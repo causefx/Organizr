@@ -164,6 +164,18 @@ trait RadarrHomepageItem
 					),
 					array(
 						'type' => 'switch',
+						'name' => 'radarrPhysicalRelease',
+						'label' => 'Show Physical Release',
+						'value' => $this->config['radarrPhysicalRelease']
+					),
+					array(
+						'type' => 'switch',
+						'name' => 'radarrDigitalRelease',
+						'label' => 'Show Digital Release',
+						'value' => $this->config['radarrDigitalRelease']
+					),
+					array(
+						'type' => 'switch',
 						'name' => 'radarrCinemaRelease',
 						'label' => 'Show Cinema Releases',
 						'value' => $this->config['radarrCinemaRelease']
@@ -361,18 +373,38 @@ trait RadarrHomepageItem
 		$gotCalendar = array();
 		$i = 0;
 		foreach ($array as $child) {
-			if (isset($child['physicalRelease']) || $this->config['radarrCinemaRelease']) {
+			for ($j = 0; $j < 3; $j++) {
+				$type = [];
+				if ($j == 0 && $this->config['radarrPhysicalRelease'] && isset($child['physicalRelease'])) {
+					$releaseDate = $child['physicalRelease'];
+					array_push($type, "physical");
+					if (isset($child['digitalRelease']) && $child['physicalRelease'] == $child['digitalRelease']) {
+						array_push($type, "digital");
+						$j++;
+					}
+					if (isset($child['inCinemas']) && $child['physicalRelease'] == $child['inCinemas']) {
+						array_push($type, "cinema");
+						$j++;
+					}
+				} elseif ($j == 1 && $this->config['radarrDigitalRelease'] && isset($child['digitalRelease'])) {
+					$releaseDate = $child['digitalRelease'];
+					array_push($type, "digital");
+					if (isset($child['inCinemas']) && $child['digitalRelease'] == $child['inCinemas']) {
+						array_push($type, "cinema");
+						$j++;
+					}
+				} elseif ($j == 2 && $this->config['radarrCinemaRelease'] && isset($child['inCinemas'])) {
+					$releaseDate = $child['inCinemas'];
+					array_push($type, "cinema");
+				} else {
+					continue;
+				}
 				$i++;
 				$movieName = $child['title'];
 				$movieID = $child['tmdbId'];
 				if (!isset($movieID)) {
 					$movieID = "";
 				}
-				if (isset($child['physicalRelease'])) {
-					$releaseDate = $child['physicalRelease'];
-				} elseif (isset($child['inCinemas'])) {
-					$releaseDate = $child['inCinemas'];
-				}	
 				$releaseDate = strtotime($releaseDate);
 				$releaseDate = date("Y-m-d", $releaseDate);
 				if (new DateTime() < new DateTime($releaseDate)) {
@@ -418,10 +450,16 @@ trait RadarrHomepageItem
 					}
 				}
 				$alternativeTitles = "";
-				foreach ($child['alternativeTitles'] as $alternative) {
-					$alternativeTitles .= $alternative['title'] . ', ';
+				if (!empty($child['alternativeTitles'])) {
+					foreach ($child['alternativeTitles'] as $alternative) {
+						$alternativeTitles .= $alternative['title'] . ', ';
+					}
+				} elseif (!empty($child['alternateTitles'])) { //v3 API
+					foreach ($child['alternateTitles'] as $alternative) {
+						$alternativeTitles .= $alternative['title'] . ', ';
+					}
 				}
-				$alternativeTitles = empty($child['alternativeTitles']) ? "" : substr($alternativeTitles, 0, -2);
+				$alternativeTitles = empty($alternativeTitles) ? "" : substr($alternativeTitles, 0, -2);
 				$details = array(
 					"topTitle" => $movieName,
 					"bottomTitle" => $alternativeTitles,
@@ -447,6 +485,7 @@ trait RadarrHomepageItem
 					"imagetype" => "film " . $downloaded,
 					"imagetypeFilter" => "film",
 					"downloadFilter" => $downloaded,
+					"releaseType" => $type,
 					"bgColor" => str_replace('text', 'bg', $downloaded),
 					"details" => $details
 				));
