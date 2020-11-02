@@ -258,7 +258,7 @@ trait RadarrHomepageItem
 				],
 				'not_empty' => [
 					'radarrURL',
-					'lidarrToken'
+					'radarrToken'
 				]
 			],
 			'queue' => [
