@@ -384,7 +384,7 @@ trait RadarrHomepageItem
 					}
 					if (isset($child['inCinemas']) && $child['physicalRelease'] == $child['inCinemas']) {
 						array_push($type, "cinema");
-						$j++;
+						$j += 2;
 					}
 				} elseif ($j == 1 && $this->config['radarrDigitalRelease'] && isset($child['digitalRelease'])) {
 					$releaseDate = $child['digitalRelease'];
