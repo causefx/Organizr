@@ -1860,3 +1860,8 @@ $(document).on('click', 'li a[aria-controls="Custom data"]', function() {
 $(document).on('click', '.imageManagerItem', function() {
 	createImageSwal($(this));
 });
+
+$(document).on('click', '.close-editHomepageItemDiv',function () {
+	$('body').removeAttr('style');
+	$('html').removeAttr('style');
+})

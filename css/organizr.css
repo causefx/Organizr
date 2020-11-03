@@ -7,6 +7,12 @@
     opacity: 1 !important;
     background: #000000eb !important;
 }
+.editHomepageItemDiv-off {
+    z-index: -9999 !important;
+    opacity: 0 !important;
+    display: none;
+    animation-duration: 0.6s;
+}
 #editHomepageItem {
     margin-top: 40px;
 }
@@ -1656,8 +1662,11 @@ span.has-coupon {
     overflow: auto;
     position: absolute;
 }
+html{
+    overflow: hidden !important;
+}
 body{
-    overflow: hidden;
+    overflow: initial !important;
 }
 .login-area {
     position: fixed;
