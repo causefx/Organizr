@@ -5733,6 +5733,11 @@ function buildDownloaderItem(array, source, type='none'){
 			}
 			if(array.content.queueItems == 0){
 				queue = '<tr><td class="max-texts" lang="en">Nothing in queue</td></tr>';
+				break;
+			}
+			if(array.content.queueItems.records == 0){
+				queue = '<tr><td class="max-texts" lang="en">Nothing in queue</td></tr>';
+				break;
 			}
 			$.each(array.content.queueItems, function(i,v) {
 				count = count + 1;
@@ -5764,28 +5769,33 @@ function buildDownloaderItem(array, source, type='none'){
 			}
 			if(array.content.queueItems == 0){
 				queue = '<tr><td class="max-texts" lang="en">Nothing in queue</td></tr>';
+				break;
 			}
-			$.each(array.content.queueItems, function(i,v) {
-				if(v.hasOwnProperty('movie')) {
-					count = count + 1;
-					var percent = Math.floor(((v.size - v.sizeleft) / v.size) * 100);
-					percent = (isNaN(percent)) ? '0' : percent;
-					var size = v.size != -1 ? humanFileSize(v.size, false) : "?";
-					v.name = v.movie.title;
-					queue += `
-	                <tr>
-	                    <td class="max-texts">` + v.name + `</td>
-	                    <td class="hidden-xs sonarr-` + cleanClass(v.status) + `">` + v.status + `</td>
-	                    <td class="hidden-xs">` + size + `</td>
-	                    <td class="hidden-xs"><span class="label label-info">` + v.protocol + `</span></td>
-	                    <td class="text-right">
-	                        <div class="progress progress-lg m-b-0">
-	                            <div class="progress-bar progress-bar-info" style="width: ` + percent + `%;" role="progressbar">` + percent + `%</div>
-	                        </div>
-	                    </td>
-	                </tr>
-	                `;
-				}
+			if(array.content.queueItems.records == 0){
+				queue = '<tr><td class="max-texts" lang="en">Nothing in queue</td></tr>';
+				break;
+			}
+			let queueSet = (typeof array.content.queueItems.records == 'undefined') ? array.content.queueItems : array.content.queueItems.records;
+			$.each(queueSet, function(i,v) {
+				count = count + 1;
+				var percent = Math.floor(((v.size - v.sizeleft) / v.size) * 100);
+				percent = (isNaN(percent)) ? '0' : percent;
+				var size = v.size != -1 ? humanFileSize(v.size, false) : "?";
+				v.name = (typeof v.movie == 'undefined') ? v.title : v.movie.title;
+				queue += `
+                <tr>
+                    <td class="max-texts">` + v.name + `</td>
+                    <td class="hidden-xs sonarr-` + cleanClass(v.status) + `">` + v.status + `</td>
+                    <td class="hidden-xs">` + size + `</td>
+                    <td class="hidden-xs"><span class="label label-info">` + v.protocol + `</span></td>
+                    <td class="text-right">
+                        <div class="progress progress-lg m-b-0">
+                            <div class="progress-bar progress-bar-info" style="width: ` + percent + `%;" role="progressbar">` + percent + `%</div>
+                        </div>
+                    </td>
+                </tr>
+                `;
+
 			});
 			if(queue == ''){
 				queue = '<tr><td class="max-texts" lang="en">Nothing in queue</td></tr>';

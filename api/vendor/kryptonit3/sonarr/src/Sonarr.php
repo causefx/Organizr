@@ -3,6 +3,7 @@
 namespace Kryptonit3\Sonarr;
 
 use GuzzleHttp\Client;
+use Composer\Semver\Comparator;
 
 class Sonarr
 {
@@ -11,11 +12,11 @@ class Sonarr
     protected $httpAuthUsername;
     protected $httpAuthPassword;
 
-    public function __construct($url, $apiKey, $lidarr = false, $httpAuthUsername = null, $httpAuthPassword = null)
+    public function __construct($url, $apiKey, $type = 'sonarr', $httpAuthUsername = null, $httpAuthPassword = null)
     {
         $this->url = rtrim($url, '/\\'); // Example: http://127.0.0.1:8989 (no trailing forward-backward slashes)
 	    $this->apiKey = $apiKey;
-	    $this->lidarr = $lidarr;
+	    $this->type = strtolower($type);
         $this->httpAuthUsername = $httpAuthUsername;
         $this->httpAuthPassword = $httpAuthPassword;
     }
@@ -65,7 +66,7 @@ class Sonarr
         if ( $sonarrUnmonitored == 'true' ) {
             $uriData['unmonitored'] = 'true';
 		}
-	    if ( $this->lidarr == true ) {
+	    if ( $this->type == 'lidarr' ) {
 		    $uriData['includeArtist'] = 'true';
 	    }
 	    $response = [
@@ -582,7 +583,7 @@ class Sonarr
             'data' => []
         ];
 
-        return $this->processRequest($response);
+        return $this->preProcessRequest($response);
     }
 
     /**
@@ -606,29 +607,33 @@ class Sonarr
                 $this->httpAuthPassword
             ];
         }
-	    $lidarr = ( $this->lidarr == true ) ? 'v1/' : '';
+		if($this->type == 'lidarr'){
+			$params['version'] = 'v1/';
+		}
+	    $version = $params['version'] ?? '';
+        
         if ( $params['type'] == 'get' ) {
-            $url = $this->url . '/api/' . $lidarr . $params['uri'] . '?' . http_build_query($params['data']);
+            $url = $this->url . '/api/' . $version . $params['uri'] . '?' . http_build_query($params['data']);
 
             return $client->get($url, $options);
         }
 
         if ( $params['type'] == 'put' ) {
-            $url = $this->url . '/api/' . $lidarr . $params['uri'];
+            $url = $this->url . '/api/' . $version . $params['uri'];
             $options['json'] = $params['data'];
 
             return $client->put($url, $options);
         }
 
         if ( $params['type'] == 'post' ) {
-            $url = $this->url . '/api/' . $lidarr . $params['uri'];
+            $url = $this->url . '/api/' . $version . $params['uri'];
             $options['json'] = $params['data'];
 
             return $client->post($url, $options);
         }
 
         if ( $params['type'] == 'delete' ) {
-            $url = $this->url . '/api/' . $lidarr . $params['uri'] . '?' . http_build_query($params['data']);
+            $url = $this->url . '/api/' . $version . $params['uri'] . '?' . http_build_query($params['data']);
 
             return $client->delete($url, $options);
         }
@@ -642,12 +647,39 @@ class Sonarr
      */
     protected function processRequest(array $request)
     {
+	    try {
+		    $versionCheck = $this->getSystemStatus();
+		    $versionCheck = json_decode($versionCheck)['version'];
+		    $compare = new Comparator;
+		    switch ($this->type){
+			    case 'sonarr':
+				    $versionCheck = '';
+				    break;
+			    case 'radarr':
+			    	$versionCheck =  ($compare->lessThan('2.9.9', $versionCheck)) ? '' : 'v3/';
+			    	break;
+			    case 'lidarr':
+				    $versionCheck = 'v1/';
+				    break;
+			    default:
+				    $versionCheck = '';
+		    }
+	    } catch ( \Exception $e ) {
+		    return json_encode(array(
+			    'error' => array(
+				    'msg' => $e->getMessage(),
+				    'code' => $e->getCode(),
+			    ),
+		    ));
+		    exit();
+	    }
         try {
             $response = $this->_request(
                 [
                     'uri' => $request['uri'],
                     'type' => $request['type'],
-                    'data' => $request['data']
+                    'data' => $request['data'],
+	                'version' => $versionCheck
                 ]
             );
         } catch ( \Exception $e ) {
@@ -657,11 +689,31 @@ class Sonarr
                     'code' => $e->getCode(),
                 ),
             ));
-
             exit();
         }
 
         return $response->getBody()->getContents();
+    }
+    protected function preProcessRequest(array $request)
+    {
+	    try {
+		    $response = $this->_request(
+			    [
+				    'uri' => $request['uri'],
+				    'type' => $request['type'],
+				    'data' => $request['data']
+			    ]
+		    );
+	    } catch ( \Exception $e ) {
+		    return json_encode(array(
+			    'error' => array(
+				    'msg' => $e->getMessage(),
+				    'code' => $e->getCode(),
+			    ),
+		    ));
+		
+		    exit();
+	    }
     }
 
     /**

@@ -214,7 +214,7 @@ trait RadarrHomepageItem
 		$list = $this->csvHomepageUrlToken($this->config['radarrURL'], $this->config['radarrToken']);
 		foreach ($list as $key => $value) {
 			try {
-				$downloader = new Kryptonit3\Sonarr\Sonarr($value['url'], $value['token']);
+				$downloader = new Kryptonit3\Sonarr\Sonarr($value['url'], $value['token'], 'radarr');
 				$results = $downloader->getSystemStatus();
 				$downloadList = json_decode($results, true);
 				if (is_array($downloadList) || is_object($downloadList)) {
@@ -313,7 +313,7 @@ trait RadarrHomepageItem
 		$list = $this->csvHomepageUrlToken($this->config['radarrURL'], $this->config['radarrToken']);
 		foreach ($list as $key => $value) {
 			try {
-				$downloader = new Kryptonit3\Sonarr\Sonarr($value['url'], $value['token']);
+				$downloader = new Kryptonit3\Sonarr\Sonarr($value['url'], $value['token'], 'radarr');
 				$results = $downloader->getQueue();
 				$downloadList = json_decode($results, true);
 				if (is_array($downloadList) || is_object($downloadList)) {
@@ -346,7 +346,7 @@ trait RadarrHomepageItem
 		$list = $this->csvHomepageUrlToken($this->config['radarrURL'], $this->config['radarrToken']);
 		foreach ($list as $key => $value) {
 			try {
-				$downloader = new Kryptonit3\Sonarr\Sonarr($value['url'], $value['token']);
+				$downloader = new Kryptonit3\Sonarr\Sonarr($value['url'], $value['token'], 'radarr');
 				$results = $downloader->getCalendar($startDate, $endDate, $this->config['radarrUnmonitored']);
 				$result = json_decode($results, true);
 				if (is_array($result) || is_object($result)) {
