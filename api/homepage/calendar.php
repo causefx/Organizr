@@ -5,7 +5,7 @@ trait CalendarHomepageItem
 	public function calendarSettingsArray()
 	{
 		return array(
-			'name' => 'Calendar',
+			'name' => 'iCal',
 			'enabled' => strpos('personal', $this->config['license']) !== false,
 			'image' => 'plugins/images/tabs/calendar.png',
 			'category' => 'HOMEPAGE',
