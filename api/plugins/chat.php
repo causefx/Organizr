@@ -1,5 +1,7 @@
 <?php
 // PLUGIN INFORMATION
+use Pusher\PusherException;
+
 $GLOBALS['plugins'][]['chat'] = array( // Plugin Name
 	'name' => 'Chat', // Plugin Name
 	'author' => 'CauseFX', // Who wrote the plugin
@@ -138,18 +140,22 @@ class Chat extends Organizr
 		$query = $this->processQueries($response);
 		if ($query) {
 			$options = array(
-				'cluster' => $GLOBALS['CHAT-cluster-include'],
-				'useTLS' => $GLOBALS['CHAT-useSSL']
+				'cluster' => $this->config['CHAT-cluster-include'],
+				'useTLS' => $this->config['CHAT-useSSL']
 			);
-			$pusher = new Pusher\Pusher(
-				$GLOBALS['CHAT-authKey-include'],
-				$GLOBALS['CHAT-secret'],
-				$GLOBALS['CHAT-appID-include'],
-				$options
-			);
-			$pusher->trigger('org_channel', 'my-event', $newMessage);
-			$this->setAPIResponse('success', 'Chat message accepted', 200);
-			return true;
+			try {
+				$pusher = new Pusher\Pusher(
+					$this->config['CHAT-authKey-include'],
+					$this->config['CHAT-secret'],
+					$this->config['CHAT-appID-include'],
+					$options
+				);
+				$pusher->trigger('org_channel', 'my-event', $newMessage);
+				$this->setAPIResponse('success', 'Chat message accepted', 200);
+				return true;
+			} catch (PusherException $e) {
+				$this->setAPIResponse('error', 'Chat message error', 500);
+			}
 		}
 		$this->setAPIResponse('error', 'Chat error occurred', 409);
 		return false;

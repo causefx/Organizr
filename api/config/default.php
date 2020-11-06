@@ -66,6 +66,10 @@ return array(
 	'lidarrSocksEnabled' => false,
 	'lidarrSocksAuth' => '999',
 	'radarrURL' => '',
+	'radarrUnmonitored' => false,
+	'radarrPhysicalRelease' => true,
+	'radarrDigitalRelease' => false,
+	'radarrCinemaRelease' => false,
 	'radarrToken' => '',
 	'radarrSocksEnabled' => false,
 	'radarrSocksAuth' => '999',
@@ -436,5 +440,6 @@ return array(
 	'githubMenuLink' => true,
 	'organizrSupportMenuLink' => true,
 	'organizrDocsMenuLink' => true,
-	'organizrSignoutMenuLink' => true
+	'organizrSignoutMenuLink' => true,
+	'breezometerToken' => 'd95ab607392d4fa5bf64bb26a5cb2a06'
 );

@@ -338,7 +338,7 @@ trait EmbyHomepageItem
 						break;
 					}
 				}
-				$url = $url . '/Users/' . $userId . '/Items/Latest?EnableImages=true&Limit=' . $this->config['homepageRecentLimit'] . '&api_key=' . $this->config['embyToken'] . ($showPlayed ? '' : '&IsPlayed=false') . '&Fields=Overview,People,Genres,CriticRating,Studios,Taglines';
+				$url = $url . '/Users/' . $userId . '/Items/Latest?EnableImages=true&Limit=' . $this->config['homepageRecentLimit'] . '&api_key=' . $this->config['embyToken'] . ($showPlayed ? '' : '&IsPlayed=false') . '&Fields=Overview,People,Genres,CriticRating,Studios,Taglines&IncludeItemTypes=Series,Episode,MusicAlbum,Audio,Movie,Video';
 			} else {
 				$this->setAPIResponse('error', 'Emby Error Occurred', 500);
 				return false;

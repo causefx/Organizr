@@ -7,7 +7,7 @@ $GLOBALS['plugins'][]['healthChecks'] = array( // Plugin Name
 	'link' => '', // Link to plugin info
 	'license' => 'personal,business', // License Type use , for multiple
 	'idPrefix' => 'HEALTHCHECKS', // html element id prefix
-	'configPrefix' => 'HEALTHCHECKS', // config file prefix for array items without the hypen
+	'configPrefix' => 'HEALTHCHECKS', // config file prefix for array items without the hyphen
 	'version' => '1.0.0', // SemVer of plugin
 	'image' => 'plugins/images/healthchecksio.png', // 1:1 non transparent image for plugin
 	'settings' => true, // does plugin need a settings page? true or false
@@ -71,7 +71,8 @@ class HealthChecks extends Organizr
 		$url = $this->qualifyURL($this->config['HEALTHCHECKS-PingURL']);
 		$uuid = '/' . $uuid;
 		$path = !$pass ? '/fail' : '';
-		return Requests::get($url . $uuid . $path, [], []);
+		$options = ($this->localURL($url)) ? array('verify' => false) : array('verify' => $this->getCert());
+		return Requests::get($url . $uuid . $path, [], $options);
 	}
 	
 	public function _healthCheckPluginRun()

@@ -58,7 +58,7 @@ class Organizr
 	
 	// ===================================
 	// Organizr Version
-	public $version = '2.1.0';
+	public $version = '2.1.60';
 	// ===================================
 	// Quick php Version check
 	public $minimumPHP = '7.2';
@@ -3693,7 +3693,7 @@ class Organizr
 				case 'homepageOrdercalendar':
 					$class = 'bg-primary';
 					$image = 'plugins/images/tabs/calendar.png';
-					if (!$this->config['homepageSonarrEnabled'] && !$this->config['homepageRadarrEnabled'] && !$this->config['homepageSickrageEnabled'] && !$this->config['homepageCouchpotatoEnabled']) {
+					if (!$this->config['homepageCalendarEnabled'] && !$this->config['homepageSonarrEnabled'] && !$this->config['homepageRadarrEnabled'] && !$this->config['homepageSickrageEnabled'] && !$this->config['homepageCouchpotatoEnabled']) {
 						$class .= ' faded';
 					}
 					break;

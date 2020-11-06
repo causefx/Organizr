@@ -3486,8 +3486,12 @@ function buildBackers(array){
 	$.each(array, function(i,v) {
 		if(v.type == 'USER' && v.role == 'BACKER' && v.isActive){
 			v.name = v.name ? v.name : 'User';
-			v.image = v.image ? v.image : 'image here';
-			backers += '<li><img src="'+v.image+'" alt="user" height="60" width="60" data-toggle="tooltip" title="" class="img-circle" data-original-title="'+v.name+'"></li>';
+			v.image = v.image ? v.image : null;
+			if(v.image == null){
+				backers += '<li><span alt="user" data-toggle="tooltip" title="" class="circle circle-md bg-info di" data-original-title="'+v.name+'" href="image here"><i class="fa fa-user"></i></span></li>';
+			}else{
+				backers += '<li><img src="'+v.image+'" alt="user" height="60" width="60" data-toggle="tooltip" title="" class="img-circle" data-original-title="'+v.name+'"></li>';
+			}
 		}
 	});
 	backers += '<li><a href="https://opencollective.com/organizr" target="_blank" class="circle circle-md bg-info di" data-toggle="tooltip" title="" data-original-title="Join">You</a></li>';
@@ -5729,6 +5733,11 @@ function buildDownloaderItem(array, source, type='none'){
 			}
 			if(array.content.queueItems == 0){
 				queue = '<tr><td class="max-texts" lang="en">Nothing in queue</td></tr>';
+				break;
+			}
+			if(array.content.queueItems.records == 0){
+				queue = '<tr><td class="max-texts" lang="en">Nothing in queue</td></tr>';
+				break;
 			}
 			$.each(array.content.queueItems, function(i,v) {
 				count = count + 1;
@@ -5760,28 +5769,33 @@ function buildDownloaderItem(array, source, type='none'){
 			}
 			if(array.content.queueItems == 0){
 				queue = '<tr><td class="max-texts" lang="en">Nothing in queue</td></tr>';
+				break;
 			}
-			$.each(array.content.queueItems, function(i,v) {
-				if(v.hasOwnProperty('movie')) {
-					count = count + 1;
-					var percent = Math.floor(((v.size - v.sizeleft) / v.size) * 100);
-					percent = (isNaN(percent)) ? '0' : percent;
-					var size = v.size != -1 ? humanFileSize(v.size, false) : "?";
-					v.name = v.movie.title;
-					queue += `
-	                <tr>
-	                    <td class="max-texts">` + v.name + `</td>
-	                    <td class="hidden-xs sonarr-` + cleanClass(v.status) + `">` + v.status + `</td>
-	                    <td class="hidden-xs">` + size + `</td>
-	                    <td class="hidden-xs"><span class="label label-info">` + v.protocol + `</span></td>
-	                    <td class="text-right">
-	                        <div class="progress progress-lg m-b-0">
-	                            <div class="progress-bar progress-bar-info" style="width: ` + percent + `%;" role="progressbar">` + percent + `%</div>
-	                        </div>
-	                    </td>
-	                </tr>
-	                `;
-				}
+			if(array.content.queueItems.records == 0){
+				queue = '<tr><td class="max-texts" lang="en">Nothing in queue</td></tr>';
+				break;
+			}
+			let queueSet = (typeof array.content.queueItems.records == 'undefined') ? array.content.queueItems : array.content.queueItems.records;
+			$.each(queueSet, function(i,v) {
+				count = count + 1;
+				var percent = Math.floor(((v.size - v.sizeleft) / v.size) * 100);
+				percent = (isNaN(percent)) ? '0' : percent;
+				var size = v.size != -1 ? humanFileSize(v.size, false) : "?";
+				v.name = (typeof v.movie == 'undefined') ? v.title : v.movie.title;
+				queue += `
+                <tr>
+                    <td class="max-texts">` + v.name + `</td>
+                    <td class="hidden-xs sonarr-` + cleanClass(v.status) + `">` + v.status + `</td>
+                    <td class="hidden-xs">` + size + `</td>
+                    <td class="hidden-xs"><span class="label label-info">` + v.protocol + `</span></td>
+                    <td class="text-right">
+                        <div class="progress progress-lg m-b-0">
+                            <div class="progress-bar progress-bar-info" style="width: ` + percent + `%;" role="progressbar">` + percent + `%</div>
+                        </div>
+                    </td>
+                </tr>
+                `;
+
 			});
 			if(queue == ''){
 				queue = '<tr><td class="max-texts" lang="en">Nothing in queue</td></tr>';
@@ -7232,13 +7246,13 @@ function buildWeatherAndAir(array){
                     weatherItems += `
                     <div class="col-lg-4 col-sm-12 col-xs-12">
                         <div class="white-box">
-                            <h3 class="box-title">`+moment(v.datetime).format('dddd')+`<small class="pull-right m-t-10">Feels Like `+Math.round(v.feels_like_temperature.value)+`°</small></h3>
-                            <ul class="list-inline two-part">
+                            <h3 class="box-title"><small class="pull-right m-t-10">Feels Like `+Math.round(v.feels_like_temperature.value)+`°</small>`+moment(v.datetime).format('dddd')+`<br/><small class="text-uppercase elip">`+v.weather_text+`</small></h3>
+                            <ul class="list-inline two-part" style="margin-top: -13px;">
                                 <li><i class="wi `+weatherIcon(v.icon_code, v.is_day_time)+` text-info"></i></li>
                                 <li class="text-right"><span class="counter">`+Math.round(v.temperature.value)+`<small><sup>°`+v.temperature.units+`</sup></small></span></li>
                             </ul>
                             <ul class="list-inline m-b-0">
-                                <li class="pull-left w-50 hidden-xs"><small class="text-uppercase elip">`+v.weather_text+`</small></li>
+                                <li class="pull-left w-50 hidden-xs"></li>
                                 <li class="pull-right" style="width:75px"><small><i class="wi wi-strong-wind m-r-5 text-primary tooltip-primary" data-toggle="tooltip" data-placement="top" title="" data-original-title="Wind"></i>`+Math.round(v.wind.speed.value)+` `+v.wind.speed.units+`</small></li>
                                 <li class="pull-right" style="width:75px"><small><i class="wi wi-barometer m-r-5 text-primary tooltip-primary" data-toggle="tooltip" data-placement="top" title="" data-original-title="Pressure"></i>`+Math.round(v.pressure.value)+` `+v.pressure.units+`</small></li>
                                 <li class="pull-right" style="width:45px"><small><i class="wi wi-humidity m-r-5 text-primary tooltip-primary" data-toggle="tooltip" data-placement="top" title="" data-original-title="Humidity"></i>`+Math.round(v.relative_humidity)+`</small></li>
@@ -10242,7 +10256,7 @@ function OrganizrApiError(xhr, secondaryMessage = null){
 }
 function launch(){
 	console.info('https://docs.organizr.app/books/setup-features/page/organizr-20--%3E-21-migration-guide');
-	organizrConsole('API V2 API','If you see a 404 Error below this line, you have not setup the new location block... See URL above this line', 'error');
+	organizrConsole('API V2 API','If you see a 404 Error for api/v2/launch below this line, you have not setup the new location block... See URL above this line', 'error');
 	organizrConnect('api/v2/launch').success(function (data) {
         try {
             let json = data.response;
