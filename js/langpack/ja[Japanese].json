@@ -1,7 +1,7 @@
 {
     "token": {
         "Navigation": "Navigation",
-        "Date": "Date",
+        "Date": "日付",
         "Type": "Type",
         "IP Address": "IP Address",
         "Username": "Username",
@@ -18,7 +18,7 @@
         "Register": "Register",
         "Registration Password": "Registration Password",
         "Recover Password": "Recover Password",
-        "Password": "Password",
+        "Password": "パスワード",
         "Sign Up": "Sign Up",
         "Don't have an account?": "Don't have an account?",
         "Forgot pwd?": "Forgot pwd?",
@@ -39,7 +39,7 @@
         "Edit Categories": "Edit Categories",
         "Edit Tabs": "Edit Tabs",
         "Tabs": "Tabs",
-        "System Settings": "System Settings",
+        "System Settings": "システムの設定",
         "User Management": "User Management",
         "Customize": "Customize",
         "Tab Editor": "Tab Editor",
