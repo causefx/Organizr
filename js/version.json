@@ -285,5 +285,12 @@
     "new": "API v2 endpoints - Please make sure to update nginx auth_request location block if being used|Update Organizr alert errors|Redid Debug area|Jellyfin homepage item|SOCKS support for sonarr - radarr - lidarr|Redid plex token and machine methods|Redid user management area|Jackett homepage item|redid homepage items settings pages",
     "fixed": "Lots of little misc fixes",
     "notes": "CHECK MIGRATION LINK IN NEWS SECTION!!!!!!!|API v2 is here|If using built-in updater in Organizr and not on Windows - it will fail on cleaning up install - reloading should fix|If using Docker - Please switch to organizr/organizr|Remove any plugins that were downloaded from marketplace prior to upgrade|Please join our discord if you have any issues|Please report bugs in GitHub issues page"
+  },
+  "2.1.60": {
+    "date": "2020-11-06 19:40",
+    "title": "",
+    "new": "Radarr Unmonitored/Cinema Toggles|update class for arrs to check version of api",
+    "fixed": "Fix User list error (#1487)|fix Weather Homepage Item Not Showing (#1498)|update healthchecks plugin to reflect cert temp change|fix chat plugin|Add IncludeItemTypes to emby recent items - fixes issue with having newly added tv channels|fix menu bug|user mgmt goto last page instead of first on error|iCal not showing up if solo enabled|Healthchecks cert failing|Weather css|OC backer with no image",
+    "notes": "Added new tab icons|Added new languages and updated existing ones|Please join our discord if you have any issues|Please report bugs in GitHub issues page"
   }
 }
