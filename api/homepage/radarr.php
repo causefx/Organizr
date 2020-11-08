@@ -215,7 +215,7 @@ trait RadarrHomepageItem
 		foreach ($list as $key => $value) {
 			try {
 				$downloader = new Kryptonit3\Sonarr\Sonarr($value['url'], $value['token'], 'radarr');
-				$results = $downloader->getSystemStatus();
+				$results = $downloader->getRootFolder();
 				$downloadList = json_decode($results, true);
 				if (is_array($downloadList) || is_object($downloadList)) {
 					$queue = (array_key_exists('error', $downloadList)) ? $downloadList['error']['msg'] : $downloadList;
