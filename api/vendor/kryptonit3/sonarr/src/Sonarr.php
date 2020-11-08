@@ -650,7 +650,7 @@ class Sonarr
 	    try {
 		    $versionCheck = $this->getSystemStatus();
 		    $versionCheck = json_decode($versionCheck, true);
-		    $versionCheck = (is_array($versionCheck) || is_object($versionCheck)) ? $versionCheck['version'] : '1.0';
+		    $versionCheck = (is_array($versionCheck) && array_key_exists('version', $versionCheck)) ? $versionCheck['version'] : '1.0';
 		    $compare = new Comparator;
 		    switch ($this->type){
 			    case 'sonarr':
