@@ -53,12 +53,17 @@ class HealthChecks extends Organizr
 		$options = array('verify' => false, 'verifyname' => false, 'follow_redirects' => true, 'redirects' => 1);
 		$headers = array('Token' => $this->config['organizrAPI']);
 		$url = $this->qualifyURL($url);
-		$response = Requests::get($url, $headers, $options);
-		if ($response->success) {
-			$success = true;
-		}
-		if ($response->status_code == 200) {
-			$success = true;
+		try {
+			$response = Requests::get($url, $headers, $options);
+			if ($response->success) {
+				$success = true;
+			}
+			if ($response->status_code == 200) {
+				$success = true;
+			}
+		} catch (Requests_Exception $e) {
+			$this->writeLog('error', 'HealthChecks Plugin - Error: ' . $e->getMessage(), 'SYSTEM');
+			return false;
 		}
 		return $success;
 	}

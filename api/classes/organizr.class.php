@@ -58,7 +58,7 @@ class Organizr
 	
 	// ===================================
 	// Organizr Version
-	public $version = '2.1.60';
+	public $version = '2.1.74';
 	// ===================================
 	// Quick php Version check
 	public $minimumPHP = '7.2';
@@ -221,6 +221,7 @@ class Organizr
 				if ($this->qualifyRequest($group) && $unlocked) {
 					header("X-Organizr-User: $currentUser");
 					header("X-Organizr-Email: $currentEmail");
+					header("X-Organizr-Group: $currentGroup");
 					$this->setAPIResponse('success', $userInfo . ' User is Authorized', 200);
 				} else {
 					if (!$redirect) {

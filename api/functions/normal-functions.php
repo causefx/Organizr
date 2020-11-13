@@ -477,7 +477,8 @@ trait NormalFunctions
 				$domain = $_SERVER['HTTP_HOST'];
 			}
 		}
-		$url = $protocol . $domain . str_replace("\\", "/", dirname($_SERVER['REQUEST_URI']));
+		$path = (str_replace("\\", "/", dirname($_SERVER['REQUEST_URI'])) !== '.') ?? '';
+		$url = $protocol . $domain . $path;
 		if (strpos($url, '/api') !== false) {
 			$url = explode('/api', $url);
 			return $url[0] . '/';
