@@ -160,10 +160,9 @@ trait RTorrentHomepageItem
 		}
 		try {
 			$digest = (empty($this->config['rTorrentURLOverride'])) ? $this->qualifyURL($this->config['rTorrentURL'], true) : $this->qualifyURL($this->checkOverrideURL($this->config['rTorrentURL'], $this->config['rTorrentURLOverride']), true);
-			$passwordInclude = ($this->config['rTorrentUsername'] !== '' && $this->config['rTorrentPassword'] !== '') ? $this->config['rTorrentUsername'] . ':' . $this->decrypt($this->config['rTorrentPassword']) . "@" : '';
 			$extraPath = (strpos($this->config['rTorrentURL'], '.php') !== false) ? '' : '/RPC2';
 			$extraPath = (empty($this->config['rTorrentURLOverride'])) ? $extraPath : '';
-			$url = $digest['scheme'] . '://' . $passwordInclude . $digest['host'] . $digest['port'] . $digest['path'] . $extraPath;
+			$url = $digest['scheme'] . '://' . $digest['host'] . $digest['port'] . $digest['path'] . $extraPath;
 			$options = ($this->localURL($url, $this->config['rTorrentDisableCertCheck'])) ? array('verify' => false) : array();
 			if ($this->config['rTorrentUsername'] !== '' && $this->decrypt($this->config['rTorrentPassword']) !== '') {
 				$credentials = array('auth' => new Requests_Auth_Digest(array($this->config['rTorrentUsername'], $this->decrypt($this->config['rTorrentPassword']))));
@@ -267,11 +266,10 @@ trait RTorrentHomepageItem
 			}
 			$torrents = array();
 			$digest = (empty($this->config['rTorrentURLOverride'])) ? $this->qualifyURL($this->config['rTorrentURL'], true) : $this->qualifyURL($this->checkOverrideURL($this->config['rTorrentURL'], $this->config['rTorrentURLOverride']), true);
-			$passwordInclude = ($this->config['rTorrentUsername'] !== '' && $this->config['rTorrentPassword'] !== '') ? $this->config['rTorrentUsername'] . ':' . $this->decrypt($this->config['rTorrentPassword']) . "@" : '';
 			$extraPath = (strpos($this->config['rTorrentURL'], '.php') !== false) ? '' : '/RPC2';
 			$extraPath = (empty($this->config['rTorrentURLOverride'])) ? $extraPath : '';
-			$url = $digest['scheme'] . '://' . $passwordInclude . $digest['host'] . $digest['port'] . $digest['path'] . $extraPath;
-			$options = (localURL($url, $this->config['rTorrentDisableCertCheck'])) ? array('verify' => false) : array();
+			$url = $digest['scheme'] . '://' . $digest['host'] . $digest['port'] . $digest['path'] . $extraPath;
+			$options = ($this->localURL($url, $this->config['rTorrentDisableCertCheck'])) ? array('verify' => false) : array();
 			if ($this->config['rTorrentUsername'] !== '' && $this->decrypt($this->config['rTorrentPassword']) !== '') {
 				$credentials = array('auth' => new Requests_Auth_Digest(array($this->config['rTorrentUsername'], $this->decrypt($this->config['rTorrentPassword']))));
 				$options = array_merge($options, $credentials);
