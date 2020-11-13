@@ -288,9 +288,16 @@
   },
   "2.1.60": {
     "date": "2020-11-06 19:40",
-    "title": "",
+    "title": "Make sure to read about 2.1.0 before updating",
     "new": "Radarr Unmonitored/Cinema Toggles|update class for arrs to check version of api",
     "fixed": "Fix User list error (#1487)|fix Weather Homepage Item Not Showing (#1498)|update healthchecks plugin to reflect cert temp change|fix chat plugin|Add IncludeItemTypes to emby recent items - fixes issue with having newly added tv channels|fix menu bug|user mgmt goto last page instead of first on error|iCal not showing up if solo enabled|Healthchecks cert failing|Weather css|OC backer with no image",
     "notes": "Added new tab icons|Added new languages and updated existing ones|Please join our discord if you have any issues|Please report bugs in GitHub issues page"
+  },
+  "2.1.74": {
+    "date": "2020-11-13 18:00",
+    "title": "Weekly update",
+    "new": "Add group to auth header",
+    "fixed": "fix Traefik Redirection adds an . at ending (#1484)|fix issue with special character in password rutorrent module (#1511)|Unifi homepage item image|Radarr Test button|Sonarr Test button|Lidarr Test button|Arrs homepage items|rtorrent array fix|Healthchecks plugin",
+    "notes": "Add Turkish language|Please join our discord if you have any issues|Please report bugs in GitHub issues page"
   }
 }
