@@ -1042,9 +1042,9 @@ function buildAccordion(array, open = false){
         var id = mainId + '-' + i;
         items += `
         <div class="panel">
-            <div class="panel-heading bg-org" id="`+id+`-heading" role="tab"> <a class="panel-title `+collapsed+`" data-toggle="collapse" href="#`+id+`-collapse" data-parent="#`+mainId+`" aria-expanded="false" aria-controls="`+id+`-collapse"> `+v.title+` </a> </div>
+            <div class="panel-heading bg-org" id="`+id+`-heading" role="tab"> <a class="panel-title `+collapsed+`" data-toggle="collapse" href="#`+id+`-collapse" data-parent="#`+mainId+`" aria-expanded="false" aria-controls="`+id+`-collapse"> <span lang="en">`+v.title+`</span> </a> </div>
             <div class="panel-collapse `+collapse+`" id="`+id+`-collapse" aria-labelledby="`+id+`-heading" role="tabpanel">
-                <div class="panel-body"> `+v.body+` </div>
+                <div class="panel-body" lang="en"> `+v.body+` </div>
             </div>
         </div>
         `;
@@ -1801,7 +1801,7 @@ function buildFormGroup(array){
 		if(i == 'custom'){
 			group += v;
 		}else{
-		    uList += `<li role="presentation" class="`+active+`"><a href="#`+customID+cleanClass(i)+`" aria-controls="`+i+`" role="tab" data-toggle="tab" aria-expanded="false"><span> `+i+`</span></a></li>`;
+		    uList += `<li role="presentation" class="`+active+`"><a href="#`+customID+cleanClass(i)+`" aria-controls="`+i+`" role="tab" data-toggle="tab" aria-expanded="false"><span lang="en">`+i+`</span></a></li>`;
 			group += `
 				<!-- FORM GROUP -->
 				<div role="tabpanel" class="tab-pane fade in `+active+`" id="`+customID+cleanClass(i)+`">
@@ -2460,12 +2460,12 @@ function buildActiveTokens(array) {
                                 <thead>
                                     <tr>
                                         <th>#</th>
-                                        <th>Token</th>
-                                        <th>Created</th>
-                                        <th>Expires</th>
-                                        <th>Browser</th>
-                                        <th>IP</th>
-                                        <th>Action</th>
+                                        <th lang="en">Token</th>
+                                        <th lang="en">Created</th>
+                                        <th lang="en">Expires</th>
+                                        <th lang="en">Browser</th>
+                                        <th lang="en">IP</th>
+                                        <th lang="en">Action</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -2492,7 +2492,7 @@ function accountManager(user){
                         <div class="panel-wrapper collapse" aria-expanded="true">
                             <div class="panel-body bg-org">
                                 <p lang="en">If you signed in with a Plex Acct... Please use the following link to change your password there:</p><br>
-                                <p><a href="https://app.plex.tv/auth#?resetPassword" target="_blank">Change Password on Plex Website</a></p>
+                                <p><a href="https://app.plex.tv/auth#?resetPassword" target="_blank" lang="en">Change Password on Plex Website</a></p>
                             </div>
                         </div>
                     </div>
@@ -3494,7 +3494,7 @@ function buildBackers(array){
 			}
 		}
 	});
-	backers += '<li><a href="https://opencollective.com/organizr" target="_blank" class="circle circle-md bg-info di" data-toggle="tooltip" title="" data-original-title="Join">You</a></li>';
+	backers += '<li><a href="https://opencollective.com/organizr" target="_blank" class="circle circle-md bg-info di" data-toggle="tooltip" title="" data-original-title="Join" lang="en">You</a></li>';
 	return backers;
 }
 function sponsorDetails(id){
@@ -8338,14 +8338,14 @@ function homepageJackett(){
 				`+header+`
 				<div class="panel-wrapper p-b-0 collapse in">
 					<div class="white-box">
-	                    <h3 class="box-title m-b-0">Search</h3>
+	                    <h3 class="box-title m-b-0" lang="en">Search</h3>
 	                    
 	                    <form onsubmit="searchJackett();return false;">
 	                        <div class="input-group m-b-30">
 	                        	<span class="input-group-btn hidden">
 									<button type="button" class="btn waves-effect waves-light btn-primary clearJackett" onclick="clearJackett();"><i class="fa fa-eraser"></i></button>
 								</span>
-	                            <input id="jackett-search-query" class="form-control" placeholder="Search for...">
+	                            <input id="jackett-search-query" class="form-control" placeholder="Search for..." lang="en">
 	                            <span class="input-group-btn">
 									<button type="submit" class="btn waves-effect waves-light btn-info"><i class="fa fa-search"></i></button>
 								</span>
