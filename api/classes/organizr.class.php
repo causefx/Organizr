@@ -260,7 +260,7 @@ class Organizr
 		$data = $this->apiData($request);
 		if (!in_array($route, $GLOBALS['bypass'])) {
 			if ($this->isApprovedRequest($method, $data) === false) {
-				$this->setAPIResponse('error', 'Not authorized', 401);
+				$this->setAPIResponse('error', 'Not authorized for current Route: ' . $route, 401);
 				$this->writeLog('success', 'Killed Attack From [' . (isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : 'No Referer') . ']', $this->user['username']);
 				return false;
 			}
