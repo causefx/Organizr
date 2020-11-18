@@ -9775,6 +9775,43 @@ function toggleDebug(){
 	});
 	getDebugPreInfo();
 }
+function toggleCalendarFilter(){
+	var div = `
+	<div id="calendar-filter-modal" class="panel panel-inverse">
+        <div class="panel-heading"><span class="text-uppercase" lang="en">Filter Calendar</span></div>
+        <div class="panel-wrapper collapse in" aria-expanded="true">
+            <div class="panel-body">
+	            <div class="row">
+                    <div class="col-md-12">
+                        <label class="control-label" lang="en">Choose Media Type</label>
+                        <select class="form-control form-white" data-placeholder="Choose media type" id="choose-calender-filter">
+                            <option value="all" lang="en">All</option>
+                            <option value="tv" lang="en">TV</option>
+                            <option value="film" lang="en">Movie</option>
+                            <option value="music" lang="en">Music</option>
+                        </select>
+                    </div>
+                    <div class="col-md-12">
+                        <label class="control-label" lang="en">Choose Media Status</label>
+                        <select class="form-control form-white" data-placeholder="Choose media status" id="choose-calender-filter-status">
+                            <option value="all" lang="en">All</option>
+                            <option value="text-success" lang="en">Downloaded</option>
+                            <option value="text-info" lang="en">Unaired</option>
+                            <option value="text-danger" lang="en">Missing</option>
+                            <option value="text-primary animated flash" lang="en">Premier</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+	</div>
+	`;
+	swal({
+		content: createElementFromHTML(div),
+		className: 'bg-org',
+		button: false
+	});
+}
 function closeOrgError(){
     $('#main-org-error-container').removeClass('show');
     $('#main-org-error').html('');
