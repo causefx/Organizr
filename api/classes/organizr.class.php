@@ -255,7 +255,7 @@ class Organizr
 	
 	public function checkRoute($request)
 	{
-		$route = $request->getUri()->getPath();
+		$route = '/api/v2/' . explode('api/v2/', $request->getUri()->getPath())[1];
 		$method = $request->getMethod();
 		$data = $this->apiData($request);
 		if (!in_array($route, $GLOBALS['bypass'])) {
