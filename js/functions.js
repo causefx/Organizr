@@ -10348,7 +10348,7 @@ function launch(){
 			        buildLanguage('wizard');
 			        break;
 		        case "dependencies":
-			        buildDependencyCheck(json.data);
+			        buildDependencyCheck(json);
 			        break;
 		        case "ok":
 			        loadAppearance(json.data.appearance);
