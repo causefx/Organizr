@@ -3387,7 +3387,9 @@ function updateCheck(){
             if (activeInfo.settings.misc.docker === false) {
                 messageSingle(window.lang.translate('Update Available'), latest + ' ' + window.lang.translate('is available, goto') + ' <a href="javascript:void(0)" onclick="tabActions(event,\'Settings\',0);clickPath(\'update\')"><span lang="en">Update Tab</span></a>', activeInfo.settings.notifications.position, '#FFF', 'update', '60000');
             }
-        }
+        }else{
+			organizrConsole('Update Function','Already running latest version: ' + latest, 'info');
+		}
 		$('#githubVersions').html(buildVersion(reverseObject(response)));
 	}).fail(function(xhr) {
 		OrganizrApiError(xhr);
@@ -10291,6 +10293,12 @@ function OrganizrApiError(xhr, secondaryMessage = null){
 	}
 	return false;
 }
+function checkForUpdates(){
+	if(activeInfo.user.loggedin && activeInfo.user.groupID <= 1){
+		updateCheck();
+		checkCommitLoad();
+	}
+}
 function launch(){
 	console.info('https://docs.organizr.app/books/setup-features/page/organizr-20--%3E-21-migration-guide');
 	organizrConsole('API V2 API','If you see a 404 Error for api/v2/launch below this line, you have not setup the new location block... See URL above this line', 'error');
@@ -10355,6 +10363,7 @@ function launch(){
 				        organizrSpecialSettings(json.data);
 				        getPingList(json);
 				        checkLocalForwardStatus(json.data);
+				        checkForUpdates();
 			        }
 			        loadCustomJava(json.data.appearance);
 			        if(getCookie('lockout')){
