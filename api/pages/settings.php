@@ -282,7 +282,7 @@ function get_page_settings($Organizr)
     							    <div class="col-lg-12">
                                         <div class="white-box bg-org">
 	                                        <div class="p-20 p-t-0 text-center">
-							                    <h4 class="font-medium">Backers</h4>
+							                    <h4 class="font-medium" lang="en">Backers</h4>
 							                    <ul class="dp-table m-t-30 backers-list"></ul>
 							                </div>
 						                </div>

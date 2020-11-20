@@ -58,7 +58,7 @@ class Organizr
 	
 	// ===================================
 	// Organizr Version
-	public $version = '2.1.74';
+	public $version = '2.1.83';
 	// ===================================
 	// Quick php Version check
 	public $minimumPHP = '7.2';
@@ -255,12 +255,12 @@ class Organizr
 	
 	public function checkRoute($request)
 	{
-		$route = $request->getUri()->getPath();
+		$route = '/api/v2/' . explode('api/v2/', $request->getUri()->getPath())[1];
 		$method = $request->getMethod();
 		$data = $this->apiData($request);
 		if (!in_array($route, $GLOBALS['bypass'])) {
 			if ($this->isApprovedRequest($method, $data) === false) {
-				$this->setAPIResponse('error', 'Not authorized', 401);
+				$this->setAPIResponse('error', 'Not authorized for current Route: ' . $route, 401);
 				$this->writeLog('success', 'Killed Attack From [' . (isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : 'No Referer') . ']', $this->user['username']);
 				return false;
 			}

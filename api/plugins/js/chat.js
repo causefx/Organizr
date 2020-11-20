@@ -24,7 +24,7 @@ function chatLaunch(){
                                 <ul class="chat-list p-t-30"></ul>
                                 <div class="row send-chat-box">
                                     <div class="col-sm-12">
-                                        <textarea class="form-control chat-input-send" placeholder="Type your message"></textarea>
+                                        <textarea class="form-control chat-input-send" placeholder="Type your message" lang="en"></textarea>
                                         <div class="custom-send">
                                             <button type="button" class="btn btn-info btn-lg custom-send-button"><i class="fa fa-paper-plane fa-2x"></i> </button>
                                         </div>

@@ -1713,9 +1713,6 @@ $(document).on('change', "#edit-tab-form-chooseIcon", function (e) {
 $(document).on('change', "#choose-calender-filter, #choose-calender-filter-status", function (e) {
     filter = $('#choose-calender-filter').val();
     filterDownload = $('#choose-calender-filter-status').val();
-    $('#calendar-filter-modal').modal('hide');
-    console.log("Calendar Filter: "+filter);
-    console.log("Calendar Filter: "+filterDownload);
     $('#calendar').fullCalendar('rerenderEvents');
     new SimpleBar($('.fc-scroller')[0]);
 });

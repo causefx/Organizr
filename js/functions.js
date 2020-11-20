@@ -1042,9 +1042,9 @@ function buildAccordion(array, open = false){
         var id = mainId + '-' + i;
         items += `
         <div class="panel">
-            <div class="panel-heading bg-org" id="`+id+`-heading" role="tab"> <a class="panel-title `+collapsed+`" data-toggle="collapse" href="#`+id+`-collapse" data-parent="#`+mainId+`" aria-expanded="false" aria-controls="`+id+`-collapse"> `+v.title+` </a> </div>
+            <div class="panel-heading bg-org" id="`+id+`-heading" role="tab"> <a class="panel-title `+collapsed+`" data-toggle="collapse" href="#`+id+`-collapse" data-parent="#`+mainId+`" aria-expanded="false" aria-controls="`+id+`-collapse"> <span lang="en">`+v.title+`</span> </a> </div>
             <div class="panel-collapse `+collapse+`" id="`+id+`-collapse" aria-labelledby="`+id+`-heading" role="tabpanel">
-                <div class="panel-body"> `+v.body+` </div>
+                <div class="panel-body" lang="en"> `+v.body+` </div>
             </div>
         </div>
         `;
@@ -1801,7 +1801,7 @@ function buildFormGroup(array){
 		if(i == 'custom'){
 			group += v;
 		}else{
-		    uList += `<li role="presentation" class="`+active+`"><a href="#`+customID+cleanClass(i)+`" aria-controls="`+i+`" role="tab" data-toggle="tab" aria-expanded="false"><span> `+i+`</span></a></li>`;
+		    uList += `<li role="presentation" class="`+active+`"><a href="#`+customID+cleanClass(i)+`" aria-controls="`+i+`" role="tab" data-toggle="tab" aria-expanded="false"><span lang="en">`+i+`</span></a></li>`;
 			group += `
 				<!-- FORM GROUP -->
 				<div role="tabpanel" class="tab-pane fade in `+active+`" id="`+customID+cleanClass(i)+`">
@@ -2460,12 +2460,12 @@ function buildActiveTokens(array) {
                                 <thead>
                                     <tr>
                                         <th>#</th>
-                                        <th>Token</th>
-                                        <th>Created</th>
-                                        <th>Expires</th>
-                                        <th>Browser</th>
-                                        <th>IP</th>
-                                        <th>Action</th>
+                                        <th lang="en">Token</th>
+                                        <th lang="en">Created</th>
+                                        <th lang="en">Expires</th>
+                                        <th lang="en">Browser</th>
+                                        <th lang="en">IP</th>
+                                        <th lang="en">Action</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -2492,7 +2492,7 @@ function accountManager(user){
                         <div class="panel-wrapper collapse" aria-expanded="true">
                             <div class="panel-body bg-org">
                                 <p lang="en">If you signed in with a Plex Acct... Please use the following link to change your password there:</p><br>
-                                <p><a href="https://app.plex.tv/auth#?resetPassword" target="_blank">Change Password on Plex Website</a></p>
+                                <p><a href="https://app.plex.tv/auth#?resetPassword" target="_blank" lang="en">Change Password on Plex Website</a></p>
                             </div>
                         </div>
                     </div>
@@ -3387,7 +3387,9 @@ function updateCheck(){
             if (activeInfo.settings.misc.docker === false) {
                 messageSingle(window.lang.translate('Update Available'), latest + ' ' + window.lang.translate('is available, goto') + ' <a href="javascript:void(0)" onclick="tabActions(event,\'Settings\',0);clickPath(\'update\')"><span lang="en">Update Tab</span></a>', activeInfo.settings.notifications.position, '#FFF', 'update', '60000');
             }
-        }
+        }else{
+			organizrConsole('Update Function','Already running latest version: ' + latest, 'info');
+		}
 		$('#githubVersions').html(buildVersion(reverseObject(response)));
 	}).fail(function(xhr) {
 		OrganizrApiError(xhr);
@@ -3494,7 +3496,7 @@ function buildBackers(array){
 			}
 		}
 	});
-	backers += '<li><a href="https://opencollective.com/organizr" target="_blank" class="circle circle-md bg-info di" data-toggle="tooltip" title="" data-original-title="Join">You</a></li>';
+	backers += '<li><a href="https://opencollective.com/organizr" target="_blank" class="circle circle-md bg-info di" data-toggle="tooltip" title="" data-original-title="Join" lang="en">You</a></li>';
 	return backers;
 }
 function sponsorDetails(id){
@@ -8338,14 +8340,14 @@ function homepageJackett(){
 				`+header+`
 				<div class="panel-wrapper p-b-0 collapse in">
 					<div class="white-box">
-	                    <h3 class="box-title m-b-0">Search</h3>
+	                    <h3 class="box-title m-b-0" lang="en">Search</h3>
 	                    
 	                    <form onsubmit="searchJackett();return false;">
 	                        <div class="input-group m-b-30">
 	                        	<span class="input-group-btn hidden">
 									<button type="button" class="btn waves-effect waves-light btn-primary clearJackett" onclick="clearJackett();"><i class="fa fa-eraser"></i></button>
 								</span>
-	                            <input id="jackett-search-query" class="form-control" placeholder="Search for...">
+	                            <input id="jackett-search-query" class="form-control" placeholder="Search for..." lang="en">
 	                            <span class="input-group-btn">
 									<button type="submit" class="btn waves-effect waves-light btn-info"><i class="fa fa-search"></i></button>
 								</span>
@@ -9775,6 +9777,43 @@ function toggleDebug(){
 	});
 	getDebugPreInfo();
 }
+function toggleCalendarFilter(){
+	var div = `
+	<div id="calendar-filter-modal" class="panel panel-inverse">
+        <div class="panel-heading"><span class="text-uppercase" lang="en">Filter Calendar</span></div>
+        <div class="panel-wrapper collapse in" aria-expanded="true">
+            <div class="panel-body">
+	            <div class="row">
+                    <div class="col-md-12">
+                        <label class="control-label" lang="en">Choose Media Type</label>
+                        <select class="form-control form-white" data-placeholder="Choose media type" id="choose-calender-filter">
+                            <option value="all" lang="en">All</option>
+                            <option value="tv" lang="en">TV</option>
+                            <option value="film" lang="en">Movie</option>
+                            <option value="music" lang="en">Music</option>
+                        </select>
+                    </div>
+                    <div class="col-md-12">
+                        <label class="control-label" lang="en">Choose Media Status</label>
+                        <select class="form-control form-white" data-placeholder="Choose media status" id="choose-calender-filter-status">
+                            <option value="all" lang="en">All</option>
+                            <option value="text-success" lang="en">Downloaded</option>
+                            <option value="text-info" lang="en">Unaired</option>
+                            <option value="text-danger" lang="en">Missing</option>
+                            <option value="text-primary animated flash" lang="en">Premier</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+	</div>
+	`;
+	swal({
+		content: createElementFromHTML(div),
+		className: 'bg-org',
+		button: false
+	});
+}
 function closeOrgError(){
     $('#main-org-error-container').removeClass('show');
     $('#main-org-error').html('');
@@ -10254,6 +10293,12 @@ function OrganizrApiError(xhr, secondaryMessage = null){
 	}
 	return false;
 }
+function checkForUpdates(){
+	if(activeInfo.user.loggedin && activeInfo.user.groupID <= 1){
+		updateCheck();
+		checkCommitLoad();
+	}
+}
 function launch(){
 	console.info('https://docs.organizr.app/books/setup-features/page/organizr-20--%3E-21-migration-guide');
 	organizrConsole('API V2 API','If you see a 404 Error for api/v2/launch below this line, you have not setup the new location block... See URL above this line', 'error');
@@ -10303,7 +10348,7 @@ function launch(){
 			        buildLanguage('wizard');
 			        break;
 		        case "dependencies":
-			        buildDependencyCheck(json.data);
+			        buildDependencyCheck(json);
 			        break;
 		        case "ok":
 			        loadAppearance(json.data.appearance);
@@ -10318,6 +10363,7 @@ function launch(){
 				        organizrSpecialSettings(json.data);
 				        getPingList(json);
 				        checkLocalForwardStatus(json.data);
+				        checkForUpdates();
 			        }
 			        loadCustomJava(json.data.appearance);
 			        if(getCookie('lockout')){

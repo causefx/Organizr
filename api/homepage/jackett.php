@@ -100,7 +100,7 @@ trait JackettHomepageItem
 		$endpoint = $apiURL . '/api/v2.0/indexers/all/results?apikey=' . $this->config['jackettToken'] . '&Query=' . urlencode($query);
 		try {
 			$headers = array();
-			$options = array('timeout' => 60);
+			$options = array('timeout' => 120);
 			$response = Requests::get($endpoint, $headers, $options);
 			if ($response->success) {
 				$apiData = json_decode($response->body, true);

@@ -158,7 +158,7 @@ $Organizr = new Organizr();
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-                    <h4 class="modal-title" id="help-modal-title">Large modal</h4></div>
+                    <h4 class="modal-title" id="help-modal-title" lang="en">Large modal</h4></div>
                 <div class="modal-body" id="help-modal-body"></div>
             </div>
             <!-- /.modal-content -->
