@@ -341,6 +341,7 @@ return array(
 	'tautulliPopularTV' => true,
 	'tautulliHeader' => 'Tautulli',
 	'tautulliHeaderToggle' => true,
+	'tautulliFriendlyName' => true,
 	'homepagePiholeEnabled' => false,
 	'homepagePiholeAuth' => '1',
 	'homepagePiholeRefresh' => '10000',
