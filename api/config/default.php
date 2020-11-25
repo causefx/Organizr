@@ -56,6 +56,7 @@ return array(
 	'ssoPlex' => false,
 	'ssoOmbi' => false,
 	'ssoTautulli' => false,
+	'ssoJellyfin' => false,
 	'sonarrURL' => '',
 	'sonarrUnmonitored' => false,
 	'sonarrToken' => '',
