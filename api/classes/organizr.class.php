@@ -2302,6 +2302,22 @@ class Organizr
 					'label' => 'Enable',
 					'value' => $this->config['ssoOmbi']
 				)
+			),
+			'Jellyfin' => array(
+				array(
+					'type' => 'input',
+					'name' => 'jellyfinURL',
+					'label' => 'Jellyfin URL',
+					'value' => $this->config['jellyfinURL'],
+					'help' => 'Please make sure to use the same (sub)domain to access Jellyfin as Organizr\'s',
+					'placeholder' => 'http(s)://hostname:port'
+				),
+				array(
+					'type' => 'switch',
+					'name' => 'ssoJellyfin',
+					'label' => 'Enable',
+					'value' => $this->config['ssoJellyfin']
+				)
 			)
 		);
 	}
