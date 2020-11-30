@@ -139,6 +139,13 @@ trait TautulliHomepageItem
 						'value' => $this->config['homepageTautulliMiscAuth'],
 						'options' => $this->groupOptions
 					),
+					array(
+						'type' => 'switch',
+						'name' => 'tautulliFriendlyName',
+						'label' => 'Use Friendly Name',
+						'value' => $this->config['tautulliFriendlyName'],
+						'help' => 'Use the friendly name set in tautulli for users.',
+					),
 				),
 				'Test Connection' => array(
 					array(
@@ -157,7 +164,7 @@ trait TautulliHomepageItem
 			)
 		);
 	}
-	
+
 	public function testConnectionTautulli()
 	{
 		if (empty($this->config['tautulliURL'])) {
@@ -186,7 +193,7 @@ trait TautulliHomepageItem
 			return false;
 		}
 	}
-	
+
 	public function tautulliHomepagePermissions($key = null)
 	{
 		$permissions = [
@@ -211,7 +218,7 @@ trait TautulliHomepageItem
 			return [];
 		}
 	}
-	
+
 	public function homepageOrdertautulli()
 	{
 		if ($this->homepageItemPermissions($this->tautulliHomepagePermissions('main'))) {
@@ -227,7 +234,7 @@ trait TautulliHomepageItem
 				';
 		}
 	}
-	
+
 	public function getTautulliHomepageData()
 	{
 		if (!$this->homepageItemPermissions($this->tautulliHomepagePermissions('main'), true)) {
@@ -283,6 +290,7 @@ trait TautulliHomepageItem
 				'popularMovies' => $this->config['tautulliPopularMovies'],
 				'popularTV' => $this->config['tautulliPopularTV'],
 				'title' => $this->config['tautulliHeaderToggle'],
+				'friendlyName' => $this->config['tautulliFriendlyName'],
 			];
 			$ids = []; // Array of stat_ids to remove from the returned array
 			if (!$this->qualifyRequest($this->config['homepageTautulliLibraryAuth'])) {

@@ -6936,6 +6936,7 @@ function buildTautulliItem(array){
     var homestats = array.homestats.data;
     var libstats = array.libstats;
     var options = array.options;
+    var friendlyName = array.options.friendlyName;
     var buildLibraries = function(data){
         var libs = data.data;
         var movies = [];
@@ -7026,7 +7027,7 @@ function buildTautulliItem(array){
         card += (audio.length > 0) ? buildCard('artist', audio) : '';
         return card;
     };
-    var buildStats = function(data, stat){
+    var buildStats = function(data, stat, friendlyName = true){
         var card = '';
         data.forEach(e => {
             let classes = '';
@@ -7074,7 +7075,11 @@ function buildTautulliItem(array){
                                             var rowNameValue = '';
                                             var rowValue = '';
                                             if(stat == 'top_users') {
-                                                rowNameValue = item['user'];
+                                                if(friendlyName) {
+                                                    rowNameValue = item['friendly_name'];
+                                                } else {
+                                                    rowNameValue = item['user'];
+                                                }
                                                 rowValue = item['total_plays'];
                                             } else if(stat == 'top_platforms') {
                                                 rowNameValue = item['platform'];
@@ -7112,7 +7117,7 @@ function buildTautulliItem(array){
     cards += (options['popularTV']) ? buildStats(homestats, 'popular_tv') : '';
     cards += (options['topMovies']) ? buildStats(homestats, 'top_movies') : '';
     cards += (options['topTV']) ? buildStats(homestats, 'top_tv') : '';
-    cards += (options['topUsers']) ? buildStats(homestats, 'top_users') : '';
+    cards += (options['topUsers']) ? buildStats(homestats, 'top_users', friendlyName) : '';
     cards += (options['topPlatforms']) ? buildStats(homestats, 'top_platforms') : '';
     cards += '</div>';
     cards += '<div class="row tautulliLibraries">'
