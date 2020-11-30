@@ -23,9 +23,46 @@ trait SSOFunctions
 				}
 			}
 		}
+		if ($this->config['ssoJellyfin']) {
+			$jellyfinToken = $this->getJellyfinToken($username, $password);
+			if ($jellyfinToken) {
+				$this->coookie('set', 'jellyfin_credentials', $jellyfinToken, $this->config['rememberMeDays'], false);
+				$this->writeLog('success', 'ITTATOKEN: ' . $jellyfinToken);
+			}
+		}
 		return true;
 	}
-	
+
+	public function getJellyfinToken($username, $password)
+	{
+		$token = null;
+		try {
+			$url = $this->qualifyURL($this->config['jellyfinURL']);
+			$headers = array(
+				'X-Emby-Authorization' => 'MediaBrowser Client="Organizr Jellyfin Tab", Device="Organizr_PHP", DeviceId="Organizr_SSO", Version="1.0"',
+				"Accept" => "application/json",
+				"Content-Type" => "application/json"
+			);
+			$data = array(
+				"Username" => $username,
+				"Pw" => $password
+			);
+			$endpoint = '/Users/authenticatebyname';
+			$options = ($this->localURL($url)) ? array('verify' => false) : array();
+			$response = Requests::post($url . $endpoint, $headers, json_encode($data), $options);
+			if ($response->success) {
+				$token = json_decode($response->body, true);
+				$this->writeLog('success', 'Jellyfin Token Function - Grabbed token.', $username);
+			} else {
+				$this->writeLog('error', 'Jellyfin Token Function - Jellyfin did not return Token', $username);
+			}
+		} catch (Requests_Exception $e) {
+			$this->writeLog('error', 'Jellyfin Token Function - Error: ' . $e->getMessage(), $username);
+		}
+		
+		return '{"Servers":[{"ManualAddress":"'. $url . '","Id":"' . $token['ServerId'] . '","UserId":"' . $token['User']['Id'] . '","AccessToken":"' . $token['AccessToken'] . '"}]}';
+	}
+
 	public function getOmbiToken($username, $password, $oAuthToken = null, $fallback = false)
 	{
 		$token = null;

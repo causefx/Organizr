@@ -116,7 +116,8 @@ $app->get('/launch', function ($request, $response, $args) {
 	$GLOBALS['api']['response']['data']['status'] = $Organizr->status();
 	$GLOBALS['api']['response']['data']['sso'] = array(
 		'myPlexAccessToken' => isset($_COOKIE['mpt']) ? $_COOKIE['mpt'] : false,
-		'id_token' => isset($_COOKIE['Auth']) ? $_COOKIE['Auth'] : false
+		'id_token' => isset($_COOKIE['Auth']) ? $_COOKIE['Auth'] : false,
+		'jellyfin_credentials' => isset($_COOKIE['jellyfin_credentials']) ? $_COOKIE['jellyfin_credentials'] : false
 	);
 	$response->getBody()->write(jsonE($GLOBALS['api']));
 	return $response
