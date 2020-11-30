@@ -3245,6 +3245,7 @@ function submitHomepageOrder(){
 }
 function submitTabOrder(newTabs){
 	var data = [];
+	var process = false;
 	$.each(newTabs.tab, function(i,v) {
 		if(v.originalOrder == v.order){
 			delete newTabs.tab[i];
@@ -3254,8 +3255,14 @@ function submitTabOrder(newTabs){
 				"id":v.id
 			}
 			data.push(temp);
+			process = true;
 		}
 	})
+	if(!process){
+		message('Tab Order Warning','Order was not changed - Submission not needed',activeInfo.settings.notifications.position,"#FFF","warning","5000");
+		$('.saveTabOrderButton').addClass('hidden');
+		return false;
+	}
 	var callbacks = $.Callbacks();
 	callbacks.add( buildTabEditor );
 	organizrAPI2('PUT','api/v2/tabs',data,true).success(function(data) {
