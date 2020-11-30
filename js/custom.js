@@ -1863,11 +1863,11 @@ $(document).on('click', '.close-editHomepageItemDiv',function () {
 	$('html').removeAttr('style');
 })
 // Control init of custom plex JSON editor
-$(document).on('click', 'li a[aria-controls="Misc Options"]', function() {
+$(document).on('click', '#homepage-Plex-form li a[aria-controls="Misc Options"]', function() {
     var resizeEditor = function(jsonEditor) {
         const aceEditor = jsonEditor;
         const newHeight = aceEditor.getSession().getScreenLength() * (aceEditor.renderer.lineHeight + aceEditor.renderer.scrollBar.getWidth());
-        aceEditor.container.style.height = `${newHeight}px`;
+        aceEditor.container.style.height = newHeight + 'px';
         aceEditor.resize();
     }
 
