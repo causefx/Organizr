@@ -8320,6 +8320,24 @@ function tryUpdateNetdata(array){
     });
     return existing;
 }
+function getTautulliFriendlyNames()
+{
+    organizrAPI2('GET','api/v2/homepage/tautulli/names').success(function(data) {
+        try {
+            let response = data.response;
+            if(response.data !== null){
+                var string = JSON.stringify(response.data, null, 4);
+                jsonEditor = ace.edit("homepageCustomStreamNamesAce");
+                jsonEditor.setValue(string);
+                $('#homepage-Plex-form-save').removeClass('hidden');
+            }
+        }catch(e) {
+	        organizrCatchError(e,data);
+        }
+    }).fail(function(xhr) {
+	    OrganizrApiError(xhr);
+    });
+}
 function homepageJackett(){
 	if(activeInfo.settings.homepage.options.alternateHomepageHeaders){
 		var header = `

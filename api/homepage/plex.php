@@ -2,7 +2,7 @@
 
 trait PlexHomepageItem
 {
-	
+
 	public function plexSettingsArray()
 	{
 		return array(
@@ -205,6 +205,39 @@ trait PlexHomepageItem
 								'value' => '3'
 							)
 						)
+					),
+					array(
+						'type' => 'blank',
+						'label' => ''
+					),
+					array(
+						'type' => 'switch',
+						'name' => 'homepageUseCustomStreamNames',
+						'label' => 'Use custom names for users',
+						'value' => $this->config['homepageUseCustomStreamNames']
+					),
+					array(
+						'type' => 'html',
+						'name' => 'grabFromTautulli',
+						'label' => 'Grab from Tautulli. (Note, you must have set the Tautulli API key already)',
+						'override' => 6,
+						'html' => '<button type="button" onclick="getTautulliFriendlyNames()" class="btn btn-sm btn-success btn-rounded waves-effect waves-light b-none">Grab Names</button>',
+					),
+					array(
+						'type' => 'html',
+						'name' => 'homepageCustomStreamNamesAce',
+						'class' => 'jsonTextarea hidden',
+						'label' => 'Custom definitions for user names (JSON Object, with the key being the plex name, and the value what you want to override with)',
+						'override' => 12,
+						'html' => '<div id="homepageCustomStreamNamesAce" style="height: 300px;">' . htmlentities($this->config['homepageCustomStreamNames']) . '</div>',
+					),
+					array(
+						'type' => 'textbox',
+						'name' => 'homepageCustomStreamNames',
+						'class' => 'jsonTextarea hidden',
+						'id' => 'homepageCustomStreamNamesText',
+						'label' => '',
+						'value' => $this->config['homepageCustomStreamNames'],
 					)
 				),
 				'Test Connection' => array(
@@ -224,7 +257,7 @@ trait PlexHomepageItem
 			)
 		);
 	}
-	
+
 	public function testConnectionPlex()
 	{
 		if (!empty($this->config['plexURL']) && !empty($this->config['plexToken'])) {
@@ -249,7 +282,7 @@ trait PlexHomepageItem
 			return 'URL and/or Token not setup';
 		}
 	}
-	
+
 	public function plexHomepagePermissions($key = null)
 	{
 		$permissions = [
@@ -335,7 +368,7 @@ trait PlexHomepageItem
 			return [];
 		}
 	}
-	
+
 	public function homepageOrderplexnowplaying()
 	{
 		if ($this->homepageItemPermissions($this->plexHomepagePermissions('streams'))) {
@@ -351,7 +384,7 @@ trait PlexHomepageItem
 				';
 		}
 	}
-	
+
 	public function homepageOrderplexrecent()
 	{
 		if ($this->homepageItemPermissions($this->plexHomepagePermissions('recent'))) {
@@ -367,7 +400,7 @@ trait PlexHomepageItem
 				';
 		}
 	}
-	
+
 	public function homepageOrderplexplaylist()
 	{
 		if ($this->homepageItemPermissions($this->plexHomepagePermissions('playlists'))) {
@@ -383,7 +416,7 @@ trait PlexHomepageItem
 				';
 		}
 	}
-	
+
 	public function getPlexHomepageStreams()
 	{
 		if (!$this->homepageItemPermissions($this->plexHomepagePermissions('streams'), true)) {
@@ -412,7 +445,7 @@ trait PlexHomepageItem
 			return $api;
 		}
 	}
-	
+
 	public function getPlexHomepageRecent()
 	{
 		if (!$this->homepageItemPermissions($this->plexHomepagePermissions('recent'), true)) {
@@ -454,7 +487,7 @@ trait PlexHomepageItem
 		$this->setAPIResponse('success', null, 200, $api);
 		return $api;
 	}
-	
+
 	public function getPlexHomepagePlaylists()
 	{
 		if (!$this->homepageItemPermissions($this->plexHomepagePermissions('playlists'), true)) {
@@ -494,9 +527,8 @@ trait PlexHomepageItem
 			$this->setAPIResponse('error', 'Plex API error', 500);
 			return false;
 		}
-		
 	}
-	
+
 	public function getPlexHomepageMetadata($array)
 	{
 		if (!$this->homepageItemPermissions($this->plexHomepagePermissions('metadata'), true)) {
@@ -530,7 +562,7 @@ trait PlexHomepageItem
 			return $api;
 		}
 	}
-	
+
 	public function getPlexHomepageSearch($query)
 	{
 		if (!$this->homepageItemPermissions($this->plexHomepagePermissions('search'), true)) {
@@ -564,7 +596,7 @@ trait PlexHomepageItem
 			return $api;
 		}
 	}
-	
+
 	public function resolvePlexItem($item)
 	{
 		// Static Height & Width
@@ -674,7 +706,7 @@ trait PlexHomepageItem
 		$plexItem['bandwidthType'] = (string)$item->Session['location'];
 		$plexItem['sessionType'] = isset($item->TranscodeSession['progress']) ? 'Transcoding' : 'Direct Playing';
 		$plexItem['state'] = (((string)$item->Player['state'] == "paused") ? "pause" : "play");
-		$plexItem['user'] = ($this->config['homepageShowStreamNames'] && $this->qualifyRequest($this->config['homepageShowStreamNamesAuth'])) ? (string)$item->User['title'] : "";
+		$plexItem['user'] = $this->formatPlexUserName($item);
 		$plexItem['userThumb'] = ($this->config['homepageShowStreamNames'] && $this->qualifyRequest($this->config['homepageShowStreamNamesAuth'])) ? (string)$item->User['thumb'] : "";
 		$plexItem['userAddress'] = ($this->config['homepageShowStreamNames'] && $this->qualifyRequest($this->config['homepageShowStreamNamesAuth'])) ? (string)$item->Player['address'] : "x.x.x.x";
 		$plexItem['address'] = $this->config['plexTabURL'] ? $this->config['plexTabURL'] . "/web/index.html#!/server/" . $this->config['plexID'] . "/details?key=/library/metadata/" . $item['ratingKey'] : "https://app.plex.tv/web/app#!/server/" . $this->config['plexID'] . "/details?key=/library/metadata/" . $item['ratingKey'];
@@ -756,5 +788,50 @@ trait PlexHomepageItem
 			$plexItem['useImage'] = $useImage;
 		}
 		return $plexItem;
+	}
+
+	public function getTautulliFriendlyNames()
+	{
+		if (!$this->qualifyRequest(1)) {
+			return false;
+		}
+
+		$url = $this->qualifyURL($this->config['tautulliURL']);
+		$url .= '/api/v2?apikey=' . $this->config['tautulliApikey'];
+		$url .= '&cmd=get_users';
+
+		$response = Requests::get($url, [], []);
+		$names = [];
+
+		try {
+			$response = json_decode($response->body, true);
+			foreach ($response['response']['data'] as $user) {
+				if ($user['user_id'] != 0) {
+					$names[$user['username']] = $user['friendly_name'];
+				}
+			}
+		} catch (Exception $e) {
+			$this->setAPIResponse('failure', null, 422, [$e->getMessage()]);
+		}
+
+		$this->setAPIResponse('success', null, 200, $names);
+	}
+
+	private function formatPlexUserName($item)
+	{
+		$name = ($this->config['homepageShowStreamNames'] && $this->qualifyRequest($this->config['homepageShowStreamNamesAuth'])) ? (string)$item->User['title'] : "";
+
+		try {
+			if ($this->config['homepageUseCustomStreamNames']) {
+				$customNames = json_decode($this->config['homepageCustomStreamNames'], true);
+				if (array_key_exists($name, $customNames)) {
+					$name = $customNames[$name];
+				}
+			}
+		} catch (Exception $e) {
+			// don't do anythig if it goes wrong, like if the JSON is badly formatted
+		}
+
+		return $name;
 	}
 }

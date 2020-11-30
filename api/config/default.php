@@ -221,6 +221,8 @@ return array(
 	'homepageOrderJackett' => '31',
 	'homepageShowStreamNames' => false,
 	'homepageShowStreamNamesAuth' => '1',
+	'homepageUseCustomStreamNames' => false,
+	'homepageCustomStreamNames' => '',
 	'homepageStreamRefresh' => '60000',
 	'homepageRecentRefresh' => '60000',
 	'homepageDownloadRefresh' => '60000',
