@@ -5879,6 +5879,8 @@ class Organizr
 						$results[$keyName] = $query->fetchAll();
 						break;
 					case 'fetch':
+						// PHP 8 Fix?
+						$query->setRowClass(null);
 						$results[$keyName] = $query->fetch();
 						break;
 					case 'getAffectedRows':
@@ -5888,6 +5890,8 @@ class Organizr
 						$results[$keyName] = $query->getRowCount();
 						break;
 					case 'fetchSingle':
+						// PHP 8 Fix?
+						$query->setRowClass(null);
 						$results[$keyName] = $query->fetchSingle();
 						break;
 					case 'query':
