@@ -436,7 +436,7 @@ $(document).on("click", ".reset-button", function(e) {
 		var post = {
 	        email:email
         };
-	    message('Submitting request...',html.message,activeInfo.settings.notifications.position,'#FFF','info','10000');
+	    message('Submitting request...','',activeInfo.settings.notifications.position,'#FFF','info','10000');
         organizrAPI2('POST','api/v2/users/recover',post).success(function(data) {
             var html = data.response;
             message('Recover Password',html.message,activeInfo.settings.notifications.position,'#FFF','success','10000');
