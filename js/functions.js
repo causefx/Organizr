@@ -2072,6 +2072,12 @@ function sortHomepageItemHrefs(){
         }
     });
 }
+function checkTabHomepageItemList(name, url, urlLocal, id, check, tab) {
+	// might use this later
+	if (name.includes(check) || url.includes(check) || urlLocal.includes(check)) {
+		addEditHomepageItem(id, tab);
+	}
+}
 function checkTabHomepageItem(id, name, url, urlLocal){
     name = name.toLowerCase();
     url = url.toLowerCase();
@@ -2116,6 +2122,12 @@ function checkTabHomepageItem(id, name, url, urlLocal){
         addEditHomepageItem(id,'Ombi');
     }else if(name.includes('healthcheck') || url.includes('healthcheck') || urlLocal.includes('healthcheck')){
         addEditHomepageItem(id,'HealthChecks');
+    }else if(name.includes('jackett') || url.includes('jackett') || urlLocal.includes('jackett')){
+	    addEditHomepageItem(id,'Jackett');
+    }else if(name.includes('unifi') || url.includes('unifi') || urlLocal.includes('unifi')){
+	    addEditHomepageItem(id,'Unifi');
+    }else if(name.includes('tautulli') || url.includes('tautulli') || urlLocal.includes('tautulli')){
+	    addEditHomepageItem(id,'Tautulli');
     }
 }
 function addEditHomepageItem(id, type){
@@ -10000,6 +10012,10 @@ function showPlexTokenForm(selector = null){
 		            <label class="control-label" for="plex-token-form-password" lang="en">Plex Password</label>
 		            <input type="password" class="form-control" id="plex-token-form-password" name="password"  required="">
 		        </div>
+		        <div class="form-group">
+		            <label class="control-label" for="plex-token-form-tfa" lang="en">Plex 2FA (if applicable)</label>
+		            <input type="text" class="form-control" id="plex-token-form-tfa" name="tfa" >
+		        </div>
 		    </fieldset>
 		    <button class="btn btn-sm btn-info btn-rounded waves-effect waves-light pull-right row b-none" onclick="getPlexToken('`+selector+`')" type="button"><span class="btn-label"><i class="fa fa-ticket"></i></span><span lang="en">Grab It</span></button>
 		    <div class="clearfix"></div>
@@ -10016,6 +10032,7 @@ function getPlexToken(selector) {
 	$('.plexTokenHeader').addClass('panel-info').removeClass('panel-warning').removeClass('panel-danger');
 	var plex_username = $('#get-plex-token-form [name=username]').val().trim();
 	var plex_password = $('#get-plex-token-form [name=password]').val().trim();
+	var plex_tfa = $('#get-plex-token-form [name=tfa]').val().trim();
 	if ((plex_password !== '') && (plex_password !== '')) {
 		$.ajax({
 			type: 'POST',
@@ -10027,7 +10044,7 @@ function getPlexToken(selector) {
 			url: 'https://plex.tv/users/sign_in.json',
 			data: {
 				'user[login]': plex_username,
-				'user[password]': plex_password,
+				'user[password]': plex_password + plex_tfa,
 				force: true
 			},
 			cache: false,
