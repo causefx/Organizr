@@ -4197,6 +4197,19 @@ class Organizr
 		return $newData;
 	}
 	
+	public function getTabByIdCheckUser($id)
+	{
+		$tabInfo = $this->getTabById($id);
+		if ($tabInfo) {
+			if ($this->qualifyRequest($tabInfo['group_id'], true)) {
+				return $tabInfo;
+			}
+		} else {
+			$this->setAPIResponse('error', 'id not found', 404);
+			return false;
+		}
+	}
+	
 	public function deleteTab($id)
 	{
 		$response = [

@@ -848,25 +848,6 @@ function convertMinutesToMs(minutes){
         return (minutes * 1000) * 60;
     }
 }
-//EDIT TAB GET ID
-$(document).on("click", ".editTabButton", function () {
-    //tabActionTime
-    //tabActionType
-    $('#edit-tab-form [name=name]').val($(this).parent().parent().attr("data-name"));
-    $('#originalTabName').html($(this).parent().parent().attr("data-name"));
-    $('#edit-tab-form [name=url]').val($(this).parent().parent().attr("data-url"));
-    $('#edit-tab-form [name=url_local]').val($(this).parent().parent().attr("data-local-url"));
-    $('#edit-tab-form [name=ping_url]').val($(this).parent().parent().attr("data-ping-url"));
-    $('#edit-tab-form [name=image]').val($(this).parent().parent().attr("data-image"));
-    $('#edit-tab-form [name=id]').val($(this).parent().parent().attr("data-id"));
-    $('#edit-tab-form [name=timeout_ms]').val(convertMsToMinutes($(this).parent().parent().attr("data-tab-action-time")));
-    $('#edit-tab-form [name=timeout]').val($(this).parent().parent().attr("data-tab-action-type"));
-    if( $(this).parent().parent().attr("data-url").indexOf('/?v') > 0){
-        $('#edit-tab-form [name=url]').prop('disabled', 'true');
-    }else{
-        $('#edit-tab-form [name=url]').prop('disabled', null);
-    }
-});
 //EDIT TAB
 $(document).on("click", ".editTab", function () {
     var originalTabName = $('#originalTabName').html();

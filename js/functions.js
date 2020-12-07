@@ -3089,17 +3089,10 @@ function buildTabEditorItem(array){
 		var buttonDisabled = v.url.indexOf('/page/settings') > 0 ? 'disabled' : '';
         var typeDisabled = v.url.indexOf('/v2/page/') > 0 ? 'disabled' : '';
 		tabList += `
-		<tr class="tabEditor" data-order="`+v.order+`" data-id="`+v.id+`" data-group-id="`+v.group_id+`" data-category-id="`+v.category_id+`" data-name="`+v.name+`" data-url="`+v.url+`" data-local-url="`+v.url_local+`" data-ping-url="`+v.ping_url+`" data-image="`+v.image+`" data-tab-action-type="`+v.timeout+`" data-tab-action-time="`+v.timeout_ms+`">
+		<tr class="tabEditor" data-order="`+v.order+`" data-original-order="`+v.order+`" data-id="`+v.id+`" data-group-id="`+v.group_id+`" data-category-id="`+v.category_id+`" data-name="`+v.name+`" data-url="`+v.url+`" data-local-url="`+v.url_local+`" data-ping-url="`+v.ping_url+`" data-image="`+v.image+`" data-tab-action-type="`+v.timeout+`" data-tab-action-time="`+v.timeout_ms+`">
 			<input type="hidden" class="form-control" name="tab[`+v.id+`].id" value="`+v.id+`">
 			<input type="hidden" class="form-control order" name="tab[`+v.id+`].order" value="`+v.order+`">
 			<input type="hidden" class="form-control" name="tab[`+v.id+`].originalOrder" value="`+v.order+`">
-			<input type="hidden" class="form-control" name="tab[`+v.id+`].url_local" value="`+v.url_local+`">
-			<input type="hidden" class="form-control" name="tab[`+v.id+`].name" value="`+v.name+`">
-			<input type="hidden" class="form-control" name="tab[`+v.id+`].url" value="`+v.url+`">
-			<input type="hidden" class="form-control" name="tab[`+v.id+`].ping_url" value="`+v.ping_url+`">
-			<input type="hidden" class="form-control" name="tab[`+v.id+`].image" value="`+v.image+`">
-			<input type="hidden" class="form-control" name="tab[`+v.id+`].timeout" value="`+v.timeout+`">
-			<input type="hidden" class="form-control" name="tab[`+v.id+`].timeout_ms" value="`+v.timeout_ms+`">
 			<td style="text-align:center" class="text-center el-element-overlay">
 				<div class="el-card-item p-0">
 					<div class="el-card-avatar el-overlay-1 m-0">
@@ -3122,12 +3115,38 @@ function buildTabEditorItem(array){
 			<td style="text-align:center"><input type="checkbox" class="js-switch splashSwitch" data-size="small" data-color="#99d683" data-secondary-color="#f96262" name="tab[`+v.id+`].splash" value="true" `+tof(v.splash,'c')+`/><input type="hidden" class="form-control" name="tab[`+v.id+`].splash" value="false"></td>
 			<td style="text-align:center"><input type="checkbox" class="js-switch pingSwitch" data-size="small" data-color="#99d683" data-secondary-color="#f96262" name="tab[`+v.id+`].ping" value="true" `+tof(v.ping,'c')+`/><input type="hidden" class="form-control" name="tab[`+v.id+`].ping" value="false"></td>
 			<td style="text-align:center"><input type="checkbox" class="js-switch preloadSwitch" data-size="small" data-color="#99d683" data-secondary-color="#f96262" name="tab[`+v.id+`].preload" value="true" `+tof(v.preload,'c')+`/><input type="hidden" class="form-control" name="tab[`+v.id+`].preload" value="false"></td>
-			<td style="text-align:center"><button type="button" class="btn btn-info btn-outline btn-circle btn-lg m-r-5 editTabButton popup-with-form" href="#edit-tab-form" data-effect="mfp-3d-unfold"><i class="ti-pencil-alt"></i></button></td>
+			<td style="text-align:center"><button type="button" class="btn btn-info btn-outline btn-circle btn-lg m-r-5 editTabButton popup-with-form" onclick="editTabForm('`+v.id+`')" href="#edit-tab-form" data-effect="mfp-3d-unfold"><i class="ti-pencil-alt"></i></button></td>
 			<td style="text-align:center"><button type="button" class="btn btn-danger btn-outline btn-circle btn-lg m-r-5 `+deleteDisabled+`"><i class="ti-trash"></i></button></td>
 		</tr>
 		`;
 	});
 	return tabList;
+}
+function editTabForm(id){
+	organizrAPI2('GET','api/v2/tabs/' + id,true).success(function(data) {
+		try {
+			let response = data.response;
+			console.log(response);
+			$('#edit-tab-form [name=name]').val(response.data.name);
+			$('#originalTabName').html(response.data.name);
+			$('#edit-tab-form [name=url]').val(response.data.url);
+			$('#edit-tab-form [name=url_local]').val(response.data.url_local);
+			$('#edit-tab-form [name=ping_url]').val(response.data.ping_url);
+			$('#edit-tab-form [name=image]').val(response.data.image);
+			$('#edit-tab-form [name=id]').val(response.data.id);
+			$('#edit-tab-form [name=timeout_ms]').val(convertMsToMinutes(response.data.timeout_ms));
+			$('#edit-tab-form [name=timeout]').val(response.data.timeout);
+			if( response.data.url.indexOf('/?v') > 0){
+				$('#edit-tab-form [name=url]').prop('disabled', 'true');
+			}else{
+				$('#edit-tab-form [name=url]').prop('disabled', null);
+			}
+		}catch(e) {
+			organizrCatchError(e,data);
+		}
+	}).fail(function(xhr) {
+		OrganizrApiError(xhr, 'Tab Error');
+	});
 }
 function getSubmitSettingsFormValueSingle(form, index, value){
     var values = {};
