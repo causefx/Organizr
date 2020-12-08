@@ -23,7 +23,7 @@ class Organizr
 	use TokenFunctions;
 	use UpdateFunctions;
 	use UpgradeFunctions;
-	
+
 	// Use homepage item functions
 	use CalendarHomepageItem;
 	use CouchPotatoHomepageItem;
@@ -55,7 +55,7 @@ class Organizr
 	use TransmissionHomepageItem;
 	use UnifiHomepageItem;
 	use WeatherHomepageItem;
-	
+
 	// ===================================
 	// Organizr Version
 	public $version = '2.1.83';
@@ -83,7 +83,7 @@ class Organizr
 	public $paths;
 	public $updating;
 	public $groupOptions;
-	
+
 	public function __construct($updating = false)
 	{
 		// First Check PHP Version
@@ -137,7 +137,7 @@ class Organizr
 		// Is Page load Organizr OAuth?
 		$this->checkForOrganizrOAuth();
 	}
-	
+
 	protected function connectDB()
 	{
 		if ($this->hasDB()) {
@@ -153,7 +153,7 @@ class Organizr
 			$this->db = null;
 		}
 	}
-	
+
 	public function connectOtherDB($file = null)
 	{
 		$file = $file ?? $this->config['dbLocation'] . 'tempMigration.db';
@@ -166,7 +166,7 @@ class Organizr
 			$this->otherDb = null;
 		}
 	}
-	
+
 	public function checkForOrganizrOAuth()
 	{
 		// Oauth?
@@ -176,7 +176,7 @@ class Organizr
 			}
 		}
 	}
-	
+
 	public function auth()
 	{
 		if ($this->hasDB()) {
@@ -236,7 +236,7 @@ class Organizr
 		}
 		return true;
 	}
-	
+
 	public function setAPIResponse($result = null, $message = null, $responseCode = null, $data = null)
 	{
 		if ($result) {
@@ -252,7 +252,7 @@ class Organizr
 			$GLOBALS['api']['response']['data'] = $data;
 		}
 	}
-	
+
 	public function checkRoute($request)
 	{
 		$route = '/api/v2/' . explode('api/v2/', $request->getUri()->getPath())[1];
@@ -267,7 +267,7 @@ class Organizr
 		}
 		return true;
 	}
-	
+
 	public function apiData($request)
 	{
 		switch ($request->getMethod()) {
@@ -285,7 +285,7 @@ class Organizr
 				}
 		}
 	}
-	
+
 	public function getPlugins()
 	{
 		if ($this->hasDB()) {
@@ -302,12 +302,12 @@ class Organizr
 		}
 		return false;
 	}
-	
+
 	public function refreshCookieName()
 	{
 		$this->cookieName = $this->config['uuid'] !== '' ? 'organizr_token_' . $this->config['uuid'] : 'organizr_token_temp';
 	}
-	
+
 	public function favIcons()
 	{
 		$favicon = '
@@ -324,7 +324,7 @@ class Organizr
 	';
 		return ($this->config['favIcon'] == '') ? $favicon : $this->config['favIcon'];
 	}
-	
+
 	public function pluginGlobalList()
 	{
 		$pluginSearch = '-enabled';
@@ -337,7 +337,7 @@ class Organizr
 		}, ARRAY_FILTER_USE_KEY);
 		return $plugins;
 	}
-	
+
 	public function googleTracking()
 	{
 		if ($this->config['gaTrackingID'] !== '') {
@@ -353,7 +353,7 @@ class Organizr
 		}
 		return null;
 	}
-	
+
 	public function matchBrackets($text, $brackets = 's')
 	{
 		switch ($brackets) {
@@ -371,7 +371,7 @@ class Organizr
 		preg_match($pattern, $text, $match);
 		return $match[1];
 	}
-	
+
 	public function languagePacks($encode = false)
 	{
 		$files = array();
@@ -390,7 +390,7 @@ class Organizr
 		});
 		return ($encode) ? json_encode($files) : $files;
 	}
-	
+
 	public function pluginFiles($type)
 	{
 		$files = '';
@@ -410,7 +410,7 @@ class Organizr
 		}
 		return $files;
 	}
-	
+
 	public function formKey($script = true)
 	{
 		if (isset($this->config['organizrHash'])) {
@@ -420,14 +420,14 @@ class Organizr
 			}
 		}
 	}
-	
+
 	private function checkPHP()
 	{
 		if (!(version_compare(PHP_VERSION, $this->minimumPHP) >= 0)) {
 			die('Organizr needs PHP Version: ' . $this->minimumPHP . '<br/> You have PHP Version: ' . PHP_VERSION);
 		}
 	}
-	
+
 	private function checkWritableDB()
 	{
 		if ($this->hasDB()) {
@@ -437,7 +437,7 @@ class Organizr
 			}
 		}
 	}
-	
+
 	public function upgradeCheck()
 	{
 		if ($this->hasDB()) {
@@ -499,7 +499,7 @@ class Organizr
 			return true;
 		}
 	}
-	
+
 	public function updateDB($oldVerNum = false)
 	{
 		$tempLock = $this->config['dbLocation'] . 'DBLOCK.txt';
@@ -573,7 +573,7 @@ class Organizr
 				}
 				@unlink($tempLock);
 				return false;
-				
+
 			} else {
 				$this->writeLog('error', 'Update Function -  Could not create migration DB', 'Database');
 			}
@@ -582,7 +582,7 @@ class Organizr
 		}
 		return false;
 	}
-	
+
 	// Create config file in the return syntax
 	public function createConfig($array, $path = null, $nest = 0)
 	{
@@ -643,7 +643,7 @@ class Organizr
 			return $output;
 		}
 	}
-	
+
 	// Commit new values to the configuration
 	public function updateConfig($new, $current = false)
 	{
@@ -661,7 +661,7 @@ class Organizr
 		// Return Create
 		return $this->createConfig($current);
 	}
-	
+
 	public function loadConfig($path = null)
 	{
 		$path = ($path) ? $path : $this->userConfigPath;
@@ -673,7 +673,7 @@ class Organizr
 			});
 		}
 	}
-	
+
 	public function fillDefaultConfig($array)
 	{
 		$path = $this->defaultConfigPath;
@@ -688,7 +688,7 @@ class Organizr
 		}
 		return (is_array($loadedDefaults) ? $this->fillDefaultConfig_recurse($array, $loadedDefaults) : false);
 	}
-	
+
 	public function fillDefaultConfig_recurse($current, $defaults)
 	{
 		foreach ($defaults as $k => $v) {
@@ -700,7 +700,7 @@ class Organizr
 		}
 		return $current;
 	}
-	
+
 	public function config()
 	{
 		// Load config or default
@@ -711,13 +711,13 @@ class Organizr
 		}
 		return $config;
 	}
-	
+
 	public function combineConfig($array)
 	{
 		$this->config = array_merge($this->config, $array);
 		return $this->config;
 	}
-	
+
 	public function status()
 	{
 		$status = array();
@@ -756,17 +756,17 @@ class Organizr
 		$status['userConfigPath'] = $this->userConfigPath;
 		return $status;
 	}
-	
+
 	public function hasDB()
 	{
 		return (file_exists($this->userConfigPath)) ?? false;
 	}
-	
+
 	public function hasCookie()
 	{
 		return ($_COOKIE[$this->cookieName]) ?? false;
 	}
-	
+
 	public function getGuest()
 	{
 		$guest = array(
@@ -781,9 +781,9 @@ class Organizr
 			),
 		];
 		return $this->hasDB() ? $this->processQueries($response) : $guest;
-		
+
 	}
-	
+
 	public function getSchema()
 	{
 		$response = [
@@ -794,7 +794,7 @@ class Organizr
 		];
 		return $this->hasDB() ? $this->processQueries($response) : 'Database not setup yet';
 	}
-	
+
 	public function guestUser()
 	{
 		if ($this->hasDB()) {
@@ -837,10 +837,10 @@ class Organizr
 			);
 		return $guest;
 	}
-	
+
 	public function getAllUserTokens($id)
 	{
-		
+
 		$response = [
 			array(
 				'function' => 'fetchAll',
@@ -853,7 +853,7 @@ class Organizr
 		];
 		return $this->processQueries($response);
 	}
-	
+
 	public function getUserById($id)
 	{
 		$response = [
@@ -867,7 +867,7 @@ class Organizr
 		];
 		return $this->processQueries($response);
 	}
-	
+
 	public function getUserByEmail($email)
 	{
 		$response = [
@@ -881,13 +881,13 @@ class Organizr
 		];
 		return $this->processQueries($response);
 	}
-	
+
 	protected function invalidToken()
 	{
 		$this->coookie('delete', $this->cookieName);
 		$this->user = null;
 	}
-	
+
 	public function validateToken($token)
 	{
 		// Validate script
@@ -923,7 +923,7 @@ class Organizr
 		}
 		return false;
 	}
-	
+
 	public function defaultUserGroup()
 	{
 		$response = [
@@ -934,7 +934,7 @@ class Organizr
 		];
 		return $this->processQueries($response);
 	}
-	
+
 	public function getAllTabs()
 	{
 		$response = [
@@ -956,7 +956,7 @@ class Organizr
 		];
 		return $this->processQueries($response);
 	}
-	
+
 	public function getUsers()
 	{
 		$response = [
@@ -971,7 +971,7 @@ class Organizr
 		];
 		return $this->processQueries($response);
 	}
-	
+
 	public function usernameTaken($username, $email, $id = null)
 	{
 		if ($id) {
@@ -1000,27 +1000,27 @@ class Organizr
 		}
 		return $this->processQueries($response);
 	}
-	
+
 	public function cleanPageName($page)
 	{
 		return ($page) ? strtolower(str_replace(array('%20', ' ', '-', '_'), '_', $page)) : '';
 	}
-	
+
 	public function cleanClassName($name)
 	{
 		return ($name) ? (str_replace(array('%20', ' ', '-', '_'), '-', $name)) : '';
 	}
-	
+
 	public function reverseCleanClassName($name)
 	{
 		return ($name) ? (str_replace(array('%20', '-', '_'), ' ', strtolower($name))) : '';
 	}
-	
+
 	public function getPageList()
 	{
 		return $GLOBALS['organizrPages'];
 	}
-	
+
 	public function getPage($page)
 	{
 		if (!$page) {
@@ -1035,7 +1035,7 @@ class Organizr
 			return null;
 		}
 	}
-	
+
 	public function getUserLevel()
 	{
 		// Grab token
@@ -1052,7 +1052,7 @@ class Organizr
 		// All else fails?  return guest id
 		return 999;
 	}
-	
+
 	public function qualifyRequest($accessLevelNeeded, $api = false)
 	{
 		if ($this->getUserLevel() <= $accessLevelNeeded && $this->getUserLevel() !== null) {
@@ -1064,7 +1064,7 @@ class Organizr
 			return false;
 		}
 	}
-	
+
 	public function getImages()
 	{
 		$allIconsPrep = array();
@@ -1098,7 +1098,7 @@ class Organizr
 		}
 		return $allIcons;
 	}
-	
+
 	public function getImagesSelect()
 	{
 		$term = $_GET['search'] ?? null;
@@ -1128,7 +1128,7 @@ class Organizr
 		$goodIcons['pagination']['more'] = $page < (ceil($total / $limit));
 		return $goodIcons;
 	}
-	
+
 	public function removeImage($image = null)
 	{
 		if (!$image) {
@@ -1151,7 +1151,7 @@ class Organizr
 			return false;
 		}
 	}
-	
+
 	public function uploadImage()
 	{
 		$filesCheck = array_filter($_FILES);
@@ -1165,7 +1165,7 @@ class Organizr
 			return move_uploaded_file($tempFile, $targetFile);
 		}
 	}
-	
+
 	public function ping($pings)
 	{
 		if ($this->qualifyRequest($this->config['pingAuth'], true)) {
@@ -1221,7 +1221,7 @@ class Organizr
 		}
 		return null;
 	}
-	
+
 	public function getCustomizeAppearance()
 	{
 		return array(
@@ -1604,7 +1604,7 @@ class Organizr
 			),
 		);
 	}
-	
+
 	public function loadAppearance()
 	{
 		$appearance['logo'] = $this->config['logo'];
@@ -1630,7 +1630,7 @@ class Organizr
 		$appearance['customThemeJava'] = $this->config['customThemeJava'];
 		return $appearance;
 	}
-	
+
 	public function getSettingsMain()
 	{
 		return array(
@@ -2173,7 +2173,7 @@ class Organizr
 			)
 		);
 	}
-	
+
 	public function getSettingsSSO()
 	{
 		return array(
@@ -2305,12 +2305,12 @@ class Organizr
 			)
 		);
 	}
-	
+
 	public function updateConfigMultiple($array)
 	{
 		return ($this->updateConfig($array)) ? true : false;
 	}
-	
+
 	public function updateConfigItems($array)
 	{
 		if (!count($array)) {
@@ -2343,7 +2343,7 @@ class Organizr
 		$this->setAPIResponse('success', 'Config items updated', 200);
 		return ($this->updateConfig($newItem)) ? true : false;
 	}
-	
+
 	public function updateConfigItem($array)
 	{
 		$array['value'] = $array['value'] ?? '';
@@ -2364,7 +2364,7 @@ class Organizr
 		);
 		return ($this->updateConfig($newItem)) ? true : false;
 	}
-	
+
 	public function testWizardPath($array)
 	{
 		if ($this->hasDB()) {
@@ -2388,7 +2388,7 @@ class Organizr
 		$this->setAPIResponse('error', 'Path is not writable', 401);
 		return false;
 	}
-	
+
 	public function wizardConfig($array)
 	{
 		$dbName = $array['dbName'] ?? null;
@@ -2465,16 +2465,16 @@ class Organizr
 			} else {
 				$this->setAPIResponse('error', 'error creating database', 500);
 			}
-			
+
 		} else {
 			$this->setAPIResponse('error', 'error creating config', 500);
 		}
 		return false;
 	}
-	
+
 	public function createDB($path, $migration = false)
 	{
-		
+
 		if (!file_exists($path)) {
 			mkdir($path, 0777, true);
 		}
@@ -2588,10 +2588,10 @@ class Organizr
 		];
 		return $this->processQueries($response, $migration);
 	}
-	
+
 	public function createFirstAdmin($username, $password, $email)
 	{
-		
+
 		$userInfo = [
 			'username' => $username,
 			'password' => password_hash($password, PASSWORD_BCRYPT),
@@ -2663,7 +2663,7 @@ class Organizr
 			'order' => 1,
 			'category' => 'Unsorted',
 			'category_id' => 0,
-			'image' => 'plugins/images/categories/unsorted.png',
+			'image' => 'plugins/images/categories/fontawesome::question',
 			'default' => true
 		];
 		$response = [
@@ -2740,7 +2740,7 @@ class Organizr
 		];
 		return $this->processQueries($response);
 	}
-	
+
 	public function getUserByUsernameAndEmail($username, $email)
 	{
 		$response = [
@@ -2755,7 +2755,7 @@ class Organizr
 		];
 		return $this->processQueries($response);
 	}
-	
+
 	public function createToken($username, $email, $days = 1)
 	{
 		$days = ($days > 365) ? 365 : $days;
@@ -2802,9 +2802,9 @@ class Organizr
 		];
 		$token = $this->processQueries($response);
 		return $jwttoken;
-		
+
 	}
-	
+
 	public function login($array)
 	{
 		// Grab username, Password & other optional items from api call
@@ -2973,7 +2973,7 @@ class Organizr
 			}
 		}
 	}
-	
+
 	public function logout()
 	{
 		$this->coookie('delete', $this->cookieName);
@@ -2985,7 +2985,7 @@ class Organizr
 		$this->user = null;
 		return true;
 	}
-	
+
 	public function recover($array)
 	{
 		$email = $array['email'] ?? null;
@@ -3025,7 +3025,7 @@ class Organizr
 			return false;
 		}
 	}
-	
+
 	public function register($array)
 	{
 		$email = $array['email'] ?? null;
@@ -3066,7 +3066,7 @@ class Organizr
 			return false;
 		}
 	}
-	
+
 	public function authRegister($username, $password, $email, $token = null)
 	{
 		if ($this->config['authBackend'] !== '') {
@@ -3109,7 +3109,7 @@ class Organizr
 			return false;
 		}
 	}
-	
+
 	public function revokeTokenCurrentUser($token = null)
 	{
 		if ($token) {
@@ -3135,7 +3135,7 @@ class Organizr
 		}
 		return $this->processQueries($response);
 	}
-	
+
 	public function revokeToken($token = null)
 	{
 		if (!$token) {
@@ -3154,7 +3154,7 @@ class Organizr
 		$this->setAPIResponse('success', 'Token revoked', 204);
 		return $this->processQueries($response);
 	}
-	
+
 	public function revokeTokenByIdCurrentUser($id = null)
 	{
 		if (!$id) {
@@ -3174,7 +3174,7 @@ class Organizr
 		$this->setAPIResponse('success', 'Token revoked', 204);
 		return $this->processQueries($response);
 	}
-	
+
 	public function updateUserPassword($password, $id)
 	{
 		$response = [
@@ -3190,7 +3190,7 @@ class Organizr
 		];
 		return $this->processQueries($response);
 	}
-	
+
 	public function updateUserPlexToken($token, $id)
 	{
 		$response = [
@@ -3206,7 +3206,7 @@ class Organizr
 		];
 		return $this->processQueries($response);
 	}
-	
+
 	public function getUserTabsAndCategories($type = null)
 	{
 		if (!$this->hasDB()) {
@@ -3252,7 +3252,7 @@ class Organizr
 				return $all;
 		}
 	}
-	
+
 	public function refreshList()
 	{
 		$searchTerm = "Refresh";
@@ -3260,7 +3260,7 @@ class Organizr
 			return stripos($k, $searchTerm) !== false;
 		}, ARRAY_FILTER_USE_KEY);
 	}
-	
+
 	public function homepageOrderList()
 	{
 		$searchTerm = "homepageOrder";
@@ -3270,7 +3270,7 @@ class Organizr
 		asort($order);
 		return $order;
 	}
-	
+
 	public function tautulliList()
 	{
 		$searchTerm = "tautulli_token";
@@ -3278,7 +3278,7 @@ class Organizr
 			return stripos($k, $searchTerm) !== false;
 		}, ARRAY_FILTER_USE_KEY);
 	}
-	
+
 	public function checkPlexAdminFilled()
 	{
 		if ($this->config['plexAdmin'] == '') {
@@ -3291,7 +3291,7 @@ class Organizr
 			}
 		}
 	}
-	
+
 	public function organizrSpecialSettings()
 	{
 		return array(
@@ -3414,7 +3414,7 @@ class Organizr
 			)
 		);
 	}
-	
+
 	public function getLog($log, $reverse = true)
 	{
 		switch ($log) {
@@ -3443,10 +3443,10 @@ class Organizr
 		$gotLog = json_decode($getLog, true);
 		return ($reverse) ? array_reverse($gotLog[$parent]) : $gotLog[$parent];
 	}
-	
+
 	public function purgeLog($log)
 	{
-		
+
 		switch ($log) {
 			case 'login':
 			case 'loginLog':
@@ -3478,9 +3478,9 @@ class Organizr
 			$this->setAPIResponse('error', 'Log does not exist', 404);
 			return false;
 		}
-		
+
 	}
-	
+
 	public function checkLog($path)
 	{
 		if (file_exists($path)) {
@@ -3493,7 +3493,7 @@ class Organizr
 			return false;
 		}
 	}
-	
+
 	public function writeLoginLog($username, $authType)
 	{
 		$username = htmlspecialchars($username, ENT_QUOTES);
@@ -3511,7 +3511,7 @@ class Organizr
 		}
 		file_put_contents($this->organizrLoginLog, $writeFailLog);
 	}
-	
+
 	public function writeLog($type = 'error', $message, $username = null)
 	{
 		$this->timeExecution = $this->timeExecution($this->timeExecution);
@@ -3531,7 +3531,7 @@ class Organizr
 		}
 		file_put_contents($this->organizrLog, $writeFailLog);
 	}
-	
+
 	public function isApprovedRequest($method, $data)
 	{
 		$requesterToken = isset($this->getallheaders()['Token']) ? $this->getallheaders()['Token'] : (isset($_GET['apikey']) ? $_GET['apikey'] : false);
@@ -3566,12 +3566,12 @@ class Organizr
 		}
 		return false;
 	}
-	
+
 	public function checkFormKey($formKey = '')
 	{
 		return password_verify(substr($this->config['organizrHash'], 2, 10), $formKey);
 	}
-	
+
 	public function buildHomepage()
 	{
 		$homepageOrder = $this->homepageOrderList();
@@ -3588,7 +3588,7 @@ class Organizr
 		}
 		return $homepageBuilt;
 	}
-	
+
 	public function buildHomepageSettings()
 	{
 		$homepageOrder = $this->homepageOrderList();
@@ -3809,12 +3809,12 @@ class Organizr
 		$inputList .= '</form>';
 		return $homepageList . $inputList;
 	}
-	
+
 	public function setGroupOptionsVariable()
 	{
 		$this->groupOptions = $this->groupSelect();
 	}
-	
+
 	public function getSettingsHomepageItem($item)
 	{
 		$items = $this->getSettingsHomepage();
@@ -3826,13 +3826,13 @@ class Organizr
 		$this->setAPIResponse('error', 'Homepage item was not found', 404);
 		return null;
 	}
-	
+
 	public function getSettingsHomepage()
 	{
 		$this->setGroupOptionsVariable();
 		return $this->getHomepageSettingsCombined();
 	}
-	
+
 	public function isTabNameTaken($name, $id = null)
 	{
 		if ($id) {
@@ -3859,7 +3859,7 @@ class Organizr
 		}
 		return $this->processQueries($response);
 	}
-	
+
 	public function isCategoryNameTaken($name, $id = null)
 	{
 		if ($id) {
@@ -3886,7 +3886,7 @@ class Organizr
 		}
 		return $this->processQueries($response);
 	}
-	
+
 	public function isGroupNameTaken($name, $id = null)
 	{
 		if ($id) {
@@ -3913,7 +3913,7 @@ class Organizr
 		}
 		return $this->processQueries($response);
 	}
-	
+
 	public function getTableColumns($table)
 	{
 		$response = [
@@ -3926,9 +3926,9 @@ class Organizr
 			),
 		];
 		return $this->processQueries($response);
-		
+
 	}
-	
+
 	public function getTableColumnsFormatted($table)
 	{
 		$columns = $this->getTableColumns($table);
@@ -3942,7 +3942,7 @@ class Organizr
 			return false;
 		}
 	}
-	
+
 	public function getTabById($id)
 	{
 		$response = [
@@ -3956,7 +3956,7 @@ class Organizr
 		];
 		return $this->processQueries($response);
 	}
-	
+
 	public function getTabGroupByTabName($tab)
 	{
 		$response = [
@@ -3971,7 +3971,7 @@ class Organizr
 		$query = $this->processQueries($response);
 		return $query ? $query['group_id'] : 0;
 	}
-	
+
 	public function getCategoryById($id)
 	{
 		$response = [
@@ -3985,7 +3985,7 @@ class Organizr
 		];
 		return $this->processQueries($response);
 	}
-	
+
 	public function getGroupUserCountById($id)
 	{
 		$response = [
@@ -3999,7 +3999,7 @@ class Organizr
 		];
 		return $this->processQueries($response);
 	}
-	
+
 	public function getGroupById($id)
 	{
 		$response = [
@@ -4013,7 +4013,7 @@ class Organizr
 		];
 		return $this->processQueries($response);
 	}
-	
+
 	public function getGroupByGroupId($id)
 	{
 		$response = [
@@ -4027,7 +4027,7 @@ class Organizr
 		];
 		return $this->processQueries($response);
 	}
-	
+
 	public function getDefaultGroup()
 	{
 		$response = [
@@ -4040,7 +4040,7 @@ class Organizr
 		];
 		return $this->processQueries($response);
 	}
-	
+
 	public function getDefaultGroupId()
 	{
 		$response = [
@@ -4053,7 +4053,7 @@ class Organizr
 		];
 		return $this->processQueries($response);
 	}
-	
+
 	public function getDefaultCategory()
 	{
 		$response = [
@@ -4066,7 +4066,7 @@ class Organizr
 		];
 		return $this->processQueries($response);
 	}
-	
+
 	public function getDefaultCategoryId()
 	{
 		$response = [
@@ -4079,7 +4079,7 @@ class Organizr
 		];
 		return $this->processQueries($response);
 	}
-	
+
 	public function getNextTabOrder()
 	{
 		$response = [
@@ -4092,7 +4092,7 @@ class Organizr
 		];
 		return $this->processQueries($response);
 	}
-	
+
 	public function getNextCategoryOrder()
 	{
 		$response = [
@@ -4105,7 +4105,7 @@ class Organizr
 		];
 		return $this->processQueries($response);
 	}
-	
+
 	public function getNextGroupOrder()
 	{
 		$response = [
@@ -4118,7 +4118,7 @@ class Organizr
 		];
 		return $this->processQueries($response);
 	}
-	
+
 	public function getNextCategoryId()
 	{
 		$response = [
@@ -4131,7 +4131,7 @@ class Organizr
 		];
 		return $this->processQueries($response);
 	}
-	
+
 	public function clearTabDefault()
 	{
 		$response = [
@@ -4144,7 +4144,7 @@ class Organizr
 		];
 		return $this->processQueries($response);
 	}
-	
+
 	public function clearCategoryDefault()
 	{
 		$response = [
@@ -4157,7 +4157,7 @@ class Organizr
 		];
 		return $this->processQueries($response);
 	}
-	
+
 	public function clearGroupDefault()
 	{
 		$response = [
@@ -4170,7 +4170,7 @@ class Organizr
 		];
 		return $this->processQueries($response);
 	}
-	
+
 	public function checkKeys($tabInfo, $newData)
 	{
 		foreach ($newData as $k => $v) {
@@ -4180,7 +4180,7 @@ class Organizr
 		}
 		return $newData;
 	}
-	
+
 	public function deleteTab($id)
 	{
 		$response = [
@@ -4202,7 +4202,7 @@ class Organizr
 			return false;
 		}
 	}
-	
+
 	public function addTab($array)
 	{
 		if (!$array) {
@@ -4246,7 +4246,7 @@ class Organizr
 		$this->writeLog('success', 'Tab Editor Function -  Added Tab for [' . $array['name'] . ']', $this->user['username']);
 		return $this->processQueries($response);
 	}
-	
+
 	public function updateTab($id, $array)
 	{
 		if (!$id || $id == '') {
@@ -4290,7 +4290,7 @@ class Organizr
 		$this->writeLog('success', 'Tab Editor Function -  Edited Tab Info for [' . $tabInfo['name'] . ']', $this->user['username']);
 		return $this->processQueries($response);
 	}
-	
+
 	public function updateTabOrder($array)
 	{
 		if (count($array) >= 1) {
@@ -4323,7 +4323,7 @@ class Organizr
 			return false;
 		}
 	}
-	
+
 	public function addCategory($array)
 	{
 		if (!$array) {
@@ -4359,7 +4359,7 @@ class Organizr
 		$this->writeLog('success', 'Category Editor Function -  Added Category for [' . $array['category'] . ']', $this->user['username']);
 		return $this->processQueries($response);
 	}
-	
+
 	public function updateCategory($id, $array)
 	{
 		if (!$id || $id == '') {
@@ -4403,7 +4403,7 @@ class Organizr
 		$this->writeLog('success', 'Category Editor Function -  Edited Category Info for [' . $categoryInfo['category'] . ']', $this->user['username']);
 		return $this->processQueries($response);
 	}
-	
+
 	public function updateCategoryOrder($array)
 	{
 		if (count($array) >= 1) {
@@ -4436,7 +4436,7 @@ class Organizr
 			return false;
 		}
 	}
-	
+
 	public function deleteCategory($id)
 	{
 		$response = [
@@ -4458,7 +4458,7 @@ class Organizr
 			return false;
 		}
 	}
-	
+
 	public function marketplaceFileListFormat($files, $folder, $type)
 	{
 		foreach ($files as $k => $v) {
@@ -4473,9 +4473,9 @@ class Organizr
 			}
 		}
 		return $filesList;
-		
+
 	}
-	
+
 	public function removeTheme($theme)
 	{
 		$theme = $this->reverseCleanClassName($theme);
@@ -4534,7 +4534,7 @@ class Organizr
 		$this->setAPIResponse('success', 'Theme removed', 200, $installedThemesNew);
 		return true;
 	}
-	
+
 	public function installTheme($theme)
 	{
 		$theme = $this->reverseCleanClassName($theme);
@@ -4597,7 +4597,7 @@ class Organizr
 		$this->setAPIResponse('success', 'Theme installed', 200, $installedThemesNew);
 		return true;
 	}
-	
+
 	public function removePlugin($plugin)
 	{
 		$plugin = $this->reverseCleanClassName($plugin);
@@ -4656,7 +4656,7 @@ class Organizr
 		$this->setAPIResponse('success', 'Plugin removed', 200, $installedPluginsNew);
 		return true;
 	}
-	
+
 	public function installPlugin($plugin)
 	{
 		$plugin = $this->reverseCleanClassName($plugin);
@@ -4719,7 +4719,7 @@ class Organizr
 		$this->setAPIResponse('success', 'Plugin installed', 200, $installedPluginsNew);
 		return true;
 	}
-	
+
 	public function getThemesGithub()
 	{
 		$url = 'https://raw.githubusercontent.com/causefx/Organizr/v2-themes/themes.json';
@@ -4730,7 +4730,7 @@ class Organizr
 		}
 		return false;
 	}
-	
+
 	public function getPluginsGithub()
 	{
 		$url = 'https://raw.githubusercontent.com/causefx/Organizr/v2-plugins/plugins.json';
@@ -4741,7 +4741,7 @@ class Organizr
 		}
 		return false;
 	}
-	
+
 	public function getOpenCollectiveBackers()
 	{
 		$url = 'https://opencollective.com/organizr/members/users.json?limit=100&offset=0';
@@ -4755,14 +4755,14 @@ class Organizr
 		$this->setAPIResponse('error', 'Error connecting to Open Collective', 409);
 		return false;
 	}
-	
+
 	public function guestHash($start, $end)
 	{
 		$ip = $_SERVER['REMOTE_ADDR'];
 		$ip = md5($ip);
 		return substr($ip, $start, $end);
 	}
-	
+
 	public function rrmdir($dir)
 	{
 		ini_set('max_execution_time', 0);
@@ -4780,7 +4780,7 @@ class Organizr
 		}
 		return true;
 	}
-	
+
 	public function rcopy($src, $dst)
 	{
 		ini_set('max_execution_time', 0);
@@ -4801,7 +4801,7 @@ class Organizr
 		}
 		return true;
 	}
-	
+
 	public function unzipFile($zipFile)
 	{
 		ini_set('max_execution_time', 0);
@@ -4818,7 +4818,7 @@ class Organizr
 		$zip->close();
 		return true;
 	}
-	
+
 	public function downloadFile($url, $path)
 	{
 		ini_set('max_execution_time', 0);
@@ -4867,7 +4867,7 @@ class Organizr
 		}
 		return true;
 	}
-	
+
 	public function downloadFileToPath($from, $to, $path)
 	{
 		ini_set('max_execution_time', 0);
@@ -4900,7 +4900,7 @@ class Organizr
 		}
 		return true;
 	}
-	
+
 	public function getAllUsers($includeGroups = false)
 	{
 		$response = [
@@ -4925,7 +4925,7 @@ class Organizr
 		}
 		return $this->processQueries($response);
 	}
-	
+
 	public function getAllGroups()
 	{
 		$response = [
@@ -4950,7 +4950,7 @@ class Organizr
 		}
 		return $this->processQueries($response);
 	}
-	
+
 	public function importUsers($array)
 	{
 		$imported = 0;
@@ -4968,7 +4968,7 @@ class Organizr
 		$this->setAPIResponse('success', 'Imported ' . $imported . ' users', 200);
 		return true;
 	}
-	
+
 	public function importUsersType($type)
 	{
 		if ($type !== '') {
@@ -4985,7 +4985,7 @@ class Organizr
 		}
 		return false;
 	}
-	
+
 	public function allPlexUsers($newOnly = false, $friendsOnly = false)
 	{
 		try {
@@ -5032,7 +5032,7 @@ class Organizr
 										'id' => (string)$child['id'],
 									);
 								}
-								
+
 							}
 						}
 						return $results;
@@ -5045,7 +5045,7 @@ class Organizr
 		}
 		return false;
 	}
-	
+
 	public function allJellyfinUsers($newOnly = false)
 	{
 		try {
@@ -5085,7 +5085,7 @@ class Organizr
 		}
 		return false;
 	}
-	
+
 	public function allEmbyUsers($newOnly = false)
 	{
 		try {
@@ -5125,7 +5125,7 @@ class Organizr
 		}
 		return false;
 	}
-	
+
 	public function updateUser($id, $array)
 	{
 		if (!$id) {
@@ -5220,7 +5220,7 @@ class Organizr
 		$this->writeLog('success', 'User Editor Function -  Updated User Info for [' . $user['username'] . ']', $this->user['username']);
 		return $this->processQueries($response);
 	}
-	
+
 	public function deleteUser($id)
 	{
 		$response = [
@@ -5246,7 +5246,7 @@ class Organizr
 			return false;
 		}
 	}
-	
+
 	public function addUser($array)
 	{
 		$username = $array['username'] ?? null;
@@ -5268,7 +5268,7 @@ class Organizr
 			return false;
 		}
 	}
-	
+
 	public function createUser($username, $password, $email = null)
 	{
 		$username = $username ?? null;
@@ -5308,7 +5308,7 @@ class Organizr
 		$this->setAPIResponse('success', 'User created', 200);
 		return $this->processQueries($response);
 	}
-	
+
 	public function updateGroup($id, $array)
 	{
 		if (!$id || $id == '') {
@@ -5329,7 +5329,7 @@ class Organizr
 		if (array_key_exists('group_id', $array)) {
 			$this->setAPIResponse('error', 'Cannot change group_id', 409);
 			return false;
-			
+
 		}
 		if (array_key_exists('group', $array)) {
 			if ($array['group'] == '') {
@@ -5372,7 +5372,7 @@ class Organizr
 		$this->writeLog('success', 'Group Editor Function -  Edited Group Info for [' . $groupInfo['group'] . ']', $this->user['username']);
 		return $this->processQueries($response);
 	}
-	
+
 	public function deleteGroup($id)
 	{
 		$response = [
@@ -5402,7 +5402,7 @@ class Organizr
 			return false;
 		}
 	}
-	
+
 	public function addGroup($array)
 	{
 		if (!$array) {
@@ -5443,7 +5443,7 @@ class Organizr
 		$this->writeLog('success', 'Tab Editor Function -  Added Tab for [' . $array['name'] . ']', $this->user['username']);
 		return $this->processQueries($response);
 	}
-	
+
 	public function userList($type = null)
 	{
 		switch ($type) {
@@ -5483,14 +5483,14 @@ class Organizr
 		}
 		return false;
 	}
-	
-	
+
+
 	public function encrypt($password, $key = null)
 	{
 		$key = ($key) ? $key : ((isset($this->config['organizrHash'])) ? $this->config['organizrHash'] : null);
 		return openssl_encrypt($password, 'AES-256-CBC', $key, 0, $this->fillString($key, 16));
 	}
-	
+
 	public function decrypt($password, $key = null)
 	{
 		if (empty($password)) {
@@ -5499,7 +5499,7 @@ class Organizr
 		$key = ($key) ? $key : ((isset($this->config['organizrHash'])) ? $this->config['organizrHash'] : null);
 		return openssl_decrypt($password, 'AES-256-CBC', $key, 0, $this->fillString($key, 16));
 	}
-	
+
 	public function getCert()
 	{
 		$url = 'http://curl.haxx.se/ca/cacert.pem';
@@ -5526,7 +5526,7 @@ class Organizr
 		}
 		return $file;
 	}
-	
+
 	public function plexJoinAPI($array)
 	{
 		$username = ($array['username']) ?? null;
@@ -5546,10 +5546,10 @@ class Organizr
 		}
 		return $this->plexJoin($username, $email, $password);
 	}
-	
+
 	public function plexJoin($username, $email, $password)
 	{
-		
+
 		try {
 			$url = 'https://plex.tv/api/v2/users';
 			$headers = array(
@@ -5589,7 +5589,7 @@ class Organizr
 		}
 		return false;
 	}
-	
+
 	public function lockCurrentUser()
 	{
 		if ($this->user['userID'] == '999') {
@@ -5598,10 +5598,10 @@ class Organizr
 		}
 		return $this->lockUser($this->user['userID']);
 	}
-	
+
 	public function lockUser($id)
 	{
-		
+
 		$user = $this->getUserById($id);
 		if (!$user) {
 			$this->setAPIResponse('error', 'User not found', 404);
@@ -5622,7 +5622,7 @@ class Organizr
 		$this->setAPIResponse('success', 'User account locked', 200);
 		return $this->processQueries($response);
 	}
-	
+
 	public function unlockCurrentUser($array)
 	{
 		if ($array['password'] == '') {
@@ -5636,7 +5636,7 @@ class Organizr
 		}
 		return $this->unlockUser($this->user['userID']);
 	}
-	
+
 	public function unlockUser($id)
 	{
 		$user = $this->getUserById($id);
@@ -5659,7 +5659,7 @@ class Organizr
 		$this->setAPIResponse('success', 'User account unlocked', 200);
 		return $this->processQueries($response);
 	}
-	
+
 	public function youtubeSearch($query)
 	{
 		if (!$query) {
@@ -5687,7 +5687,7 @@ class Organizr
 			return false;
 		}
 	}
-	
+
 	public function scrapePage($array)
 	{
 		try {
@@ -5728,7 +5728,7 @@ class Organizr
 			return false;
 		}
 	}
-	
+
 	public function socks($url, $enabled, $auth, $requestObject, $header = null)
 	{
 		$error = false;
@@ -5775,7 +5775,7 @@ class Organizr
 			return null;
 		}
 	}
-	
+
 	public function getPlexServers()
 	{
 		if ($this->config['plexToken'] == '') {
@@ -5814,14 +5814,14 @@ class Organizr
 						'owned' => (float)$server['owned'],
 					);
 				}
-				
+
 			}
 			$this->setAPIResponse('success', null, 200, $items);
 			return $items;
 		}
-		
+
 	}
-	
+
 	public function getIcons()
 	{
 		$term = $_GET['search'] ?? null;
@@ -5847,14 +5847,14 @@ class Organizr
 		$goodIcons['pagination']['more'] = $page < (ceil($total / $limit));
 		return $goodIcons;
 	}
-	
+
 	protected function processQueries(array $request, $migration = false)
 	{
 		$results = array();
 		$firstKey = '';
 		try {
 			foreach ($request as $k => $v) {
-				
+
 				$query = ($migration) ? $this->otherDb->query($v['query']) : $this->db->query($v['query']);
 				$keyName = (isset($v['key'])) ? $v['key'] : $k;
 				$firstKey = (isset($v['key']) && $k == 0) ? $v['key'] : $k;
@@ -5881,11 +5881,11 @@ class Organizr
 						return false;
 				}
 			}
-			
+
 		} catch (Exception $e) {
 			return $e;
 		}
 		return count($request) > 1 ? $results : $results[$firstKey];
 	}
-	
+
 }
