@@ -2,9 +2,26 @@
 
 trait PlexHomepageItem
 {
-
+	
 	public function plexSettingsArray()
 	{
+		if ($this->config['plexID'] !== '' && $this->config['plexToken'] !== '') {
+			$loop = $this->plexLibraryList('key')['libraries'];
+			foreach ($loop as $key => $value) {
+				$libraryList[] = array(
+					'name' => $key,
+					'value' => $value
+				);
+			}
+		} else {
+			$libraryList = array(
+				array(
+					'name' => 'Refresh page to update List',
+					'value' => '',
+					'disabled' => true,
+				),
+			);
+		}
 		return array(
 			'name' => 'Plex',
 			'enabled' => strpos('personal', $this->config['license']) !== false,
@@ -86,6 +103,15 @@ trait PlexHomepageItem
 						'name' => 'homepageShowStreamNames',
 						'label' => 'User Information',
 						'value' => $this->config['homepageShowStreamNames']
+					),
+					array(
+						'type' => 'select2',
+						'class' => 'select2-multiple',
+						'id' => 'plex-stream-exclude-select',
+						'name' => 'homepagePlexStreamsExclude',
+						'label' => 'Libraries to Exclude',
+						'value' => $this->config['homepagePlexStreamsExclude'],
+						'options' => $libraryList
 					),
 					array(
 						'type' => 'select',
@@ -257,7 +283,7 @@ trait PlexHomepageItem
 			)
 		);
 	}
-
+	
 	public function testConnectionPlex()
 	{
 		if (!empty($this->config['plexURL']) && !empty($this->config['plexToken'])) {
@@ -282,7 +308,7 @@ trait PlexHomepageItem
 			return 'URL and/or Token not setup';
 		}
 	}
-
+	
 	public function plexHomepagePermissions($key = null)
 	{
 		$permissions = [
@@ -368,7 +394,7 @@ trait PlexHomepageItem
 			return [];
 		}
 	}
-
+	
 	public function homepageOrderplexnowplaying()
 	{
 		if ($this->homepageItemPermissions($this->plexHomepagePermissions('streams'))) {
@@ -384,7 +410,7 @@ trait PlexHomepageItem
 				';
 		}
 	}
-
+	
 	public function homepageOrderplexrecent()
 	{
 		if ($this->homepageItemPermissions($this->plexHomepagePermissions('recent'))) {
@@ -400,7 +426,7 @@ trait PlexHomepageItem
 				';
 		}
 	}
-
+	
 	public function homepageOrderplexplaylist()
 	{
 		if ($this->homepageItemPermissions($this->plexHomepagePermissions('playlists'))) {
@@ -416,13 +442,14 @@ trait PlexHomepageItem
 				';
 		}
 	}
-
+	
 	public function getPlexHomepageStreams()
 	{
 		if (!$this->homepageItemPermissions($this->plexHomepagePermissions('streams'), true)) {
 			return false;
 		}
 		$ignore = array();
+		$exclude = explode(',', $this->config['homepagePlexStreamsExclude']);
 		$resolve = true;
 		$url = $this->qualifyURL($this->config['plexURL']);
 		$url = $url . "/status/sessions?X-Plex-Token=" . $this->config['plexToken'];
@@ -433,7 +460,7 @@ trait PlexHomepageItem
 			$items = array();
 			$plex = simplexml_load_string($response->body);
 			foreach ($plex as $child) {
-				if (!in_array($child['type'], $ignore) && isset($child['librarySectionID'])) {
+				if (!in_array($child['type'], $ignore) && !in_array($child['librarySectionID'], $exclude) && isset($child['librarySectionID'])) {
 					$items[] = $this->resolvePlexItem($child);
 				}
 			}
@@ -445,7 +472,7 @@ trait PlexHomepageItem
 			return $api;
 		}
 	}
-
+	
 	public function getPlexHomepageRecent()
 	{
 		if (!$this->homepageItemPermissions($this->plexHomepagePermissions('recent'), true)) {
@@ -487,7 +514,7 @@ trait PlexHomepageItem
 		$this->setAPIResponse('success', null, 200, $api);
 		return $api;
 	}
-
+	
 	public function getPlexHomepagePlaylists()
 	{
 		if (!$this->homepageItemPermissions($this->plexHomepagePermissions('playlists'), true)) {
@@ -528,7 +555,7 @@ trait PlexHomepageItem
 			return false;
 		}
 	}
-
+	
 	public function getPlexHomepageMetadata($array)
 	{
 		if (!$this->homepageItemPermissions($this->plexHomepagePermissions('metadata'), true)) {
@@ -562,7 +589,7 @@ trait PlexHomepageItem
 			return $api;
 		}
 	}
-
+	
 	public function getPlexHomepageSearch($query)
 	{
 		if (!$this->homepageItemPermissions($this->plexHomepagePermissions('search'), true)) {
@@ -596,7 +623,7 @@ trait PlexHomepageItem
 			return $api;
 		}
 	}
-
+	
 	public function resolvePlexItem($item)
 	{
 		// Static Height & Width
@@ -789,20 +816,17 @@ trait PlexHomepageItem
 		}
 		return $plexItem;
 	}
-
+	
 	public function getTautulliFriendlyNames()
 	{
 		if (!$this->qualifyRequest(1)) {
 			return false;
 		}
-
 		$url = $this->qualifyURL($this->config['tautulliURL']);
 		$url .= '/api/v2?apikey=' . $this->config['tautulliApikey'];
 		$url .= '&cmd=get_users';
-
 		$response = Requests::get($url, [], []);
 		$names = [];
-
 		try {
 			$response = json_decode($response->body, true);
 			foreach ($response['response']['data'] as $user) {
@@ -813,14 +837,12 @@ trait PlexHomepageItem
 		} catch (Exception $e) {
 			$this->setAPIResponse('failure', null, 422, [$e->getMessage()]);
 		}
-
 		$this->setAPIResponse('success', null, 200, $names);
 	}
-
+	
 	private function formatPlexUserName($item)
 	{
 		$name = ($this->config['homepageShowStreamNames'] && $this->qualifyRequest($this->config['homepageShowStreamNamesAuth'])) ? (string)$item->User['title'] : "";
-
 		try {
 			if ($this->config['homepageUseCustomStreamNames']) {
 				$customNames = json_decode($this->config['homepageCustomStreamNames'], true);
@@ -831,7 +853,35 @@ trait PlexHomepageItem
 		} catch (Exception $e) {
 			// don't do anythig if it goes wrong, like if the JSON is badly formatted
 		}
-
 		return $name;
+	}
+	
+	public function plexLibraryList($value = 'id')
+	{
+		
+		if (!empty($this->config['plexToken']) && !empty($this->config['plexID'])) {
+			$url = 'https://plex.tv/api/servers/' . $this->config['plexID'];
+			try {
+				$headers = array(
+					"Accept" => "application/json",
+					"X-Plex-Token" => $this->config['plexToken']
+				);
+				$response = Requests::get($url, $headers, array());
+				libxml_use_internal_errors(true);
+				if ($response->success) {
+					$libraryList = array();
+					$plex = simplexml_load_string($response->body);
+					foreach ($plex->Server->Section as $child) {
+						$libraryList['libraries'][(string)$child['title']] = (string)$child[$value];
+					}
+					$libraryList = array_change_key_case($libraryList, CASE_LOWER);
+					return $libraryList;
+				}
+			} catch (Requests_Exception $e) {
+				$this->writeLog('error', 'Plex Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
+				return false;
+			};
+		}
+		return false;
 	}
 }

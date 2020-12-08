@@ -229,6 +229,7 @@ return array(
 	'homepageHealthChecksRefresh' => '60000',
 	'homepagePlexStreams' => false,
 	'homepagePlexStreamsAuth' => '1',
+	'homepagePlexStreamsExclude' => '',
 	'homepagePlexRecent' => false,
 	'homepageRecentLimit' => '50',
 	'homepagePlexRecentAuth' => '1',
