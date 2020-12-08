@@ -2679,7 +2679,7 @@ class Organizr
 			'order' => 1,
 			'category' => 'Unsorted',
 			'category_id' => 0,
-			'image' => 'plugins/images/categories/unsorted.png',
+			'image' => 'fontawesome::question',
 			'default' => true
 		];
 		$response = [
