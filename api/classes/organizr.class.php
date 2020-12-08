@@ -5161,7 +5161,7 @@ class Organizr
 			$this->setAPIResponse('error', 'Id was not supplied', 422);
 			return false;
 		}
-		if ($id !== $this->user['userID']) {
+		if ((int)$id !== $this->user['userID']) {
 			if (!$this->qualifyRequest('1', true)) {
 				return false;
 			}
