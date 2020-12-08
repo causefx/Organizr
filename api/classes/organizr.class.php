@@ -3835,7 +3835,7 @@ class Organizr
 	{
 		$items = $this->getSettingsHomepage();
 		foreach ($items as $k => $v) {
-			if ($v['name'] === $item) {
+			if (strtolower($v['name']) === strtolower($item)) {
 				return $v;
 			}
 		}
