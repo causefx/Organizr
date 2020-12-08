@@ -1674,6 +1674,7 @@ function homepageItemFormHTML(v){
 	`;
 }
 function editHomepageItem(item){
+	ajaxloader('.editHomepageItemBox-' + item, 'in');
 	organizrAPI2('GET','api/v2/settings/homepage/'+item).success(function(data) {
 		try {
 			let response = data.response;
@@ -1715,9 +1716,10 @@ function editHomepageItem(item){
 		}catch(e) {
 			organizrCatchError(e,data);
 		}
-
+		ajaxloader('.editHomepageItemBox-' + item);
 	}).fail(function(xhr) {
 		OrganizrApiError(xhr, 'Edit Homepage Failed');
+		ajaxloader('.editHomepageItemBox-' + item);
 	});
 }
 function buildHomepageItem(array){
@@ -1728,7 +1730,7 @@ function buildHomepageItem(array){
 				listing += `
 				<div class="col-lg-2 col-md-2 col-sm-4 col-xs-4">
 					<div class="white-box bg-org m-0">
-						<div class="el-card-item p-0">
+						<div class="el-card-item p-0 editHomepageItemBox-`+v.name+`">
 							<div class="el-card-avatar el-overlay-1">
 								<a onclick="editHomepageItem('`+v.name+`')"><img class="lazyload tabImages mouse" data-src="`+v.image+`"></a>
 							</div>
@@ -1739,25 +1741,6 @@ function buildHomepageItem(array){
 						</div>
 					</div>
 				</div>
-				<!--
-				<form id="homepage-`+v.name+`-form" class="mfp-hide white-popup mfp-with-anim homepageForm addFormTick">
-				    <fieldset style="border:0;" class="col-md-10 col-md-offset-1">
-                        <div class="panel bg-org panel-info">
-                            <div class="panel-heading">
-                                <span lang="en">`+v.name+`</span>
-                                <button type="button" class="btn bg-org btn-circle close-popup pull-right"><i class="fa fa-times"></i> </button>
-                                <button id="homepage-`+v.name+`-form-save" onclick="submitSettingsForm('homepage-`+v.name+`-form')" class="btn btn-sm btn-info btn-rounded waves-effect waves-light pull-right hidden animated loop-animation rubberBand m-r-20" type="button"><span class="btn-label"><i class="fa fa-save"></i></span><span lang="en">Save</span></button>
-                            </div>
-                            <div class="panel-wrapper collapse in" aria-expanded="true">
-                                <div class="panel-body bg-org">
-                                    +buildFormGroup(v.settings)+
-                                </div>
-                            </div>
-                        </div>
-					</fieldset>
-				    <div class="clearfix"></div>
-				</form>
-				-->
 				`;
 			}
 		});
