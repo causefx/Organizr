@@ -896,7 +896,7 @@ span.homepage-text {
 }
 .fc-scroller .simplebar-content {
     min-height: auto !important;
-    overflow-x: hidden !important;
+    overflow: hidden !important;
 	padding-bottom: 0px !important;
 }
 .simplebar-content {
