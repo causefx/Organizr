@@ -8471,8 +8471,8 @@ function searchJackett(){
 				{ "data": "Tracker" },
 				{ data: 'Title',
 					render: function ( data, type, row ) {
-						if(row.Comments !== null){
-							return '<a href="'+row.Comments+'" target="_blank">'+data+'</a>';
+						if(row.Details !== null){
+							return '<a href="'+row.Details+'" target="_blank">'+data+'</a>';
 						}else{
 							return data;
 						}
@@ -8496,8 +8496,8 @@ function searchJackett(){
 						if ( type === 'display' || type === 'filter' ) {
 							if(data !== null){
 								return '<a href="'+data+'" target="_blank"><i class="fa fa-magnet"></i></a>';
-							}else if(row.Comments !== null){
-								return '<a href="'+row.Comments+'" target="_blank"><i class="fa fa-cloud-download"></i></a>';
+							}else if(row.Details !== null){
+								return '<a href="'+row.Details+'" target="_blank"><i class="fa fa-cloud-download"></i></a>';
 							}else if(row.Guid !== null){
 								return '<a href="'+row.Guid+'" target="_blank"><i class="fa fa-cloud-download"></i></a>';
 							}else if(row.Link !== null){
