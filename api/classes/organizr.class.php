@@ -5199,8 +5199,9 @@ class Organizr
 		}
 		if (array_key_exists('group_id', $array)) {
 			if ($array['group_id'] == '') {
-				$this->setAPIResponse('error', 'group_id was set but empty', 409);
-				return false;
+				$array['group_id'] = 0;
+				//$this->setAPIResponse('error', 'group_id was set but empty', 409);
+				//return false;
 			}
 			if (!$this->qualifyRequest('1', false)) {
 				$this->setAPIResponse('error', 'Cannot change your own group_id', 401);
