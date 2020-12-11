@@ -1531,9 +1531,6 @@ span.fc-title {
 .dropdown-menu {
     width: inherit;
 }
-#organizrNewsPanel .panel-body {
-    background: #2d2c2c;
-}
 .pingTime {
     position: inherit;
     right: -30px;
