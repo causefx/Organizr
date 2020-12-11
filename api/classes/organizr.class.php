@@ -5778,6 +5778,7 @@ class Organizr
 			$url = $this->cleanPath($url);
 			$options = ($this->localURL($url)) ? array('verify' => false) : array();
 			$headers = [];
+			$apiData = $this->json_validator($this->apiData($requestObject)) ? json_encode($this->apiData($requestObject)) : $this->apiData($requestObject);
 			if ($header) {
 				if ($requestObject->hasHeader($header)) {
 					$headerKey = $requestObject->getHeaderLine($header);
@@ -5789,13 +5790,13 @@ class Organizr
 					$call = Requests::get($url, $headers, $options);
 					break;
 				case 'POST':
-					$call = Requests::post($url, $headers, $this->apiData($requestObject), $options);
+					$call = Requests::post($url, $headers, $apiData, $options);
 					break;
 				case 'DELETE':
 					$call = Requests::delete($url, $headers, $options);
 					break;
 				case 'PUT':
-					$call = Requests::put($url, $headers, $this->apiData($requestObject), $options);
+					$call = Requests::put($url, $headers, $apiData, $options);
 					break;
 				default:
 					$call = Requests::get($url, $headers, $options);

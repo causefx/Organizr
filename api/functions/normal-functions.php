@@ -548,6 +548,15 @@ trait NormalFunctions
 		$factor = floor((strlen($bytes) - 1) / 3);
 		return sprintf("%.{$dec}f %s", $bytes / (1024 ** $factor), $size[$factor]);
 	}
+	
+	public function json_validator($data = null)
+	{
+		if (!empty($data)) {
+			@json_decode($data);
+			return (json_last_error() === JSON_ERROR_NONE);
+		}
+		return false;
+	}
 }
 
 // Leave for deluge class
