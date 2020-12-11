@@ -539,7 +539,7 @@ trait JellyfinHomepageItem
 		$jellyfinItem['user'] = ($this->config['homepageShowStreamNames'] && $this->qualifyRequest($this->config['homepageShowStreamNamesAuth'])) ? @(string)$itemDetails['UserName'] : "";
 		$jellyfinItem['userThumb'] = '';
 		$jellyfinItem['userAddress'] = (isset($itemDetails['RemoteEndPoint']) ? $itemDetails['RemoteEndPoint'] : "x.x.x.x");
-		$jellyfinURL = $this->config['jellyfinURL'] . '/web/index.html#!/itemdetails.html?id=';
+		$jellyfinURL = $this->config['jellyfinURL'] . '/web/index.html#!/details?id=';
 		$jellyfinItem['address'] = $this->config['jellyfinTabURL'] ? rtrim($this->config['jellyfinTabURL'], '/') . "/web/#!/item/item.html?id=" . $jellyfinItem['uid'] : $jellyfinURL . $jellyfinItem['uid'] . "&serverId=" . $jellyfinItem['id'];
 		$jellyfinItem['nowPlayingOriginalImage'] = 'api/v2/homepage/image?source=jellyfin&type=' . $jellyfinItem['nowPlayingImageType'] . '&img=' . $jellyfinItem['nowPlayingThumb'] . '&height=' . $nowPlayingHeight . '&width=' . $nowPlayingWidth . '&key=' . $jellyfinItem['nowPlayingKey'] . '$' . $this->randString();
 		$jellyfinItem['originalImage'] = 'api/v2/homepage/image?source=jellyfin&type=' . $jellyfinItem['imageType'] . '&img=' . $jellyfinItem['thumb'] . '&height=' . $height . '&width=' . $width . '&key=' . $jellyfinItem['key'] . '$' . $this->randString();
