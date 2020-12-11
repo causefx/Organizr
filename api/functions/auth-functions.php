@@ -434,7 +434,7 @@ trait AuthFunctions
 	public function plugin_auth_jellyfin($username, $password)
 	{
 		try {
-			$url = $this->qualifyURL($this->config['embyURL']) . '/Users/authenticatebyname';
+			$url = $this->qualifyURL($this->config['jellyfinURL']) . '/Users/authenticatebyname';
 			$headers = array(
 				'X-Emby-Authorization' => 'MediaBrowser Client="Organizr Auth", Device="Organizr", DeviceId="orgv2", Version="2.0"',
 				'Content-Type' => 'application/json',
@@ -453,7 +453,7 @@ trait AuthFunctions
 						'X-Emby-Authorization' => 'MediaBrowser Client="Organizr Auth", Device="Organizr", DeviceId="orgv2", Version="2.0", Token="' . $json['AccessToken'] . '"',
 						'Content-Type' => 'application/json',
 					);
-					$response = Requests::post($this->qualifyURL($this->config['embyURL']) . '/Sessions/Logout', $headers, array());
+					$response = Requests::post($this->qualifyURL($this->config['jellyfinURL']) . '/Sessions/Logout', $headers, array());
 					if ($response->success) {
 						return true;
 					}

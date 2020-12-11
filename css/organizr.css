@@ -896,7 +896,7 @@ span.homepage-text {
 }
 .fc-scroller .simplebar-content {
     min-height: auto !important;
-    overflow-x: hidden !important;
+    overflow: hidden !important;
 	padding-bottom: 0px !important;
 }
 .simplebar-content {
@@ -1530,9 +1530,6 @@ span.fc-title {
 }
 .dropdown-menu {
     width: inherit;
-}
-#organizrNewsPanel .panel-body {
-    background: #2d2c2c;
 }
 .pingTime {
     position: inherit;

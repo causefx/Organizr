@@ -477,7 +477,8 @@ trait NormalFunctions
 				$domain = $_SERVER['HTTP_HOST'];
 			}
 		}
-		$path = (str_replace("\\", "/", dirname($_SERVER['REQUEST_URI'])) !== '.') ?? '';
+		$path = str_replace("\\", "/", dirname($_SERVER['REQUEST_URI']));
+		$path = ($path !== '.') ? $path : '';
 		$url = $protocol . $domain . $path;
 		if (strpos($url, '/api') !== false) {
 			$url = explode('/api', $url);
@@ -546,6 +547,15 @@ trait NormalFunctions
 		$size = array('B', 'kB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB');
 		$factor = floor((strlen($bytes) - 1) / 3);
 		return sprintf("%.{$dec}f %s", $bytes / (1024 ** $factor), $size[$factor]);
+	}
+	
+	public function json_validator($data = null)
+	{
+		if (!empty($data)) {
+			@json_decode($data);
+			return (json_last_error() === JSON_ERROR_NONE);
+		}
+		return false;
 	}
 }
 

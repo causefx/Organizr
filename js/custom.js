@@ -436,7 +436,7 @@ $(document).on("click", ".reset-button", function(e) {
 		var post = {
 	        email:email
         };
-	    message('Submitting request...',html.message,activeInfo.settings.notifications.position,'#FFF','info','10000');
+	    message('Submitting request...','',activeInfo.settings.notifications.position,'#FFF','info','10000');
         organizrAPI2('POST','api/v2/users/recover',post).success(function(data) {
             var html = data.response;
             message('Recover Password',html.message,activeInfo.settings.notifications.position,'#FFF','success','10000');
@@ -848,25 +848,6 @@ function convertMinutesToMs(minutes){
         return (minutes * 1000) * 60;
     }
 }
-//EDIT TAB GET ID
-$(document).on("click", ".editTabButton", function () {
-    //tabActionTime
-    //tabActionType
-    $('#edit-tab-form [name=name]').val($(this).parent().parent().attr("data-name"));
-    $('#originalTabName').html($(this).parent().parent().attr("data-name"));
-    $('#edit-tab-form [name=url]').val($(this).parent().parent().attr("data-url"));
-    $('#edit-tab-form [name=url_local]').val($(this).parent().parent().attr("data-local-url"));
-    $('#edit-tab-form [name=ping_url]').val($(this).parent().parent().attr("data-ping-url"));
-    $('#edit-tab-form [name=image]').val($(this).parent().parent().attr("data-image"));
-    $('#edit-tab-form [name=id]').val($(this).parent().parent().attr("data-id"));
-    $('#edit-tab-form [name=timeout_ms]').val(convertMsToMinutes($(this).parent().parent().attr("data-tab-action-time")));
-    $('#edit-tab-form [name=timeout]').val($(this).parent().parent().attr("data-tab-action-type"));
-    if( $(this).parent().parent().attr("data-url").indexOf('/?v') > 0){
-        $('#edit-tab-form [name=url]').prop('disabled', 'true');
-    }else{
-        $('#edit-tab-form [name=url]').prop('disabled', null);
-    }
-});
 //EDIT TAB
 $(document).on("click", ".editTab", function () {
     var originalTabName = $('#originalTabName').html();
@@ -1862,3 +1843,22 @@ $(document).on('click', '.close-editHomepageItemDiv',function () {
 	$('body').removeAttr('style');
 	$('html').removeAttr('style');
 })
+// Control init of custom plex JSON editor
+$(document).on('click', '#homepage-Plex-form li a[aria-controls="Misc Options"]', function() {
+    var resizeEditor = function(jsonEditor) {
+        const aceEditor = jsonEditor;
+        const newHeight = aceEditor.getSession().getScreenLength() * (aceEditor.renderer.lineHeight + aceEditor.renderer.scrollBar.getWidth());
+        aceEditor.container.style.height = newHeight + 'px';
+        aceEditor.resize();
+    }
+
+    jsonEditor = ace.edit("homepageCustomStreamNamesAce");
+    var JsonMode = ace.require("ace/mode/javascript").Mode;
+    jsonEditor.session.setMode(new JsonMode());
+    jsonEditor.setTheme("ace/theme/idle_fingers");
+    jsonEditor.setShowPrintMargin(false);
+    jsonEditor.session.on('change', function(delta) {
+        $('#homepageCustomStreamNamesText').val(jsonEditor.getValue());
+        $('#customize-appearance-form-save').removeClass('hidden');
+    });
+}); 

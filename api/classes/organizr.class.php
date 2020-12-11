@@ -58,7 +58,7 @@ class Organizr
 	
 	// ===================================
 	// Organizr Version
-	public $version = '2.1.83';
+	public $version = '2.1.120';
 	// ===================================
 	// Quick php Version check
 	public $minimumPHP = '7.2';
@@ -2302,6 +2302,22 @@ class Organizr
 					'label' => 'Enable',
 					'value' => $this->config['ssoOmbi']
 				)
+			),
+			'Jellyfin' => array(
+				array(
+					'type' => 'input',
+					'name' => 'jellyfinURL',
+					'label' => 'Jellyfin URL',
+					'value' => $this->config['jellyfinURL'],
+					'help' => 'Please make sure to use the same (sub)domain to access Jellyfin as Organizr\'s',
+					'placeholder' => 'http(s)://hostname:port'
+				),
+				array(
+					'type' => 'switch',
+					'name' => 'ssoJellyfin',
+					'label' => 'Enable',
+					'value' => $this->config['ssoJellyfin']
+				)
 			)
 		);
 	}
@@ -2663,7 +2679,7 @@ class Organizr
 			'order' => 1,
 			'category' => 'Unsorted',
 			'category_id' => 0,
-			'image' => 'plugins/images/categories/unsorted.png',
+			'image' => 'fontawesome::question',
 			'default' => true
 		];
 		$response = [
@@ -3819,7 +3835,7 @@ class Organizr
 	{
 		$items = $this->getSettingsHomepage();
 		foreach ($items as $k => $v) {
-			if ($v['name'] === $item) {
+			if (strtolower($v['name']) === strtolower($item)) {
 				return $v;
 			}
 		}
@@ -4179,6 +4195,19 @@ class Organizr
 			}
 		}
 		return $newData;
+	}
+	
+	public function getTabByIdCheckUser($id)
+	{
+		$tabInfo = $this->getTabById($id);
+		if ($tabInfo) {
+			if ($this->qualifyRequest($tabInfo['group_id'], true)) {
+				return $tabInfo;
+			}
+		} else {
+			$this->setAPIResponse('error', 'id not found', 404);
+			return false;
+		}
 	}
 	
 	public function deleteTab($id)
@@ -5132,7 +5161,7 @@ class Organizr
 			$this->setAPIResponse('error', 'Id was not supplied', 422);
 			return false;
 		}
-		if ($id !== $this->user['userID']) {
+		if ((int)$id !== $this->user['userID']) {
 			if (!$this->qualifyRequest('1', true)) {
 				return false;
 			}
@@ -5170,8 +5199,9 @@ class Organizr
 		}
 		if (array_key_exists('group_id', $array)) {
 			if ($array['group_id'] == '') {
-				$this->setAPIResponse('error', 'group_id was set but empty', 409);
-				return false;
+				$array['group_id'] = 0;
+				//$this->setAPIResponse('error', 'group_id was set but empty', 409);
+				//return false;
 			}
 			if (!$this->qualifyRequest('1', false)) {
 				$this->setAPIResponse('error', 'Cannot change your own group_id', 401);
@@ -5748,6 +5778,7 @@ class Organizr
 			$url = $this->cleanPath($url);
 			$options = ($this->localURL($url)) ? array('verify' => false) : array();
 			$headers = [];
+			$apiData = $this->json_validator($this->apiData($requestObject)) ? json_encode($this->apiData($requestObject)) : $this->apiData($requestObject);
 			if ($header) {
 				if ($requestObject->hasHeader($header)) {
 					$headerKey = $requestObject->getHeaderLine($header);
@@ -5759,13 +5790,13 @@ class Organizr
 					$call = Requests::get($url, $headers, $options);
 					break;
 				case 'POST':
-					$call = Requests::post($url, $headers, $this->apiData($requestObject), $options);
+					$call = Requests::post($url, $headers, $apiData, $options);
 					break;
 				case 'DELETE':
 					$call = Requests::delete($url, $headers, $options);
 					break;
 				case 'PUT':
-					$call = Requests::put($url, $headers, $this->apiData($requestObject), $options);
+					$call = Requests::put($url, $headers, $apiData, $options);
 					break;
 				default:
 					$call = Requests::get($url, $headers, $options);
@@ -5863,6 +5894,8 @@ class Organizr
 						$results[$keyName] = $query->fetchAll();
 						break;
 					case 'fetch':
+						// PHP 8 Fix?
+						$query->setRowClass(null);
 						$results[$keyName] = $query->fetch();
 						break;
 					case 'getAffectedRows':
@@ -5872,6 +5905,8 @@ class Organizr
 						$results[$keyName] = $query->getRowCount();
 						break;
 					case 'fetchSingle':
+						// PHP 8 Fix?
+						$query->setRowClass(null);
 						$results[$keyName] = $query->fetchSingle();
 						break;
 					case 'query':

@@ -1674,6 +1674,7 @@ function homepageItemFormHTML(v){
 	`;
 }
 function editHomepageItem(item){
+	ajaxloader('.editHomepageItemBox-' + item, 'in');
 	organizrAPI2('GET','api/v2/settings/homepage/'+item).success(function(data) {
 		try {
 			let response = data.response;
@@ -1715,9 +1716,10 @@ function editHomepageItem(item){
 		}catch(e) {
 			organizrCatchError(e,data);
 		}
-
+		ajaxloader('.editHomepageItemBox-' + item);
 	}).fail(function(xhr) {
 		OrganizrApiError(xhr, 'Edit Homepage Failed');
+		ajaxloader('.editHomepageItemBox-' + item);
 	});
 }
 function buildHomepageItem(array){
@@ -1728,7 +1730,7 @@ function buildHomepageItem(array){
 				listing += `
 				<div class="col-lg-2 col-md-2 col-sm-4 col-xs-4">
 					<div class="white-box bg-org m-0">
-						<div class="el-card-item p-0">
+						<div class="el-card-item p-0 editHomepageItemBox-`+v.name+`">
 							<div class="el-card-avatar el-overlay-1">
 								<a onclick="editHomepageItem('`+v.name+`')"><img class="lazyload tabImages mouse" data-src="`+v.image+`"></a>
 							</div>
@@ -1739,25 +1741,6 @@ function buildHomepageItem(array){
 						</div>
 					</div>
 				</div>
-				<!--
-				<form id="homepage-`+v.name+`-form" class="mfp-hide white-popup mfp-with-anim homepageForm addFormTick">
-				    <fieldset style="border:0;" class="col-md-10 col-md-offset-1">
-                        <div class="panel bg-org panel-info">
-                            <div class="panel-heading">
-                                <span lang="en">`+v.name+`</span>
-                                <button type="button" class="btn bg-org btn-circle close-popup pull-right"><i class="fa fa-times"></i> </button>
-                                <button id="homepage-`+v.name+`-form-save" onclick="submitSettingsForm('homepage-`+v.name+`-form')" class="btn btn-sm btn-info btn-rounded waves-effect waves-light pull-right hidden animated loop-animation rubberBand m-r-20" type="button"><span class="btn-label"><i class="fa fa-save"></i></span><span lang="en">Save</span></button>
-                            </div>
-                            <div class="panel-wrapper collapse in" aria-expanded="true">
-                                <div class="panel-body bg-org">
-                                    +buildFormGroup(v.settings)+
-                                </div>
-                            </div>
-                        </div>
-					</fieldset>
-				    <div class="clearfix"></div>
-				</form>
-				-->
 				`;
 			}
 		});
@@ -2072,6 +2055,12 @@ function sortHomepageItemHrefs(){
         }
     });
 }
+function checkTabHomepageItemList(name, url, urlLocal, id, check, tab) {
+	// might use this later
+	if (name.includes(check) || url.includes(check) || urlLocal.includes(check)) {
+		addEditHomepageItem(id, tab);
+	}
+}
 function checkTabHomepageItem(id, name, url, urlLocal){
     name = name.toLowerCase();
     url = url.toLowerCase();
@@ -2116,6 +2105,12 @@ function checkTabHomepageItem(id, name, url, urlLocal){
         addEditHomepageItem(id,'Ombi');
     }else if(name.includes('healthcheck') || url.includes('healthcheck') || urlLocal.includes('healthcheck')){
         addEditHomepageItem(id,'HealthChecks');
+    }else if(name.includes('jackett') || url.includes('jackett') || urlLocal.includes('jackett')){
+	    addEditHomepageItem(id,'Jackett');
+    }else if(name.includes('unifi') || url.includes('unifi') || urlLocal.includes('unifi')){
+	    addEditHomepageItem(id,'Unifi');
+    }else if(name.includes('tautulli') || url.includes('tautulli') || urlLocal.includes('tautulli')){
+	    addEditHomepageItem(id,'Tautulli');
     }
 }
 function addEditHomepageItem(id, type){
@@ -3077,17 +3072,10 @@ function buildTabEditorItem(array){
 		var buttonDisabled = v.url.indexOf('/page/settings') > 0 ? 'disabled' : '';
         var typeDisabled = v.url.indexOf('/v2/page/') > 0 ? 'disabled' : '';
 		tabList += `
-		<tr class="tabEditor" data-order="`+v.order+`" data-id="`+v.id+`" data-group-id="`+v.group_id+`" data-category-id="`+v.category_id+`" data-name="`+v.name+`" data-url="`+v.url+`" data-local-url="`+v.url_local+`" data-ping-url="`+v.ping_url+`" data-image="`+v.image+`" data-tab-action-type="`+v.timeout+`" data-tab-action-time="`+v.timeout_ms+`">
+		<tr class="tabEditor" data-order="`+v.order+`" data-original-order="`+v.order+`" data-id="`+v.id+`" data-group-id="`+v.group_id+`" data-category-id="`+v.category_id+`" data-name="`+v.name+`" data-url="`+v.url+`" data-local-url="`+v.url_local+`" data-ping-url="`+v.ping_url+`" data-image="`+v.image+`" data-tab-action-type="`+v.timeout+`" data-tab-action-time="`+v.timeout_ms+`">
 			<input type="hidden" class="form-control" name="tab[`+v.id+`].id" value="`+v.id+`">
 			<input type="hidden" class="form-control order" name="tab[`+v.id+`].order" value="`+v.order+`">
 			<input type="hidden" class="form-control" name="tab[`+v.id+`].originalOrder" value="`+v.order+`">
-			<input type="hidden" class="form-control" name="tab[`+v.id+`].url_local" value="`+v.url_local+`">
-			<input type="hidden" class="form-control" name="tab[`+v.id+`].name" value="`+v.name+`">
-			<input type="hidden" class="form-control" name="tab[`+v.id+`].url" value="`+v.url+`">
-			<input type="hidden" class="form-control" name="tab[`+v.id+`].ping_url" value="`+v.ping_url+`">
-			<input type="hidden" class="form-control" name="tab[`+v.id+`].image" value="`+v.image+`">
-			<input type="hidden" class="form-control" name="tab[`+v.id+`].timeout" value="`+v.timeout+`">
-			<input type="hidden" class="form-control" name="tab[`+v.id+`].timeout_ms" value="`+v.timeout_ms+`">
 			<td style="text-align:center" class="text-center el-element-overlay">
 				<div class="el-card-item p-0">
 					<div class="el-card-avatar el-overlay-1 m-0">
@@ -3110,12 +3098,38 @@ function buildTabEditorItem(array){
 			<td style="text-align:center"><input type="checkbox" class="js-switch splashSwitch" data-size="small" data-color="#99d683" data-secondary-color="#f96262" name="tab[`+v.id+`].splash" value="true" `+tof(v.splash,'c')+`/><input type="hidden" class="form-control" name="tab[`+v.id+`].splash" value="false"></td>
 			<td style="text-align:center"><input type="checkbox" class="js-switch pingSwitch" data-size="small" data-color="#99d683" data-secondary-color="#f96262" name="tab[`+v.id+`].ping" value="true" `+tof(v.ping,'c')+`/><input type="hidden" class="form-control" name="tab[`+v.id+`].ping" value="false"></td>
 			<td style="text-align:center"><input type="checkbox" class="js-switch preloadSwitch" data-size="small" data-color="#99d683" data-secondary-color="#f96262" name="tab[`+v.id+`].preload" value="true" `+tof(v.preload,'c')+`/><input type="hidden" class="form-control" name="tab[`+v.id+`].preload" value="false"></td>
-			<td style="text-align:center"><button type="button" class="btn btn-info btn-outline btn-circle btn-lg m-r-5 editTabButton popup-with-form" href="#edit-tab-form" data-effect="mfp-3d-unfold"><i class="ti-pencil-alt"></i></button></td>
+			<td style="text-align:center"><button type="button" class="btn btn-info btn-outline btn-circle btn-lg m-r-5 editTabButton popup-with-form" onclick="editTabForm('`+v.id+`')" href="#edit-tab-form" data-effect="mfp-3d-unfold"><i class="ti-pencil-alt"></i></button></td>
 			<td style="text-align:center"><button type="button" class="btn btn-danger btn-outline btn-circle btn-lg m-r-5 `+deleteDisabled+`"><i class="ti-trash"></i></button></td>
 		</tr>
 		`;
 	});
 	return tabList;
+}
+function editTabForm(id){
+	organizrAPI2('GET','api/v2/tabs/' + id,true).success(function(data) {
+		try {
+			let response = data.response;
+			console.log(response);
+			$('#edit-tab-form [name=name]').val(response.data.name);
+			$('#originalTabName').html(response.data.name);
+			$('#edit-tab-form [name=url]').val(response.data.url);
+			$('#edit-tab-form [name=url_local]').val(response.data.url_local);
+			$('#edit-tab-form [name=ping_url]').val(response.data.ping_url);
+			$('#edit-tab-form [name=image]').val(response.data.image);
+			$('#edit-tab-form [name=id]').val(response.data.id);
+			$('#edit-tab-form [name=timeout_ms]').val(convertMsToMinutes(response.data.timeout_ms));
+			$('#edit-tab-form [name=timeout]').val(response.data.timeout);
+			if( response.data.url.indexOf('/?v') > 0){
+				$('#edit-tab-form [name=url]').prop('disabled', 'true');
+			}else{
+				$('#edit-tab-form [name=url]').prop('disabled', null);
+			}
+		}catch(e) {
+			organizrCatchError(e,data);
+		}
+	}).fail(function(xhr) {
+		OrganizrApiError(xhr, 'Tab Error');
+	});
 }
 function getSubmitSettingsFormValueSingle(form, index, value){
     var values = {};
@@ -3245,6 +3259,7 @@ function submitHomepageOrder(){
 }
 function submitTabOrder(newTabs){
 	var data = [];
+	var process = false;
 	$.each(newTabs.tab, function(i,v) {
 		if(v.originalOrder == v.order){
 			delete newTabs.tab[i];
@@ -3254,8 +3269,14 @@ function submitTabOrder(newTabs){
 				"id":v.id
 			}
 			data.push(temp);
+			process = true;
 		}
 	})
+	if(!process){
+		message('Tab Order Warning','Order was not changed - Submission not needed',activeInfo.settings.notifications.position,"#FFF","warning","5000");
+		$('.saveTabOrderButton').addClass('hidden');
+		return false;
+	}
 	var callbacks = $.Callbacks();
 	callbacks.add( buildTabEditor );
 	organizrAPI2('PUT','api/v2/tabs',data,true).success(function(data) {
@@ -6936,6 +6957,7 @@ function buildTautulliItem(array){
     var homestats = array.homestats.data;
     var libstats = array.libstats;
     var options = array.options;
+    var friendlyName = array.options.friendlyName;
     var buildLibraries = function(data){
         var libs = data.data;
         var movies = [];
@@ -7026,7 +7048,7 @@ function buildTautulliItem(array){
         card += (audio.length > 0) ? buildCard('artist', audio) : '';
         return card;
     };
-    var buildStats = function(data, stat){
+    var buildStats = function(data, stat, friendlyName = true){
         var card = '';
         data.forEach(e => {
             let classes = '';
@@ -7074,7 +7096,11 @@ function buildTautulliItem(array){
                                             var rowNameValue = '';
                                             var rowValue = '';
                                             if(stat == 'top_users') {
-                                                rowNameValue = item['user'];
+                                                if(friendlyName) {
+                                                    rowNameValue = item['friendly_name'];
+                                                } else {
+                                                    rowNameValue = item['user'];
+                                                }
                                                 rowValue = item['total_plays'];
                                             } else if(stat == 'top_platforms') {
                                                 rowNameValue = item['platform'];
@@ -7112,7 +7138,7 @@ function buildTautulliItem(array){
     cards += (options['popularTV']) ? buildStats(homestats, 'popular_tv') : '';
     cards += (options['topMovies']) ? buildStats(homestats, 'top_movies') : '';
     cards += (options['topTV']) ? buildStats(homestats, 'top_tv') : '';
-    cards += (options['topUsers']) ? buildStats(homestats, 'top_users') : '';
+    cards += (options['topUsers']) ? buildStats(homestats, 'top_users', friendlyName) : '';
     cards += (options['topPlatforms']) ? buildStats(homestats, 'top_platforms') : '';
     cards += '</div>';
     cards += '<div class="row tautulliLibraries">'
@@ -8315,6 +8341,24 @@ function tryUpdateNetdata(array){
     });
     return existing;
 }
+function getTautulliFriendlyNames()
+{
+    organizrAPI2('GET','api/v2/homepage/tautulli/names').success(function(data) {
+        try {
+            let response = data.response;
+            if(response.data !== null){
+                var string = JSON.stringify(response.data, null, 4);
+                jsonEditor = ace.edit("homepageCustomStreamNamesAce");
+                jsonEditor.setValue(string);
+                $('#homepage-Plex-form-save').removeClass('hidden');
+            }
+        }catch(e) {
+	        organizrCatchError(e,data);
+        }
+    }).fail(function(xhr) {
+	    OrganizrApiError(xhr);
+    });
+}
 function homepageJackett(){
 	if(activeInfo.settings.homepage.options.alternateHomepageHeaders){
 		var header = `
@@ -8427,8 +8471,8 @@ function searchJackett(){
 				{ "data": "Tracker" },
 				{ data: 'Title',
 					render: function ( data, type, row ) {
-						if(row.Comments !== null){
-							return '<a href="'+row.Comments+'" target="_blank">'+data+'</a>';
+						if(row.Details !== null){
+							return '<a href="'+row.Details+'" target="_blank">'+data+'</a>';
 						}else{
 							return data;
 						}
@@ -8452,8 +8496,8 @@ function searchJackett(){
 						if ( type === 'display' || type === 'filter' ) {
 							if(data !== null){
 								return '<a href="'+data+'" target="_blank"><i class="fa fa-magnet"></i></a>';
-							}else if(row.Comments !== null){
-								return '<a href="'+row.Comments+'" target="_blank"><i class="fa fa-cloud-download"></i></a>';
+							}else if(row.Details !== null){
+								return '<a href="'+row.Details+'" target="_blank"><i class="fa fa-cloud-download"></i></a>';
 							}else if(row.Guid !== null){
 								return '<a href="'+row.Guid+'" target="_blank"><i class="fa fa-cloud-download"></i></a>';
 							}else if(row.Link !== null){
@@ -9970,6 +10014,10 @@ function showPlexTokenForm(selector = null){
 		            <label class="control-label" for="plex-token-form-password" lang="en">Plex Password</label>
 		            <input type="password" class="form-control" id="plex-token-form-password" name="password"  required="">
 		        </div>
+		        <div class="form-group">
+		            <label class="control-label" for="plex-token-form-tfa" lang="en">Plex 2FA (if applicable)</label>
+		            <input type="text" class="form-control" id="plex-token-form-tfa" name="tfa" >
+		        </div>
 		    </fieldset>
 		    <button class="btn btn-sm btn-info btn-rounded waves-effect waves-light pull-right row b-none" onclick="getPlexToken('`+selector+`')" type="button"><span class="btn-label"><i class="fa fa-ticket"></i></span><span lang="en">Grab It</span></button>
 		    <div class="clearfix"></div>
@@ -9986,6 +10034,7 @@ function getPlexToken(selector) {
 	$('.plexTokenHeader').addClass('panel-info').removeClass('panel-warning').removeClass('panel-danger');
 	var plex_username = $('#get-plex-token-form [name=username]').val().trim();
 	var plex_password = $('#get-plex-token-form [name=password]').val().trim();
+	var plex_tfa = $('#get-plex-token-form [name=tfa]').val().trim();
 	if ((plex_password !== '') && (plex_password !== '')) {
 		$.ajax({
 			type: 'POST',
@@ -9997,7 +10046,7 @@ function getPlexToken(selector) {
 			url: 'https://plex.tv/users/sign_in.json',
 			data: {
 				'user[login]': plex_username,
-				'user[password]': plex_password,
+				'user[password]': plex_password + plex_tfa,
 				force: true
 			},
 			cache: false,

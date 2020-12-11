@@ -336,7 +336,7 @@ trait OrganizrFunctions
 			$buttons .= '<button class="btn m-b-20 m-r-20 bg-primary text-muted waves-effect waves-light importUsersButton" onclick="importUsers(\'jellyfin\')" type="button"><span class="btn-label"><i class="mdi mdi-fish"></i></span><span lang="en">Import Jellyfin Users</span></button>';
 		}
 		if (!empty($this->config['embyURL']) && !empty($this->config['embyToken'])) {
-			$buttons .= '<button class="btn m-b-20 m-r-20 bg-emby text-muted waves-effect waves-light importUsersButton" onclick="importUsers(\'emby\')" type="button"><span class="btn-label"><i class="mdi mdi-emby"></i></span><span lang="en">Import Jellyfin Users</span></button>';
+			$buttons .= '<button class="btn m-b-20 m-r-20 bg-emby text-muted waves-effect waves-light importUsersButton" onclick="importUsers(\'emby\')" type="button"><span class="btn-label"><i class="mdi mdi-emby"></i></span><span lang="en">Import Emby Users</span></button>';
 		}
 		return ($buttons !== '') ? $buttons : $emptyButtons;
 	}

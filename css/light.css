@@ -15,6 +15,9 @@
     top: calc(50% - 3.5px);
     left: calc(50% - 3.5px);
 }
+.internal-listing.p-0.show {
+    width: 99%;
+}
 * {
     outline: 0 !important;
 }

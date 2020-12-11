@@ -10,6 +10,17 @@ $app->get('/tabs', function ($request, $response, $args) {
 		->withStatus($GLOBALS['responseCode']);
 	
 });
+$app->get('/tabs/{id}', function ($request, $response, $args) {
+	$Organizr = ($request->getAttribute('Organizr')) ?? new Organizr();
+	if ($Organizr->qualifyRequest(1, true)) {
+		$GLOBALS['api']['response']['data'] = $Organizr->getTabByIdCheckUser($args['id']);
+	}
+	$response->getBody()->write(jsonE($GLOBALS['api']));
+	return $response
+		->withHeader('Content-Type', 'application/json;charset=UTF-8')
+		->withStatus($GLOBALS['responseCode']);
+	
+});
 $app->post('/tabs', function ($request, $response, $args) {
 	$Organizr = ($request->getAttribute('Organizr')) ?? new Organizr();
 	if ($Organizr->checkRoute($request)) {
