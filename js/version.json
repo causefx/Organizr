@@ -306,5 +306,12 @@
     "new": "Update check on load instead of settings",
     "fixed": "add clarification to checkRoute error message|Increase jackett timeout to 120 seconds|add language elements to more areas|rework calendar filter|fix checkroute if has subdir|fix dependency check",
     "notes": "Please join our discord if you have any issues|Please report bugs in GitHub issues page"
+  },
+  "2.1.120": {
+    "date": "2020-12-11 20:00",
+    "title": "Weekly update-ish",
+    "new": "Option to disable certain plex libraries on now playing (#1534)|Toggle to use friendly name in stats|jellyFin SSO|PHP8 support|add 2fa to plex token form|loading animation to homepage item loading|allow admin to make other admins",
+    "fixed": "fix Blue Light theme News background (#1538)|fix empty socks (#1520)|getServerPath function|tab saving on order change if nothing updated (#1530)|fix tab sort order saving with lots of tabs (#1175)|non admin from changing password|password reset|allow homepage item api lookup lowercase|change unsorted icon on new installs|unifi and ubnt image changes|missing ssoJellyfin var",
+    "notes": "New tab images|Please join our discord if you have any issues|Please report bugs in GitHub issues page"
   }
 }
