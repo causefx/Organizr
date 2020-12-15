@@ -600,4 +600,9 @@ trait OrganizrFunctions
 		}
 		return $approved;
 	}
+	
+	public function userDefinedIdReplacementLink($link, $variables)
+	{
+		return strtr($link, $variables);
+	}
 }

@@ -107,6 +107,13 @@ trait EmbyHomepageItem
 				'Misc Options' => array(
 					array(
 						'type' => 'input',
+						'name' => 'homepageEmbyLink',
+						'label' => 'Emby Homepage Link URL',
+						'value' => $this->config['homepageEmbyLink'],
+						'help' => 'Available variables: {id} {serverId}'
+					),
+					array(
+						'type' => 'input',
 						'name' => 'embyTabName',
 						'label' => 'Emby Tab Name',
 						'value' => $this->config['embyTabName'],
@@ -538,8 +545,11 @@ trait EmbyHomepageItem
 		$embyItem['user'] = ($this->config['homepageShowStreamNames'] && $this->qualifyRequest($this->config['homepageShowStreamNamesAuth'])) ? @(string)$itemDetails['UserName'] : "";
 		$embyItem['userThumb'] = '';
 		$embyItem['userAddress'] = (isset($itemDetails['RemoteEndPoint']) ? $itemDetails['RemoteEndPoint'] : "x.x.x.x");
-		$embyURL = 'https://app.emby.media/#!/item/item.html?id=';
-		$embyItem['address'] = $this->config['embyTabURL'] ? rtrim($this->config['embyTabURL'], '/') . "/web/#!/item/item.html?id=" . $embyItem['uid'] : $embyURL . $embyItem['uid'] . "&serverId=" . $embyItem['id'];
+		$embyVariablesForLink = [
+			'{id}' => $embyItem['uid'],
+			'{serverId}' => $embyItem['id']
+		];
+		$embyItem['address'] = $this->userDefinedIdReplacementLink($this->config['homepageEmbyLink'], $embyVariablesForLink);
 		$embyItem['nowPlayingOriginalImage'] = 'api/v2/homepage/image?source=emby&type=' . $embyItem['nowPlayingImageType'] . '&img=' . $embyItem['nowPlayingThumb'] . '&height=' . $nowPlayingHeight . '&width=' . $nowPlayingWidth . '&key=' . $embyItem['nowPlayingKey'] . '$' . $this->randString();
 		$embyItem['originalImage'] = 'api/v2/homepage/image?source=emby&type=' . $embyItem['imageType'] . '&img=' . $embyItem['thumb'] . '&height=' . $height . '&width=' . $width . '&key=' . $embyItem['key'] . '$' . $this->randString();
 		$embyItem['openTab'] = $this->config['embyTabURL'] && $this->config['embyTabName'] ? true : false;
