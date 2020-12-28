@@ -2,21 +2,30 @@
 
 trait SSOFunctions
 {
-	
-	public function ssoCheck($username, $password, $token = null)
+	public function getSSOUserFor($app, $userobj)
+	{
+		$map = array(
+			'jellyfin' => 'username',
+			'ombi' => 'username',
+			'tautulli' => 'username'
+		);
+		return $userobj[$map[$app]];
+	}
+
+	public function ssoCheck($userobj, $password, $token = null)
 	{
 		if ($this->config['ssoPlex'] && $token) {
 			$this->coookie('set', 'mpt', $token, $this->config['rememberMeDays'], false);
 		}
 		if ($this->config['ssoOmbi']) {
 			$fallback = ($this->config['ombiFallbackUser'] !== '' && $this->config['ombiFallbackPassword'] !== '');
-			$ombiToken = $this->getOmbiToken($username, $password, $token, $fallback);
+			$ombiToken = $this->getOmbiToken($this->getSSOUserFor('ombi', $userobj), $password, $token, $fallback);
 			if ($ombiToken) {
 				$this->coookie('set', 'Auth', $ombiToken, $this->config['rememberMeDays'], false);
 			}
 		}
 		if ($this->config['ssoTautulli']) {
-			$tautulliToken = $this->getTautulliToken($username, $password, $token);
+			$tautulliToken = $this->getTautulliToken($this->getSSOUserFor('tautulli', $userobj), $password, $token);
 			if ($tautulliToken) {
 				foreach ($tautulliToken as $key => $value) {
 					$this->coookie('set', 'tautulli_token_' . $value['uuid'], $value['token'], $this->config['rememberMeDays'], true, $value['path']);
@@ -24,10 +33,9 @@ trait SSOFunctions
 			}
 		}
 		if ($this->config['ssoJellyfin']) {
-			$jellyfinToken = $this->getJellyfinToken($username, $password);
+			$jellyfinToken = $this->getJellyfinToken($this->getSSOUserFor('jellyfin', $userobj), $password);
 			if ($jellyfinToken) {
 				$this->coookie('set', 'jellyfin_credentials', $jellyfinToken, $this->config['rememberMeDays'], false);
-				$this->writeLog('success', 'ITTATOKEN: ' . $jellyfinToken);
 			}
 		}
 		return true;

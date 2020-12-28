@@ -2964,8 +2964,7 @@ class Organizr
 				if ($createToken) {
 					$this->writeLoginLog($username, 'success');
 					$this->writeLog('success', 'Login Function - A User has logged in', $username);
-					$ssoUser = ((empty($result['email'])) ? $result['username'] : (strpos($result['email'], 'placeholder') !== false)) ? $result['username'] : $result['email'];
-					$this->ssoCheck($ssoUser, $password, $token); //need to work on this
+					$this->ssoCheck($result, $password, $token); //need to work on this
 					return ($output) ? array('name' => $this->cookieName, 'token' => (string)$createToken) : true;
 				} else {
 					$this->setAPIResponse('error', 'Token creation error', 500);
