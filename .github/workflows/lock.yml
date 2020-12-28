@@ -1,0 +1,14 @@
+name: Lock closed stale issue
+
+on:
+  issues:
+    types: [closed]
+
+jobs:
+  lock:
+    if: github.event.label.name == 'closed-no-issue-activity'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: OSDKDev/lock-issues@v1.1
+        with:
+          repo-token: "${{ secrets.GITHUB_TOKEN }}"
