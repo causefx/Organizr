@@ -7,11 +7,12 @@ trait SSOFunctions
 		$map = array(
 			'jellyfin' => 'username',
 			'ombi' => 'username',
+			'overseerr' => 'username',
 			'tautulli' => 'username'
 		);
 		return $userobj[$map[$app]];
 	}
-
+	
 	public function ssoCheck($userobj, $password, $token = null)
 	{
 		if ($this->config['ssoPlex'] && $token) {
@@ -38,9 +39,15 @@ trait SSOFunctions
 				$this->coookie('set', 'jellyfin_credentials', $jellyfinToken, $this->config['rememberMeDays'], false);
 			}
 		}
+		if ($this->config['ssoOverseerr']) {
+			$overseerrToken = $this->getOverseerrToken($this->getSSOUserFor('overseerr', $userobj), $password, $token);
+			if ($overseerrToken) {
+				$this->coookie('set', 'connect.sid', $overseerrToken, $this->config['rememberMeDays'], false);
+			}
+		}
 		return true;
 	}
-
+	
 	public function getJellyfinToken($username, $password)
 	{
 		$token = null;
@@ -67,10 +74,9 @@ trait SSOFunctions
 		} catch (Requests_Exception $e) {
 			$this->writeLog('error', 'Jellyfin Token Function - Error: ' . $e->getMessage(), $username);
 		}
-		
-		return '{"Servers":[{"ManualAddress":"'. $url . '","Id":"' . $token['ServerId'] . '","UserId":"' . $token['User']['Id'] . '","AccessToken":"' . $token['AccessToken'] . '"}]}';
+		return '{"Servers":[{"ManualAddress":"' . $url . '","Id":"' . $token['ServerId'] . '","UserId":"' . $token['User']['Id'] . '","AccessToken":"' . $token['AccessToken'] . '"}]}';
 	}
-
+	
 	public function getOmbiToken($username, $password, $oAuthToken = null, $fallback = false)
 	{
 		$token = null;
@@ -148,6 +154,45 @@ trait SSOFunctions
 			}
 		}
 		return ($token) ? $token : false;
+	}
+	
+	public function getOverseerrToken($username, $password, $oAuthToken = null, $fallback = false)
+	{
+		$token = null;
+		try {
+			$url = $this->qualifyURL($this->config['overseerrURL']);
+			$headers = array(
+				"Content-Type" => "application/json"
+			);
+			$data = array(
+				//"username" => ($oAuthToken ? "" : $username), // not needed yet
+				//"password" => ($oAuthToken ? "" : $password), // not needed yet
+				"authToken" => $oAuthToken
+			);
+			$endpoint = '/api/v1/auth/login';
+			$options = ($this->localURL($url)) ? array('verify' => false) : array();
+			$response = Requests::post($url . $endpoint, $headers, json_encode($data), $options);
+			if ($response->success) {
+				$user = json_decode($response->body, true); // not really needed yet
+				$token = $response->cookies['connect.sid']->value;
+				$this->writeLog('success', 'Overseerr Token Function - Grabbed token', $user['username']);
+			} else {
+				if ($fallback) {
+					$this->writeLog('error', 'Overseerr Token Function - Overseerr did not return Token - Will retry using fallback credentials', $username);
+				} else {
+					$this->writeLog('error', 'Overseerr Token Function - Overseerr did not return Token', $username);
+				}
+			}
+		} catch (Requests_Exception $e) {
+			$this->writeLog('error', 'Overseerr Token Function - Error: ' . $e->getMessage(), $username);
+		}
+		if ($token) {
+			return urldecode($token);
+		} elseif ($fallback) {
+			return $this->getOverseerrToken($this->config['overseerrFallbackUser'], $this->decrypt($this->config['overseerrFallbackPassword']), null, false);
+		} else {
+			return false;
+		}
 	}
 	
 }

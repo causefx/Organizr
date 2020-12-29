@@ -2268,6 +2268,43 @@ class Organizr
 					'value' => $this->config['ssoTautulli']
 				)
 			),
+			'Overseerr' => array(
+				array(
+					'type' => 'input',
+					'name' => 'overseerrURL',
+					'label' => 'Overseerr URL',
+					'value' => $this->config['overseerrURL'],
+					'help' => 'Please make sure to use local IP address and port - You also may use local dns name too.',
+					'placeholder' => 'http(s)://hostname:port'
+				),
+				array(
+					'type' => 'password-alt',
+					'name' => 'overseerrToken',
+					'label' => 'Token',
+					'value' => $this->config['overseerrToken']
+				),
+				array(
+					'type' => 'input',
+					'name' => 'overseerrFallbackUser',
+					'label' => 'Overseerr Fallback User',
+					'value' => $this->config['overseerrFallbackUser'],
+					'help' => 'Organizr will request an Overseerr User Token based off of this user credentials',
+					'attr' => 'disabled'
+				),
+				array(
+					'type' => 'password-alt',
+					'name' => 'overseerrFallbackPassword',
+					'label' => 'Overseerr Fallback Password',
+					'value' => $this->config['overseerrFallbackPassword'],
+					'attr' => 'disabled'
+				),
+				array(
+					'type' => 'switch',
+					'name' => 'ssoOverseerr',
+					'label' => 'Enable',
+					'value' => $this->config['ssoOverseerr']
+				)
+			),
 			'Ombi' => array(
 				array(
 					'type' => 'input',
@@ -2995,6 +3032,8 @@ class Organizr
 		$this->coookie('delete', 'mpt');
 		$this->coookie('delete', 'Auth');
 		$this->coookie('delete', 'oAuth');
+		$this->coookie('delete', 'jellyfin_credentials');
+		$this->coookie('delete', 'connect.sid');
 		$this->clearTautulliTokens();
 		$this->revokeTokenCurrentUser($this->user['token']);
 		$this->user = null;
