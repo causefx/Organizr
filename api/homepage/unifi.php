@@ -7,7 +7,7 @@ trait UnifiHomepageItem
 		return array(
 			'name' => 'UniFi',
 			'enabled' => true,
-			'image' => 'plugins/images/tabs/ubnt.png',
+			'image' => 'plugins/images/tabs/unifi.png',
 			'category' => 'Monitor',
 			'settings' => array(
 				'Enable' => array(
