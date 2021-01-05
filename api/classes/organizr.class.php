@@ -145,6 +145,7 @@ class Organizr
 				$this->db = new Connection([
 					'driver' => 'sqlite3',
 					'database' => $this->config['dbLocation'] . $this->config['dbName'],
+					//'onConnect' => array('PRAGMA journal_mode=WAL'),
 				]);
 			} catch (Dibi\Exception $e) {
 				$this->db = null;
@@ -2824,11 +2825,11 @@ class Organizr
 		->identifiedBy('4f1g23a12aa', true)// Configures the id (jti claim), replicating as a header item
 		->issuedAt(time())// Configures the time that the token was issue (iat claim)
 		->expiresAt(time() + (86400 * $days))// Configures the expiration time of the token (exp claim)
-		->withClaim('username', $result['username'])// Configures a new claim, called "username"
-		->withClaim('group', $result['group'])// Configures a new claim, called "group"
-		->withClaim('groupID', $result['group_id'])// Configures a new claim, called "groupID"
-		->withClaim('email', $result['email'])// Configures a new claim, called "email"
-		->withClaim('image', $result['image'])// Configures a new claim, called "image"
+		//->withClaim('username', $result['username'])// Configures a new claim, called "username"
+		//->withClaim('group', $result['group'])// Configures a new claim, called "group"
+		//->withClaim('groupID', $result['group_id'])// Configures a new claim, called "groupID"
+		//->withClaim('email', $result['email'])// Configures a new claim, called "email"
+		//->withClaim('image', $result['image'])// Configures a new claim, called "image"
 		->withClaim('userID', $result['id'])// Configures a new claim, called "image"
 		->sign($signer, $this->config['organizrHash'])// creates a signature using "testing" as key
 		->getToken(); // Retrieves the generated token
@@ -3566,7 +3567,7 @@ class Organizr
 		file_put_contents($this->organizrLoginLog, $writeFailLog);
 	}
 	
-	public function writeLog($type = 'error', $message, $username = null)
+	public function writeLog($type = 'error', $message = null, $username = null)
 	{
 		$this->timeExecution = $this->timeExecution($this->timeExecution);
 		$message = $message . ' [Execution Time: ' . $this->formatSeconds($this->timeExecution) . ']';

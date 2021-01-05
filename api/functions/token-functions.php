@@ -25,15 +25,15 @@ trait TokenFunctions
 				$data->setAudience('Organizr');
 				if ($jwttoken->validate($data)) {
 					$result['valid'] = true;
-					$result['username'] = $jwttoken->getClaim('username');
-					$result['group'] = $jwttoken->getClaim('group');
-					$result['groupID'] = $jwttoken->getClaim('groupID');
+					//$result['username'] = $jwttoken->getClaim('username');
+					//$result['group'] = $jwttoken->getClaim('group');
+					//$result['groupID'] = $jwttoken->getClaim('groupID');
 					$result['userID'] = $jwttoken->getClaim('userID');
-					$result['email'] = $jwttoken->getClaim('email');
-					$result['image'] = $jwttoken->getClaim('image');
+					//$result['email'] = $jwttoken->getClaim('email');
+					//$result['image'] = $jwttoken->getClaim('image');
 					$result['tokenExpire'] = $jwttoken->getClaim('exp');
 					$result['tokenDate'] = $jwttoken->getClaim('iat');
-					$result['token'] = $jwttoken->getClaim('exp');
+					//$result['token'] = $jwttoken->getClaim('exp');
 				}
 			}
 			if ($result['valid'] == true) {
