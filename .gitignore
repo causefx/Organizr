@@ -167,4 +167,5 @@ api/pages/custom/*.php
 /plugins/images/cache/tautulli-artist.svg
 /plugins/images/cache/tautulli-movie.svg
 /plugins/images/cache/tautulli-windows.svg
-plugins/images/cache/tautulli-samsung.svg
+/plugins/images/cache/tautulli-samsung.svg
+/plugins/images/cache/tautulli-chrome.svg
