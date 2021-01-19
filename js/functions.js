@@ -6245,7 +6245,7 @@ function buildHealthChecks(array){
     if(array === false){ return ''; }
     var checks = (typeof array.content.checks !== 'undefined') ? array.content.checks.length : false;
     return (checks) ? `
-	<div id="allHealthChecks">
+	<div id="allHealthChecks" class="m-b-30">
 		<div class="el-element-overlay row">
 		    <div class="col-md-12">
 		        <h4 class="pull-left homepage-element-title"><span lang="en">Health Checks</span> : </h4><h4 class="pull-left">&nbsp;<span class="label label-info m-l-20 checkbox-circle good-health-checks mouse" onclick="homepageHealthChecks()">`+checks+`</span></h4>
@@ -8281,7 +8281,7 @@ function buildNetdata(array){
     `;
 
     html += `
-    <div class="row">
+    <div class="row m-b-30">
         
             <div class="d-block text-center all-netdata">
     `;
