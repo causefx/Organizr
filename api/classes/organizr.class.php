@@ -5675,9 +5675,9 @@ class Organizr
 			$response = Requests::post($url, $headers, $data, array());
 			$json = json_decode($response->body, true);
 			$errors = !empty($json['errors']);
-			$success = !empty($json['user']);
+			$success = empty($json['errors']);
 			//Use This for later
-			$errorMessage = "";
+			$errorMessage = '';
 			if ($errors) {
 				foreach ($json['errors'] as $error) {
 					if (isset($error['message']) && isset($error['field'])) {
