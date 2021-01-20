@@ -2083,6 +2083,21 @@ class Organizr
 					'help' => 'Enables the local address forward if on local address and accessed from WAN Domain',
 					'value' => $this->config['enableLocalAddressForward'],
 				),
+				array(
+					'type' => 'switch',
+					'name' => 'disableRecoverPassword',
+					'label' => 'Disable Recover Password',
+					'help' => 'Disables recover password area',
+					'value' => $this->config['disableRecoverPassword'],
+				),
+				array(
+					'type' => 'input',
+					'name' => 'customForgotPasswordText',
+					'label' => 'Custom Recover Password Text',
+					'value' => $this->config['customForgotPasswordText'],
+					'placeholder' => '',
+					'help' => 'Text or HTML for recovery password section'
+				),
 			),
 			'Auth Proxy' => array(
 				array(

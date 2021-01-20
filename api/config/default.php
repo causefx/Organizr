@@ -453,5 +453,7 @@ return array(
 	'organizrSupportMenuLink' => true,
 	'organizrDocsMenuLink' => true,
 	'organizrSignoutMenuLink' => true,
-	'breezometerToken' => 'd95ab607392d4fa5bf64bb26a5cb2a06'
+	'breezometerToken' => 'd95ab607392d4fa5bf64bb26a5cb2a06',
+	'customForgotPasswordText' => '',
+	'disableRecoverPassword' => false
 );
