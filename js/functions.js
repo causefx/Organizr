@@ -3873,7 +3873,7 @@ function organizrAPI2(type,path,data=null,asyncValue=true){
 	switch(path){
 		case 'api/v2/windows/update':
 		case 'api/v2/docker/update':
-			timeout = 120000;
+			timeout = 240000;
 			break;
 		default:
 			timeout = 60000;
