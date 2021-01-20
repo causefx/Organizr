@@ -7707,7 +7707,7 @@ function buildSpeedtest(array){
     var maximum = array.data.maximum;
     var minimum = array.data.minimum;
     var options = array.options;
-  
+
     html += `
     <div id="allSpeedtest">
     `;
@@ -8138,7 +8138,7 @@ function buildNetdataItem(array){
             html += buildGaugeChart(e,i,size,easySize,display);
         }
     });
-    
+
     return html;
 }
 function buildNetdata(array){
@@ -8290,7 +8290,7 @@ function buildNetdata(array){
             </div>
         
     </div>`;
-   
+
     return (array) ? html : '';
 }
 function homepageNetdata(timeout){
