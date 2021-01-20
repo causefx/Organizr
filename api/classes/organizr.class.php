@@ -345,12 +345,12 @@ class Organizr
 		if ($this->config['gaTrackingID'] !== '') {
 			return '
 				<script async src="https://www.googletagmanager.com/gtag/js?id=' . $this->config['gaTrackingID'] . '"></script>
-    			<script>
-				    window.dataLayer = window.dataLayer || [];
-				    function gtag(){dataLayer.push(arguments);}
-				    gtag("js", new Date());
-				    gtag("config","' . $this->config['gaTrackingID'] . '");
-    			</script>
+				<script>
+					window.dataLayer = window.dataLayer || [];
+					function gtag(){dataLayer.push(arguments);}
+					gtag("js", new Date());
+					gtag("config","' . $this->config['gaTrackingID'] . '");
+				</script>
 			';
 		}
 		return null;
@@ -1350,19 +1350,19 @@ class Organizr
 					'label' => 'Custom CSS [Can replace colors from above]',
 					'html' => '
 					<div class="row">
-					    <div class="col-lg-12">
-					        <div class="panel panel-info">
-					            <div class="panel-heading">
-					                <span lang="en">Notice</span>
-					            </div>
-					            <div class="panel-wrapper collapse in" aria-expanded="true">
-					                <div class="panel-body">
-					                    <span lang="en">The value of #987654 is just a placeholder, you can change to any value you like.</span>
-					                    <span lang="en">To revert back to default, save with no value defined in the relevant field.</span>
-					                </div>
-					            </div>
-					        </div>
-					    </div>
+						<div class="col-lg-12">
+							<div class="panel panel-info">
+								<div class="panel-heading">
+									<span lang="en">Notice</span>
+								</div>
+								<div class="panel-wrapper collapse in" aria-expanded="true">
+									<div class="panel-body">
+										<span lang="en">The value of #987654 is just a placeholder, you can change to any value you like.</span>
+										<span lang="en">To revert back to default, save with no value defined in the relevant field.</span>
+									</div>
+								</div>
+							</div>
+						</div>
 					</div>
 					',
 				),
@@ -2186,18 +2186,18 @@ class Organizr
 					'override' => 12,
 					'html' => '
 				<div class="row">
-						    <div class="col-lg-12">
-						        <div class="panel panel-info">
-						            <div class="panel-heading">
-						                <span lang="en">Notice</span>
-						            </div>
-						            <div class="panel-wrapper collapse in" aria-expanded="true">
-						                <div class="panel-body">
-						                    <span lang="en">This is not the same as database authentication - i.e. Plex Authentication | Emby Authentication | FTP Authentication<br/>Click Main on the sub-menu above.</span>
-						                </div>
-						            </div>
-						        </div>
-						    </div>
+							<div class="col-lg-12">
+								<div class="panel panel-info">
+									<div class="panel-heading">
+										<span lang="en">Notice</span>
+									</div>
+									<div class="panel-wrapper collapse in" aria-expanded="true">
+										<div class="panel-body">
+											<span lang="en">This is not the same as database authentication - i.e. Plex Authentication | Emby Authentication | FTP Authentication<br/>Click Main on the sub-menu above.</span>
+										</div>
+									</div>
+								</div>
+							</div>
 						</div>
 				'
 				)
@@ -2553,92 +2553,92 @@ class Organizr
 			array(
 				'function' => 'query',
 				'query' => 'CREATE TABLE `chatroom` (
-			        `id`	INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE,
-			        `username`	TEXT,
-			        `gravatar`	TEXT,
-			        `uid`	TEXT,
-			        `date` DATE,
-			        `ip` TEXT,
-			        `message` TEXT
-			    );'
+					`id`	INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE,
+					`username`	TEXT,
+					`gravatar`	TEXT,
+					`uid`	TEXT,
+					`date` DATE,
+					`ip` TEXT,
+					`message` TEXT
+				);'
 			),
 			array(
 				'function' => 'query',
 				'query' => 'CREATE TABLE `tokens` (
-			        `id`	INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE,
-			        `token`	TEXT UNIQUE,
-			        `user_id`	INTEGER,
-			        `browser`	TEXT,
-			        `ip`	TEXT,
-			        `created` DATE,
-			        `expires` DATE
-			    );'
+					`id`	INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE,
+					`token`	TEXT UNIQUE,
+					`user_id`	INTEGER,
+					`browser`	TEXT,
+					`ip`	TEXT,
+					`created` DATE,
+					`expires` DATE
+				);'
 			),
 			array(
 				'function' => 'query',
 				'query' => 'CREATE TABLE `groups` (
-			        `id`	INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE,
-			        `group`	TEXT UNIQUE,
-			        `group_id`	INTEGER,
-			        `image`	TEXT,
-			        `default` INTEGER
-			    );'
+					`id`	INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE,
+					`group`	TEXT UNIQUE,
+					`group_id`	INTEGER,
+					`image`	TEXT,
+					`default` INTEGER
+				);'
 			),
 			array(
 				'function' => 'query',
 				'query' => 'CREATE TABLE `categories` (
-			        `id`	INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE,
-			        `order`	INTEGER,
-			        `category`	TEXT UNIQUE,
-			        `category_id`	INTEGER,
-			        `image`	TEXT,
-			        `default` INTEGER
-			    );'
+					`id`	INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE,
+					`order`	INTEGER,
+					`category`	TEXT UNIQUE,
+					`category_id`	INTEGER,
+					`image`	TEXT,
+					`default` INTEGER
+				);'
 			),
 			array(
 				'function' => 'query',
 				'query' => 'CREATE TABLE `tabs` (
-			        `id`	INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE,
-			        `order`	INTEGER,
-			        `category_id`	INTEGER,
-			        `name`	TEXT,
-			        `url`	TEXT,
-			        `url_local`	TEXT,
-			        `default`	INTEGER,
-			        `enabled`	INTEGER,
-			        `group_id`	INTEGER,
-			        `image`	TEXT,
-			        `type`	INTEGER,
-			        `splash`	INTEGER,
-			        `ping`		INTEGER,
-			        `ping_url`	TEXT,
-			        `timeout`	INTEGER,
-			        `timeout_ms`	INTEGER,
-			        `preload`	INTEGER
-			    );'
+					`id`	INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE,
+					`order`	INTEGER,
+					`category_id`	INTEGER,
+					`name`	TEXT,
+					`url`	TEXT,
+					`url_local`	TEXT,
+					`default`	INTEGER,
+					`enabled`	INTEGER,
+					`group_id`	INTEGER,
+					`image`	TEXT,
+					`type`	INTEGER,
+					`splash`	INTEGER,
+					`ping`		INTEGER,
+					`ping_url`	TEXT,
+					`timeout`	INTEGER,
+					`timeout_ms`	INTEGER,
+					`preload`	INTEGER
+				);'
 			),
 			array(
 				'function' => 'query',
 				'query' => 'CREATE TABLE `options` (
-			        `id`	INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE,
-			        `name`	TEXT UNIQUE,
-			        `value`	TEXT
-			    );'
+					`id`	INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE,
+					`name`	TEXT UNIQUE,
+					`value`	TEXT
+				);'
 			),
 			array(
 				'function' => 'query',
 				'query' => 'CREATE TABLE `invites` (
-			        `id`	INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE,
-			        `code`	TEXT UNIQUE,
-			        `date`	TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-			        `email`	TEXT,
-			        `username`	TEXT,
-			        `dateused`	TIMESTAMP,
-			        `usedby`	TEXT,
-			        `ip`	TEXT,
-			        `valid`	TEXT,
-			        `type` TEXT
-			    );'
+					`id`	INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE,
+					`code`	TEXT UNIQUE,
+					`date`	TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+					`email`	TEXT,
+					`username`	TEXT,
+					`dateused`	TIMESTAMP,
+					`usedby`	TEXT,
+					`ip`	TEXT,
+					`valid`	TEXT,
+					`type` TEXT
+				);'
 			),
 		];
 		return $this->processQueries($response, $migration);
