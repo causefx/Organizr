@@ -6292,7 +6292,7 @@ function buildUnifi(array){
 	<div id="allUnifi">
 		<div class="row">
 		    <div class="col-md-12">
-		        <h4 class="pull-left homepage-element-title"><span lang="en">Unifi</span> : </h4><h4 class="pull-left">&nbsp;</h4>
+		        <h4 class="pull-left homepage-element-title"><span lang="en">UniFi</span> : </h4><h4 class="pull-left">&nbsp;</h4>
 		        <hr class="hidden-xs">
 		    </div>
 			<div class="clearfix"></div>
