@@ -4792,7 +4792,7 @@ class Organizr
 	public function getThemesGithub()
 	{
 		$url = 'https://raw.githubusercontent.com/causefx/Organizr/v2-themes/themes.json';
-		$options = (localURL($url)) ? array('verify' => false) : array();
+		$options = ($this->localURL($url)) ? array('verify' => false) : array();
 		$response = Requests::get($url, array(), $options);
 		if ($response->success) {
 			return json_decode($response->body, true);
@@ -4803,7 +4803,7 @@ class Organizr
 	public function getPluginsGithub()
 	{
 		$url = 'https://raw.githubusercontent.com/causefx/Organizr/v2-plugins/plugins.json';
-		$options = (localURL($url)) ? array('verify' => false) : array();
+		$options = ($this->localURL($url)) ? array('verify' => false) : array();
 		$response = Requests::get($url, array(), $options);
 		if ($response->success) {
 			return json_decode($response->body, true);
@@ -4814,7 +4814,7 @@ class Organizr
 	public function getOpenCollectiveBackers()
 	{
 		$url = 'https://opencollective.com/organizr/members/users.json?limit=100&offset=0';
-		$options = (localURL($url)) ? array('verify' => false) : array();
+		$options = ($this->localURL($url)) ? array('verify' => false) : array();
 		$response = Requests::get($url, array(), $options);
 		if ($response->success) {
 			$api = json_decode($response->body, true);
@@ -4823,6 +4823,29 @@ class Organizr
 		}
 		$this->setAPIResponse('error', 'Error connecting to Open Collective', 409);
 		return false;
+	}
+	
+	public function getOrganizrSmtpFromAPI()
+	{
+		$url = 'https://api.organizr.app/?cmd=smtp';
+		$options = ($this->localURL($url)) ? array('verify' => false) : array();
+		$response = Requests::get($url, array(), $options);
+		if ($response->success) {
+			return json_decode($response->body, true);
+		}
+		return false;
+	}
+	
+	public function saveOrganizrSmtpFromAPI()
+	{
+		$api = $this->getOrganizrSmtpFromAPI();
+		if ($api) {
+			$this->updateConfigItems($api['response']['data']);
+			$this->setAPIResponse(null, 'SMTP activated with Organizr SMTP account');
+			return true;
+		} else {
+			return false;
+		}
 	}
 	
 	public function guestHash($start, $end)
