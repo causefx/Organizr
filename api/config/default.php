@@ -456,5 +456,6 @@ return array(
 	'organizrFeatureRequestLink' => true,
 	'breezometerToken' => 'd95ab607392d4fa5bf64bb26a5cb2a06',
 	'customForgotPasswordText' => '',
-	'disableRecoverPassword' => false
+	'disableRecoverPassword' => false,
+	'expandCategoriesByDefault' => false
 );

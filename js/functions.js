@@ -2721,13 +2721,16 @@ function menuExtras(active){
 }
 function categoryProcess(arrayItems){
 	var menuList = '';
+	let categoryIn = activeInfo.settings.misc.expandCategoriesByDefault ? 'in' : '';
+	let categoryActive = activeInfo.settings.misc.expandCategoriesByDefault ? 'active' : '';
+	let categoryExpanded = activeInfo.settings.misc.expandCategoriesByDefault ? 'true' : 'false';
 	if (Array.isArray(arrayItems['data']['categories']) && Array.isArray(arrayItems['data']['tabs'])) {
 		$.each(arrayItems['data']['categories'], function(i,v) {
 			if(v.count !== 0 && v.category_id !== 0){
 				menuList += `
-					<li class="allGroupsList" data-group-name="`+cleanClass(v.category)+`">
+					<li class="allGroupsList `+categoryActive+`" data-group-name="`+cleanClass(v.category)+`">
 						<a class="waves-effect" href="javascript:void(0)">`+iconPrefix(v.image)+`<span class="hide-menu">`+v.category+` <span class="fa arrow"></span> <span class="label label-rouded label-inverse pull-right">`+v.count+`</span></span><div class="menu-category-ping" data-good="0" data-bad="0"></div></a>
-						<ul class="nav nav-second-level category-`+v.category_id+` collapse"></ul>
+						<ul class="nav nav-second-level category-`+v.category_id+` collapse `+categoryIn+`" aria-expanded="`+categoryExpanded+`"></ul>
 					</li>
 				`;
 			}

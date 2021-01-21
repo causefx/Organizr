@@ -1326,6 +1326,12 @@ class Organizr
 					'value' => $this->config['organizrSignoutMenuLink']
 				),
 				array(
+					'type' => 'switch',
+					'name' => 'expandCategoriesByDefault',
+					'label' => 'Expand All Categories',
+					'value' => $this->config['expandCategoriesByDefault']
+				),
+				array(
 					'type' => 'select',
 					'name' => 'unsortedTabs',
 					'label' => 'Unsorted Tab Placement',
@@ -3482,6 +3488,7 @@ class Organizr
 				'debugArea' => $this->qualifyRequest($this->config['debugAreaAuth']),
 				'debugErrors' => $this->config['debugErrors'],
 				'sandbox' => $this->config['sandbox'],
+				'expandCategoriesByDefault' => $this->config['expandCategoriesByDefault']
 			),
 			'menuLink' => array(
 				'githubMenuLink' => $this->config['githubMenuLink'],
