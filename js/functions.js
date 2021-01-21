@@ -943,7 +943,10 @@ function closeCurrentTab(event){
 	}
 }
 function tabActions(event,name, type){
-	if(event.ctrlKey && !event.shiftKey && !event.altKey){
+	if(event.which == 3){
+		return false;
+	}
+	if((event.ctrlKey && !event.shiftKey && !event.altKey)  || event.which == 2){
 		popTab(cleanClass(name), type);
 	}else if(event.altKey && !event.shiftKey && !event.ctrlKey){
         closeTab(name);
@@ -2718,7 +2721,7 @@ function buildInternalContainer(name,url,type, split = null){
 function buildMenuList(name,url,type,icon,ping=null,category_id = null,group_id = null){
     var ping = (ping !== null) ? `<small class="menu-`+cleanClass(ping)+`-ping-ms hidden-xs label label-rouded label-inverse pull-right pingTime hidden">
 </small><div class="menu-`+cleanClass(ping)+`-ping" data-tab-name="`+name+`" data-previous-state=""></div>` : '';
-	return `<li class="allTabsList" id="menu-`+cleanClass(name)+`" data-tab-name="`+cleanClass(name)+`" type="`+type+`" data-group-id="`+group_id+`" data-category-id="`+category_id+`" data-url="`+url+`"><a class="waves-effect"  onclick="tabActions(event,'`+cleanClass(name)+`',`+type+`);">`+iconPrefix(icon)+`<span class="hide-menu elip sidebar-tabName">`+name+`</span>`+ping+`</a></li>`;
+	return `<li class="allTabsList" id="menu-`+cleanClass(name)+`" data-tab-name="`+cleanClass(name)+`" type="`+type+`" data-group-id="`+group_id+`" data-category-id="`+category_id+`" data-url="`+url+`"><a class="waves-effect"  onclick="tabActions(event,'`+cleanClass(name)+`',`+type+`);" onauxclick="tabActions(event,'`+cleanClass(name)+`',`+type+`);">`+iconPrefix(icon)+`<span class="hide-menu elip sidebar-tabName">`+name+`</span>`+ping+`</a></li>`;
 }
 function tabProcess(arrayItems) {
 	var iFrameList = '';
