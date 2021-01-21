@@ -95,7 +95,7 @@ trait JDownloaderHomepageItem
 		}
 		$url = $this->qualifyURL($this->config['jdownloaderURL']);
 		try {
-			$options = ($this->localURL($url)) ? array('verify' => false, 'timeout' => 30) : array('timeout' => 30);
+			$options = $this->requestOptions($this->config['jdownloaderURL'], false, $this->config['homepageDownloadRefresh']);
 			$response = Requests::get($url, array(), $options);
 			if ($response->success) {
 				$this->setAPIResponse('success', 'API Connection succeeded', 200);
@@ -161,7 +161,7 @@ trait JDownloaderHomepageItem
 		}
 		$url = $this->qualifyURL($this->config['jdownloaderURL']);
 		try {
-			$options = ($this->localURL($url)) ? array('verify' => false, 'timeout' => 30) : array('timeout' => 30);
+			$options = $this->requestOptions($this->config['jdownloaderURL'], false, $this->config['homepageDownloadRefresh']);
 			$response = Requests::get($url, array(), $options);
 			if ($response->success) {
 				$temp = json_decode($response->body, true);
