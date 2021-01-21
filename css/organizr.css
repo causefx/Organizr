@@ -1192,6 +1192,9 @@ ul.nav.customtab.nav-tabs.nav-low-margin {
 #menu-Organizr-Docs i {
     color: #707cd2;
 }
+#menu-Feature-Request i {
+    color: #2cabe3;
+}
 .ping {
     position: relative;
     margin-top: 0;

@@ -1303,6 +1303,12 @@ class Organizr
 				),
 				array(
 					'type' => 'switch',
+					'name' => 'organizrFeatureRequestLink',
+					'label' => 'Show Organizr Feature Request Link',
+					'value' => $this->config['organizrFeatureRequestLink']
+				),
+				array(
+					'type' => 'switch',
 					'name' => 'organizrSupportMenuLink',
 					'label' => 'Show Organizr Support Link',
 					'value' => $this->config['organizrSupportMenuLink']
@@ -3481,7 +3487,8 @@ class Organizr
 				'githubMenuLink' => $this->config['githubMenuLink'],
 				'organizrSupportMenuLink' => $this->config['organizrSupportMenuLink'],
 				'organizrDocsMenuLink' => $this->config['organizrDocsMenuLink'],
-				'organizrSignoutMenuLink' => $this->config['organizrSignoutMenuLink']
+				'organizrSignoutMenuLink' => $this->config['organizrSignoutMenuLink'],
+				'organizrFeatureRequestLink' => $this->config['organizrFeatureRequestLink']
 			)
 		);
 	}

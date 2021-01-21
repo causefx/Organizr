@@ -2665,14 +2665,48 @@ function userMenu(user){
 	console.info("%c "+window.lang.translate('Welcome')+" %c ".concat(user.data.user.username, " "), "color: white; background: #AD80FD; font-weight: 700;", "color: #AD80FD; background: white; font-weight: 700;");
 }
 function menuExtras(active){
-    var supportFrame = buildFrameContainer('Organizr Support','https://organizr.app/support',1);
-    var docsFrame = buildFrameContainer('Organizr Docs','https://docs.organizr.app',1);
-    var adminMenu = '<li class="devider"></li>';
-    adminMenu += (activeInfo.user.groupID <= 1 && activeInfo.settings.menuLink.githubMenuLink) ? buildMenuList('GitHub Repo','https://github.com/causefx/organizr',2,'fontawesome::github') : '';
-    adminMenu += (activeInfo.user.groupID <= 1 && activeInfo.settings.menuLink.organizrSupportMenuLink) ? buildMenuList('Organizr Support','https://organizr.app/support',1,'fontawesome::life-ring') : '';
-    adminMenu += (activeInfo.user.groupID <= 1 && activeInfo.settings.menuLink.organizrDocsMenuLink) ? buildMenuList('Organizr Docs','https://docs.organizr.app',1,'simpleline::docs') : '';
-    $(supportFrame).appendTo($('.iFrame-listing'));
-    $(docsFrame).appendTo($('.iFrame-listing'));
+	let adminMenu = '<li class="devider"></li>';
+	let extraOrganizrLinks = [
+		{
+			'type':2,
+			'group_id':1,
+			'name':'Github Repo',
+			'url':'https://github.com/causefx/organizr',
+			'icon':'fontawesome::github',
+			'active':activeInfo.settings.menuLink.githubMenuLink
+		},
+		{
+			'type':1,
+			'group_id':1,
+			'name':'Organizr Support',
+			'url':'https://organizr.app/support',
+			'icon':'fontawesome::life-ring',
+			'active':activeInfo.settings.menuLink.organizrSupportMenuLink
+		},
+		{
+			'type':2,
+			'group_id':1,
+			'name':'Organizr Docs',
+			'url':'https://docs.organizr.app',
+			'icon':'simpleline::docs',
+			'active':activeInfo.settings.menuLink.organizrDocsMenuLink
+		},
+		{
+			'type':1,
+			'group_id':1,
+			'name':'Feature Request',
+			'url':'https://vote.organizr.app',
+			'icon':'simpleline::arrow-up-circle',
+			'active':activeInfo.settings.menuLink.organizrFeatureRequestLink
+		}
+	];
+	$.each(extraOrganizrLinks, function(i,v) {
+		if(v.type == 1){
+			let frame = buildFrameContainer(v.name,v.url,v.type);
+			$(frame).appendTo($('.iFrame-listing'));
+		}
+		adminMenu += (activeInfo.user.groupID <= v.group_id && v.active) ? buildMenuList(v.name,v.url,v.type,v.icon) : '';
+	});
 	if(active === true){
 		return (activeInfo.settings.menuLink.organizrSignoutMenuLink) ? `
 			<li class="devider"></li>
