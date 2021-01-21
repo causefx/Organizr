@@ -605,4 +605,18 @@ trait OrganizrFunctions
 	{
 		return strtr($link, $variables);
 	}
+	
+	public function requestOptions($url, $override = false, $timeout = null)
+	{
+		$options = [];
+		if (is_numeric($timeout)) {
+			$timeout = $timeout / 1000;
+			array_push($options, array('timeout' => $timeout));
+		}
+		if ($this->localURL($url, $override)) {
+			array_push($options, array('verify' => false));
+			
+		}
+		return $options;
+	}
 }
