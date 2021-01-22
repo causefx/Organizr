@@ -924,7 +924,8 @@ $(document).on("click", ".addNewTab", function () {
 	    organizrAPI2('POST','api/v2/tabs',tabInfo,true).success(function(data) {
 		    try {
 			    var response = data.response;
-			    console.log(response);
+			    $('.tabIconImageList').val(null).trigger('change');
+			    $('.tabIconIconList').val(null).trigger('change');
 		    }catch(e) {
 			    organizrCatchError(e,data);
 		    }
@@ -1748,7 +1749,7 @@ $(document).on('click', ".help-modal", function(){
             break;
         default:
             return null;
-        
+
     }
     $('#help-modal-title').html(title);
     $('#help-modal-body').html(body);
@@ -1861,4 +1862,4 @@ $(document).on('click', '#homepage-Plex-form li a[aria-controls="Misc Options"]'
         $('#homepageCustomStreamNamesText').val(jsonEditor.getValue());
         $('#customize-appearance-form-save').removeClass('hidden');
     });
-}); 
+});

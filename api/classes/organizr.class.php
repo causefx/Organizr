@@ -58,7 +58,7 @@ class Organizr
 	
 	// ===================================
 	// Organizr Version
-	public $version = '2.1.120';
+	public $version = '2.1.165';
 	// ===================================
 	// Quick php Version check
 	public $minimumPHP = '7.2';
@@ -145,6 +145,7 @@ class Organizr
 				$this->db = new Connection([
 					'driver' => 'sqlite3',
 					'database' => $this->config['dbLocation'] . $this->config['dbName'],
+					//'onConnect' => array('PRAGMA journal_mode=WAL'),
 				]);
 			} catch (Dibi\Exception $e) {
 				$this->db = null;
@@ -216,7 +217,8 @@ class Organizr
 			}
 			if ($group !== null) {
 				if ((isset($_SERVER['HTTP_X_FORWARDED_SERVER']) && $_SERVER['HTTP_X_FORWARDED_SERVER'] == 'traefik') || $this->config['traefikAuthEnable']) {
-					$redirect = 'Location: ' . $this->getServerPath();
+					$return = (isset($_SERVER['HTTP_X_FORWARDED_HOST']) && isset($_SERVER['HTTP_X_FORWARDED_URI']) && isset($_SERVER['HTTP_X_FORWARDED_PROTO'])) ? '?return=' . $_SERVER['HTTP_X_FORWARDED_PROTO'] . '://' . $_SERVER['HTTP_X_FORWARDED_HOST'] . $_SERVER['HTTP_X_FORWARDED_URI'] : '';
+					$redirect = 'Location: ' . $this->getServerPath() . $return;
 				}
 				if ($this->qualifyRequest($group) && $unlocked) {
 					header("X-Organizr-User: $currentUser");
@@ -343,12 +345,12 @@ class Organizr
 		if ($this->config['gaTrackingID'] !== '') {
 			return '
 				<script async src="https://www.googletagmanager.com/gtag/js?id=' . $this->config['gaTrackingID'] . '"></script>
-    			<script>
-				    window.dataLayer = window.dataLayer || [];
-				    function gtag(){dataLayer.push(arguments);}
-				    gtag("js", new Date());
-				    gtag("config","' . $this->config['gaTrackingID'] . '");
-    			</script>
+				<script>
+					window.dataLayer = window.dataLayer || [];
+					function gtag(){dataLayer.push(arguments);}
+					gtag("js", new Date());
+					gtag("config","' . $this->config['gaTrackingID'] . '");
+				</script>
 			';
 		}
 		return null;
@@ -1301,6 +1303,12 @@ class Organizr
 				),
 				array(
 					'type' => 'switch',
+					'name' => 'organizrFeatureRequestLink',
+					'label' => 'Show Organizr Feature Request Link',
+					'value' => $this->config['organizrFeatureRequestLink']
+				),
+				array(
+					'type' => 'switch',
 					'name' => 'organizrSupportMenuLink',
 					'label' => 'Show Organizr Support Link',
 					'value' => $this->config['organizrSupportMenuLink']
@@ -1316,6 +1324,12 @@ class Organizr
 					'name' => 'organizrSignoutMenuLink',
 					'label' => 'Show Organizr Sign out & in Button on Sidebar',
 					'value' => $this->config['organizrSignoutMenuLink']
+				),
+				array(
+					'type' => 'switch',
+					'name' => 'expandCategoriesByDefault',
+					'label' => 'Expand All Categories',
+					'value' => $this->config['expandCategoriesByDefault']
 				),
 				array(
 					'type' => 'select',
@@ -1348,19 +1362,19 @@ class Organizr
 					'label' => 'Custom CSS [Can replace colors from above]',
 					'html' => '
 					<div class="row">
-					    <div class="col-lg-12">
-					        <div class="panel panel-info">
-					            <div class="panel-heading">
-					                <span lang="en">Notice</span>
-					            </div>
-					            <div class="panel-wrapper collapse in" aria-expanded="true">
-					                <div class="panel-body">
-					                    <span lang="en">The value of #987654 is just a placeholder, you can change to any value you like.</span>
-					                    <span lang="en">To revert back to default, save with no value defined in the relevant field.</span>
-					                </div>
-					            </div>
-					        </div>
-					    </div>
+						<div class="col-lg-12">
+							<div class="panel panel-info">
+								<div class="panel-heading">
+									<span lang="en">Notice</span>
+								</div>
+								<div class="panel-wrapper collapse in" aria-expanded="true">
+									<div class="panel-body">
+										<span lang="en">The value of #987654 is just a placeholder, you can change to any value you like.</span>
+										<span lang="en">To revert back to default, save with no value defined in the relevant field.</span>
+									</div>
+								</div>
+							</div>
+						</div>
 					</div>
 					',
 				),
@@ -2081,6 +2095,21 @@ class Organizr
 					'help' => 'Enables the local address forward if on local address and accessed from WAN Domain',
 					'value' => $this->config['enableLocalAddressForward'],
 				),
+				array(
+					'type' => 'switch',
+					'name' => 'disableRecoverPassword',
+					'label' => 'Disable Recover Password',
+					'help' => 'Disables recover password area',
+					'value' => $this->config['disableRecoverPassword'],
+				),
+				array(
+					'type' => 'input',
+					'name' => 'customForgotPasswordText',
+					'label' => 'Custom Recover Password Text',
+					'value' => $this->config['customForgotPasswordText'],
+					'placeholder' => '',
+					'help' => 'Text or HTML for recovery password section'
+				),
 			),
 			'Auth Proxy' => array(
 				array(
@@ -2184,18 +2213,18 @@ class Organizr
 					'override' => 12,
 					'html' => '
 				<div class="row">
-						    <div class="col-lg-12">
-						        <div class="panel panel-info">
-						            <div class="panel-heading">
-						                <span lang="en">Notice</span>
-						            </div>
-						            <div class="panel-wrapper collapse in" aria-expanded="true">
-						                <div class="panel-body">
-						                    <span lang="en">This is not the same as database authentication - i.e. Plex Authentication | Emby Authentication | FTP Authentication<br/>Click Main on the sub-menu above.</span>
-						                </div>
-						            </div>
-						        </div>
-						    </div>
+							<div class="col-lg-12">
+								<div class="panel panel-info">
+									<div class="panel-heading">
+										<span lang="en">Notice</span>
+									</div>
+									<div class="panel-wrapper collapse in" aria-expanded="true">
+										<div class="panel-body">
+											<span lang="en">This is not the same as database authentication - i.e. Plex Authentication | Emby Authentication | FTP Authentication<br/>Click Main on the sub-menu above.</span>
+										</div>
+									</div>
+								</div>
+							</div>
 						</div>
 				'
 				)
@@ -2266,6 +2295,43 @@ class Organizr
 					'name' => 'ssoTautulli',
 					'label' => 'Enable',
 					'value' => $this->config['ssoTautulli']
+				)
+			),
+			'Overseerr' => array(
+				array(
+					'type' => 'input',
+					'name' => 'overseerrURL',
+					'label' => 'Overseerr URL',
+					'value' => $this->config['overseerrURL'],
+					'help' => 'Please make sure to use local IP address and port - You also may use local dns name too.',
+					'placeholder' => 'http(s)://hostname:port'
+				),
+				array(
+					'type' => 'password-alt',
+					'name' => 'overseerrToken',
+					'label' => 'Token',
+					'value' => $this->config['overseerrToken']
+				),
+				array(
+					'type' => 'input',
+					'name' => 'overseerrFallbackUser',
+					'label' => 'Overseerr Fallback User',
+					'value' => $this->config['overseerrFallbackUser'],
+					'help' => 'Organizr will request an Overseerr User Token based off of this user credentials',
+					'attr' => 'disabled'
+				),
+				array(
+					'type' => 'password-alt',
+					'name' => 'overseerrFallbackPassword',
+					'label' => 'Overseerr Fallback Password',
+					'value' => $this->config['overseerrFallbackPassword'],
+					'attr' => 'disabled'
+				),
+				array(
+					'type' => 'switch',
+					'name' => 'ssoOverseerr',
+					'label' => 'Enable',
+					'value' => $this->config['ssoOverseerr']
 				)
 			),
 			'Ombi' => array(
@@ -2514,92 +2580,92 @@ class Organizr
 			array(
 				'function' => 'query',
 				'query' => 'CREATE TABLE `chatroom` (
-			        `id`	INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE,
-			        `username`	TEXT,
-			        `gravatar`	TEXT,
-			        `uid`	TEXT,
-			        `date` DATE,
-			        `ip` TEXT,
-			        `message` TEXT
-			    );'
+					`id`	INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE,
+					`username`	TEXT,
+					`gravatar`	TEXT,
+					`uid`	TEXT,
+					`date` DATE,
+					`ip` TEXT,
+					`message` TEXT
+				);'
 			),
 			array(
 				'function' => 'query',
 				'query' => 'CREATE TABLE `tokens` (
-			        `id`	INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE,
-			        `token`	TEXT UNIQUE,
-			        `user_id`	INTEGER,
-			        `browser`	TEXT,
-			        `ip`	TEXT,
-			        `created` DATE,
-			        `expires` DATE
-			    );'
+					`id`	INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE,
+					`token`	TEXT UNIQUE,
+					`user_id`	INTEGER,
+					`browser`	TEXT,
+					`ip`	TEXT,
+					`created` DATE,
+					`expires` DATE
+				);'
 			),
 			array(
 				'function' => 'query',
 				'query' => 'CREATE TABLE `groups` (
-			        `id`	INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE,
-			        `group`	TEXT UNIQUE,
-			        `group_id`	INTEGER,
-			        `image`	TEXT,
-			        `default` INTEGER
-			    );'
+					`id`	INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE,
+					`group`	TEXT UNIQUE,
+					`group_id`	INTEGER,
+					`image`	TEXT,
+					`default` INTEGER
+				);'
 			),
 			array(
 				'function' => 'query',
 				'query' => 'CREATE TABLE `categories` (
-			        `id`	INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE,
-			        `order`	INTEGER,
-			        `category`	TEXT UNIQUE,
-			        `category_id`	INTEGER,
-			        `image`	TEXT,
-			        `default` INTEGER
-			    );'
+					`id`	INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE,
+					`order`	INTEGER,
+					`category`	TEXT UNIQUE,
+					`category_id`	INTEGER,
+					`image`	TEXT,
+					`default` INTEGER
+				);'
 			),
 			array(
 				'function' => 'query',
 				'query' => 'CREATE TABLE `tabs` (
-			        `id`	INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE,
-			        `order`	INTEGER,
-			        `category_id`	INTEGER,
-			        `name`	TEXT,
-			        `url`	TEXT,
-			        `url_local`	TEXT,
-			        `default`	INTEGER,
-			        `enabled`	INTEGER,
-			        `group_id`	INTEGER,
-			        `image`	TEXT,
-			        `type`	INTEGER,
-			        `splash`	INTEGER,
-			        `ping`		INTEGER,
-			        `ping_url`	TEXT,
-			        `timeout`	INTEGER,
-			        `timeout_ms`	INTEGER,
-			        `preload`	INTEGER
-			    );'
+					`id`	INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE,
+					`order`	INTEGER,
+					`category_id`	INTEGER,
+					`name`	TEXT,
+					`url`	TEXT,
+					`url_local`	TEXT,
+					`default`	INTEGER,
+					`enabled`	INTEGER,
+					`group_id`	INTEGER,
+					`image`	TEXT,
+					`type`	INTEGER,
+					`splash`	INTEGER,
+					`ping`		INTEGER,
+					`ping_url`	TEXT,
+					`timeout`	INTEGER,
+					`timeout_ms`	INTEGER,
+					`preload`	INTEGER
+				);'
 			),
 			array(
 				'function' => 'query',
 				'query' => 'CREATE TABLE `options` (
-			        `id`	INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE,
-			        `name`	TEXT UNIQUE,
-			        `value`	TEXT
-			    );'
+					`id`	INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE,
+					`name`	TEXT UNIQUE,
+					`value`	TEXT
+				);'
 			),
 			array(
 				'function' => 'query',
 				'query' => 'CREATE TABLE `invites` (
-			        `id`	INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE,
-			        `code`	TEXT UNIQUE,
-			        `date`	TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-			        `email`	TEXT,
-			        `username`	TEXT,
-			        `dateused`	TIMESTAMP,
-			        `usedby`	TEXT,
-			        `ip`	TEXT,
-			        `valid`	TEXT,
-			        `type` TEXT
-			    );'
+					`id`	INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE,
+					`code`	TEXT UNIQUE,
+					`date`	TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+					`email`	TEXT,
+					`username`	TEXT,
+					`dateused`	TIMESTAMP,
+					`usedby`	TEXT,
+					`ip`	TEXT,
+					`valid`	TEXT,
+					`type` TEXT
+				);'
 			),
 		];
 		return $this->processQueries($response, $migration);
@@ -2787,11 +2853,11 @@ class Organizr
 		->identifiedBy('4f1g23a12aa', true)// Configures the id (jti claim), replicating as a header item
 		->issuedAt(time())// Configures the time that the token was issue (iat claim)
 		->expiresAt(time() + (86400 * $days))// Configures the expiration time of the token (exp claim)
-		->withClaim('username', $result['username'])// Configures a new claim, called "username"
-		->withClaim('group', $result['group'])// Configures a new claim, called "group"
-		->withClaim('groupID', $result['group_id'])// Configures a new claim, called "groupID"
-		->withClaim('email', $result['email'])// Configures a new claim, called "email"
-		->withClaim('image', $result['image'])// Configures a new claim, called "image"
+		//->withClaim('username', $result['username'])// Configures a new claim, called "username"
+		//->withClaim('group', $result['group'])// Configures a new claim, called "group"
+		//->withClaim('groupID', $result['group_id'])// Configures a new claim, called "groupID"
+		//->withClaim('email', $result['email'])// Configures a new claim, called "email"
+		//->withClaim('image', $result['image'])// Configures a new claim, called "image"
 		->withClaim('userID', $result['id'])// Configures a new claim, called "image"
 		->sign($signer, $this->config['organizrHash'])// creates a signature using "testing" as key
 		->getToken(); // Retrieves the generated token
@@ -2964,8 +3030,7 @@ class Organizr
 				if ($createToken) {
 					$this->writeLoginLog($username, 'success');
 					$this->writeLog('success', 'Login Function - A User has logged in', $username);
-					$ssoUser = ((empty($result['email'])) ? $result['username'] : (strpos($result['email'], 'placeholder') !== false)) ? $result['username'] : $result['email'];
-					$this->ssoCheck($ssoUser, $password, $token); //need to work on this
+					$this->ssoCheck($result, $password, $token); //need to work on this
 					return ($output) ? array('name' => $this->cookieName, 'token' => (string)$createToken) : true;
 				} else {
 					$this->setAPIResponse('error', 'Token creation error', 500);
@@ -2996,6 +3061,8 @@ class Organizr
 		$this->coookie('delete', 'mpt');
 		$this->coookie('delete', 'Auth');
 		$this->coookie('delete', 'oAuth');
+		$this->coookie('delete', 'jellyfin_credentials');
+		$this->coookie('delete', 'connect.sid');
 		$this->clearTautulliTokens();
 		$this->revokeTokenCurrentUser($this->user['token']);
 		$this->user = null;
@@ -3421,12 +3488,14 @@ class Organizr
 				'debugArea' => $this->qualifyRequest($this->config['debugAreaAuth']),
 				'debugErrors' => $this->config['debugErrors'],
 				'sandbox' => $this->config['sandbox'],
+				'expandCategoriesByDefault' => $this->config['expandCategoriesByDefault']
 			),
 			'menuLink' => array(
 				'githubMenuLink' => $this->config['githubMenuLink'],
 				'organizrSupportMenuLink' => $this->config['organizrSupportMenuLink'],
 				'organizrDocsMenuLink' => $this->config['organizrDocsMenuLink'],
-				'organizrSignoutMenuLink' => $this->config['organizrSignoutMenuLink']
+				'organizrSignoutMenuLink' => $this->config['organizrSignoutMenuLink'],
+				'organizrFeatureRequestLink' => $this->config['organizrFeatureRequestLink']
 			)
 		);
 	}
@@ -3528,7 +3597,7 @@ class Organizr
 		file_put_contents($this->organizrLoginLog, $writeFailLog);
 	}
 	
-	public function writeLog($type = 'error', $message, $username = null)
+	public function writeLog($type = 'error', $message = null, $username = null)
 	{
 		$this->timeExecution = $this->timeExecution($this->timeExecution);
 		$message = $message . ' [Execution Time: ' . $this->formatSeconds($this->timeExecution) . ']';
@@ -4752,7 +4821,7 @@ class Organizr
 	public function getThemesGithub()
 	{
 		$url = 'https://raw.githubusercontent.com/causefx/Organizr/v2-themes/themes.json';
-		$options = (localURL($url)) ? array('verify' => false) : array();
+		$options = ($this->localURL($url)) ? array('verify' => false) : array();
 		$response = Requests::get($url, array(), $options);
 		if ($response->success) {
 			return json_decode($response->body, true);
@@ -4763,7 +4832,7 @@ class Organizr
 	public function getPluginsGithub()
 	{
 		$url = 'https://raw.githubusercontent.com/causefx/Organizr/v2-plugins/plugins.json';
-		$options = (localURL($url)) ? array('verify' => false) : array();
+		$options = ($this->localURL($url)) ? array('verify' => false) : array();
 		$response = Requests::get($url, array(), $options);
 		if ($response->success) {
 			return json_decode($response->body, true);
@@ -4774,7 +4843,7 @@ class Organizr
 	public function getOpenCollectiveBackers()
 	{
 		$url = 'https://opencollective.com/organizr/members/users.json?limit=100&offset=0';
-		$options = (localURL($url)) ? array('verify' => false) : array();
+		$options = ($this->localURL($url)) ? array('verify' => false) : array();
 		$response = Requests::get($url, array(), $options);
 		if ($response->success) {
 			$api = json_decode($response->body, true);
@@ -4783,6 +4852,29 @@ class Organizr
 		}
 		$this->setAPIResponse('error', 'Error connecting to Open Collective', 409);
 		return false;
+	}
+	
+	public function getOrganizrSmtpFromAPI()
+	{
+		$url = 'https://api.organizr.app/?cmd=smtp';
+		$options = ($this->localURL($url)) ? array('verify' => false) : array();
+		$response = Requests::get($url, array(), $options);
+		if ($response->success) {
+			return json_decode($response->body, true);
+		}
+		return false;
+	}
+	
+	public function saveOrganizrSmtpFromAPI()
+	{
+		$api = $this->getOrganizrSmtpFromAPI();
+		if ($api) {
+			$this->updateConfigItems($api['response']['data']);
+			$this->setAPIResponse(null, 'SMTP activated with Organizr SMTP account');
+			return true;
+		} else {
+			return false;
+		}
 	}
 	
 	public function guestHash($start, $end)
@@ -5597,9 +5689,9 @@ class Organizr
 			$response = Requests::post($url, $headers, $data, array());
 			$json = json_decode($response->body, true);
 			$errors = !empty($json['errors']);
-			$success = !empty($json['user']);
+			$success = empty($json['errors']);
 			//Use This for later
-			$errorMessage = "";
+			$errorMessage = '';
 			if ($errors) {
 				foreach ($json['errors'] as $error) {
 					if (isset($error['message']) && isset($error['field'])) {

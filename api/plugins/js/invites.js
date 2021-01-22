@@ -88,7 +88,7 @@ function joinPlex(){
                 message('Invite Error',' '+response.message,activeInfo.settings.notifications.position,'#FFF','warning','5000');
             }
     	}).fail(function(xhr) {
-    		console.error("Organizr Function: API Connection Failed");
+	        OrganizrApiError(xhr, 'Plex Signup Error');
     	});
     }
 }
@@ -120,7 +120,7 @@ function joinEmby(){
                 message('Invite Error',' '+response.message,activeInfo.settings.notifications.position,'#FFF','warning','5000');
             }
     	}).fail(function(xhr) {
-    		console.error("Organizr Function: API Connection Failed");
+	        OrganizrApiError(xhr, 'Emby Signup Error');
     	});
     }
 }
@@ -173,7 +173,7 @@ function hasPlexUsername(){
             }
             ajaxloader();;
         }).fail(function(xhr) {
-            console.error("Organizr Function: API Connection Failed");
+	        OrganizrApiError(xhr);
             ajaxloader();
         });
     }
@@ -202,7 +202,7 @@ function hasEmbyUsername(){
             }
             ajaxloader();;
         }).fail(function(xhr) {
-            console.error("Organizr Function: API Connection Failed");
+	        OrganizrApiError(xhr);
             ajaxloader();
         });
     }
@@ -223,7 +223,7 @@ function verifyInvite(){
         }
         ajaxloader();;
     }).fail(function(xhr) {
-        console.error("Organizr Function: API Connection Failed");
+	    OrganizrApiError(xhr);
         ajaxloader();
     });
 }
@@ -267,7 +267,7 @@ function createNewInvite(){
             ajaxloader();
             message('Invite',' Invite Created',activeInfo.settings.notifications.position,'#FFF','success','5000');
         }).fail(function(xhr) {
-            console.error("Organizr Function: API Connection Failed");
+	        OrganizrApiError(xhr);
             ajaxloader();
             message('Invite Error',' An Error Occured',activeInfo.settings.notifications.position,'#FFF','error','5000');
         });
@@ -415,7 +415,7 @@ $(document).on('click', '.inviteModal', function() {
                             <button class="btn btn-block btn-info" onclick="joinPlex();">Submit</button>
                         </div>
                         <div class="form-group invite-step-4-plex-accept hidden">
-                            <h4 class="" lang="en">You have been invited.  Please goto <a href="https://plex.tv" target="_blank">PLEX.TV</a> and login to accept the invite.  Once you have done that, you may head back here and login with your credentials.</h4>
+                            <h4 class="" lang="en">You have been invited.  Please check your email or goto <a href="https://plex.tv" target="_blank">PLEX.TV</a> and login to accept the invite.  Once you have done that, you may head back here and login with your credentials.</h4>
                         </div>
                         <!-- Begin Emby Invites -->
                         <div class="form-group invite-step-3-emby-yes hidden">

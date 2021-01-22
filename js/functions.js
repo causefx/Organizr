@@ -943,7 +943,10 @@ function closeCurrentTab(event){
 	}
 }
 function tabActions(event,name, type){
-	if(event.ctrlKey && !event.shiftKey && !event.altKey){
+	if(event.which == 3){
+		return false;
+	}
+	if((event.ctrlKey && !event.shiftKey && !event.altKey)  || event.which == 2){
 		popTab(cleanClass(name), type);
 	}else if(event.altKey && !event.shiftKey && !event.ctrlKey){
         closeTab(name);
@@ -2662,14 +2665,48 @@ function userMenu(user){
 	console.info("%c "+window.lang.translate('Welcome')+" %c ".concat(user.data.user.username, " "), "color: white; background: #AD80FD; font-weight: 700;", "color: #AD80FD; background: white; font-weight: 700;");
 }
 function menuExtras(active){
-    var supportFrame = buildFrameContainer('Organizr Support','https://organizr.app/support',1);
-    var docsFrame = buildFrameContainer('Organizr Docs','https://docs.organizr.app',1);
-    var adminMenu = '<li class="devider"></li>';
-    adminMenu += (activeInfo.user.groupID <= 1 && activeInfo.settings.menuLink.githubMenuLink) ? buildMenuList('GitHub Repo','https://github.com/causefx/organizr',2,'fontawesome::github') : '';
-    adminMenu += (activeInfo.user.groupID <= 1 && activeInfo.settings.menuLink.organizrSupportMenuLink) ? buildMenuList('Organizr Support','https://organizr.app/support',1,'fontawesome::life-ring') : '';
-    adminMenu += (activeInfo.user.groupID <= 1 && activeInfo.settings.menuLink.organizrDocsMenuLink) ? buildMenuList('Organizr Docs','https://docs.organizr.app',1,'simpleline::docs') : '';
-    $(supportFrame).appendTo($('.iFrame-listing'));
-    $(docsFrame).appendTo($('.iFrame-listing'));
+	let adminMenu = '<li class="devider"></li>';
+	let extraOrganizrLinks = [
+		{
+			'type':2,
+			'group_id':1,
+			'name':'Github Repo',
+			'url':'https://github.com/causefx/organizr',
+			'icon':'fontawesome::github',
+			'active':activeInfo.settings.menuLink.githubMenuLink
+		},
+		{
+			'type':1,
+			'group_id':1,
+			'name':'Organizr Support',
+			'url':'https://organizr.app/support',
+			'icon':'fontawesome::life-ring',
+			'active':activeInfo.settings.menuLink.organizrSupportMenuLink
+		},
+		{
+			'type':2,
+			'group_id':1,
+			'name':'Organizr Docs',
+			'url':'https://docs.organizr.app',
+			'icon':'simpleline::docs',
+			'active':activeInfo.settings.menuLink.organizrDocsMenuLink
+		},
+		{
+			'type':1,
+			'group_id':1,
+			'name':'Feature Request',
+			'url':'https://vote.organizr.app',
+			'icon':'simpleline::arrow-up-circle',
+			'active':activeInfo.settings.menuLink.organizrFeatureRequestLink
+		}
+	];
+	$.each(extraOrganizrLinks, function(i,v) {
+		if(v.type == 1){
+			let frame = buildFrameContainer(v.name,v.url,v.type);
+			$(frame).appendTo($('.iFrame-listing'));
+		}
+		adminMenu += (activeInfo.user.groupID <= v.group_id && v.active) ? buildMenuList(v.name,v.url,v.type,v.icon) : '';
+	});
 	if(active === true){
 		return (activeInfo.settings.menuLink.organizrSignoutMenuLink) ? `
 			<li class="devider"></li>
@@ -2684,13 +2721,16 @@ function menuExtras(active){
 }
 function categoryProcess(arrayItems){
 	var menuList = '';
+	let categoryIn = activeInfo.settings.misc.expandCategoriesByDefault ? 'in' : '';
+	let categoryActive = activeInfo.settings.misc.expandCategoriesByDefault ? 'active' : '';
+	let categoryExpanded = activeInfo.settings.misc.expandCategoriesByDefault ? 'true' : 'false';
 	if (Array.isArray(arrayItems['data']['categories']) && Array.isArray(arrayItems['data']['tabs'])) {
 		$.each(arrayItems['data']['categories'], function(i,v) {
 			if(v.count !== 0 && v.category_id !== 0){
 				menuList += `
-					<li class="allGroupsList" data-group-name="`+cleanClass(v.category)+`">
+					<li class="allGroupsList `+categoryActive+`" data-group-name="`+cleanClass(v.category)+`">
 						<a class="waves-effect" href="javascript:void(0)">`+iconPrefix(v.image)+`<span class="hide-menu">`+v.category+` <span class="fa arrow"></span> <span class="label label-rouded label-inverse pull-right">`+v.count+`</span></span><div class="menu-category-ping" data-good="0" data-bad="0"></div></a>
-						<ul class="nav nav-second-level category-`+v.category_id+` collapse"></ul>
+						<ul class="nav nav-second-level category-`+v.category_id+` collapse `+categoryIn+`" aria-expanded="`+categoryExpanded+`"></ul>
 					</li>
 				`;
 			}
@@ -2718,7 +2758,7 @@ function buildInternalContainer(name,url,type, split = null){
 function buildMenuList(name,url,type,icon,ping=null,category_id = null,group_id = null){
     var ping = (ping !== null) ? `<small class="menu-`+cleanClass(ping)+`-ping-ms hidden-xs label label-rouded label-inverse pull-right pingTime hidden">
 </small><div class="menu-`+cleanClass(ping)+`-ping" data-tab-name="`+name+`" data-previous-state=""></div>` : '';
-	return `<li class="allTabsList" id="menu-`+cleanClass(name)+`" data-tab-name="`+cleanClass(name)+`" type="`+type+`" data-group-id="`+group_id+`" data-category-id="`+category_id+`" data-url="`+url+`"><a class="waves-effect"  onclick="tabActions(event,'`+cleanClass(name)+`',`+type+`);">`+iconPrefix(icon)+`<span class="hide-menu elip sidebar-tabName">`+name+`</span>`+ping+`</a></li>`;
+	return `<li class="allTabsList" id="menu-`+cleanClass(name)+`" data-tab-name="`+cleanClass(name)+`" type="`+type+`" data-group-id="`+group_id+`" data-category-id="`+category_id+`" data-url="`+url+`"><a class="waves-effect"  onclick="tabActions(event,'`+cleanClass(name)+`',`+type+`);" onauxclick="tabActions(event,'`+cleanClass(name)+`',`+type+`);">`+iconPrefix(icon)+`<span class="hide-menu elip sidebar-tabName">`+name+`</span>`+ping+`</a></li>`;
 }
 function tabProcess(arrayItems) {
 	var iFrameList = '';
@@ -3873,7 +3913,7 @@ function organizrAPI2(type,path,data=null,asyncValue=true){
 	switch(path){
 		case 'api/v2/windows/update':
 		case 'api/v2/docker/update':
-			timeout = 120000;
+			timeout = 240000;
 			break;
 		default:
 			timeout = 60000;
@@ -6245,7 +6285,7 @@ function buildHealthChecks(array){
     if(array === false){ return ''; }
     var checks = (typeof array.content.checks !== 'undefined') ? array.content.checks.length : false;
     return (checks) ? `
-	<div id="allHealthChecks">
+	<div id="allHealthChecks" class="m-b-30">
 		<div class="el-element-overlay row">
 		    <div class="col-md-12">
 		        <h4 class="pull-left homepage-element-title"><span lang="en">Health Checks</span> : </h4><h4 class="pull-left">&nbsp;<span class="label label-info m-l-20 checkbox-circle good-health-checks mouse" onclick="homepageHealthChecks()">`+checks+`</span></h4>
@@ -6292,7 +6332,7 @@ function buildUnifi(array){
 	<div id="allUnifi">
 		<div class="row">
 		    <div class="col-md-12">
-		        <h4 class="pull-left homepage-element-title"><span lang="en">Unifi</span> : </h4><h4 class="pull-left">&nbsp;</h4>
+		        <h4 class="pull-left homepage-element-title"><span lang="en">UniFi</span> : </h4><h4 class="pull-left">&nbsp;</h4>
 		        <hr class="hidden-xs">
 		    </div>
 			<div class="clearfix"></div>
@@ -7707,7 +7747,7 @@ function buildSpeedtest(array){
     var maximum = array.data.maximum;
     var minimum = array.data.minimum;
     var options = array.options;
-  
+
     html += `
     <div id="allSpeedtest">
     `;
@@ -8138,7 +8178,7 @@ function buildNetdataItem(array){
             html += buildGaugeChart(e,i,size,easySize,display);
         }
     });
-    
+
     return html;
 }
 function buildNetdata(array){
@@ -8281,7 +8321,7 @@ function buildNetdata(array){
     `;
 
     html += `
-    <div class="row">
+    <div class="row m-b-30">
         
             <div class="d-block text-center all-netdata">
     `;
@@ -8290,7 +8330,7 @@ function buildNetdata(array){
             </div>
         
     </div>`;
-   
+
     return (array) ? html : '';
 }
 function homepageNetdata(timeout){

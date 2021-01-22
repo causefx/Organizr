@@ -164,7 +164,7 @@ trait TautulliHomepageItem
 			)
 		);
 	}
-
+	
 	public function testConnectionTautulli()
 	{
 		if (empty($this->config['tautulliURL'])) {
@@ -179,7 +179,8 @@ trait TautulliHomepageItem
 		$apiURL = $url . '/api/v2?apikey=' . $this->config['tautulliApikey'];
 		try {
 			$homestatsUrl = $apiURL . '&cmd=get_home_stats&grouping=1';
-			$homestats = Requests::get($homestatsUrl, [], []);
+			$options = $this->requestOptions($this->config['tautulliURL'], false, $this->config['homepageTautulliRefresh']);
+			$homestats = Requests::get($homestatsUrl, [], $options);
 			if ($homestats->success) {
 				$this->setAPIResponse('success', 'API Connection succeeded', 200);
 				return true;
@@ -193,7 +194,7 @@ trait TautulliHomepageItem
 			return false;
 		}
 	}
-
+	
 	public function tautulliHomepagePermissions($key = null)
 	{
 		$permissions = [
@@ -218,7 +219,7 @@ trait TautulliHomepageItem
 			return [];
 		}
 	}
-
+	
 	public function homepageOrdertautulli()
 	{
 		if ($this->homepageItemPermissions($this->tautulliHomepagePermissions('main'))) {
@@ -234,7 +235,7 @@ trait TautulliHomepageItem
 				';
 		}
 	}
-
+	
 	public function getTautulliHomepageData()
 	{
 		if (!$this->homepageItemPermissions($this->tautulliHomepagePermissions('main'), true)) {
@@ -249,7 +250,8 @@ trait TautulliHomepageItem
 		$nowPlayingWidth = $this->getCacheImageSize('npw');
 		try {
 			$homestatsUrl = $apiURL . '&cmd=get_home_stats&grouping=1';
-			$homestats = Requests::get($homestatsUrl, [], []);
+			$options = $this->requestOptions($this->config['tautulliURL'], false, $this->config['homepageTautulliRefresh']);
+			$homestats = Requests::get($homestatsUrl, [], $options);
 			if ($homestats->success) {
 				$homestats = json_decode($homestats->body, true);
 				$api['homestats'] = $homestats['response'];
@@ -270,7 +272,8 @@ trait TautulliHomepageItem
 				$this->cacheImage($url . '/images/platforms/' . $platform . '.svg', 'tautulli-' . $platform, 'svg');
 			}
 			$libstatsUrl = $apiURL . '&cmd=get_libraries';
-			$libstats = Requests::get($libstatsUrl, [], []);
+			$options = $this->requestOptions($this->config['tautulliURL'], false, $this->config['homepageTautulliRefresh']);
+			$libstats = Requests::get($libstatsUrl, [], $options);
 			if ($libstats->success) {
 				$libstats = json_decode($libstats->body, true);
 				$api['libstats'] = $libstats['response'];

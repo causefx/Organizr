@@ -352,7 +352,7 @@ trait NormalFunctions
 		}
 	}
 	
-	public function coookieSeconds($type, $name, $value = '', $ms, $http = true, $path = '/')
+	public function coookieSeconds($type, $name, $value = '', $ms = null, $http = true, $path = '/')
 	{
 		if (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] == "https") {
 			$Secure = true;

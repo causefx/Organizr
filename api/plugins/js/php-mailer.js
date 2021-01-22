@@ -256,8 +256,7 @@ $(document).on('click', '.phpmSendTestEmail', function() {
             messageSingle('',response.message,activeInfo.settings.notifications.position,'#FFF','error','5000');
         }
     }).fail(function(xhr, data) {
-    	console.log(data)
-        console.error("Organizr Function: API Connection Failed");
+	    OrganizrApiError(xhr, 'Mailer Error');
     });
     ajaxloader();
 });
