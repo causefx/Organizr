@@ -313,5 +313,12 @@
     "new": "Option to disable certain plex libraries on now playing (#1534)|Toggle to use friendly name in stats|jellyFin SSO|PHP8 support|add 2fa to plex token form|loading animation to homepage item loading|allow admin to make other admins",
     "fixed": "fix Blue Light theme News background (#1538)|fix empty socks (#1520)|getServerPath function|tab saving on order change if nothing updated (#1530)|fix tab sort order saving with lots of tabs (#1175)|non admin from changing password|password reset|allow homepage item api lookup lowercase|change unsorted icon on new installs|unifi and ubnt image changes|missing ssoJellyfin var",
     "notes": "New tab images|Please join our discord if you have any issues|Please report bugs in GitHub issues page"
+  },
+  "2.1.165": {
+    "date": "2021-01-22 17:45",
+    "title": "Weekly update-ish",
+    "new": "Overseerr SSO|/help/smtp to api to help users without SMTP accounts|option to disable recover password and change text or html (#1245)|Allow Middle-click to open in new tab (#1474)|Option for keeping Categories expanded by default (#1550)|link and option for new feature request site to replace feathub|Tab Images for Overseerr - Cardigann|increase windows and docker update timeout",
+    "fixed": "plex errors not coming up on failed user creation (#1456)|plex invite (#1456)|Emby HomePage Add-in - Item Details URL Needs updating (#1290)|Tautulli timeout issue|Reflect homepage refresh for Monitorr (#1554)|update timeout for jdownloader (#1510)|update timeout of SSO function|change out organizr logo for nav bar and add more logos|Unable to use same tab image on multiple tab adds without selecting different image first (#1369)|Issue with using wrong combo of username/email/password for SSO|UniFi Homepage Item Title|function variables|error message to phpmailer test button|padding on some homepage items|Traefik return with redirect",
+    "notes": "We are now using FeatureUpvote - icon located on bottom side bar|Updated languages|Please join our discord if you have any issues|Please report bugs in GitHub issues page"
   }
 }
