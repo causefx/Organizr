@@ -63,7 +63,7 @@ trait SSOFunctions
 				"Pw" => $password
 			);
 			$endpoint = '/Users/authenticatebyname';
-			$options = ($this->localURL($url)) ? array('verify' => false) : array();
+			$options = $this->requestOptions($url, false, 60);
 			$response = Requests::post($url . $endpoint, $headers, json_encode($data), $options);
 			if ($response->success) {
 				$token = json_decode($response->body, true);
@@ -93,7 +93,7 @@ trait SSOFunctions
 				"plexToken" => $oAuthToken
 			);
 			$endpoint = ($oAuthToken) ? '/api/v1/Token/plextoken' : '/api/v1/Token';
-			$options = ($this->localURL($url)) ? array('verify' => false) : array();
+			$options = $this->requestOptions($url, false, 60);
 			$response = Requests::post($url . $endpoint, $headers, json_encode($data), $options);
 			if ($response->success) {
 				$token = json_decode($response->body, true)['access_token'];
@@ -136,7 +136,7 @@ trait SSOFunctions
 						"token" => $plexToken,
 						"remember_me" => 1,
 					);
-					$options = ($this->localURL($url)) ? array('verify' => false) : array();
+					$options = $this->requestOptions($url, false, 60);
 					$response = Requests::post($url . '/auth/signin', $headers, $data, $options);
 					if ($response->success) {
 						$qualifiedURL = $this->qualifyURL($url, true);
@@ -170,7 +170,7 @@ trait SSOFunctions
 				"authToken" => $oAuthToken
 			);
 			$endpoint = '/api/v1/auth/login';
-			$options = ($this->localURL($url)) ? array('verify' => false) : array();
+			$options = $this->requestOptions($url, false, 60);
 			$response = Requests::post($url . $endpoint, $headers, json_encode($data), $options);
 			if ($response->success) {
 				$user = json_decode($response->body, true); // not really needed yet
