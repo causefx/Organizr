@@ -439,9 +439,7 @@ return array(
 	'netdata5Enabled' => false,
 	'netdata6Enabled' => false,
 	'netdata7Enabled' => false,
-	'netdataCustom' => '{
-
-	}',
+	'netdataCustom' => '{}',
 	'homepageOctoprintEnabled' => false,
 	'homepageOctoprintAuth' => '1',
 	'homepageOctoprintRefresh' => 10000,
@@ -457,5 +455,6 @@ return array(
 	'breezometerToken' => 'd95ab607392d4fa5bf64bb26a5cb2a06',
 	'customForgotPasswordText' => '',
 	'disableRecoverPassword' => false,
-	'expandCategoriesByDefault' => false
+	'expandCategoriesByDefault' => false,
+	'ignoredNewsIds' => array()
 );

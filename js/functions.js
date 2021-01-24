@@ -3456,6 +3456,19 @@ function updateCheck(){
 		OrganizrApiError(xhr);
 	});
 }
+function ignoreNewsId(id){
+	organizrAPI2('POST','api/v2/news/' + id,{}).success(function(data) {
+		try {
+			let response = data.response;
+			message('News Item','Id now ignored',activeInfo.settings.notifications.position,"#FFF","success","5000");
+			newsLoad();
+		}catch(e) {
+			organizrCatchError(e,data);
+		}
+	}).fail(function(xhr) {
+		OrganizrApiError(xhr, 'News');
+	});
+}
 function newsLoad(){
     newsJSON().success(function(data) {
         try {
@@ -3463,27 +3476,39 @@ function newsLoad(){
             var items = [];
             var limit = 5;
             var count = 0;
-            $.each(response, function(i,v) {
-                count++;
-                let alertDefined = (typeof v.important !== 'undefined' || v.important === false);
-                let alert = (alertDefined) ? '<span class="animated loop-animation flash text-danger">&nbsp; <i class="ti-alert"></i>&nbsp; Important Message</span>' : '';
-                let heartBeat = (alertDefined) ? '<div class="notify pull-left"><span class="heartbit"></span><span class="point"></span></div>' : '';
-                let newBody = `
-                <h5 class="pull-left">`+moment(v.date).format('LLL')+`</h5>
-                <h5 class="pull-right">`+v.author+`</h5>
-                <div class="clearfix"></div>
-                `+((v.subTitle) ? '<h5>' + v.subTitle + alert + '</h5>' : '' )+`
-                <p>`+v.body+`</p>
-                `;
-                if(count <= limit){
-                    items[i] = {
-                        title:v.title + heartBeat,
-                        body:newBody
-                    }
-                }
-            });
-            var body = buildAccordion(items, true);
-            $('#organizrNewsPanel').html(body);
+	        organizrAPI2('get','api/v2/news').success(function(data) {
+		        try {
+			        let ignoredIds = data.response.data;
+			        ignoredIds = ignoredIds == null ? [] : ignoredIds;
+			        $.each(response, function(i,v) {
+				        count++;
+				        let ignore = ignoredIds.includes(v.id);
+				        let alertDefined = (typeof v.important !== 'undefined' || v.important === false);
+				        let alert = (alertDefined && ignore == false) ? `<span class="animated loop-animation flash text-danger mouse" onclick="ignoreNewsId('${v.id}')">&nbsp; <i class="ti-alert"></i>&nbsp; Important Message - Click me to Ignore</span>` : '';
+				        let heartBeat = (alertDefined && ignore == false) ? '<div class="notify pull-left"><span class="heartbit"></span><span class="point"></span></div>' : '';
+				        let newBody = `
+			                <h5 class="pull-left">`+moment(v.date).format('LLL')+`</h5>
+			                <h5 class="pull-right">`+v.author+`</h5>
+			                <div class="clearfix"></div>
+			                `+((v.subTitle) ? '<h5>' + v.subTitle + alert + '</h5>' : '' )+`
+			                <p>`+v.body+`</p>
+			                `;
+				        if(count <= limit){
+					        items[i] = {
+						        title:v.title + heartBeat,
+						        body:newBody
+					        }
+				        }
+			        });
+			        var body = buildAccordion(items, true);
+			        $('#organizrNewsPanel').html(body);
+		        }catch(e) {
+			        organizrCatchError(e,data);
+		        }
+	        }).fail(function(xhr) {
+		        OrganizrApiError(xhr, 'News');
+	        });
+
         }catch(e) {
 	        organizrCatchError(e,data);
         }

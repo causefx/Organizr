@@ -2447,6 +2447,27 @@ class Organizr
 		return ($this->updateConfig($newItem)) ? true : false;
 	}
 	
+	public function ignoreNewsId($id)
+	{
+		if (!$id) {
+			$this->setAPIResponse('error', 'News id was not supplied', 409);
+			return false;
+		}
+		$id = array(intval($id));
+		$newsIds = $this->config['ignoredNewsIds'];
+		$newsIds = array_merge($newsIds, $id);
+		$newsIds = array_unique($newsIds);
+		$this->updateConfig(['ignoredNewsIds' => $newsIds]);
+		$this->setAPIResponse('success', 'News id is now ignored', 200, null);
+	}
+	
+	public function getNewsIds()
+	{
+		$newsIds = $this->config['ignoredNewsIds'];
+		$this->setAPIResponse('success', null, 200, $newsIds);
+		return $newsIds;
+	}
+	
 	public function testWizardPath($array)
 	{
 		if ($this->hasDB()) {
