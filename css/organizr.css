@@ -1397,6 +1397,9 @@ img.dark-logo-side {
     max-width: 160px;
     max-height: 35px;
 }
+.themeIcon {
+    height: 25px;
+}
 .select2-container {
     box-sizing: border-box;
     display: inline-block;
@@ -1405,9 +1408,13 @@ img.dark-logo-side {
     vertical-align: middle;
     width: 100% !important;
 }
+.select2-container--default .select2-selection--single .select2-selection__rendered {
+    line-height: 38px;
+}
 span.select2-selection.select2-selection--single,
 span.select2-selection.select2-selection--multiple{
     background: inherit;
+    height: 38px;
 }
 img.img-chooser {
     width: 20px;

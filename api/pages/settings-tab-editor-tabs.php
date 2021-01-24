@@ -158,13 +158,19 @@ function get_page_settings_tab_editor_tabs($Organizr)
 		        </div>
 		    </div>
 	        <div class="row">
-		        <div class="form-group col-lg-6">
+		        <div class="form-group col-lg-4">
 		            <label class="control-label" for="new-tab-form-chooseImage" lang="en">Choose Image</label>
 		            <select class="form-control tabIconImageList" id="new-tab-form-chooseImage" name="chooseImage"><option lang="en">Select or type Image</option></select>
 		        </div>
-		        <div class="form-group col-lg-6">
+		        <div class="form-group col-lg-4">
 		            <label class="control-label" for="new-tab-form-chooseIcon" lang="en">Choose Icon</label>
 					<select class="form-control tabIconIconList" id="new-tab-form-chooseIcon" name="chooseIcon"><option lang="en">Select or type Icon</option></select>
+		        </div>
+		        <div class="form-group col-lg-4">
+		            <label class="control-label" for="new-tab-form-chooseBlackberry" lang="en">Choose Blackberry Theme Icon</label>
+		            <button id="new-tab-form-chooseBlackberry" class="btn btn-xs btn-primary waves-effect waves-light form-control" onclick="showBlackberryThemes(\'new-tab-form-inputImageNew\');" type="button">
+		                <i class="fa fa-search"></i>&nbsp; <span lang="en">Choose</span>
+		            </button>
 		        </div>
 		    </div>
 	        <div class="form-group">
@@ -220,13 +226,19 @@ function get_page_settings_tab_editor_tabs($Organizr)
 		        </div>
 		    </div>
 	        <div class="row">
-		        <div class="form-group col-lg-6">
+		        <div class="form-group col-lg-4">
 		            <label class="control-label" for="edit-tab-form-chooseImage" lang="en">Choose Image</label>
 		            <select class="form-control tabIconImageList" id="edit-tab-form-chooseImage" name="chooseImage"><option lang="en">Select or type Image</option></select>
 		        </div>
-		        <div class="form-group col-lg-6">
+		        <div class="form-group col-lg-4">
 		            <label class="control-label" for="edit-tab-form-chooseIcon" lang="en">Choose Icon</label>
 					<select class="form-control tabIconIconList" id="edit-tab-form-chooseIcon" name="chooseIcon"><option lang="en">Select or type Icon</option></select>
+		        </div>
+		        <div class="form-group col-lg-4">
+		            <label class="control-label" for="edit-tab-form-chooseBlackberry" lang="en">Choose Blackberry Theme Icon</label>
+		            <button id="edit-tab-form-chooseBlackberry" class="btn btn-xs btn-primary waves-effect waves-light form-control" onclick="showBlackberryThemes(\'edit-tab-form-inputImage\');" type="button">
+		                <i class="fa fa-search"></i>&nbsp; <span lang="en">Choose</span>
+		            </button>
 		        </div>
 		    </div>
 	        <div class="form-group">

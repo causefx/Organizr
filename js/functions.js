@@ -9758,6 +9758,92 @@ function checkIfTabNameExists(tabName){
         return true;
     }
 }
+function getLatestBlackberryThemes() {
+	return $.ajax({
+		url: 'https://api.github.com/repos/Archmonger/Blackberry-Themes/contents/Themes',
+	});
+}
+function getBlackberryTheme(theme) {
+	return $.ajax({
+		url: 'https://api.github.com/repos/Archmonger/Blackberry-Themes/contents/Themes/' +  theme + '/Icons',
+	});
+}
+function showBlackberryThemes(target){
+	getLatestBlackberryThemes().success(function(data) {
+		try {
+			let themes = '';
+			$.each(data, function(i,v) {
+				if(v.name !== 'Beta'){
+					themes += `<a href="javascript:selectBlackberryTheme('${v.name}','${target}');" class="list-group-item"><span><img class="themeIcon pull-right" src="https://raw.githubusercontent.com/Archmonger/Blackberry-Themes/master/Themes/${v.name}/Icons/home.png"></span>${v.name}</a>`;
+				}
+			});
+			themes = `<div class="list-group">${themes}</div>`;
+			let html = `
+			<div class="panel">
+				<div class="bg-org2">
+					<div class="panel-heading">Choose a Theme</div>
+					<div class="panel-body text-left">${themes}</div>
+				</div>
+			</div>
+			`;
+			swal({
+				content: createElementFromHTML(html),
+				button: 'Close',
+				className: 'orgErrorAlert',
+				dangerMode: true
+			});
+		}catch(e) {
+			organizrCatchError(e,data);
+		}
+	}).fail(function(xhr) {
+		OrganizrApiError(xhr);
+	});
+}
+function selectBlackberryTheme(theme, target){
+	getBlackberryTheme(theme).success(function(data) {
+		try {
+			let icons = '';
+			$.each(data, function(i,v) {
+				v.name = v.name.split('.')[0];
+				v.name = cleanClass(v.name);
+				icons += `<a href="javascript:swal.close();$('#${target}').val('${v.download_url}')"><img alt="${v.name}" data-toggle="tooltip" data-placement="top" title="" data-original-title="${v.name}"src="${v.download_url}" ></a>`;
+			});
+			icons = `<div id="gallery-content-center">${icons}</div>`;
+			let html = `
+			<div class="panel">
+				<div class="bg-org2">
+					<div class="panel-heading">Choose an Icon</div>
+					<div class="panel-body text-left">${icons}</div>
+				</div>
+			</div>
+			`;
+			swal({
+				content: createElementFromHTML(html),
+				buttons: {
+					back: {
+						text: "Back To Themes",
+						value: "back",
+						dangerMode: true,
+						className: "bg-org-alt"
+					}
+				},
+				className: 'orgErrorAlert',
+				dangerMode: true
+			})
+			.then((value) => {
+				switch (value) {
+					case "back":
+						showBlackberryThemes();
+						break;
+				}
+			});
+		}catch(e) {
+			organizrCatchError(e,data);
+		}
+	}).fail(function(xhr) {
+		OrganizrApiError(xhr);
+	});
+}
 function orgErrorAlert(error){
 	let showError = false;
 	if(typeof activeInfo === 'undefined'){
