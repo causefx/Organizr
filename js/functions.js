@@ -3488,10 +3488,10 @@ function newsLoad(){
 				        let alert = (alertDefined && ignore == false) ? `<span class="animated loop-animation flash text-danger mouse newsItem-${v.id}" onclick="ignoreNewsId('${v.id}')">&nbsp; <i class="ti-alert"></i>&nbsp; Important Message - Click me to Ignore</span>` : '';
 				        let heartBeat = (alertDefined && ignore == false) ? `<div class="notify pull-left newsHeart-${v.id}"><span class="heartbit"></span><span class="point"></span></div>` : '';
 				        let newBody = `
-			                <h5 class="pull-left">`+moment(v.date).format('LLL')+`</h5>
+			                <h5 class="pull-left"><i class="ti-calendar"></i>&nbsp;`+moment(v.date).format('LLL')+ alert +`</h5>
 			                <h5 class="pull-right">`+v.author+`</h5>
 			                <div class="clearfix"></div>
-			                `+((v.subTitle) ? '<h5>' + v.subTitle + alert + '</h5>' : '' )+`
+			                `+((v.subTitle) ? '<h5>' + v.subTitle +'</h5>' : '' )+`
 			                <p>`+v.body+`</p>
 			                `;
 				        if(count <= limit){
