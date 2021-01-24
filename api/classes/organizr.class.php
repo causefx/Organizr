@@ -2097,16 +2097,16 @@ class Organizr
 				),
 				array(
 					'type' => 'switch',
-					'name' => 'disableRecoverPassword',
+					'name' => 'disableRecoverPass',
 					'label' => 'Disable Recover Password',
 					'help' => 'Disables recover password area',
-					'value' => $this->config['disableRecoverPassword'],
+					'value' => $this->config['disableRecoverPass'],
 				),
 				array(
 					'type' => 'input',
-					'name' => 'customForgotPasswordText',
+					'name' => 'customForgotPassText',
 					'label' => 'Custom Recover Password Text',
-					'value' => $this->config['customForgotPasswordText'],
+					'value' => $this->config['customForgotPassText'],
 					'placeholder' => '',
 					'help' => 'Text or HTML for recovery password section'
 				),
