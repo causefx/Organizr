@@ -1166,7 +1166,7 @@ function buildPluginsItem(array){
 					<div class="el-card-avatar el-overlay-1 m-0"> <img class="lazyload" data-src="`+v.image+`">
 						<div class="el-overlay">
 							<ul class="el-info">
-								`+settings+activeToggle+`
+								${settings} ${activeToggle}
 							</ul>
 						</div>
 					</div>
@@ -1314,23 +1314,23 @@ function loadMarketplaceThemesItems(themes){
         var removeButton = (v.status == 'Not Installed') ? 'disabled' : '';
         v.name = i;
         themeList += `
-            <tr class="themeManagement" data-name="`+i+`" data-version="`+v.version+`">
+            <tr class="themeManagement" data-name="${i}" data-version="${v.version}">
                 <td class="text-center el-element-overlay">
                     <div class="el-card-item p-0">
                         <div class="el-card-avatar el-overlay-1 m-0">
-                            <img alt="user-img" src="`+v.icon+`" width="45">
+                            <img alt="user-img" src="${v.icon}" width="45">
                         </div>
                     </div>
                 </td>
-                <td>`+i+`
-                    <br><span class="text-muted">`+v.version+`</span>
-                    <br><span class="text-muted">`+v.author+`</span>
+                <td>${i}
+                    <br><span class="text-muted">${v.version}</span>
+                    <br><span class="text-muted">${v.author}</span>
                 </td>
-                <td>`+v.category+`</td>
-                <td>`+v.status+`</td>
-                <td style="text-align:center"><button type="button" onclick='aboutTheme(`+JSON.stringify(v)+`);' class="btn btn-success btn-outline btn-circle btn-lg popup-with-form" href="#about-theme-form" data-effect="mfp-3d-unfold"><i class="fa fa-info"></i></button></td>
-                <td style="text-align:center"><button type="button" onclick='installTheme("`+cleanClass(i)+`");themeAnalytics("`+ v.name +`");' class="btn btn-info btn-outline btn-circle btn-lg"><i class="`+installButton+`"></i></button></td>
-                <td style="text-align:center"><button type="button" onclick='removeTheme("`+cleanClass(i)+`");' class="btn btn-danger btn-outline btn-circle btn-lg" `+removeButton+`><i class="fa fa-trash"></i></button></td>
+                <td>${v.category}</td>
+                <td>${v.status}</td>
+                <td style="text-align:center"><button type="button" onclick='aboutTheme(${JSON.stringify(v)});' class="btn btn-success btn-outline btn-circle btn-lg popup-with-form" href="#about-theme-form" data-effect="mfp-3d-unfold"><i class="fa fa-info"></i></button></td>
+                <td style="text-align:center"><button type="button" onclick='installTheme("${cleanClass(i)}");themeAnalytics("${v.name}");' class="btn btn-info btn-outline btn-circle btn-lg"><i class="${installButton}"></i></button></td>
+                <td style="text-align:center"><button type="button" onclick='removeTheme("${cleanClass(i)}");' class="btn btn-danger btn-outline btn-circle btn-lg" ${removeButton}><i class="fa fa-trash"></i></button></td>
             </tr>
         `;
 
@@ -1819,8 +1819,8 @@ function buildFormGroup(array){
                                     <!-- INPUT BOX  Yes Multiple -->
                                     <div class="col-md-6 p-b-10">
                                         <div class="form-group">
-                                            <label class="control-label col-md-12"><span lang="en">`+formItem.label+`</span>`+helpTip+`</label>
-                                            <div class="col-md-12"> `+ buildFormItem(formItem) +` </div> <!-- end div -->
+                                            <label class="control-label col-md-12"><span lang="en">${formItem.label}</span>${helpTip}</label>
+                                            <div class="col-md-12">${buildFormItem(formItem)}</div> <!-- end div -->
                                         </div>
                                     </div>
                                     <!--/ INPUT BOX -->
@@ -1837,9 +1837,9 @@ function buildFormGroup(array){
 					<!-- INPUT BOX  no Multiple-->
 					<div class="col-md-`+override+` p-b-10">
 						<div class="form-group">
-							<label class="control-label col-md-12"><span lang="en">`+v.label+`</span>`+helpTip+`</label>
+							<label class="control-label col-md-12"><span lang="en">${v.label}</span>${helpTip}</label>
 							<div class="col-md-12">
-								`+ buildFormItem(v) +`
+								${buildFormItem(v)}
 							</div>
 						</div>
 					</div>
@@ -2612,7 +2612,7 @@ function userMenu(user){
 					<li class="append-menu"><a class="inline-popups" href="#account-area" data-effect="mfp-zoom-out"><i class="ti-settings fa-fw"></i> <span lang="en">Account Settings</span></a></li>
 					<li class="divider" role="separator"></li>
 					<li><a href="javascript:void(0)" onclick="lock();"><i class="ti-lock fa-fw"></i> <span lang="en">Lock Screen</span></a></li>
-					` + showDebug + `
+					${showDebug}
 					<li><a href="javascript:void(0)" onclick="logout();"><i class="fa fa-sign-out fa-fw"></i> <span lang="en">Logout</span></a></li>
 				</ul><!-- /.dropdown-user -->
 			</li><!-- /.dropdown -->
@@ -2626,7 +2626,7 @@ function userMenu(user){
 			<ul class="nav nav-second-level collapse" aria-expanded="false" style="height: 0px;">
 				<li class="append-menu"><a class="inline-popups" href="#account-area" data-effect="mfp-zoom-out"><i class="ti-settings fa-fw"></i> <span lang="en">Account Settings</span></a></li>
 				<li><a href="javascript:void(0)" onclick="lock();"><i class="ti-lock fa-fw"></i> <span lang="en">Lock Screen</span></a></li>
-				` + showDebug + `
+				${showDebug}
 				<li><a href="javascript:void(0)" onclick="logout();"><i class="fa fa-sign-out fa-fw"></i> <span lang="en">Logout</span></a></li>
 			</ul>
 		</li>
@@ -2900,10 +2900,10 @@ function buildSplashScreenItem(arrayItems){
                     var nonImage = '<span class="text-uppercase badge bg-org splash-badge">'+image+'</span>';
                 }
                 splashList += `
-                <div class="col-xs-12 col-sm-3 col-md-3 col-lg-3 col-xl-2 mouse hvr-grow m-b-20" id="menu-`+cleanClass(v.name)+`" type="`+v.type+`" data-url="`+v.access_url+`" onclick="tabActions(event,'`+cleanClass(v.name)+`',`+v.type+`);">
-                    <div class="homepage-drag fc-event bg-org lazyload"  `+ dataSrc +`>
-                        `+nonImage+`
-                        <span class="homepage-text">&nbsp; `+v.name+`</span>
+                <div class="col-xs-12 col-sm-3 col-md-3 col-lg-3 col-xl-2 mouse hvr-grow m-b-20" id="menu-${cleanClass(v.name)}" type="${v.type}" data-url="${v.access_url}" onclick="tabActions(event,'${cleanClass(v.name)}',${v.type});">
+                    <div class="homepage-drag fc-event bg-org lazyload" ${dataSrc}>
+                        ${nonImage}
+                        <span class="homepage-text">&nbsp; ${v.name}</span>
                     </div>
                 </div>
                 `;
@@ -3569,23 +3569,23 @@ function sponsorDetails(id){
 			let extraInfo = (coupon && couponAbout) ? `
 				<hr/>
 		        <h3>Coupon Code:</h3>
-		        <p><span class="label label-rouded label-info pull-right">`+response[id].coupon+`</span>
-		        <span class=" pull-left">`+response[id].coupon_about+`</span></p>
+		        <p><span class="label label-rouded label-info pull-right">${response[id].coupon}</span>
+		        <span class=" pull-left">${response[id].coupon_about}</span></p>
 		    ` : '';
 			let html = `
 		        <div class="panel panel-default">
-                    <div class="panel-heading">`+response[id].company_name+`</div>
+                    <div class="panel-heading">${response[id].company_name}</div>
                     <div class="panel-wrapper collapse in">
                         <div class="panel-body">
                             <div class="overlay-box">
                                 <div class="user-content">
-                                    <a href="javascript:void(0)"><img src="`+response[id].logo+`" class="thumb-lg img-circle" alt="img"></a>
-                                    <h4 class="text-white">`+response[id].company_name+`</h4>
-                                    <h5 class="text-white"><a href="` + response[id].website +`" target="_blank">Website</a></h5>
+                                    <a href="javascript:void(0)"><img src="${response[id].logo}" class="thumb-lg img-circle" alt="img"></a>
+                                    <h4 class="text-white">${response[id].company_name}</h4>
+                                    <h5 class="text-white"><a href="${response[id].website}" target="_blank">Website</a></h5>
                                 </div>
                             </div>
                             <hr/>
-                            <div class="text-left">`+response[id].about+extraInfo+`</div>
+                            <div class="text-left">${response[id].about} ${extraInfo}</div>
                         </div>
                     </div>
                 </div>
@@ -3659,9 +3659,9 @@ function buildSponsor(array){
         var sponsorAboutModal = (v.about) ? 'onclick="sponsorDetails(\''+i+'\');sponsorAnalytics(\''+v.company_name+'\');"' : 'onclick="window.open(\''+ v.website +'\', \'_blank\');sponsorAnalytics(\''+v.company_name+'\');"';
         sponsors += `
             <!-- /.usercard -->
-            <div class="item lazyload recent-sponsor mouse imageSource mouse" `+sponsorAboutModal+` data-src="`+v.logo+`" data-id="`+i+`">
-                <span class="elip recent-title">`+v.company_name+`</span>
-                `+ hasCoupon +`
+            <div class="item lazyload recent-sponsor mouse imageSource mouse" ${sponsorAboutModal} data-src="${v.logo}" data-id="${i}">
+                <span class="elip recent-title">${v.company_name}</span>
+                ${hasCoupon}
             </div>
             <!-- /.usercard-->
         `;
@@ -3770,12 +3770,12 @@ function buildOrganizrBackups(array){
 			let version = (typeof v.name.match(pattern)[1] !== 'undefined') ?  v.name.match(pattern)[1] : 'N/A';
 			list += `
 			<tr>
-				<td>` + i + `</td>
-				<td class="txt-oflo">` + v.name + `</td>
-				<td><span class="label label-primary label-rouded">` + version + `</span> </td>
-				<td class="txt-oflo">` + v.size + `</td>
-				<td><span class="text-info tooltip-info" data-toggle="tooltip" data-placement="right" title="" data-original-title="`+moment(v.date).format('LLL')+`">`+moment.utc(v.date, "YYYY-MM-DD hh:mm[Z]").local().fromNow()+`</span></td>
-				<td><span class="text-primary"><a href="api/v2/backup/`+v.name+`"><i class="fa fa-download download-backup" data-file="` + v.name + `"></i></a> | <a href="javascript:void(0)"><i class="fa fa-trash-o delete-backup" data-file="` + v.name + `"></i></a></span></td>
+				<td>${i}</td>
+				<td class="txt-oflo">${v.name}</td>
+				<td><span class="label label-primary label-rouded">${version}</span> </td>
+				<td class="txt-oflo">${v.size}</td>
+				<td><span class="text-info tooltip-info" data-toggle="tooltip" data-placement="right" title="" data-original-title="${moment(v.date).format('LLL')}">${moment.utc(v.date, "YYYY-MM-DD hh:mm[Z]").local().fromNow()}</span></td>
+				<td><span class="text-primary"><a href="api/v2/backup/${v.name}"><i class="fa fa-download download-backup" data-file="${v.name}"></i></a> | <a href="javascript:void(0)"><i class="fa fa-trash-o delete-backup" data-file="${v.name}"></i></a></span></td>
 			</tr>
 			`;
 		});
@@ -5847,13 +5847,13 @@ function buildDownloaderItem(array, source, type='none'){
 				v.name = (typeof v.movie == 'undefined') ? v.title : v.movie.title;
 				queue += `
                 <tr>
-                    <td class="max-texts">` + v.name + `</td>
-                    <td class="hidden-xs sonarr-` + cleanClass(v.status) + `">` + v.status + `</td>
-                    <td class="hidden-xs">` + size + `</td>
-                    <td class="hidden-xs"><span class="label label-info">` + v.protocol + `</span></td>
+                    <td class="max-texts">${v.name}</td>
+                    <td class="hidden-xs sonarr-${cleanClass(v.status)}">${v.status}</td>
+                    <td class="hidden-xs">${size}</td>
+                    <td class="hidden-xs"><span class="label label-info">${v.protocol}</span></td>
                     <td class="text-right">
                         <div class="progress progress-lg m-b-0">
-                            <div class="progress-bar progress-bar-info" style="width: ` + percent + `%;" role="progressbar">` + percent + `%</div>
+                            <div class="progress-bar progress-bar-info" style="width: ${percent}%;" role="progressbar">${percent}%</div>
                         </div>
                     </td>
                 </tr>
@@ -6393,28 +6393,20 @@ function buildUnifiItem(array){
             $.each(stats, function (istat, vstat) {
                 statItems += `
                     <div class="stat-item">
-                        <h6 class="text-uppercase">` + istat + `</h6>
-                        <b>` + vstat + `</b>
+                        <h6 class="text-uppercase">${istat}</h6>
+                        <b>${vstat}</b>
                     </div>
                     `;
             });
             items += `
-                <!--<div class="col-lg-4 col-md-6">
-                    <div class="white-box">
-                        <h3 class="box-title">` + name + `</h3>
-                        <div class="stats-row">
-                            ` + statItems + `
-                        </div>
-                    </div>
-                </div>-->
                 <div class="col-lg-4 col-md-6 col-center">
-                    <div class="panel panel-` + panelColor + `">
-                        <div class="panel-heading"> <span class="text-uppercase">` + name + `</span>
+                    <div class="panel panel-${panelColor}">
+                        <div class="panel-heading"> <span class="text-uppercase">${name}</span>
                             <div class="pull-right"><a href="#" data-perform="panel-collapse"><i class="ti-minus"></i></a></div>
                         </div>
                         <div class="panel-wrapper collapse in" aria-expanded="true">
                             <div class="panel-body">
-                               ` + statItems + `
+                               ${statItems}
                             </div>
                         </div>
                     </div>
@@ -6583,9 +6575,9 @@ function buildPiholeItem(array){
             var e = data[key];
 	        if(typeof e['FTLnotrunning'] == 'undefined') {
 		        if (length > 1 && !combine) {
-			        card += `<p class="d-inline text-muted">(` + key + `)</p>`;
+			        card += `<p class="d-inline text-muted">(${key})</p>`;
 		        }
-		        card += `<h3 data-toggle="tooltip" data-placement="right" title="` + key + `">` + e['ads_blocked_today'].toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + `</h3>`;
+		        card += `<h3 data-toggle="tooltip" data-placement="right" title="${key}">${e['ads_blocked_today'].toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}</h3>`;
 	        }
         };
         card += `
@@ -6608,9 +6600,9 @@ function buildPiholeItem(array){
             var e = data[key];
 	        if(typeof e['FTLnotrunning'] == 'undefined') {
 		        if (length > 1 && !combine) {
-			        card += `<p class="d-inline text-muted">(` + key + `)</p>`;
+			        card += `<p class="d-inline text-muted">(${key})</p>`;
 		        }
-		        card += `<h3 data-toggle="tooltip" data-placement="right" title="` + key + `">` + e['ads_percentage_today'].toFixed(1) + `%</h3>`
+		        card += `<h3 data-toggle="tooltip" data-placement="right" title="${key}">${e['ads_percentage_today'].toFixed(1)}%</h3>`
 	        }
         };
         card += `
@@ -6633,9 +6625,9 @@ function buildPiholeItem(array){
             var e = data[key];
 	        if(typeof e['FTLnotrunning'] == 'undefined') {
 		        if (length > 1 && !combine) {
-			        card += `<p class="d-inline text-muted">(` + key + `)</p>`;
+			        card += `<p class="d-inline text-muted">(${key})</p>`;
 		        }
-		        card += `<h3 data-toggle="tooltip" data-placement="right" title="` + key + `">` + e['domains_being_blocked'].toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + `</h3>`;
+		        card += `<h3 data-toggle="tooltip" data-placement="right" title="${key}">${e['domains_being_blocked'].toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}</h3>`;
 	        }
         };
         card += `
@@ -9780,13 +9772,13 @@ function orgErrorAlert(error){
 	    <div class="panel">
             <div class="bg-org2">
                 <div class="panel-heading">ERROR</div>
-                <div class="panel-body text-left">`+error+`</div>
+                <div class="panel-body text-left">${error}</div>
             </div>
         </div>
 	    `;
 	    swal({
 		    content: createElementFromHTML(div),
-		    button: "OK",
+		    button: 'OK',
 		    className: 'orgErrorAlert',
 		    dangerMode: true
 	    });
