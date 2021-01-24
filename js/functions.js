@@ -9800,7 +9800,7 @@ function showBlackberryThemes(target){
 			let themes = '';
 			$.each(data, function(i,v) {
 				if(v.name !== 'Beta'){
-					themes += `<a href="javascript:selectBlackberryTheme('${v.name}','${target}');" class="list-group-item"><span><img class="themeIcon pull-right" src="https://raw.githubusercontent.com/Archmonger/Blackberry-Themes/master/Themes/${v.name}/Icons/home.png"></span>${v.name}</a>`;
+					themes += `<a href="javascript:selectBlackberryTheme('${v.name}','${target}');" class="list-group-item"><span><img class="themeIcon pull-right" src="https://raw.githubusercontent.com/Archmonger/Blackberry-Themes/master/Themes/${v.name}/Icons/preview.png"></span>${v.name}</a>`;
 				}
 			});
 			themes = `<div class="list-group">${themes}</div>`;
