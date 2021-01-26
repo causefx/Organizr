@@ -44,7 +44,7 @@ $(document).ready(function () {
 
             /* ===== This is for resizing window ===== */
 
-            if (width < 1170) {
+            if (width < 768) {
                 body.addClass('content-wrapper');
                 $(".sidebar-nav, .slimScrollDiv").css("overflow-x", "visible").parent().css("overflow", "visible");
             } else {
