@@ -1414,7 +1414,7 @@ img.dark-logo-side {
 span.select2-selection.select2-selection--single,
 span.select2-selection.select2-selection--multiple{
     background: inherit;
-    height: 38px;
+    min-height: 38px;
 }
 img.img-chooser {
     width: 20px;
