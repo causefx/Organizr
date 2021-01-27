@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Slim Framework (https://slimframework.com)
  *
@@ -13,6 +14,8 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Slim\Interfaces\InvocationStrategyInterface;
 
+use function array_values;
+
 /**
  * Route callback strategy with route parameters as individual arguments.
  */
@@ -25,7 +28,7 @@ class RequestResponseArgs implements InvocationStrategyInterface
      * @param callable               $callable
      * @param ServerRequestInterface $request
      * @param ResponseInterface      $response
-     * @param array                  $routeArguments
+     * @param array<mixed>           $routeArguments
      *
      * @return ResponseInterface
      */

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Slim Framework (https://slimframework.com)
  *
@@ -17,7 +18,7 @@ interface Psr17FactoryProviderInterface
     public static function getFactories(): array;
 
     /**
-     * @var string[]
+     * @param string[] $factories
      */
     public static function setFactories(array $factories): void;
 

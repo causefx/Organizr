@@ -1,9 +1,11 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Slim\Routing;
 
-use FastRoute\RouteCollector;
+use FastRoute\DataGenerator\GroupCountBased;
+use FastRoute\RouteCollector as FastRouteCollector;
 use FastRoute\RouteParser\Std;
 use Slim\Interfaces\DispatcherInterface;
 use Slim\Interfaces\RouteCollectorInterface;
@@ -37,9 +39,11 @@ class Dispatcher implements DispatcherInterface
             return $this->dispatcher;
         }
 
-        $routeDefinitionCallback = function (RouteCollector $r) {
+        $routeDefinitionCallback = function (FastRouteCollector $r) {
+            $basePath = $this->routeCollector->getBasePath();
+
             foreach ($this->routeCollector->getRoutes() as $route) {
-                $r->addRoute($route->getMethods(), $route->getPattern(), $route->getIdentifier());
+                $r->addRoute($route->getMethods(), $basePath . $route->getPattern(), $route->getIdentifier());
             }
         };
 
@@ -47,6 +51,7 @@ class Dispatcher implements DispatcherInterface
         if ($cacheFile) {
             /** @var FastRouteDispatcher $dispatcher */
             $dispatcher = \FastRoute\cachedDispatcher($routeDefinitionCallback, [
+                'dataGenerator' => GroupCountBased::class,
                 'dispatcher' => FastRouteDispatcher::class,
                 'routeParser' => new Std(),
                 'cacheFile' => $cacheFile,
@@ -54,6 +59,7 @@ class Dispatcher implements DispatcherInterface
         } else {
             /** @var FastRouteDispatcher $dispatcher */
             $dispatcher = \FastRoute\simpleDispatcher($routeDefinitionCallback, [
+                'dataGenerator' => GroupCountBased::class,
                 'dispatcher' => FastRouteDispatcher::class,
                 'routeParser' => new Std(),
             ]);

@@ -1,3 +1,20 @@
+## 4.1.5 (2020-12-08)
+
+[ADDED] Support for PHP 8.
+
+## 4.1.4 (2020-04-14)
+
+[FIXED] Errors in the failure path of `get_...` methods revealed by stricter type checking in PHP7.4
+
+## 4.1.3 (2020-04-01)
+
+No functional change, previous release was only partially successful
+
+## 4.1.2 (2020-04-01)
+
+[ADDED] option `encryption_master_key_base64`
+[DEPRECATED] option `encryption_master_key`
+
 ## 4.1.1 (2019-12-03)
 
 [ADDED] Support for PHP 7.4.
