@@ -6,7 +6,7 @@
     'aliases' => 
     array (
     ),
-    'reference' => 'ae44089b1b0cf1cb63e4fb28e4bcae4137884064',
+    'reference' => '4f3a4e2860249439b127a128c99a1fe02f82dd41',
     'name' => '__root__',
   ),
   'versions' => 
@@ -18,16 +18,16 @@
       'aliases' => 
       array (
       ),
-      'reference' => 'ae44089b1b0cf1cb63e4fb28e4bcae4137884064',
+      'reference' => '4f3a4e2860249439b127a128c99a1fe02f82dd41',
     ),
     'adldap2/adldap2' => 
     array (
-      'pretty_version' => 'v10.3.0',
-      'version' => '10.3.0.0',
+      'pretty_version' => 'v10.3.1',
+      'version' => '10.3.1.0',
       'aliases' => 
       array (
       ),
-      'reference' => '1294c92746e3fb3bb59cd7756ca7838a1e705a2a',
+      'reference' => '936a4e2eb925d005198f716a75bb78068c4de94d',
     ),
     'composer/semver' => 
     array (
@@ -225,6 +225,13 @@
       ),
       'reference' => '12ac7fcd07e5b077433f5f2bee95b3a771bf61be',
     ),
+    'psr/http-factory-implementation' => 
+    array (
+      'provided' => 
+      array (
+        0 => '1.0',
+      ),
+    ),
     'psr/http-message' => 
     array (
       'pretty_version' => '1.0.1',
@@ -306,12 +313,12 @@
     ),
     'slim/psr7' => 
     array (
-      'pretty_version' => '1.1.0',
-      'version' => '1.1.0.0',
+      'pretty_version' => '1.3.0',
+      'version' => '1.3.0.0',
       'aliases' => 
       array (
       ),
-      'reference' => '3c76899e707910779f13d7af95fde12310b0a5ae',
+      'reference' => '235d2e5a5ee1ad4b97b96870f37f3091b22fffd7',
     ),
     'slim/slim' => 
     array (
@@ -375,6 +382,15 @@
       array (
       ),
       'reference' => '9050816e2ca34a8e916c3a0ae8b9c2fccf68b631',
+    ),
+    'symfony/polyfill-php80' => 
+    array (
+      'pretty_version' => 'v1.22.0',
+      'version' => '1.22.0.0',
+      'aliases' => 
+      array (
+      ),
+      'reference' => 'dc3063ba22c2a1fd2f45ed856374d79114998f91',
     ),
     'symfony/polyfill-util' => 
     array (
