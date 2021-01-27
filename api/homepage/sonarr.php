@@ -9,7 +9,24 @@ trait SonarrHomepageItem
 			'enabled' => strpos('personal', $this->config['license']) !== false,
 			'image' => 'plugins/images/tabs/sonarr.png',
 			'category' => 'PVR',
+			'docs' => 'https://docs.organizr.app/books/setup-features/page/sonarr',
 			'settings' => array(
+				'About' => array(
+					array(
+						'type' => 'html',
+						'override' => 12,
+						'label' => '',
+						'html' => '
+							<div class="panel panel-default">
+								<div class="panel-wrapper collapse in">
+									<div class="panel-body">
+										<h3 lang="en">Sonarr Homepage Item</h3>
+										<p lang="en">This item allows access to Sonarr\'s calendar data and aggregates it to Organizr\'s calendar.  Along with that you also have the Downloader function that allow access to Sonarr\'s queue.  The last item that is included is the API SOCKS function which acts as a middleman between API\'s which is useful if you are not port forwarding or reverse proxying Sonarr.</p>
+									</div>
+								</div>
+							</div>'
+					),
+				),
 				'Enable' => array(
 					array(
 						'type' => 'switch',
