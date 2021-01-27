@@ -3461,7 +3461,7 @@ function ignoreNewsId(id){
 	organizrAPI2('POST','api/v2/news/' + id,{}).success(function(data) {
 		try {
 			let response = data.response;
-			message('News Item','Id now ignored',activeInfo.settings.notifications.position,"#FFF","success","5000");
+			message('News Item','Item now ignored',activeInfo.settings.notifications.position,"#FFF","success","5000");
 			$('.newsItem-' + id).remove();
 			$('.newsHeart-' + id).remove();
 		}catch(e) {
@@ -3563,7 +3563,15 @@ function backersLoad(){
 	organizrAPI2('GET','api/v2/opencollective').success(function(data) {
 		try {
 			let json = data.response;
-			$('.backers-list').html(buildBackers(json.data));
+			$('#backersList').html(buildBackers(json.data));
+			$('.backers-items').owlCarousel({
+				nav:false,
+				autoplay:true,
+				dots:false,
+				margin:10,
+				autoWidth:true,
+				items:4
+			});
 		}catch(e) {
 			organizrCatchError(e,data);
 		}
@@ -3576,16 +3584,27 @@ function buildBackers(array){
 	$.each(array, function(i,v) {
 		if(v.type == 'USER' && v.role == 'BACKER' && v.isActive){
 			v.name = v.name ? v.name : 'User';
-			v.image = v.image ? v.image : null;
-			if(v.image == null){
-				backers += '<li><span alt="user" data-toggle="tooltip" title="" class="circle circle-md bg-info di" data-original-title="'+v.name+'" href="image here"><i class="fa fa-user"></i></span></li>';
-			}else{
-				backers += '<li><img src="'+v.image+'" alt="user" height="60" width="60" data-toggle="tooltip" title="" class="img-circle" data-original-title="'+v.name+'"></li>';
-			}
+			v.image = v.image ? v.image : 'plugins/images/default_user.png';
+			backers += `
+		        <!-- /.usercard -->
+		        <div class="item lazyload recent-sponsor imageSource"  data-src="${v.image}">
+		            <span class="elip recent-title" lang="en">${v.name}</span>
+		        </div>
+		        <!-- /.usercard-->
+		    `;
 		}
 	});
-	backers += '<li><a href="https://opencollective.com/organizr" target="_blank" class="circle circle-md bg-info di" data-toggle="tooltip" title="" data-original-title="Join" lang="en">You</a></li>';
+	backers += `
+        <!-- /.usercard -->
+        <div class="item lazyload recent-sponsor mouse imageSource mouse" onclick="window.open('https://opencollective.com/organizr', '_blank')" data-src="plugins/images/sponsor-open-collective.png">
+            <span class="elip recent-title" lang="en">You</span>
+        </div>
+        <!-- /.usercard-->
+    `;
 	return backers;
+
+
+
 }
 function sponsorDetails(id){
 	sponsorsJSON().success(function(data) {
