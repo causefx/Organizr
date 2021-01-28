@@ -59,7 +59,19 @@ trait TraktHomepageItem
 						'name' => 'traktClientSecret',
 						'label' => 'Client Secret',
 						'value' => $this->config['traktClientSecret']
-					)
+					),
+					array(
+						'type' => 'blank',
+						'label' => 'Please Save before clicking button'
+					),
+					array(
+						'type' => 'button',
+						'label' => '',
+						'icon' => 'fa fa-user',
+						'class' => 'pull-right',
+						'text' => 'Connect Account',
+						'attr' => 'onclick="openOAuth(\'trakt\')"'
+					),
 				),
 				'Calendar' => array(
 					array(

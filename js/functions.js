@@ -8794,7 +8794,7 @@ const plex_oauth_loader = '<style>' +
     '<div class="login-loader-message">' +
     '<div class="login-loader"></div>' +
     '<br>' +
-    'Redirecting to the Plex login page...' +
+    'Redirecting to the login page...' +
     '</div>' +
     '</div>';
 function closePlexOAuthWindow() {
@@ -8881,6 +8881,13 @@ function PlexOAuth(success, error, pre) {
             error()
         }
     });
+}
+function openOAuth(provider){
+	// will actually fix this later
+	closePlexOAuthWindow();
+	plex_oauth_window = PopupCenter('', 'OAuth', 600, 700);
+	$(plex_oauth_window.document.body).html(plex_oauth_loader);
+	plex_oauth_window.location = 'api/v2/oauth/trakt';
 }
 function encodeData(data) {
     return Object.keys(data).map(function(key) {
