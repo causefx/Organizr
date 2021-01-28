@@ -26,7 +26,34 @@ trait OAuthFunctions
 					'traktRefreshToken' => $token->getRefreshToken()
 				];
 				$this->updateConfig($traktDetails);
-				echo 'Details saved - Please close me!';
+				echo '
+					<!DOCTYPE html>
+					<html lang="en">
+					<head>
+						<link rel="stylesheet" href="' . $this->getServerPath() . '/css/mvp.css">
+						<meta charset="utf-8">
+						<meta name="description" content="Trakt OAuth">
+						<meta name="viewport" content="width=device-width, initial-scale=1.0">
+						<title>Trakt OAuth</title>
+					</head>
+					<script language=javascript>
+					function closemyself() {
+						window.opener=self;
+						window.close();
+					}
+					</script>
+					<body onLoad="setTimeout(\'closemyself()\',3000);">
+						<main>
+							<section>
+								<aside>
+									<h3>Details Saved</h3>
+									<p><sup>(This window will close automatically)</sup></p>
+								</aside>
+							</section>
+						</main>
+					</body>
+					</html>
+				';
 				exit;
 			} catch (\League\OAuth2\Client\Provider\Exception\IdentityProviderException $e) {
 				exit($e->getMessage());
