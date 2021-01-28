@@ -9032,6 +9032,11 @@ function requestNewID(id) {
 		url: "https://api.themoviedb.org/3/tv/"+id+"/external_ids?api_key=83cf4ee97bb728eeaf9d4a54e64356a1&language=en-US",
 	});
 }
+function getTmdbImages(id, type) {
+	return $.ajax({
+		url: `https://api.themoviedb.org/3/${type}/${id}/images?api_key=83cf4ee97bb728eeaf9d4a54e64356a1`,
+	});
+}
 function inlineLoad(){
 	$('.inline-popups').magnificPopup({
 	  removalDelay: 500, //delay removal by X to allow out-animation

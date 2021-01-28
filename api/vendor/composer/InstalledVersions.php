@@ -29,7 +29,7 @@ private static $installed = array (
     'aliases' => 
     array (
     ),
-    'reference' => '4f3a4e2860249439b127a128c99a1fe02f82dd41',
+    'reference' => '4e3765a9a4e63d1a4353ba100264632bad9e38ed',
     'name' => '__root__',
   ),
   'versions' => 
@@ -41,7 +41,7 @@ private static $installed = array (
       'aliases' => 
       array (
       ),
-      'reference' => '4f3a4e2860249439b127a128c99a1fe02f82dd41',
+      'reference' => '4e3765a9a4e63d1a4353ba100264632bad9e38ed',
     ),
     'adldap2/adldap2' => 
     array (
@@ -51,6 +51,15 @@ private static $installed = array (
       array (
       ),
       'reference' => '936a4e2eb925d005198f716a75bb78068c4de94d',
+    ),
+    'bogstag/oauth2-trakt' => 
+    array (
+      'pretty_version' => 'v1.0.1',
+      'version' => '1.0.1.0',
+      'aliases' => 
+      array (
+      ),
+      'reference' => 'fbb9253d9e317e84dc2b3f1253afc1dcbb4414a2',
     ),
     'composer/semver' => 
     array (
@@ -175,6 +184,15 @@ private static $installed = array (
       array (
       ),
       'reference' => 'a11ec5f4b4d75d1fcd04e133dede4c317aac9e18',
+    ),
+    'league/oauth2-client' => 
+    array (
+      'pretty_version' => '2.6.0',
+      'version' => '2.6.0.0',
+      'aliases' => 
+      array (
+      ),
+      'reference' => 'badb01e62383430706433191b82506b6df24ad98',
     ),
     'nikic/fast-route' => 
     array (

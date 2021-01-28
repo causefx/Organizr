@@ -29,6 +29,7 @@ return array(
     'ParagonIE\\ConstantTime\\' => array($vendorDir . '/paragonie/constant_time_encoding/src'),
     'PHPMailer\\PHPMailer\\' => array($vendorDir . '/phpmailer/phpmailer/src'),
     'OpenApi\\' => array($vendorDir . '/zircote/swagger-php/src'),
+    'League\\OAuth2\\Client\\' => array($vendorDir . '/league/oauth2-client/src'),
     'Lcobucci\\JWT\\' => array($vendorDir . '/lcobucci/jwt/src'),
     'Kryptonit3\\Sonarr\\' => array($vendorDir . '/kryptonit3/sonarr/src'),
     'Kryptonit3\\SickRage\\' => array($vendorDir . '/kryptonit3/sickrage/src'),
@@ -42,5 +43,6 @@ return array(
     'Doctrine\\Common\\Lexer\\' => array($vendorDir . '/doctrine/lexer/lib/Doctrine/Common/Lexer'),
     'Doctrine\\Common\\Annotations\\' => array($vendorDir . '/doctrine/annotations/lib/Doctrine/Common/Annotations'),
     'Composer\\Semver\\' => array($vendorDir . '/composer/semver/src'),
+    'Bogstag\\OAuth2\\Client\\' => array($vendorDir . '/bogstag/oauth2-trakt/src'),
     'Adldap\\' => array($vendorDir . '/adldap2/adldap2/src'),
 );

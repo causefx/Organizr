@@ -1863,3 +1863,36 @@ $(document).on('click', '#homepage-Plex-form li a[aria-controls="Misc Options"]'
         $('#customize-appearance-form-save').removeClass('hidden');
     });
 });
+// Trakt image fix
+$(document).on('click', '.get-tmdb-image', function() {
+	let target = $(this).attr('data-target');
+	let type = $(this).hasClass('tmdb-tv') ? 'tv' : 'movie';
+	let classList = $(this).attr('class');
+	checkMetadataDiv(target,type,classList);
+});
+
+function checkMetadataDiv(target,type,classList){
+	let classArray = classList.split(/\s+/);
+	$(classArray).each(function (i,v) {
+		if(v.includes('--')){
+			let getId = v.split('--');
+			getTmdbImages(getId[1], type).success(function(data) {
+				try {
+					let response = data;
+					let bg = 'https://image.tmdb.org/t/p/w1280';
+					if(typeof response.backdrops !== 'undefined'){
+						bg = bg + response.backdrops[0]['file_path'];
+						$('.' + target + '-metadata-info .user-bg').css('background-image' , '');
+						setTimeout(function(){
+							$('.' + target + '-metadata-info .user-bg').css('background-image' , 'url('+bg+')');
+						}, 25);
+					}
+				}catch(e) {
+					console.log('tmdb Error');
+				}
+			}).fail(function(xhr) {
+				console.log('tmdb Error');
+			});
+		}
+	});
+}

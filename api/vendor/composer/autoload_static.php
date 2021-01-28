@@ -64,6 +64,7 @@ class ComposerStaticInitcbdc783d76f8e7563dcce7d8af053ecb
         ),
         'L' => 
         array (
+            'League\\OAuth2\\Client\\' => 21,
             'Lcobucci\\JWT\\' => 13,
         ),
         'K' => 
@@ -95,6 +96,10 @@ class ComposerStaticInitcbdc783d76f8e7563dcce7d8af053ecb
         'C' => 
         array (
             'Composer\\Semver\\' => 16,
+        ),
+        'B' => 
+        array (
+            'Bogstag\\OAuth2\\Client\\' => 22,
         ),
         'A' => 
         array (
@@ -197,6 +202,10 @@ class ComposerStaticInitcbdc783d76f8e7563dcce7d8af053ecb
         array (
             0 => __DIR__ . '/..' . '/zircote/swagger-php/src',
         ),
+        'League\\OAuth2\\Client\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/league/oauth2-client/src',
+        ),
         'Lcobucci\\JWT\\' => 
         array (
             0 => __DIR__ . '/..' . '/lcobucci/jwt/src',
@@ -248,6 +257,10 @@ class ComposerStaticInitcbdc783d76f8e7563dcce7d8af053ecb
         'Composer\\Semver\\' => 
         array (
             0 => __DIR__ . '/..' . '/composer/semver/src',
+        ),
+        'Bogstag\\OAuth2\\Client\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/bogstag/oauth2-trakt/src',
         ),
         'Adldap\\' => 
         array (

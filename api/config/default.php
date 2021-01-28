@@ -456,5 +456,14 @@ return array(
 	'customForgotPasswordText' => '',
 	'disableRecoverPassword' => false,
 	'expandCategoriesByDefault' => false,
-	'ignoredNewsIds' => array()
+	'ignoredNewsIds' => array(),
+	'homepageTraktEnabled' => false,
+	'homepageTraktAuth' => '1',
+	'calendarStartTrakt' => '14',
+	'calendarEndTrakt' => '14',
+	'traktClientId' => '',
+	'traktClientSecret' => '',
+	'traktAccessToken' => '',
+	'traktAccessTokenExpires' => '',
+	'traktRefreshToken' => ''
 );

@@ -15,6 +15,7 @@ class Organizr
 	use LogFunctions;
 	use NetDataFunctions;
 	use NormalFunctions;
+	use OAuthFunctions;
 	use OptionsFunction;
 	use OrganizrFunctions;
 	use PluginFunctions;
@@ -52,6 +53,7 @@ class Organizr
 	use SonarrHomepageItem;
 	use SpeedTestHomepageItem;
 	use TautulliHomepageItem;
+	use TraktHomepageItem;
 	use TransmissionHomepageItem;
 	use UnifiHomepageItem;
 	use WeatherHomepageItem;
