@@ -15,6 +15,7 @@ class Organizr
 	use LogFunctions;
 	use NetDataFunctions;
 	use NormalFunctions;
+	use OAuthFunctions;
 	use OptionsFunction;
 	use OrganizrFunctions;
 	use PluginFunctions;
@@ -52,13 +53,14 @@ class Organizr
 	use SonarrHomepageItem;
 	use SpeedTestHomepageItem;
 	use TautulliHomepageItem;
+	use TraktHomepageItem;
 	use TransmissionHomepageItem;
 	use UnifiHomepageItem;
 	use WeatherHomepageItem;
 	
 	// ===================================
 	// Organizr Version
-	public $version = '2.1.165';
+	public $version = '2.1.183';
 	// ===================================
 	// Quick php Version check
 	public $minimumPHP = '7.2';
@@ -2097,16 +2099,16 @@ class Organizr
 				),
 				array(
 					'type' => 'switch',
-					'name' => 'disableRecoverPassword',
+					'name' => 'disableRecoverPass',
 					'label' => 'Disable Recover Password',
 					'help' => 'Disables recover password area',
-					'value' => $this->config['disableRecoverPassword'],
+					'value' => $this->config['disableRecoverPass'],
 				),
 				array(
 					'type' => 'input',
-					'name' => 'customForgotPasswordText',
+					'name' => 'customForgotPassText',
 					'label' => 'Custom Recover Password Text',
-					'value' => $this->config['customForgotPasswordText'],
+					'value' => $this->config['customForgotPassText'],
 					'placeholder' => '',
 					'help' => 'Text or HTML for recovery password section'
 				),
@@ -2445,6 +2447,27 @@ class Organizr
 			$array['name'] => $array['value']
 		);
 		return ($this->updateConfig($newItem)) ? true : false;
+	}
+	
+	public function ignoreNewsId($id)
+	{
+		if (!$id) {
+			$this->setAPIResponse('error', 'News id was not supplied', 409);
+			return false;
+		}
+		$id = array(intval($id));
+		$newsIds = $this->config['ignoredNewsIds'];
+		$newsIds = array_merge($newsIds, $id);
+		$newsIds = array_unique($newsIds);
+		$this->updateConfig(['ignoredNewsIds' => $newsIds]);
+		$this->setAPIResponse('success', 'News id is now ignored', 200, null);
+	}
+	
+	public function getNewsIds()
+	{
+		$newsIds = $this->config['ignoredNewsIds'];
+		$this->setAPIResponse('success', null, 200, $newsIds);
+		return $newsIds;
 	}
 	
 	public function testWizardPath($array)

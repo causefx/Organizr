@@ -11,9 +11,9 @@ function get_page_login($Organizr)
 	$hideOrganizrLogin = ($Organizr->checkoAuth()) ? 'collapse' : 'collapse in';
 	$hideOrganizrLoginHeader = ($Organizr->checkoAuthOnly()) ? 'hidden' : '';
 	$hideOrganizrLoginHeader2 = ($Organizr->checkoAuth()) ? '' : 'hidden';
-	$hideOrganizrRecoveryPassword = ($Organizr->config['disableRecoverPassword']) ? 'hidden' : '';
-	$customForgotPasswordText = (empty($Organizr->config['customForgotPasswordText'])) ? 'Enter your Email and instructions will be sent to you!' : $Organizr->config['customForgotPasswordText'];
-	$customForgotPasswordText = ($Organizr->config['disableRecoverPassword']) ? 'Disabled' : $customForgotPasswordText;
+	$hideOrganizrRecoveryPassword = ($Organizr->config['disableRecoverPass']) ? 'hidden' : '';
+	$customForgotPasswordText = (empty($Organizr->config['customForgotPassText'])) ? 'Enter your Email and instructions will be sent to you!' : $Organizr->config['customForgotPassText'];
+	$customForgotPasswordText = ($Organizr->config['disableRecoverPass']) ? 'Disabled' : $customForgotPasswordText;
 	return '
 <script>
 if(activeInfo.settings.login.rememberMe){

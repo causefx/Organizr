@@ -1,11 +1,21 @@
 [
   {
+    "title": "Important Messages - Each message can now be ignored using ignore button",
+    "subTitle": "I know they were annoying to some people",
+    "date": "2021-01-24 15:30",
+    "body": "Just make sure to click (Important Message - Click me to Ignore)",
+    "author": "CauseFX",
+    "important": true,
+    "id": 11
+  },
+  {
     "title": "API V2 TESTING almost complete",
     "subTitle": "Organizr API v2 changes will break installs unless changes to webserver are completed",
     "date": "2020-09-17 20:30",
     "body": "This is just a warning that the changes will be merged 2nd of October. If you are using docker - make sure to use organizr/organizr - DO NOT USE organizrTools image!  Also with the changes you need to update your webserver if you haven't already.  A list of fixes for each webserver along with other breaking changes are noted in the migration note here: <a href=\"https:\/\/docs.organizr.app\/books\/setup-features\/page\/api-v2-webserver-changes-needed\", target=\"_blank\" rel=\"noopener noreferrer\">API migration note<\/a>",
     "author": "CauseFX",
-    "important": true
+    "important": true,
+    "id": 10
   },
   {
     "title": "Develop Branch Users - Please switch to Master for mean time",
@@ -13,62 +23,71 @@
     "date": "2020-08-24 15:00",
     "body": "The new API is now complete and we plan on using the develop branch to do the testing.  So if you want to test and are okay with things possibly breaking, then by all means stay on the develop branch.  The API change is coming this week for sure so please be ready and make sure everyone has done the webserver location block addition.  If you do not do this and you upgrade, it will break your install.  Please refer to the migration note for details <a href=\"https:\/\/docs.organizr.app\/books\/setup-features\/page\/api-v2-webserver-changes-needed\", target=\"_blank\" rel=\"noopener noreferrer\">API migration note<\/a>",
     "author": "CauseFX",
-    "important": true
+    "important": true,
+    "id": 9
   },
   {
     "title": "New Organizr API v2",
     "subTitle": "Breaking changes are coming!!!",
     "date": "2020-08-07 17:00",
     "body": "I am currently in the process of creating the 2nd version of the Organizr API.  With that being said, with the way v1 of API was written, it will be replaced with this new version. I will be writing portions of the API so the change will be minimal.  The first changes that will be pushed are the plugins portion of the API.  This will be pushed by August 14th.  Please refer to the migration note for details <a href=\"https:\/\/docs.organizr.app\/books\/setup-features\/page\/api-v2-webserver-changes-needed\", target=\"_blank\" rel=\"noopener noreferrer\">API migration note<\/a>",
-    "author": "CauseFX"
+    "author": "CauseFX",
+    "id": 8
   },
   {
     "title": "New container",
     "subTitle": "Deprecating organizrtools/organizr-v2",
     "date": "2020-07-25 20:30",
     "body": "Organizrtools/organizr-v2 is being deprecated, breaking changes are coming to Organizr, which this container wont be updated to handle. Please refer to the migration note for details <a href=\"https:\/\/github.com\/Organizr\/docker-organizr#migration\" target=\"_blank\" rel=\"noopener noreferrer\">Container migration note<\/a>",
-    "author": "Roxedus"
+    "author": "Roxedus",
+    "id": 7
   },
   {
     "title": "Plex OAuth Patch",
     "subTitle": "You server hostname will now be listed on OAuth box",
     "date": "2020-06-18 16:30",
     "body": "Plex has now fixed the 3 open CVE's pertaining to the ability for an attacker to phish for an Plex Admins token.  Please follow this link to read more about it.  <a href=\"https:\/\/www.bleepingcomputer.com\/news\/security\/plex-fixes-media-server-bugs-allowing-full-system-takeover\/\" target=\"_blank\" rel=\"noopener noreferrer\">Plex Vulnerabilities Patched<\/a>",
-    "author": "CauseFX"
+    "author": "CauseFX",
+    "id": 6
   },
   {
     "title": "Tab Redirect Loops and SameSite Cookie Issues",
     "subTitle": "New Browser Restrictions",
     "date": "2020-04-01 19:30",
     "body": "It seems there are a lot of issues happening with redirect Loops and SameSite cookie issues.  If you are having issues, please read this document.  <a href=\"https:\/\/docs.organizr.app\/books\/troubleshooting\/page\/redirect-looping---samesite-errors\" target=\"_blank\" rel=\"noopener noreferrer\">Organizr SameSite Docs<\/a>",
-    "author": "CauseFX"
+    "author": "CauseFX",
+    "id": 5
   },
   {
     "title": "Plex Oauth Issues - RESOLVED!",
     "subTitle": "Let's make them bring back support correctly",
     "date": "2019-07-17 15:20",
     "body": "It seems like Plex has broken support for us using Oauth.  Currently there is a workaround but we would rather they fix the issue.  Please share your feedback in this thread: <a href=\"https:\/\/forums.plex.tv\/t\/plex-oauth-not-working-with-tautulli-ombi-etc\/433945\" target=\"_blank\" rel=\"noopener noreferrer\">Plex Oauth Discussion<\/a>",
-    "author": "CauseFX"
+    "author": "CauseFX",
+    "id": 4
   },
   {
     "title": "Emby Discontinued Support",
     "subTitle": "Emby API - EmbyConnect Deprecated",
     "date": "2019-05-14 19:15",
     "body": "Emby has discontinued support for matching users against Emby Connect via API.  Therefore, we will no longer be supporting this method of Authentication for Organizr.  If Emby decides to support this again, I will re-enable it once more.  You can find more information here: <a href=\"https:\/\/github.com\/MediaBrowser\/Emby\/issues\/3553\" target=\"_blank\" rel=\"noopener noreferrer\">Emby API Discussion<\/a>",
-    "author": "CauseFX"
+    "author": "CauseFX",
+    "id": 3
   },
   {
     "title": "Welcome to Version 2.0",
     "subTitle": "We finally made it...",
     "date": "2019-03-01 16:30",
     "body": "I want to thank all the alpha and beta testers.  It took us awhile but we did it!  I hope you enjoy using Organizr...",
-    "author": "CauseFX"
+    "author": "CauseFX",
+    "id": 2
   },
   {
     "title": "Testing out News Area",
     "subTitle": null,
     "date": "2019-02-22 21:40",
     "body": "There will be news here in the future, thanks for bearing with me in the meantime throughout the v2 beta!",
-    "author": "CauseFX"
+    "author": "CauseFX",
+    "id": 1
   }
 ]

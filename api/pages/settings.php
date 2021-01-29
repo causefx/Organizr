@@ -280,12 +280,15 @@ function get_page_settings($Organizr)
     							</div>
     							<div class="row">
     							    <div class="col-lg-12">
-                                        <div class="white-box bg-org">
-	                                        <div class="p-20 p-t-0 text-center">
-							                    <h4 class="font-medium" lang="en">Backers</h4>
-							                    <ul class="dp-table m-t-30 backers-list"></ul>
+    							        <div class="panel panel-default">
+											<div class="panel-heading bg-org p-t-10 p-b-10">
+												<span class="pull-left m-t-5"><span lang="en">Backers</span></span>
+												<div class="clearfix"></div>
+											</div>
+							                <div class="panel-wrapper p-b-0 collapse in bg-org">
+							                	<div id="backersList" class="owl-carousel owl-theme backers-items"></div>
 							                </div>
-						                </div>
+							            </div>
                                     </div>
     							</div>
                                 <div class="clearfix"></div>

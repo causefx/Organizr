@@ -21,6 +21,40 @@ class PusherCrypto
         return substr($channel, 0, strlen(self::ENCRYPTED_PREFIX)) === self::ENCRYPTED_PREFIX;
     }
 
+    public static function parse_master_key($encryption_master_key, $encryption_master_key_base64)
+    {
+        if (!function_exists('sodium_crypto_secretbox')) {
+            throw new PusherException('To use end to end encryption, you must either be using PHP 7.2 or greater or have installed the libsodium-php extension for php < 7.2.');
+        }
+
+        if ($encryption_master_key != '' and $encryption_master_key_base64 != '') {
+            throw new PusherException('Do not specify both encryption_master_key and encryption_master_key_base64. encryption_master_key is deprecated, use only encryption_master_key_base64');
+        }
+
+        if ($encryption_master_key != '') {
+            if (strlen($encryption_master_key) != SODIUM_CRYPTO_SECRETBOX_KEYBYTES) {
+                throw new PusherException('encryption_master_key must be 32 bytes. It is also deprecated, use encryption_master_key_base64');
+            }
+
+            return $encryption_master_key;
+        }
+
+        if ($encryption_master_key_base64 != '') {
+            $decoded_key = base64_decode($encryption_master_key_base64, true);
+            if ($decoded_key === false) {
+                throw new PusherException('encryption_master_key_base64 must be a valid base64 string');
+            }
+
+            if (strlen($decoded_key) != SODIUM_CRYPTO_SECRETBOX_KEYBYTES) {
+                throw new PusherException('encryption_master_key_base64 must encode a key which is 32 bytes long');
+            }
+
+            return $decoded_key;
+        }
+
+        return '';
+    }
+
     /**
      * Initialises a PusherCrypto instance.
      *
@@ -28,17 +62,7 @@ class PusherCrypto
      */
     public function __construct($encryption_master_key)
     {
-        if (function_exists('sodium_crypto_secretbox')) {
-            if (strlen($encryption_master_key) === SODIUM_CRYPTO_SECRETBOX_KEYBYTES) {
-                $this->encryption_master_key = $encryption_master_key;
-
-                return;
-            } else {
-                throw new PusherException('Your end to end encryption key must be 32 chars long');
-            }
-        }
-
-        throw new PusherException('To use end to end encryption, you must either be using PHP 7.2 or greater or have installed the libsodium-php extension for php < 7.2.');
+        $this->encryption_master_key = $encryption_master_key;
     }
 
     /**

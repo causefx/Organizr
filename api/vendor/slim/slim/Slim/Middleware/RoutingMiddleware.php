@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Slim Framework (https://slimframework.com)
  *
@@ -18,6 +19,7 @@ use Slim\Exception\HttpMethodNotAllowedException;
 use Slim\Exception\HttpNotFoundException;
 use Slim\Interfaces\RouteParserInterface;
 use Slim\Interfaces\RouteResolverInterface;
+use Slim\Routing\RouteContext;
 use Slim\Routing\RoutingResults;
 
 class RoutingMiddleware implements MiddlewareInterface
@@ -53,7 +55,6 @@ class RoutingMiddleware implements MiddlewareInterface
      */
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
-        $request = $request->withAttribute('routeParser', $this->routeParser);
         $request = $this->performRouting($request);
         return $handler->handle($request);
     }
@@ -70,13 +71,12 @@ class RoutingMiddleware implements MiddlewareInterface
      */
     public function performRouting(ServerRequestInterface $request): ServerRequestInterface
     {
-        $routingResults = $this->routeResolver->computeRoutingResults(
-            $request->getUri()->getPath(),
-            $request->getMethod()
-        );
+        $request = $request->withAttribute(RouteContext::ROUTE_PARSER, $this->routeParser);
+
+        $routingResults = $this->resolveRoutingResultsFromRequest($request);
         $routeStatus = $routingResults->getRouteStatus();
 
-        $request = $request->withAttribute('routingResults', $routingResults);
+        $request = $request->withAttribute(RouteContext::ROUTING_RESULTS, $routingResults);
 
         switch ($routeStatus) {
             case RoutingResults::FOUND:
@@ -85,7 +85,7 @@ class RoutingMiddleware implements MiddlewareInterface
                 $route = $this->routeResolver
                     ->resolveRoute($routeIdentifier)
                     ->prepare($routeArguments);
-                return $request->withAttribute('route', $route);
+                return $request->withAttribute(RouteContext::ROUTE, $route);
 
             case RoutingResults::NOT_FOUND:
                 throw new HttpNotFoundException($request);
@@ -98,5 +98,19 @@ class RoutingMiddleware implements MiddlewareInterface
             default:
                 throw new RuntimeException('An unexpected error occurred while performing routing.');
         }
+    }
+
+    /**
+     * Resolves the route from the given request
+     *
+     * @param  ServerRequestInterface $request
+     * @return RoutingResults
+     */
+    protected function resolveRoutingResultsFromRequest(ServerRequestInterface $request): RoutingResults
+    {
+        return $this->routeResolver->computeRoutingResults(
+            $request->getUri()->getPath(),
+            $request->getMethod()
+        );
     }
 }

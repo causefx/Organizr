@@ -1166,7 +1166,7 @@ function buildPluginsItem(array){
 					<div class="el-card-avatar el-overlay-1 m-0"> <img class="lazyload" data-src="`+v.image+`">
 						<div class="el-overlay">
 							<ul class="el-info">
-								`+settings+activeToggle+`
+								${settings} ${activeToggle}
 							</ul>
 						</div>
 					</div>
@@ -1314,23 +1314,23 @@ function loadMarketplaceThemesItems(themes){
         var removeButton = (v.status == 'Not Installed') ? 'disabled' : '';
         v.name = i;
         themeList += `
-            <tr class="themeManagement" data-name="`+i+`" data-version="`+v.version+`">
+            <tr class="themeManagement" data-name="${i}" data-version="${v.version}">
                 <td class="text-center el-element-overlay">
                     <div class="el-card-item p-0">
                         <div class="el-card-avatar el-overlay-1 m-0">
-                            <img alt="user-img" src="`+v.icon+`" width="45">
+                            <img alt="user-img" src="${v.icon}" width="45">
                         </div>
                     </div>
                 </td>
-                <td>`+i+`
-                    <br><span class="text-muted">`+v.version+`</span>
-                    <br><span class="text-muted">`+v.author+`</span>
+                <td>${i}
+                    <br><span class="text-muted">${v.version}</span>
+                    <br><span class="text-muted">${v.author}</span>
                 </td>
-                <td>`+v.category+`</td>
-                <td>`+v.status+`</td>
-                <td style="text-align:center"><button type="button" onclick='aboutTheme(`+JSON.stringify(v)+`);' class="btn btn-success btn-outline btn-circle btn-lg popup-with-form" href="#about-theme-form" data-effect="mfp-3d-unfold"><i class="fa fa-info"></i></button></td>
-                <td style="text-align:center"><button type="button" onclick='installTheme("`+cleanClass(i)+`");themeAnalytics("`+ v.name +`");' class="btn btn-info btn-outline btn-circle btn-lg"><i class="`+installButton+`"></i></button></td>
-                <td style="text-align:center"><button type="button" onclick='removeTheme("`+cleanClass(i)+`");' class="btn btn-danger btn-outline btn-circle btn-lg" `+removeButton+`><i class="fa fa-trash"></i></button></td>
+                <td>${v.category}</td>
+                <td>${v.status}</td>
+                <td style="text-align:center"><button type="button" onclick='aboutTheme(${JSON.stringify(v)});' class="btn btn-success btn-outline btn-circle btn-lg popup-with-form" href="#about-theme-form" data-effect="mfp-3d-unfold"><i class="fa fa-info"></i></button></td>
+                <td style="text-align:center"><button type="button" onclick='installTheme("${cleanClass(i)}");themeAnalytics("${v.name}");' class="btn btn-info btn-outline btn-circle btn-lg"><i class="${installButton}"></i></button></td>
+                <td style="text-align:center"><button type="button" onclick='removeTheme("${cleanClass(i)}");' class="btn btn-danger btn-outline btn-circle btn-lg" ${removeButton}><i class="fa fa-trash"></i></button></td>
             </tr>
         `;
 
@@ -1655,13 +1655,14 @@ function themeStatus(name=null,version=null){
     }
 }
 function homepageItemFormHTML(v){
+	let docs = (typeof v.docs == 'undefined') ? '' : `<small class="pl-5"><a class="btn btn-sm btn-primary waves-effect waves-light" href="${v.docs}" target="_blank"> <i class="icon-docs m-r-5"></i> <span lang="en">Support Docs</span></a></small>`;
 	return `
 	<a id="editHomepageItemCall" href="#editHomepageItemDiv" class="hidden">homepage item</a>
 	<form id="homepage-`+v.name+`-form" class="white-popup mfp-with-anim homepageForm addFormTick">
 		<fieldset style="border:0;" class="col-md-10 col-md-offset-1">
             <div class="panel bg-org panel-info">
                 <div class="panel-heading">
-                    <span lang="en">`+v.name+`</span>
+                    <span class="" lang="en">`+v.name+`</span>${docs}
                     <button type="button" class="btn bg-org btn-circle close-popup pull-right close-editHomepageItemDiv"><i class="fa fa-times"></i> </button>
                     <button id="homepage-`+v.name+`-form-save" onclick="submitSettingsForm('homepage-`+v.name+`-form')" class="btn btn-sm btn-info btn-rounded waves-effect waves-light pull-right hidden animated loop-animation rubberBand m-r-20" type="button"><span class="btn-label"><i class="fa fa-save"></i></span><span lang="en">Save</span></button>
                 </div>
@@ -1819,8 +1820,8 @@ function buildFormGroup(array){
                                     <!-- INPUT BOX  Yes Multiple -->
                                     <div class="col-md-6 p-b-10">
                                         <div class="form-group">
-                                            <label class="control-label col-md-12"><span lang="en">`+formItem.label+`</span>`+helpTip+`</label>
-                                            <div class="col-md-12"> `+ buildFormItem(formItem) +` </div> <!-- end div -->
+                                            <label class="control-label col-md-12"><span lang="en">${formItem.label}</span>${helpTip}</label>
+                                            <div class="col-md-12">${buildFormItem(formItem)}</div> <!-- end div -->
                                         </div>
                                     </div>
                                     <!--/ INPUT BOX -->
@@ -1837,9 +1838,9 @@ function buildFormGroup(array){
 					<!-- INPUT BOX  no Multiple-->
 					<div class="col-md-`+override+` p-b-10">
 						<div class="form-group">
-							<label class="control-label col-md-12"><span lang="en">`+v.label+`</span>`+helpTip+`</label>
+							<label class="control-label col-md-12"><span lang="en">${v.label}</span>${helpTip}</label>
 							<div class="col-md-12">
-								`+ buildFormItem(v) +`
+								${buildFormItem(v)}
 							</div>
 						</div>
 					</div>
@@ -2612,7 +2613,7 @@ function userMenu(user){
 					<li class="append-menu"><a class="inline-popups" href="#account-area" data-effect="mfp-zoom-out"><i class="ti-settings fa-fw"></i> <span lang="en">Account Settings</span></a></li>
 					<li class="divider" role="separator"></li>
 					<li><a href="javascript:void(0)" onclick="lock();"><i class="ti-lock fa-fw"></i> <span lang="en">Lock Screen</span></a></li>
-					` + showDebug + `
+					${showDebug}
 					<li><a href="javascript:void(0)" onclick="logout();"><i class="fa fa-sign-out fa-fw"></i> <span lang="en">Logout</span></a></li>
 				</ul><!-- /.dropdown-user -->
 			</li><!-- /.dropdown -->
@@ -2626,7 +2627,7 @@ function userMenu(user){
 			<ul class="nav nav-second-level collapse" aria-expanded="false" style="height: 0px;">
 				<li class="append-menu"><a class="inline-popups" href="#account-area" data-effect="mfp-zoom-out"><i class="ti-settings fa-fw"></i> <span lang="en">Account Settings</span></a></li>
 				<li><a href="javascript:void(0)" onclick="lock();"><i class="ti-lock fa-fw"></i> <span lang="en">Lock Screen</span></a></li>
-				` + showDebug + `
+				${showDebug}
 				<li><a href="javascript:void(0)" onclick="logout();"><i class="fa fa-sign-out fa-fw"></i> <span lang="en">Logout</span></a></li>
 			</ul>
 		</li>
@@ -2900,10 +2901,10 @@ function buildSplashScreenItem(arrayItems){
                     var nonImage = '<span class="text-uppercase badge bg-org splash-badge">'+image+'</span>';
                 }
                 splashList += `
-                <div class="col-xs-12 col-sm-3 col-md-3 col-lg-3 col-xl-2 mouse hvr-grow m-b-20" id="menu-`+cleanClass(v.name)+`" type="`+v.type+`" data-url="`+v.access_url+`" onclick="tabActions(event,'`+cleanClass(v.name)+`',`+v.type+`);">
-                    <div class="homepage-drag fc-event bg-org lazyload"  `+ dataSrc +`>
-                        `+nonImage+`
-                        <span class="homepage-text">&nbsp; `+v.name+`</span>
+                <div class="col-xs-12 col-sm-3 col-md-3 col-lg-3 col-xl-2 mouse hvr-grow m-b-20" id="menu-${cleanClass(v.name)}" type="${v.type}" data-url="${v.access_url}" onclick="tabActions(event,'${cleanClass(v.name)}',${v.type});">
+                    <div class="homepage-drag fc-event bg-org lazyload" ${dataSrc}>
+                        ${nonImage}
+                        <span class="homepage-text">&nbsp; ${v.name}</span>
                     </div>
                 </div>
                 `;
@@ -3456,6 +3457,20 @@ function updateCheck(){
 		OrganizrApiError(xhr);
 	});
 }
+function ignoreNewsId(id){
+	organizrAPI2('POST','api/v2/news/' + id,{}).success(function(data) {
+		try {
+			let response = data.response;
+			message('News Item','Item now ignored',activeInfo.settings.notifications.position,"#FFF","success","5000");
+			$('.newsItem-' + id).remove();
+			$('.newsHeart-' + id).remove();
+		}catch(e) {
+			organizrCatchError(e,data);
+		}
+	}).fail(function(xhr) {
+		OrganizrApiError(xhr, 'News');
+	});
+}
 function newsLoad(){
     newsJSON().success(function(data) {
         try {
@@ -3463,27 +3478,39 @@ function newsLoad(){
             var items = [];
             var limit = 5;
             var count = 0;
-            $.each(response, function(i,v) {
-                count++;
-                let alertDefined = (typeof v.important !== 'undefined' || v.important === false);
-                let alert = (alertDefined) ? '<span class="animated loop-animation flash text-danger">&nbsp; <i class="ti-alert"></i>&nbsp; Important Message</span>' : '';
-                let heartBeat = (alertDefined) ? '<div class="notify pull-left"><span class="heartbit"></span><span class="point"></span></div>' : '';
-                let newBody = `
-                <h5 class="pull-left">`+moment(v.date).format('LLL')+`</h5>
-                <h5 class="pull-right">`+v.author+`</h5>
-                <div class="clearfix"></div>
-                `+((v.subTitle) ? '<h5>' + v.subTitle + alert + '</h5>' : '' )+`
-                <p>`+v.body+`</p>
-                `;
-                if(count <= limit){
-                    items[i] = {
-                        title:v.title + heartBeat,
-                        body:newBody
-                    }
-                }
-            });
-            var body = buildAccordion(items, true);
-            $('#organizrNewsPanel').html(body);
+	        organizrAPI2('get','api/v2/news').success(function(data) {
+		        try {
+			        let ignoredIds = data.response.data;
+			        ignoredIds = ignoredIds == null ? [] : ignoredIds;
+			        $.each(response, function(i,v) {
+				        count++;
+				        let ignore = ignoredIds.includes(v.id);
+				        let alertDefined = (typeof v.important !== 'undefined' || v.important === false);
+				        let alert = (alertDefined && ignore == false) ? `<span class="animated loop-animation flash text-danger mouse newsItem-${v.id}" onclick="ignoreNewsId('${v.id}')">&nbsp; <i class="ti-alert"></i>&nbsp; Important Message - Click me to Ignore</span>` : '';
+				        let heartBeat = (alertDefined && ignore == false) ? `<div class="notify pull-left newsHeart-${v.id}"><span class="heartbit"></span><span class="point"></span></div>` : '';
+				        let newBody = `
+			                <h5 class="pull-left"><i class="ti-calendar"></i>&nbsp;`+moment(v.date).format('LLL')+ alert +`</h5>
+			                <h5 class="pull-right">`+v.author+`</h5>
+			                <div class="clearfix"></div>
+			                `+((v.subTitle) ? '<h5>' + v.subTitle +'</h5>' : '' )+`
+			                <p>`+v.body+`</p>
+			                `;
+				        if(count <= limit){
+					        items[i] = {
+						        title:v.title + heartBeat,
+						        body:newBody
+					        }
+				        }
+			        });
+			        var body = buildAccordion(items, true);
+			        $('#organizrNewsPanel').html(body);
+		        }catch(e) {
+			        organizrCatchError(e,data);
+		        }
+	        }).fail(function(xhr) {
+		        OrganizrApiError(xhr, 'News');
+	        });
+
         }catch(e) {
 	        organizrCatchError(e,data);
         }
@@ -3536,7 +3563,15 @@ function backersLoad(){
 	organizrAPI2('GET','api/v2/opencollective').success(function(data) {
 		try {
 			let json = data.response;
-			$('.backers-list').html(buildBackers(json.data));
+			$('#backersList').html(buildBackers(json.data));
+			$('.backers-items').owlCarousel({
+				nav:false,
+				autoplay:true,
+				dots:false,
+				margin:10,
+				autoWidth:true,
+				items:4
+			});
 		}catch(e) {
 			organizrCatchError(e,data);
 		}
@@ -3549,16 +3584,27 @@ function buildBackers(array){
 	$.each(array, function(i,v) {
 		if(v.type == 'USER' && v.role == 'BACKER' && v.isActive){
 			v.name = v.name ? v.name : 'User';
-			v.image = v.image ? v.image : null;
-			if(v.image == null){
-				backers += '<li><span alt="user" data-toggle="tooltip" title="" class="circle circle-md bg-info di" data-original-title="'+v.name+'" href="image here"><i class="fa fa-user"></i></span></li>';
-			}else{
-				backers += '<li><img src="'+v.image+'" alt="user" height="60" width="60" data-toggle="tooltip" title="" class="img-circle" data-original-title="'+v.name+'"></li>';
-			}
+			v.image = v.image ? v.image : 'plugins/images/default_user.png';
+			backers += `
+		        <!-- /.usercard -->
+		        <div class="item lazyload recent-sponsor imageSource"  data-src="${v.image}">
+		            <span class="elip recent-title" lang="en">${v.name}</span>
+		        </div>
+		        <!-- /.usercard-->
+		    `;
 		}
 	});
-	backers += '<li><a href="https://opencollective.com/organizr" target="_blank" class="circle circle-md bg-info di" data-toggle="tooltip" title="" data-original-title="Join" lang="en">You</a></li>';
+	backers += `
+        <!-- /.usercard -->
+        <div class="item lazyload recent-sponsor mouse imageSource mouse" onclick="window.open('https://opencollective.com/organizr', '_blank')" data-src="plugins/images/sponsor-open-collective.png">
+            <span class="elip recent-title" lang="en">You</span>
+        </div>
+        <!-- /.usercard-->
+    `;
 	return backers;
+
+
+
 }
 function sponsorDetails(id){
 	sponsorsJSON().success(function(data) {
@@ -3569,23 +3615,23 @@ function sponsorDetails(id){
 			let extraInfo = (coupon && couponAbout) ? `
 				<hr/>
 		        <h3>Coupon Code:</h3>
-		        <p><span class="label label-rouded label-info pull-right">`+response[id].coupon+`</span>
-		        <span class=" pull-left">`+response[id].coupon_about+`</span></p>
+		        <p><span class="label label-rouded label-info pull-right">${response[id].coupon}</span>
+		        <span class=" pull-left">${response[id].coupon_about}</span></p>
 		    ` : '';
 			let html = `
 		        <div class="panel panel-default">
-                    <div class="panel-heading">`+response[id].company_name+`</div>
+                    <div class="panel-heading">${response[id].company_name}</div>
                     <div class="panel-wrapper collapse in">
                         <div class="panel-body">
                             <div class="overlay-box">
                                 <div class="user-content">
-                                    <a href="javascript:void(0)"><img src="`+response[id].logo+`" class="thumb-lg img-circle" alt="img"></a>
-                                    <h4 class="text-white">`+response[id].company_name+`</h4>
-                                    <h5 class="text-white"><a href="` + response[id].website +`" target="_blank">Website</a></h5>
+                                    <a href="javascript:void(0)"><img src="${response[id].logo}" class="thumb-lg img-circle" alt="img"></a>
+                                    <h4 class="text-white">${response[id].company_name}</h4>
+                                    <h5 class="text-white"><a href="${response[id].website}" target="_blank">Website</a></h5>
                                 </div>
                             </div>
                             <hr/>
-                            <div class="text-left">`+response[id].about+extraInfo+`</div>
+                            <div class="text-left">${response[id].about} ${extraInfo}</div>
                         </div>
                     </div>
                 </div>
@@ -3659,9 +3705,9 @@ function buildSponsor(array){
         var sponsorAboutModal = (v.about) ? 'onclick="sponsorDetails(\''+i+'\');sponsorAnalytics(\''+v.company_name+'\');"' : 'onclick="window.open(\''+ v.website +'\', \'_blank\');sponsorAnalytics(\''+v.company_name+'\');"';
         sponsors += `
             <!-- /.usercard -->
-            <div class="item lazyload recent-sponsor mouse imageSource mouse" `+sponsorAboutModal+` data-src="`+v.logo+`" data-id="`+i+`">
-                <span class="elip recent-title">`+v.company_name+`</span>
-                `+ hasCoupon +`
+            <div class="item lazyload recent-sponsor mouse imageSource mouse" ${sponsorAboutModal} data-src="${v.logo}" data-id="${i}">
+                <span class="elip recent-title">${v.company_name}</span>
+                ${hasCoupon}
             </div>
             <!-- /.usercard-->
         `;
@@ -3770,12 +3816,12 @@ function buildOrganizrBackups(array){
 			let version = (typeof v.name.match(pattern)[1] !== 'undefined') ?  v.name.match(pattern)[1] : 'N/A';
 			list += `
 			<tr>
-				<td>` + i + `</td>
-				<td class="txt-oflo">` + v.name + `</td>
-				<td><span class="label label-primary label-rouded">` + version + `</span> </td>
-				<td class="txt-oflo">` + v.size + `</td>
-				<td><span class="text-info tooltip-info" data-toggle="tooltip" data-placement="right" title="" data-original-title="`+moment(v.date).format('LLL')+`">`+moment.utc(v.date, "YYYY-MM-DD hh:mm[Z]").local().fromNow()+`</span></td>
-				<td><span class="text-primary"><a href="api/v2/backup/`+v.name+`"><i class="fa fa-download download-backup" data-file="` + v.name + `"></i></a> | <a href="javascript:void(0)"><i class="fa fa-trash-o delete-backup" data-file="` + v.name + `"></i></a></span></td>
+				<td>${i}</td>
+				<td class="txt-oflo">${v.name}</td>
+				<td><span class="label label-primary label-rouded">${version}</span> </td>
+				<td class="txt-oflo">${v.size}</td>
+				<td><span class="text-info tooltip-info" data-toggle="tooltip" data-placement="right" title="" data-original-title="${moment(v.date).format('LLL')}">${moment.utc(v.date, "YYYY-MM-DD hh:mm[Z]").local().fromNow()}</span></td>
+				<td><span class="text-primary"><a href="api/v2/backup/${v.name}"><i class="fa fa-download download-backup" data-file="${v.name}"></i></a> | <a href="javascript:void(0)"><i class="fa fa-trash-o delete-backup" data-file="${v.name}"></i></a></span></td>
 			</tr>
 			`;
 		});
@@ -5847,13 +5893,13 @@ function buildDownloaderItem(array, source, type='none'){
 				v.name = (typeof v.movie == 'undefined') ? v.title : v.movie.title;
 				queue += `
                 <tr>
-                    <td class="max-texts">` + v.name + `</td>
-                    <td class="hidden-xs sonarr-` + cleanClass(v.status) + `">` + v.status + `</td>
-                    <td class="hidden-xs">` + size + `</td>
-                    <td class="hidden-xs"><span class="label label-info">` + v.protocol + `</span></td>
+                    <td class="max-texts">${v.name}</td>
+                    <td class="hidden-xs sonarr-${cleanClass(v.status)}">${v.status}</td>
+                    <td class="hidden-xs">${size}</td>
+                    <td class="hidden-xs"><span class="label label-info">${v.protocol}</span></td>
                     <td class="text-right">
                         <div class="progress progress-lg m-b-0">
-                            <div class="progress-bar progress-bar-info" style="width: ` + percent + `%;" role="progressbar">` + percent + `%</div>
+                            <div class="progress-bar progress-bar-info" style="width: ${percent}%;" role="progressbar">${percent}%</div>
                         </div>
                     </td>
                 </tr>
@@ -6393,28 +6439,20 @@ function buildUnifiItem(array){
             $.each(stats, function (istat, vstat) {
                 statItems += `
                     <div class="stat-item">
-                        <h6 class="text-uppercase">` + istat + `</h6>
-                        <b>` + vstat + `</b>
+                        <h6 class="text-uppercase">${istat}</h6>
+                        <b>${vstat}</b>
                     </div>
                     `;
             });
             items += `
-                <!--<div class="col-lg-4 col-md-6">
-                    <div class="white-box">
-                        <h3 class="box-title">` + name + `</h3>
-                        <div class="stats-row">
-                            ` + statItems + `
-                        </div>
-                    </div>
-                </div>-->
                 <div class="col-lg-4 col-md-6 col-center">
-                    <div class="panel panel-` + panelColor + `">
-                        <div class="panel-heading"> <span class="text-uppercase">` + name + `</span>
+                    <div class="panel panel-${panelColor}">
+                        <div class="panel-heading"> <span class="text-uppercase">${name}</span>
                             <div class="pull-right"><a href="#" data-perform="panel-collapse"><i class="ti-minus"></i></a></div>
                         </div>
                         <div class="panel-wrapper collapse in" aria-expanded="true">
                             <div class="panel-body">
-                               ` + statItems + `
+                               ${statItems}
                             </div>
                         </div>
                     </div>
@@ -6583,9 +6621,9 @@ function buildPiholeItem(array){
             var e = data[key];
 	        if(typeof e['FTLnotrunning'] == 'undefined') {
 		        if (length > 1 && !combine) {
-			        card += `<p class="d-inline text-muted">(` + key + `)</p>`;
+			        card += `<p class="d-inline text-muted">(${key})</p>`;
 		        }
-		        card += `<h3 data-toggle="tooltip" data-placement="right" title="` + key + `">` + e['ads_blocked_today'].toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + `</h3>`;
+		        card += `<h3 data-toggle="tooltip" data-placement="right" title="${key}">${e['ads_blocked_today'].toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}</h3>`;
 	        }
         };
         card += `
@@ -6608,9 +6646,9 @@ function buildPiholeItem(array){
             var e = data[key];
 	        if(typeof e['FTLnotrunning'] == 'undefined') {
 		        if (length > 1 && !combine) {
-			        card += `<p class="d-inline text-muted">(` + key + `)</p>`;
+			        card += `<p class="d-inline text-muted">(${key})</p>`;
 		        }
-		        card += `<h3 data-toggle="tooltip" data-placement="right" title="` + key + `">` + e['ads_percentage_today'].toFixed(1) + `%</h3>`
+		        card += `<h3 data-toggle="tooltip" data-placement="right" title="${key}">${e['ads_percentage_today'].toFixed(1)}%</h3>`
 	        }
         };
         card += `
@@ -6633,9 +6671,9 @@ function buildPiholeItem(array){
             var e = data[key];
 	        if(typeof e['FTLnotrunning'] == 'undefined') {
 		        if (length > 1 && !combine) {
-			        card += `<p class="d-inline text-muted">(` + key + `)</p>`;
+			        card += `<p class="d-inline text-muted">(${key})</p>`;
 		        }
-		        card += `<h3 data-toggle="tooltip" data-placement="right" title="` + key + `">` + e['domains_being_blocked'].toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + `</h3>`;
+		        card += `<h3 data-toggle="tooltip" data-placement="right" title="${key}">${e['domains_being_blocked'].toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}</h3>`;
 	        }
         };
         card += `
@@ -8756,7 +8794,7 @@ const plex_oauth_loader = '<style>' +
     '<div class="login-loader-message">' +
     '<div class="login-loader"></div>' +
     '<br>' +
-    'Redirecting to the Plex login page...' +
+    'Redirecting to the login page...' +
     '</div>' +
     '</div>';
 function closePlexOAuthWindow() {
@@ -8843,6 +8881,13 @@ function PlexOAuth(success, error, pre) {
             error()
         }
     });
+}
+function openOAuth(provider){
+	// will actually fix this later
+	closePlexOAuthWindow();
+	plex_oauth_window = PopupCenter('', 'OAuth', 600, 700);
+	$(plex_oauth_window.document.body).html(plex_oauth_loader);
+	plex_oauth_window.location = 'api/v2/oauth/trakt';
 }
 function encodeData(data) {
     return Object.keys(data).map(function(key) {
@@ -8992,6 +9037,11 @@ function requestSearchList(list,page=1) {
 function requestNewID(id) {
 	return $.ajax({
 		url: "https://api.themoviedb.org/3/tv/"+id+"/external_ids?api_key=83cf4ee97bb728eeaf9d4a54e64356a1&language=en-US",
+	});
+}
+function getTmdbImages(id, type) {
+	return $.ajax({
+		url: `https://api.themoviedb.org/3/${type}/${id}/images?api_key=83cf4ee97bb728eeaf9d4a54e64356a1`,
 	});
 }
 function inlineLoad(){
@@ -9766,6 +9816,92 @@ function checkIfTabNameExists(tabName){
         return true;
     }
 }
+function getLatestBlackberryThemes() {
+	return $.ajax({
+		url: 'https://api.github.com/repos/Archmonger/Blackberry-Themes/contents/Themes',
+	});
+}
+function getBlackberryTheme(theme) {
+	return $.ajax({
+		url: 'https://api.github.com/repos/Archmonger/Blackberry-Themes/contents/Themes/' +  theme + '/Icons',
+	});
+}
+function showBlackberryThemes(target){
+	getLatestBlackberryThemes().success(function(data) {
+		try {
+			let themes = '';
+			$.each(data, function(i,v) {
+				if(v.name !== 'Beta'){
+					themes += `<a href="javascript:selectBlackberryTheme('${v.name}','${target}');" class="list-group-item"><span><img class="themeIcon pull-right" src="https://raw.githubusercontent.com/Archmonger/Blackberry-Themes/master/Themes/${v.name}/Icons/preview.png"></span>${v.name}</a>`;
+				}
+			});
+			themes = `<div class="list-group">${themes}</div>`;
+			let html = `
+			<div class="panel">
+				<div class="bg-org2">
+					<div class="panel-heading">Choose a Theme</div>
+					<div class="panel-body text-left">${themes}</div>
+				</div>
+			</div>
+			`;
+			swal({
+				content: createElementFromHTML(html),
+				button: 'Close',
+				className: 'orgErrorAlert',
+				dangerMode: true
+			});
+		}catch(e) {
+			organizrCatchError(e,data);
+		}
+	}).fail(function(xhr) {
+		OrganizrApiError(xhr);
+	});
+}
+function selectBlackberryTheme(theme, target){
+	getBlackberryTheme(theme).success(function(data) {
+		try {
+			let icons = '';
+			$.each(data, function(i,v) {
+				v.name = v.name.split('.')[0];
+				v.name = cleanClass(v.name);
+				icons += `<a href="javascript:swal.close();$('#${target}').val('${v.download_url}')"><img alt="${v.name}" data-toggle="tooltip" data-placement="top" title="" data-original-title="${v.name}"src="${v.download_url}" ></a>`;
+			});
+			icons = `<div id="gallery-content-center">${icons}</div>`;
+			let html = `
+			<div class="panel">
+				<div class="bg-org2">
+					<div class="panel-heading">Choose an Icon</div>
+					<div class="panel-body text-left">${icons}</div>
+				</div>
+			</div>
+			`;
+			swal({
+				content: createElementFromHTML(html),
+				buttons: {
+					back: {
+						text: "Back To Themes",
+						value: "back",
+						dangerMode: true,
+						className: "bg-org-alt"
+					}
+				},
+				className: 'orgErrorAlert',
+				dangerMode: true
+			})
+			.then((value) => {
+				switch (value) {
+					case "back":
+						showBlackberryThemes();
+						break;
+				}
+			});
+		}catch(e) {
+			organizrCatchError(e,data);
+		}
+	}).fail(function(xhr) {
+		OrganizrApiError(xhr);
+	});
+}
 function orgErrorAlert(error){
 	let showError = false;
 	if(typeof activeInfo === 'undefined'){
@@ -9780,13 +9916,13 @@ function orgErrorAlert(error){
 	    <div class="panel">
             <div class="bg-org2">
                 <div class="panel-heading">ERROR</div>
-                <div class="panel-body text-left">`+error+`</div>
+                <div class="panel-body text-left">${error}</div>
             </div>
         </div>
 	    `;
 	    swal({
 		    content: createElementFromHTML(div),
-		    button: "OK",
+		    button: 'OK',
 		    className: 'orgErrorAlert',
 		    dangerMode: true
 	    });

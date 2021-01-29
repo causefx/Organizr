@@ -12,6 +12,12 @@
     </strong> </br> Adldap2 will continue to be supported with bug fixes, but will not receive new features.
 </p>
 
+<p align="center">
+ <strong>
+ <a href="https://stevebauman.ca/posts/why-ldap-record/">Read Why</a>
+ </strong>
+</p>
+
 <hr/>
 
 <h1 align="center">Adldap2</h1>

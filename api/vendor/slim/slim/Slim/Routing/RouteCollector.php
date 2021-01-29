@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Slim Framework (https://slimframework.com)
  *
@@ -19,6 +20,13 @@ use Slim\Interfaces\RouteCollectorInterface;
 use Slim\Interfaces\RouteGroupInterface;
 use Slim\Interfaces\RouteInterface;
 use Slim\Interfaces\RouteParserInterface;
+
+use function array_pop;
+use function dirname;
+use function file_exists;
+use function sprintf;
+use function is_readable;
+use function is_writable;
 
 /**
  * RouteCollector is used to collect routes and route groups
@@ -54,7 +62,7 @@ class RouteCollector implements RouteCollectorInterface
     protected $basePath = '';
 
     /**
-     * Path to fast route cache file. Set to false to disable route caching
+     * Path to fast route cache file. Set to null to disable route caching
      *
      * @var string|null
      */
@@ -87,12 +95,12 @@ class RouteCollector implements RouteCollectorInterface
     protected $responseFactory;
 
     /**
-     * @param ResponseFactoryInterface    $responseFactory
-     * @param CallableResolverInterface   $callableResolver
-     * @param ContainerInterface|null     $container
-     * @param InvocationStrategyInterface $defaultInvocationStrategy
-     * @param RouteParserInterface        $routeParser
-     * @param string                      $cacheFile
+     * @param ResponseFactoryInterface         $responseFactory
+     * @param CallableResolverInterface        $callableResolver
+     * @param ContainerInterface|null          $container
+     * @param InvocationStrategyInterface|null $defaultInvocationStrategy
+     * @param RouteParserInterface|null        $routeParser
+     * @param string|null                      $cacheFile
      */
     public function __construct(
         ResponseFactoryInterface $responseFactory,
@@ -179,7 +187,7 @@ class RouteCollector implements RouteCollectorInterface
     }
 
     /**
-     * Set the base path used in pathFor()
+     * Set the base path used in urlFor()
      *
      * @param string $basePath
      *
@@ -205,7 +213,6 @@ class RouteCollector implements RouteCollectorInterface
      */
     public function removeNamedRoute(string $name): RouteCollectorInterface
     {
-        /** @var Route $route */
         $route = $this->getNamedRoute($name);
         unset($this->routes[$route->getIdentifier()]);
         return $this;
@@ -252,7 +259,7 @@ class RouteCollector implements RouteCollectorInterface
         $this->routeGroups[] = $routeGroup;
 
         $routeGroup->collectRoutes();
-        array_shift($this->routeGroups);
+        array_pop($this->routeGroups);
 
         return $routeGroup;
     }
@@ -262,7 +269,6 @@ class RouteCollector implements RouteCollectorInterface
      */
     public function map(array $methods, string $pattern, $handler): RouteInterface
     {
-
         $route = $this->createRoute($methods, $pattern, $handler);
         $this->routes[$route->getIdentifier()] = $route;
         $this->routeCounter++;
@@ -271,7 +277,11 @@ class RouteCollector implements RouteCollectorInterface
     }
 
     /**
-     * {@inheritdoc}
+     * @param string[]        $methods
+     * @param string          $pattern
+     * @param callable|string $callable
+     *
+     * @return RouteInterface
      */
     protected function createRoute(array $methods, string $pattern, $callable): RouteInterface
     {

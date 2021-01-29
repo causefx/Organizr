@@ -126,6 +126,7 @@ trait CalendarHomepageItem
 			$this->homepageItemPermissions($this->lidarrHomepagePermissions('calendar')) ||
 			$this->homepageItemPermissions($this->sickrageHomepagePermissions('calendar')) ||
 			$this->homepageItemPermissions($this->couchPotatoHomepagePermissions('calendar')) ||
+			$this->homepageItemPermissions($this->traktHomepagePermissions('calendar')) ||
 			$this->homepageItemPermissions($this->calendarHomepagePermissions('main'))
 		) {
 			return '
@@ -171,6 +172,10 @@ trait CalendarHomepageItem
 		unset($items);
 		// COUCHPOTATO CONNECT
 		$items = $this->getCouchPotatoCalendar();
+		$calendarItems = is_array($items) ? array_merge($calendarItems, $items) : $calendarItems;
+		unset($items);
+		// TRAKT CONNECT
+		$items = $this->getTraktCalendar();
 		$calendarItems = is_array($items) ? array_merge($calendarItems, $items) : $calendarItems;
 		unset($items);
 		// iCal URL

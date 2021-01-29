@@ -15,6 +15,7 @@ use Psr\Http\Message\StreamFactoryInterface;
 use Psr\Http\Message\StreamInterface;
 use RuntimeException;
 use Slim\Psr7\Stream;
+use ValueError;
 
 use function fopen;
 use function fwrite;
@@ -53,20 +54,35 @@ class StreamFactory implements StreamFactoryInterface
         string $mode = 'r',
         StreamInterface $cache = null
     ): StreamInterface {
-        // When fopen fails, PHP normally raises a warning. Add an error
+        // When fopen fails, PHP 7 normally raises a warning. Add an error
         // handler to check for errors and throw an exception instead.
+        // On PHP 8, exceptions are thrown.
         $exc = null;
 
-        set_error_handler(function (int $errno, string $errstr) use ($filename, $mode, &$exc) {
+        // Would not be initialized if fopen throws on PHP >= 8.0
+        $resource = null;
+
+        $errorHandler = function (string $errorMessage) use ($filename, $mode, &$exc) {
             $exc = new RuntimeException(sprintf(
                 'Unable to open %s using mode %s: %s',
                 $filename,
                 $mode,
-                $errstr
+                $errorMessage
             ));
+        };
+
+        set_error_handler(function (int $errno, string $errstr) use ($errorHandler) {
+            $errorHandler($errstr);
         });
 
-        $resource = fopen($filename, $mode);
+        try {
+            $resource = fopen($filename, $mode);
+        // @codeCoverageIgnoreStart
+        // (Can only be executed in PHP >= 8.0)
+        } catch (ValueError $exception) {
+            $errorHandler($exception->getMessage());
+        }
+        // @codeCoverageIgnoreEnd
         restore_error_handler();
 
         if ($exc) {
