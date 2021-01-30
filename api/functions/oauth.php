@@ -8,6 +8,8 @@ trait OAuthFunctions
 			'clientId' => $this->config['traktClientId'],
 			'clientSecret' => $this->config['traktClientSecret'],
 			'redirectUri' => $this->getServerPath() . 'api/v2/oauth/trakt'
+		], [
+			'httpClient' => new GuzzleHttp\Client(['verify' => getCert()]),
 		]);
 		if (!isset($_GET['code'])) {
 			$authUrl = $provider->getAuthorizationUrl();
