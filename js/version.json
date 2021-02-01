@@ -327,5 +327,12 @@
     "new": "Trakt to homepage items|blackberry themes icon selector|option to dismiss important messages|help button and about section to sonarr|updated frameworks for phpmailer - slim - pusher - adldap2 - slimpr|Change layout for backers",
     "fixed": "Content wrapper causing obstructed view of tab content (#1567)|disable recover password|height for select2 boxes",
     "notes": "We are now using FeatureUpvote - icon located on bottom side bar|Please join our discord if you have any issues|Please report bugs in GitHub issues page"
+  },
+  "2.1.184": {
+    "date": "2021-02-01 20:10",
+    "title": "HOTFIX",
+    "new": "",
+    "fixed": "Missing variable",
+    "notes": "This is a quick hotfix"
   }
 }

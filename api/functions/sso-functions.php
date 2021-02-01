@@ -10,7 +10,7 @@ trait SSOFunctions
 			'overseerr' => 'username',
 			'tautulli' => 'username'
 		);
-		return $userobj[$map[$app]];
+		return (gettype($userobj) == 'string') ? $userobj : $userobj[$map[$app]];
 	}
 	
 	public function ssoCheck($userobj, $password, $token = null)
