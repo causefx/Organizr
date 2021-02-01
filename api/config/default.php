@@ -453,7 +453,7 @@ return array(
 	'organizrSignoutMenuLink' => true,
 	'organizrFeatureRequestLink' => true,
 	'breezometerToken' => 'd95ab607392d4fa5bf64bb26a5cb2a06',
-	'customForgotPasswordText' => '',
+	'customForgotPassText' => '',
 	'disableRecoverPass' => false,
 	'expandCategoriesByDefault' => false,
 	'ignoredNewsIds' => array(),
