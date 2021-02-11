@@ -113,6 +113,7 @@ return array(
 	'qBittorrentReverseSorting' => false,
 	'qBittorrentCombine' => false,
 	'qBittorrentApiVersion' => '1',
+	'qBittorrentDisableCertCheck' => false,
 	'rTorrentURL' => '',
 	'rTorrentURLOverride' => '',
 	'rTorrentUsername' => '',
