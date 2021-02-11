@@ -170,16 +170,30 @@ class Bookmark extends Organizr
 			overflow: hidden;
 			border: 1px solid;
 			border-radius: 5px;
+			transition: all 0.2s ease-in-out;
 		}
-		.BOOKMARK-tab img {
-			width: 100px;
+		.BOOKMARK-tab:hover {
+			filter: brightness(80%);
+		}
+		.BOOKMARK-tab-image {
+			width: 50px;
 			max-width: 50px;
 			height: 100%;
 			flex-grow: 33;
-			object-fit: contain;
-			padding: 5px;
 		}
-		.BOOKMARK-tab span {
+		.BOOKMARK-tab-image img {
+			width: 100%;
+			height: 100%;
+			padding: 8px;
+			object-fit: contain;
+		}
+		.BOOKMARK-tab-image i {
+			width: 100%;
+			height: 100%;
+			line-height: 44px;
+			font-size: 2.2em;
+		}
+		.BOOKMARK-tab-title {
 			flex-grow: 67;
 			padding: 0 5px;
 			color: white;
@@ -209,8 +223,8 @@ class Bookmark extends Organizr
 				$bookmarks .= '<a href="'.$tab['url'].'" target="_SELF">
 					<div class="BOOKMARK-tab"
 						style="border-color: '.$this->adjustBrightness($tab['background_color'], 0.3).'; background: linear-gradient(90deg, '.$this->adjustBrightness($tab['background_color'], -0.3).' 0%, '.$tab['background_color'].' 70%, '.$this->adjustBrightness($tab['background_color'], 0.1).' 100%);">
-						'.$this->_iconPrefix($tab['image']).'
-						<span style="color: '.$tab['text_color'].';">'.$tab['name'].'</span>
+						<span class="BOOKMARK-tab-image">'.$this->_iconPrefix($tab['image']).'</span>
+						<span class="BOOKMARK-tab-title" style="color: '.$tab['text_color'].';">'.$tab['name'].'</span>
 					</div>
 				</a>';
 			}
@@ -234,14 +248,14 @@ class Bookmark extends Organizr
 		);
 		if (is_array($tabIcon) && count($tabIcon) == 2) {
 			if ($tabIcon[0] !== 'url' && $tabIcon[0] !== 'alphanumeric') {
-				return '<i class="' . $icons[$tabIcon[0]] . $tabIcon[1] . ' fa-fw"></i>';
+				return '<i class="' . $icons[$tabIcon[0]] . $tabIcon[1] . '"></i>';
 			} else if ($tabIcon[0] == 'alphanumeric') {
-				return '<i class="fa-fw">' . $tabIcon[1] . '</i>';
+				return '<i>' . $tabIcon[1] . '</i>';
 			} else {
-				return '<img class="fa-fw" src="' . $tabIcon[1] . '" alt="tabIcon" />';
+				return '<img src="' . $tabIcon[1] . '" alt="tabIcon" />';
 			}
 		} else {
-			return '<img class="fa-fw" src="' . $source . '" alt="tabIcon" />';
+			return '<img src="' . $source . '" alt="tabIcon" />';
 		}
 	}
 
