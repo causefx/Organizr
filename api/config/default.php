@@ -98,6 +98,7 @@ return array(
 	'transmissionHideSeeding' => false,
 	'transmissionHideCompleted' => false,
 	'transmissionCombine' => false,
+	'transmissionDisableCertCheck' => false,
 	'delugeURL' => '',
 	'delugePassword' => '',
 	'delugeHideSeeding' => false,

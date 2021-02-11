@@ -35,6 +35,12 @@ trait TransmissionHomepageItem
 						'placeholder' => 'http(s)://hostname:port'
 					),
 					array(
+						'type' => 'switch',
+						'name' => 'transmissionDisableCertCheck',
+						'label' => 'Disable Certificate Check',
+						'value' => $this->config['transmissionDisableCertCheck']
+					),
+					array(
 						'type' => 'input',
 						'name' => 'transmissionUsername',
 						'label' => 'Username',
@@ -101,7 +107,7 @@ trait TransmissionHomepageItem
 		$passwordInclude = ($this->config['transmissionUsername'] != '' && $this->config['transmissionPassword'] != '') ? $this->config['transmissionUsername'] . ':' . $this->decrypt($this->config['transmissionPassword']) . "@" : '';
 		$url = $digest['scheme'] . '://' . $passwordInclude . $digest['host'] . $digest['port'] . $digest['path'] . '/rpc';
 		try {
-			$options = ($this->localURL($this->config['transmissionURL'])) ? array('verify' => false) : array();
+			$options = $this->requestOptions($this->config['transmissionURL'], $this->config['transmissionDisableCertCheck'], $this->config['homepageDownloadRefresh']);
 			$response = Requests::get($url, array(), $options);
 			if ($response->headers['x-transmission-session-id']) {
 				$headers = array(
@@ -189,7 +195,7 @@ trait TransmissionHomepageItem
 		$passwordInclude = ($this->config['transmissionUsername'] != '' && $this->config['transmissionPassword'] != '') ? $this->config['transmissionUsername'] . ':' . $this->decrypt($this->config['transmissionPassword']) . "@" : '';
 		$url = $digest['scheme'] . '://' . $passwordInclude . $digest['host'] . $digest['port'] . $digest['path'] . '/rpc';
 		try {
-			$options = ($this->localURL($this->config['transmissionURL'])) ? array('verify' => false) : array();
+			$options = $this->requestOptions($this->config['transmissionURL'], $this->config['transmissionDisableCertCheck'], $this->config['homepageDownloadRefresh']);
 			$response = Requests::get($url, array(), $options);
 			if ($response->headers['x-transmission-session-id']) {
 				$headers = array(
