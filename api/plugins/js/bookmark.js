@@ -13,7 +13,7 @@ $(document).on('click', '#BOOKMARK-settings-button', function() {
 
 bookmarkLaunch()
 function bookmarkLaunch(){
-    if(typeof activeInfo == 'undefined'){
+    if((typeof activeInfo == 'undefined') || ($('#settings-main-tab-editor .nav-tabs').length == 0)){
         setTimeout(function () {
             bookmarkLaunch();
         }, 1000);
