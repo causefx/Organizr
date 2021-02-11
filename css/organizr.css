@@ -122,6 +122,7 @@ span.jsgrid-pager-page.jsgrid-pager-current-page.btn.btn-primary{
 .organizr-area-right {
     height: calc(100vh - 40px);
     position: absolute;
+    width: 100%;
 }
 /* Larger Images */
 

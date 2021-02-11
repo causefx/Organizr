@@ -498,16 +498,17 @@ function cleanClass(string){
 // What the hell is this?  I don't remember this lol
 function noTabs(arrayItems){
 	if (arrayItems.data.user.loggedin === true) {
-		organizrConnect('api/?v1/no_tabs').success(function(data) {
-            try {
-                var response = JSON.parse(data);
-            }catch(e) {
-	            organizrCatchError(e,data);
-            }
-			console.log("Organizr Function: No Tabs Available");
-			$(response.data).appendTo($('.organizr-area'));
+		organizrAPI2('GET','api/v2/page/tabs').success(function(data) {
+			try {
+				var json = data.response;
+				organizrConsole('Organizr Function','No tabs available');
+				$(json.data).appendTo($('.organizr-area'));
+				$("#preloader").fadeOut();
+			}catch(e) {
+				organizrCatchError(e,data);
+			}
 		}).fail(function(xhr) {
-			OrganizrApiError(xhr);
+			OrganizrApiError(xhr, 'Error');
 		});
 	}else {
 		$('.show-login').trigger('click');
@@ -4342,6 +4343,12 @@ function logIcon(type){
 	switch (type) {
 		case "success":
 			return '<i class="fa fa-check text-success"></i><span class="hidden">Success</span>';
+			break;
+		case "info":
+			return '<i class="fa fa-info text-info"></i><span class="hidden">Info</span>';
+			break;
+		case "debug":
+			return '<i class="fa fa-code text-primary"></i><span class="hidden">Debug</span>';
 			break;
 		case "warning":
 			return '<i class="fa fa-exclamation-triangle text-warning"></i><span class="hidden">Warning</span>';
