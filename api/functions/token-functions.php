@@ -26,7 +26,7 @@ trait TokenFunctions
 				if ($jwttoken->validate($data)) {
 					$result['valid'] = true;
 					//$result['username'] = $jwttoken->getClaim('username');
-					//$result['group'] = $jwttoken->getClaim('group');
+					$result['group'] = ($jwttoken->hasClaim('group')) ? $jwttoken->getClaim('group') : 'N/A';
 					//$result['groupID'] = $jwttoken->getClaim('groupID');
 					$result['userID'] = $jwttoken->getClaim('userID');
 					//$result['email'] = $jwttoken->getClaim('email');
