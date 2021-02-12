@@ -139,7 +139,7 @@ $Organizr = new Organizr();
     <div class="error-page bg-org"></div>
     <div class="login-area hidden"></div>
     <div class="p-0" id="page-wrapper">
-        <div class="organizr-area"></div>
+        <div class="organizr-area hidden"></div>
         <div class="plugin-listing p-0 hidden"></div>
         <div class="internal-listing p-0 hidden"></div>
         <div class="iFrame-listing p-0 hidden"></div>

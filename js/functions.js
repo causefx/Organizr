@@ -503,6 +503,7 @@ function noTabs(arrayItems){
 				var json = data.response;
 				organizrConsole('Organizr Function','No tabs available');
 				$(json.data).appendTo($('.organizr-area'));
+				$('.organizr-area').removeClass('hidden');
 				$("#preloader").fadeOut();
 			}catch(e) {
 				organizrCatchError(e,data);
@@ -3877,7 +3878,6 @@ function countdown(remaining) {
 function dockerUpdate(){
     if(activeInfo.settings.misc.docker){
 	    showUpdateBar();
-        //$(updateBar()).appendTo('.organizr-area');
         updateUpdateBar('Starting Download','20%');
         messageSingle(window.lang.translate('[DO NOT CLOSE WINDOW]'),window.lang.translate('Starting Update Process'),activeInfo.settings.notifications.position,'#FFF','success','60000');
         organizrAPI2('GET','api/v2/update/docker').success(function(data) {
@@ -3891,7 +3891,6 @@ function dockerUpdate(){
 function windowsUpdate(){
     if(activeInfo.serverOS == 'win'){
 	    showUpdateBar();
-    	//$(updateBar()).appendTo('.organizr-area');
         updateUpdateBar('Starting Download','20%');
         messageSingle(window.lang.translate('[DO NOT CLOSE WINDOW]'),window.lang.translate('Starting Update Process'),activeInfo.settings.notifications.position,'#FFF','success','60000');
         organizrAPI2('GET','api/v2/update/windows').success(function(data) {
@@ -3914,7 +3913,6 @@ function updateNow(){
     }
 	organizrConsole('Update Function','Starting Update Process');
 	showUpdateBar();
-	//$(updateBar()).appendTo('.organizr-area');
 	updateUpdateBar('Starting Download','5%');
 	messageSingle(window.lang.translate('[DO NOT CLOSE WINDOW]'),window.lang.translate('Starting Update Process'),activeInfo.settings.notifications.position,'#FFF','success','60000');
 	organizrAPI2('GET','api/v2/update/download/'+ activeInfo.branch).success(function(data) {
@@ -4184,6 +4182,7 @@ function buildWizard(){
         }
 		organizrConsole('Organizr Function','Starting Install Wizard');
 		$(json.data).appendTo($('.organizr-area'));
+		$('.organizr-area').removeClass('hidden');
 	}).fail(function(xhr) {
 		OrganizrApiError(xhr, 'Wiizard Error');
 	});
@@ -4198,6 +4197,7 @@ function buildDependencyCheck(orgdata){
         }
 		organizrConsole('Organizr Function','Starting Dependencies Check');
 		$(json.data).appendTo($('.organizr-area'));
+		$('.organizr-area').removeClass('hidden');
 		$(buildBrowserInfo()).appendTo($('#browser-info'));
 		$('#web-folder').html(buildWebFolder(orgdata));
 		$('#php-version-check').html(buildPHPCheck(orgdata));
