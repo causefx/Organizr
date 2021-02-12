@@ -2375,10 +2375,18 @@ class Organizr
 				array(
 					'type' => 'input',
 					'name' => 'jellyfinURL',
-					'label' => 'Jellyfin URL',
+					'label' => 'Jellyfin API URL',
 					'value' => $this->config['jellyfinURL'],
-					'help' => 'Please make sure to use the same (sub)domain to access Jellyfin as Organizr\'s',
+					'help' => 'Please make sure to use the local address to the API',
 					'placeholder' => 'http(s)://hostname:port'
+				),
+				array(
+					'type' => 'input',
+					'name' => 'jellyfinSSOURL',
+					'label' => 'Jellyfin SSO URL',
+					'value' => $this->config['jellyfinSSOURL'],
+					'help' => 'Please make sure to use the same (sub)domain to access Jellyfin as Organizr\'s',
+					'placeholder' => 'http(s)://domain.com'
 				),
 				array(
 					'type' => 'switch',

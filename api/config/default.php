@@ -46,6 +46,7 @@ return array(
 	'jellyfinTabName' => '',
 	'jellyfinURL' => '',
 	'jellyfinToken' => '',
+	'jellyfinSSOURL' => '',
 	'plexID' => '',
 	'tautulliURL' => '',
 	'ombiURL' => '',
