@@ -1217,6 +1217,9 @@ ul.nav.customtab.nav-tabs.nav-low-margin {
     -webkit-animation-iteration-count: infinite;
     animation-iteration-count: infinite;
 }
+.heartbit.depend-heartbit {
+    top: -37.5px;
+}
 .ping .point {
     width: 6px;
     height: 6px;

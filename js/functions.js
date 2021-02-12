@@ -4213,7 +4213,7 @@ function buildDependencyInfo(arrayItems){
 			listing += '<li class="depenency-item" data-name="'+v+'"><a href="javascript:void(0)"><i class="fa fa-check text-success"></i> '+v+'</a></li>';
 		});
 	$.each(arrayItems.data.status.dependenciesInactive, function(i,v) {
-		listing += '<li class="depenency-item" data-name="'+v+'"><a href="javascript:void(0)"><i class="fa fa-close text-danger"><div class="notify"><span class="heartbit"></span></div></i> '+v+'</a></li>';
+		listing += '<li class="depenency-item" data-name="'+v+'"><a href="javascript:void(0)"><i class="fa fa-close text-danger"><div class="notify"><span class="heartbit depend-heartbit"></span></div></i> '+v+'</a></li>';
 	});
 	return listing;
 }
