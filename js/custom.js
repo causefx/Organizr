@@ -584,6 +584,7 @@ $(document).on("click", ".addNewUser", function () {
 		message('User Created',response.message,activeInfo.settings.notifications.position,"#FFF","success","5000");
 		if(callbacks){ callbacks.fire(); }
 		clearForm('#new-user-form');
+		$('#jsGrid-Users').jsGrid('render');
 		$.magnificPopup.close();
 	}).fail(function(xhr) {
 		OrganizrApiError(xhr, 'API Error');

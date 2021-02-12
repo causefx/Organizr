@@ -24,8 +24,8 @@ function get_page_wizard($Organizr)
                                     message: \'The username must be more than 2 and less than 30 characters long\'
                                 },
                                 regexp: {
-                                    regexp: /^[a-zA-Z0-9_\.]+$/,
-                                    message: \'The username can only consist of alphabetical, number, dot and underscore\'
+                                    regexp: /^[a-zA-Z0-9_\.\@]+$/,
+                                    message: \'The username can only consist of alphabetical, number, at sign, dot and underscore\'
                                 }
                             }
                         },

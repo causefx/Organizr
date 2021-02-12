@@ -498,16 +498,18 @@ function cleanClass(string){
 // What the hell is this?  I don't remember this lol
 function noTabs(arrayItems){
 	if (arrayItems.data.user.loggedin === true) {
-		organizrConnect('api/?v1/no_tabs').success(function(data) {
-            try {
-                var response = JSON.parse(data);
-            }catch(e) {
-	            organizrCatchError(e,data);
-            }
-			console.log("Organizr Function: No Tabs Available");
-			$(response.data).appendTo($('.organizr-area'));
+		organizrAPI2('GET','api/v2/page/tabs').success(function(data) {
+			try {
+				var json = data.response;
+				organizrConsole('Organizr Function','No tabs available');
+				$(json.data).appendTo($('.organizr-area'));
+				$('.organizr-area').removeClass('hidden');
+				$("#preloader").fadeOut();
+			}catch(e) {
+				organizrCatchError(e,data);
+			}
 		}).fail(function(xhr) {
-			OrganizrApiError(xhr);
+			OrganizrApiError(xhr, 'Error');
 		});
 	}else {
 		$('.show-login').trigger('click');
@@ -3876,7 +3878,6 @@ function countdown(remaining) {
 function dockerUpdate(){
     if(activeInfo.settings.misc.docker){
 	    showUpdateBar();
-        //$(updateBar()).appendTo('.organizr-area');
         updateUpdateBar('Starting Download','20%');
         messageSingle(window.lang.translate('[DO NOT CLOSE WINDOW]'),window.lang.translate('Starting Update Process'),activeInfo.settings.notifications.position,'#FFF','success','60000');
         organizrAPI2('GET','api/v2/update/docker').success(function(data) {
@@ -3890,7 +3891,6 @@ function dockerUpdate(){
 function windowsUpdate(){
     if(activeInfo.serverOS == 'win'){
 	    showUpdateBar();
-    	//$(updateBar()).appendTo('.organizr-area');
         updateUpdateBar('Starting Download','20%');
         messageSingle(window.lang.translate('[DO NOT CLOSE WINDOW]'),window.lang.translate('Starting Update Process'),activeInfo.settings.notifications.position,'#FFF','success','60000');
         organizrAPI2('GET','api/v2/update/windows').success(function(data) {
@@ -3913,7 +3913,6 @@ function updateNow(){
     }
 	organizrConsole('Update Function','Starting Update Process');
 	showUpdateBar();
-	//$(updateBar()).appendTo('.organizr-area');
 	updateUpdateBar('Starting Download','5%');
 	messageSingle(window.lang.translate('[DO NOT CLOSE WINDOW]'),window.lang.translate('Starting Update Process'),activeInfo.settings.notifications.position,'#FFF','success','60000');
 	organizrAPI2('GET','api/v2/update/download/'+ activeInfo.branch).success(function(data) {
@@ -4183,6 +4182,7 @@ function buildWizard(){
         }
 		organizrConsole('Organizr Function','Starting Install Wizard');
 		$(json.data).appendTo($('.organizr-area'));
+		$('.organizr-area').removeClass('hidden');
 	}).fail(function(xhr) {
 		OrganizrApiError(xhr, 'Wiizard Error');
 	});
@@ -4197,6 +4197,7 @@ function buildDependencyCheck(orgdata){
         }
 		organizrConsole('Organizr Function','Starting Dependencies Check');
 		$(json.data).appendTo($('.organizr-area'));
+		$('.organizr-area').removeClass('hidden');
 		$(buildBrowserInfo()).appendTo($('#browser-info'));
 		$('#web-folder').html(buildWebFolder(orgdata));
 		$('#php-version-check').html(buildPHPCheck(orgdata));
@@ -4212,7 +4213,7 @@ function buildDependencyInfo(arrayItems){
 			listing += '<li class="depenency-item" data-name="'+v+'"><a href="javascript:void(0)"><i class="fa fa-check text-success"></i> '+v+'</a></li>';
 		});
 	$.each(arrayItems.data.status.dependenciesInactive, function(i,v) {
-		listing += '<li class="depenency-item" data-name="'+v+'"><a href="javascript:void(0)"><i class="fa fa-close text-danger"><div class="notify"><span class="heartbit"></span></div></i> '+v+'</a></li>';
+		listing += '<li class="depenency-item" data-name="'+v+'"><a href="javascript:void(0)"><i class="fa fa-close text-danger"><div class="notify"><span class="heartbit depend-heartbit"></span></div></i> '+v+'</a></li>';
 	});
 	return listing;
 }
@@ -4342,6 +4343,12 @@ function logIcon(type){
 	switch (type) {
 		case "success":
 			return '<i class="fa fa-check text-success"></i><span class="hidden">Success</span>';
+			break;
+		case "info":
+			return '<i class="fa fa-info text-info"></i><span class="hidden">Info</span>';
+			break;
+		case "debug":
+			return '<i class="fa fa-code text-primary"></i><span class="hidden">Debug</span>';
 			break;
 		case "warning":
 			return '<i class="fa fa-exclamation-triangle text-warning"></i><span class="hidden">Warning</span>';

@@ -53,6 +53,7 @@ trait SSOFunctions
 		$token = null;
 		try {
 			$url = $this->qualifyURL($this->config['jellyfinURL']);
+			$ssoUrl = $this->qualifyURL($this->config['jellyfinSSOURL']);
 			$headers = array(
 				'X-Emby-Authorization' => 'MediaBrowser Client="Organizr Jellyfin Tab", Device="Organizr_PHP", DeviceId="Organizr_SSO", Version="1.0"',
 				"Accept" => "application/json",
@@ -68,13 +69,14 @@ trait SSOFunctions
 			if ($response->success) {
 				$token = json_decode($response->body, true);
 				$this->writeLog('success', 'Jellyfin Token Function - Grabbed token.', $username);
+				return '{"Servers":[{"ManualAddress":"' . $ssoUrl . '","Id":"' . $token['ServerId'] . '","UserId":"' . $token['User']['Id'] . '","AccessToken":"' . $token['AccessToken'] . '"}]}';
 			} else {
 				$this->writeLog('error', 'Jellyfin Token Function - Jellyfin did not return Token', $username);
 			}
 		} catch (Requests_Exception $e) {
 			$this->writeLog('error', 'Jellyfin Token Function - Error: ' . $e->getMessage(), $username);
 		}
-		return '{"Servers":[{"ManualAddress":"' . $url . '","Id":"' . $token['ServerId'] . '","UserId":"' . $token['User']['Id'] . '","AccessToken":"' . $token['AccessToken'] . '"}]}';
+		return false;
 	}
 	
 	public function getOmbiToken($username, $password, $oAuthToken = null, $fallback = false)
