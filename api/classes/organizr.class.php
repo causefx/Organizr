@@ -395,6 +395,7 @@ class Organizr
 		return ($encode) ? json_encode($files) : $files;
 	}
 	
+	/* Old function
 	public function pluginFiles($type)
 	{
 		$files = '';
@@ -406,6 +407,50 @@ class Organizr
 				break;
 			case 'css':
 				foreach (glob(dirname(__DIR__, 1) . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . 'css' . DIRECTORY_SEPARATOR . "*.css") as $filename) {
+					$files .= '<link href="api/plugins/css/' . basename($filename) . '?v=' . $this->fileHash . '" rel="stylesheet">';
+				}
+				break;
+			default:
+				break;
+		}
+		return $files;
+	}
+	*/
+	public function pluginFiles($type, $settings = false)
+	{
+		$files = '';
+		switch ($type) {
+			case 'js':
+				foreach (glob(dirname(__DIR__, 1) . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . 'js' . DIRECTORY_SEPARATOR . '*.js') as $filename) {
+					$keyOriginal = strtoupper(basename($filename, '.js'));
+					$key = str_replace('-SETTINGS', '', $keyOriginal);
+					$continue = false;
+					if ($settings) {
+						if (stripos($keyOriginal, '-SETTINGS') !== false) {
+							$continue = true;
+						}
+					} else {
+						if (stripos($keyOriginal, '-SETTINGS') == false) {
+							$continue = true;
+						}
+					}
+					switch ($key) {
+						case 'PHP-MAILER':
+							$key = 'PHPMAILER';
+							break;
+						default:
+							$key = $key;
+					}
+					if ($this->config[$key . '-enabled']) {
+						if ($continue) {
+							$files .= '<script src="api/plugins/js/' . basename($filename) . '?v=' . $this->fileHash . '" defer="true"></script>';
+						}
+					}
+					
+				}
+				break;
+			case 'css':
+				foreach (glob(dirname(__DIR__, 1) . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . 'css' . DIRECTORY_SEPARATOR . '*.css') as $filename) {
 					$files .= '<link href="api/plugins/css/' . basename($filename) . '?v=' . $this->fileHash . '" rel="stylesheet">';
 				}
 				break;
