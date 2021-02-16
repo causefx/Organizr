@@ -12,7 +12,7 @@ function get_page_settings($Organizr)
 		return false;
 	}
 	$Organizr->writeLog('success', 'Admin Function -  Accessed Settings Page', $Organizr->user['username']);
-	return '
+	return $Organizr->pluginFiles('js', true) . '
 <script>
     (function() {
         updateCheck();
