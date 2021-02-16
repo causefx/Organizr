@@ -137,6 +137,7 @@ api/plugins/*
 !api/plugins/api/healthChecks.php
 !api/plugins/config/healthChecks.php
 !api/plugins/js/healthChecks.js
+!api/plugins/js/healthChecks-settings.js
 !api/plugins/php-mailer.php
 !api/plugins/api/php-mailer.php
 !api/plugins/config/php-mailer.php
