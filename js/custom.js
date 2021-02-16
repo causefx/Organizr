@@ -1897,3 +1897,21 @@ function checkMetadataDiv(target,type,classList){
 		}
 	});
 }
+
+// Plugins settings bind
+$(document).on('click', '[id$=-settings-button]', function() {
+	let el = $(this)[0];
+	let bind = $(el).attr('data-bind');
+	let api = $(el).attr('data-api');
+	let prefix = $(el).attr('data-config-prefix');
+	if(bind == 'true' && api !== 'false' && prefix !== 'false'){
+		ajaxloader(".content-wrap","in");
+		organizrAPI2('GET',api).success(function(data) {
+			var response = data.response;
+			$('#'+prefix+'-settings-items').html(buildFormGroup(response.data));
+		}).fail(function(xhr) {
+			OrganizrApiError(xhr);
+		});
+		ajaxloader();
+	}
+});
