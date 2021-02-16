@@ -441,7 +441,7 @@ class Organizr
 						default:
 							$key = $key;
 					}
-					if ($this->config[$key . '-enabled']) {
+					if ($this->config[$key . '-enabled'] || $settings) {
 						if ($continue) {
 							$files .= '<script src="api/plugins/js/' . basename($filename) . '?v=' . $this->fileHash . '" defer="true"></script>';
 						}
