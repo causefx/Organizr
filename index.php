@@ -230,6 +230,7 @@ $Organizr = new Organizr();
 <script src="js/ua-parser.min.js"></script>
 <script src="js/plyr.js"></script>
 <script src="js/simplebar.js"></script>
+<script src="js/arrive.min.js"></script>
 <script src="https://apis.google.com/js/client.js?onload=googleApiClientReady"></script>
 <script src="js/functions.js?v=<?php echo $Organizr->fileHash; ?>"></script>
 <script src="js/custom.min.js?v=<?php echo $Organizr->fileHash; ?>"></script>
