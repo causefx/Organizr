@@ -1669,30 +1669,6 @@ Mousetrap.bind('ctrl+shift+down', function(e) {
     nextTab.trigger("click");
     return false;
 });
-$(document).on('change', "#new-tab-form-chooseImage", function (e) {
-    var newIcon = $('#new-tab-form-chooseImage').val();
-    if(newIcon !== 'Select or type Icon'){
-        $('#new-tab-form-inputImageNew').val(newIcon);
-    }
-});
-$(document).on('change', "#edit-tab-form-chooseImage", function (e) {
-    var newIcon = $('#edit-tab-form-chooseImage').val();
-    if(newIcon !== 'Select or type Icon'){
-        $('#edit-tab-form-inputImage').val(newIcon);
-    }
-});
-$(document).on('change', "#new-tab-form-chooseIcon", function (e) {
-    var newIcon = $('#new-tab-form-chooseIcon').val();
-    if(newIcon !== 'Select or type Icon'){
-        $('#new-tab-form-inputImageNew').val(newIcon);
-    }
-});
-$(document).on('change', "#edit-tab-form-chooseIcon", function (e) {
-    var newIcon = $('#edit-tab-form-chooseIcon').val();
-    if(newIcon !== 'Select or type Icon'){
-        $('#edit-tab-form-inputImage').val(newIcon);
-    }
-});
 $(document).on('change', "#choose-calender-filter, #choose-calender-filter-status", function (e) {
     filter = $('#choose-calender-filter').val();
     filterDownload = $('#choose-calender-filter-status').val();
@@ -1913,5 +1889,15 @@ $(document).on('click', '[id$=-settings-button]', function() {
 			OrganizrApiError(xhr);
 		});
 		ajaxloader();
+	}
+});
+$(document).on('change', '[id*=-form-chooseI]', function (e) {
+	let el = $(this)[0];
+	let id = $(el).attr('id');
+	let newForm = (id.includes('new')) ? 'New' : '';
+	let pasteId = id.match(/(?:[a-z]*-){1,5}/) + 'inputImage' + newForm;
+	let newValue = $('#'+id).val();
+	if(newValue !== 'Select or type Icon'){
+		$('#'+pasteId).val(newValue);
 	}
 });
