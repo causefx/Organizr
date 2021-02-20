@@ -68,9 +68,7 @@ $app->get('/plugins/bookmark/tabs', function ($request, $response, $args) {
 $app->get('/plugins/bookmark/tabs/{id}', function ($request, $response, $args) {
 	$Bookmark = new Bookmark();
 	if ($Bookmark->_checkRequest($request) && $Bookmark->checkRoute($request)) {
-		if ($Bookmark->qualifyRequest(1, true)) {
-			$GLOBALS['api']['response']['data'] = $Bookmark->_getTabByIdCheckUser($args['id']);
-		}
+		$GLOBALS['api']['response']['data'] = $Bookmark->_getTabByIdCheckUser($args['id']);
 	}
 	$response->getBody()->write(jsonE($GLOBALS['api']));
 	return $response

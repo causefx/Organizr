@@ -29,20 +29,6 @@ class Bookmark extends Organizr
 		$result = false;
 
 		if ($this->config['BOOKMARK-enabled'] && $this->hasDB()) {
-			/*
-			$response = [
-				array(
-					'function' => 'query',
-					'query' => 'DROP TABLE IF EXISTS `BOOKMARK-categories`'
-				),
-				array(
-					'function' => 'query',
-					'query' => 'DROP TABLE IF EXISTS `BOOKMARK-tabs`'
-				)
-			];
-			$this->processQueries($response);
-			//*/
-
 			if (!$this->_checkDatabaseTablesExist()) {
 				$this->_createDatabaseTables();
 			}
@@ -136,80 +122,6 @@ class Bookmark extends Organizr
 
 	public function _getPage()
 	{
-		$script = '
-<script>
-	var styles = `
-		#BOOKMARK-wrapper {
-			display: flex;
-			flex-direction: column;
-			justify-content: flex-start;
-		}
-		.BOOKMARK-category {
-			text-align: center;
-			margin-bottom: 40px;
-		}
-		.BOOKMARK-category-title {
-			font-weight: 500;
-			color: #ddd;
-			font-size: large;
-		}
-		.BOOKMARK-category-content {
-			width: 80%;
-			margin: 0 auto;
-			display: flex;
-			flex-flow: row wrap;
-			justify-content: center;
-		}
-		.BOOKMARK-tab {
-			display: inline-flex;
-			justify-content: space-between;
-			align-items: center;
-			margin: 10px 10px 0 10px;
-			height: 50px;
-			width: 200px;
-			overflow: hidden;
-			border: 1px solid;
-			border-radius: 5px;
-			transition: all 0.2s ease-in-out;
-		}
-		.BOOKMARK-tab:hover {
-			filter: brightness(80%);
-		}
-		.BOOKMARK-tab-image {
-			width: 50px;
-			max-width: 50px;
-			height: 100%;
-			flex-grow: 33;
-		}
-		.BOOKMARK-tab-image img {
-			width: 100%;
-			height: 100%;
-			padding: 8px;
-			object-fit: contain;
-		}
-		.BOOKMARK-tab-image i {
-			width: 100%;
-			height: 100%;
-			line-height: 44px;
-			font-size: 2.2em;
-		}
-		.BOOKMARK-tab-title {
-			flex-grow: 67;
-			padding: 0 5px;
-			color: white;
-			text-align: left;
-			font-weight: 500;
-		}
-	`;
-
-	var styleSheet = document.createElement("style");
-	styleSheet.type = "text/css";
-	styleSheet.innerText = styles;
-	document.head.appendChild(styleSheet);
-
-
-</script>';
-
 		$bookmarks = '<div id="BOOKMARK-wrapper">';
 		foreach ($this->_getAllCategories() as $category) {
 			$tabs = $this->_getRelevantTabsForCategory($category['category_id']);
@@ -220,11 +132,11 @@ class Bookmark extends Organizr
 				</div>
 				<div class="BOOKMARK-category-content">';
 			foreach ($tabs as $tab) {
-				$bookmarks .= '<a href="'.$tab['url'].'" target="_SELF">
+				$bookmarks .= '<a href="' . $tab['url'] . '" target="_SELF">
 					<div class="BOOKMARK-tab"
-						style="border-color: '.$this->adjustBrightness($tab['background_color'], 0.3).'; background: linear-gradient(90deg, '.$this->adjustBrightness($tab['background_color'], -0.3).' 0%, '.$tab['background_color'].' 70%, '.$this->adjustBrightness($tab['background_color'], 0.1).' 100%);">
-						<span class="BOOKMARK-tab-image">'.$this->_iconPrefix($tab['image']).'</span>
-						<span class="BOOKMARK-tab-title" style="color: '.$tab['text_color'].';">'.$tab['name'].'</span>
+						style="border-color: ' . $this->adjustBrightness($tab['background_color'], 0.3) . '; background: linear-gradient(90deg, ' . $this->adjustBrightness($tab['background_color'], -0.3) . ' 0%, ' . $tab['background_color'] . ' 70%, ' . $this->adjustBrightness($tab['background_color'], 0.1) . ' 100%);">
+						<span class="BOOKMARK-tab-image">' . $this->_iconPrefix($tab['image']) . '</span>
+						<span class="BOOKMARK-tab-title" style="color: ' . $tab['text_color'] . ';">' . $tab['name'] . '</span>
 					</div>
 				</a>';
 			}
@@ -232,7 +144,7 @@ class Bookmark extends Organizr
 		}
 		$bookmarks .= '</div>';
 
-		return $script . $bookmarks;
+		return $bookmarks;
 	}
 
 	protected function _iconPrefix($source)
@@ -621,22 +533,20 @@ class Bookmark extends Organizr
 			return false;
 		}
 		if (array_key_exists('background_color', $array)) {
-			if(!$this->_checkColorHexCode($array['background_color'])){
+			if (!$this->_checkColorHexCode($array['background_color'])) {
 				$this->setAPIResponse('error', 'Tab background color is invalid', 422);
 				return false;
 			}
-		}
-		else{
+		} else {
 			$this->setAPIResponse('error', 'Tab background color was not supplied', 422);
 			return false;
 		}
 		if (array_key_exists('text_color', $array)) {
-			if(!$this->_checkColorHexCode($array['text_color'])){
+			if (!$this->_checkColorHexCode($array['text_color'])) {
 				$this->setAPIResponse('error', 'Tab text color is invalid', 422);
 				return false;
 			}
-		}
-		else{
+		} else {
 			$this->setAPIResponse('error', 'Tab text color was not supplied', 422);
 			return false;
 		}
@@ -678,13 +588,13 @@ class Bookmark extends Organizr
 			}
 		}
 		if (array_key_exists('background_color', $array)) {
-			if(!$this->_checkColorHexCode($array['background_color'])){
+			if (!$this->_checkColorHexCode($array['background_color'])) {
 				$this->setAPIResponse('error', 'Tab background color is invalid', 422);
 				return false;
 			}
 		}
 		if (array_key_exists('text_color', $array)) {
-			if(!$this->_checkColorHexCode($array['text_color'])){
+			if (!$this->_checkColorHexCode($array['text_color'])) {
 				$this->setAPIResponse('error', 'Tab text color is invalid', 422);
 				return false;
 			}
@@ -1034,8 +944,9 @@ class Bookmark extends Organizr
 		}
 	}
 
-	protected function _correctDefaultCategory(){
-		if($this->_getDefaultBookmarkCategoryId() == null){
+	protected function _correctDefaultCategory()
+	{
+		if ($this->_getDefaultBookmarkCategoryId() == null) {
 			$response = [
 				array(
 					'function' => 'query',
@@ -1046,7 +957,8 @@ class Bookmark extends Organizr
 		}
 	}
 
-	protected function _checkColorHexCode($hex){
+	protected function _checkColorHexCode($hex)
+	{
 		return preg_match('/^\#([0-9a-fA-F]{3}){1,2}$/', $hex);
 	}
 
@@ -1061,7 +973,8 @@ class Bookmark extends Organizr
 	 * @author  maliayas
 	 * @link https://stackoverflow.com/questions/3512311/how-to-generate-lighter-darker-color-with-php
 	 */
-	protected function adjustBrightness($hexCode, $adjustPercent) {
+	protected function adjustBrightness($hexCode, $adjustPercent)
+	{
 		$hexCode = ltrim($hexCode, '#');
 
 		if (strlen($hexCode) == 3) {
@@ -1070,7 +983,7 @@ class Bookmark extends Organizr
 
 		$hexCode = array_map('hexdec', str_split($hexCode, 2));
 
-		foreach ($hexCode as & $color) {
+		foreach ($hexCode as &$color) {
 			$adjustableLimit = $adjustPercent < 0 ? $color : 255 - $color;
 			$adjustAmount = ceil($adjustableLimit * $adjustPercent);
 

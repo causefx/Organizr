@@ -160,7 +160,8 @@ api/plugins/*
 !api/plugins/bookmark.php
 !api/plugins/api/bookmark.php
 !api/plugins/config/bookmark.php
-!api/plugins/js/bookmark.js
+!api/plugins/js/bookmark-settings.js
+!api/plugins/css/bookmark.css
 
 # =========================
 # Custom files
