@@ -60,7 +60,7 @@ class Organizr
 	
 	// ===================================
 	// Organizr Version
-	public $version = '2.1.184';
+	public $version = '2.1.195';
 	// ===================================
 	// Quick php Version check
 	public $minimumPHP = '7.2';
@@ -395,6 +395,7 @@ class Organizr
 		return ($encode) ? json_encode($files) : $files;
 	}
 	
+	/* Old function
 	public function pluginFiles($type)
 	{
 		$files = '';
@@ -406,6 +407,50 @@ class Organizr
 				break;
 			case 'css':
 				foreach (glob(dirname(__DIR__, 1) . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . 'css' . DIRECTORY_SEPARATOR . "*.css") as $filename) {
+					$files .= '<link href="api/plugins/css/' . basename($filename) . '?v=' . $this->fileHash . '" rel="stylesheet">';
+				}
+				break;
+			default:
+				break;
+		}
+		return $files;
+	}
+	*/
+	public function pluginFiles($type, $settings = false)
+	{
+		$files = '';
+		switch ($type) {
+			case 'js':
+				foreach (glob(dirname(__DIR__, 1) . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . 'js' . DIRECTORY_SEPARATOR . '*.js') as $filename) {
+					$keyOriginal = strtoupper(basename($filename, '.js'));
+					$key = str_replace('-SETTINGS', '', $keyOriginal);
+					$continue = false;
+					if ($settings) {
+						if (stripos($keyOriginal, '-SETTINGS') !== false) {
+							$continue = true;
+						}
+					} else {
+						if (stripos($keyOriginal, '-SETTINGS') == false) {
+							$continue = true;
+						}
+					}
+					switch ($key) {
+						case 'PHP-MAILER':
+							$key = 'PHPMAILER';
+							break;
+						default:
+							$key = $key;
+					}
+					if ($this->config[$key . '-enabled'] || $settings) {
+						if ($continue) {
+							$files .= '<script src="api/plugins/js/' . basename($filename) . '?v=' . $this->fileHash . '" defer="true"></script>';
+						}
+					}
+					
+				}
+				break;
+			case 'css':
+				foreach (glob(dirname(__DIR__, 1) . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . 'css' . DIRECTORY_SEPARATOR . '*.css') as $filename) {
 					$files .= '<link href="api/plugins/css/' . basename($filename) . '?v=' . $this->fileHash . '" rel="stylesheet">';
 				}
 				break;
@@ -2375,10 +2420,18 @@ class Organizr
 				array(
 					'type' => 'input',
 					'name' => 'jellyfinURL',
-					'label' => 'Jellyfin URL',
+					'label' => 'Jellyfin API URL',
 					'value' => $this->config['jellyfinURL'],
-					'help' => 'Please make sure to use the same (sub)domain to access Jellyfin as Organizr\'s',
+					'help' => 'Please make sure to use the local address to the API',
 					'placeholder' => 'http(s)://hostname:port'
+				),
+				array(
+					'type' => 'input',
+					'name' => 'jellyfinSSOURL',
+					'label' => 'Jellyfin SSO URL',
+					'value' => $this->config['jellyfinSSOURL'],
+					'help' => 'Please make sure to use the same (sub)domain to access Jellyfin as Organizr\'s',
+					'placeholder' => 'http(s)://domain.com'
 				),
 				array(
 					'type' => 'switch',
@@ -2877,7 +2930,7 @@ class Organizr
 		->issuedAt(time())// Configures the time that the token was issue (iat claim)
 		->expiresAt(time() + (86400 * $days))// Configures the expiration time of the token (exp claim)
 		//->withClaim('username', $result['username'])// Configures a new claim, called "username"
-		//->withClaim('group', $result['group'])// Configures a new claim, called "group"
+		->withClaim('group', $result['group'])// Configures a new claim, called "group"
 		//->withClaim('groupID', $result['group_id'])// Configures a new claim, called "groupID"
 		//->withClaim('email', $result['email'])// Configures a new claim, called "email"
 		//->withClaim('image', $result['image'])// Configures a new claim, called "image"

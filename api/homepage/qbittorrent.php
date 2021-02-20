@@ -35,6 +35,12 @@ trait QBitTorrentHomepageItem
 						'placeholder' => 'http(s)://hostname:port'
 					),
 					array(
+						'type' => 'switch',
+						'name' => 'qBittorrentDisableCertCheck',
+						'label' => 'Disable Certificate Check',
+						'value' => $this->config['qBittorrentDisableCertCheck']
+					),
+					array(
 						'type' => 'select',
 						'name' => 'qBittorrentApiVersion',
 						'label' => 'API Version',
@@ -123,7 +129,7 @@ trait QBitTorrentHomepageItem
 		$apiVersionQuery = ($this->config['qBittorrentApiVersion'] == '1') ? '/query/torrents?sort=' : '/api/v2/torrents/info?sort=';
 		$url = $digest['scheme'] . '://' . $digest['host'] . $digest['port'] . $digest['path'] . $apiVersionLogin;
 		try {
-			$options = ($this->localURL($this->config['qBittorrentURL'])) ? array('verify' => false) : array();
+			$options = $this->requestOptions($this->config['qBittorrentURL'], $this->config['qBittorrentDisableCertCheck'], $this->config['homepageDownloadRefresh']);
 			$response = Requests::post($url, array(), $data, $options);
 			$reflection = new ReflectionClass($response->cookies);
 			$cookie = $reflection->getProperty("cookies");
@@ -215,7 +221,7 @@ trait QBitTorrentHomepageItem
 		$apiVersionQuery = ($this->config['qBittorrentApiVersion'] == '1') ? '/query/torrents?sort=' : '/api/v2/torrents/info?sort=';
 		$url = $digest['scheme'] . '://' . $digest['host'] . $digest['port'] . $digest['path'] . $apiVersionLogin;
 		try {
-			$options = ($this->localURL($this->config['qBittorrentURL'])) ? array('verify' => false) : array();
+			$options = $this->requestOptions($this->config['qBittorrentURL'], $this->config['qBittorrentDisableCertCheck'], $this->config['homepageDownloadRefresh']);
 			$response = Requests::post($url, array(), $data, $options);
 			$reflection = new ReflectionClass($response->cookies);
 			$cookie = $reflection->getProperty("cookies");

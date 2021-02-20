@@ -139,7 +139,7 @@ $Organizr = new Organizr();
     <div class="error-page bg-org"></div>
     <div class="login-area hidden"></div>
     <div class="p-0" id="page-wrapper">
-        <div class="organizr-area"></div>
+        <div class="organizr-area hidden"></div>
         <div class="plugin-listing p-0 hidden"></div>
         <div class="internal-listing p-0 hidden"></div>
         <div class="iFrame-listing p-0 hidden"></div>
@@ -230,6 +230,7 @@ $Organizr = new Organizr();
 <script src="js/ua-parser.min.js"></script>
 <script src="js/plyr.js"></script>
 <script src="js/simplebar.js"></script>
+<script src="js/arrive.min.js"></script>
 <script src="https://apis.google.com/js/client.js?onload=googleApiClientReady"></script>
 <script src="js/functions.js?v=<?php echo $Organizr->fileHash; ?>"></script>
 <script src="js/custom.min.js?v=<?php echo $Organizr->fileHash; ?>"></script>

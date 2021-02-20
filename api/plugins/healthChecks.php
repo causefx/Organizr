@@ -10,7 +10,9 @@ $GLOBALS['plugins'][]['healthChecks'] = array( // Plugin Name
 	'configPrefix' => 'HEALTHCHECKS', // config file prefix for array items without the hyphen
 	'version' => '1.0.0', // SemVer of plugin
 	'image' => 'plugins/images/healthchecksio.png', // 1:1 non transparent image for plugin
-	'settings' => true, // does plugin need a settings page? true or false
+	'settings' => true, // does plugin need a settings modal?
+	'bind' => false, // use default bind to make settings page - true or false
+	'api' => false, // api route for settings page
 	'homepage' => false // Is plugin for use on homepage? true or false
 );
 

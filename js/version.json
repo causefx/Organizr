@@ -334,5 +334,12 @@
     "new": "",
     "fixed": "Missing variable",
     "notes": "This is a quick hotfix"
+  },
+  "2.1.195": {
+    "date": "2021-02-12 20:00",
+    "title": "Weekly Update",
+    "new": "ignore cert to transmission (#1177)|ignore cert to qbit (#1177)|no tabs api function|log functions",
+    "fixed": "Jellyfin SSO fails behind reverse proxy (#1585)|Unable to use \"@\" in username during initial account setup (#1584)|Re-add JWT claims removed from token (#1577)|heart on dependency|refresh to add new user|organizr-area css",
+    "notes": "remove spinner css classes"
   }
 }

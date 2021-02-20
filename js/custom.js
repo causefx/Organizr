@@ -584,6 +584,7 @@ $(document).on("click", ".addNewUser", function () {
 		message('User Created',response.message,activeInfo.settings.notifications.position,"#FFF","success","5000");
 		if(callbacks){ callbacks.fire(); }
 		clearForm('#new-user-form');
+		$('#jsGrid-Users').jsGrid('render');
 		$.magnificPopup.close();
 	}).fail(function(xhr) {
 		OrganizrApiError(xhr, 'API Error');
@@ -1668,30 +1669,6 @@ Mousetrap.bind('ctrl+shift+down', function(e) {
     nextTab.trigger("click");
     return false;
 });
-$(document).on('change', "#new-tab-form-chooseImage", function (e) {
-    var newIcon = $('#new-tab-form-chooseImage').val();
-    if(newIcon !== 'Select or type Icon'){
-        $('#new-tab-form-inputImageNew').val(newIcon);
-    }
-});
-$(document).on('change', "#edit-tab-form-chooseImage", function (e) {
-    var newIcon = $('#edit-tab-form-chooseImage').val();
-    if(newIcon !== 'Select or type Icon'){
-        $('#edit-tab-form-inputImage').val(newIcon);
-    }
-});
-$(document).on('change', "#new-tab-form-chooseIcon", function (e) {
-    var newIcon = $('#new-tab-form-chooseIcon').val();
-    if(newIcon !== 'Select or type Icon'){
-        $('#new-tab-form-inputImageNew').val(newIcon);
-    }
-});
-$(document).on('change', "#edit-tab-form-chooseIcon", function (e) {
-    var newIcon = $('#edit-tab-form-chooseIcon').val();
-    if(newIcon !== 'Select or type Icon'){
-        $('#edit-tab-form-inputImage').val(newIcon);
-    }
-});
 $(document).on('change', "#choose-calender-filter, #choose-calender-filter-status", function (e) {
     filter = $('#choose-calender-filter').val();
     filterDownload = $('#choose-calender-filter-status').val();
@@ -1896,3 +1873,31 @@ function checkMetadataDiv(target,type,classList){
 		}
 	});
 }
+
+// Plugins settings bind
+$(document).on('click', '[id$=-settings-button]', function() {
+	let el = $(this)[0];
+	let bind = $(el).attr('data-bind');
+	let api = $(el).attr('data-api');
+	let prefix = $(el).attr('data-config-prefix');
+	if(bind == 'true' && api !== 'false' && prefix !== 'false'){
+		ajaxloader(".content-wrap","in");
+		organizrAPI2('GET',api).success(function(data) {
+			var response = data.response;
+			$('#'+prefix+'-settings-items').html(buildFormGroup(response.data));
+		}).fail(function(xhr) {
+			OrganizrApiError(xhr);
+		});
+		ajaxloader();
+	}
+});
+$(document).on('change', '[id*=-form-chooseI]', function (e) {
+	let el = $(this)[0];
+	let id = $(el).attr('id');
+	let newForm = (id.includes('new')) ? 'New' : '';
+	let pasteId = id.match(/(?:[a-z]*-){1,5}/) + 'inputImage' + newForm;
+	let newValue = $('#'+id).val();
+	if(newValue !== 'Select or type Icon'){
+		$('#'+pasteId).val(newValue);
+	}
+});

@@ -122,6 +122,7 @@ span.jsgrid-pager-page.jsgrid-pager-current-page.btn.btn-primary{
 .organizr-area-right {
     height: calc(100vh - 40px);
     position: absolute;
+    width: 100%;
 }
 /* Larger Images */
 
@@ -1215,6 +1216,9 @@ ul.nav.customtab.nav-tabs.nav-low-margin {
     -webkit-animation: heartbit 1s ease-out;
     -webkit-animation-iteration-count: infinite;
     animation-iteration-count: infinite;
+}
+.heartbit.depend-heartbit {
+    top: -37.5px;
 }
 .ping .point {
     width: 6px;
@@ -4325,48 +4329,6 @@ html {
     border-top-right-radius: 0; }
 .accordion > .card .card-header {
     margin-bottom: 0px; }
-
-@keyframes spinner-border {
-    to {
-        transform: rotate(360deg); } }
-
-.spinner-border {
-    display: inline-block;
-    width: 2rem;
-    height: 2rem;
-    vertical-align: text-bottom;
-    border: 0.25em solid currentColor;
-    border-right-color: transparent;
-    border-radius: 50%;
-    animation: spinner-border .75s linear infinite; }
-
-.spinner-border-sm {
-    width: 1rem;
-    height: 1rem;
-    border-width: 0.2em; }
-
-@keyframes spinner-grow {
-    0% {
-        transform: scale(0);
-    }
-    50% {
-        opacity: 1;
-    }
-}
-
-.spinner-grow {
-    display: inline-block;
-    width: 2rem;
-    height: 2rem;
-    vertical-align: text-bottom;
-    background-color: currentColor;
-    border-radius: 50%;
-    opacity: 0;
-    animation: spinner-grow .75s linear infinite; }
-
-.spinner-grow-sm {
-    width: 1rem;
-    height: 1rem; }
 
 .pollen-wrapper {
     display: flex;
