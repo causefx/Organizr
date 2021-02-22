@@ -11,33 +11,32 @@ $GLOBALS['plugins'][]['Bookmark'] = array( // Plugin Name
 	'dbPrefix' => 'BOOKMARK', // db prefix
 	'version' => '0.1.0', // SemVer of plugin
 	'image' => 'plugins/images/bookmark.png', // 1:1 non transparent image for plugin
-	'settings' => true, // does plugin need a settings page? true or false
+	'settings' => true, // does plugin need a settings modal?
+	'bind' => true, // use default bind to make settings page - true or false
+	'api' => 'api/v2/plugins/bookmark/settings', // api route for settings page
 	'homepage' => false // Is plugin for use on homepage? true or false
 );
 
 // Logo image under Public Domain from https://openclipart.org/detail/182527/open-book
-
 class Bookmark extends Organizr
 {
 	public function writeLog($type = 'error', $message = null, $username = null)
 	{
 		parent::writeLog($type, "Plugin 'Bookmark': " . $message, $username);
 	}
-
+	
 	public function _checkRequest($request)
 	{
 		$result = false;
-
 		if ($this->config['BOOKMARK-enabled'] && $this->hasDB()) {
 			if (!$this->_checkDatabaseTablesExist()) {
 				$this->_createDatabaseTables();
 			}
 			$result = true;
 		}
-
 		return $result;
 	}
-
+	
 	protected function _checkDatabaseTablesExist()
 	{
 		$response = [
@@ -56,11 +55,10 @@ class Bookmark extends Organizr
 				'key' => 'BOOKMARK-tabs'
 			),
 		];
-
 		$data = $this->processQueries($response);
 		return ($data["BOOKMARK-categories"] != false && $data["BOOKMARK-tabs"] != false);
 	}
-
+	
 	protected function _createDatabaseTables()
 	{
 		$response = [
@@ -92,7 +90,7 @@ class Bookmark extends Organizr
 		];
 		$this->processQueries($response);
 	}
-
+	
 	public function _getSettings()
 	{
 		return array(
@@ -119,7 +117,7 @@ class Bookmark extends Organizr
 			'
 		);
 	}
-
+	
 	public function _getPage()
 	{
 		$bookmarks = '<div id="BOOKMARK-wrapper">';
@@ -143,10 +141,9 @@ class Bookmark extends Organizr
 			$bookmarks .= '</div></div>';
 		}
 		$bookmarks .= '</div>';
-
 		return $bookmarks;
 	}
-
+	
 	protected function _iconPrefix($source)
 	{
 		$tabIcon = explode("::", $source);
@@ -170,7 +167,7 @@ class Bookmark extends Organizr
 			return '<img src="' . $source . '" alt="tabIcon" />';
 		}
 	}
-
+	
 	protected function _getAllCategories()
 	{
 		$response = [
@@ -181,7 +178,7 @@ class Bookmark extends Organizr
 		];
 		return $this->processQueries($response);
 	}
-
+	
 	protected function _getRelevantTabsForCategory($category_id)
 	{
 		$response = [
@@ -196,7 +193,7 @@ class Bookmark extends Organizr
 		];
 		return $this->processQueries($response);
 	}
-
+	
 	public function _getTabs()
 	{
 		$response = [
@@ -218,7 +215,7 @@ class Bookmark extends Organizr
 		];
 		return $this->processQueries($response);
 	}
-
+	
 	// Tabs
 	public function _getSettingsTabEditorBookmarkTabsPage()
 	{
@@ -414,7 +411,7 @@ class Bookmark extends Organizr
 		</form>
 		';
 	}
-
+	
 	public function _isBookmarkTabNameTaken($name, $id = null)
 	{
 		if ($id) {
@@ -441,7 +438,7 @@ class Bookmark extends Organizr
 		}
 		return $this->processQueries($response);
 	}
-
+	
 	public function _getNextBookmarkTabOrder()
 	{
 		$response = [
@@ -454,7 +451,7 @@ class Bookmark extends Organizr
 		];
 		return $this->processQueries($response);
 	}
-
+	
 	public function _getBookmarkTabById($id)
 	{
 		$response = [
@@ -468,7 +465,7 @@ class Bookmark extends Organizr
 		];
 		return $this->processQueries($response);
 	}
-
+	
 	public function _getTabByIdCheckUser($id)
 	{
 		$tabInfo = $this->_getBookmarkTabById($id);
@@ -481,7 +478,7 @@ class Bookmark extends Organizr
 			return false;
 		}
 	}
-
+	
 	public function _deleteTab($id)
 	{
 		$response = [
@@ -503,7 +500,7 @@ class Bookmark extends Organizr
 			return false;
 		}
 	}
-
+	
 	public function _addTab($array)
 	{
 		if (!$array) {
@@ -563,7 +560,7 @@ class Bookmark extends Organizr
 		$this->writeLog('success', 'Tab Editor Function -  Added Tab for [' . $array['name'] . ']', $this->user['username']);
 		return $this->processQueries($response);
 	}
-
+	
 	public function _updateTab($id, $array)
 	{
 		if (!$id || $id == '') {
@@ -614,7 +611,7 @@ class Bookmark extends Organizr
 		$this->writeLog('success', 'Tab Editor Function -  Edited Tab Info for [' . $tabInfo['name'] . ']', $this->user['username']);
 		return $this->processQueries($response);
 	}
-
+	
 	public function _updateTabOrder($array)
 	{
 		if (count($array) >= 1) {
@@ -647,7 +644,7 @@ class Bookmark extends Organizr
 			return false;
 		}
 	}
-
+	
 	// Categories
 	public function _getSettingsTabEditorBookmarkCategoriesPage()
 	{
@@ -712,7 +709,7 @@ class Bookmark extends Organizr
 	</form>
 	';
 	}
-
+	
 	public function _getDefaultBookmarkCategoryId()
 	{
 		$response = [
@@ -725,7 +722,7 @@ class Bookmark extends Organizr
 		];
 		return $this->processQueries($response);
 	}
-
+	
 	public function _getNextBookmarkCategoryOrder()
 	{
 		$response = [
@@ -738,7 +735,7 @@ class Bookmark extends Organizr
 		];
 		return $this->processQueries($response);
 	}
-
+	
 	public function _getNextBookmarkCategoryId()
 	{
 		$response = [
@@ -751,7 +748,7 @@ class Bookmark extends Organizr
 		];
 		return $this->processQueries($response);
 	}
-
+	
 	public function _isBookmarkCategoryNameTaken($name, $id = null)
 	{
 		if ($id) {
@@ -778,7 +775,7 @@ class Bookmark extends Organizr
 		}
 		return $this->processQueries($response);
 	}
-
+	
 	public function _getBookmarkCategoryById($id)
 	{
 		$response = [
@@ -792,7 +789,7 @@ class Bookmark extends Organizr
 		];
 		return $this->processQueries($response);
 	}
-
+	
 	public function _clearBookmarkCategoryDefault()
 	{
 		$response = [
@@ -805,7 +802,7 @@ class Bookmark extends Organizr
 		];
 		return $this->processQueries($response);
 	}
-
+	
 	public function _addCategory($array)
 	{
 		if (!$array) {
@@ -840,7 +837,7 @@ class Bookmark extends Organizr
 		$this->_correctDefaultCategory();
 		return $result;
 	}
-
+	
 	public function _updateCategory($id, $array)
 	{
 		if (!$id || $id == '') {
@@ -886,7 +883,7 @@ class Bookmark extends Organizr
 		$this->_correctDefaultCategory();
 		return $result;
 	}
-
+	
 	public function _updateCategoryOrder($array)
 	{
 		if (count($array) >= 1) {
@@ -919,7 +916,7 @@ class Bookmark extends Organizr
 			return false;
 		}
 	}
-
+	
 	public function _deleteCategory($id)
 	{
 		$response = [
@@ -943,7 +940,7 @@ class Bookmark extends Organizr
 			return false;
 		}
 	}
-
+	
 	protected function _correctDefaultCategory()
 	{
 		if ($this->_getDefaultBookmarkCategoryId() == null) {
@@ -956,40 +953,35 @@ class Bookmark extends Organizr
 			return $this->processQueries($response);
 		}
 	}
-
+	
 	protected function _checkColorHexCode($hex)
 	{
 		return preg_match('/^\#([0-9a-fA-F]{3}){1,2}$/', $hex);
 	}
-
+	
 	/**
 	 * Increases or decreases the brightness of a color by a percentage of the current brightness.
 	 *
-	 * @param   string  $hexCode        Supported formats: `#FFF`, `#FFFFFF`, `FFF`, `FFFFFF`
-	 * @param   float   $adjustPercent  A number between -1 and 1. E.g. 0.3 = 30% lighter; -0.4 = 40% darker.
+	 * @param string $hexCode       Supported formats: `#FFF`, `#FFFFFF`, `FFF`, `FFFFFF`
+	 * @param float  $adjustPercent A number between -1 and 1. E.g. 0.3 = 30% lighter; -0.4 = 40% darker.
 	 *
 	 * @return  string
 	 *
 	 * @author  maliayas
-	 * @link https://stackoverflow.com/questions/3512311/how-to-generate-lighter-darker-color-with-php
+	 * @link    https://stackoverflow.com/questions/3512311/how-to-generate-lighter-darker-color-with-php
 	 */
 	protected function adjustBrightness($hexCode, $adjustPercent)
 	{
 		$hexCode = ltrim($hexCode, '#');
-
 		if (strlen($hexCode) == 3) {
 			$hexCode = $hexCode[0] . $hexCode[0] . $hexCode[1] . $hexCode[1] . $hexCode[2] . $hexCode[2];
 		}
-
 		$hexCode = array_map('hexdec', str_split($hexCode, 2));
-
 		foreach ($hexCode as &$color) {
 			$adjustableLimit = $adjustPercent < 0 ? $color : 255 - $color;
 			$adjustAmount = ceil($adjustableLimit * $adjustPercent);
-
 			$color = str_pad(dechex($color + $adjustAmount), 2, '0', STR_PAD_LEFT);
 		}
-
 		return '#' . implode($hexCode);
 	}
 }
