@@ -171,7 +171,7 @@ trait SSOFunctions
 				//"password" => ($oAuthToken ? "" : $password), // not needed yet
 				"authToken" => $oAuthToken
 			);
-			$endpoint = '/api/v1/auth/login';
+			$endpoint = '/api/v1/auth/plex';
 			$options = $this->requestOptions($url, false, 60);
 			$response = Requests::post($url . $endpoint, $headers, json_encode($data), $options);
 			if ($response->success) {
