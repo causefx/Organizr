@@ -1,5 +1,4 @@
 <?php
-
 $app->get('/plugins/bookmark/settings', function ($request, $response, $args) {
 	$Bookmark = new Bookmark();
 	if ($Bookmark->checkRoute($request)) {
@@ -12,7 +11,6 @@ $app->get('/plugins/bookmark/settings', function ($request, $response, $args) {
 		->withHeader('Content-Type', 'application/json;charset=UTF-8')
 		->withStatus($GLOBALS['responseCode']);
 });
-
 $app->get('/plugins/bookmark/page', function ($request, $response, $args) {
 	$Bookmark = new Bookmark();
 	if ($Bookmark->_checkRequest($request) && $Bookmark->checkRoute($request)) {
@@ -25,7 +23,30 @@ $app->get('/plugins/bookmark/page', function ($request, $response, $args) {
 		->withHeader('Content-Type', 'application/json;charset=UTF-8')
 		->withStatus($GLOBALS['responseCode']);
 });
-
+$app->get('/plugins/bookmark/setup/tab', function ($request, $response, $args) {
+	$Bookmark = new Bookmark();
+	if ($Bookmark->_checkRequest($request) && $Bookmark->checkRoute($request)) {
+		if ($Bookmark->qualifyRequest(1, true)) {
+			$GLOBALS['api']['response']['data'] = $Bookmark->_checkForBookmarkTab();
+		}
+	}
+	$response->getBody()->write(jsonE($GLOBALS['api']));
+	return $response
+		->withHeader('Content-Type', 'application/json;charset=UTF-8')
+		->withStatus($GLOBALS['responseCode']);
+});
+$app->get('/plugins/bookmark/setup/category', function ($request, $response, $args) {
+	$Bookmark = new Bookmark();
+	if ($Bookmark->_checkRequest($request) && $Bookmark->checkRoute($request)) {
+		if ($Bookmark->qualifyRequest(1, true)) {
+			$GLOBALS['api']['response']['data'] = $Bookmark->_checkForBookmarkCategories();
+		}
+	}
+	$response->getBody()->write(jsonE($GLOBALS['api']));
+	return $response
+		->withHeader('Content-Type', 'application/json;charset=UTF-8')
+		->withStatus($GLOBALS['responseCode']);
+});
 $app->get('/plugins/bookmark/settings_tab_editor_bookmark_tabs', function ($request, $response, $args) {
 	$Bookmark = new Bookmark();
 	if ($Bookmark->_checkRequest($request) && $Bookmark->checkRoute($request)) {
@@ -38,7 +59,6 @@ $app->get('/plugins/bookmark/settings_tab_editor_bookmark_tabs', function ($requ
 		->withHeader('Content-Type', 'application/json;charset=UTF-8')
 		->withStatus($GLOBALS['responseCode']);
 });
-
 $app->get('/plugins/bookmark/settings_tab_editor_bookmark_categories', function ($request, $response, $args) {
 	$Bookmark = new Bookmark();
 	if ($Bookmark->_checkRequest($request) && $Bookmark->checkRoute($request)) {
@@ -51,7 +71,6 @@ $app->get('/plugins/bookmark/settings_tab_editor_bookmark_categories', function 
 		->withHeader('Content-Type', 'application/json;charset=UTF-8')
 		->withStatus($GLOBALS['responseCode']);
 });
-
 // TABS
 $app->get('/plugins/bookmark/tabs', function ($request, $response, $args) {
 	$Bookmark = new Bookmark();
@@ -123,7 +142,6 @@ $app->delete('/plugins/bookmark/tabs/{id}', function ($request, $response, $args
 		->withHeader('Content-Type', 'application/json')
 		->withStatus($GLOBALS['responseCode']);
 });
-
 // CATEGORIES
 $app->get('/plugins/bookmark/categories', function ($request, $response, $args) {
 	$Bookmark = new Bookmark();
