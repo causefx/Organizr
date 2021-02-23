@@ -1,20 +1,41 @@
 /* BOOKMARK JS FILE */
 // FUNCTIONS
-$(document).on('click', '#BOOKMARK-settings-button', function() {
-	ajaxloader(".content-wrap","in");
-	organizrAPI2('GET','api/v2/plugins/bookmark/settings').success(function(data) {
-		var response = data.response;
-		$('#BOOKMARK-settings-items').html(buildFormGroup(response.data));
-	}).fail(function(xhr) {
-		console.error("Organizr Function: API Connection Failed");
-	});
-	ajaxloader();
-});
-
 bookmarkLaunch();
 $('body').arrive('#settings-main-tab-editor .nav-tabs', {onceOnly: true}, function() {
 	bookmarkLaunch();
 });
+function bookmarkCheckForTab() {
+	// Let check for tab with bookmark url
+	organizrAPI2('GET', 'api/v2/plugins/bookmark/setup/tab').success(function (data) {
+		try {
+			let response = data.response;
+			$('.bookmark-check-tab .result').text(response.message);
+		} catch (e) {
+			organizrCatchError(e, data);
+		}
+	}).fail(function (xhr) {
+		OrganizrApiError(xhr);
+		$('.bookmark-check-tab .result').text('Error...');
+	});
+}
+$('body').arrive('.bookmark-check-tab', {onceOnly: false}, function() {
+	bookmarkCheckForTab()
+	bookmarkCheckForCategory();
+});
+function bookmarkCheckForCategory(){
+	// Let check for tab with bookmark url
+	organizrAPI2('GET','api/v2/plugins/bookmark/setup/category').success(function(data) {
+		try {
+			let response = data.response;
+			$('.bookmark-check-category .result').text(response.message);
+		}catch(e) {
+			organizrCatchError(e,data);
+		}
+	}).fail(function(xhr) {
+		OrganizrApiError(xhr);
+		$('.bookmark-check-category .result').text('Error...');
+	});
+}
 function bookmarkLaunch(){
 	if(activeInfo.plugins["BOOKMARK-enabled"] == true){
 		bookmarkTabsLaunch();

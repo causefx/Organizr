@@ -96,23 +96,44 @@ class Bookmark extends Organizr
 		return array(
 			'custom' => '
 				<div class="row">
-                    <div class="col-lg-12">
-                        <div class="panel panel-info">
-                            <div class="panel-heading">
+					<div class="col-lg-6 col-sm-12 col-md-6">
+						<div class="white-box">
+							<h3 class="box-title" lang="en">Automatic Setup Tasks</h3>
+							<ul class="feeds">
+								<li class="bookmark-check-tab">
+									<div class="bg-info">
+										<i class="sticon ti-layout-tab-v text-white"></i>
+									</div>
+									<small lang="en">Checking for Bookmark tab...</small>
+									<span class="text-muted result">...checking...</span>
+								</li>
+								<li class="bookmark-check-category">
+									<div class="bg-success">
+										<i class="ti-layout-list-thumb text-white"></i>
+									</div>
+									<small lang="en">Checking for bookmark default category...</small>
+									<span class="text-muted result">...checking...</span>
+								</li>
+							</ul>
+						</div>
+					</div>
+					<div class="col-lg-6 col-sm-12 col-md-6">
+						<div class="panel panel-info">
+							<div class="panel-heading">
 								<span lang="en">Notice</span>
-                            </div>
-                            <div class="panel-wrapper collapse in" aria-expanded="true">
-                                <div class="panel-body">
+							</div>
+							<div class="panel-wrapper collapse in" aria-expanded="true">
+								<div class="panel-body">
 									<ul class="list-icons">
 										<li><i class="fa fa-chevron-right text-info"></i> Add tab that points to <i>api/v2/plugins/bookmark/page</i> and set it\'s type to <i>Organizr</i>.</li>
 										<li><i class="fa fa-chevron-right text-info"></i> Create Bookmark categories in the new area in <i>Tab Editor</i>.</li>
 										<li><i class="fa fa-chevron-right text-info"></i> Create Bookmark tabs in the new area in <i>Tab Editor</i>.</li>
 										<li><i class="fa fa-chevron-right text-info"></i> Open your custom Bookmark page via menu.</li>
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+									</ul>
+								</div>
+							</div>
+						</div>
+					</div>
 				</div>
 			'
 		);
@@ -983,5 +1004,76 @@ class Bookmark extends Organizr
 			$color = str_pad(dechex($color + $adjustAmount), 2, '0', STR_PAD_LEFT);
 		}
 		return '#' . implode($hexCode);
+	}
+	
+	public function _checkForBookmarkTab()
+	{
+		$response = [
+			array(
+				'function' => 'fetchAll',
+				'query' => array(
+					'SELECT * FROM tabs',
+					'WHERE url = ?',
+					'api/v2/plugins/bookmark/page'
+				)
+			),
+		];
+		$tab = $this->processQueries($response);
+		if ($tab) {
+			$this->setAPIResponse('success', 'Tab already exists', 200);
+			return $tab;
+		} else {
+			$createTab = $this->_createBookmarkTab();
+			if ($createTab) {
+				$tab = $this->processQueries($response);
+				$this->setAPIResponse('success', 'Tab created', 200);
+				return $tab;
+			} else {
+				$this->setAPIResponse('error', 'Tab creation error', 500);
+			}
+		}
+	}
+	
+	public function _createBookmarkTab()
+	{
+		$tabInfo = [
+			'order' => $this->getNextTabOrder() + 1,
+			'category_id' => $this->getDefaultCategoryId(),
+			'name' => 'Bookmarks',
+			'url' => 'api/v2/plugins/bookmark/page',
+			'default' => false,
+			'enabled' => true,
+			'group_id' => $this->getDefaultGroupId(),
+			'image' => 'fontawesome::book',
+			'type' => 0
+		];
+		$response = [
+			array(
+				'function' => 'query',
+				'query' => array(
+					'INSERT INTO [tabs]',
+					$tabInfo
+				)
+			),
+		];
+		return $this->processQueries($response);
+	}
+	
+	public function _checkForBookmarkCategories()
+	{
+		$categories = $this->_getAllCategories();
+		if ($categories) {
+			$this->setAPIResponse('success', 'Categories already exists', 200);
+			return $categories;
+		} else {
+			$createCategory = $this->_addCategory(['category' => 'Unsorted', 'default' => 1]);
+			if ($createCategory) {
+				$categories = $this->_getAllCategories();
+				$this->setAPIResponse('success', 'Category created', 200);
+				return $categories;
+			} else {
+				$this->setAPIResponse('error', 'Category creation error', 500);
+			}
+		}
 	}
 }
