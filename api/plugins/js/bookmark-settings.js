@@ -9,6 +9,7 @@ function bookmarkCheckForTab() {
 	organizrAPI2('GET', 'api/v2/plugins/bookmark/setup/tab').success(function (data) {
 		try {
 			let response = data.response;
+			$('.bookmark-check-tab small').text('Bookmark Tab');
 			$('.bookmark-check-tab .result').text(response.message);
 		} catch (e) {
 			organizrCatchError(e, data);
@@ -19,14 +20,18 @@ function bookmarkCheckForTab() {
 	});
 }
 $('body').arrive('.bookmark-check-tab', {onceOnly: false}, function() {
-	bookmarkCheckForTab()
-	bookmarkCheckForCategory();
+	setTimeout(function(){
+		bookmarkCheckForTab()
+		bookmarkCheckForCategory();
+	}, 500);
+
 });
 function bookmarkCheckForCategory(){
 	// Let check for tab with bookmark url
 	organizrAPI2('GET','api/v2/plugins/bookmark/setup/category').success(function(data) {
 		try {
 			let response = data.response;
+			$('.bookmark-check-category small').text('Bookmark Categories');
 			$('.bookmark-check-category .result').text(response.message);
 		}catch(e) {
 			organizrCatchError(e,data);

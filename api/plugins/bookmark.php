@@ -105,14 +105,14 @@ class Bookmark extends Organizr
 										<i class="sticon ti-layout-tab-v text-white"></i>
 									</div>
 									<small lang="en">Checking for Bookmark tab...</small>
-									<span class="text-muted result">...checking...</span>
+									<span class="text-muted result"><i class="fa fa-spin fa-refresh"></i></span>
 								</li>
 								<li class="bookmark-check-category">
 									<div class="bg-success">
 										<i class="ti-layout-list-thumb text-white"></i>
 									</div>
 									<small lang="en">Checking for bookmark default category...</small>
-									<span class="text-muted result">...checking...</span>
+									<span class="text-muted result"><i class="fa fa-spin fa-refresh"></i></span>
 								</li>
 							</ul>
 						</div>
