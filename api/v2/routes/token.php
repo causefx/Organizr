@@ -13,7 +13,7 @@ $app->delete('/token/{id}', function ($request, $response, $args) {
 $app->post('/token/validate', function ($request, $response, $args) {
         $Organizr = ($request->getAttribute('Organizr')) ?? new Organizr();
         if ($Organizr->qualifyRequest(999, true)) {
-                $GLOBALS['api']['response']['data'] = $Organizr->jwtParse($_REQUEST["Token"]);
+                $GLOBALS['api']['response']['data'] = $Organizr->validateToken($_REQUEST["Token"]);
         }
         $response->getBody()->write(jsonE($GLOBALS['api']));
         return $response
