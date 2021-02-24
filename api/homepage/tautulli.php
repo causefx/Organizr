@@ -139,6 +139,13 @@ trait TautulliHomepageItem
 						'value' => $this->config['homepageTautulliMiscAuth'],
 						'options' => $this->groupOptions
 					),
+					array(
+						'type' => 'switch',
+						'name' => 'tautulliFriendlyName',
+						'label' => 'Use Friendly Name',
+						'value' => $this->config['tautulliFriendlyName'],
+						'help' => 'Use the friendly name set in tautulli for users.',
+					),
 				),
 				'Test Connection' => array(
 					array(
@@ -172,7 +179,8 @@ trait TautulliHomepageItem
 		$apiURL = $url . '/api/v2?apikey=' . $this->config['tautulliApikey'];
 		try {
 			$homestatsUrl = $apiURL . '&cmd=get_home_stats&grouping=1';
-			$homestats = Requests::get($homestatsUrl, [], []);
+			$options = $this->requestOptions($this->config['tautulliURL'], false, $this->config['homepageTautulliRefresh']);
+			$homestats = Requests::get($homestatsUrl, [], $options);
 			if ($homestats->success) {
 				$this->setAPIResponse('success', 'API Connection succeeded', 200);
 				return true;
@@ -187,22 +195,50 @@ trait TautulliHomepageItem
 		}
 	}
 	
+	public function tautulliHomepagePermissions($key = null)
+	{
+		$permissions = [
+			'main' => [
+				'enabled' => [
+					'homepageTautulliEnabled'
+				],
+				'auth' => [
+					'homepageTautulliAuth'
+				],
+				'not_empty' => [
+					'tautulliURL',
+					'tautulliApikey'
+				]
+			]
+		];
+		if (array_key_exists($key, $permissions)) {
+			return $permissions[$key];
+		} elseif ($key == 'all') {
+			return $permissions;
+		} else {
+			return [];
+		}
+	}
+	
+	public function homepageOrdertautulli()
+	{
+		if ($this->homepageItemPermissions($this->tautulliHomepagePermissions('main'))) {
+			return '
+				<div id="' . __FUNCTION__ . '">
+					<div class="white-box homepage-loading-box"><h2 class="text-center" lang="en">Loading Tautulli...</h2></div>
+					<script>
+						// Tautulli
+						homepageTautulli("' . $this->config['homepageTautulliRefresh'] . '");
+						// End Tautulli
+					</script>
+				</div>
+				';
+		}
+	}
+	
 	public function getTautulliHomepageData()
 	{
-		if (!$this->config['homepageTautulliEnabled']) {
-			$this->setAPIResponse('error', 'Tautulli homepage item is not enabled', 409);
-			return false;
-		}
-		if (!$this->qualifyRequest($this->config['homepageTautulliAuth'])) {
-			$this->setAPIResponse('error', 'User not approved to view this homepage item', 401);
-			return false;
-		}
-		if (empty($this->config['tautulliURL'])) {
-			$this->setAPIResponse('error', 'Tautulli URL is not defined', 422);
-			return false;
-		}
-		if (empty($this->config['tautulliApikey'])) {
-			$this->setAPIResponse('error', 'Tautulli Token is not defined', 422);
+		if (!$this->homepageItemPermissions($this->tautulliHomepagePermissions('main'), true)) {
 			return false;
 		}
 		$api = [];
@@ -214,7 +250,8 @@ trait TautulliHomepageItem
 		$nowPlayingWidth = $this->getCacheImageSize('npw');
 		try {
 			$homestatsUrl = $apiURL . '&cmd=get_home_stats&grouping=1';
-			$homestats = Requests::get($homestatsUrl, [], []);
+			$options = $this->requestOptions($this->config['tautulliURL'], false, $this->config['homepageTautulliRefresh']);
+			$homestats = Requests::get($homestatsUrl, [], $options);
 			if ($homestats->success) {
 				$homestats = json_decode($homestats->body, true);
 				$api['homestats'] = $homestats['response'];
@@ -235,7 +272,8 @@ trait TautulliHomepageItem
 				$this->cacheImage($url . '/images/platforms/' . $platform . '.svg', 'tautulli-' . $platform, 'svg');
 			}
 			$libstatsUrl = $apiURL . '&cmd=get_libraries';
-			$libstats = Requests::get($libstatsUrl, [], []);
+			$options = $this->requestOptions($this->config['tautulliURL'], false, $this->config['homepageTautulliRefresh']);
+			$libstats = Requests::get($libstatsUrl, [], $options);
 			if ($libstats->success) {
 				$libstats = json_decode($libstats->body, true);
 				$api['libstats'] = $libstats['response'];
@@ -255,6 +293,7 @@ trait TautulliHomepageItem
 				'popularMovies' => $this->config['tautulliPopularMovies'],
 				'popularTV' => $this->config['tautulliPopularTV'],
 				'title' => $this->config['tautulliHeaderToggle'],
+				'friendlyName' => $this->config['tautulliFriendlyName'],
 			];
 			$ids = []; // Array of stat_ids to remove from the returned array
 			if (!$this->qualifyRequest($this->config['homepageTautulliLibraryAuth'])) {

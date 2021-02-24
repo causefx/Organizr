@@ -12,7 +12,7 @@ function get_page_settings($Organizr)
 		return false;
 	}
 	$Organizr->writeLog('success', 'Admin Function -  Accessed Settings Page', $Organizr->user['username']);
-	return '
+	return $Organizr->pluginFiles('js', true) . '
 <script>
     (function() {
         updateCheck();
@@ -20,6 +20,7 @@ function get_page_settings($Organizr)
         sponsorLoad();
         newsLoad();
         checkCommitLoad();
+        backersLoad();
         [].slice.call(document.querySelectorAll(\'.sttabs-main-settings-div\')).forEach(function(el) {
             new CBPFWTabs(el);
         });
@@ -176,6 +177,8 @@ function get_page_settings($Organizr)
                             </li>
                             <li onclick="changeSettingsMenu(\'Settings::System Settings::Updates\')" role="presentation" class=""><a id="update-button" href="#settings-settings-updates" aria-controls="profile" role="tab" data-toggle="tab" aria-expanded="false"><span class="visible-xs"><i class="ti-package"></i></span> <span class="hidden-xs" lang="en">Updates</span></a>
                             </li>
+                            <li onclick="changeSettingsMenu(\'Settings::System Settings::Backup\');loadSettingsPage2(\'api/v2/page/settings_settings_backup\',\'#settings-settings-backup\',\'Backup\');" role="presentation" class=""><a id="settings-settings-backup-anchor" href="#settings-settings-backup" aria-controls="home" role="tab" data-toggle="tab" aria-expanded="false"><span class="visible-xs"><i class="ti-export"></i></span><span class="hidden-xs" lang="en">Backup</span></a>
+                            </li>
                             <li onclick="changeSettingsMenu(\'Settings::System Settings::Donate\')" role="presentation" class=""><a id="settings-settings-donate-anchor" href="#settings-settings-donate" aria-controls="profile" role="tab" data-toggle="tab" aria-expanded="false"><span class="visible-xs"><i class="ti-money"></i></span> <span class="hidden-xs" lang="en">Donate</span></a>
                             </li>
                         </ul>
@@ -190,6 +193,10 @@ function get_page_settings($Organizr)
                                 <div class="clearfix"></div>
                             </div>
                             <div role="tabpanel" class="tab-pane fade" id="settings-settings-logs">
+                                <h2 lang="en">Loading...</h2>
+                                <div class="clearfix"></div>
+                            </div>
+                            <div role="tabpanel" class="tab-pane fade" id="settings-settings-backup">
                                 <h2 lang="en">Loading...</h2>
                                 <div class="clearfix"></div>
                             </div>
@@ -229,14 +236,16 @@ function get_page_settings($Organizr)
     											<li><a href="https://organizr.app/discord" target="_blank"><i class="mdi mdi-discord mdi-24px"></i></a></li>
     											<li><a href="https://github.com/causefx/organizr" target="_blank"><i class="mdi mdi-github-box mdi-24px"></i></a></li>
     										</ul>
+    										<hr>
+    										<a href="https://poeditor.com/join/project/T6l68hksTE" target="_blank">
+		                                        <div class="white-box bg-org">
+		                                            <h4 lang="en">Want to help translate?</h4>
+		                                            <p lang="en">Head on over to POEditor and help us translate Organizr into your language</p>
+		                                            <p lang="en">I will try and import new strings every Friday</p>
+		                                        </div>
+		                                    </a>
+    										
     									</div>
-    									<a href="https://poeditor.com/join/project/T6l68hksTE" target="_blank">
-	                                        <div class="white-box bg-org">
-	                                            <h4 lang="en">Want to help translate?</h4>
-	                                            <p lang="en">Head on over to POEditor and help us translate Organizr into your language</p>
-	                                            <p lang="en">I will try and import new strings every Friday</p>
-	                                        </div>
-	                                    </a>
     								</div>
                                     <div class="col-lg-6 col-sm-12 col-md-6">
                                         <div class="white-box bg-org">
@@ -269,6 +278,19 @@ function get_page_settings($Organizr)
 							            </div>
 							        </div>
     							</div>
+    							<div class="row">
+    							    <div class="col-lg-12">
+    							        <div class="panel panel-default">
+											<div class="panel-heading bg-org p-t-10 p-b-10">
+												<span class="pull-left m-t-5"><span lang="en">Backers</span></span>
+												<div class="clearfix"></div>
+											</div>
+							                <div class="panel-wrapper p-b-0 collapse in bg-org">
+							                	<div id="backersList" class="owl-carousel owl-theme backers-items"></div>
+							                </div>
+							            </div>
+                                    </div>
+    							</div>
                                 <div class="clearfix"></div>
                             </div>
                             <div role="tabpanel" class="tab-pane fade" id="settings-settings-donate">
@@ -276,7 +298,7 @@ function get_page_settings($Organizr)
                                     <div class="white-box bg-org">
                                         <ul class="nav nav-tabs tabs customtab">
                                             <li class="tab active">
-                                                <a href="#donate-beer" data-toggle="tab" aria-expanded="true"> <span class=""><i class="fa fa-beer text-warning"></i></span> <span class="hidden-xs" lang="en">Beerpay.io</span> </a>
+                                                <a href="#donate-github" data-toggle="tab" aria-expanded="true"> <span class=""><i class="fa fa-github text-warning"></i></span> <span class="hidden-xs" lang="en">Github Sponsor</span> </a>
                                             </li>
                                             <li class="tab">
                                                 <a href="#donate-paypal" data-toggle="tab" aria-expanded="true"> <span class=""><i class="fa fa-paypal text-info"></i></span> <span class="hidden-xs" lang="en">PayPal</span> </a>
@@ -298,9 +320,9 @@ function get_page_settings($Organizr)
                                             </li>
                                         </ul>
                                         <div class="tab-content">
-                                        	<div class="tab-pane active" id="donate-beer">
-                                                <blockquote>Want to show support on Beerpay.io?  Send me a beer :)<br/>Please click the button to continue.</blockquote>
-                                                <button onclick="window.open(\'https://beerpay.io/causefx/Organizr\', \'_blank\')" class="btn btn-primary btn-rounded waves-effect waves-light" type="button"><span class="btn-label"><i class="fa fa-link"></i></span><span lang="en">Continue To Website</span></button>
+                                        	<div class="tab-pane active" id="donate-github">
+                                                <blockquote>Want to show support on Github?  Sponsor me :)<br/>Please click the button to continue.</blockquote>
+                                                <button onclick="window.open(\'https://github.com/sponsors/causefx\', \'_blank\')" class="btn btn-primary btn-rounded waves-effect waves-light" type="button"><span class="btn-label"><i class="fa fa-link"></i></span><span lang="en">Continue To Website</span></button>
                                             </div>
                                             <div class="tab-pane" id="donate-paypal">
                                                 <blockquote>I have chosen to go with PayPal Pools so everyone can see how much people have donated.<br/>Please click the button to continue.</blockquote>
@@ -366,5 +388,6 @@ function get_page_settings($Organizr)
     <div class="clearfix"></div>
     <div id="about-theme-body" class=""></div>
 </form>
+<div id="editHomepageItemDiv"><div id="editHomepageItem" class=""></div></div>
 ';
 }

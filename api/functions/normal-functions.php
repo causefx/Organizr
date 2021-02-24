@@ -266,7 +266,7 @@ trait NormalFunctions
 	
 	public function parseDomain($value, $force = false)
 	{
-		$badDomains = array('ddns.net', 'ddnsking.com', '3utilities.com', 'bounceme.net', 'duckdns.org', 'freedynamicdns.net', 'freedynamicdns.org', 'gotdns.ch', 'hopto.org', 'myddns.me', 'myds.me', 'myftp.biz', 'myftp.org', 'myvnc.com', 'noip.com', 'onthewifi.com', 'redirectme.net', 'serveblog.net', 'servecounterstrike.com', 'serveftp.com', 'servegame.com', 'servehalflife.com', 'servehttp.com', 'serveirc.com', 'serveminecraft.net', 'servemp3.com', 'servepics.com', 'servequake.com', 'sytes.net', 'viewdns.net', 'webhop.me', 'zapto.org');
+		$badDomains = array('ddns.net', 'ddnsking.com', '3utilities.com', 'bounceme.net', 'freedynamicdns.net', 'freedynamicdns.org', 'gotdns.ch', 'hopto.org', 'myddns.me', 'myds.me', 'myftp.biz', 'myftp.org', 'myvnc.com', 'noip.com', 'onthewifi.com', 'redirectme.net', 'serveblog.net', 'servecounterstrike.com', 'serveftp.com', 'servegame.com', 'servehalflife.com', 'servehttp.com', 'serveirc.com', 'serveminecraft.net', 'servemp3.com', 'servepics.com', 'servequake.com', 'sytes.net', 'viewdns.net', 'webhop.me', 'zapto.org');
 		$Domain = $value;
 		$Port = strpos($Domain, ':');
 		if ($Port !== false) {
@@ -352,7 +352,7 @@ trait NormalFunctions
 		}
 	}
 	
-	public function coookieSeconds($type, $name, $value = '', $ms, $http = true, $path = '/')
+	public function coookieSeconds($type, $name, $value = '', $ms = null, $http = true, $path = '/')
 	{
 		if (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] == "https") {
 			$Secure = true;
@@ -477,7 +477,9 @@ trait NormalFunctions
 				$domain = $_SERVER['HTTP_HOST'];
 			}
 		}
-		$url = $protocol . $domain . str_replace("\\", "/", dirname($_SERVER['REQUEST_URI']));
+		$path = str_replace("\\", "/", dirname($_SERVER['REQUEST_URI']));
+		$path = ($path !== '.') ? $path : '';
+		$url = $protocol . $domain . $path;
 		if (strpos($url, '/api') !== false) {
 			$url = explode('/api', $url);
 			return $url[0] . '/';
@@ -537,6 +539,23 @@ trait NormalFunctions
 			}
 		}
 		return $isLocal;
+	}
+	
+	public function human_filesize($bytes, $dec = 2)
+	{
+		$bytes = number_format($bytes, 0, '.', '');
+		$size = array('B', 'kB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB');
+		$factor = floor((strlen($bytes) - 1) / 3);
+		return sprintf("%.{$dec}f %s", $bytes / (1024 ** $factor), $size[$factor]);
+	}
+	
+	public function json_validator($data = null)
+	{
+		if (!empty($data)) {
+			@json_decode($data);
+			return (json_last_error() === JSON_ERROR_NONE);
+		}
+		return false;
 	}
 }
 
@@ -667,11 +686,6 @@ function download($url, $path)
 // swagger
 function getServerPath($over = false)
 {
-	if ($over) {
-		if ($GLOBALS['PHPMAILER-domain'] !== '') {
-			return $GLOBALS['PHPMAILER-domain'];
-		}
-	}
 	if (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] == "https") {
 		$protocol = "https://";
 	} elseif (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != 'off') {

@@ -109,18 +109,52 @@ trait NZBGetHomepageItem
 		}
 	}
 	
+	public function nzbgetHomepagePermissions($key = null)
+	{
+		$permissions = [
+			'main' => [
+				'enabled' => [
+					'homepageNzbgetEnabled'
+				],
+				'auth' => [
+					'homepageNzbgetAuth'
+				],
+				'not_empty' => [
+					'nzbgetURL'
+				]
+			]
+		];
+		if (array_key_exists($key, $permissions)) {
+			return $permissions[$key];
+		} elseif ($key == 'all') {
+			return $permissions;
+		} else {
+			return [];
+		}
+	}
+	
+	public function homepageOrdernzbget()
+	{
+		if ($this->homepageItemPermissions($this->nzbgetHomepagePermissions('main'))) {
+			$loadingBox = ($this->config['nzbgetCombine']) ? '' : '<div class="white-box homepage-loading-box"><h2 class="text-center" lang="en">Loading Download Queue...</h2></div>';
+			$builder = ($this->config['nzbgetCombine']) ? 'buildDownloaderCombined(\'nzbget\');' : '$("#' . __FUNCTION__ . '").html(buildDownloader("nzbget"));';
+			return '
+				<div id="' . __FUNCTION__ . '">
+					' . $loadingBox . '
+					<script>
+		                // homepageOrdernzbget
+		                ' . $builder . '
+		                homepageDownloader("nzbget", "' . $this->config['homepageDownloadRefresh'] . '");
+		                // End homepageOrdernzbget
+	                </script>
+				</div>
+				';
+		}
+	}
+	
 	public function getNzbgetHomepageQueue()
 	{
-		if (!$this->config['homepageNzbgetEnabled']) {
-			$this->setAPIResponse('error', 'NZBGet homepage item is not enabled', 409);
-			return false;
-		}
-		if (!$this->qualifyRequest($this->config['homepageNzbgetAuth'])) {
-			$this->setAPIResponse('error', 'User not approved to view this homepage item', 401);
-			return false;
-		}
-		if (empty($this->config['nzbgetURL'])) {
-			$this->setAPIResponse('error', 'NZBGet URL is not defined', 422);
+		if (!$this->homepageItemPermissions($this->nzbgetHomepagePermissions('main'), true)) {
 			return false;
 		}
 		try {

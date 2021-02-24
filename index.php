@@ -36,6 +36,7 @@ $Organizr = new Organizr();
     <link href="plugins/bower_components/hover/hover-min.css" rel="stylesheet" type="text/css"/>
     <link href="plugins/bower_components/jsgrid/dist/jsgrid.min.css" rel="stylesheet" type="text/css"/>
     <link href="plugins/bower_components/jsgrid/dist/jsgrid-theme.min.css" rel="stylesheet" type="text/css"/>
+    <link href="plugins/bower_components/gallery/css/animated-masonry-gallery.css" rel="stylesheet" type="text/css"/>
     <link href="css/animate.css" rel="stylesheet">
     <link href="css/simplebar.css" rel="stylesheet">
     <link href="css/plyr.css" rel="stylesheet">
@@ -138,7 +139,7 @@ $Organizr = new Organizr();
     <div class="error-page bg-org"></div>
     <div class="login-area hidden"></div>
     <div class="p-0" id="page-wrapper">
-        <div class="organizr-area"></div>
+        <div class="organizr-area hidden"></div>
         <div class="plugin-listing p-0 hidden"></div>
         <div class="internal-listing p-0 hidden"></div>
         <div class="iFrame-listing p-0 hidden"></div>
@@ -157,7 +158,7 @@ $Organizr = new Organizr();
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-                    <h4 class="modal-title" id="help-modal-title">Large modal</h4></div>
+                    <h4 class="modal-title" id="help-modal-title" lang="en">Large modal</h4></div>
                 <div class="modal-body" id="help-modal-body"></div>
             </div>
             <!-- /.modal-content -->
@@ -221,11 +222,15 @@ $Organizr = new Organizr();
 <script src="plugins/bower_components/bootstrap-treeview-master/dist/bootstrap-treeview.min.js"></script>
 <script src="plugins/bower_components/jquery.easy-pie-chart/dist/jquery.easypiechart.min.js"></script>
 <script src="plugins/bower_components/jsgrid/dist/jsgrid.min.js"></script>
+<script src="plugins/bower_components/animatedModal/animatedModal.min.js"></script>
+<script src="plugins/bower_components/gallery/js/animated-masonry-gallery.js"></script>
+<script src="plugins/bower_components/gallery/js/jquery.isotope.min.js"></script>
 <script src="js/gauge.min.js"></script>
 <script src="js/jquery.mousewheel.min.js"></script>
 <script src="js/ua-parser.min.js"></script>
 <script src="js/plyr.js"></script>
 <script src="js/simplebar.js"></script>
+<script src="js/arrive.min.js"></script>
 <script src="https://apis.google.com/js/client.js?onload=googleApiClientReady"></script>
 <script src="js/functions.js?v=<?php echo $Organizr->fileHash; ?>"></script>
 <script src="js/custom.min.js?v=<?php echo $Organizr->fileHash; ?>"></script>

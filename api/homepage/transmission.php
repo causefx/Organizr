@@ -35,6 +35,12 @@ trait TransmissionHomepageItem
 						'placeholder' => 'http(s)://hostname:port'
 					),
 					array(
+						'type' => 'switch',
+						'name' => 'transmissionDisableCertCheck',
+						'label' => 'Disable Certificate Check',
+						'value' => $this->config['transmissionDisableCertCheck']
+					),
+					array(
 						'type' => 'input',
 						'name' => 'transmissionUsername',
 						'label' => 'Username',
@@ -101,7 +107,7 @@ trait TransmissionHomepageItem
 		$passwordInclude = ($this->config['transmissionUsername'] != '' && $this->config['transmissionPassword'] != '') ? $this->config['transmissionUsername'] . ':' . $this->decrypt($this->config['transmissionPassword']) . "@" : '';
 		$url = $digest['scheme'] . '://' . $passwordInclude . $digest['host'] . $digest['port'] . $digest['path'] . '/rpc';
 		try {
-			$options = ($this->localURL($this->config['transmissionURL'])) ? array('verify' => false) : array();
+			$options = $this->requestOptions($this->config['transmissionURL'], $this->config['transmissionDisableCertCheck'], $this->config['homepageDownloadRefresh']);
 			$response = Requests::get($url, array(), $options);
 			if ($response->headers['x-transmission-session-id']) {
 				$headers = array(
@@ -137,25 +143,59 @@ trait TransmissionHomepageItem
 		}
 	}
 	
+	public function transmissionHomepagePermissions($key = null)
+	{
+		$permissions = [
+			'main' => [
+				'enabled' => [
+					'homepageTransmissionEnabled'
+				],
+				'auth' => [
+					'homepageTransmissionAuth'
+				],
+				'not_empty' => [
+					'transmissionURL'
+				]
+			]
+		];
+		if (array_key_exists($key, $permissions)) {
+			return $permissions[$key];
+		} elseif ($key == 'all') {
+			return $permissions;
+		} else {
+			return [];
+		}
+	}
+	
+	public function homepageOrdertransmission()
+	{
+		if ($this->homepageItemPermissions($this->transmissionHomepagePermissions('main'))) {
+			$loadingBox = ($this->config['transmissionCombine']) ? '' : '<div class="white-box homepage-loading-box"><h2 class="text-center" lang="en">Loading Download Queue...</h2></div>';
+			$builder = ($this->config['transmissionCombine']) ? 'buildDownloaderCombined(\'transmission\');' : '$("#' . __FUNCTION__ . '").html(buildDownloader("transmission"));';
+			return '
+				<div id="' . __FUNCTION__ . '">
+					' . $loadingBox . '
+					<script>
+		                // homepageOrdertransmission
+		                ' . $builder . '
+		                homepageDownloader("transmission", "' . $this->config['homepageDownloadRefresh'] . '");
+		                // End homepageOrdertransmission
+	                </script>
+				</div>
+				';
+		}
+	}
+	
 	public function getTransmissionHomepageQueue()
 	{
-		if (!$this->config['homepageTransmissionEnabled']) {
-			$this->setAPIResponse('error', 'Transmission homepage item is not enabled', 409);
-			return false;
-		}
-		if (!$this->qualifyRequest($this->config['homepageTransmissionAuth'])) {
-			$this->setAPIResponse('error', 'User not approved to view this homepage item', 401);
-			return false;
-		}
-		if (empty($this->config['transmissionURL'])) {
-			$this->setAPIResponse('error', 'Transmission URL is not defined', 422);
+		if (!$this->homepageItemPermissions($this->transmissionHomepagePermissions('main'), true)) {
 			return false;
 		}
 		$digest = $this->qualifyURL($this->config['transmissionURL'], true);
 		$passwordInclude = ($this->config['transmissionUsername'] != '' && $this->config['transmissionPassword'] != '') ? $this->config['transmissionUsername'] . ':' . $this->decrypt($this->config['transmissionPassword']) . "@" : '';
 		$url = $digest['scheme'] . '://' . $passwordInclude . $digest['host'] . $digest['port'] . $digest['path'] . '/rpc';
 		try {
-			$options = ($this->localURL($this->config['transmissionURL'])) ? array('verify' => false) : array();
+			$options = $this->requestOptions($this->config['transmissionURL'], $this->config['transmissionDisableCertCheck'], $this->config['homepageDownloadRefresh']);
 			$response = Requests::get($url, array(), $options);
 			if ($response->headers['x-transmission-session-id']) {
 				$headers = array(
@@ -166,7 +206,7 @@ trait TransmissionHomepageItem
 					'method' => 'torrent-get',
 					'arguments' => array(
 						'fields' => array(
-							"id", "name", "totalSize", "eta", "isFinished", "isStalled", "percentDone", "rateDownload", "status", "downloadDir", "errorString"
+							"id", "name", "totalSize", "eta", "isFinished", "isStalled", "percentDone", "rateDownload", "status", "downloadDir", "errorString", "addedDate"
 						),
 					),
 					'tags' => ''
@@ -189,8 +229,11 @@ trait TransmissionHomepageItem
 							}
 						}
 					} else {
-						$torrents = json_decode($response->body, true);
+						$torrents = json_decode($response->body, true)['arguments']['torrents'];
 					}
+					usort($torrents, function ($a, $b) {
+						return $a["addedDate"] < $b["addedDate"];
+					});
 					$api['content']['queueItems'] = $torrents;
 					$api['content']['historyItems'] = false;
 				}

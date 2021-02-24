@@ -60,18 +60,49 @@ trait SpeedTestHomepageItem
 		);
 	}
 	
+	public function speedTestHomepagePermissions($key = null)
+	{
+		$permissions = [
+			'main' => [
+				'enabled' => [
+					'homepageSpeedtestEnabled'
+				],
+				'auth' => [
+					'homepageSpeedtestAuth'
+				],
+				'not_empty' => [
+					'speedtestURL'
+				]
+			]
+		];
+		if (array_key_exists($key, $permissions)) {
+			return $permissions[$key];
+		} elseif ($key == 'all') {
+			return $permissions;
+		} else {
+			return [];
+		}
+	}
+	
+	public function homepageOrderSpeedtest()
+	{
+		if ($this->homepageItemPermissions($this->speedTestHomepagePermissions('main'))) {
+			return '
+				<div id="' . __FUNCTION__ . '">
+					<div class="white-box homepage-loading-box"><h2 class="text-center" lang="en">Loading Speedtest...</h2></div>
+					<script>
+						// Speedtest
+						homepageSpeedtest("' . $this->config['homepageSpeedtestRefresh'] . '");
+						// End Speedtest
+					</script>
+				</div>
+				';
+		}
+	}
+	
 	public function getSpeedtestHomepageData()
 	{
-		if (!$this->config['homepageSpeedtestEnabled']) {
-			$this->setAPIResponse('error', 'SpeedTest homepage item is not enabled', 409);
-			return false;
-		}
-		if (!$this->qualifyRequest($this->config['homepageSpeedtestAuth'])) {
-			$this->setAPIResponse('error', 'User not approved to view this homepage item', 401);
-			return false;
-		}
-		if (empty($this->config['speedtestURL'])) {
-			$this->setAPIResponse('error', 'SpeedTest URL is not defined', 422);
+		if (!$this->homepageItemPermissions($this->speedTestHomepagePermissions('main'), true)) {
 			return false;
 		}
 		$api = [];
@@ -81,18 +112,15 @@ trait SpeedTestHomepageItem
 			$response = Requests::get($dataUrl);
 			if ($response->success) {
 				$json = json_decode($response->body, true);
-
 				$api['data'] = [
 					'current' => $json['data'],
 				];
-
 				$keys = [
 					'average',
 					'max',
 					'maximum',
 					'minimum'
 				];
-
 				foreach ($keys as $key) {
 					if (array_key_exists($key, $json)) {
 						if ($key == 'max') {
@@ -102,7 +130,6 @@ trait SpeedTestHomepageItem
 						}
 					}
 				}
-
 				$api['options'] = [
 					'title' => $this->config['speedtestHeader'],
 					'titleToggle' => $this->config['speedtestHeaderToggle'],

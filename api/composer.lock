@@ -4,34 +4,34 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "a5faec9d74a923c354d912dbfd73cf9b",
+    "content-hash": "1620f8d6a2da9fd3302c753d432b19bc",
     "packages": [
         {
             "name": "adldap2/adldap2",
-            "version": "v10.3.0",
+            "version": "v10.3.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Adldap2/Adldap2.git",
-                "reference": "1294c92746e3fb3bb59cd7756ca7838a1e705a2a"
+                "reference": "936a4e2eb925d005198f716a75bb78068c4de94d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Adldap2/Adldap2/zipball/1294c92746e3fb3bb59cd7756ca7838a1e705a2a",
-                "reference": "1294c92746e3fb3bb59cd7756ca7838a1e705a2a",
+                "url": "https://api.github.com/repos/Adldap2/Adldap2/zipball/936a4e2eb925d005198f716a75bb78068c4de94d",
+                "reference": "936a4e2eb925d005198f716a75bb78068c4de94d",
                 "shasum": ""
             },
             "require": {
                 "ext-json": "*",
                 "ext-ldap": "*",
-                "illuminate/contracts": "~5.0|~6.0|~7.0",
+                "illuminate/contracts": "~5.0|~6.0|~7.0|~8.0",
                 "php": ">=7.0",
                 "psr/log": "~1.0",
                 "psr/simple-cache": "~1.0",
-                "tightenco/collect": "~5.0|~6.0|~7.0"
+                "tightenco/collect": "~5.0|~6.0|~7.0|~8.0"
             },
             "require-dev": {
                 "mockery/mockery": "~1.0",
-                "phpunit/phpunit": "~6.0"
+                "phpunit/phpunit": "~6.0|~7.0|~8.0"
             },
             "suggest": {
                 "ext-fileinfo": "fileinfo is required when retrieving user encoded thumbnails"
@@ -63,7 +63,68 @@
                 "ldap",
                 "windows"
             ],
-            "time": "2020-05-04T21:10:15+00:00"
+            "support": {
+                "docs": "https://github.com/Adldap2/Adldap2/blob/master/readme.md",
+                "email": "steven_bauman@outlook.com",
+                "issues": "https://github.com/Adldap2/Adldap2/issues",
+                "source": "https://github.com/Adldap2/Adldap2"
+            },
+            "time": "2020-09-09T12:55:51+00:00"
+        },
+        {
+            "name": "bogstag/oauth2-trakt",
+            "version": "v1.0.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/Bogstag/oauth2-trakt.git",
+                "reference": "fbb9253d9e317e84dc2b3f1253afc1dcbb4414a2"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/Bogstag/oauth2-trakt/zipball/fbb9253d9e317e84dc2b3f1253afc1dcbb4414a2",
+                "reference": "fbb9253d9e317e84dc2b3f1253afc1dcbb4414a2",
+                "shasum": ""
+            },
+            "require": {
+                "league/oauth2-client": "^2.0",
+                "php": ">=5.6.0"
+            },
+            "require-dev": {
+                "mockery/mockery": "~0.9",
+                "phpunit/phpunit": "^5.0",
+                "squizlabs/php_codesniffer": "~2.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Bogstag\\OAuth2\\Client\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Bogstag",
+                    "email": "krister@bogstag.se",
+                    "homepage": "https://github.com/bogstag"
+                }
+            ],
+            "description": "trakt.tv OAuth 2.0 Client Provider for The PHP League OAuth2-Client",
+            "keywords": [
+                "Authentication",
+                "authorization",
+                "client",
+                "oauth",
+                "oauth2",
+                "trakt"
+            ],
+            "support": {
+                "issues": "https://github.com/Bogstag/oauth2-trakt/issues",
+                "source": "https://github.com/Bogstag/oauth2-trakt/tree/master"
+            },
+            "time": "2017-02-26T18:30:14+00:00"
         },
         {
             "name": "composer/semver",
@@ -774,6 +835,76 @@
             "time": "2019-05-24T18:30:49+00:00"
         },
         {
+            "name": "league/oauth2-client",
+            "version": "2.6.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/thephpleague/oauth2-client.git",
+                "reference": "badb01e62383430706433191b82506b6df24ad98"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/thephpleague/oauth2-client/zipball/badb01e62383430706433191b82506b6df24ad98",
+                "reference": "badb01e62383430706433191b82506b6df24ad98",
+                "shasum": ""
+            },
+            "require": {
+                "guzzlehttp/guzzle": "^6.0 || ^7.0",
+                "paragonie/random_compat": "^1 || ^2 || ^9.99",
+                "php": "^5.6 || ^7.0 || ^8.0"
+            },
+            "require-dev": {
+                "mockery/mockery": "^1.3",
+                "php-parallel-lint/php-parallel-lint": "^1.2",
+                "phpunit/phpunit": "^5.7 || ^6.0 || ^9.3",
+                "squizlabs/php_codesniffer": "^2.3 || ^3.0"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-2.x": "2.0.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "League\\OAuth2\\Client\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Alex Bilbie",
+                    "email": "hello@alexbilbie.com",
+                    "homepage": "http://www.alexbilbie.com",
+                    "role": "Developer"
+                },
+                {
+                    "name": "Woody Gilk",
+                    "homepage": "https://github.com/shadowhand",
+                    "role": "Contributor"
+                }
+            ],
+            "description": "OAuth 2.0 Client Library",
+            "keywords": [
+                "Authentication",
+                "SSO",
+                "authorization",
+                "identity",
+                "idp",
+                "oauth",
+                "oauth2",
+                "single sign on"
+            ],
+            "support": {
+                "issues": "https://github.com/thephpleague/oauth2-client/issues",
+                "source": "https://github.com/thephpleague/oauth2-client/tree/2.6.0"
+            },
+            "time": "2020-10-28T02:03:40+00:00"
+        },
+        {
             "name": "nikic/fast-route",
             "version": "v1.3.0",
             "source": {
@@ -1010,27 +1141,31 @@
         },
         {
             "name": "phpmailer/phpmailer",
-            "version": "v6.1.4",
+            "version": "v6.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/PHPMailer/PHPMailer.git",
-                "reference": "c5e61d0729507049cec9673aa1a679f9adefd683"
+                "reference": "e38888a75c070304ca5514197d4847a59a5c853f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PHPMailer/PHPMailer/zipball/c5e61d0729507049cec9673aa1a679f9adefd683",
-                "reference": "c5e61d0729507049cec9673aa1a679f9adefd683",
+                "url": "https://api.github.com/repos/PHPMailer/PHPMailer/zipball/e38888a75c070304ca5514197d4847a59a5c853f",
+                "reference": "e38888a75c070304ca5514197d4847a59a5c853f",
                 "shasum": ""
             },
             "require": {
                 "ext-ctype": "*",
                 "ext-filter": "*",
+                "ext-hash": "*",
                 "php": ">=5.5.0"
             },
             "require-dev": {
+                "dealerdirect/phpcodesniffer-composer-installer": "^0.7.0",
                 "doctrine/annotations": "^1.2",
-                "friendsofphp/php-cs-fixer": "^2.2",
-                "phpunit/phpunit": "^4.8 || ^5.7"
+                "phpcompatibility/php-compatibility": "^9.3.5",
+                "roave/security-advisories": "dev-latest",
+                "squizlabs/php_codesniffer": "^3.5.6",
+                "yoast/phpunit-polyfills": "^0.2.0"
             },
             "suggest": {
                 "ext-mbstring": "Needed to send email in multibyte encoding charset",
@@ -1068,7 +1203,17 @@
                 }
             ],
             "description": "PHPMailer is a full-featured email creation and transfer class for PHP",
-            "time": "2019-12-10T11:17:38+00:00"
+            "support": {
+                "issues": "https://github.com/PHPMailer/PHPMailer/issues",
+                "source": "https://github.com/PHPMailer/PHPMailer/tree/v6.2.0"
+            },
+            "funding": [
+                {
+                    "url": "https://github.com/Synchro",
+                    "type": "github"
+                }
+            ],
+            "time": "2020-11-25T15:24:57+00:00"
         },
         {
             "name": "pragmarx/google2fa",
@@ -1485,26 +1630,26 @@
         },
         {
             "name": "pusher/pusher-php-server",
-            "version": "v4.1.1",
+            "version": "v4.1.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/pusher/pusher-http-php.git",
-                "reference": "3c05ef64839845b6114396ff8406712cba052750"
+                "reference": "251f22602320c1b1aff84798fe74f3f7ee0504a9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pusher/pusher-http-php/zipball/3c05ef64839845b6114396ff8406712cba052750",
-                "reference": "3c05ef64839845b6114396ff8406712cba052750",
+                "url": "https://api.github.com/repos/pusher/pusher-http-php/zipball/251f22602320c1b1aff84798fe74f3f7ee0504a9",
+                "reference": "251f22602320c1b1aff84798fe74f3f7ee0504a9",
                 "shasum": ""
             },
             "require": {
                 "ext-curl": "*",
                 "paragonie/sodium_compat": "^1.6",
-                "php": "^7.1",
+                "php": "^7.1|^8.0",
                 "psr/log": "^1.0"
             },
             "require-dev": {
-                "phpunit/phpunit": "^7.2"
+                "phpunit/phpunit": "^7.2|^8.5|^9.3"
             },
             "type": "library",
             "extra": {
@@ -1535,7 +1680,11 @@
                 "rest",
                 "trigger"
             ],
-            "time": "2019-12-03T13:29:13+00:00"
+            "support": {
+                "issues": "https://github.com/pusher/pusher-http-php/issues",
+                "source": "https://github.com/pusher/pusher-http-php/tree/v4.1.5"
+            },
+            "time": "2020-12-09T09:38:19+00:00"
         },
         {
             "name": "ralouphie/getallheaders",
@@ -1628,36 +1777,39 @@
         },
         {
             "name": "slim/psr7",
-            "version": "1.1.0",
+            "version": "1.3.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/slimphp/Slim-Psr7.git",
-                "reference": "3c76899e707910779f13d7af95fde12310b0a5ae"
+                "reference": "235d2e5a5ee1ad4b97b96870f37f3091b22fffd7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/slimphp/Slim-Psr7/zipball/3c76899e707910779f13d7af95fde12310b0a5ae",
-                "reference": "3c76899e707910779f13d7af95fde12310b0a5ae",
+                "url": "https://api.github.com/repos/slimphp/Slim-Psr7/zipball/235d2e5a5ee1ad4b97b96870f37f3091b22fffd7",
+                "reference": "235d2e5a5ee1ad4b97b96870f37f3091b22fffd7",
                 "shasum": ""
             },
             "require": {
-                "fig/http-message-util": "^1.1.2",
-                "php": "^7.2",
+                "fig/http-message-util": "^1.1.4",
+                "php": "^7.2 || ^8.0",
                 "psr/http-factory": "^1.0",
                 "psr/http-message": "^1.0",
-                "ralouphie/getallheaders": "^3"
+                "ralouphie/getallheaders": "^3",
+                "symfony/polyfill-php80": "^1.18"
             },
             "provide": {
+                "psr/http-factory-implementation": "1.0",
                 "psr/http-message-implementation": "1.0"
             },
             "require-dev": {
-                "adriansuter/php-autoload-override": "^1.0",
+                "adriansuter/php-autoload-override": "^1.2",
                 "ext-json": "*",
-                "http-interop/http-factory-tests": "^0.6.0",
+                "http-interop/http-factory-tests": "^0.7.0",
                 "php-http/psr7-integration-tests": "dev-master",
                 "phpstan/phpstan": "^0.12",
-                "phpunit/phpunit": "^8.5",
-                "squizlabs/php_codesniffer": "^3.5"
+                "phpunit/phpunit": "^8.5 || ^9.3",
+                "squizlabs/php_codesniffer": "^3.5",
+                "weirdan/prophecy-shim": "^1.0 || ^2.0.2"
             },
             "type": "library",
             "autoload": {
@@ -1698,54 +1850,63 @@
                 "psr-7",
                 "psr7"
             ],
-            "time": "2020-05-01T14:24:20+00:00"
+            "support": {
+                "issues": "https://github.com/slimphp/Slim-Psr7/issues",
+                "source": "https://github.com/slimphp/Slim-Psr7/tree/1.3.0"
+            },
+            "time": "2020-11-28T06:28:46+00:00"
         },
         {
             "name": "slim/slim",
-            "version": "4.0.0",
+            "version": "4.7.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/slimphp/Slim.git",
-                "reference": "2b0ed80b2ab4acfb5e7648797b8202e4d9aea06d"
+                "reference": "0905e0775f8c1cfb3bbcfabeb6588dcfd8b82d3f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/slimphp/Slim/zipball/2b0ed80b2ab4acfb5e7648797b8202e4d9aea06d",
-                "reference": "2b0ed80b2ab4acfb5e7648797b8202e4d9aea06d",
+                "url": "https://api.github.com/repos/slimphp/Slim/zipball/0905e0775f8c1cfb3bbcfabeb6588dcfd8b82d3f",
+                "reference": "0905e0775f8c1cfb3bbcfabeb6588dcfd8b82d3f",
                 "shasum": ""
             },
             "require": {
                 "ext-json": "*",
                 "nikic/fast-route": "^1.3",
-                "php": "^7.1",
+                "php": "^7.2 || ^8.0",
                 "psr/container": "^1.0",
                 "psr/http-factory": "^1.0",
                 "psr/http-message": "^1.0",
                 "psr/http-server-handler": "^1.0",
-                "psr/http-server-middleware": "^1.0"
+                "psr/http-server-middleware": "^1.0",
+                "psr/log": "^1.1"
             },
             "require-dev": {
+                "adriansuter/php-autoload-override": "^1.2",
                 "ext-simplexml": "*",
-                "guzzlehttp/psr7": "^1.5",
+                "guzzlehttp/psr7": "^1.7",
                 "http-interop/http-factory-guzzle": "^1.0",
-                "nyholm/psr7": "^1.1",
-                "nyholm/psr7-server": "^0.3.0",
-                "phpspec/prophecy": "^1.8",
-                "phpstan/phpstan": "^0.11.5",
-                "phpunit/phpunit": "^7.5",
-                "slim/http": "^0.7",
-                "slim/psr7": "^0.3",
-                "squizlabs/php_codesniffer": "^3.4.2",
-                "zendframework/zend-diactoros": "^2.1"
+                "laminas/laminas-diactoros": "^2.4",
+                "nyholm/psr7": "^1.3",
+                "nyholm/psr7-server": "^1.0.1",
+                "phpspec/prophecy": "^1.12",
+                "phpstan/phpstan": "^0.12.58",
+                "phpunit/phpunit": "^8.5.13",
+                "slim/http": "^1.2",
+                "slim/psr7": "^1.3",
+                "squizlabs/php_codesniffer": "^3.5",
+                "weirdan/prophecy-shim": "^1.0 || ^2.0.2"
             },
             "suggest": {
-                "slim/psr7": "Slim PSR-7 implementation. See http://www.slimframework.com/docs/v4/start/installation.html for more information."
+                "ext-simplexml": "Needed to support XML format in BodyParsingMiddleware",
+                "ext-xml": "Needed to support XML format in BodyParsingMiddleware",
+                "php-di/php-di": "PHP-DI is the recommended container library to be used with Slim",
+                "slim/psr7": "Slim PSR-7 implementation. See https://www.slimframework.com/docs/v4/start/installation.html for more information."
             },
             "type": "library",
             "autoload": {
                 "psr-4": {
-                    "Slim\\": "Slim",
-                    "Slim\\Tests\\": "tests"
+                    "Slim\\": "Slim"
                 }
             },
             "notification-url": "https://packagist.org/downloads/",
@@ -1780,14 +1941,34 @@
                 }
             ],
             "description": "Slim is a PHP micro framework that helps you quickly write simple yet powerful web applications and APIs",
-            "homepage": "https://slimframework.com",
+            "homepage": "https://www.slimframework.com",
             "keywords": [
                 "api",
                 "framework",
                 "micro",
                 "router"
             ],
-            "time": "2019-08-01T16:11:29+00:00"
+            "support": {
+                "docs": "https://www.slimframework.com/docs/v4/",
+                "forum": "https://discourse.slimframework.com/",
+                "irc": "irc://irc.freenode.net:6667/slimphp",
+                "issues": "https://github.com/slimphp/Slim/issues",
+                "rss": "https://www.slimframework.com/blog/feed.rss",
+                "slack": "https://slimphp.slack.com/",
+                "source": "https://github.com/slimphp/Slim",
+                "wiki": "https://github.com/slimphp/Slim/wiki"
+            },
+            "funding": [
+                {
+                    "url": "https://opencollective.com/slimphp",
+                    "type": "open_collective"
+                },
+                {
+                    "url": "https://tidelift.com/funding/github/packagist/slim/slim",
+                    "type": "tidelift"
+                }
+            ],
+            "time": "2020-12-01T19:41:22+00:00"
         },
         {
             "name": "symfony/deprecation-contracts",
@@ -2121,6 +2302,89 @@
             "time": "2018-09-21T13:07:52+00:00"
         },
         {
+            "name": "symfony/polyfill-php80",
+            "version": "v1.22.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/symfony/polyfill-php80.git",
+                "reference": "dc3063ba22c2a1fd2f45ed856374d79114998f91"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/symfony/polyfill-php80/zipball/dc3063ba22c2a1fd2f45ed856374d79114998f91",
+                "reference": "dc3063ba22c2a1fd2f45ed856374d79114998f91",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=7.1"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-main": "1.22-dev"
+                },
+                "thanks": {
+                    "name": "symfony/polyfill",
+                    "url": "https://github.com/symfony/polyfill"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Symfony\\Polyfill\\Php80\\": ""
+                },
+                "files": [
+                    "bootstrap.php"
+                ],
+                "classmap": [
+                    "Resources/stubs"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Ion Bazan",
+                    "email": "ion.bazan@gmail.com"
+                },
+                {
+                    "name": "Nicolas Grekas",
+                    "email": "p@tchwork.com"
+                },
+                {
+                    "name": "Symfony Community",
+                    "homepage": "https://symfony.com/contributors"
+                }
+            ],
+            "description": "Symfony polyfill backporting some PHP 8.0+ features to lower PHP versions",
+            "homepage": "https://symfony.com",
+            "keywords": [
+                "compatibility",
+                "polyfill",
+                "portable",
+                "shim"
+            ],
+            "support": {
+                "source": "https://github.com/symfony/polyfill-php80/tree/v1.22.0"
+            },
+            "funding": [
+                {
+                    "url": "https://symfony.com/sponsor",
+                    "type": "custom"
+                },
+                {
+                    "url": "https://github.com/fabpot",
+                    "type": "github"
+                },
+                {
+                    "url": "https://tidelift.com/funding/github/packagist/symfony/symfony",
+                    "type": "tidelift"
+                }
+            ],
+            "time": "2021-01-07T16:49:33+00:00"
+        },
+        {
             "name": "symfony/polyfill-util",
             "version": "v1.9.0",
             "source": {
@@ -2432,5 +2696,6 @@
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": [],
-    "platform-dev": []
+    "platform-dev": [],
+    "plugin-api-version": "2.0.0"
 }

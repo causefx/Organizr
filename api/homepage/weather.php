@@ -117,6 +117,47 @@ trait WeatherHomepageItem
 		);
 	}
 	
+	public function weatherHomepagePermissions($key = null)
+	{
+		$permissions = [
+			'main' => [
+				'enabled' => [
+					'homepageWeatherAndAirEnabled'
+				],
+				'auth' => [
+					'homepageWeatherAndAirAuth'
+				],
+				'not_empty' => [
+					'homepageWeatherAndAirLatitude',
+					'homepageWeatherAndAirLongitude'
+				]
+			]
+		];
+		if (array_key_exists($key, $permissions)) {
+			return $permissions[$key];
+		} elseif ($key == 'all') {
+			return $permissions;
+		} else {
+			return [];
+		}
+	}
+	
+	public function homepageOrderWeatherAndAir()
+	{
+		if ($this->homepageItemPermissions($this->weatherHomepagePermissions('main'))) {
+			return '
+				<div id="' . __FUNCTION__ . '">
+					<div class="white-box homepage-loading-box"><h2 class="text-center" lang="en">Loading Weather...</h2></div>
+					<script>
+						// Weather And Air
+						homepageWeatherAndAir("' . $this->config['homepageWeatherAndAirRefresh'] . '");
+						// End Weather And Air
+					</script>
+				</div>
+				';
+		}
+	}
+	
 	public function searchCityForCoordinates($query)
 	{
 		try {
@@ -140,16 +181,7 @@ trait WeatherHomepageItem
 	
 	public function getWeatherAndAirData()
 	{
-		if (!$this->config['homepageWeatherAndAirEnabled']) {
-			$this->setAPIResponse('error', 'Weather homepage item is not enabled', 409);
-			return false;
-		}
-		if (!$this->qualifyRequest($this->config['homepageWeatherAndAirAuth'])) {
-			$this->setAPIResponse('error', 'User not approved to view this homepage item', 401);
-			return false;
-		}
-		if (empty($this->config['homepageWeatherAndAirLatitude']) && empty($this->config['homepageWeatherAndAirLongitude'])) {
-			$this->setAPIResponse('error', 'Weather Latitude and/or Longitude were not defined', 422);
+		if (!$this->homepageItemPermissions($this->weatherHomepagePermissions('main'), true)) {
 			return false;
 		}
 		$api['content'] = array(
@@ -158,7 +190,7 @@ trait WeatherHomepageItem
 			'pollen' => false
 		);
 		$apiURL = $this->qualifyURL('https://api.breezometer.com/');
-		$info = '&lat=' . $this->config['homepageWeatherAndAirLatitude'] . '&lon=' . $this->config['homepageWeatherAndAirLongitude'] . '&units=' . $this->config['homepageWeatherAndAirUnits'] . '&key=b7401295888443538a7ebe04719c8394';
+		$info = '&lat=' . $this->config['homepageWeatherAndAirLatitude'] . '&lon=' . $this->config['homepageWeatherAndAirLongitude'] . '&units=' . $this->config['homepageWeatherAndAirUnits'] . '&key=' . $this->config['breezometerToken'];
 		try {
 			$headers = array();
 			$options = array();

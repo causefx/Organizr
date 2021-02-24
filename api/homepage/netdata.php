@@ -4,16 +4,7 @@ trait NetDataHomepageItem
 {
 	public function getNetdataHomepageData()
 	{
-		if (!$this->config['homepageNetdataEnabled']) {
-			$this->setAPIResponse('error', 'NetData homepage item is not enabled', 409);
-			return false;
-		}
-		if (!$this->qualifyRequest($this->config['homepageNetdataAuth'])) {
-			$this->setAPIResponse('error', 'User not approved to view this homepage item', 401);
-			return false;
-		}
-		if (empty($this->config['netdataURL'])) {
-			$this->setAPIResponse('error', 'NetData URL is not defined', 422);
+		if (!$this->homepageItemPermissions($this->netdataHomepagePermissions('main'), true)) {
 			return false;
 		}
 		$api = [];
@@ -291,6 +282,46 @@ trait NetDataHomepageItem
 			),
 		);
 		return $array;
+	}
+	
+	public function netdataHomepagePermissions($key = null)
+	{
+		$permissions = [
+			'main' => [
+				'enabled' => [
+					'homepageNetdataEnabled'
+				],
+				'auth' => [
+					'homepageNetdataAuth'
+				],
+				'not_empty' => [
+					'netdataURL'
+				]
+			]
+		];
+		if (array_key_exists($key, $permissions)) {
+			return $permissions[$key];
+		} elseif ($key == 'all') {
+			return $permissions;
+		} else {
+			return [];
+		}
+	}
+	
+	public function homepageOrderNetdata()
+	{
+		if ($this->homepageItemPermissions($this->netdataHomepagePermissions('main'))) {
+			return '
+				<div id="' . __FUNCTION__ . '">
+					<div class="white-box homepage-loading-box"><h2 class="text-center" lang="en">Loading Netdata...</h2></div>
+					<script>
+						// Netdata
+						homepageNetdata("' . $this->config['homepageNetdataRefresh'] . '");
+						// End Netdata
+					</script>
+				</div>
+				';
+		}
 	}
 	
 	public function disk($dimension, $url)

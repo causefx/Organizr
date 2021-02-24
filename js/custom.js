@@ -44,7 +44,7 @@ $(document).ready(function () {
 
             /* ===== This is for resizing window ===== */
 
-            if (width < 1170) {
+            if (width < 768) {
                 body.addClass('content-wrapper');
                 $(".sidebar-nav, .slimScrollDiv").css("overflow-x", "visible").parent().css("overflow", "visible");
             } else {
@@ -333,12 +333,10 @@ function doneTypingMediaSearch () {
 			    });
 		    }
 	    }catch(e) {
-		    console.log(e + ' error: ' + data);
-		    orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
-		    return false;
+		    organizrCatchError(e,data);
 	    }
     }).fail(function(xhr) {
-	    console.error("Organizr Function: API Connection Failed | Error: " + xhr.responseJSON.response.message);
+	    OrganizrApiError(xhr, 'API Error');
     })
 }
 $(document).on("click", ".login-button", function(e) {
@@ -417,8 +415,7 @@ $(document).on("click", ".unlockButton", function(e) {
         let html = data.response;
         location.reload();
     }).fail(function(xhr) {
-	    message('API Error', xhr.responseJSON.response.message, activeInfo.settings.notifications.position, '#FFF', 'error', '10000');
-	    console.error("Organizr Function: API Connection Failed | Error: " + xhr.responseJSON.response.message);
+	    OrganizrApiError(xhr, 'API Error');
     });
 });
 $(document).on("click", ".register-button", function(e) {
@@ -429,8 +426,7 @@ $(document).on("click", ".register-button", function(e) {
         let html = data.response;
 		location.reload();
     }).fail(function(xhr) {
-	    message('API Error', xhr.responseJSON.response.message, activeInfo.settings.notifications.position, '#FFF', 'error', '10000');
-	    console.error("Organizr Function: API Connection Failed | Error: " + xhr.responseJSON.response.message);
+	    OrganizrApiError(xhr, 'API Error');
     });
 });
 $(document).on("click", ".reset-button", function(e) {
@@ -440,14 +436,13 @@ $(document).on("click", ".reset-button", function(e) {
 		var post = {
 	        email:email
         };
-	    message('Submitting request...',html.message,activeInfo.settings.notifications.position,'#FFF','info','10000');
+	    message('Submitting request...','',activeInfo.settings.notifications.position,'#FFF','info','10000');
         organizrAPI2('POST','api/v2/users/recover',post).success(function(data) {
             var html = data.response;
             message('Recover Password',html.message,activeInfo.settings.notifications.position,'#FFF','success','10000');
             $('#leave-recover').trigger('click');
         }).fail(function(xhr) {
-	        message('API Error', xhr.responseJSON.response.message, activeInfo.settings.notifications.position, '#FFF', 'error', '10000');
-	        console.error("Organizr Function: API Connection Failed | Error: " + xhr.responseJSON.response.message);
+	        OrganizrApiError(xhr, 'API Error');
         });
     }else{
         message('Recover Error','Enter Email',activeInfo.settings.notifications.position,'#FFF','warning','10000');
@@ -483,17 +478,14 @@ $(document).on("click", ".editGroup", function () {
 		try {
 			var response = data.response;
 		}catch(e) {
-			console.log(e + ' error: ' + data);
-			orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
-			return false;
+			organizrCatchError(e,data);
 		}
 		message(response.message,'',activeInfo.settings.notifications.position,"#FFF","success","5000");
 		if(callbacks){ callbacks.fire(); }
 		clearForm('#edit-group-form');
 		$.magnificPopup.close();
 	}).fail(function(xhr) {
-		message('Group Error', xhr.responseJSON.response.message, activeInfo.settings.notifications.position, '#FFF', 'error', '10000');
-		console.error("Organizr Function: API Connection Failed");
+		OrganizrApiError(xhr, 'API Error');
 	});
 });
 //CHANGE DEFAULT GROUP
@@ -507,13 +499,10 @@ $(document).on("click", ".changeDefaultGroup", function () {
 			message(response.message,'',activeInfo.settings.notifications.position,"#FFF","success","5000");
 			if(callbacks){ callbacks.fire(); }
 		}catch(e) {
-			console.log(e + ' error: ' + data);
-			orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
-			return false;
+			organizrCatchError(e,data);
 		}
 	}).fail(function(xhr) {
-		message('API Error', xhr.responseJSON.response.message, activeInfo.settings.notifications.position, '#FFF', 'error', '10000');
-		console.error("Organizr Function: API Connection Failed | Error: " + xhr.responseJSON.response.message);
+		OrganizrApiError(xhr, 'API Error');
 	});
 });
 //DELETE GROUP
@@ -538,13 +527,10 @@ $(document).on("click", ".deleteUserGroup", function () {
 			        message('Group Deleted','',activeInfo.settings.notifications.position,"#FFF","success","5000");
 			        if(callbacks){ callbacks.fire(); }
 		        }catch(e) {
-			        console.log(e + ' error: ' + data);
-			        orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
-			        return false;
+			        organizrCatchError(e,data);
 		        }
 	        }).fail(function(xhr) {
-		        message('API Error', xhr.responseJSON.response.message, activeInfo.settings.notifications.position, '#FFF', 'error', '10000');
-		        console.error("Organizr Function: API Connection Failed | Error: " + xhr.responseJSON.response.message);
+		        OrganizrApiError(xhr, 'API Error');
 	        });
         }
     });
@@ -572,13 +558,10 @@ $(document).on("click", ".addNewGroup", function () {
 			clearForm('#new-group-form');
 			$.magnificPopup.close();
 		}catch(e) {
-			console.log(e + ' error: ' + data);
-			orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
-			return false;
+			organizrCatchError(e,data);
 		}
 	}).fail(function(xhr) {
-		message('API Error', xhr.responseJSON.response.message, activeInfo.settings.notifications.position, '#FFF', 'error', '10000');
-		console.error("Organizr Function: API Connection Failed | Error: " + xhr.responseJSON.response.message);
+		OrganizrApiError(xhr, 'API Error');
 	});
 });
 // ADD USER
@@ -596,17 +579,15 @@ $(document).on("click", ".addNewUser", function () {
 		try {
 			var response = data.response;
 		}catch(e) {
-			console.log(e + ' error: ' + data);
-			orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
-			return false;
+			organizrCatchError(e,data);
 		}
 		message('User Created',response.message,activeInfo.settings.notifications.position,"#FFF","success","5000");
 		if(callbacks){ callbacks.fire(); }
 		clearForm('#new-user-form');
+		$('#jsGrid-Users').jsGrid('render');
 		$.magnificPopup.close();
 	}).fail(function(xhr) {
-		message('User Error', xhr.responseJSON.response.message, activeInfo.settings.notifications.position, '#FFF', 'error', '10000');
-		console.error("Organizr Function: API Connection Failed");
+		OrganizrApiError(xhr, 'API Error');
 	});
 });
 //EDIT GROUP GET ID
@@ -637,17 +618,14 @@ $(document).on("click", ".editUserAdmin", function () {
 		try {
 			var response = data.response;
 		}catch(e) {
-			console.log(e + ' error: ' + data);
-			orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
-			return false;
+			organizrCatchError(e,data);
 		}
 		message('User Updated',response.message,activeInfo.settings.notifications.position,"#FFF","success","5000");
 		if(callbacks){ callbacks.fire(); }
 		clearForm('#edit-user-form');
 		$.magnificPopup.close();
 	}).fail(function(xhr) {
-		message('User Error', xhr.responseJSON.response.message, activeInfo.settings.notifications.position, '#FFF', 'error', '10000');
-		console.error("Organizr Function: API Connection Failed");
+		OrganizrApiError(xhr, 'API Error');
 	});
 });
 // CHANGE USER GROUP
@@ -661,15 +639,12 @@ $(document).on("change", ".userGroupSelect", function () {
 		try {
 			var response = data.response;
 		}catch(e) {
-			console.log(e + ' error: ' + data);
-			orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
-			return false;
+			organizrCatchError(e,data);
 		}
 		message('User Group Updated',response.message,activeInfo.settings.notifications.position,"#FFF","success","5000");
 		if(callbacks){ callbacks.fire(); }
 	}).fail(function(xhr) {
-		message('User Group Error', xhr.responseJSON.response.message, activeInfo.settings.notifications.position, '#FFF', 'error', '10000');
-		console.error("Organizr Function: API Connection Failed");
+		OrganizrApiError(xhr, 'API Error');
 	});
 });
 // DELETE USER
@@ -694,8 +669,7 @@ $(document).on("click", ".deleteUser", function () {
 		        message('User Deleted','',activeInfo.settings.notifications.position,"#FFF","success","5000");
 		        if(callbacks){ callbacks.fire(); }
 	        }).fail(function(xhr) {
-		        message('User Deleted Error', xhr.responseJSON.response.message, activeInfo.settings.notifications.position, '#FFF', 'error', '10000');
-		        console.error("Organizr Function: API Connection Failed");
+		        OrganizrApiError(xhr, 'User Delete Error');
 	        });
         }
     });
@@ -709,15 +683,12 @@ $(document).on("change", ".tabGroupSelect", function (event) {
 		try {
 			var response = data.response;
 		}catch(e) {
-			console.log(e + ' error: ' + data);
-			orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
-			return false;
+			organizrCatchError(e,data);
 		}
 		message('Tab Group Updated',response.message,activeInfo.settings.notifications.position,"#FFF","success","5000");
 		if(callbacks){ callbacks.fire(); }
 	}).fail(function(xhr) {
-		message('Tab Group Error', xhr.responseJSON.response.message, activeInfo.settings.notifications.position, '#FFF', 'error', '10000');
-		console.error("Organizr Function: API Connection Failed");
+		OrganizrApiError(xhr, 'Tab Group Error');
 	});
 });
 // CHANGE TAB CATEGORY
@@ -729,15 +700,12 @@ $(document).on("change", ".tabCategorySelect", function () {
 		try {
 			var response = data.response;
 		}catch(e) {
-			console.log(e + ' error: ' + data);
-			orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
-			return false;
+			organizrCatchError(e,data);
 		}
 		message('Tab Category Updated',response.message,activeInfo.settings.notifications.position,"#FFF","success","5000");
 		if(callbacks){ callbacks.fire(); }
 	}).fail(function(xhr) {
-		message('Tab Category Error', xhr.responseJSON.response.message, activeInfo.settings.notifications.position, '#FFF', 'error', '10000');
-		console.error("Organizr Function: API Connection Failed");
+		OrganizrApiError(xhr, 'Tab Category Error');
 	});
 });
 // CHANGE TAB TYPE
@@ -749,15 +717,12 @@ $(document).on("change", ".tabTypeSelect", function () {
 		try {
 			var response = data.response;
 		}catch(e) {
-			console.log(e + ' error: ' + data);
-			orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
-			return false;
+			organizrCatchError(e,data);
 		}
 		message('Tab Type Updated',response.message,activeInfo.settings.notifications.position,"#FFF","success","5000");
 		if(callbacks){ callbacks.fire(); }
 	}).fail(function(xhr) {
-		message('Tab Type Error', xhr.responseJSON.response.message, activeInfo.settings.notifications.position, '#FFF', 'error', '10000');
-		console.error("Organizr Function: API Connection Failed");
+		OrganizrApiError(xhr, 'Tab Type Error');
 	});
 });
 // CHANGE ENABLED TAB
@@ -769,15 +734,12 @@ $(document).on("change", ".enabledSwitch", function () {
 		try {
 			var response = data.response;
 		}catch(e) {
-			console.log(e + ' error: ' + data);
-			orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
-			return false;
+			organizrCatchError(e,data);
 		}
 		message('Tab Enable Updated',response.message,activeInfo.settings.notifications.position,"#FFF","success","5000");
 		if(callbacks){ callbacks.fire(); }
 	}).fail(function(xhr) {
-		message('Tab Enable Error', xhr.responseJSON.response.message, activeInfo.settings.notifications.position, '#FFF', 'error', '10000');
-		console.error("Organizr Function: API Connection Failed");
+		OrganizrApiError(xhr, 'Tab Enable Error');
 	});
 });
 // CHANGE SPLASH TAB
@@ -789,15 +751,12 @@ $(document).on("change", ".splashSwitch", function () {
 		try {
 			var response = data.response;
 		}catch(e) {
-			console.log(e + ' error: ' + data);
-			orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
-			return false;
+			organizrCatchError(e,data);
 		}
 		message('Tab Splash Updated',response.message,activeInfo.settings.notifications.position,"#FFF","success","5000");
 		if(callbacks){ callbacks.fire(); }
 	}).fail(function(xhr) {
-		message('Tab Splash Error', xhr.responseJSON.response.message, activeInfo.settings.notifications.position, '#FFF', 'error', '10000');
-		console.error("Organizr Function: API Connection Failed");
+		OrganizrApiError(xhr, 'Tab Splash Error');
 	});
 });
 // CHANGE SPLASH TAB
@@ -809,15 +768,12 @@ $(document).on("change", ".pingSwitch", function () {
 		try {
 			var response = data.response;
 		}catch(e) {
-			console.log(e + ' error: ' + data);
-			orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
-			return false;
+			organizrCatchError(e,data);
 		}
 		message('Tab Ping Updated',response.message,activeInfo.settings.notifications.position,"#FFF","success","5000");
 		if(callbacks){ callbacks.fire(); }
 	}).fail(function(xhr) {
-		message('Tab Ping Error', xhr.responseJSON.response.message, activeInfo.settings.notifications.position, '#FFF', 'error', '10000');
-		console.error("Organizr Function: API Connection Failed");
+		OrganizrApiError(xhr, 'Tab Ping Error');
 	});
 });
 // CHANGE PRELOAD TAB
@@ -829,15 +785,12 @@ $(document).on("change", ".preloadSwitch", function () {
 		try {
 			var response = data.response;
 		}catch(e) {
-			console.log(e + ' error: ' + data);
-			orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
-			return false;
+			organizrCatchError(e,data);
 		}
 		message('Tab Preload Updated',response.message,activeInfo.settings.notifications.position,"#FFF","success","5000");
 		if(callbacks){ callbacks.fire(); }
 	}).fail(function(xhr) {
-		message('Tab Preload Error', xhr.responseJSON.response.message, activeInfo.settings.notifications.position, '#FFF', 'error', '10000');
-		console.error("Organizr Function: API Connection Failed");
+		OrganizrApiError(xhr, 'Tab Preload Error');
 	});
 });
 // CHANGE DEFAULT TAB
@@ -848,15 +801,12 @@ $(document).on("change", ".defaultSwitch", function () {
 		try {
 			var response = data.response;
 		}catch(e) {
-			console.log(e + ' error: ' + data);
-			orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
-			return false;
+			organizrCatchError(e,data);
 		}
 		message('Default Tab Updated',response.message,activeInfo.settings.notifications.position,"#FFF","success","5000");
 		if(callbacks){ callbacks.fire(); }
 	}).fail(function(xhr) {
-		message('Default Tab Error', xhr.responseJSON.response.message, activeInfo.settings.notifications.position, '#FFF', 'error', '10000');
-		console.error("Organizr Function: API Connection Failed");
+		OrganizrApiError(xhr, 'Default Tab Error');
 	});
 });
 //DELETE TAB
@@ -880,8 +830,7 @@ $(document).on("click", ".deleteTab", function () {
 		        message('Tab Deleted','',activeInfo.settings.notifications.position,"#FFF","success","5000");
 		        if(callbacks){ callbacks.fire(); }
 	        }).fail(function(xhr) {
-		        message('Tab Deleted Error', xhr.responseJSON.response.message, activeInfo.settings.notifications.position, '#FFF', 'error', '10000');
-		        console.error("Organizr Function: API Connection Failed");
+		        OrganizrApiError(xhr, 'Tab Deleted Error');
 	        });
         }
     });
@@ -900,25 +849,6 @@ function convertMinutesToMs(minutes){
         return (minutes * 1000) * 60;
     }
 }
-//EDIT TAB GET ID
-$(document).on("click", ".editTabButton", function () {
-    //tabActionTime
-    //tabActionType
-    $('#edit-tab-form [name=name]').val($(this).parent().parent().attr("data-name"));
-    $('#originalTabName').html($(this).parent().parent().attr("data-name"));
-    $('#edit-tab-form [name=url]').val($(this).parent().parent().attr("data-url"));
-    $('#edit-tab-form [name=url_local]').val($(this).parent().parent().attr("data-local-url"));
-    $('#edit-tab-form [name=ping_url]').val($(this).parent().parent().attr("data-ping-url"));
-    $('#edit-tab-form [name=image]').val($(this).parent().parent().attr("data-image"));
-    $('#edit-tab-form [name=id]').val($(this).parent().parent().attr("data-id"));
-    $('#edit-tab-form [name=timeout_ms]').val(convertMsToMinutes($(this).parent().parent().attr("data-tab-action-time")));
-    $('#edit-tab-form [name=timeout]').val($(this).parent().parent().attr("data-tab-action-type"));
-    if( $(this).parent().parent().attr("data-url").indexOf('/?v') > 0){
-        $('#edit-tab-form [name=url]').prop('disabled', 'true');
-    }else{
-        $('#edit-tab-form [name=url]').prop('disabled', null);
-    }
-});
 //EDIT TAB
 $(document).on("click", ".editTab", function () {
     var originalTabName = $('#originalTabName').html();
@@ -954,17 +884,14 @@ $(document).on("click", ".editTab", function () {
 			    var response = data.response;
 			    console.log(response);
 		    }catch(e) {
-			    console.log(e + ' error: ' + data);
-			    orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
-			    return false;
+			    organizrCatchError(e,data);
 		    }
 		    message('Tab Updated',response.message,activeInfo.settings.notifications.position,"#FFF","success","5000");
 		    if(callbacks){ callbacks.fire(); }
 		    clearForm('#edit-tab-form');
 		    $.magnificPopup.close();
 	    }).fail(function(xhr) {
-		    message('Tab Error', xhr.responseJSON.response.message, activeInfo.settings.notifications.position, '#FFF', 'error', '10000');
-		    console.error("Organizr Function: API Connection Failed");
+		    OrganizrApiError(xhr, 'Tab Error');
 	    });
     }
 });
@@ -998,19 +925,17 @@ $(document).on("click", ".addNewTab", function () {
 	    organizrAPI2('POST','api/v2/tabs',tabInfo,true).success(function(data) {
 		    try {
 			    var response = data.response;
-			    console.log(response);
+			    $('.tabIconImageList').val(null).trigger('change');
+			    $('.tabIconIconList').val(null).trigger('change');
 		    }catch(e) {
-			    console.log(e + ' error: ' + data);
-			    orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
-			    return false;
+			    organizrCatchError(e,data);
 		    }
 		    message('Tab Created',response.message,activeInfo.settings.notifications.position,"#FFF","success","5000");
 		    if(callbacks){ callbacks.fire(); }
 		    clearForm('#new-tab-form');
 		    $.magnificPopup.close();
 	    }).fail(function(xhr) {
-		    message('Tab Error', xhr.responseJSON.response.message, activeInfo.settings.notifications.position, '#FFF', 'error', '10000');
-		    console.error("Organizr Function: API Connection Failed");
+		    OrganizrApiError(xhr, 'Tab Error');
 	    });
     }
 });
@@ -1035,17 +960,14 @@ $(document).on("click", ".addNewCategory", function () {
 				var response = data.response;
 				console.log(response);
 			}catch(e) {
-				console.log(e + ' error: ' + data);
-				orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
-				return false;
+				organizrCatchError(e,data);
 			}
 			message('Category Added',response.message,activeInfo.settings.notifications.position,"#FFF","success","5000");
 			if(callbacks){ callbacks.fire(); }
 			clearForm('#new-category-form');
 			$.magnificPopup.close();
 		}).fail(function(xhr) {
-			message('Category Error', xhr.responseJSON.response.message, activeInfo.settings.notifications.position, '#FFF', 'error', '10000');
-			console.error("Organizr Function: API Connection Failed");
+			OrganizrApiError(xhr, 'Category Error');
 		});
 	}
 });
@@ -1070,8 +992,7 @@ $(document).on("click", ".deleteCategory", function () {
 		        message('Category Deleted','',activeInfo.settings.notifications.position,"#FFF","success","5000");
 		        if(callbacks){ callbacks.fire(); }
 	        }).fail(function(xhr) {
-		        message('Category Deleted Error', xhr.responseJSON.response.message, activeInfo.settings.notifications.position, '#FFF', 'error', '10000');
-		        console.error("Organizr Function: API Connection Failed");
+		        OrganizrApiError(xhr, 'Category Deleted Error');
 	        });
         }
     });
@@ -1105,17 +1026,14 @@ $(document).on("click", ".editCategory", function () {
 				var response = data.response;
 				console.log(response);
 			}catch(e) {
-				console.log(e + ' error: ' + data);
-				orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
-				return false;
+				organizrCatchError(e,data);
 			}
 			message('Category Updated',response.message,activeInfo.settings.notifications.position,"#FFF","success","5000");
 			if(callbacks){ callbacks.fire(); }
 			clearForm('#edit-category-form');
 			$.magnificPopup.close();
 		}).fail(function(xhr) {
-			message('Category Error', xhr.responseJSON.response.message, activeInfo.settings.notifications.position, '#FFF', 'error', '10000');
-			console.error("Organizr Function: API Connection Failed");
+			OrganizrApiError(xhr, 'Category Error');
 		});
 	}
 });
@@ -1128,15 +1046,12 @@ $(document).on("click", ".changeDefaultCategory", function () {
 		try {
 			var response = data.response;
 		}catch(e) {
-			console.log(e + ' error: ' + data);
-			orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
-			return false;
+			organizrCatchError(e,data);
 		}
 		message('Default Category Updated',response.message,activeInfo.settings.notifications.position,"#FFF","success","5000");
 		if(callbacks){ callbacks.fire(); }
 	}).fail(function(xhr) {
-		message('Default Category Error', xhr.responseJSON.response.message, activeInfo.settings.notifications.position, '#FFF', 'error', '10000');
-		console.error("Organizr Function: API Connection Failed");
+		OrganizrApiError(xhr, 'Default Cateogry Error');
 	});
 });
 // CHANGE CUSTOMIZE Options and CSS Save
@@ -1225,14 +1140,12 @@ $(document).on("click", ".deleteImage", function () {
 		        try {
 			        var response = data.response;
 		        }catch(e) {
-			        console.log(e + ' error: ' + data);
-			        orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
-			        return false;
+			        organizrCatchError(e,data);
 		        }
 		        message(post.messageTitle,post.messageBody,activeInfo.settings.notifications.position,"#FFF","success","5000");
 		        if(callbacks){ callbacks.fire(); }
 	        }).fail(function(xhr) {
-		        console.error(post.error);
+		        OrganizrApiError(xhr, 'Image Error');
 	        });
         }
     });
@@ -1255,13 +1168,10 @@ $(document).on('click', '.enablePlugin', function() {
 			message('Plugin Enabled','',activeInfo.settings.notifications.position,"#FFF","success","5000");
 			if(callbacks){ callbacks.fire(); }
 		}catch(e) {
-			console.log(e + ' error: ' + data);
-			orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
-			return false;
+			organizrCatchError(e,data);
 		}
 	}).fail(function(xhr) {
-		message('API Error', xhr.responseJSON.response.message, activeInfo.settings.notifications.position, '#FFF', 'error', '10000');
-		console.error("Organizr Function: API Connection Failed | Error: " + xhr.responseJSON.response.message);
+		OrganizrApiError(xhr, 'Plugin Error');
 		ajaxloader();
 	});
 });
@@ -1291,13 +1201,10 @@ $(document).on('click', '.disablePlugin', function() {
 			        message('Plugin Disabled','',activeInfo.settings.notifications.position,"#FFF","success","5000");
 			        if(callbacks){ callbacks.fire(); }
 		        }catch(e) {
-			        console.log(e + ' error: ' + data);
-			        orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
-			        return false;
+			        organizrCatchError(e,data);
 		        }
 	        }).fail(function(xhr) {
-		        message('API Error', xhr.responseJSON.response.message, activeInfo.settings.notifications.position, '#FFF', 'error', '10000');
-		        console.error("Organizr Function: API Connection Failed | Error: " + xhr.responseJSON.response.message);
+		        OrganizrApiError(xhr, 'Plugin Error');
 		        ajaxloader();
 	        });
         }
@@ -1327,8 +1234,7 @@ $(document).on("click", ".testPath", function () {
             var html = data.response;
             message('Path',' Path is good to go',activeInfo.settings.notifications.position,'#FFF','success','10000');
         }).fail(function(xhr) {
-	        message('API Error', xhr.responseJSON.response.message, activeInfo.settings.notifications.position, '#FFF', 'error', '10000');
-	        console.error("Organizr Function: API Connection Failed | Error: " + xhr.responseJSON.response.message);
+	        OrganizrApiError(xhr, 'API Error');
         });
     }
 });
@@ -1468,7 +1374,7 @@ $(document).on("click", ".metadata-get", function(e) {
 	    ajaxloader();
 	    $("#preloader").fadeOut();
     }).fail(function(xhr) {
-	    console.error("Organizr Function: API Connection Failed | Error: " + xhr.responseJSON.response.message);
+	    OrganizrApiError(xhr, 'API Error');
 	    ajaxloader();
 	    $("#preloader").fadeOut();
     });
@@ -1493,7 +1399,7 @@ $(document).on("click", ".downloader", function(e) {
         homepageDownloader(source);
 	    messageSingle('Successful', '', activeInfo.settings.notifications.position, '#FFF', 'success', '2500');
     }).fail(function(xhr) {
-        console.error("Organizr Function: API Connection Failed");
+	    OrganizrApiError(xhr, 'API Error');
     });
 });
 // test tab
@@ -1514,8 +1420,7 @@ $(document).on("click", ".testTab", function () {
 		        $('.tabTestMessage.alert-success').addClass('hidden');
 	        	}, 5000);
         }).fail(function(xhr) {
-	        message('API Error', xhr.responseJSON.response.message, activeInfo.settings.notifications.position, '#FFF', 'error', '10000');
-	        console.error("Organizr Function: API Connection Failed | Error: " + xhr.responseJSON.response.message);
+	        OrganizrApiError(xhr, 'API Error');
 	        $('.tabTestMessage.alert-danger').removeClass('hidden');
 	        $('.tabTestMessage.alert-success').addClass('hidden');
 	        setTimeout(function(){
@@ -1543,8 +1448,7 @@ $(document).on("click", ".testEditTab", function () {
 		        $('.tabEditTestMessage.alert-success').addClass('hidden');
 	        }, 5000);
         }).fail(function(xhr) {
-	        message('API Error', xhr.responseJSON.response.message, activeInfo.settings.notifications.position, '#FFF', 'error', '10000');
-	        console.error("Organizr Function: API Connection Failed | Error: " + xhr.responseJSON.response.message);
+	        OrganizrApiError(xhr, 'API Error');
 	        $('.tabEditTestMessage.alert-danger').removeClass('hidden');
 	        $('.tabEditTestMessage.alert-success').addClass('hidden');
 	        setTimeout(function(){
@@ -1573,9 +1477,7 @@ $(document).on("click", ".purgeLog", function () {
 		    try {
 			    var response = data.response;
 		    }catch(e) {
-			    console.log(e + ' error: ' + data);
-			    orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
-			    return false;
+			    organizrCatchError(e,data);
 		    }
 		    message(post.messageTitle,post.messageBody,activeInfo.settings.notifications.position,"#FFF","success","5000");
 		    var callbacks = $.Callbacks();
@@ -1590,10 +1492,37 @@ $(document).on("click", ".purgeLog", function () {
 		    }
 		    if(callbacks){ callbacks.fire(); }
 	    }).fail(function(xhr) {
-		    console.error(post.error);
+		    OrganizrApiError(xhr, 'API Error');
 	    });
     }
 
+});
+$(document).on("click", ".delete-backup", function () {
+	$('#settings-settings-backup').block({
+		message: '<p style="margin:0;padding:8px;font-size:24px;" lang="en">Deleting Backup...</p>',
+		css: {
+			color: '#fff',
+			border: '1px solid #5761a9',
+			backgroundColor: '#707cd2'
+		}
+	});
+	let filename = $(this).attr('data-file');
+	if(filename !== ''){
+		let post = {
+			api:'api/v2/backup/' + filename,
+			messageTitle:'',
+			messageBody:window.lang.translate('Deleted Backup')+': '+filename,
+			error:'Organizr Function: Backup API Connection Failed'
+		};
+		organizrAPI2('DELETE',post.api,'',true).success(function(data) {
+			message(post.messageTitle,post.messageBody,activeInfo.settings.notifications.position,"#FFF","success","5000");
+			getOrganizrBackups();
+			$('#settings-settings-backup').unblock();
+		}).fail(function(xhr) {
+			OrganizrApiError(xhr, 'API Error');
+			$('#settings-settings-backup').unblock();
+		});
+	}
 });
 //Show Password
 $(document).on("click", ".showPassword", function () {
@@ -1740,36 +1669,9 @@ Mousetrap.bind('ctrl+shift+down', function(e) {
     nextTab.trigger("click");
     return false;
 });
-$(document).on('change', "#new-tab-form-chooseImage", function (e) {
-    var newIcon = $('#new-tab-form-chooseImage').val();
-    if(newIcon !== 'Select or type Icon'){
-        $('#new-tab-form-inputImageNew').val(newIcon);
-    }
-});
-$(document).on('change', "#edit-tab-form-chooseImage", function (e) {
-    var newIcon = $('#edit-tab-form-chooseImage').val();
-    if(newIcon !== 'Select or type Icon'){
-        $('#edit-tab-form-inputImage').val(newIcon);
-    }
-});
-$(document).on('change', "#new-tab-form-chooseIcon", function (e) {
-    var newIcon = $('#new-tab-form-chooseIcon').val();
-    if(newIcon !== 'Select or type Icon'){
-        $('#new-tab-form-inputImageNew').val(newIcon);
-    }
-});
-$(document).on('change', "#edit-tab-form-chooseIcon", function (e) {
-    var newIcon = $('#edit-tab-form-chooseIcon').val();
-    if(newIcon !== 'Select or type Icon'){
-        $('#edit-tab-form-inputImage').val(newIcon);
-    }
-});
 $(document).on('change', "#choose-calender-filter, #choose-calender-filter-status", function (e) {
     filter = $('#choose-calender-filter').val();
     filterDownload = $('#choose-calender-filter-status').val();
-    $('#calendar-filter-modal').modal('hide');
-    console.log("Calendar Filter: "+filter);
-    console.log("Calendar Filter: "+filterDownload);
     $('#calendar').fullCalendar('rerenderEvents');
     new SimpleBar($('.fc-scroller')[0]);
 });
@@ -1824,7 +1726,7 @@ $(document).on('click', ".help-modal", function(){
             break;
         default:
             return null;
-        
+
     }
     $('#help-modal-title').html(title);
     $('#help-modal-body').html(body);
@@ -1910,4 +1812,92 @@ $(document).on('click', 'li a[aria-controls="Custom data"]', function() {
         $('#netdataCustomText').val(jsonEditor.getValue());
         $('#customize-appearance-form-save').removeClass('hidden');
     });
+});
+$(document).on('click', '.imageManagerItem', function() {
+	createImageSwal($(this));
+});
+
+$(document).on('click', '.close-editHomepageItemDiv',function () {
+	$('body').removeAttr('style');
+	$('html').removeAttr('style');
+})
+// Control init of custom plex JSON editor
+$(document).on('click', '#homepage-Plex-form li a[aria-controls="Misc Options"]', function() {
+    var resizeEditor = function(jsonEditor) {
+        const aceEditor = jsonEditor;
+        const newHeight = aceEditor.getSession().getScreenLength() * (aceEditor.renderer.lineHeight + aceEditor.renderer.scrollBar.getWidth());
+        aceEditor.container.style.height = newHeight + 'px';
+        aceEditor.resize();
+    }
+
+    jsonEditor = ace.edit("homepageCustomStreamNamesAce");
+    var JsonMode = ace.require("ace/mode/javascript").Mode;
+    jsonEditor.session.setMode(new JsonMode());
+    jsonEditor.setTheme("ace/theme/idle_fingers");
+    jsonEditor.setShowPrintMargin(false);
+    jsonEditor.session.on('change', function(delta) {
+        $('#homepageCustomStreamNamesText').val(jsonEditor.getValue());
+        $('#customize-appearance-form-save').removeClass('hidden');
+    });
+});
+// Trakt image fix
+$(document).on('click', '.get-tmdb-image', function() {
+	let target = $(this).attr('data-target');
+	let type = $(this).hasClass('tmdb-tv') ? 'tv' : 'movie';
+	let classList = $(this).attr('class');
+	checkMetadataDiv(target,type,classList);
+});
+
+function checkMetadataDiv(target,type,classList){
+	let classArray = classList.split(/\s+/);
+	$(classArray).each(function (i,v) {
+		if(v.includes('--')){
+			let getId = v.split('--');
+			getTmdbImages(getId[1], type).success(function(data) {
+				try {
+					let response = data;
+					let bg = 'https://image.tmdb.org/t/p/w1280';
+					if(typeof response.backdrops !== 'undefined'){
+						bg = bg + response.backdrops[0]['file_path'];
+						$('.' + target + '-metadata-info .user-bg').css('background-image' , '');
+						setTimeout(function(){
+							$('.' + target + '-metadata-info .user-bg').css('background-image' , 'url('+bg+')');
+						}, 25);
+					}
+				}catch(e) {
+					console.log('tmdb Error');
+				}
+			}).fail(function(xhr) {
+				console.log('tmdb Error');
+			});
+		}
+	});
+}
+
+// Plugins settings bind
+$(document).on('click', '[id$=-settings-button]', function() {
+	let el = $(this)[0];
+	let bind = $(el).attr('data-bind');
+	let api = $(el).attr('data-api');
+	let prefix = $(el).attr('data-config-prefix');
+	if(bind == 'true' && api !== 'false' && prefix !== 'false'){
+		ajaxloader(".content-wrap","in");
+		organizrAPI2('GET',api).success(function(data) {
+			var response = data.response;
+			$('#'+prefix+'-settings-items').html(buildFormGroup(response.data));
+		}).fail(function(xhr) {
+			OrganizrApiError(xhr);
+		});
+		ajaxloader();
+	}
+});
+$(document).on('change', '[id*=-form-chooseI]', function (e) {
+	let el = $(this)[0];
+	let id = $(el).attr('id');
+	let newForm = (id.includes('new')) ? 'New' : '';
+	let pasteId = id.match(/(?:[a-z]*-){1,5}/) + 'inputImage' + newForm;
+	let newValue = $('#'+id).val();
+	if(newValue !== 'Select or type Icon'){
+		$('#'+pasteId).val(newValue);
+	}
 });

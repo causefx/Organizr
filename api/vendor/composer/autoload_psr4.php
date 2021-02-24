@@ -8,6 +8,7 @@ $baseDir = dirname($vendorDir);
 return array(
     'Tightenco\\Collect\\' => array($vendorDir . '/tightenco/collect/src/Collect'),
     'Symfony\\Polyfill\\Util\\' => array($vendorDir . '/symfony/polyfill-util'),
+    'Symfony\\Polyfill\\Php80\\' => array($vendorDir . '/symfony/polyfill-php80'),
     'Symfony\\Polyfill\\Php72\\' => array($vendorDir . '/symfony/polyfill-php72'),
     'Symfony\\Polyfill\\Php56\\' => array($vendorDir . '/symfony/polyfill-php56'),
     'Symfony\\Polyfill\\Mbstring\\' => array($vendorDir . '/symfony/polyfill-mbstring'),
@@ -15,7 +16,6 @@ return array(
     'Symfony\\Component\\Yaml\\' => array($vendorDir . '/symfony/yaml'),
     'Symfony\\Component\\VarDumper\\' => array($vendorDir . '/symfony/var-dumper'),
     'Symfony\\Component\\Finder\\' => array($vendorDir . '/symfony/finder'),
-    'Slim\\Tests\\' => array($vendorDir . '/slim/slim/tests'),
     'Slim\\Psr7\\' => array($vendorDir . '/slim/psr7/src'),
     'Slim\\' => array($vendorDir . '/slim/slim/Slim'),
     'Pusher\\' => array($vendorDir . '/pusher/pusher-php-server/src'),
@@ -29,6 +29,7 @@ return array(
     'ParagonIE\\ConstantTime\\' => array($vendorDir . '/paragonie/constant_time_encoding/src'),
     'PHPMailer\\PHPMailer\\' => array($vendorDir . '/phpmailer/phpmailer/src'),
     'OpenApi\\' => array($vendorDir . '/zircote/swagger-php/src'),
+    'League\\OAuth2\\Client\\' => array($vendorDir . '/league/oauth2-client/src'),
     'Lcobucci\\JWT\\' => array($vendorDir . '/lcobucci/jwt/src'),
     'Kryptonit3\\Sonarr\\' => array($vendorDir . '/kryptonit3/sonarr/src'),
     'Kryptonit3\\SickRage\\' => array($vendorDir . '/kryptonit3/sickrage/src'),
@@ -42,5 +43,6 @@ return array(
     'Doctrine\\Common\\Lexer\\' => array($vendorDir . '/doctrine/lexer/lib/Doctrine/Common/Lexer'),
     'Doctrine\\Common\\Annotations\\' => array($vendorDir . '/doctrine/annotations/lib/Doctrine/Common/Annotations'),
     'Composer\\Semver\\' => array($vendorDir . '/composer/semver/src'),
+    'Bogstag\\OAuth2\\Client\\' => array($vendorDir . '/bogstag/oauth2-trakt/src'),
     'Adldap\\' => array($vendorDir . '/adldap2/adldap2/src'),
 );

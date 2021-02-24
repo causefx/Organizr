@@ -150,27 +150,34 @@ trait SickRageHomepageItem
 		}
 	}
 	
+	public function sickrageHomepagePermissions($key = null)
+	{
+		$permissions = [
+			'calendar' => [
+				'enabled' => [
+					'homepageSickrageEnabled'
+				],
+				'auth' => [
+					'homepageSickrageAuth'
+				],
+				'not_empty' => [
+					'sickrageURL',
+					'sickrageToken'
+				]
+			]
+		];
+		if (array_key_exists($key, $permissions)) {
+			return $permissions[$key];
+		} elseif ($key == 'all') {
+			return $permissions;
+		} else {
+			return [];
+		}
+	}
 	
 	public function getSickRageCalendar($startDate = null, $endDate = null)
 	{
-		if (!$this->config['homepageSickrageEnabled']) {
-			$this->setAPIResponse('error', 'SickRage homepage item is not enabled', 409);
-			return false;
-		}
-		if (!$this->qualifyRequest($this->config['homepageSickrageAuth'])) {
-			$this->setAPIResponse('error', 'User not approved to view this homepage item', 401);
-			return false;
-		}
-		if (!$this->qualifyRequest($this->config['homepageRadarrQueueAuth'])) {
-			$this->setAPIResponse('error', 'User not approved to view this homepage module', 401);
-			return false;
-		}
-		if (empty($this->config['sickrageURL'])) {
-			$this->setAPIResponse('error', 'SickRage URL is not defined', 422);
-			return false;
-		}
-		if (empty($this->config['sickrageToken'])) {
-			$this->setAPIResponse('error', 'SickRage Token is not defined', 422);
+		if (!$this->homepageItemPermissions($this->sickrageHomepagePermissions('calendar'), true)) {
 			return false;
 		}
 		$calendarItems = array();

@@ -32,7 +32,9 @@ function get_page_settings_image_manager($Organizr)
 	</div>
     <div class="panel-wrapper collapse in" aria-expanded="true">
         <div class="panel-body bg-org" >
-        <div class="row el-element-overlay m-b-40" id="settings-image-manager-list"></div>
+        	<div id="gallery-content">
+                <div id="gallery-content-center" class="settings-image-manager-list"></div>
+            </div>
         </div>
     </div>
 </div>

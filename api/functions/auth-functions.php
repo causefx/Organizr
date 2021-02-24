@@ -2,9 +2,167 @@
 
 trait AuthFunctions
 {
-	public function testing()
+	public function testConnectionLdap()
 	{
-		return 'wasssup';
+		if (!empty($this->config['authBaseDN']) && !empty($this->config['authBackendHost'])) {
+			$ad = new \Adldap\Adldap();
+			// Create a configuration array.
+			$ldapServers = explode(',', $this->config['authBackendHost']);
+			$i = 0;
+			foreach ($ldapServers as $key => $value) {
+				// Calculate parts
+				$digest = parse_url(trim($value));
+				$scheme = strtolower((isset($digest['scheme']) ? $digest['scheme'] : 'ldap'));
+				$host = (isset($digest['host']) ? $digest['host'] : (isset($digest['path']) ? $digest['path'] : ''));
+				$port = (isset($digest['port']) ? $digest['port'] : (strtolower($scheme) == 'ldap' ? 389 : 636));
+				// Reassign
+				$ldapHosts[] = $host;
+				if ($i == 0) {
+					$ldapPort = $port;
+				}
+				$i++;
+			}
+			$config = [
+				// Mandatory Configuration Options
+				'hosts' => $ldapHosts,
+				'base_dn' => $this->config['authBaseDN'],
+				'username' => (empty($this->config['ldapBindUsername'])) ? null : $this->config['ldapBindUsername'],
+				'password' => (empty($this->config['ldapBindPassword'])) ? null : $this->decrypt($this->config['ldapBindPassword']),
+				// Optional Configuration Options
+				'schema' => (($this->config['ldapType'] == '1') ? Adldap\Schemas\ActiveDirectory::class : (($this->config['ldapType'] == '2') ? Adldap\Schemas\OpenLDAP::class : Adldap\Schemas\FreeIPA::class)),
+				'account_prefix' => '',
+				'account_suffix' => '',
+				'port' => $ldapPort,
+				'follow_referrals' => false,
+				'use_ssl' => $this->config['ldapSSL'],
+				'use_tls' => $this->config['ldapTLS'],
+				'version' => 3,
+				'timeout' => 5,
+				// Custom LDAP Options
+				'custom_options' => [
+					// See: http://php.net/ldap_set_option
+					//LDAP_OPT_X_TLS_REQUIRE_CERT => LDAP_OPT_X_TLS_HARD
+				]
+			];
+			// Add a connection provider to Adldap.
+			$ad->addProvider($config);
+			try {
+				// If a successful connection is made to your server, the provider will be returned.
+				$provider = $ad->connect();
+			} catch (\Adldap\Auth\BindException $e) {
+				$detailedError = $e->getDetailedError();
+				$this->writeLog('error', 'LDAP Function - Error: ' . $detailedError->getErrorMessage(), 'SYSTEM');
+				$this->setAPIResponse('error', $detailedError->getErrorMessage(), 409);
+				return $detailedError->getErrorMessage();
+				// There was an issue binding / connecting to the server.
+			}
+			if ($provider) {
+				$this->setAPIResponse('success', 'LDAP connection successful', 200);
+				return true;
+			} else {
+				$this->setAPIResponse('error', 'Could not connect', 500);
+				return false;
+			}
+			return ($provider) ? true : false;
+		} else {
+			$this->setAPIResponse('error', 'authBaseDN and/or BackendHost not supplied', 422);
+			return false;
+		}
+	}
+	
+	public function testConnectionLdapLogin($array)
+	{
+		$username = $array['username'] ?? null;
+		$password = $array['password'] ?? null;
+		if (empty($username) || empty($password)) {
+			$this->setAPIResponse('error', 'Username and/or Password not supplied', 422);
+			return false;
+		}
+		if (!empty($this->config['authBaseDN']) && !empty($this->config['authBackendHost'])) {
+			$ad = new \Adldap\Adldap();
+			// Create a configuration array.
+			$ldapServers = explode(',', $this->config['authBackendHost']);
+			$i = 0;
+			foreach ($ldapServers as $key => $value) {
+				// Calculate parts
+				$digest = parse_url(trim($value));
+				$scheme = strtolower((isset($digest['scheme']) ? $digest['scheme'] : 'ldap'));
+				$host = (isset($digest['host']) ? $digest['host'] : (isset($digest['path']) ? $digest['path'] : ''));
+				$port = (isset($digest['port']) ? $digest['port'] : (strtolower($scheme) == 'ldap' ? 389 : 636));
+				// Reassign
+				$ldapHosts[] = $host;
+				$ldapServersNew[$key] = $scheme . '://' . $host . ':' . $port; // May use this later
+				if ($i == 0) {
+					$ldapPort = $port;
+				}
+				$i++;
+			}
+			$config = [
+				// Mandatory Configuration Options
+				'hosts' => $ldapHosts,
+				'base_dn' => $this->config['authBaseDN'],
+				'username' => (empty($this->config['ldapBindUsername'])) ? null : $this->config['ldapBindUsername'],
+				'password' => (empty($this->config['ldapBindPassword'])) ? null : $this->decrypt($this->config['ldapBindPassword']),
+				// Optional Configuration Options
+				'schema' => (($this->config['ldapType'] == '1') ? Adldap\Schemas\ActiveDirectory::class : (($this->config['ldapType'] == '2') ? Adldap\Schemas\OpenLDAP::class : Adldap\Schemas\FreeIPA::class)),
+				'account_prefix' => (empty($this->config['authBackendHostPrefix'])) ? null : $this->config['authBackendHostPrefix'],
+				'account_suffix' => (empty($this->config['authBackendHostSuffix'])) ? null : $this->config['authBackendHostSuffix'],
+				'port' => $ldapPort,
+				'follow_referrals' => false,
+				'use_ssl' => $this->config['ldapSSL'],
+				'use_tls' => $this->config['ldapTLS'],
+				'version' => 3,
+				'timeout' => 5,
+				// Custom LDAP Options
+				'custom_options' => [
+					// See: http://php.net/ldap_set_option
+					//LDAP_OPT_X_TLS_REQUIRE_CERT => LDAP_OPT_X_TLS_HARD
+				]
+			];
+			// Add a connection provider to Adldap.
+			$ad->addProvider($config);
+			try {
+				// If a successful connection is made to your server, the provider will be returned.
+				$provider = $ad->connect();
+				//prettyPrint($provider);
+				if ($provider->auth()->attempt($username, $password, true)) {
+					// Passed.
+					$user = $provider->search()->find($username);
+					//return $user->getFirstAttribute('cn');
+					//return $user->getGroups(['cn']);
+					//return $user;
+					//return $user->getUserPrincipalName();
+					//return $user->getGroups(['cn']);
+					$this->setAPIResponse('success', 'LDAP connection successful', 200);
+					return true;
+				} else {
+					// Failed.
+					$this->setAPIResponse('error', 'Username/Password Failed to authenticate', 401);
+					return false;
+				}
+			} catch (\Adldap\Auth\BindException $e) {
+				$detailedError = $e->getDetailedError();
+				$this->writeLog('error', 'LDAP Function - Error: ' . $detailedError->getErrorMessage(), $username);
+				$this->setAPIResponse('error', $detailedError->getErrorMessage(), 500);
+				return $detailedError->getErrorMessage();
+				// There was an issue binding / connecting to the server.
+			} catch (Adldap\Auth\UsernameRequiredException $e) {
+				$detailedError = $e->getDetailedError();
+				$this->writeLog('error', 'LDAP Function - Error: ' . $detailedError->getErrorMessage(), $username);
+				$this->setAPIResponse('error', $detailedError->getErrorMessage(), 422);
+				return $detailedError->getErrorMessage();
+				// The user didn't supply a username.
+			} catch (Adldap\Auth\PasswordRequiredException $e) {
+				$detailedError = $e->getDetailedError();
+				$this->writeLog('error', 'LDAP Function - Error: ' . $detailedError->getErrorMessage(), $username);
+				$this->setAPIResponse('error', $detailedError->getErrorMessage(), 422);
+				return $detailedError->getErrorMessage();
+				// The user didn't supply a password.
+			}
+		} else {
+			$this->setAPIResponse('error', 'authBaseDN and/or BackendHost not supplied', 422);
+			return false;
+		}
 	}
 	
 	public function checkPlexToken($token = '')
@@ -26,7 +184,7 @@ trait AuthFunctions
 			}
 			
 		} catch (Requests_Exception $e) {
-			$this->writeLog('success', 'Plex Token Check Function - Error: ' . $e->getMessage(), SYSTEM);
+			$this->writeLog('success', 'Plex Token Check Function - Error: ' . $e->getMessage(), 'SYSTEM');
 		}
 		return false;
 	}
@@ -144,7 +302,7 @@ trait AuthFunctions
 				'username' => (empty($this->config['ldapBindUsername'])) ? null : $this->config['ldapBindUsername'],
 				'password' => (empty($this->config['ldapBindPassword'])) ? null : $this->decrypt($this->config['ldapBindPassword']),
 				// Optional Configuration Options
-				'schema' => (($GLOBALS['ldapType'] == '1') ? Adldap\Schemas\ActiveDirectory::class : (($GLOBALS['ldapType'] == '2') ? Adldap\Schemas\OpenLDAP::class : Adldap\Schemas\FreeIPA::class)),
+				'schema' => (($this->config['ldapType'] == '1') ? Adldap\Schemas\ActiveDirectory::class : (($this->config['ldapType'] == '2') ? Adldap\Schemas\OpenLDAP::class : Adldap\Schemas\FreeIPA::class)),
 				'account_prefix' => (empty($this->config['authBackendHostPrefix'])) ? null : $this->config['authBackendHostPrefix'],
 				'account_suffix' => (empty($this->config['authBackendHostSuffix'])) ? null : $this->config['authBackendHostSuffix'],
 				'port' => $ldapPort,
@@ -276,7 +434,7 @@ trait AuthFunctions
 	public function plugin_auth_jellyfin($username, $password)
 	{
 		try {
-			$url = $this->qualifyURL($this->config['embyURL']) . '/Users/authenticatebyname';
+			$url = $this->qualifyURL($this->config['jellyfinURL']) . '/Users/authenticatebyname';
 			$headers = array(
 				'X-Emby-Authorization' => 'MediaBrowser Client="Organizr Auth", Device="Organizr", DeviceId="orgv2", Version="2.0"',
 				'Content-Type' => 'application/json',
@@ -295,7 +453,7 @@ trait AuthFunctions
 						'X-Emby-Authorization' => 'MediaBrowser Client="Organizr Auth", Device="Organizr", DeviceId="orgv2", Version="2.0", Token="' . $json['AccessToken'] . '"',
 						'Content-Type' => 'application/json',
 					);
-					$response = Requests::post($this->qualifyURL($this->config['embyURL']) . '/Sessions/Logout', $headers, array());
+					$response = Requests::post($this->qualifyURL($this->config['jellyfinURL']) . '/Sessions/Logout', $headers, array());
 					if ($response->success) {
 						return true;
 					}

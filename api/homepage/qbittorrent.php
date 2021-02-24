@@ -35,6 +35,12 @@ trait QBitTorrentHomepageItem
 						'placeholder' => 'http(s)://hostname:port'
 					),
 					array(
+						'type' => 'switch',
+						'name' => 'qBittorrentDisableCertCheck',
+						'label' => 'Disable Certificate Check',
+						'value' => $this->config['qBittorrentDisableCertCheck']
+					),
+					array(
 						'type' => 'select',
 						'name' => 'qBittorrentApiVersion',
 						'label' => 'API Version',
@@ -123,7 +129,7 @@ trait QBitTorrentHomepageItem
 		$apiVersionQuery = ($this->config['qBittorrentApiVersion'] == '1') ? '/query/torrents?sort=' : '/api/v2/torrents/info?sort=';
 		$url = $digest['scheme'] . '://' . $digest['host'] . $digest['port'] . $digest['path'] . $apiVersionLogin;
 		try {
-			$options = ($this->localURL($this->config['qBittorrentURL'])) ? array('verify' => false) : array();
+			$options = $this->requestOptions($this->config['qBittorrentURL'], $this->config['qBittorrentDisableCertCheck'], $this->config['homepageDownloadRefresh']);
 			$response = Requests::post($url, array(), $data, $options);
 			$reflection = new ReflectionClass($response->cookies);
 			$cookie = $reflection->getProperty("cookies");
@@ -161,18 +167,52 @@ trait QBitTorrentHomepageItem
 		}
 	}
 	
+	public function qBittorrentHomepagePermissions($key = null)
+	{
+		$permissions = [
+			'main' => [
+				'enabled' => [
+					'homepageqBittorrentEnabled'
+				],
+				'auth' => [
+					'homepageqBittorrentAuth'
+				],
+				'not_empty' => [
+					'qBittorrentURL'
+				]
+			]
+		];
+		if (array_key_exists($key, $permissions)) {
+			return $permissions[$key];
+		} elseif ($key == 'all') {
+			return $permissions;
+		} else {
+			return [];
+		}
+	}
+	
+	public function homepageOrderqBittorrent()
+	{
+		if ($this->homepageItemPermissions($this->qBittorrentHomepagePermissions('main'))) {
+			$loadingBox = ($this->config['qBittorrentCombine']) ? '' : '<div class="white-box homepage-loading-box"><h2 class="text-center" lang="en">Loading Download Queue...</h2></div>';
+			$builder = ($this->config['qBittorrentCombine']) ? 'buildDownloaderCombined(\'qBittorrent\');' : '$("#' . __FUNCTION__ . '").html(buildDownloader("qBittorrent"));';
+			return '
+				<div id="' . __FUNCTION__ . '">
+					' . $loadingBox . '
+					<script>
+		                // homepageOrderqBittorrent
+		                ' . $builder . '
+		                homepageDownloader("qBittorrent", "' . $this->config['homepageDownloadRefresh'] . '");
+		                // End homepageOrderqBittorrent
+	                </script>
+				</div>
+				';
+		}
+	}
+	
 	public function getQBittorrentHomepageQueue()
 	{
-		if (!$this->config['homepageqBittorrentEnabled']) {
-			$this->setAPIResponse('error', 'qBittorrent homepage item is not enabled', 409);
-			return false;
-		}
-		if (!$this->qualifyRequest($this->config['homepageqBittorrentAuth'])) {
-			$this->setAPIResponse('error', 'User not approved to view this homepage item', 401);
-			return false;
-		}
-		if (empty($this->config['qBittorrentURL'])) {
-			$this->setAPIResponse('error', 'qBittorrent URL is not defined', 422);
+		if (!$this->homepageItemPermissions($this->qBittorrentHomepagePermissions('main'), true)) {
 			return false;
 		}
 		$digest = $this->qualifyURL($this->config['qBittorrentURL'], true);
@@ -181,7 +221,7 @@ trait QBitTorrentHomepageItem
 		$apiVersionQuery = ($this->config['qBittorrentApiVersion'] == '1') ? '/query/torrents?sort=' : '/api/v2/torrents/info?sort=';
 		$url = $digest['scheme'] . '://' . $digest['host'] . $digest['port'] . $digest['path'] . $apiVersionLogin;
 		try {
-			$options = ($this->localURL($this->config['qBittorrentURL'])) ? array('verify' => false) : array();
+			$options = $this->requestOptions($this->config['qBittorrentURL'], $this->config['qBittorrentDisableCertCheck'], $this->config['homepageDownloadRefresh']);
 			$response = Requests::post($url, array(), $data, $options);
 			$reflection = new ReflectionClass($response->cookies);
 			$cookie = $reflection->getProperty("cookies");

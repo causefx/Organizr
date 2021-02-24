@@ -9,7 +9,24 @@ trait SonarrHomepageItem
 			'enabled' => strpos('personal', $this->config['license']) !== false,
 			'image' => 'plugins/images/tabs/sonarr.png',
 			'category' => 'PVR',
+			'docs' => 'https://docs.organizr.app/books/setup-features/page/sonarr',
 			'settings' => array(
+				'About' => array(
+					array(
+						'type' => 'html',
+						'override' => 12,
+						'label' => '',
+						'html' => '
+							<div class="panel panel-default">
+								<div class="panel-wrapper collapse in">
+									<div class="panel-body">
+										<h3 lang="en">Sonarr Homepage Item</h3>
+										<p lang="en">This item allows access to Sonarr\'s calendar data and aggregates it to Organizr\'s calendar.  Along with that you also have the Downloader function that allow access to Sonarr\'s queue.  The last item that is included is the API SOCKS function which acts as a middleman between API\'s which is useful if you are not port forwarding or reverse proxying Sonarr.</p>
+									</div>
+								</div>
+							</div>'
+					),
+				),
 				'Enable' => array(
 					array(
 						'type' => 'switch',
@@ -196,8 +213,8 @@ trait SonarrHomepageItem
 		$list = $this->csvHomepageUrlToken($this->config['sonarrURL'], $this->config['sonarrToken']);
 		foreach ($list as $key => $value) {
 			try {
-				$downloader = new Kryptonit3\Sonarr\Sonarr($value['url'], $value['token']);
-				$results = $downloader->getSystemStatus();
+				$downloader = new Kryptonit3\Sonarr\Sonarr($value['url'], $value['token'], 'sonarr');
+				$results = $downloader->getRootFolder();
 				$downloadList = json_decode($results, true);
 				if (is_array($downloadList) || is_object($downloadList)) {
 					$queue = (array_key_exists('error', $downloadList)) ? $downloadList['error']['msg'] : $downloadList;
@@ -228,37 +245,74 @@ trait SonarrHomepageItem
 		}
 	}
 	
+	public function sonarrHomepagePermissions($key = null)
+	{
+		$permissions = [
+			'calendar' => [
+				'enabled' => [
+					'homepageSonarrEnabled'
+				],
+				'auth' => [
+					'homepageSonarrAuth'
+				],
+				'not_empty' => [
+					'sonarrURL',
+					'sonarrToken'
+				]
+			],
+			'queue' => [
+				'enabled' => [
+					'homepageSonarrEnabled',
+					'homepageSonarrQueueEnabled'
+				],
+				'auth' => [
+					'homepageSonarrAuth',
+					'homepageSonarrQueueAuth'
+				],
+				'not_empty' => [
+					'sonarrURL',
+					'sonarrToken'
+				]
+			]
+		];
+		if (array_key_exists($key, $permissions)) {
+			return $permissions[$key];
+		} elseif ($key == 'all') {
+			return $permissions;
+		} else {
+			return [];
+		}
+	}
+	
+	public function homepageOrderSonarrQueue()
+	{
+		if ($this->homepageItemPermissions($this->sonarrHomepagePermissions('queue'))) {
+			$loadingBox = ($this->config['homepageSonarrQueueCombine']) ? '' : '<div class="white-box homepage-loading-box"><h2 class="text-center" lang="en">Loading Download Queue...</h2></div>';
+			$builder = ($this->config['homepageSonarrQueueCombine']) ? 'buildDownloaderCombined(\'sonarr\');' : '$("#' . __FUNCTION__ . '").html(buildDownloader("sonarr"));';
+			return '
+				<div id="' . __FUNCTION__ . '">
+					' . $loadingBox . '
+					<script>
+		                // homepageOrderSonarrQueue
+		                ' . $builder . '
+		                homepageDownloader("sonarr", "' . $this->config['homepageSonarrQueueRefresh'] . '");
+		                // End homepageOrderSonarrQueue
+	                </script>
+				</div>
+				';
+		}
+	}
+	
 	public function getSonarrQueue()
 	{
-		if (!$this->config['homepageSonarrEnabled']) {
-			$this->setAPIResponse('error', 'Sonarr homepage item is not enabled', 409);
-			return false;
-		}
-		if (!$this->config['homepageSonarrQueueEnabled']) {
-			$this->setAPIResponse('error', 'Sonarr homepage module is not enabled', 409);
-			return false;
-		}
-		if (!$this->qualifyRequest($this->config['homepageSonarrAuth'])) {
-			$this->setAPIResponse('error', 'User not approved to view this homepage item', 401);
-			return false;
-		}
-		if (!$this->qualifyRequest($this->config['homepageSonarrQueueAuth'])) {
-			$this->setAPIResponse('error', 'User not approved to view this homepage module', 401);
-			return false;
-		}
-		if (empty($this->config['sonarrURL'])) {
-			$this->setAPIResponse('error', 'Sonarr URL is not defined', 422);
-			return false;
-		}
-		if (empty($this->config['sonarrToken'])) {
-			$this->setAPIResponse('error', 'Sonarr Token is not defined', 422);
+		if (!$this->homepageItemPermissions($this->sonarrHomepagePermissions('queue'), true)) {
 			return false;
 		}
 		$queueItems = array();
 		$list = $this->csvHomepageUrlToken($this->config['sonarrURL'], $this->config['sonarrToken']);
 		foreach ($list as $key => $value) {
 			try {
-				$downloader = new Kryptonit3\Sonarr\Sonarr($value['url'], $value['token']);
+				$downloader = new Kryptonit3\Sonarr\Sonarr($value['url'], $value['token'], 'sonarr');
 				$results = $downloader->getQueue();
 				$downloadList = json_decode($results, true);
 				if (is_array($downloadList) || is_object($downloadList)) {
@@ -284,27 +338,14 @@ trait SonarrHomepageItem
 	{
 		$startDate = ($startDate) ?? $_GET['start'];
 		$endDate = ($endDate) ?? $_GET['end'];
-		if (!$this->config['homepageSonarrEnabled']) {
-			$this->setAPIResponse('error', 'Sonarr homepage item is not enabled', 409);
-			return false;
-		}
-		if (!$this->qualifyRequest($this->config['homepageSonarrAuth'])) {
-			$this->setAPIResponse('error', 'User not approved to view this homepage item', 401);
-			return false;
-		}
-		if (empty($this->config['sonarrURL'])) {
-			$this->setAPIResponse('error', 'Sonarr URL is not defined', 422);
-			return false;
-		}
-		if (empty($this->config['sonarrToken'])) {
-			$this->setAPIResponse('error', 'Sonarr Token is not defined', 422);
+		if (!$this->homepageItemPermissions($this->sonarrHomepagePermissions('calendar'), true)) {
 			return false;
 		}
 		$calendarItems = array();
 		$list = $this->csvHomepageUrlToken($this->config['sonarrURL'], $this->config['sonarrToken']);
 		foreach ($list as $key => $value) {
 			try {
-				$sonarr = new Kryptonit3\Sonarr\Sonarr($value['url'], $value['token']);
+				$sonarr = new Kryptonit3\Sonarr\Sonarr($value['url'], $value['token'], 'sonarr');
 				$sonarr = $sonarr->getCalendar($startDate, $endDate, $this->config['sonarrUnmonitored']);
 				$result = json_decode($sonarr, true);
 				if (is_array($result) || is_object($result)) {

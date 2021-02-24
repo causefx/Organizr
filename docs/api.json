@@ -1122,6 +1122,116 @@
                 ]
             }
         },
+        "/api/v2/test/ldap": {
+            "post": {
+                "tags": [
+                    "test connection"
+                ],
+                "summary": "Test LDAP connection",
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/success-message"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/unauthorized-message"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/error-message"
+                                }
+                            }
+                        }
+                    },
+                    "409": {
+                        "description": "Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/error-message"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "api_key": []
+                    }
+                ]
+            }
+        },
+        "/api/v2/test/ldap/login": {
+            "post": {
+                "tags": [
+                    "test connection"
+                ],
+                "summary": "Test LDAP connection using account login",
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/success-message"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/unauthorized-message"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/error-message"
+                                }
+                            }
+                        }
+                    },
+                    "409": {
+                        "description": "Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/error-message"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "api_key": []
+                    }
+                ]
+            }
+        },
         "/api/v2/test/iframe": {
             "post": {
                 "tags": [
@@ -1283,6 +1393,61 @@
                     "test connection"
                 ],
                 "summary": "Test connection to Emby",
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/success-message"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/unauthorized-message"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/error-message"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/error-message"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "api_key": []
+                    }
+                ]
+            }
+        },
+        "/api/v2/test/jellyfin": {
+            "post": {
+                "tags": [
+                    "test connection"
+                ],
+                "summary": "Test connection to Jellyfin",
                 "responses": {
                     "200": {
                         "description": "Success",
@@ -2758,6 +2923,71 @@
                     "update"
                 ],
                 "summary": "Update Organizr install using Windows script",
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/success-message"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/unauthorized-message"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/error-message"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/error-message"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/error-message"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "api_key": []
+                    }
+                ]
+            }
+        },
+        "/api/v2/update/migrate/{version}": {
+            "get": {
+                "tags": [
+                    "update"
+                ],
+                "summary": "Run Organizr Version Mirgation for specific version",
                 "responses": {
                     "200": {
                         "description": "Success",

@@ -7,10 +7,12 @@ $GLOBALS['plugins'][]['healthChecks'] = array( // Plugin Name
 	'link' => '', // Link to plugin info
 	'license' => 'personal,business', // License Type use , for multiple
 	'idPrefix' => 'HEALTHCHECKS', // html element id prefix
-	'configPrefix' => 'HEALTHCHECKS', // config file prefix for array items without the hypen
+	'configPrefix' => 'HEALTHCHECKS', // config file prefix for array items without the hyphen
 	'version' => '1.0.0', // SemVer of plugin
 	'image' => 'plugins/images/healthchecksio.png', // 1:1 non transparent image for plugin
-	'settings' => true, // does plugin need a settings page? true or false
+	'settings' => true, // does plugin need a settings modal?
+	'bind' => false, // use default bind to make settings page - true or false
+	'api' => false, // api route for settings page
 	'homepage' => false // Is plugin for use on homepage? true or false
 );
 
@@ -53,12 +55,17 @@ class HealthChecks extends Organizr
 		$options = array('verify' => false, 'verifyname' => false, 'follow_redirects' => true, 'redirects' => 1);
 		$headers = array('Token' => $this->config['organizrAPI']);
 		$url = $this->qualifyURL($url);
-		$response = Requests::get($url, $headers, $options);
-		if ($response->success) {
-			$success = true;
-		}
-		if ($response->status_code == 200) {
-			$success = true;
+		try {
+			$response = Requests::get($url, $headers, $options);
+			if ($response->success) {
+				$success = true;
+			}
+			if ($response->status_code == 200) {
+				$success = true;
+			}
+		} catch (Requests_Exception $e) {
+			$this->writeLog('error', 'HealthChecks Plugin - Error: ' . $e->getMessage(), 'SYSTEM');
+			return false;
 		}
 		return $success;
 	}
@@ -71,7 +78,8 @@ class HealthChecks extends Organizr
 		$url = $this->qualifyURL($this->config['HEALTHCHECKS-PingURL']);
 		$uuid = '/' . $uuid;
 		$path = !$pass ? '/fail' : '';
-		return Requests::get($url . $uuid . $path, [], []);
+		$options = ($this->localURL($url)) ? array('verify' => false) : array('verify' => $this->getCert());
+		return Requests::get($url . $uuid . $path, [], $options);
 	}
 	
 	public function _healthCheckPluginRun()

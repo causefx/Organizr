@@ -15,6 +15,7 @@ class ComposerStaticInitcbdc783d76f8e7563dcce7d8af053ecb
         '25072dd6e2470089de65ae7bf11d3109' => __DIR__ . '/..' . '/symfony/polyfill-php72/bootstrap.php',
         '6e3fae29631ef280660b3cdad06f25a8' => __DIR__ . '/..' . '/symfony/deprecation-contracts/function.php',
         '320cde22f66dd4f5d3fd621d3e88b98f' => __DIR__ . '/..' . '/symfony/polyfill-ctype/bootstrap.php',
+        'a4a119a56e50fbb293281d9a48007e0e' => __DIR__ . '/..' . '/symfony/polyfill-php80/bootstrap.php',
         '667aeda72477189d0494fecd327c3641' => __DIR__ . '/..' . '/symfony/var-dumper/Resources/functions/dump.php',
         '253c157292f75eb38082b5acb06f3f01' => __DIR__ . '/..' . '/nikic/fast-route/src/functions.php',
         '3109cb1a231dcd04bee1f9f620d46975' => __DIR__ . '/..' . '/paragonie/sodium_compat/autoload.php',
@@ -33,6 +34,7 @@ class ComposerStaticInitcbdc783d76f8e7563dcce7d8af053ecb
         'S' => 
         array (
             'Symfony\\Polyfill\\Util\\' => 22,
+            'Symfony\\Polyfill\\Php80\\' => 23,
             'Symfony\\Polyfill\\Php72\\' => 23,
             'Symfony\\Polyfill\\Php56\\' => 23,
             'Symfony\\Polyfill\\Mbstring\\' => 26,
@@ -40,7 +42,6 @@ class ComposerStaticInitcbdc783d76f8e7563dcce7d8af053ecb
             'Symfony\\Component\\Yaml\\' => 23,
             'Symfony\\Component\\VarDumper\\' => 28,
             'Symfony\\Component\\Finder\\' => 25,
-            'Slim\\Tests\\' => 11,
             'Slim\\Psr7\\' => 10,
             'Slim\\' => 5,
         ),
@@ -63,6 +64,7 @@ class ComposerStaticInitcbdc783d76f8e7563dcce7d8af053ecb
         ),
         'L' => 
         array (
+            'League\\OAuth2\\Client\\' => 21,
             'Lcobucci\\JWT\\' => 13,
         ),
         'K' => 
@@ -95,6 +97,10 @@ class ComposerStaticInitcbdc783d76f8e7563dcce7d8af053ecb
         array (
             'Composer\\Semver\\' => 16,
         ),
+        'B' => 
+        array (
+            'Bogstag\\OAuth2\\Client\\' => 22,
+        ),
         'A' => 
         array (
             'Adldap\\' => 7,
@@ -109,6 +115,10 @@ class ComposerStaticInitcbdc783d76f8e7563dcce7d8af053ecb
         'Symfony\\Polyfill\\Util\\' => 
         array (
             0 => __DIR__ . '/..' . '/symfony/polyfill-util',
+        ),
+        'Symfony\\Polyfill\\Php80\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/symfony/polyfill-php80',
         ),
         'Symfony\\Polyfill\\Php72\\' => 
         array (
@@ -137,10 +147,6 @@ class ComposerStaticInitcbdc783d76f8e7563dcce7d8af053ecb
         'Symfony\\Component\\Finder\\' => 
         array (
             0 => __DIR__ . '/..' . '/symfony/finder',
-        ),
-        'Slim\\Tests\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/slim/slim/tests',
         ),
         'Slim\\Psr7\\' => 
         array (
@@ -196,6 +202,10 @@ class ComposerStaticInitcbdc783d76f8e7563dcce7d8af053ecb
         array (
             0 => __DIR__ . '/..' . '/zircote/swagger-php/src',
         ),
+        'League\\OAuth2\\Client\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/league/oauth2-client/src',
+        ),
         'Lcobucci\\JWT\\' => 
         array (
             0 => __DIR__ . '/..' . '/lcobucci/jwt/src',
@@ -248,6 +258,10 @@ class ComposerStaticInitcbdc783d76f8e7563dcce7d8af053ecb
         array (
             0 => __DIR__ . '/..' . '/composer/semver/src',
         ),
+        'Bogstag\\OAuth2\\Client\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/bogstag/oauth2-trakt/src',
+        ),
         'Adldap\\' => 
         array (
             0 => __DIR__ . '/..' . '/adldap2/adldap2/src',
@@ -265,6 +279,8 @@ class ComposerStaticInitcbdc783d76f8e7563dcce7d8af053ecb
     );
 
     public static $classMap = array (
+        'Attribute' => __DIR__ . '/..' . '/symfony/polyfill-php80/Resources/stubs/Attribute.php',
+        'Composer\\InstalledVersions' => __DIR__ . '/..' . '/composer/InstalledVersions.php',
         'Dibi\\Bridges\\Nette\\DibiExtension22' => __DIR__ . '/..' . '/dibi/dibi/src/Dibi/Bridges/Nette/DibiExtension22.php',
         'Dibi\\Connection' => __DIR__ . '/..' . '/dibi/dibi/src/Dibi/Connection.php',
         'Dibi\\ConstraintViolationException' => __DIR__ . '/..' . '/dibi/dibi/src/Dibi/exceptions.php',
@@ -318,6 +334,9 @@ class ComposerStaticInitcbdc783d76f8e7563dcce7d8af053ecb
         'Dibi\\Translator' => __DIR__ . '/..' . '/dibi/dibi/src/Dibi/Translator.php',
         'Dibi\\Type' => __DIR__ . '/..' . '/dibi/dibi/src/Dibi/Type.php',
         'Dibi\\UniqueConstraintViolationException' => __DIR__ . '/..' . '/dibi/dibi/src/Dibi/exceptions.php',
+        'Stringable' => __DIR__ . '/..' . '/symfony/polyfill-php80/Resources/stubs/Stringable.php',
+        'UnhandledMatchError' => __DIR__ . '/..' . '/symfony/polyfill-php80/Resources/stubs/UnhandledMatchError.php',
+        'ValueError' => __DIR__ . '/..' . '/symfony/polyfill-php80/Resources/stubs/ValueError.php',
         'dibi' => __DIR__ . '/..' . '/dibi/dibi/src/Dibi/dibi.php',
     );
 

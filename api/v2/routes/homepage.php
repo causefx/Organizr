@@ -7,7 +7,6 @@ $app->get('/homepage/image', function ($request, $response, $args) {
 	return $response
 		->withHeader('Content-Type', 'application/json;charset=UTF-8')
 		->withStatus($GLOBALS['responseCode']);
-	
 });
 $app->get('/homepage/calendar', function ($request, $response, $args) {
 	$Organizr = ($request->getAttribute('Organizr')) ?? new Organizr();
@@ -16,7 +15,6 @@ $app->get('/homepage/calendar', function ($request, $response, $args) {
 	return $response
 		->withHeader('Content-Type', 'application/json;charset=UTF-8')
 		->withStatus($GLOBALS['responseCode']);
-	
 });
 $app->get('/homepage/plex/streams', function ($request, $response, $args) {
 	$Organizr = ($request->getAttribute('Organizr')) ?? new Organizr();
@@ -25,7 +23,6 @@ $app->get('/homepage/plex/streams', function ($request, $response, $args) {
 	return $response
 		->withHeader('Content-Type', 'application/json;charset=UTF-8')
 		->withStatus($GLOBALS['responseCode']);
-	
 });
 $app->get('/homepage/emby/streams', function ($request, $response, $args) {
 	$Organizr = ($request->getAttribute('Organizr')) ?? new Organizr();
@@ -34,7 +31,6 @@ $app->get('/homepage/emby/streams', function ($request, $response, $args) {
 	return $response
 		->withHeader('Content-Type', 'application/json;charset=UTF-8')
 		->withStatus($GLOBALS['responseCode']);
-	
 });
 $app->get('/homepage/jellyfin/streams', function ($request, $response, $args) {
 	$Organizr = ($request->getAttribute('Organizr')) ?? new Organizr();
@@ -43,7 +39,6 @@ $app->get('/homepage/jellyfin/streams', function ($request, $response, $args) {
 	return $response
 		->withHeader('Content-Type', 'application/json;charset=UTF-8')
 		->withStatus($GLOBALS['responseCode']);
-	
 });
 $app->get('/homepage/plex/recent', function ($request, $response, $args) {
 	$Organizr = ($request->getAttribute('Organizr')) ?? new Organizr();
@@ -52,7 +47,6 @@ $app->get('/homepage/plex/recent', function ($request, $response, $args) {
 	return $response
 		->withHeader('Content-Type', 'application/json;charset=UTF-8')
 		->withStatus($GLOBALS['responseCode']);
-	
 });
 $app->get('/homepage/emby/recent', function ($request, $response, $args) {
 	$Organizr = ($request->getAttribute('Organizr')) ?? new Organizr();
@@ -61,7 +55,6 @@ $app->get('/homepage/emby/recent', function ($request, $response, $args) {
 	return $response
 		->withHeader('Content-Type', 'application/json;charset=UTF-8')
 		->withStatus($GLOBALS['responseCode']);
-	
 });
 $app->get('/homepage/jellyfin/recent', function ($request, $response, $args) {
 	$Organizr = ($request->getAttribute('Organizr')) ?? new Organizr();
@@ -70,7 +63,6 @@ $app->get('/homepage/jellyfin/recent', function ($request, $response, $args) {
 	return $response
 		->withHeader('Content-Type', 'application/json;charset=UTF-8')
 		->withStatus($GLOBALS['responseCode']);
-	
 });
 $app->get('/homepage/plex/playlists', function ($request, $response, $args) {
 	$Organizr = ($request->getAttribute('Organizr')) ?? new Organizr();
@@ -79,7 +71,6 @@ $app->get('/homepage/plex/playlists', function ($request, $response, $args) {
 	return $response
 		->withHeader('Content-Type', 'application/json;charset=UTF-8')
 		->withStatus($GLOBALS['responseCode']);
-	
 });
 $app->post('/homepage/plex/metadata', function ($request, $response, $args) {
 	$Organizr = ($request->getAttribute('Organizr')) ?? new Organizr();
@@ -88,7 +79,6 @@ $app->post('/homepage/plex/metadata', function ($request, $response, $args) {
 	return $response
 		->withHeader('Content-Type', 'application/json;charset=UTF-8')
 		->withStatus($GLOBALS['responseCode']);
-	
 });
 $app->post('/homepage/emby/metadata', function ($request, $response, $args) {
 	$Organizr = ($request->getAttribute('Organizr')) ?? new Organizr();
@@ -97,7 +87,6 @@ $app->post('/homepage/emby/metadata', function ($request, $response, $args) {
 	return $response
 		->withHeader('Content-Type', 'application/json;charset=UTF-8')
 		->withStatus($GLOBALS['responseCode']);
-	
 });
 $app->post('/homepage/jellyfin/metadata', function ($request, $response, $args) {
 	$Organizr = ($request->getAttribute('Organizr')) ?? new Organizr();
@@ -106,7 +95,6 @@ $app->post('/homepage/jellyfin/metadata', function ($request, $response, $args) 
 	return $response
 		->withHeader('Content-Type', 'application/json;charset=UTF-8')
 		->withStatus($GLOBALS['responseCode']);
-	
 });
 $app->get('/homepage/plex/search/{query}', function ($request, $response, $args) {
 	$Organizr = ($request->getAttribute('Organizr')) ?? new Organizr();
@@ -115,7 +103,6 @@ $app->get('/homepage/plex/search/{query}', function ($request, $response, $args)
 	return $response
 		->withHeader('Content-Type', 'application/json;charset=UTF-8')
 		->withStatus($GLOBALS['responseCode']);
-	
 });
 $app->get('/homepage/pihole/stats', function ($request, $response, $args) {
 	$Organizr = ($request->getAttribute('Organizr')) ?? new Organizr();
@@ -124,7 +111,6 @@ $app->get('/homepage/pihole/stats', function ($request, $response, $args) {
 	return $response
 		->withHeader('Content-Type', 'application/json;charset=UTF-8')
 		->withStatus($GLOBALS['responseCode']);
-	
 });
 $app->get('/homepage/rtorrent/queue', function ($request, $response, $args) {
 	$Organizr = ($request->getAttribute('Organizr')) ?? new Organizr();
@@ -133,7 +119,6 @@ $app->get('/homepage/rtorrent/queue', function ($request, $response, $args) {
 	return $response
 		->withHeader('Content-Type', 'application/json;charset=UTF-8')
 		->withStatus($GLOBALS['responseCode']);
-	
 });
 $app->get('/homepage/sonarr/queue', function ($request, $response, $args) {
 	$Organizr = ($request->getAttribute('Organizr')) ?? new Organizr();
@@ -142,7 +127,6 @@ $app->get('/homepage/sonarr/queue', function ($request, $response, $args) {
 	return $response
 		->withHeader('Content-Type', 'application/json;charset=UTF-8')
 		->withStatus($GLOBALS['responseCode']);
-	
 });
 $app->get('/homepage/sonarr/calendar', function ($request, $response, $args) {
 	$Organizr = ($request->getAttribute('Organizr')) ?? new Organizr();
@@ -151,7 +135,6 @@ $app->get('/homepage/sonarr/calendar', function ($request, $response, $args) {
 	return $response
 		->withHeader('Content-Type', 'application/json;charset=UTF-8')
 		->withStatus($GLOBALS['responseCode']);
-	
 });
 $app->get('/homepage/radarr/queue', function ($request, $response, $args) {
 	$Organizr = ($request->getAttribute('Organizr')) ?? new Organizr();
@@ -160,7 +143,6 @@ $app->get('/homepage/radarr/queue', function ($request, $response, $args) {
 	return $response
 		->withHeader('Content-Type', 'application/json;charset=UTF-8')
 		->withStatus($GLOBALS['responseCode']);
-	
 });
 $app->get('/homepage/radarr/calendar', function ($request, $response, $args) {
 	$Organizr = ($request->getAttribute('Organizr')) ?? new Organizr();
@@ -169,7 +151,6 @@ $app->get('/homepage/radarr/calendar', function ($request, $response, $args) {
 	return $response
 		->withHeader('Content-Type', 'application/json;charset=UTF-8')
 		->withStatus($GLOBALS['responseCode']);
-	
 });
 $app->get('/homepage/lidarr/calendar', function ($request, $response, $args) {
 	$Organizr = ($request->getAttribute('Organizr')) ?? new Organizr();
@@ -178,7 +159,6 @@ $app->get('/homepage/lidarr/calendar', function ($request, $response, $args) {
 	return $response
 		->withHeader('Content-Type', 'application/json;charset=UTF-8')
 		->withStatus($GLOBALS['responseCode']);
-	
 });
 $app->get('/homepage/couchpotato/calendar', function ($request, $response, $args) {
 	$Organizr = ($request->getAttribute('Organizr')) ?? new Organizr();
@@ -187,7 +167,6 @@ $app->get('/homepage/couchpotato/calendar', function ($request, $response, $args
 	return $response
 		->withHeader('Content-Type', 'application/json;charset=UTF-8')
 		->withStatus($GLOBALS['responseCode']);
-	
 });
 $app->get('/homepage/sickrage/calendar', function ($request, $response, $args) {
 	$Organizr = ($request->getAttribute('Organizr')) ?? new Organizr();
@@ -196,7 +175,6 @@ $app->get('/homepage/sickrage/calendar', function ($request, $response, $args) {
 	return $response
 		->withHeader('Content-Type', 'application/json;charset=UTF-8')
 		->withStatus($GLOBALS['responseCode']);
-	
 });
 $app->get('/homepage/ical/calendar', function ($request, $response, $args) {
 	$Organizr = ($request->getAttribute('Organizr')) ?? new Organizr();
@@ -205,7 +183,6 @@ $app->get('/homepage/ical/calendar', function ($request, $response, $args) {
 	return $response
 		->withHeader('Content-Type', 'application/json;charset=UTF-8')
 		->withStatus($GLOBALS['responseCode']);
-	
 });
 $app->get('/homepage/deluge/queue', function ($request, $response, $args) {
 	$Organizr = ($request->getAttribute('Organizr')) ?? new Organizr();
@@ -214,7 +191,6 @@ $app->get('/homepage/deluge/queue', function ($request, $response, $args) {
 	return $response
 		->withHeader('Content-Type', 'application/json;charset=UTF-8')
 		->withStatus($GLOBALS['responseCode']);
-	
 });
 $app->get('/homepage/transmission/queue', function ($request, $response, $args) {
 	$Organizr = ($request->getAttribute('Organizr')) ?? new Organizr();
@@ -223,7 +199,6 @@ $app->get('/homepage/transmission/queue', function ($request, $response, $args) 
 	return $response
 		->withHeader('Content-Type', 'application/json;charset=UTF-8')
 		->withStatus($GLOBALS['responseCode']);
-	
 });
 $app->get('/homepage/qbittorrent/queue', function ($request, $response, $args) {
 	$Organizr = ($request->getAttribute('Organizr')) ?? new Organizr();
@@ -232,7 +207,6 @@ $app->get('/homepage/qbittorrent/queue', function ($request, $response, $args) {
 	return $response
 		->withHeader('Content-Type', 'application/json;charset=UTF-8')
 		->withStatus($GLOBALS['responseCode']);
-	
 });
 $app->get('/homepage/jdownloader/queue', function ($request, $response, $args) {
 	$Organizr = ($request->getAttribute('Organizr')) ?? new Organizr();
@@ -241,7 +215,6 @@ $app->get('/homepage/jdownloader/queue', function ($request, $response, $args) {
 	return $response
 		->withHeader('Content-Type', 'application/json;charset=UTF-8')
 		->withStatus($GLOBALS['responseCode']);
-	
 });
 $app->get('/homepage/nzbget/queue', function ($request, $response, $args) {
 	$Organizr = ($request->getAttribute('Organizr')) ?? new Organizr();
@@ -250,7 +223,6 @@ $app->get('/homepage/nzbget/queue', function ($request, $response, $args) {
 	return $response
 		->withHeader('Content-Type', 'application/json;charset=UTF-8')
 		->withStatus($GLOBALS['responseCode']);
-	
 });
 $app->get('/homepage/sabnzbd/queue', function ($request, $response, $args) {
 	$Organizr = ($request->getAttribute('Organizr')) ?? new Organizr();
@@ -259,7 +231,6 @@ $app->get('/homepage/sabnzbd/queue', function ($request, $response, $args) {
 	return $response
 		->withHeader('Content-Type', 'application/json;charset=UTF-8')
 		->withStatus($GLOBALS['responseCode']);
-	
 });
 $app->post('/homepage/sabnzbd/queue/resume', function ($request, $response, $args) {
 	$Organizr = ($request->getAttribute('Organizr')) ?? new Organizr();
@@ -270,7 +241,6 @@ $app->post('/homepage/sabnzbd/queue/resume', function ($request, $response, $arg
 	return $response
 		->withHeader('Content-Type', 'application/json;charset=UTF-8')
 		->withStatus($GLOBALS['responseCode']);
-	
 });
 $app->post('/homepage/sabnzbd/queue/pause', function ($request, $response, $args) {
 	$Organizr = ($request->getAttribute('Organizr')) ?? new Organizr();
@@ -281,7 +251,6 @@ $app->post('/homepage/sabnzbd/queue/pause', function ($request, $response, $args
 	return $response
 		->withHeader('Content-Type', 'application/json;charset=UTF-8')
 		->withStatus($GLOBALS['responseCode']);
-	
 });
 $app->get('/homepage/unifi/data', function ($request, $response, $args) {
 	$Organizr = ($request->getAttribute('Organizr')) ?? new Organizr();
@@ -290,7 +259,6 @@ $app->get('/homepage/unifi/data', function ($request, $response, $args) {
 	return $response
 		->withHeader('Content-Type', 'application/json;charset=UTF-8')
 		->withStatus($GLOBALS['responseCode']);
-	
 });
 $app->get('/homepage/tautulli/data', function ($request, $response, $args) {
 	$Organizr = ($request->getAttribute('Organizr')) ?? new Organizr();
@@ -299,7 +267,14 @@ $app->get('/homepage/tautulli/data', function ($request, $response, $args) {
 	return $response
 		->withHeader('Content-Type', 'application/json;charset=UTF-8')
 		->withStatus($GLOBALS['responseCode']);
-	
+});
+$app->get('/homepage/tautulli/names', function ($request, $response, $args) {
+	$Organizr = ($request->getAttribute('Organizr')) ?? new Organizr();
+	$Organizr->getTautulliFriendlyNames();
+	$response->getBody()->write(jsonE($GLOBALS['api']));
+	return $response
+		->withHeader('Content-Type', 'application/json;charset=UTF-8')
+		->withStatus($GLOBALS['responseCode']);
 });
 $app->get('/homepage/netdata/data', function ($request, $response, $args) {
 	$Organizr = ($request->getAttribute('Organizr')) ?? new Organizr();
@@ -308,7 +283,6 @@ $app->get('/homepage/netdata/data', function ($request, $response, $args) {
 	return $response
 		->withHeader('Content-Type', 'application/json;charset=UTF-8')
 		->withStatus($GLOBALS['responseCode']);
-	
 });
 $app->get('/homepage/monitorr/data', function ($request, $response, $args) {
 	$Organizr = ($request->getAttribute('Organizr')) ?? new Organizr();
@@ -317,7 +291,6 @@ $app->get('/homepage/monitorr/data', function ($request, $response, $args) {
 	return $response
 		->withHeader('Content-Type', 'application/json;charset=UTF-8')
 		->withStatus($GLOBALS['responseCode']);
-	
 });
 $app->get('/homepage/speedtest/data', function ($request, $response, $args) {
 	$Organizr = ($request->getAttribute('Organizr')) ?? new Organizr();
@@ -326,7 +299,6 @@ $app->get('/homepage/speedtest/data', function ($request, $response, $args) {
 	return $response
 		->withHeader('Content-Type', 'application/json;charset=UTF-8')
 		->withStatus($GLOBALS['responseCode']);
-	
 });
 $app->get('/homepage/octoprint/data', function ($request, $response, $args) {
 	$Organizr = ($request->getAttribute('Organizr')) ?? new Organizr();
@@ -335,7 +307,6 @@ $app->get('/homepage/octoprint/data', function ($request, $response, $args) {
 	return $response
 		->withHeader('Content-Type', 'application/json;charset=UTF-8')
 		->withStatus($GLOBALS['responseCode']);
-	
 });
 $app->get('/homepage/weather/data', function ($request, $response, $args) {
 	$Organizr = ($request->getAttribute('Organizr')) ?? new Organizr();
@@ -344,7 +315,6 @@ $app->get('/homepage/weather/data', function ($request, $response, $args) {
 	return $response
 		->withHeader('Content-Type', 'application/json;charset=UTF-8')
 		->withStatus($GLOBALS['responseCode']);
-	
 });
 $app->post('/homepage/weather/coordinates', function ($request, $response, $args) {
 	$Organizr = ($request->getAttribute('Organizr')) ?? new Organizr();
@@ -353,7 +323,6 @@ $app->post('/homepage/weather/coordinates', function ($request, $response, $args
 	return $response
 		->withHeader('Content-Type', 'application/json;charset=UTF-8')
 		->withStatus($GLOBALS['responseCode']);
-	
 });
 $app->get('/homepage/healthchecks', function ($request, $response, $args) {
 	$Organizr = ($request->getAttribute('Organizr')) ?? new Organizr();
@@ -362,7 +331,6 @@ $app->get('/homepage/healthchecks', function ($request, $response, $args) {
 	return $response
 		->withHeader('Content-Type', 'application/json;charset=UTF-8')
 		->withStatus($GLOBALS['responseCode']);
-	
 });
 $app->get('/homepage/healthchecks/{tags}', function ($request, $response, $args) {
 	$Organizr = ($request->getAttribute('Organizr')) ?? new Organizr();
@@ -371,7 +339,6 @@ $app->get('/homepage/healthchecks/{tags}', function ($request, $response, $args)
 	return $response
 		->withHeader('Content-Type', 'application/json;charset=UTF-8')
 		->withStatus($GLOBALS['responseCode']);
-	
 });
 $app->get('/homepage/ombi/requests[/{type}[/{limit}[/{offset}]]]', function ($request, $response, $args) {
 	$Organizr = ($request->getAttribute('Organizr')) ?? new Organizr();
@@ -383,7 +350,6 @@ $app->get('/homepage/ombi/requests[/{type}[/{limit}[/{offset}]]]', function ($re
 	return $response
 		->withHeader('Content-Type', 'application/json;charset=UTF-8')
 		->withStatus($GLOBALS['responseCode']);
-	
 });
 $app->post('/homepage/ombi/requests/{type}/{id}', function ($request, $response, $args) {
 	$Organizr = ($request->getAttribute('Organizr')) ?? new Organizr();
@@ -392,7 +358,6 @@ $app->post('/homepage/ombi/requests/{type}/{id}', function ($request, $response,
 	return $response
 		->withHeader('Content-Type', 'application/json;charset=UTF-8')
 		->withStatus($GLOBALS['responseCode']);
-	
 });
 $app->post('/homepage/ombi/requests/{type}/{id}/available', function ($request, $response, $args) {
 	$Organizr = ($request->getAttribute('Organizr')) ?? new Organizr();
@@ -401,7 +366,6 @@ $app->post('/homepage/ombi/requests/{type}/{id}/available', function ($request, 
 	return $response
 		->withHeader('Content-Type', 'application/json;charset=UTF-8')
 		->withStatus($GLOBALS['responseCode']);
-	
 });
 $app->post('/homepage/ombi/requests/{type}/{id}/unavailable', function ($request, $response, $args) {
 	$Organizr = ($request->getAttribute('Organizr')) ?? new Organizr();
@@ -410,7 +374,6 @@ $app->post('/homepage/ombi/requests/{type}/{id}/unavailable', function ($request
 	return $response
 		->withHeader('Content-Type', 'application/json;charset=UTF-8')
 		->withStatus($GLOBALS['responseCode']);
-	
 });
 $app->post('/homepage/ombi/requests/{type}/{id}/approve', function ($request, $response, $args) {
 	$Organizr = ($request->getAttribute('Organizr')) ?? new Organizr();
@@ -419,7 +382,6 @@ $app->post('/homepage/ombi/requests/{type}/{id}/approve', function ($request, $r
 	return $response
 		->withHeader('Content-Type', 'application/json;charset=UTF-8')
 		->withStatus($GLOBALS['responseCode']);
-	
 });
 $app->put('/homepage/ombi/requests/{type}/{id}/deny', function ($request, $response, $args) {
 	$Organizr = ($request->getAttribute('Organizr')) ?? new Organizr();
@@ -428,7 +390,6 @@ $app->put('/homepage/ombi/requests/{type}/{id}/deny', function ($request, $respo
 	return $response
 		->withHeader('Content-Type', 'application/json;charset=UTF-8')
 		->withStatus($GLOBALS['responseCode']);
-	
 });
 $app->delete('/homepage/ombi/requests/{type}/{id}', function ($request, $response, $args) {
 	$Organizr = ($request->getAttribute('Organizr')) ?? new Organizr();
@@ -437,7 +398,6 @@ $app->delete('/homepage/ombi/requests/{type}/{id}', function ($request, $respons
 	return $response
 		->withHeader('Content-Type', 'application/json;charset=UTF-8')
 		->withStatus($GLOBALS['responseCode']);
-	
 });
 $app->get('/homepage/youtube/{query}', function ($request, $response, $args) {
 	$Organizr = ($request->getAttribute('Organizr')) ?? new Organizr();
@@ -446,7 +406,6 @@ $app->get('/homepage/youtube/{query}', function ($request, $response, $args) {
 	return $response
 		->withHeader('Content-Type', 'application/json;charset=UTF-8')
 		->withStatus($GLOBALS['responseCode']);
-	
 });
 $app->post('/homepage/scrape', function ($request, $response, $args) {
 	$Organizr = ($request->getAttribute('Organizr')) ?? new Organizr();
@@ -455,5 +414,20 @@ $app->post('/homepage/scrape', function ($request, $response, $args) {
 	return $response
 		->withHeader('Content-Type', 'application/json;charset=UTF-8')
 		->withStatus($GLOBALS['responseCode']);
-	
+});
+$app->get('/homepage/jackett/{query}', function ($request, $response, $args) {
+	$Organizr = ($request->getAttribute('Organizr')) ?? new Organizr();
+	$Organizr->searchJackettIndexers($args['query']);
+	$response->getBody()->write(jsonE($GLOBALS['api']));
+	return $response
+		->withHeader('Content-Type', 'application/json;charset=UTF-8')
+		->withStatus($GLOBALS['responseCode']);
+});
+$app->get('/homepage/trakt/calendar', function ($request, $response, $args) {
+	$Organizr = ($request->getAttribute('Organizr')) ?? new Organizr();
+	$Organizr->getTraktCalendar();
+	$response->getBody()->write(jsonE($GLOBALS['api']));
+	return $response
+		->withHeader('Content-Type', 'application/json;charset=UTF-8')
+		->withStatus($GLOBALS['responseCode']);
 });

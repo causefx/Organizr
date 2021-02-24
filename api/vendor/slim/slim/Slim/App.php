@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Slim Framework (https://slimframework.com)
  *
@@ -15,15 +16,20 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
+use Psr\Log\LoggerInterface;
 use Slim\Factory\ServerRequestCreatorFactory;
 use Slim\Interfaces\CallableResolverInterface;
+use Slim\Interfaces\MiddlewareDispatcherInterface;
 use Slim\Interfaces\RouteCollectorInterface;
 use Slim\Interfaces\RouteResolverInterface;
+use Slim\Middleware\BodyParsingMiddleware;
 use Slim\Middleware\ErrorMiddleware;
 use Slim\Middleware\RoutingMiddleware;
 use Slim\Routing\RouteCollectorProxy;
 use Slim\Routing\RouteResolver;
 use Slim\Routing\RouteRunner;
+
+use function strtoupper;
 
 class App extends RouteCollectorProxy implements RequestHandlerInterface
 {
@@ -32,12 +38,7 @@ class App extends RouteCollectorProxy implements RequestHandlerInterface
      *
      * @var string
      */
-    public const VERSION = '4.0.0';
-
-    /**
-     * @var MiddlewareDispatcher
-     */
-    protected $middlewareDispatcher;
+    public const VERSION = '4.7.0';
 
     /**
      * @var RouteResolverInterface
@@ -45,18 +46,25 @@ class App extends RouteCollectorProxy implements RequestHandlerInterface
     protected $routeResolver;
 
     /**
-     * @param ResponseFactoryInterface       $responseFactory
-     * @param ContainerInterface|null        $container
-     * @param CallableResolverInterface|null $callableResolver
-     * @param RouteCollectorInterface|null   $routeCollector
-     * @param RouteResolverInterface|null    $routeResolver
+     * @var MiddlewareDispatcherInterface
+     */
+    protected $middlewareDispatcher;
+
+    /**
+     * @param ResponseFactoryInterface              $responseFactory
+     * @param ContainerInterface|null               $container
+     * @param CallableResolverInterface|null        $callableResolver
+     * @param RouteCollectorInterface|null          $routeCollector
+     * @param RouteResolverInterface|null           $routeResolver
+     * @param MiddlewareDispatcherInterface|null    $middlewareDispatcher
      */
     public function __construct(
         ResponseFactoryInterface $responseFactory,
         ?ContainerInterface $container = null,
         ?CallableResolverInterface $callableResolver = null,
         ?RouteCollectorInterface $routeCollector = null,
-        ?RouteResolverInterface $routeResolver = null
+        ?RouteResolverInterface $routeResolver = null,
+        ?MiddlewareDispatcherInterface $middlewareDispatcher = null
     ) {
         parent::__construct(
             $responseFactory,
@@ -66,9 +74,15 @@ class App extends RouteCollectorProxy implements RequestHandlerInterface
         );
 
         $this->routeResolver = $routeResolver ?? new RouteResolver($this->routeCollector);
-        $routeRunner = new RouteRunner($this->routeResolver, $this->routeCollector->getRouteParser());
+        $routeRunner = new RouteRunner($this->routeResolver, $this->routeCollector->getRouteParser(), $this);
 
-        $this->middlewareDispatcher = new MiddlewareDispatcher($routeRunner, $container);
+        if (!$middlewareDispatcher) {
+            $middlewareDispatcher = new MiddlewareDispatcher($routeRunner, $this->callableResolver, $container);
+        } else {
+            $middlewareDispatcher->seedMiddlewareStack($routeRunner);
+        }
+
+        $this->middlewareDispatcher = $middlewareDispatcher;
     }
 
     /**
@@ -77,6 +91,14 @@ class App extends RouteCollectorProxy implements RequestHandlerInterface
     public function getRouteResolver(): RouteResolverInterface
     {
         return $this->routeResolver;
+    }
+
+    /**
+     * @return MiddlewareDispatcherInterface
+     */
+    public function getMiddlewareDispatcher(): MiddlewareDispatcherInterface
+    {
+        return $this->middlewareDispatcher;
     }
 
     /**
@@ -100,7 +122,9 @@ class App extends RouteCollectorProxy implements RequestHandlerInterface
     }
 
     /**
-     * Add the slim built-in routing middleware to the app middleware stack
+     * Add the Slim built-in routing middleware to the app middleware stack
+     *
+     * This method can be used to control middleware order and is not required for default routing operation.
      *
      * @return RoutingMiddleware
      */
@@ -115,28 +139,45 @@ class App extends RouteCollectorProxy implements RequestHandlerInterface
     }
 
     /**
-     * Add the slim built-in error middleware to the app middleware stack
+     * Add the Slim built-in error middleware to the app middleware stack
      *
-     * @param bool $displayErrorDetails
-     * @param bool $logErrors
-     * @param bool $logErrorDetails
+     * @param bool                 $displayErrorDetails
+     * @param bool                 $logErrors
+     * @param bool                 $logErrorDetails
+     * @param LoggerInterface|null $logger
      *
      * @return ErrorMiddleware
      */
     public function addErrorMiddleware(
         bool $displayErrorDetails,
         bool $logErrors,
-        bool $logErrorDetails
+        bool $logErrorDetails,
+        ?LoggerInterface $logger = null
     ): ErrorMiddleware {
         $errorMiddleware = new ErrorMiddleware(
             $this->getCallableResolver(),
             $this->getResponseFactory(),
             $displayErrorDetails,
             $logErrors,
-            $logErrorDetails
+            $logErrorDetails,
+            $logger
         );
         $this->add($errorMiddleware);
         return $errorMiddleware;
+    }
+
+    /**
+     * Add the Slim body parsing middleware to the app middleware stack
+     *
+     * @param callable[] $bodyParsers
+     *
+     * @return BodyParsingMiddleware
+     */
+    public function addBodyParsingMiddleware(array $bodyParsers = []): BodyParsingMiddleware
+    {
+        $bodyParsingMiddleware = new BodyParsingMiddleware($bodyParsers);
+        $this->add($bodyParsingMiddleware);
+        return $bodyParsingMiddleware;
     }
 
     /**

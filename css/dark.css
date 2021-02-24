@@ -380,8 +380,8 @@ hr {
 }
 .notify .heartbit {
     position: absolute;
-    top: -20px;
-    right: -16px;
+    top: -19.5px;
+    right: -15.5px;
     height: 25px;
     width: 25px;
     z-index: 10;
@@ -16505,7 +16505,7 @@ h6 {
 .dd-handle,
 .footable.breakpoint > tbody > tr > td > span.footable-toggle,
 pre {
-    color: #96a2b4;
+    color: #96a2b4 !important;
 }
 .btn-link,
 a {

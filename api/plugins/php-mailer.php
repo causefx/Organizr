@@ -10,7 +10,9 @@ $GLOBALS['plugins'][]['PHP Mailer'] = array( // Plugin Name
 	'configPrefix' => 'PHPMAILER', // config file prefix for array items without the hyphen
 	'version' => '1.0.0', // SemVer of plugin
 	'image' => 'plugins/images/php-mailer.png', // 1:1 non transparent image for plugin
-	'settings' => true, // does plugin need a settings page? true or false
+	'settings' => true, // does plugin need a settings modal?
+	'bind' => true, // use default bind to make settings page - true or false
+	'api' => 'api/v2/plugins/php-mailer/settings', // api route for settings page
 	'homepage' => false // Is plugin for use on homepage? true or false
 );
 

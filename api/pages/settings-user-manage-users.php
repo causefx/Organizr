@@ -54,7 +54,6 @@ function get_page_settings_user_manage_users($Organizr)
         }
     });
 	$(function() {
-		
 		pageLength = 10;
 		function onPageSelect(newPageLength) {
             pageLength = newPageLength;
@@ -69,6 +68,7 @@ function get_page_settings_user_manage_users($Organizr)
 	 		loadIndication: true,
 		    loadIndicationDelay: 50000,
 		    loadMessage: "Please, wait...",
+		    loadShading: true,
 		    noDataContent: "Loading... or Not found",
 		    loadShading: true,
 	        filtering: false,
@@ -81,6 +81,11 @@ function get_page_settings_user_manage_users($Organizr)
 	        pageSize: pageLength,
 	        changePageSize: function (pageSize) {
                 var $this = this;
+                let totalUsers = $this.data.length;
+                let totalPages = Math.ceil(totalUsers / pageSize);
+                if($this.pageIndex > totalPages){
+                    $("#jsGrid-Users").jsGrid("openPage", totalPages);
+                }
                 $this.pageSize = pageLength;
                 $this.refresh();
             },

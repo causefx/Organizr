@@ -108,6 +108,13 @@ trait JellyfinHomepageItem
 				'Misc Options' => array(
 					array(
 						'type' => 'input',
+						'name' => 'homepageJellyfinLink',
+						'label' => 'Jellyfin Homepage Link URL',
+						'value' => $this->config['homepageJellyfinLink'],
+						'help' => 'Available variables: {id} {serverId}'
+					),
+					array(
+						'type' => 'input',
 						'name' => 'jellyfinTabName',
 						'label' => 'Jellyfin Tab Name',
 						'value' => $this->config['jellyfinTabName'],
@@ -192,6 +199,240 @@ trait JellyfinHomepageItem
 				return true;
 			}
 		} catch (Requests_Exception $e) {
+			$this->setAPIResponse('error', $e->getMessage(), 500);
+			return false;
+		}
+	}
+	
+	public function jellyfinHomepagePermissions($key = null)
+	{
+		$permissions = [
+			'streams' => [
+				'enabled' => [
+					'homepageJellyfinEnabled',
+					'homepageJellyfinStreams'
+				],
+				'auth' => [
+					'homepageJellyfinAuth',
+					'homepageJellyStreamsAuth'
+				],
+				'not_empty' => [
+					'jellyfinURL',
+					'jellyfinToken'
+				]
+			],
+			'recent' => [
+				'enabled' => [
+					'homepageJellyfinEnabled',
+					'homepageJellyfinRecent'
+				],
+				'auth' => [
+					'homepageJellyfinAuth',
+					'homepageJellyfinRecentAuth'
+				],
+				'not_empty' => [
+					'jellyfinURL',
+					'jellyfinToken'
+				]
+			],
+			'metadata' => [
+				'enabled' => [
+					'homepageJellyfinEnabled'
+				],
+				'auth' => [
+					'homepageJellyfinAuth'
+				],
+				'not_empty' => [
+					'jellyfinURL',
+					'jellyfinToken'
+				]
+			]
+		];
+		if (array_key_exists($key, $permissions)) {
+			return $permissions[$key];
+		} elseif ($key == 'all') {
+			return $permissions;
+		} else {
+			return [];
+		}
+	}
+	
+	public function homepageOrderjellyfinnowplaying()
+	{
+		if ($this->homepageItemPermissions($this->jellyfinHomepagePermissions('streams'))) {
+			return '
+				<div id="' . __FUNCTION__ . '">
+					<div class="white-box homepage-loading-box"><h2 class="text-center" lang="en">Loading Now Playing...</h2></div>
+					<script>
+						// Jellyfin Stream
+						homepageStream("jellyfin", "' . $this->config['homepageStreamRefresh'] . '");
+						// End Jellyfin Stream
+					</script>
+				</div>
+				';
+		}
+	}
+	
+	public function homepageOrderjellyfinrecent()
+	{
+		if ($this->homepageItemPermissions($this->jellyfinHomepagePermissions('recent'))) {
+			return '
+				<div id="' . __FUNCTION__ . '">
+					<div class="white-box homepage-loading-box"><h2 class="text-center" lang="en">Loading Recent...</h2></div>
+					<script>
+						// Jellyfin Recent
+						homepageRecent("jellyfin", "' . $this->config['homepageRecentRefresh'] . '");
+						// End Jellyfin Recent
+					</script>
+				</div>
+				';
+		}
+	}
+	
+	public function getJellyfinHomepageStreams()
+	{
+		if (!$this->homepageItemPermissions($this->jellyfinHomepagePermissions('streams'), true)) {
+			return false;
+		}
+		$url = $this->qualifyURL($this->config['jellyfinURL']);
+		$url = $url . '/Sessions?api_key=' . $this->config['jellyfinToken'] . '&Fields=Overview,People,Genres,CriticRating,Studios,Taglines';
+		$options = ($this->localURL($url)) ? array('verify' => false) : array();
+		try {
+			$response = Requests::get($url, array(), $options);
+			if ($response->success) {
+				$items = array();
+				$jellyfin = json_decode($response->body, true);
+				foreach ($jellyfin as $child) {
+					if (isset($child['NowPlayingItem']) || isset($child['Name'])) {
+						$items[] = $this->resolveJellyfinItem($child);
+					}
+				}
+				$api['content'] = array_filter($items);
+				$this->setAPIResponse('success', null, 200, $api);
+				return $api;
+			} else {
+				$this->setAPIResponse('error', 'Jellyfin Error Occurred', 500);
+				return false;
+			}
+		} catch (Requests_Exception $e) {
+			$this->writeLog('error', 'Jellyfin Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
+			$this->setAPIResponse('error', $e->getMessage(), 500);
+			return false;
+		}
+	}
+	
+	public function getJellyfinHomepageRecent()
+	{
+		if (!$this->homepageItemPermissions($this->jellyfinHomepagePermissions('recent'), true)) {
+			return false;
+		}
+		$url = $this->qualifyURL($this->config['jellyfinURL']);
+		$options = ($this->localURL($url)) ? array('verify' => false) : array();
+		$username = false;
+		$showPlayed = false;
+		$userId = 0;
+		try {
+			if (isset($this->user['username'])) {
+				$username = strtolower($this->user['username']);
+			}
+			// Get A User
+			$userIds = $url . "/Users?api_key=" . $this->config['jellyfinToken'];
+			$response = Requests::get($userIds, array(), $options);
+			if ($response->success) {
+				$jellyfin = json_decode($response->body, true);
+				foreach ($jellyfin as $value) { // Scan for admin user
+					if (isset($value['Policy']) && isset($value['Policy']['IsAdministrator']) && $value['Policy']['IsAdministrator']) {
+						$userId = $value['Id'];
+					}
+					if ($username && strtolower($value['Name']) == $username) {
+						$userId = $value['Id'];
+						$showPlayed = false;
+						break;
+					}
+				}
+				$url = $url . '/Users/' . $userId . '/Items/Latest?EnableImages=true&Limit=' . $this->config['homepageRecentLimit'] . '&api_key=' . $this->config['jellyfinToken'] . ($showPlayed ? '' : '&IsPlayed=false') . '&Fields=Overview,People,Genres,CriticRating,Studios,Taglines';
+			} else {
+				$this->setAPIResponse('error', 'Jellyfin Error Occurred', 500);
+				return false;
+			}
+			$response = Requests::get($url, array(), $options);
+			if ($response->success) {
+				$items = array();
+				$jellyfin = json_decode($response->body, true);
+				foreach ($jellyfin as $child) {
+					if (isset($child['NowPlayingItem']) || isset($child['Name'])) {
+						$items[] = $this->resolveJellyfinItem($child);
+					}
+				}
+				$api['content'] = array_filter($items);
+				$this->setAPIResponse('success', null, 200, $api);
+				return $api;
+			} else {
+				$this->setAPIResponse('error', 'Jellyfin Error Occurred', 500);
+				return false;
+			}
+		} catch (Requests_Exception $e) {
+			$this->writeLog('error', 'Jellyfin Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
+			$this->setAPIResponse('error', $e->getMessage(), 500);
+			return false;
+		}
+	}
+	
+	public function getJellyfinHomepageMetadata($array)
+	{
+		if (!$this->homepageItemPermissions($this->jellyfinHomepagePermissions('metadata'), true)) {
+			return false;
+		}
+		$key = $array['key'] ?? null;
+		if (!$key) {
+			$this->setAPIResponse('error', 'Jellyfin Metadata key is not defined', 422);
+			return false;
+		}
+		$url = $this->qualifyURL($this->config['jellyfinURL']);
+		$options = ($this->localURL($url)) ? array('verify' => false) : array();
+		$username = false;
+		$showPlayed = false;
+		$userId = 0;
+		try {
+			if (isset($this->user['username'])) {
+				$username = strtolower($this->user['username']);
+			}
+			// Get A User
+			$userIds = $url . "/Users?api_key=" . $this->config['jellyfinToken'];
+			$response = Requests::get($userIds, array(), $options);
+			if ($response->success) {
+				$jellyfin = json_decode($response->body, true);
+				foreach ($jellyfin as $value) { // Scan for admin user
+					if (isset($value['Policy']) && isset($value['Policy']['IsAdministrator']) && $value['Policy']['IsAdministrator']) {
+						$userId = $value['Id'];
+					}
+					if ($username && strtolower($value['Name']) == $username) {
+						$userId = $value['Id'];
+						$showPlayed = false;
+						break;
+					}
+				}
+				$url = $url . '/Users/' . $userId . '/Items/' . $key . '?EnableImages=true&Limit=' . $this->config['homepageRecentLimit'] . '&api_key=' . $this->config['jellyfinToken'] . ($showPlayed ? '' : '&IsPlayed=false') . '&Fields=Overview,People,Genres,CriticRating,Studios,Taglines';
+			} else {
+				$this->setAPIResponse('error', 'Jellyfin Error Occurred', 500);
+				return false;
+			}
+			$response = Requests::get($url, array(), $options);
+			if ($response->success) {
+				$items = array();
+				$jellyfin = json_decode($response->body, true);
+				if (isset($jellyfin['NowPlayingItem']) || isset($jellyfin['Name'])) {
+					$items[] = $this->resolveJellyfinItem($jellyfin);
+				}
+				$api['content'] = array_filter($items);
+				$this->setAPIResponse('success', null, 200, $api);
+				return $api;
+			} else {
+				$this->setAPIResponse('error', 'Jellyfin Error Occurred', 500);
+				return false;
+			}
+		} catch (Requests_Exception $e) {
+			$this->writeLog('error', 'Jellyfin Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
 			$this->setAPIResponse('error', $e->getMessage(), 500);
 			return false;
 		}
@@ -305,8 +546,11 @@ trait JellyfinHomepageItem
 		$jellyfinItem['user'] = ($this->config['homepageShowStreamNames'] && $this->qualifyRequest($this->config['homepageShowStreamNamesAuth'])) ? @(string)$itemDetails['UserName'] : "";
 		$jellyfinItem['userThumb'] = '';
 		$jellyfinItem['userAddress'] = (isset($itemDetails['RemoteEndPoint']) ? $itemDetails['RemoteEndPoint'] : "x.x.x.x");
-		$jellyfinURL = $this->config['jellyfinURL'] . '/web/index.html#!/itemdetails.html?id=';
-		$jellyfinItem['address'] = $this->config['jellyfinTabURL'] ? rtrim($this->config['jellyfinTabURL'], '/') . "/web/#!/item/item.html?id=" . $jellyfinItem['uid'] : $jellyfinURL . $jellyfinItem['uid'] . "&serverId=" . $jellyfinItem['id'];
+		$jellfinVariablesForLink = [
+			'{id}' => $jellyfinItem['uid'],
+			'{serverId}' => $jellyfinItem['id']
+		];
+		$jellyfinItem['address'] = $this->userDefinedIdReplacementLink($this->config['homepageJellyfinLink'], $jellfinVariablesForLink);
 		$jellyfinItem['nowPlayingOriginalImage'] = 'api/v2/homepage/image?source=jellyfin&type=' . $jellyfinItem['nowPlayingImageType'] . '&img=' . $jellyfinItem['nowPlayingThumb'] . '&height=' . $nowPlayingHeight . '&width=' . $nowPlayingWidth . '&key=' . $jellyfinItem['nowPlayingKey'] . '$' . $this->randString();
 		$jellyfinItem['originalImage'] = 'api/v2/homepage/image?source=jellyfin&type=' . $jellyfinItem['imageType'] . '&img=' . $jellyfinItem['thumb'] . '&height=' . $height . '&width=' . $width . '&key=' . $jellyfinItem['key'] . '$' . $this->randString();
 		$jellyfinItem['openTab'] = $this->config['jellyfinTabURL'] && $this->config['jellyfinTabName'] ? true : false;
@@ -391,210 +635,6 @@ trait JellyfinHomepageItem
 			$jellyfinItem['useImage'] = $useImage;
 		}
 		return $jellyfinItem;
-	}
-	
-	public function getJellyfinHomepageStreams()
-	{
-		if (!$this->config['homepageJellyfinEnabled']) {
-			$this->setAPIResponse('error', 'Jellyfin homepage item is not enabled', 409);
-			return false;
-		}
-		if (!$this->config['homepageJellyfinStreams']) {
-			$this->setAPIResponse('error', 'Jellyfin homepage module is not enabled', 409);
-			return false;
-		}
-		if (!$this->qualifyRequest($this->config['homepageJellyfinAuth'])) {
-			$this->setAPIResponse('error', 'User not approved to view this homepage item', 401);
-			return false;
-		}
-		if (!$this->qualifyRequest($this->config['homepageJellyStreamsAuth'])) {
-			$this->setAPIResponse('error', 'User not approved to view this homepage module', 401);
-			return false;
-		}
-		if (empty($this->config['jellyfinURL'])) {
-			$this->setAPIResponse('error', 'Jellyfin URL is not defined', 422);
-			return false;
-		}
-		if (empty($this->config['jellyfinToken'])) {
-			$this->setAPIResponse('error', 'Jellyfin Token is not defined', 422);
-			return false;
-		}
-		$url = $this->qualifyURL($this->config['jellyfinURL']);
-		$url = $url . '/Sessions?api_key=' . $this->config['jellyfinToken'] . '&Fields=Overview,People,Genres,CriticRating,Studios,Taglines';
-		$options = ($this->localURL($url)) ? array('verify' => false) : array();
-		try {
-			$response = Requests::get($url, array(), $options);
-			if ($response->success) {
-				$items = array();
-				$jellyfin = json_decode($response->body, true);
-				foreach ($jellyfin as $child) {
-					if (isset($child['NowPlayingItem']) || isset($child['Name'])) {
-						$items[] = $this->resolveJellyfinItem($child);
-					}
-				}
-				$api['content'] = array_filter($items);
-				$this->setAPIResponse('success', null, 200, $api);
-				return $api;
-			} else {
-				$this->setAPIResponse('error', 'Jellyfin Error Occurred', 500);
-				return false;
-			}
-		} catch (Requests_Exception $e) {
-			$this->writeLog('error', 'Jellyfin Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
-			$this->setAPIResponse('error', $e->getMessage(), 500);
-			return false;
-		}
-	}
-	
-	public function getJellyfinHomepageRecent()
-	{
-		if (!$this->config['homepageJellyfinEnabled']) {
-			$this->setAPIResponse('error', 'Jellyfin homepage item is not enabled', 409);
-			return false;
-		}
-		if (!$this->config['homepageJellyfinRecent']) {
-			$this->setAPIResponse('error', 'Jellyfin homepage module is not enabled', 409);
-			return false;
-		}
-		if (!$this->qualifyRequest($this->config['homepageJellyfinAuth'])) {
-			$this->setAPIResponse('error', 'User not approved to view this homepage item', 401);
-			return false;
-		}
-		if (!$this->qualifyRequest($this->config['homepageJellyfinRecentAuth'])) {
-			$this->setAPIResponse('error', 'User not approved to view this homepage module', 401);
-			return false;
-		}
-		if (empty($this->config['jellyfinURL'])) {
-			$this->setAPIResponse('error', 'Jellyfin URL is not defined', 422);
-			return false;
-		}
-		if (empty($this->config['jellyfinToken'])) {
-			$this->setAPIResponse('error', 'Jellyfin Token is not defined', 422);
-			return false;
-		}
-		$url = $this->qualifyURL($this->config['jellyfinURL']);
-		$options = ($this->localURL($url)) ? array('verify' => false) : array();
-		$username = false;
-		$showPlayed = false;
-		$userId = 0;
-		try {
-			if (isset($this->user['username'])) {
-				$username = strtolower($this->user['username']);
-			}
-			// Get A User
-			$userIds = $url . "/Users?api_key=" . $this->config['jellyfinToken'];
-			$response = Requests::get($userIds, array(), $options);
-			if ($response->success) {
-				$jellyfin = json_decode($response->body, true);
-				foreach ($jellyfin as $value) { // Scan for admin user
-					if (isset($value['Policy']) && isset($value['Policy']['IsAdministrator']) && $value['Policy']['IsAdministrator']) {
-						$userId = $value['Id'];
-					}
-					if ($username && strtolower($value['Name']) == $username) {
-						$userId = $value['Id'];
-						$showPlayed = false;
-						break;
-					}
-				}
-				$url = $url . '/Users/' . $userId . '/Items/Latest?EnableImages=true&Limit=' . $this->config['homepageRecentLimit'] . '&api_key=' . $this->config['jellyfinToken'] . ($showPlayed ? '' : '&IsPlayed=false') . '&Fields=Overview,People,Genres,CriticRating,Studios,Taglines';
-			} else {
-				$this->setAPIResponse('error', 'Jellyfin Error Occurred', 500);
-				return false;
-			}
-			$response = Requests::get($url, array(), $options);
-			if ($response->success) {
-				$items = array();
-				$jellyfin = json_decode($response->body, true);
-				foreach ($jellyfin as $child) {
-					if (isset($child['NowPlayingItem']) || isset($child['Name'])) {
-						$items[] = $this->resolveJellyfinItem($child);
-					}
-				}
-				$api['content'] = array_filter($items);
-				$this->setAPIResponse('success', null, 200, $api);
-				return $api;
-			} else {
-				$this->setAPIResponse('error', 'Jellyfin Error Occurred', 500);
-				return false;
-			}
-		} catch (Requests_Exception $e) {
-			$this->writeLog('error', 'Jellyfin Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
-			$this->setAPIResponse('error', $e->getMessage(), 500);
-			return false;
-		}
-	}
-	
-	public function getJellyfinHomepageMetadata($array)
-	{
-		if (!$this->config['homepageJellyfinEnabled']) {
-			$this->setAPIResponse('error', 'Jellyfin homepage item is not enabled', 409);
-			return false;
-		}
-		if (!$this->qualifyRequest($this->config['homepageJellyfinAuth'])) {
-			$this->setAPIResponse('error', 'User not approved to view this homepage item', 401);
-			return false;
-		}
-		if (empty($this->config['jellyfinURL'])) {
-			$this->setAPIResponse('error', 'Jellyfin URL is not defined', 422);
-			return false;
-		}
-		if (empty($this->config['jellyfinToken'])) {
-			$this->setAPIResponse('error', 'Jellyfin Token is not defined', 422);
-			return false;
-		}
-		$key = $array['key'] ?? null;
-		if (!$key) {
-			$this->setAPIResponse('error', 'Jellyfin Metadata key is not defined', 422);
-			return false;
-		}
-		$url = $this->qualifyURL($this->config['jellyfinURL']);
-		$options = ($this->localURL($url)) ? array('verify' => false) : array();
-		$username = false;
-		$showPlayed = false;
-		$userId = 0;
-		try {
-			if (isset($this->user['username'])) {
-				$username = strtolower($this->user['username']);
-			}
-			// Get A User
-			$userIds = $url . "/Users?api_key=" . $this->config['jellyfinToken'];
-			$response = Requests::get($userIds, array(), $options);
-			if ($response->success) {
-				$jellyfin = json_decode($response->body, true);
-				foreach ($jellyfin as $value) { // Scan for admin user
-					if (isset($value['Policy']) && isset($value['Policy']['IsAdministrator']) && $value['Policy']['IsAdministrator']) {
-						$userId = $value['Id'];
-					}
-					if ($username && strtolower($value['Name']) == $username) {
-						$userId = $value['Id'];
-						$showPlayed = false;
-						break;
-					}
-				}
-				$url = $url . '/Users/' . $userId . '/Items/' . $key . '?EnableImages=true&Limit=' . $this->config['homepageRecentLimit'] . '&api_key=' . $this->config['jellyfinToken'] . ($showPlayed ? '' : '&IsPlayed=false') . '&Fields=Overview,People,Genres,CriticRating,Studios,Taglines';
-			} else {
-				$this->setAPIResponse('error', 'Jellyfin Error Occurred', 500);
-				return false;
-			}
-			$response = Requests::get($url, array(), $options);
-			if ($response->success) {
-				$items = array();
-				$jellyfin = json_decode($response->body, true);
-				if (isset($jellyfin['NowPlayingItem']) || isset($jellyfin['Name'])) {
-					$items[] = $this->resolveJellyfinItem($jellyfin);
-				}
-				$api['content'] = array_filter($items);
-				$this->setAPIResponse('success', null, 200, $api);
-				return $api;
-			} else {
-				$this->setAPIResponse('error', 'Jellyfin Error Occurred', 500);
-				return false;
-			}
-		} catch (Requests_Exception $e) {
-			$this->writeLog('error', 'Jellyfin Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
-			$this->setAPIResponse('error', $e->getMessage(), 500);
-			return false;
-		}
 	}
 	
 }

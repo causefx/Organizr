@@ -95,7 +95,7 @@ trait JDownloaderHomepageItem
 		}
 		$url = $this->qualifyURL($this->config['jdownloaderURL']);
 		try {
-			$options = ($this->localURL($url)) ? array('verify' => false, 'timeout' => 30) : array('timeout' => 30);
+			$options = $this->requestOptions($this->config['jdownloaderURL'], false, $this->config['homepageDownloadRefresh']);
 			$response = Requests::get($url, array(), $options);
 			if ($response->success) {
 				$this->setAPIResponse('success', 'API Connection succeeded', 200);
@@ -111,23 +111,57 @@ trait JDownloaderHomepageItem
 		};
 	}
 	
+	public function jDownloaderHomepagePermissions($key = null)
+	{
+		$permissions = [
+			'main' => [
+				'enabled' => [
+					'homepageJdownloaderEnabled'
+				],
+				'auth' => [
+					'homepageJdownloaderAuth'
+				],
+				'not_empty' => [
+					'jdownloaderURL'
+				]
+			]
+		];
+		if (array_key_exists($key, $permissions)) {
+			return $permissions[$key];
+		} elseif ($key == 'all') {
+			return $permissions;
+		} else {
+			return [];
+		}
+	}
+	
+	public function homepageOrderjdownloader()
+	{
+		if ($this->homepageItemPermissions($this->jDownloaderHomepagePermissions('main'))) {
+			$loadingBox = ($this->config['jdownloaderCombine']) ? '' : '<div class="white-box homepage-loading-box"><h2 class="text-center" lang="en">Loading Download Queue...</h2></div>';
+			$builder = ($this->config['jdownloaderCombine']) ? 'buildDownloaderCombined(\'jdownloader\');' : '$("#' . __FUNCTION__ . '").html(buildDownloader("jdownloader"));';
+			return '
+				<div id="' . __FUNCTION__ . '">
+					' . $loadingBox . '
+					<script>
+		                // homepageOrderjdownloader
+		                ' . $builder . '
+		                homepageDownloader("jdownloader", "' . $this->config['homepageDownloadRefresh'] . '");
+		                // End homepageOrderjdownloader
+	                </script>
+				</div>
+				';
+		}
+	}
+	
 	public function getJdownloaderHomepageQueue()
 	{
-		if (!$this->config['homepageJdownloaderEnabled']) {
-			$this->setAPIResponse('error', 'JDownloader homepage item is not enabled', 409);
-			return false;
-		}
-		if (!$this->qualifyRequest($this->config['homepageJdownloaderAuth'])) {
-			$this->setAPIResponse('error', 'User not approved to view this homepage item', 401);
-			return false;
-		}
-		if (empty($this->config['jdownloaderURL'])) {
-			$this->setAPIResponse('error', 'JDownloader URL is not defined', 422);
+		if (!$this->homepageItemPermissions($this->jDownloaderHomepagePermissions('main'), true)) {
 			return false;
 		}
 		$url = $this->qualifyURL($this->config['jdownloaderURL']);
 		try {
-			$options = ($this->localURL($url)) ? array('verify' => false, 'timeout' => 30) : array('timeout' => 30);
+			$options = $this->requestOptions($this->config['jdownloaderURL'], false, $this->config['homepageDownloadRefresh']);
 			$response = Requests::get($url, array(), $options);
 			if ($response->success) {
 				$temp = json_decode($response->body, true);

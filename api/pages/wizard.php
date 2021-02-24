@@ -24,8 +24,8 @@ function get_page_wizard($Organizr)
                                     message: \'The username must be more than 2 and less than 30 characters long\'
                                 },
                                 regexp: {
-                                    regexp: /^[a-zA-Z0-9_\.]+$/,
-                                    message: \'The username can only consist of alphabetical, number, dot and underscore\'
+                                    regexp: /^[a-zA-Z0-9_\.\@]+$/,
+                                    message: \'The username can only consist of alphabetical, number, at sign, dot and underscore\'
                                 }
                             }
                         },
@@ -132,8 +132,7 @@ function get_page_wizard($Organizr)
             		var html = data.response;
                     location.reload();
             	}).fail(function(xhr) {
-            	    messageSingle(\'API Error\', xhr.responseJSON.response.message, activeInfo.settings.notifications.position, \'#FFF\', \'error\', \'10000\');
-            		console.error("Organizr Function: API Connection Failed | Error: " + xhr.responseJSON.response.message);
+            	    OrganizrApiError(xhr, \'API Error\');
             	});
             }
         });
@@ -246,8 +245,8 @@ function get_page_wizard($Organizr)
                                     </div>
                                     <div class="panel-wrapper collapse in" aria-expanded="true">
                                         <div class="panel-body">
-                                            <p lang="en">The Hash Key will be used to decrypt all passwords etc... on the server. {User-Generated]</p>
-                                            <p lang="en">The Registration Password will lockout the registration field with this password. {User-Generated]</p>
+                                            <p lang="en">The Hash Key will be used to decrypt all passwords etc... on the server. [User-Generated]</p>
+                                            <p lang="en">The Registration Password will lockout the registration field with this password. [User-Generated]</p>
                                             <p lang="en">The API Key will be used for all calls to organizr for the UI. [Auto-Generated]</p>
                                         </div>
                                     </div>

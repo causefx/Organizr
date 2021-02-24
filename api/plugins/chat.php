@@ -1,5 +1,7 @@
 <?php
 // PLUGIN INFORMATION
+use Pusher\PusherException;
+
 $GLOBALS['plugins'][]['chat'] = array( // Plugin Name
 	'name' => 'Chat', // Plugin Name
 	'author' => 'CauseFX', // Who wrote the plugin
@@ -10,7 +12,9 @@ $GLOBALS['plugins'][]['chat'] = array( // Plugin Name
 	'configPrefix' => 'CHAT', // config file prefix for array items without the hypen
 	'version' => '1.0.0', // SemVer of plugin
 	'image' => 'plugins/images/chat.png', // 1:1 non transparent image for plugin
-	'settings' => true, // does plugin need a settings page? true or false
+	'settings' => true, // does plugin need a settings modal?
+	'bind' => true, // use default bind to make settings page - true or false
+	'api' => 'api/v2/plugins/chat/settings', // api route for settings page
 	'homepage' => false // Is plugin for use on homepage? true or false
 );
 
@@ -138,18 +142,22 @@ class Chat extends Organizr
 		$query = $this->processQueries($response);
 		if ($query) {
 			$options = array(
-				'cluster' => $GLOBALS['CHAT-cluster-include'],
-				'useTLS' => $GLOBALS['CHAT-useSSL']
+				'cluster' => $this->config['CHAT-cluster-include'],
+				'useTLS' => $this->config['CHAT-useSSL']
 			);
-			$pusher = new Pusher\Pusher(
-				$GLOBALS['CHAT-authKey-include'],
-				$GLOBALS['CHAT-secret'],
-				$GLOBALS['CHAT-appID-include'],
-				$options
-			);
-			$pusher->trigger('org_channel', 'my-event', $newMessage);
-			$this->setAPIResponse('success', 'Chat message accepted', 200);
-			return true;
+			try {
+				$pusher = new Pusher\Pusher(
+					$this->config['CHAT-authKey-include'],
+					$this->config['CHAT-secret'],
+					$this->config['CHAT-appID-include'],
+					$options
+				);
+				$pusher->trigger('org_channel', 'my-event', $newMessage);
+				$this->setAPIResponse('success', 'Chat message accepted', 200);
+				return true;
+			} catch (PusherException $e) {
+				$this->setAPIResponse('error', 'Chat message error', 500);
+			}
 		}
 		$this->setAPIResponse('error', 'Chat error occurred', 409);
 		return false;

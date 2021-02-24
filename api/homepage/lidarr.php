@@ -162,8 +162,8 @@ trait LidarrHomepageItem
 		$list = $this->csvHomepageUrlToken($this->config['lidarrURL'], $this->config['lidarrToken']);
 		foreach ($list as $key => $value) {
 			try {
-				$downloader = new Kryptonit3\Sonarr\Sonarr($value['url'], $value['token'], true);
-				$results = $downloader->getSystemStatus();
+				$downloader = new Kryptonit3\Sonarr\Sonarr($value['url'], $value['token'], 'lidarr');
+				$results = $downloader->getRootFolder();
 				$downloadList = json_decode($results, true);
 				if (is_array($downloadList) || is_object($downloadList)) {
 					$queue = (array_key_exists('error', $downloadList)) ? $downloadList['error']['msg'] : $downloadList;
@@ -194,37 +194,55 @@ trait LidarrHomepageItem
 		}
 	}
 	
+	public function lidarrHomepagePermissions($key = null)
+	{
+		$permissions = [
+			'calendar' => [
+				'enabled' => [
+					'homepageLidarrEnabled'
+				],
+				'auth' => [
+					'homepageLidarrAuth'
+				],
+				'not_empty' => [
+					'lidarrURL',
+					'lidarrToken'
+				]
+			],
+			'queue' => [
+				'enabled' => [
+					'homepageLidarrEnabled',
+					'homepageLidarrQueueEnabled'
+				],
+				'auth' => [
+					'homepageLidarrAuth',
+					'homepageLidarrQueueAuth'
+				],
+				'not_empty' => [
+					'lidarrURL',
+					'lidarrToken'
+				]
+			]
+		];
+		if (array_key_exists($key, $permissions)) {
+			return $permissions[$key];
+		} elseif ($key == 'all') {
+			return $permissions;
+		} else {
+			return [];
+		}
+	}
+	
 	public function getLidarrQueue()
 	{
-		if (!$this->config['homepageLidarrEnabled']) {
-			$this->setAPIResponse('error', 'Lidarr homepage item is not enabled', 409);
-			return false;
-		}
-		if (!$this->config['homepageLidarrQueueEnabled']) {
-			$this->setAPIResponse('error', 'Lidarr homepage module is not enabled', 409);
-			return false;
-		}
-		if (!$this->qualifyRequest($this->config['homepageLidarrAuth'])) {
-			$this->setAPIResponse('error', 'User not approved to view this homepage item', 401);
-			return false;
-		}
-		if (!$this->qualifyRequest($this->config['homepageLidarrQueueAuth'])) {
-			$this->setAPIResponse('error', 'User not approved to view this homepage module', 401);
-			return false;
-		}
-		if (empty($this->config['lidarrURL'])) {
-			$this->setAPIResponse('error', 'Lidarr URL is not defined', 422);
-			return false;
-		}
-		if (empty($this->config['lidarrToken'])) {
-			$this->setAPIResponse('error', 'Lidarr Token is not defined', 422);
+		if (!$this->homepageItemPermissions($this->lidarrHomepagePermissions('queue'), true)) {
 			return false;
 		}
 		$queueItems = array();
 		$list = $this->csvHomepageUrlToken($this->config['lidarrURL'], $this->config['lidarrToken']);
 		foreach ($list as $key => $value) {
 			try {
-				$downloader = new Kryptonit3\Sonarr\Sonarr($value['url'], $value['token'], true);
+				$downloader = new Kryptonit3\Sonarr\Sonarr($value['url'], $value['token'], 'lidarr');
 				$results = $downloader->getQueue();
 				$downloadList = json_decode($results, true);
 				if (is_array($downloadList) || is_object($downloadList)) {
@@ -250,27 +268,14 @@ trait LidarrHomepageItem
 	{
 		$startDate = ($startDate) ?? $_GET['start'];
 		$endDate = ($endDate) ?? $_GET['end'];
-		if (!$this->config['homepageLidarrEnabled']) {
-			$this->setAPIResponse('error', 'Lidarr homepage item is not enabled', 409);
-			return false;
-		}
-		if (!$this->qualifyRequest($this->config['homepageLidarrAuth'])) {
-			$this->setAPIResponse('error', 'User not approved to view this homepage item', 401);
-			return false;
-		}
-		if (empty($this->config['lidarrURL'])) {
-			$this->setAPIResponse('error', 'Lidarr URL is not defined', 422);
-			return false;
-		}
-		if (empty($this->config['lidarrToken'])) {
-			$this->setAPIResponse('error', 'Lidarr Token is not defined', 422);
+		if (!$this->homepageItemPermissions($this->lidarrHomepagePermissions('calendar'), true)) {
 			return false;
 		}
 		$calendarItems = array();
 		$list = $this->csvHomepageUrlToken($this->config['lidarrURL'], $this->config['lidarrToken']);
 		foreach ($list as $key => $value) {
 			try {
-				$downloader = new Kryptonit3\Sonarr\Sonarr($value['url'], $value['token'], true);
+				$downloader = new Kryptonit3\Sonarr\Sonarr($value['url'], $value['token'], 'lidarr');
 				$results = $downloader->getCalendar($startDate, $endDate);
 				$result = json_decode($results, true);
 				if (is_array($result) || is_object($result)) {

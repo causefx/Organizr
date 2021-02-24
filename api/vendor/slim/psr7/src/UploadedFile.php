@@ -210,6 +210,18 @@ class UploadedFile implements UploadedFileInterface
     }
 
     /**
+     * Returns the client-provided full path to the file
+     *
+     * @internal This method is not part of the PSR-7 standard
+     *
+     * @return string
+     */
+    public function getFilePath(): string
+    {
+        return $this->file;
+    }
+
+    /**
      * Create a normalized tree of UploadedFile instances from the Environment.
      *
      * @internal This method is not part of the PSR-7 standard.

@@ -155,6 +155,30 @@ trait RadarrHomepageItem
 						'label' => 'Refresh Seconds',
 						'value' => $this->config['calendarRefresh'],
 						'options' => $this->timeOptions()
+					),
+					array(
+						'type' => 'switch',
+						'name' => 'radarrUnmonitored',
+						'label' => 'Show Unmonitored',
+						'value' => $this->config['radarrUnmonitored']
+					),
+					array(
+						'type' => 'switch',
+						'name' => 'radarrPhysicalRelease',
+						'label' => 'Show Physical Release',
+						'value' => $this->config['radarrPhysicalRelease']
+					),
+					array(
+						'type' => 'switch',
+						'name' => 'radarrDigitalRelease',
+						'label' => 'Show Digital Release',
+						'value' => $this->config['radarrDigitalRelease']
+					),
+					array(
+						'type' => 'switch',
+						'name' => 'radarrCinemaRelease',
+						'label' => 'Show Cinema Releases',
+						'value' => $this->config['radarrCinemaRelease']
 					)
 				),
 				'Test Connection' => array(
@@ -190,8 +214,8 @@ trait RadarrHomepageItem
 		$list = $this->csvHomepageUrlToken($this->config['radarrURL'], $this->config['radarrToken']);
 		foreach ($list as $key => $value) {
 			try {
-				$downloader = new Kryptonit3\Sonarr\Sonarr($value['url'], $value['token']);
-				$results = $downloader->getSystemStatus();
+				$downloader = new Kryptonit3\Sonarr\Sonarr($value['url'], $value['token'], 'radarr');
+				$results = $downloader->getRootFolder();
 				$downloadList = json_decode($results, true);
 				if (is_array($downloadList) || is_object($downloadList)) {
 					$queue = (array_key_exists('error', $downloadList)) ? $downloadList['error']['msg'] : $downloadList;
@@ -222,37 +246,74 @@ trait RadarrHomepageItem
 		}
 	}
 	
+	public function radarrHomepagePermissions($key = null)
+	{
+		$permissions = [
+			'calendar' => [
+				'enabled' => [
+					'homepageRadarrEnabled'
+				],
+				'auth' => [
+					'homepageRadarrAuth'
+				],
+				'not_empty' => [
+					'radarrURL',
+					'radarrToken'
+				]
+			],
+			'queue' => [
+				'enabled' => [
+					'homepageRadarrEnabled',
+					'homepageRadarrQueueEnabled'
+				],
+				'auth' => [
+					'homepageRadarrAuth',
+					'homepageRadarrQueueAuth'
+				],
+				'not_empty' => [
+					'radarrURL',
+					'radarrToken'
+				]
+			]
+		];
+		if (array_key_exists($key, $permissions)) {
+			return $permissions[$key];
+		} elseif ($key == 'all') {
+			return $permissions;
+		} else {
+			return [];
+		}
+	}
+	
+	public function homepageOrderRadarrQueue()
+	{
+		if ($this->homepageItemPermissions($this->radarrHomepagePermissions('queue'))) {
+			$loadingBox = ($this->config['homepageRadarrQueueCombine']) ? '' : '<div class="white-box homepage-loading-box"><h2 class="text-center" lang="en">Loading Download Queue...</h2></div>';
+			$builder = ($this->config['homepageRadarrQueueCombine']) ? 'buildDownloaderCombined(\'radarr\');' : '$("#' . __FUNCTION__ . '").html(buildDownloader("radarr"));';
+			return '
+				<div id="' . __FUNCTION__ . '">
+					' . $loadingBox . '
+					<script>
+		                // homepageOrderRadarrQueue
+		                ' . $builder . '
+		                homepageDownloader("radarr", "' . $this->config['homepageRadarrQueueRefresh'] . '");
+		                // End homepageOrderRadarrQueue
+	                </script>
+				</div>
+				';
+		}
+	}
+	
 	public function getRadarrQueue()
 	{
-		if (!$this->config['homepageRadarrEnabled']) {
-			$this->setAPIResponse('error', 'Radarr homepage item is not enabled', 409);
-			return false;
-		}
-		if (!$this->config['homepageRadarrQueueEnabled']) {
-			$this->setAPIResponse('error', 'Radarr homepage module is not enabled', 409);
-			return false;
-		}
-		if (!$this->qualifyRequest($this->config['homepageRadarrAuth'])) {
-			$this->setAPIResponse('error', 'User not approved to view this homepage item', 401);
-			return false;
-		}
-		if (!$this->qualifyRequest($this->config['homepageRadarrQueueAuth'])) {
-			$this->setAPIResponse('error', 'User not approved to view this homepage module', 401);
-			return false;
-		}
-		if (empty($this->config['radarrURL'])) {
-			$this->setAPIResponse('error', 'Radarr URL is not defined', 422);
-			return false;
-		}
-		if (empty($this->config['radarrToken'])) {
-			$this->setAPIResponse('error', 'Radarr Token is not defined', 422);
+		if (!$this->homepageItemPermissions($this->radarrHomepagePermissions('queue'), true)) {
 			return false;
 		}
 		$queueItems = array();
 		$list = $this->csvHomepageUrlToken($this->config['radarrURL'], $this->config['radarrToken']);
 		foreach ($list as $key => $value) {
 			try {
-				$downloader = new Kryptonit3\Sonarr\Sonarr($value['url'], $value['token']);
+				$downloader = new Kryptonit3\Sonarr\Sonarr($value['url'], $value['token'], 'radarr');
 				$results = $downloader->getQueue();
 				$downloadList = json_decode($results, true);
 				if (is_array($downloadList) || is_object($downloadList)) {
@@ -278,28 +339,15 @@ trait RadarrHomepageItem
 	{
 		$startDate = ($startDate) ?? $_GET['start'];
 		$endDate = ($endDate) ?? $_GET['end'];
-		if (!$this->config['homepageRadarrEnabled']) {
-			$this->setAPIResponse('error', 'Radarr homepage item is not enabled', 409);
-			return false;
-		}
-		if (!$this->qualifyRequest($this->config['homepageRadarrAuth'])) {
-			$this->setAPIResponse('error', 'User not approved to view this homepage item', 401);
-			return false;
-		}
-		if (empty($this->config['radarrURL'])) {
-			$this->setAPIResponse('error', 'Radarr URL is not defined', 422);
-			return false;
-		}
-		if (empty($this->config['radarrToken'])) {
-			$this->setAPIResponse('error', 'Radarr Token is not defined', 422);
+		if (!$this->homepageItemPermissions($this->radarrHomepagePermissions('calendar'), true)) {
 			return false;
 		}
 		$calendarItems = array();
 		$list = $this->csvHomepageUrlToken($this->config['radarrURL'], $this->config['radarrToken']);
 		foreach ($list as $key => $value) {
 			try {
-				$downloader = new Kryptonit3\Sonarr\Sonarr($value['url'], $value['token']);
-				$results = $downloader->getCalendar($startDate, $endDate);
+				$downloader = new Kryptonit3\Sonarr\Sonarr($value['url'], $value['token'], 'radarr');
+				$results = $downloader->getCalendar($startDate, $endDate, $this->config['radarrUnmonitored']);
 				$result = json_decode($results, true);
 				if (is_array($result) || is_object($result)) {
 					$calendar = (array_key_exists('error', $result)) ? '' : $this->formatRadarrCalendar($results, $key, $value['url']);
@@ -325,17 +373,41 @@ trait RadarrHomepageItem
 		$gotCalendar = array();
 		$i = 0;
 		foreach ($array as $child) {
-			if (isset($child['physicalRelease'])) {
+			for ($j = 0; $j < 3; $j++) {
+				$type = [];
+				if ($j == 0 && $this->config['radarrPhysicalRelease'] && isset($child['physicalRelease'])) {
+					$releaseDate = $child['physicalRelease'];
+					array_push($type, "physical");
+					if (isset($child['digitalRelease']) && $child['physicalRelease'] == $child['digitalRelease']) {
+						array_push($type, "digital");
+						$j++;
+					}
+					if (isset($child['inCinemas']) && $child['physicalRelease'] == $child['inCinemas']) {
+						array_push($type, "cinema");
+						$j += 2;
+					}
+				} elseif ($j == 1 && $this->config['radarrDigitalRelease'] && isset($child['digitalRelease'])) {
+					$releaseDate = $child['digitalRelease'];
+					array_push($type, "digital");
+					if (isset($child['inCinemas']) && $child['digitalRelease'] == $child['inCinemas']) {
+						array_push($type, "cinema");
+						$j++;
+					}
+				} elseif ($j == 2 && $this->config['radarrCinemaRelease'] && isset($child['inCinemas'])) {
+					$releaseDate = $child['inCinemas'];
+					array_push($type, "cinema");
+				} else {
+					continue;
+				}
 				$i++;
 				$movieName = $child['title'];
 				$movieID = $child['tmdbId'];
 				if (!isset($movieID)) {
 					$movieID = "";
 				}
-				$physicalRelease = $child['physicalRelease'];
-				$physicalRelease = strtotime($physicalRelease);
-				$physicalRelease = date("Y-m-d", $physicalRelease);
-				if (new DateTime() < new DateTime($physicalRelease)) {
+				$releaseDate = strtotime($releaseDate);
+				$releaseDate = date("Y-m-d", $releaseDate);
+				if (new DateTime() < new DateTime($releaseDate)) {
 					$notReleased = "true";
 				} else {
 					$notReleased = "false";
@@ -378,10 +450,16 @@ trait RadarrHomepageItem
 					}
 				}
 				$alternativeTitles = "";
-				foreach ($child['alternativeTitles'] as $alternative) {
-					$alternativeTitles .= $alternative['title'] . ', ';
+				if (!empty($child['alternativeTitles'])) {
+					foreach ($child['alternativeTitles'] as $alternative) {
+						$alternativeTitles .= $alternative['title'] . ', ';
+					}
+				} elseif (!empty($child['alternateTitles'])) { //v3 API
+					foreach ($child['alternateTitles'] as $alternative) {
+						$alternativeTitles .= $alternative['title'] . ', ';
+					}
 				}
-				$alternativeTitles = empty($child['alternativeTitles']) ? "" : substr($alternativeTitles, 0, -2);
+				$alternativeTitles = empty($alternativeTitles) ? "" : substr($alternativeTitles, 0, -2);
 				$details = array(
 					"topTitle" => $movieName,
 					"bottomTitle" => $alternativeTitles,
@@ -402,11 +480,12 @@ trait RadarrHomepageItem
 				array_push($gotCalendar, array(
 					"id" => "Radarr-" . $number . "-" . $i,
 					"title" => $movieName,
-					"start" => $physicalRelease,
+					"start" => $releaseDate,
 					"className" => "inline-popups bg-calendar movieID--" . $movieID,
 					"imagetype" => "film " . $downloaded,
 					"imagetypeFilter" => "film",
 					"downloadFilter" => $downloaded,
+					"releaseType" => $type,
 					"bgColor" => str_replace('text', 'bg', $downloaded),
 					"details" => $details
 				));

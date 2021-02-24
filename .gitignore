@@ -84,6 +84,7 @@ config/users
 config/users*.db
 config/users*.bak.db
 config/tmp/*
+docs/api.json
 images/cache/*
 backups/*
 backups/
@@ -118,6 +119,8 @@ plugins/plugin_files/*
 !plugins/plugin_files/index.html
 plugins/images/userTabs/*
 !plugins/images/userTabs/index.html
+api/v2/routes/custom/*
+!api/v2/routes/custom/index.html
 # =========================
 # Plugin files
 # =========================
@@ -134,6 +137,7 @@ api/plugins/*
 !api/plugins/api/healthChecks.php
 !api/plugins/config/healthChecks.php
 !api/plugins/js/healthChecks.js
+!api/plugins/js/healthChecks-settings.js
 !api/plugins/php-mailer.php
 !api/plugins/api/php-mailer.php
 !api/plugins/config/php-mailer.php
@@ -153,6 +157,11 @@ api/plugins/*
 !api/plugins/misc/speedTest/telemetry.php
 !api/plugins/misc/speedTest/telemetry_settings.php
 !api/plugins/misc/speedTest/speedtest_worker.min.js
+!api/plugins/bookmark.php
+!api/plugins/api/bookmark.php
+!api/plugins/config/bookmark.php
+!api/plugins/js/bookmark-settings.js
+!api/plugins/css/bookmark.css
 
 # =========================
 # Custom files
@@ -164,4 +173,5 @@ api/pages/custom/*.php
 /plugins/images/cache/tautulli-artist.svg
 /plugins/images/cache/tautulli-movie.svg
 /plugins/images/cache/tautulli-windows.svg
-plugins/images/cache/tautulli-samsung.svg
+/plugins/images/cache/tautulli-samsung.svg
+/plugins/images/cache/tautulli-chrome.svg

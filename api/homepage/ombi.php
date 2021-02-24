@@ -40,7 +40,20 @@ trait OmbiHomepageItem
 						'name' => 'ombiToken',
 						'label' => 'Token',
 						'value' => $this->config['ombiToken']
-					)
+					),
+					array(
+						'type' => 'input',
+						'name' => 'ombiFallbackUser',
+						'label' => 'Ombi Fallback User',
+						'value' => $this->config['ombiFallbackUser'],
+						'help' => 'Organizr will request an Ombi User Token based off of this user credentials'
+					),
+					array(
+						'type' => 'password-alt',
+						'name' => 'ombiFallbackPassword',
+						'label' => 'Ombi Fallback Password',
+						'value' => $this->config['ombiFallbackPassword']
+					),
 				),
 				'Misc Options' => array(
 					array(
@@ -169,27 +182,51 @@ trait OmbiHomepageItem
 		};
 	}
 	
-	public function ombiTVDefault($type)
+	public function ombiHomepagePermissions($key = null)
 	{
-		return $type == $this->config['ombiTvDefault'];
+		$permissions = [
+			'main' => [
+				'enabled' => [
+					'homepageOmbiEnabled'
+				],
+				'auth' => [
+					'homepageOmbiAuth'
+				],
+				'not_empty' => [
+					'ombiURL',
+					'ombiToken'
+				]
+			]
+		];
+		if (array_key_exists($key, $permissions)) {
+			return $permissions[$key];
+		} elseif ($key == 'all') {
+			return $permissions;
+		} else {
+			return [];
+		}
 	}
+	
+	public function homepageOrderombi()
+	{
+		if ($this->homepageItemPermissions($this->ombiHomepagePermissions('main'))) {
+			return '
+				<div id="' . __FUNCTION__ . '">
+					<div class="white-box homepage-loading-box"><h2 class="text-center" lang="en">Loading Requests...</h2></div>
+					<script>
+						// Ombi Requests
+						homepageRequests("' . $this->config['ombiRefresh'] . '");
+						// End Ombi Requests
+					</script>
+				</div>
+				';
+		}
+	}
+	
 	
 	public function getOmbiRequests($type = "both", $limit = 50, $offset = 0)
 	{
-		if (!$this->config['homepageOmbiEnabled']) {
-			$this->setAPIResponse('error', 'Ombi homepage item is not enabled', 409);
-			return false;
-		}
-		if (!$this->qualifyRequest($this->config['homepageOmbiAuth'])) {
-			$this->setAPIResponse('error', 'User not approved to view this homepage item', 401);
-			return false;
-		}
-		if (empty($this->config['ombiURL'])) {
-			$this->setAPIResponse('error', 'Ombi URL is not defined', 422);
-			return false;
-		}
-		if (empty($this->config['ombiToken'])) {
-			$this->setAPIResponse('error', 'Ombi Token is not defined', 422);
+		if (!$this->homepageItemPermissions($this->ombiHomepagePermissions('main'), true)) {
 			return false;
 		}
 		$api['count'] = array(
@@ -223,7 +260,7 @@ trait OmbiHomepageItem
 					$movie = json_decode($movie->body, true);
 					//$movie = array_reverse($movie);
 					foreach ($movie as $key => $value) {
-						$proceed = (($this->config['ombiLimitUser']) && strtolower($this->user['username']) == strtolower($value['requestedUser']['userName'])) || (!$this->config['ombiLimitUser']) || $this->qualifyRequest(1);
+						$proceed = (($this->config['ombiLimitUser']) && strtolower($this->user['username']) == strtolower($value['requestedUser']['userName'])) || (strtolower($value['requestedUser']['userName']) == strtolower($this->config['ombiFallbackUser'])) || (!$this->config['ombiLimitUser']) || $this->qualifyRequest(1);
 						if ($proceed) {
 							$api['count']['movie']++;
 							$requests[] = array(
@@ -308,20 +345,7 @@ trait OmbiHomepageItem
 			$this->setAPIResponse('error', 'Type was not supplied', 422);
 			return false;
 		}
-		if (!$this->config['homepageOmbiEnabled']) {
-			$this->setAPIResponse('error', 'Ombi homepage item is not enabled', 409);
-			return false;
-		}
-		if (!$this->qualifyRequest($this->config['homepageOmbiAuth'])) {
-			$this->setAPIResponse('error', 'User not approved to view this homepage item', 401);
-			return false;
-		}
-		if (empty($this->config['ombiURL'])) {
-			$this->setAPIResponse('error', 'Ombi URL is not defined', 422);
-			return false;
-		}
-		if (empty($this->config['ombiToken'])) {
-			$this->setAPIResponse('error', 'Ombi Token is not defined', 422);
+		if (!$this->homepageItemPermissions($this->ombiHomepagePermissions('main'), true)) {
 			return false;
 		}
 		$url = $this->qualifyURL($this->config['ombiURL']);
@@ -449,24 +473,7 @@ trait OmbiHomepageItem
 			$this->setAPIResponse('error', 'Action was not supplied', 422);
 			return false;
 		}
-		if (!$this->config['homepageOmbiEnabled']) {
-			$this->setAPIResponse('error', 'Ombi homepage item is not enabled', 409);
-			return false;
-		}
-		if (!$this->qualifyRequest($this->config['homepageOmbiAuth'])) {
-			$this->setAPIResponse('error', 'User not approved to view this homepage item', 401);
-			return false;
-		}
-		if (!$this->qualifyRequest(1)) {
-			$this->setAPIResponse('error', 'User must be an admin', 401);
-			return false;
-		}
-		if (empty($this->config['ombiURL'])) {
-			$this->setAPIResponse('error', 'Ombi URL is not defined', 422);
-			return false;
-		}
-		if (empty($this->config['ombiToken'])) {
-			$this->setAPIResponse('error', 'Ombi Token is not defined', 422);
+		if (!$this->homepageItemPermissions($this->ombiHomepagePermissions('main'), true)) {
 			return false;
 		}
 		$url = $this->qualifyURL($this->config['ombiURL']);
@@ -525,5 +532,10 @@ trait OmbiHomepageItem
 			$this->setAPIResponse('error', $e->getMessage(), 500);
 			return false;
 		};
+	}
+	
+	public function ombiTVDefault($type)
+	{
+		return $type == $this->config['ombiTvDefault'];
 	}
 }

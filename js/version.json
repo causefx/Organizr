@@ -280,10 +280,66 @@
     "notes": "API V2 is coming with breaking changes - please check news items|Updated Language Items|Updated frameworks|Please report bugs in GitHub issues page"
   },
   "2.1.0": {
-    "date": "2020-08-26 16:20",
-    "title": "Organizr API v2 included - Please remove any downloaded plugins",
-    "new": "API v2 endpoint - Please make sure to update nginx auth_request location block",
-    "fixed": "",
-    "notes": "API v2 is here|If using built-in updater in Organizr and not on Windows - it will fail on cleaning up install - reloading should fix|If using Docker - Please switch to organizr/organizr|Remove any plugins that were downloaded from marketplace|Pleae join our discord if you have any issues|Please report bugs in GitHub issues page"
+    "date": "2020-10-27 16:20",
+    "title": "Organizr API v2 included - PLEASE READ NOTES BEFORE CONTINUING",
+    "new": "API v2 endpoints - Please make sure to update nginx auth_request location block if being used|Update Organizr alert errors|Redid Debug area|Jellyfin homepage item|SOCKS support for sonarr - radarr - lidarr|Redid plex token and machine methods|Redid user management area|Jackett homepage item|redid homepage items settings pages",
+    "fixed": "Lots of little misc fixes",
+    "notes": "CHECK MIGRATION LINK IN NEWS SECTION!!!!!!!|API v2 is here|If using built-in updater in Organizr and not on Windows - it will fail on cleaning up install - reloading should fix|If using Docker - Please switch to organizr/organizr|Remove any plugins that were downloaded from marketplace prior to upgrade|Please join our discord if you have any issues|Please report bugs in GitHub issues page"
+  },
+  "2.1.60": {
+    "date": "2020-11-06 19:40",
+    "title": "Make sure to read about 2.1.0 before updating",
+    "new": "Radarr Unmonitored/Cinema Toggles|update class for arrs to check version of api",
+    "fixed": "Fix User list error (#1487)|fix Weather Homepage Item Not Showing (#1498)|update healthchecks plugin to reflect cert temp change|fix chat plugin|Add IncludeItemTypes to emby recent items - fixes issue with having newly added tv channels|fix menu bug|user mgmt goto last page instead of first on error|iCal not showing up if solo enabled|Healthchecks cert failing|Weather css|OC backer with no image",
+    "notes": "Added new tab icons|Added new languages and updated existing ones|Please join our discord if you have any issues|Please report bugs in GitHub issues page"
+  },
+  "2.1.74": {
+    "date": "2020-11-13 18:00",
+    "title": "Weekly update",
+    "new": "Add group to auth header",
+    "fixed": "fix Traefik Redirection adds an . at ending (#1484)|fix issue with special character in password rutorrent module (#1511)|Unifi homepage item image|Radarr Test button|Sonarr Test button|Lidarr Test button|Arrs homepage items|rtorrent array fix|Healthchecks plugin",
+    "notes": "Add Turkish language|Please join our discord if you have any issues|Please report bugs in GitHub issues page"
+  },
+  "2.1.83": {
+    "date": "2020-11-20 20:00",
+    "title": "Weekly update",
+    "new": "Update check on load instead of settings",
+    "fixed": "add clarification to checkRoute error message|Increase jackett timeout to 120 seconds|add language elements to more areas|rework calendar filter|fix checkroute if has subdir|fix dependency check",
+    "notes": "Please join our discord if you have any issues|Please report bugs in GitHub issues page"
+  },
+  "2.1.120": {
+    "date": "2020-12-11 20:00",
+    "title": "Weekly update-ish",
+    "new": "Option to disable certain plex libraries on now playing (#1534)|Toggle to use friendly name in stats|jellyFin SSO|PHP8 support|add 2fa to plex token form|loading animation to homepage item loading|allow admin to make other admins",
+    "fixed": "fix Blue Light theme News background (#1538)|fix empty socks (#1520)|getServerPath function|tab saving on order change if nothing updated (#1530)|fix tab sort order saving with lots of tabs (#1175)|non admin from changing password|password reset|allow homepage item api lookup lowercase|change unsorted icon on new installs|unifi and ubnt image changes|missing ssoJellyfin var",
+    "notes": "New tab images|Please join our discord if you have any issues|Please report bugs in GitHub issues page"
+  },
+  "2.1.165": {
+    "date": "2021-01-22 17:45",
+    "title": "Weekly update-ish",
+    "new": "Overseerr SSO|/help/smtp to api to help users without SMTP accounts|option to disable recover password and change text or html (#1245)|Allow Middle-click to open in new tab (#1474)|Option for keeping Categories expanded by default (#1550)|link and option for new feature request site to replace feathub|Tab Images for Overseerr - Cardigann|increase windows and docker update timeout",
+    "fixed": "plex errors not coming up on failed user creation (#1456)|plex invite (#1456)|Emby HomePage Add-in - Item Details URL Needs updating (#1290)|Tautulli timeout issue|Reflect homepage refresh for Monitorr (#1554)|update timeout for jdownloader (#1510)|update timeout of SSO function|change out organizr logo for nav bar and add more logos|Unable to use same tab image on multiple tab adds without selecting different image first (#1369)|Issue with using wrong combo of username/email/password for SSO|UniFi Homepage Item Title|function variables|error message to phpmailer test button|padding on some homepage items|Traefik return with redirect",
+    "notes": "We are now using FeatureUpvote - icon located on bottom side bar|Updated languages|Please join our discord if you have any issues|Please report bugs in GitHub issues page"
+  },
+  "2.1.183": {
+    "date": "2021-01-29 23:40",
+    "title": "Weekly update",
+    "new": "Trakt to homepage items|blackberry themes icon selector|option to dismiss important messages|help button and about section to sonarr|updated frameworks for phpmailer - slim - pusher - adldap2 - slimpr|Change layout for backers",
+    "fixed": "Content wrapper causing obstructed view of tab content (#1567)|disable recover password|height for select2 boxes",
+    "notes": "We are now using FeatureUpvote - icon located on bottom side bar|Please join our discord if you have any issues|Please report bugs in GitHub issues page"
+  },
+  "2.1.184": {
+    "date": "2021-02-01 20:10",
+    "title": "HOTFIX",
+    "new": "",
+    "fixed": "Missing variable",
+    "notes": "This is a quick hotfix"
+  },
+  "2.1.195": {
+    "date": "2021-02-12 20:00",
+    "title": "Weekly Update",
+    "new": "ignore cert to transmission (#1177)|ignore cert to qbit (#1177)|no tabs api function|log functions",
+    "fixed": "Jellyfin SSO fails behind reverse proxy (#1585)|Unable to use \"@\" in username during initial account setup (#1584)|Re-add JWT claims removed from token (#1577)|heart on dependency|refresh to add new user|organizr-area css",
+    "notes": "remove spinner css classes"
   }
 }

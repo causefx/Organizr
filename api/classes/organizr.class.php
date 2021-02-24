@@ -15,6 +15,7 @@ class Organizr
 	use LogFunctions;
 	use NetDataFunctions;
 	use NormalFunctions;
+	use OAuthFunctions;
 	use OptionsFunction;
 	use OrganizrFunctions;
 	use PluginFunctions;
@@ -30,10 +31,13 @@ class Organizr
 	use DelugeHomepageItem;
 	use EmbyHomepageItem;
 	use HealthChecksHomepageItem;
+	use HTMLHomepageItem;
 	use ICalHomepageItem;
+	use JackettHomepageItem;
 	use JDownloaderHomepageItem;
 	use JellyfinHomepageItem;
 	use LidarrHomepageItem;
+	use MiscHomepageItem;
 	use MonitorrHomepageItem;
 	use NetDataHomepageItem;
 	use NZBGetHomepageItem;
@@ -49,13 +53,14 @@ class Organizr
 	use SonarrHomepageItem;
 	use SpeedTestHomepageItem;
 	use TautulliHomepageItem;
+	use TraktHomepageItem;
 	use TransmissionHomepageItem;
 	use UnifiHomepageItem;
 	use WeatherHomepageItem;
 	
 	// ===================================
 	// Organizr Version
-	public $version = '2.1.0';
+	public $version = '2.1.195';
 	// ===================================
 	// Quick php Version check
 	public $minimumPHP = '7.2';
@@ -142,6 +147,7 @@ class Organizr
 				$this->db = new Connection([
 					'driver' => 'sqlite3',
 					'database' => $this->config['dbLocation'] . $this->config['dbName'],
+					//'onConnect' => array('PRAGMA journal_mode=WAL'),
 				]);
 			} catch (Dibi\Exception $e) {
 				$this->db = null;
@@ -213,11 +219,13 @@ class Organizr
 			}
 			if ($group !== null) {
 				if ((isset($_SERVER['HTTP_X_FORWARDED_SERVER']) && $_SERVER['HTTP_X_FORWARDED_SERVER'] == 'traefik') || $this->config['traefikAuthEnable']) {
-					$redirect = 'Location: ' . $this->getServerPath();
+					$return = (isset($_SERVER['HTTP_X_FORWARDED_HOST']) && isset($_SERVER['HTTP_X_FORWARDED_URI']) && isset($_SERVER['HTTP_X_FORWARDED_PROTO'])) ? '?return=' . $_SERVER['HTTP_X_FORWARDED_PROTO'] . '://' . $_SERVER['HTTP_X_FORWARDED_HOST'] . $_SERVER['HTTP_X_FORWARDED_URI'] : '';
+					$redirect = 'Location: ' . $this->getServerPath() . $return;
 				}
 				if ($this->qualifyRequest($group) && $unlocked) {
 					header("X-Organizr-User: $currentUser");
 					header("X-Organizr-Email: $currentEmail");
+					header("X-Organizr-Group: $currentGroup");
 					$this->setAPIResponse('success', $userInfo . ' User is Authorized', 200);
 				} else {
 					if (!$redirect) {
@@ -251,12 +259,12 @@ class Organizr
 	
 	public function checkRoute($request)
 	{
-		$route = $request->getUri()->getPath();
+		$route = '/api/v2/' . explode('api/v2/', $request->getUri()->getPath())[1];
 		$method = $request->getMethod();
 		$data = $this->apiData($request);
 		if (!in_array($route, $GLOBALS['bypass'])) {
 			if ($this->isApprovedRequest($method, $data) === false) {
-				$this->setAPIResponse('error', 'Not authorized', 401);
+				$this->setAPIResponse('error', 'Not authorized for current Route: ' . $route, 401);
 				$this->writeLog('success', 'Killed Attack From [' . (isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : 'No Referer') . ']', $this->user['username']);
 				return false;
 			}
@@ -339,12 +347,12 @@ class Organizr
 		if ($this->config['gaTrackingID'] !== '') {
 			return '
 				<script async src="https://www.googletagmanager.com/gtag/js?id=' . $this->config['gaTrackingID'] . '"></script>
-    			<script>
-				    window.dataLayer = window.dataLayer || [];
-				    function gtag(){dataLayer.push(arguments);}
-				    gtag("js", new Date());
-				    gtag("config","' . $this->config['gaTrackingID'] . '");
-    			</script>
+				<script>
+					window.dataLayer = window.dataLayer || [];
+					function gtag(){dataLayer.push(arguments);}
+					gtag("js", new Date());
+					gtag("config","' . $this->config['gaTrackingID'] . '");
+				</script>
 			';
 		}
 		return null;
@@ -387,6 +395,7 @@ class Organizr
 		return ($encode) ? json_encode($files) : $files;
 	}
 	
+	/* Old function
 	public function pluginFiles($type)
 	{
 		$files = '';
@@ -398,6 +407,50 @@ class Organizr
 				break;
 			case 'css':
 				foreach (glob(dirname(__DIR__, 1) . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . 'css' . DIRECTORY_SEPARATOR . "*.css") as $filename) {
+					$files .= '<link href="api/plugins/css/' . basename($filename) . '?v=' . $this->fileHash . '" rel="stylesheet">';
+				}
+				break;
+			default:
+				break;
+		}
+		return $files;
+	}
+	*/
+	public function pluginFiles($type, $settings = false)
+	{
+		$files = '';
+		switch ($type) {
+			case 'js':
+				foreach (glob(dirname(__DIR__, 1) . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . 'js' . DIRECTORY_SEPARATOR . '*.js') as $filename) {
+					$keyOriginal = strtoupper(basename($filename, '.js'));
+					$key = str_replace('-SETTINGS', '', $keyOriginal);
+					$continue = false;
+					if ($settings) {
+						if (stripos($keyOriginal, '-SETTINGS') !== false) {
+							$continue = true;
+						}
+					} else {
+						if (stripos($keyOriginal, '-SETTINGS') == false) {
+							$continue = true;
+						}
+					}
+					switch ($key) {
+						case 'PHP-MAILER':
+							$key = 'PHPMAILER';
+							break;
+						default:
+							$key = $key;
+					}
+					if ($this->config[$key . '-enabled'] || $settings) {
+						if ($continue) {
+							$files .= '<script src="api/plugins/js/' . basename($filename) . '?v=' . $this->fileHash . '" defer="true"></script>';
+						}
+					}
+					
+				}
+				break;
+			case 'css':
+				foreach (glob(dirname(__DIR__, 1) . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . 'css' . DIRECTORY_SEPARATOR . '*.css') as $filename) {
 					$files .= '<link href="api/plugins/css/' . basename($filename) . '?v=' . $this->fileHash . '" rel="stylesheet">';
 				}
 				break;
@@ -1009,7 +1062,7 @@ class Organizr
 	
 	public function reverseCleanClassName($name)
 	{
-		return ($name) ? (str_replace(array('%20', '-', '_'), ' ', $name)) : '';
+		return ($name) ? (str_replace(array('%20', '-', '_'), ' ', strtolower($name))) : '';
 	}
 	
 	public function getPageList()
@@ -1088,11 +1141,41 @@ class Organizr
 				);
 			}
 		}
-		ksort($allIconsPrep);
+		uksort($allIconsPrep, 'strcasecmp');
 		foreach ($allIconsPrep as $item) {
 			$allIcons[] = $item['path'] . $item['name'];
 		}
 		return $allIcons;
+	}
+	
+	public function getImagesSelect()
+	{
+		$term = $_GET['search'] ?? null;
+		$page = $_GET['page'] ?? 1;
+		$limit = $_GET['limit'] ?? 20;
+		$offset = ($page * $limit) - $limit;
+		$goodIcons['results'] = [];
+		$goodIcons['limit'] = $limit;
+		$goodIcons['page'] = $page;
+		$goodIcons['term'] = $term;
+		$imageListing = $this->getImages();
+		$newImageListing = [];
+		foreach ($imageListing as $image) {
+			$newImageListing[] = [
+				'id' => $image,
+				'text' => basename($image)
+			];
+		}
+		foreach ($newImageListing as $k => $v) {
+			if (stripos($v['text'], $term) !== false || !$term) {
+				$goodIcons['results'][] = $v;
+			}
+		}
+		$total = count($goodIcons['results']);
+		$goodIcons['total'] = $total;
+		$goodIcons['results'] = array_slice($goodIcons['results'], $offset, $limit);
+		$goodIcons['pagination']['more'] = $page < (ceil($total / $limit));
+		return $goodIcons;
 	}
 	
 	public function removeImage($image = null)
@@ -1267,6 +1350,12 @@ class Organizr
 				),
 				array(
 					'type' => 'switch',
+					'name' => 'organizrFeatureRequestLink',
+					'label' => 'Show Organizr Feature Request Link',
+					'value' => $this->config['organizrFeatureRequestLink']
+				),
+				array(
+					'type' => 'switch',
 					'name' => 'organizrSupportMenuLink',
 					'label' => 'Show Organizr Support Link',
 					'value' => $this->config['organizrSupportMenuLink']
@@ -1282,6 +1371,12 @@ class Organizr
 					'name' => 'organizrSignoutMenuLink',
 					'label' => 'Show Organizr Sign out & in Button on Sidebar',
 					'value' => $this->config['organizrSignoutMenuLink']
+				),
+				array(
+					'type' => 'switch',
+					'name' => 'expandCategoriesByDefault',
+					'label' => 'Expand All Categories',
+					'value' => $this->config['expandCategoriesByDefault']
 				),
 				array(
 					'type' => 'select',
@@ -1314,19 +1409,19 @@ class Organizr
 					'label' => 'Custom CSS [Can replace colors from above]',
 					'html' => '
 					<div class="row">
-					    <div class="col-lg-12">
-					        <div class="panel panel-info">
-					            <div class="panel-heading">
-					                <span lang="en">Notice</span>
-					            </div>
-					            <div class="panel-wrapper collapse in" aria-expanded="true">
-					                <div class="panel-body">
-					                    <span lang="en">The value of #987654 is just a placeholder, you can change to any value you like.</span>
-					                    <span lang="en">To revert back to default, save with no value defined in the relevant field.</span>
-					                </div>
-					            </div>
-					        </div>
-					    </div>
+						<div class="col-lg-12">
+							<div class="panel panel-info">
+								<div class="panel-heading">
+									<span lang="en">Notice</span>
+								</div>
+								<div class="panel-wrapper collapse in" aria-expanded="true">
+									<div class="panel-body">
+										<span lang="en">The value of #987654 is just a placeholder, you can change to any value you like.</span>
+										<span lang="en">To revert back to default, save with no value defined in the relevant field.</span>
+									</div>
+								</div>
+							</div>
+						</div>
 					</div>
 					',
 				),
@@ -1684,7 +1779,7 @@ class Organizr
 					'class' => 'getPlexMachineAuth plexAuth switchAuth',
 					'icon' => 'fa fa-id-badge',
 					'text' => 'Retrieve',
-					'attr' => 'onclick="showPlexTokenForm(\'#settings-main-form [name=plexID]\')"'
+					'attr' => 'onclick="showPlexMachineForm(\'#settings-main-form [name=plexID]\')"'
 				),
 				array(
 					'type' => 'input',
@@ -2047,6 +2142,21 @@ class Organizr
 					'help' => 'Enables the local address forward if on local address and accessed from WAN Domain',
 					'value' => $this->config['enableLocalAddressForward'],
 				),
+				array(
+					'type' => 'switch',
+					'name' => 'disableRecoverPass',
+					'label' => 'Disable Recover Password',
+					'help' => 'Disables recover password area',
+					'value' => $this->config['disableRecoverPass'],
+				),
+				array(
+					'type' => 'input',
+					'name' => 'customForgotPassText',
+					'label' => 'Custom Recover Password Text',
+					'value' => $this->config['customForgotPassText'],
+					'placeholder' => '',
+					'help' => 'Text or HTML for recovery password section'
+				),
 			),
 			'Auth Proxy' => array(
 				array(
@@ -2150,18 +2260,18 @@ class Organizr
 					'override' => 12,
 					'html' => '
 				<div class="row">
-						    <div class="col-lg-12">
-						        <div class="panel panel-info">
-						            <div class="panel-heading">
-						                <span lang="en">Notice</span>
-						            </div>
-						            <div class="panel-wrapper collapse in" aria-expanded="true">
-						                <div class="panel-body">
-						                    <span lang="en">This is not the same as database authentication - i.e. Plex Authentication | Emby Authentication | FTP Authentication<br/>Click Main on the sub-menu above.</span>
-						                </div>
-						            </div>
-						        </div>
-						    </div>
+							<div class="col-lg-12">
+								<div class="panel panel-info">
+									<div class="panel-heading">
+										<span lang="en">Notice</span>
+									</div>
+									<div class="panel-wrapper collapse in" aria-expanded="true">
+										<div class="panel-body">
+											<span lang="en">This is not the same as database authentication - i.e. Plex Authentication | Emby Authentication | FTP Authentication<br/>Click Main on the sub-menu above.</span>
+										</div>
+									</div>
+								</div>
+							</div>
 						</div>
 				'
 				)
@@ -2234,6 +2344,43 @@ class Organizr
 					'value' => $this->config['ssoTautulli']
 				)
 			),
+			'Overseerr' => array(
+				array(
+					'type' => 'input',
+					'name' => 'overseerrURL',
+					'label' => 'Overseerr URL',
+					'value' => $this->config['overseerrURL'],
+					'help' => 'Please make sure to use local IP address and port - You also may use local dns name too.',
+					'placeholder' => 'http(s)://hostname:port'
+				),
+				array(
+					'type' => 'password-alt',
+					'name' => 'overseerrToken',
+					'label' => 'Token',
+					'value' => $this->config['overseerrToken']
+				),
+				array(
+					'type' => 'input',
+					'name' => 'overseerrFallbackUser',
+					'label' => 'Overseerr Fallback User',
+					'value' => $this->config['overseerrFallbackUser'],
+					'help' => 'Organizr will request an Overseerr User Token based off of this user credentials',
+					'attr' => 'disabled'
+				),
+				array(
+					'type' => 'password-alt',
+					'name' => 'overseerrFallbackPassword',
+					'label' => 'Overseerr Fallback Password',
+					'value' => $this->config['overseerrFallbackPassword'],
+					'attr' => 'disabled'
+				),
+				array(
+					'type' => 'switch',
+					'name' => 'ssoOverseerr',
+					'label' => 'Enable',
+					'value' => $this->config['ssoOverseerr']
+				)
+			),
 			'Ombi' => array(
 				array(
 					'type' => 'input',
@@ -2250,10 +2397,47 @@ class Organizr
 					'value' => $this->config['ombiToken']
 				),
 				array(
+					'type' => 'input',
+					'name' => 'ombiFallbackUser',
+					'label' => 'Ombi Fallback User',
+					'value' => $this->config['ombiFallbackUser'],
+					'help' => 'Organizr will request an Ombi User Token based off of this user credentials'
+				),
+				array(
+					'type' => 'password-alt',
+					'name' => 'ombiFallbackPassword',
+					'label' => 'Ombi Fallback Password',
+					'value' => $this->config['ombiFallbackPassword']
+				),
+				array(
 					'type' => 'switch',
 					'name' => 'ssoOmbi',
 					'label' => 'Enable',
 					'value' => $this->config['ssoOmbi']
+				)
+			),
+			'Jellyfin' => array(
+				array(
+					'type' => 'input',
+					'name' => 'jellyfinURL',
+					'label' => 'Jellyfin API URL',
+					'value' => $this->config['jellyfinURL'],
+					'help' => 'Please make sure to use the local address to the API',
+					'placeholder' => 'http(s)://hostname:port'
+				),
+				array(
+					'type' => 'input',
+					'name' => 'jellyfinSSOURL',
+					'label' => 'Jellyfin SSO URL',
+					'value' => $this->config['jellyfinSSOURL'],
+					'help' => 'Please make sure to use the same (sub)domain to access Jellyfin as Organizr\'s',
+					'placeholder' => 'http(s)://domain.com'
+				),
+				array(
+					'type' => 'switch',
+					'name' => 'ssoJellyfin',
+					'label' => 'Enable',
+					'value' => $this->config['ssoJellyfin']
 				)
 			)
 		);
@@ -2316,6 +2500,27 @@ class Organizr
 			$array['name'] => $array['value']
 		);
 		return ($this->updateConfig($newItem)) ? true : false;
+	}
+	
+	public function ignoreNewsId($id)
+	{
+		if (!$id) {
+			$this->setAPIResponse('error', 'News id was not supplied', 409);
+			return false;
+		}
+		$id = array(intval($id));
+		$newsIds = $this->config['ignoredNewsIds'];
+		$newsIds = array_merge($newsIds, $id);
+		$newsIds = array_unique($newsIds);
+		$this->updateConfig(['ignoredNewsIds' => $newsIds]);
+		$this->setAPIResponse('success', 'News id is now ignored', 200, null);
+	}
+	
+	public function getNewsIds()
+	{
+		$newsIds = $this->config['ignoredNewsIds'];
+		$this->setAPIResponse('success', null, 200, $newsIds);
+		return $newsIds;
 	}
 	
 	public function testWizardPath($array)
@@ -2451,92 +2656,92 @@ class Organizr
 			array(
 				'function' => 'query',
 				'query' => 'CREATE TABLE `chatroom` (
-			        `id`	INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE,
-			        `username`	TEXT,
-			        `gravatar`	TEXT,
-			        `uid`	TEXT,
-			        `date` DATE,
-			        `ip` TEXT,
-			        `message` TEXT
-			    );'
+					`id`	INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE,
+					`username`	TEXT,
+					`gravatar`	TEXT,
+					`uid`	TEXT,
+					`date` DATE,
+					`ip` TEXT,
+					`message` TEXT
+				);'
 			),
 			array(
 				'function' => 'query',
 				'query' => 'CREATE TABLE `tokens` (
-			        `id`	INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE,
-			        `token`	TEXT UNIQUE,
-			        `user_id`	INTEGER,
-			        `browser`	TEXT,
-			        `ip`	TEXT,
-			        `created` DATE,
-			        `expires` DATE
-			    );'
+					`id`	INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE,
+					`token`	TEXT UNIQUE,
+					`user_id`	INTEGER,
+					`browser`	TEXT,
+					`ip`	TEXT,
+					`created` DATE,
+					`expires` DATE
+				);'
 			),
 			array(
 				'function' => 'query',
 				'query' => 'CREATE TABLE `groups` (
-			        `id`	INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE,
-			        `group`	TEXT UNIQUE,
-			        `group_id`	INTEGER,
-			        `image`	TEXT,
-			        `default` INTEGER
-			    );'
+					`id`	INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE,
+					`group`	TEXT UNIQUE,
+					`group_id`	INTEGER,
+					`image`	TEXT,
+					`default` INTEGER
+				);'
 			),
 			array(
 				'function' => 'query',
 				'query' => 'CREATE TABLE `categories` (
-			        `id`	INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE,
-			        `order`	INTEGER,
-			        `category`	TEXT UNIQUE,
-			        `category_id`	INTEGER,
-			        `image`	TEXT,
-			        `default` INTEGER
-			    );'
+					`id`	INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE,
+					`order`	INTEGER,
+					`category`	TEXT UNIQUE,
+					`category_id`	INTEGER,
+					`image`	TEXT,
+					`default` INTEGER
+				);'
 			),
 			array(
 				'function' => 'query',
 				'query' => 'CREATE TABLE `tabs` (
-			        `id`	INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE,
-			        `order`	INTEGER,
-			        `category_id`	INTEGER,
-			        `name`	TEXT,
-			        `url`	TEXT,
-			        `url_local`	TEXT,
-			        `default`	INTEGER,
-			        `enabled`	INTEGER,
-			        `group_id`	INTEGER,
-			        `image`	TEXT,
-			        `type`	INTEGER,
-			        `splash`	INTEGER,
-			        `ping`		INTEGER,
-			        `ping_url`	TEXT,
-			        `timeout`	INTEGER,
-			        `timeout_ms`	INTEGER,
-			        `preload`	INTEGER
-			    );'
+					`id`	INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE,
+					`order`	INTEGER,
+					`category_id`	INTEGER,
+					`name`	TEXT,
+					`url`	TEXT,
+					`url_local`	TEXT,
+					`default`	INTEGER,
+					`enabled`	INTEGER,
+					`group_id`	INTEGER,
+					`image`	TEXT,
+					`type`	INTEGER,
+					`splash`	INTEGER,
+					`ping`		INTEGER,
+					`ping_url`	TEXT,
+					`timeout`	INTEGER,
+					`timeout_ms`	INTEGER,
+					`preload`	INTEGER
+				);'
 			),
 			array(
 				'function' => 'query',
 				'query' => 'CREATE TABLE `options` (
-			        `id`	INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE,
-			        `name`	TEXT UNIQUE,
-			        `value`	TEXT
-			    );'
+					`id`	INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE,
+					`name`	TEXT UNIQUE,
+					`value`	TEXT
+				);'
 			),
 			array(
 				'function' => 'query',
 				'query' => 'CREATE TABLE `invites` (
-			        `id`	INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE,
-			        `code`	TEXT UNIQUE,
-			        `date`	TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-			        `email`	TEXT,
-			        `username`	TEXT,
-			        `dateused`	TIMESTAMP,
-			        `usedby`	TEXT,
-			        `ip`	TEXT,
-			        `valid`	TEXT,
-			        `type` TEXT
-			    );'
+					`id`	INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE,
+					`code`	TEXT UNIQUE,
+					`date`	TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+					`email`	TEXT,
+					`username`	TEXT,
+					`dateused`	TIMESTAMP,
+					`usedby`	TEXT,
+					`ip`	TEXT,
+					`valid`	TEXT,
+					`type` TEXT
+				);'
 			),
 		];
 		return $this->processQueries($response, $migration);
@@ -2616,7 +2821,7 @@ class Organizr
 			'order' => 1,
 			'category' => 'Unsorted',
 			'category_id' => 0,
-			'image' => 'plugins/images/categories/unsorted.png',
+			'image' => 'fontawesome::question',
 			'default' => true
 		];
 		$response = [
@@ -2724,11 +2929,11 @@ class Organizr
 		->identifiedBy('4f1g23a12aa', true)// Configures the id (jti claim), replicating as a header item
 		->issuedAt(time())// Configures the time that the token was issue (iat claim)
 		->expiresAt(time() + (86400 * $days))// Configures the expiration time of the token (exp claim)
-		->withClaim('username', $result['username'])// Configures a new claim, called "username"
+		//->withClaim('username', $result['username'])// Configures a new claim, called "username"
 		->withClaim('group', $result['group'])// Configures a new claim, called "group"
-		->withClaim('groupID', $result['group_id'])// Configures a new claim, called "groupID"
-		->withClaim('email', $result['email'])// Configures a new claim, called "email"
-		->withClaim('image', $result['image'])// Configures a new claim, called "image"
+		//->withClaim('groupID', $result['group_id'])// Configures a new claim, called "groupID"
+		//->withClaim('email', $result['email'])// Configures a new claim, called "email"
+		//->withClaim('image', $result['image'])// Configures a new claim, called "image"
 		->withClaim('userID', $result['id'])// Configures a new claim, called "image"
 		->sign($signer, $this->config['organizrHash'])// creates a signature using "testing" as key
 		->getToken(); // Retrieves the generated token
@@ -2901,8 +3106,7 @@ class Organizr
 				if ($createToken) {
 					$this->writeLoginLog($username, 'success');
 					$this->writeLog('success', 'Login Function - A User has logged in', $username);
-					$ssoUser = ((empty($result['email'])) ? $result['username'] : (strpos($result['email'], 'placeholder') !== false)) ? $result['username'] : $result['email'];
-					$this->ssoCheck($ssoUser, $password, $token); //need to work on this
+					$this->ssoCheck($result, $password, $token); //need to work on this
 					return ($output) ? array('name' => $this->cookieName, 'token' => (string)$createToken) : true;
 				} else {
 					$this->setAPIResponse('error', 'Token creation error', 500);
@@ -2933,6 +3137,8 @@ class Organizr
 		$this->coookie('delete', 'mpt');
 		$this->coookie('delete', 'Auth');
 		$this->coookie('delete', 'oAuth');
+		$this->coookie('delete', 'jellyfin_credentials');
+		$this->coookie('delete', 'connect.sid');
 		$this->clearTautulliTokens();
 		$this->revokeTokenCurrentUser($this->user['token']);
 		$this->user = null;
@@ -3358,12 +3564,14 @@ class Organizr
 				'debugArea' => $this->qualifyRequest($this->config['debugAreaAuth']),
 				'debugErrors' => $this->config['debugErrors'],
 				'sandbox' => $this->config['sandbox'],
+				'expandCategoriesByDefault' => $this->config['expandCategoriesByDefault']
 			),
 			'menuLink' => array(
 				'githubMenuLink' => $this->config['githubMenuLink'],
 				'organizrSupportMenuLink' => $this->config['organizrSupportMenuLink'],
 				'organizrDocsMenuLink' => $this->config['organizrDocsMenuLink'],
-				'organizrSignoutMenuLink' => $this->config['organizrSignoutMenuLink']
+				'organizrSignoutMenuLink' => $this->config['organizrSignoutMenuLink'],
+				'organizrFeatureRequestLink' => $this->config['organizrFeatureRequestLink']
 			)
 		);
 	}
@@ -3465,7 +3673,7 @@ class Organizr
 		file_put_contents($this->organizrLoginLog, $writeFailLog);
 	}
 	
-	public function writeLog($type = 'error', $message, $username = null)
+	public function writeLog($type = 'error', $message = null, $username = null)
 	{
 		$this->timeExecution = $this->timeExecution($this->timeExecution);
 		$message = $message . ' [Execution Time: ' . $this->formatSeconds($this->timeExecution) . ']';
@@ -3530,473 +3738,16 @@ class Organizr
 		$homepageOrder = $this->homepageOrderList();
 		$homepageBuilt = '';
 		foreach ($homepageOrder as $key => $value) {
-			$homepageBuilt .= $this->buildHomepageItem($key);
+			//new way
+			if (method_exists($this, $key)) {
+				$homepageBuilt .= $this->$key();
+			} else {
+				$homepageBuilt .= '<div id="' . $key . '"></div>';
+			}
+			//old way
+			//$homepageBuilt .= $this->buildHomepageItem($key);
 		}
 		return $homepageBuilt;
-	}
-	
-	public function buildHomepageItem($homepageItem)
-	{
-		$item = '<div id="' . $homepageItem . '">';
-		switch ($homepageItem) {
-			case 'homepageOrdercustomhtml':
-				if ($this->config['homepageCustomHTMLoneEnabled'] && $this->qualifyRequest($this->config['homepageCustomHTMLoneAuth'])) {
-					$item .= ($this->config['customHTMLone'] !== '') ? $this->config['customHTMLone'] : '';
-				}
-				break;
-			case 'homepageOrdercustomhtmlTwo':
-				if ($this->config['homepageCustomHTMLtwoEnabled'] && $this->qualifyRequest($this->config['homepageCustomHTMLtwoAuth'])) {
-					$item .= ($this->config['customHTMLtwo'] !== '') ? $this->config['customHTMLtwo'] : '';
-				}
-				break;
-			case 'homepageOrdernotice':
-				break;
-			case 'homepageOrdernoticeguest':
-				break;
-			case 'homepageOrderqBittorrent':
-				if ($this->config['homepageqBittorrentEnabled'] && $this->qualifyRequest($this->config['homepageqBittorrentAuth'])) {
-					if ($this->config['qBittorrentCombine']) {
-						$item .= '
-	                <script>
-	                // homepageOrderqBittorrent
-	                buildDownloaderCombined(\'qBittorrent\');
-	                homepageDownloader("qBittorrent", "' . $this->config['homepageDownloadRefresh'] . '");
-	                // End homepageOrderqBittorrent
-	                </script>
-	                ';
-					} else {
-						$item .= '<div class="white-box homepage-loading-box"><h2 class="text-center" lang="en">Loading Download Queue...</h2></div>';
-						$item .= '
-	                <script>
-	                // homepageOrderqBittorrent
-	                $("#' . $homepageItem . '").html(buildDownloader("qBittorrent"));
-	                homepageDownloader("qBittorrent", "' . $this->config['homepageDownloadRefresh'] . '");
-	                // End homepageOrderqBittorrent
-	                </script>
-	                ';
-					}
-				}
-				break;
-			case 'homepageOrderrTorrent':
-				if ($this->config['homepagerTorrentEnabled'] && $this->qualifyRequest($this->config['homepagerTorrentAuth'])) {
-					if ($this->config['rTorrentCombine']) {
-						$item .= '
-	                <script>
-	                // homepageOrderrTorrent
-	                buildDownloaderCombined(\'rTorrent\');
-	                homepageDownloader("rTorrent", "' . $this->config['homepageDownloadRefresh'] . '");
-	                // End homepageOrderrTorrent
-	                </script>
-	                ';
-					} else {
-						$item .= '<div class="white-box homepage-loading-box"><h2 class="text-center" lang="en">Loading Download Queue...</h2></div>';
-						$item .= '
-	                <script>
-	                // homepageOrderrTorrent
-	                $("#' . $homepageItem . '").html(buildDownloader("rTorrent"));
-	                homepageDownloader("rTorrent", "' . $this->config['homepageDownloadRefresh'] . '");
-	                // End homepageOrderrTorrent
-	                </script>
-	                ';
-					}
-				}
-				break;
-			case 'homepageOrderdeluge':
-				if ($this->config['homepageDelugeEnabled'] && $this->qualifyRequest($this->config['homepageDelugeAuth'])) {
-					if ($this->config['delugeCombine']) {
-						$item .= '
-					<script>
-					// Deluge
-					buildDownloaderCombined(\'deluge\');
-					homepageDownloader("deluge", "' . $this->config['homepageDownloadRefresh'] . '");
-					// End Deluge
-					</script>
-					';
-					} else {
-						$item .= '<div class="white-box homepage-loading-box"><h2 class="text-center" lang="en">Loading Download Queue...</h2></div>';
-						$item .= '
-					<script>
-					// Deluge
-					$("#' . $homepageItem . '").html(buildDownloader("deluge"));
-					homepageDownloader("deluge", "' . $this->config['homepageDownloadRefresh'] . '");
-					// End Deluge
-					</script>
-					';
-					}
-				}
-				break;
-			case 'homepageOrdertransmission':
-				if ($this->config['homepageTransmissionEnabled'] && $this->qualifyRequest($this->config['homepageTransmissionAuth'])) {
-					if ($this->config['transmissionCombine']) {
-						$item .= '
-					<script>
-					// Transmission
-					buildDownloaderCombined(\'transmission\');
-					homepageDownloader("transmission", "' . $this->config['homepageDownloadRefresh'] . '");
-					// End Transmission
-					</script>
-					';
-					} else {
-						$item .= '<div class="white-box homepage-loading-box"><h2 class="text-center" lang="en">Loading Download Queue...</h2></div>';
-						$item .= '
-					<script>
-					// Transmission
-					$("#' . $homepageItem . '").html(buildDownloader("transmission"));
-					homepageDownloader("transmission", "' . $this->config['homepageDownloadRefresh'] . '");
-					// End Transmission
-					</script>
-					';
-					}
-				}
-				break;
-			case 'homepageOrdernzbget':
-				if ($this->config['homepageNzbgetEnabled'] && $this->qualifyRequest($this->config['homepageNzbgetAuth'])) {
-					if ($this->config['nzbgetCombine']) {
-						$item .= '
-					<script>
-					// NZBGet
-					buildDownloaderCombined(\'nzbget\');
-					homepageDownloader("nzbget", "' . $this->config['homepageDownloadRefresh'] . '");
-					// End NZBGet
-					</script>
-					';
-					} else {
-						$item .= '<div class="white-box homepage-loading-box"><h2 class="text-center" lang="en">Loading Download Queue...</h2></div>';
-						$item .= '
-					<script>
-					// NZBGet
-					$("#' . $homepageItem . '").html(buildDownloader("nzbget"));
-					homepageDownloader("nzbget", "' . $this->config['homepageDownloadRefresh'] . '");
-					// End NZBGet
-					</script>
-					';
-					}
-				}
-				break;
-			case 'homepageOrderjdownloader':
-				if ($this->config['homepageJdownloaderEnabled'] && $this->qualifyRequest($this->config['homepageJdownloaderAuth'])) {
-					if ($this->config['jdownloaderCombine']) {
-						$item .= '
-					<script>
-					// JDownloader
-					buildDownloaderCombined(\'jdownloader\');
-					homepageDownloader("jdownloader", "' . $this->config['homepageDownloadRefresh'] . '");
-					// End JDownloader
-					</script>
-					';
-					} else {
-						$item .= '<div class="white-box homepage-loading-box"><h2 class="text-center" lang="en">Loading Download Queue...</h2></div>';
-						$item .= '
-					<script>
-					// JDownloader
-					$("#' . $homepageItem . '").html(buildDownloader("jdownloader"));
-					homepageDownloader("jdownloader", "' . $this->config['homepageDownloadRefresh'] . '");
-					// End JDownloader
-					</script>
-					';
-					}
-				}
-				break;
-			case 'homepageOrdersabnzbd':
-				if ($this->config['homepageSabnzbdEnabled'] && $this->qualifyRequest($this->config['homepageSabnzbdAuth'])) {
-					if ($this->config['sabnzbdCombine']) {
-						$item .= '
-					<script>
-					// SabNZBd
-					buildDownloaderCombined(\'sabnzbd\');
-					homepageDownloader("sabnzbd", "' . $this->config['homepageDownloadRefresh'] . '");
-					// End SabNZBd
-					</script>
-					';
-					} else {
-						$item .= '<div class="white-box homepage-loading-box"><h2 class="text-center" lang="en">Loading Download Queue...</h2></div>';
-						$item .= '
-					<script>
-					// SabNZBd
-					$("#' . $homepageItem . '").html(buildDownloader("sabnzbd"));
-					homepageDownloader("sabnzbd", "' . $this->config['homepageDownloadRefresh'] . '");
-					// End SabNZBd
-					</script>
-					';
-					}
-				}
-				break;
-			case 'homepageOrderplexnowplaying':
-				if ($this->config['homepagePlexStreams']) {
-					$item .= '<div class="white-box homepage-loading-box"><h2 class="text-center" lang="en">Loading Now Playing...</h2></div>';
-					$item .= '
-				<script>
-				// Plex Stream
-				homepageStream("plex", "' . $this->config['homepageStreamRefresh'] . '");
-				// End Plex Stream
-				</script>
-				';
-				}
-				break;
-			case 'homepageOrderplexrecent':
-				if ($this->config['homepagePlexRecent']) {
-					$item .= '<div class="white-box homepage-loading-box"><h2 class="text-center" lang="en">Loading Recent...</h2></div>';
-					$item .= '
-				<script>
-				// Plex Recent
-				homepageRecent("plex", "' . $this->config['homepageRecentRefresh'] . '");
-				// End Plex Recent
-				</script>
-				';
-				}
-				break;
-			case 'homepageOrderplexplaylist':
-				if ($this->config['homepagePlexPlaylist']) {
-					$item .= '<div class="white-box homepage-loading-box"><h2 class="text-center" lang="en">Loading Playlists...</h2></div>';
-					$item .= '
-				<script>
-				// Plex Playlist
-				homepagePlaylist("plex");
-				// End Plex Playlist
-				</script>
-				';
-				}
-				break;
-			case 'homepageOrderembynowplaying':
-				if ($this->config['homepageEmbyStreams'] && $this->config['homepageEmbyEnabled']) {
-					$item .= '<div class="white-box homepage-loading-box"><h2 class="text-center" lang="en">Loading Now Playing...</h2></div>';
-					$item .= '
-				<script>
-				// Emby Stream
-				homepageStream("emby", "' . $this->config['homepageStreamRefresh'] . '");
-				// End Emby Stream
-				</script>
-				';
-				}
-				break;
-			case 'homepageOrderembyrecent':
-				if ($this->config['homepageEmbyRecent'] && $this->config['homepageEmbyEnabled']) {
-					$item .= '<div class="white-box homepage-loading-box"><h2 class="text-center" lang="en">Loading Recent...</h2></div>';
-					$item .= '
-				<script>
-				// Emby Recent
-				homepageRecent("emby", "' . $this->config['homepageRecentRefresh'] . '");
-				// End Emby Recent
-				</script>
-				';
-				}
-				break;
-			case 'homepageOrderjellyfinnowplaying':
-				if ($this->config['homepageJellyfinStreams'] && $this->config['homepageJellyfinEnabled']) {
-					$item .= '<div class="white-box homepage-loading-box"><h2 class="text-center" lang="en">Loading Now Playing...</h2></div>';
-					$item .= '
-				<script>
-				// Jellyfin Stream
-				homepageStream("jellyfin", "' . $this->config['homepageStreamRefresh'] . '");
-				// End Jellyfin Stream
-				</script>
-				';
-				}
-				break;
-			case 'homepageOrderjellyfinrecent':
-				if ($this->config['homepageJellyfinRecent'] && $this->config['homepageJellyfinEnabled']) {
-					$item .= '<div class="white-box homepage-loading-box"><h2 class="text-center" lang="en">Loading Recent...</h2></div>';
-					$item .= '
-				<script>
-				// Jellyfin Recent
-				homepageRecent("jellyfin", "' . $this->config['homepageRecentRefresh'] . '");
-				// End Jellyfin Recent
-				</script>
-				';
-				}
-				break;
-			case 'homepageOrderombi':
-				if ($this->config['homepageOmbiEnabled']) {
-					$item .= '<div class="white-box homepage-loading-box"><h2 class="text-center" lang="en">Loading Requests...</h2></div>';
-					$item .= '
-				<script>
-				// Ombi Requests
-				homepageRequests("' . $this->config['ombiRefresh'] . '");
-				// End Ombi Requests
-				</script>
-				';
-				}
-				break;
-			case 'homepageOrdercalendar':
-				if (
-					($this->config['homepageLidarrEnabled'] && $this->qualifyRequest($this->config['homepageLidarrAuth'])) ||
-					($this->config['homepageSonarrEnabled'] && $this->qualifyRequest($this->config['homepageSonarrAuth'])) ||
-					($this->config['homepageRadarrEnabled'] && $this->qualifyRequest($this->config['homepageRadarrAuth'])) ||
-					($this->config['homepageSickrageEnabled'] && $this->qualifyRequest($this->config['homepageSickrageAuth'])) ||
-					($this->config['homepageCouchpotatoEnabled'] && $this->qualifyRequest($this->config['homepageCouchpotatoAuth'])) ||
-					($this->config['homepageCalendarEnabled'] && $this->qualifyRequest($this->config['homepageCalendarAuth']) && $this->config['calendariCal'] !== '')
-				) {
-					$item .= '
-				<div id="calendar" class="fc fc-ltr m-b-30"></div>
-				<script>
-				// Calendar
-				homepageCalendar("' . $this->config['calendarRefresh'] . '");
-				// End Calendar
-				</script>
-				';
-				}
-				break;
-			case 'homepageOrderhealthchecks':
-				if ($this->config['homepageHealthChecksEnabled'] && $this->qualifyRequest($this->config['homepageHealthChecksAuth'])) {
-					$item .= '<div class="white-box homepage-loading-box"><h2 class="text-center" lang="en">Loading Health Checks...</h2></div>';
-					$item .= '
-				<script>
-				// Health Checks
-				homepageHealthChecks("' . $this->config['healthChecksTags'] . '","' . $this->config['homepageHealthChecksRefresh'] . '");
-				// End Health Checks
-				</script>
-				';
-				}
-				break;
-			case 'homepageOrderunifi':
-				if ($this->config['homepageUnifiEnabled'] && $this->qualifyRequest($this->config['homepageUnifiAuth'])) {
-					$item .= '<div class="white-box homepage-loading-box"><h2 class="text-center" lang="en">Loading Unifi...</h2></div>';
-					$item .= '
-				<script>
-				// Unifi
-				homepageUnifi("' . $this->config['homepageHealthChecksRefresh'] . '");
-				// End Unifi
-				</script>
-				';
-				}
-				break;
-			case 'homepageOrdertautulli':
-				if ($this->config['homepageTautulliEnabled'] && $this->qualifyRequest($this->config['homepageTautulliAuth'])) {
-					$item .= '<div class="white-box homepage-loading-box"><h2 class="text-center" lang="en">Loading Tautulli...</h2></div>';
-					$item .= '
-				<script>
-				// Tautulli
-				homepageTautulli("' . $this->config['homepageTautulliRefresh'] . '");
-				// End Tautulli
-				</script>
-				';
-				}
-				break;
-			case 'homepageOrderPihole':
-				if ($this->config['homepagePiholeEnabled']) {
-					$item .= '<div class="white-box homepage-loading-box"><h2 class="text-center" lang="en">Loading Pi-hole Stats...</h2></div>';
-					$item .= '
-				<script>
-				// Pi-hole Stats
-				homepagePihole("' . $this->config['homepagePiholeRefresh'] . '");
-				// End Pi-hole Stats
-				</script>
-				';
-				}
-				break;
-			case 'homepageOrderMonitorr':
-				if ($this->config['homepageMonitorrEnabled']) {
-					$item .= '<div class="white-box homepage-loading-box"><h2 class="text-center" lang="en">Loading Monitorr...</h2></div>';
-					$item .= '
-				<script>
-				// Monitorr
-				homepageMonitorr("' . $this->config['homepageMonitorrRefresh'] . '");
-				// End Monitorr
-				</script>
-				';
-				}
-				break;
-			case 'homepageOrderWeatherAndAir':
-				if ($this->config['homepageWeatherAndAirEnabled']) {
-					$item .= '<div class="white-box homepage-loading-box"><h2 class="text-center" lang="en">Loading Weather And Air...</h2></div>';
-					$item .= '
-				<script>
-				// Weather And Air
-				homepageWeatherAndAir("' . $this->config['homepageWeatherAndAirRefresh'] . '");
-				// End Weather And Air
-				</script>
-				';
-				}
-				break;
-			case 'homepageOrderSpeedtest':
-				if ($this->config['homepageSpeedtestEnabled']) {
-					$item .= '<div class="white-box homepage-loading-box"><h2 class="text-center" lang="en">Loading Speedtest...</h2></div>';
-					$item .= '
-				<script>
-				// Speedtest
-				homepageSpeedtest("' . $this->config['homepageSpeedtestRefresh'] . '");
-				// End Speedtest
-				</script>
-				';
-				}
-				break;
-			case 'homepageOrderNetdata':
-				if ($this->config['homepageNetdataEnabled']) {
-					$item .= '<div class="white-box homepage-loading-box"><h2 class="text-center" lang="en">Loading Netdata...</h2></div>';
-					$item .= '
-				<script>
-				// Netdata
-				homepageNetdata("' . $this->config['homepageNetdataRefresh'] . '");
-				// End Netdata
-				</script>
-				';
-				}
-				break;
-			case 'homepageOrderOctoprint':
-				if ($this->config['homepageOctoprintEnabled']) {
-					$item .= '<div class="white-box homepage-loading-box"><h2 class="text-center" lang="en">Loading Octoprint...</h2></div>';
-					$item .= '
-				<script>
-				// Octoprint
-				homepageOctoprint("' . $this->config['homepageOctoprintRefresh'] . '");
-				// End Octoprint
-				</script>
-				';
-				}
-				break;
-			case 'homepageOrderSonarrQueue':
-				if ($this->config['homepageSonarrQueueEnabled'] && $this->qualifyRequest($this->config['homepageSonarrQueueAuth'])) {
-					if ($this->config['homepageSonarrQueueCombine']) {
-						$item .= '
-					<script>
-					// Sonarr Queue
-					buildDownloaderCombined(\'sonarr\');
-					homepageDownloader("sonarr", "' . $this->config['homepageSonarrQueueRefresh'] . '");
-					// End Sonarr Queue
-					</script>
-					';
-					} else {
-						$item .= '<div class="white-box homepage-loading-box"><h2 class="text-center" lang="en">Loading Download Queue...</h2></div>';
-						$item .= '
-					<script>
-					// Sonarr Queue
-					$("#' . $homepageItem . '").html(buildDownloader("sonarr"));
-					homepageDownloader("sonarr", "' . $this->config['homepageSonarrQueueRefresh'] . '");
-					// End Sonarr Queue
-					</script>
-					';
-					}
-				}
-				break;
-			case 'homepageOrderRadarrQueue':
-				if ($this->config['homepageRadarrQueueEnabled'] && $this->qualifyRequest($this->config['homepageRadarrQueueAuth'])) {
-					if ($this->config['homepageRadarrQueueCombine']) {
-						$item .= '
-					<script>
-					// Radarr Queue
-					buildDownloaderCombined(\'radarr\');
-					homepageDownloader("radarr", "' . $this->config['homepageRadarrQueueRefresh'] . '");
-					// End Radarr Queue
-					</script>
-					';
-					} else {
-						$item .= '<div class="white-box homepage-loading-box"><h2 class="text-center" lang="en">Loading Download Queue...</h2></div>';
-						$item .= '
-					<script>
-					// Radarr Queue
-					$("#' . $homepageItem . '").html(buildDownloader("radarr"));
-					homepageDownloader("radarr", "' . $this->config['homepageRadarrQueueRefresh'] . '");
-					// End Radarr Queue
-					</script>
-					';
-					}
-				}
-				break;
-			default:
-				# code...
-				break;
-		}
-		return $item . '</div>';
 	}
 	
 	public function buildHomepageSettings()
@@ -4086,6 +3837,14 @@ class Organizr
 						$class .= ' faded';
 					}
 					break;
+				case 'homepageOrderjellyfinnowplaying':
+				case 'homepageOrderjellyfinrecent':
+					$class = 'bg-jellyfin';
+					$image = 'plugins/images/tabs/jellyfin.png';
+					if (!$this->config['homepageJellyfinEnabled']) {
+						$class .= ' faded';
+					}
+					break;
 				case 'homepageOrderombi':
 					$class = 'bg-inverse';
 					$image = 'plugins/images/tabs/ombi.png';
@@ -4096,7 +3855,7 @@ class Organizr
 				case 'homepageOrdercalendar':
 					$class = 'bg-primary';
 					$image = 'plugins/images/tabs/calendar.png';
-					if (!$this->config['homepageSonarrEnabled'] && !$this->config['homepageRadarrEnabled'] && !$this->config['homepageSickrageEnabled'] && !$this->config['homepageCouchpotatoEnabled']) {
+					if (!$this->config['homepageCalendarEnabled'] && !$this->config['homepageSonarrEnabled'] && !$this->config['homepageRadarrEnabled'] && !$this->config['homepageSickrageEnabled'] && !$this->config['homepageCouchpotatoEnabled']) {
 						$class .= ' faded';
 					}
 					break;
@@ -4184,6 +3943,13 @@ class Organizr
 						$class .= ' faded';
 					}
 					break;
+				case 'homepageOrderJackett':
+					$class = 'bg-inverse';
+					$image = 'plugins/images/tabs/jackett.png';
+					if (!$this->config['homepageJackettEnabled']) {
+						$class .= ' faded';
+					}
+					break;
 				default:
 					$class = 'blue-bg';
 					$image = '';
@@ -4210,136 +3976,22 @@ class Organizr
 		$this->groupOptions = $this->groupSelect();
 	}
 	
+	public function getSettingsHomepageItem($item)
+	{
+		$items = $this->getSettingsHomepage();
+		foreach ($items as $k => $v) {
+			if (strtolower($v['name']) === strtolower($item)) {
+				return $v;
+			}
+		}
+		$this->setAPIResponse('error', 'Homepage item was not found', 404);
+		return null;
+	}
+	
 	public function getSettingsHomepage()
 	{
 		$this->setGroupOptionsVariable();
-		return array(
-			$this->calendarSettingsArray(),
-			$this->plexSettingsArray(),
-			$this->embySettingsArray(),
-			$this->jellyfinSettingsArray(),
-			$this->jDownloaderSettingsArray(),
-			$this->sabNZBdSettingsArray(),
-			$this->nzbgetSettingsArray(),
-			$this->transmissionSettingsArray(),
-			$this->qBittorrentSettingsArray(),
-			$this->rTorrentSettingsArray(),
-			$this->delugeSettingsArray(),
-			$this->sonarrSettingsArray(),
-			$this->lidarrSettingsArray(),
-			$this->radarrSettingsArray(),
-			$this->couchPotatoSettingsArray(),
-			$this->sickrageSettingsArray(),
-			$this->ombiSettingsArray(),
-			$this->unifiSettingsArray(),
-			$this->healthChecksSettingsArray(),
-			$this->piholeSettingsArray(),
-			$this->tautulliSettingsArray(),
-			$this->monitorrSettingsArray(),
-			$this->weatherSettingsArray(),
-			$this->speedTestSettingsArray(),
-			$this->netdataSettingsArray(),
-			$this->octoprintSettingsArray(),
-			array(
-				'name' => 'CustomHTML-1',
-				'enabled' => strpos('personal,business', $this->config['license']) !== false,
-				'image' => 'plugins/images/tabs/custom1.png',
-				'category' => 'Custom',
-				'settings' => array(
-					'Enable' => array(
-						array(
-							'type' => 'switch',
-							'name' => 'homepageCustomHTMLoneEnabled',
-							'label' => 'Enable',
-							'value' => $this->config['homepageCustomHTMLoneEnabled']
-						),
-						array(
-							'type' => 'select',
-							'name' => 'homepageCustomHTMLoneAuth',
-							'label' => 'Minimum Authentication',
-							'value' => $this->config['homepageCustomHTMLoneAuth'],
-							'options' => $this->groupOptions
-						)
-					),
-					'Code' => array(
-						array(
-							'type' => 'textbox',
-							'name' => 'customHTMLone',
-							'class' => 'hidden customHTMLoneTextarea',
-							'label' => '',
-							'value' => $this->config['customHTMLone'],
-						),
-						array(
-							'type' => 'html',
-							'override' => 12,
-							'label' => 'Custom HTML/JavaScript',
-							'html' => '<button type="button" class="hidden savecustomHTMLoneTextarea btn btn-info btn-circle pull-right m-r-5 m-l-10"><i class="fa fa-save"></i> </button><div id="customHTMLoneEditor" style="height:300px">' . htmlentities($this->config['customHTMLone']) . '</div>'
-						),
-					)
-				)
-			),
-			array(
-				'name' => 'CustomHTML-2',
-				'enabled' => strpos('personal,business', $this->config['license']) !== false,
-				'image' => 'plugins/images/tabs/custom2.png',
-				'category' => 'Custom',
-				'settings' => array(
-					'Enable' => array(
-						array(
-							'type' => 'switch',
-							'name' => 'homepageCustomHTMLtwoEnabled',
-							'label' => 'Enable',
-							'value' => $this->config['homepageCustomHTMLtwoEnabled']
-						),
-						array(
-							'type' => 'select',
-							'name' => 'homepageCustomHTMLtwoAuth',
-							'label' => 'Minimum Authentication',
-							'value' => $this->config['homepageCustomHTMLtwoAuth'],
-							'options' => $this->groupOptions
-						)
-					),
-					'Code' => array(
-						array(
-							'type' => 'textbox',
-							'name' => 'customHTMLtwo',
-							'class' => 'hidden customHTMLtwoTextarea',
-							'label' => '',
-							'value' => $this->config['customHTMLtwo'],
-						),
-						array(
-							'type' => 'html',
-							'override' => 12,
-							'label' => 'Custom HTML/JavaScript',
-							'html' => '<button type="button" class="hidden savecustomHTMLtwoTextarea btn btn-info btn-circle pull-right m-r-5 m-l-10"><i class="fa fa-save"></i> </button><div id="customHTMLtwoEditor" style="height:300px">' . htmlentities($this->config['customHTMLtwo']) . '</div>'
-						),
-					)
-				)
-			),
-			array(
-				'name' => 'Misc',
-				'enabled' => true,
-				'image' => 'plugins/images/organizr/logo-no-border.png',
-				'category' => 'Custom',
-				'settings' => array(
-					'YouTube' => array(
-						array(
-							'type' => 'input',
-							'name' => 'youtubeAPI',
-							'label' => 'Youtube API Key',
-							'value' => $this->config['youtubeAPI'],
-							'help' => 'Please make sure to input this API key as the organizr one gets limited'
-						),
-						array(
-							'type' => 'html',
-							'override' => 6,
-							'label' => 'Instructions',
-							'html' => '<a href="https://www.slickremix.com/docs/get-api-key-for-youtube/" target="_blank">Click here for instructions</a>'
-						),
-					)
-				)
-			),
-		);
+		return $this->getHomepageSettingsCombined();
 	}
 	
 	public function isTabNameTaken($name, $id = null)
@@ -4688,6 +4340,19 @@ class Organizr
 			}
 		}
 		return $newData;
+	}
+	
+	public function getTabByIdCheckUser($id)
+	{
+		$tabInfo = $this->getTabById($id);
+		if ($tabInfo) {
+			if ($this->qualifyRequest($tabInfo['group_id'], true)) {
+				return $tabInfo;
+			}
+		} else {
+			$this->setAPIResponse('error', 'id not found', 404);
+			return false;
+		}
 	}
 	
 	public function deleteTab($id)
@@ -5232,7 +4897,7 @@ class Organizr
 	public function getThemesGithub()
 	{
 		$url = 'https://raw.githubusercontent.com/causefx/Organizr/v2-themes/themes.json';
-		$options = (localURL($url)) ? array('verify' => false) : array();
+		$options = ($this->localURL($url)) ? array('verify' => false) : array();
 		$response = Requests::get($url, array(), $options);
 		if ($response->success) {
 			return json_decode($response->body, true);
@@ -5243,12 +4908,49 @@ class Organizr
 	public function getPluginsGithub()
 	{
 		$url = 'https://raw.githubusercontent.com/causefx/Organizr/v2-plugins/plugins.json';
-		$options = (localURL($url)) ? array('verify' => false) : array();
+		$options = ($this->localURL($url)) ? array('verify' => false) : array();
 		$response = Requests::get($url, array(), $options);
 		if ($response->success) {
 			return json_decode($response->body, true);
 		}
 		return false;
+	}
+	
+	public function getOpenCollectiveBackers()
+	{
+		$url = 'https://opencollective.com/organizr/members/users.json?limit=100&offset=0';
+		$options = ($this->localURL($url)) ? array('verify' => false) : array();
+		$response = Requests::get($url, array(), $options);
+		if ($response->success) {
+			$api = json_decode($response->body, true);
+			$this->setAPIResponse('success', '', 200, $api);
+			return $api;
+		}
+		$this->setAPIResponse('error', 'Error connecting to Open Collective', 409);
+		return false;
+	}
+	
+	public function getOrganizrSmtpFromAPI()
+	{
+		$url = 'https://api.organizr.app/?cmd=smtp';
+		$options = ($this->localURL($url)) ? array('verify' => false) : array();
+		$response = Requests::get($url, array(), $options);
+		if ($response->success) {
+			return json_decode($response->body, true);
+		}
+		return false;
+	}
+	
+	public function saveOrganizrSmtpFromAPI()
+	{
+		$api = $this->getOrganizrSmtpFromAPI();
+		if ($api) {
+			$this->updateConfigItems($api['response']['data']);
+			$this->setAPIResponse(null, 'SMTP activated with Organizr SMTP account');
+			return true;
+		} else {
+			return false;
+		}
 	}
 	
 	public function guestHash($start, $end)
@@ -5627,7 +5329,7 @@ class Organizr
 			$this->setAPIResponse('error', 'Id was not supplied', 422);
 			return false;
 		}
-		if ($id !== $this->user['userID']) {
+		if ((int)$id !== $this->user['userID']) {
 			if (!$this->qualifyRequest('1', true)) {
 				return false;
 			}
@@ -5665,8 +5367,9 @@ class Organizr
 		}
 		if (array_key_exists('group_id', $array)) {
 			if ($array['group_id'] == '') {
-				$this->setAPIResponse('error', 'group_id was set but empty', 409);
-				return false;
+				$array['group_id'] = 0;
+				//$this->setAPIResponse('error', 'group_id was set but empty', 409);
+				//return false;
 			}
 			if (!$this->qualifyRequest('1', false)) {
 				$this->setAPIResponse('error', 'Cannot change your own group_id', 401);
@@ -6062,9 +5765,9 @@ class Organizr
 			$response = Requests::post($url, $headers, $data, array());
 			$json = json_decode($response->body, true);
 			$errors = !empty($json['errors']);
-			$success = !empty($json['user']);
+			$success = empty($json['errors']);
 			//Use This for later
-			$errorMessage = "";
+			$errorMessage = '';
 			if ($errors) {
 				foreach ($json['errors'] as $error) {
 					if (isset($error['message']) && isset($error['field'])) {
@@ -6243,6 +5946,7 @@ class Organizr
 			$url = $this->cleanPath($url);
 			$options = ($this->localURL($url)) ? array('verify' => false) : array();
 			$headers = [];
+			$apiData = $this->json_validator($this->apiData($requestObject)) ? json_encode($this->apiData($requestObject)) : $this->apiData($requestObject);
 			if ($header) {
 				if ($requestObject->hasHeader($header)) {
 					$headerKey = $requestObject->getHeaderLine($header);
@@ -6254,13 +5958,13 @@ class Organizr
 					$call = Requests::get($url, $headers, $options);
 					break;
 				case 'POST':
-					$call = Requests::post($url, $headers, $this->apiData($requestObject), $options);
+					$call = Requests::post($url, $headers, $apiData, $options);
 					break;
 				case 'DELETE':
 					$call = Requests::delete($url, $headers, $options);
 					break;
 				case 'PUT':
-					$call = Requests::put($url, $headers, $this->apiData($requestObject), $options);
+					$call = Requests::put($url, $headers, $apiData, $options);
 					break;
 				default:
 					$call = Requests::get($url, $headers, $options);
@@ -6317,6 +6021,32 @@ class Organizr
 		
 	}
 	
+	public function getIcons()
+	{
+		$term = $_GET['search'] ?? null;
+		$page = $_GET['page'] ?? 1;
+		$limit = $_GET['limit'] ?? 20;
+		$offset = ($page * $limit) - $limit;
+		$goodIcons['results'] = [];
+		$goodIcons['limit'] = $limit;
+		$goodIcons['page'] = $page;
+		$goodIcons['term'] = $term;
+		$allIcons = file_get_contents($this->root . '/js/icons.json');
+		$iconListing = json_decode($allIcons, true);
+		foreach ($iconListing as $setKey => $set) {
+			foreach ($set['children'] as $k => $v) {
+				if (stripos($v['text'], $term) !== false || !$term) {
+					$goodIcons['results'][] = $v;
+				}
+			}
+		}
+		$total = count($goodIcons['results']);
+		$goodIcons['total'] = $total;
+		$goodIcons['results'] = array_slice($goodIcons['results'], $offset, $limit);
+		$goodIcons['pagination']['more'] = $page < (ceil($total / $limit));
+		return $goodIcons;
+	}
+	
 	protected function processQueries(array $request, $migration = false)
 	{
 		$results = array();
@@ -6332,6 +6062,8 @@ class Organizr
 						$results[$keyName] = $query->fetchAll();
 						break;
 					case 'fetch':
+						// PHP 8 Fix?
+						$query->setRowClass(null);
 						$results[$keyName] = $query->fetch();
 						break;
 					case 'getAffectedRows':
@@ -6341,6 +6073,8 @@ class Organizr
 						$results[$keyName] = $query->getRowCount();
 						break;
 					case 'fetchSingle':
+						// PHP 8 Fix?
+						$query->setRowClass(null);
 						$results[$keyName] = $query->fetchSingle();
 						break;
 					case 'query':
