@@ -8531,6 +8531,7 @@ function searchJackett(){
 	}
 	$.fn.dataTable.ext.errMode = 'none';
 	$('#jackettDataTable').DataTable().destroy();
+	let preferBlackholeDownload = activeInfo.settings.homepage.jackett.homepageJackettBackholeDownload;
 	let jackettTable = $("#jackettDataTable")
 		.on( 'error.dt', function ( e, settings, techNote, message ) {
 			console.log( 'An error has been reported by DataTables: ', message );
@@ -8579,7 +8580,9 @@ function searchJackett(){
 				{ data: 'MagnetUri',
 					render: function ( data, type, row ) {
 						if ( type === 'display' || type === 'filter' ) {
-							if(data !== null){
+							if(preferBlackholeDownload === true && row.BlackholeLink !== null){
+								return '<a onclick="jackettDownload(\''+row.BlackholeLink+'\');return false;" href="#"><i class="fa fa-cloud-download"></i></a>';
+							}else if(data !== null){
 								return '<a href="'+data+'" target="_blank"><i class="fa fa-magnet"></i></a>';
 							}else if(row.Details !== null){
 								return '<a href="'+row.Details+'" target="_blank"><i class="fa fa-cloud-download"></i></a>';
@@ -8603,6 +8606,19 @@ function searchJackett(){
 			}
 		} );
 
+}
+function jackettDownload(url) {
+	let blackholeLink=url.substring(url.indexOf("/bh/"));
+	var post = {
+		url: blackholeLink
+	};
+	organizrAPI2('POST', 'api/v2/homepage/jackett/download/', post, true)
+		.success(function() {
+			message('Torrent downloaded','',activeInfo.settings.notifications.position,"#FFF","success","5000");
+		})
+		.fail(function(xhr) {
+			OrganizrApiError(xhr, 'Error downloading torrent');
+		});
 }
 function homepageOctoprint(timeout){
     var timeout = (typeof timeout !== 'undefined') ? timeout : activeInfo.settings.homepage.refresh.homepageOctoprintRefresh;
