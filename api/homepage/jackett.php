@@ -44,10 +44,10 @@ trait JackettHomepageItem
 				'Options' => array(
 				    array(
                 	    'type' => 'switch',
-                		'name' => 'homepageJackettBackHoleDownload',
+                		'name' => 'homepageJackettBackholeDownload',
                 		'label' => 'Prefer black hole download',
                 		'help' => 'Prefer black hole download link instead of direct/magnet download',
-                		'value' => $this->config['homepageJackettBackHoleDownload']
+                		'value' => $this->config['homepageJackettBackholeDownload']
                 	)
                 ),
 			)
