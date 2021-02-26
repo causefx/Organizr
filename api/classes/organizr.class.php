@@ -60,7 +60,7 @@ class Organizr
 	
 	// ===================================
 	// Organizr Version
-	public $version = '2.1.195';
+	public $version = '2.1.235';
 	// ===================================
 	// Quick php Version check
 	public $minimumPHP = '7.2';
@@ -395,6 +395,7 @@ class Organizr
 		return ($encode) ? json_encode($files) : $files;
 	}
 	
+	/* Old function
 	public function pluginFiles($type)
 	{
 		$files = '';
@@ -406,6 +407,50 @@ class Organizr
 				break;
 			case 'css':
 				foreach (glob(dirname(__DIR__, 1) . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . 'css' . DIRECTORY_SEPARATOR . "*.css") as $filename) {
+					$files .= '<link href="api/plugins/css/' . basename($filename) . '?v=' . $this->fileHash . '" rel="stylesheet">';
+				}
+				break;
+			default:
+				break;
+		}
+		return $files;
+	}
+	*/
+	public function pluginFiles($type, $settings = false)
+	{
+		$files = '';
+		switch ($type) {
+			case 'js':
+				foreach (glob(dirname(__DIR__, 1) . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . 'js' . DIRECTORY_SEPARATOR . '*.js') as $filename) {
+					$keyOriginal = strtoupper(basename($filename, '.js'));
+					$key = str_replace('-SETTINGS', '', $keyOriginal);
+					$continue = false;
+					if ($settings) {
+						if (stripos($keyOriginal, '-SETTINGS') !== false) {
+							$continue = true;
+						}
+					} else {
+						if (stripos($keyOriginal, '-SETTINGS') == false) {
+							$continue = true;
+						}
+					}
+					switch ($key) {
+						case 'PHP-MAILER':
+							$key = 'PHPMAILER';
+							break;
+						default:
+							$key = $key;
+					}
+					if ($this->config[$key . '-enabled'] || $settings) {
+						if ($continue) {
+							$files .= '<script src="api/plugins/js/' . basename($filename) . '?v=' . $this->fileHash . '" defer="true"></script>';
+						}
+					}
+					
+				}
+				break;
+			case 'css':
+				foreach (glob(dirname(__DIR__, 1) . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . 'css' . DIRECTORY_SEPARATOR . '*.css') as $filename) {
 					$files .= '<link href="api/plugins/css/' . basename($filename) . '?v=' . $this->fileHash . '" rel="stylesheet">';
 				}
 				break;
@@ -1389,7 +1434,7 @@ class Organizr
 					'name' => 'headerColor',
 					'label' => 'Nav Bar Color',
 					'value' => $this->config['headerColor'],
-					'class' => 'pick-a-color',
+					'class' => 'pick-a-color-custom-options',
 					'attr' => 'data-original="' . $this->config['headerColor'] . '"'
 				),
 				array(
@@ -1397,7 +1442,7 @@ class Organizr
 					'name' => 'headerTextColor',
 					'label' => 'Nav Bar Text Color',
 					'value' => $this->config['headerTextColor'],
-					'class' => 'pick-a-color',
+					'class' => 'pick-a-color-custom-options',
 					'attr' => 'data-original="' . $this->config['headerTextColor'] . '"'
 				),
 				array(
@@ -1405,7 +1450,7 @@ class Organizr
 					'name' => 'sidebarColor',
 					'label' => 'Side Bar Color',
 					'value' => $this->config['sidebarColor'],
-					'class' => 'pick-a-color',
+					'class' => 'pick-a-color-custom-options',
 					'attr' => 'data-original="' . $this->config['sidebarColor'] . '"'
 				),
 				array(
@@ -1413,7 +1458,7 @@ class Organizr
 					'name' => 'sidebarTextColor',
 					'label' => 'Side Bar Text Color',
 					'value' => $this->config['sidebarTextColor'],
-					'class' => 'pick-a-color',
+					'class' => 'pick-a-color-custom-options',
 					'attr' => 'data-original="' . $this->config['sidebarTextColor'] . '"'
 				),
 				array(
@@ -1421,7 +1466,7 @@ class Organizr
 					'name' => 'accentColor',
 					'label' => 'Accent Color',
 					'value' => $this->config['accentColor'],
-					'class' => 'pick-a-color',
+					'class' => 'pick-a-color-custom-options',
 					'attr' => 'data-original="' . $this->config['accentColor'] . '"'
 				),
 				array(
@@ -1429,7 +1474,7 @@ class Organizr
 					'name' => 'accentTextColor',
 					'label' => 'Accent Text Color',
 					'value' => $this->config['accentTextColor'],
-					'class' => 'pick-a-color',
+					'class' => 'pick-a-color-custom-options',
 					'attr' => 'data-original="' . $this->config['accentTextColor'] . '"'
 				),
 				array(
@@ -1437,7 +1482,7 @@ class Organizr
 					'name' => 'buttonColor',
 					'label' => 'Button Color',
 					'value' => $this->config['buttonColor'],
-					'class' => 'pick-a-color',
+					'class' => 'pick-a-color-custom-options',
 					'attr' => 'data-original="' . $this->config['buttonColor'] . '"'
 				),
 				array(
@@ -1445,7 +1490,7 @@ class Organizr
 					'name' => 'buttonTextColor',
 					'label' => 'Button Text Color',
 					'value' => $this->config['buttonTextColor'],
-					'class' => 'pick-a-color',
+					'class' => 'pick-a-color-custom-options',
 					'attr' => 'data-original="' . $this->config['buttonTextColor'] . '"'
 				),
 				array(
@@ -3428,6 +3473,9 @@ class Organizr
 					'ombiDefaultFilterApproved' => $this->config['ombiDefaultFilterApproved'] ? true : false,
 					'ombiDefaultFilterUnapproved' => $this->config['ombiDefaultFilterUnapproved'] ? true : false,
 					'ombiDefaultFilterDenied' => $this->config['ombiDefaultFilterDenied'] ? true : false
+				),
+				'jackett' => array(
+					'homepageJackettBackholeDownload' => $this->config['homepageJackettBackholeDownload'] ? true : false
 				),
 				'options' => array(
 					'alternateHomepageHeaders' => $this->config['alternateHomepageHeaders'],

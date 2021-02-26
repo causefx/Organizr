@@ -669,14 +669,14 @@ function switchTab(tab, type, split = null){
 				newTab.addClass("show").removeClass('hidden');
                 setTabInfo(cleanClass(tab),'active',true);
 			}else{
-				$("#preloader").fadeIn();
+				//$("#preloader").fadeIn();
 				organizrConsole('Tab Function','Loading new tab for: '+tab);
 				$('#menu-'+tab+' a').children().addClass('tabLoaded');
 				newTab.addClass("show loaded").removeClass('hidden');
 				loadInternal(tabURL,cleanClass(tab), split);
                 setTabInfo(cleanClass(tab),'active',true);
                 setTabInfo(cleanClass(tab),'loaded',true);
-				$("#preloader").fadeOut();
+				//$("#preloader").fadeOut();
 			}
 			break;
 		case 1:
@@ -824,7 +824,7 @@ function reloadTab(tab, type){
 	$("#preloader").fadeOut();
 }
 function reloadCurrentTab(){
-	$("#preloader").fadeIn();
+	//$("#preloader").fadeIn();
 	organizrConsole('Tab Function','Reloading Current tab');
 	var iframe = $('.iFrame-listing').find('.show');
 	var internal = $('.internal-listing').find('.show');
@@ -864,7 +864,7 @@ function reloadCurrentTab(){
 		default:
 			console.error('Tab Function: Action not set');
 	}
-	$("#preloader").fadeOut();
+	//$("#preloader").fadeOut();
 }
 function loadNextTab(){
 	var next = $('#page-wrapper').find('.loaded').attr('data-name');
@@ -1156,7 +1156,7 @@ function buildPluginsItem(array){
 		var href = (v.settings == true) ? '#'+v.idPrefix+'-settings-page' : 'javascript:void(0);';
 		if(v.enabled == true){
 			var activeToggle = `<li><a class="btn default btn-outline disablePlugin" href="javascript:void(0);" data-plugin-name="`+v.name+`" data-config-prefix="`+v.configPrefix+`" data-config-name="`+v.configPrefix+`-enabled"><i class="ti-power-off fa-2x"></i></a></li>`;
-			var settings = `<li><a class="btn default btn-outline popup-with-form" href="`+href+`" data-effect="mfp-3d-unfold"data-plugin-name="`+v.name+`" id="`+v.idPrefix+`-settings-button" data-config-prefix="`+v.configPrefix+`"><i class="ti-panel fa-2x"></i></a></li>`;
+			var settings = `<li><a class="btn default btn-outline popup-with-form" href="`+href+`" data-effect="mfp-3d-unfold"data-plugin-name="`+v.name+`" id="`+v.idPrefix+`-settings-button" data-config-prefix="`+v.configPrefix+`" data-api="${v.api}" data-settings="${v.settings}" data-bind="${v.bind}"><i class="ti-panel fa-2x"></i></a></li>`;
 		}else{
 			var activeToggle = `<li><a class="btn default btn-outline enablePlugin" href="javascript:void(0);" data-plugin-name="`+v.name+`" data-config-prefix="`+v.configPrefix+`" data-config-name="`+v.configPrefix+`-enabled"><i class="ti-plug fa-2x"></i></a></li>`;
 			var settings = '';
@@ -1966,7 +1966,7 @@ function buildCustomizeAppearance(){
             $('.javaThemeTextarea').val(javaThemeEditor.getValue());
             $('#customize-appearance-form-save').removeClass('hidden');
         });
-		$("input.pick-a-color").ColorPickerSliders({
+		$("input.pick-a-color-custom-options").ColorPickerSliders({
 			placement: 'bottom',
 			color: '#987654',
 			hsvpanel: true,
@@ -8531,6 +8531,7 @@ function searchJackett(){
 	}
 	$.fn.dataTable.ext.errMode = 'none';
 	$('#jackettDataTable').DataTable().destroy();
+	let preferBlackholeDownload = activeInfo.settings.homepage.jackett.homepageJackettBackholeDownload;
 	let jackettTable = $("#jackettDataTable")
 		.on( 'error.dt', function ( e, settings, techNote, message ) {
 			console.log( 'An error has been reported by DataTables: ', message );
@@ -8579,7 +8580,9 @@ function searchJackett(){
 				{ data: 'MagnetUri',
 					render: function ( data, type, row ) {
 						if ( type === 'display' || type === 'filter' ) {
-							if(data !== null){
+							if(preferBlackholeDownload === true && row.BlackholeLink !== null){
+								return '<a onclick="jackettDownload(\''+row.BlackholeLink+'\');return false;" href="#"><i class="fa fa-cloud-download"></i></a>';
+							}else if(data !== null){
 								return '<a href="'+data+'" target="_blank"><i class="fa fa-magnet"></i></a>';
 							}else if(row.Details !== null){
 								return '<a href="'+row.Details+'" target="_blank"><i class="fa fa-cloud-download"></i></a>';
@@ -8603,6 +8606,19 @@ function searchJackett(){
 			}
 		} );
 
+}
+function jackettDownload(url) {
+	let blackholeLink=url.substring(url.indexOf("/bh/"));
+	var post = {
+		url: blackholeLink
+	};
+	organizrAPI2('POST', 'api/v2/homepage/jackett/download/', post, true)
+		.success(function() {
+			message('Torrent downloaded','',activeInfo.settings.notifications.position,"#FFF","success","5000");
+		})
+		.fail(function(xhr) {
+			OrganizrApiError(xhr, 'Error downloading torrent');
+		});
 }
 function homepageOctoprint(timeout){
     var timeout = (typeof timeout !== 'undefined') ? timeout : activeInfo.settings.homepage.refresh.homepageOctoprintRefresh;
@@ -10562,6 +10578,8 @@ function launch(){
 		        style:json.data.style,
 		        version:json.data.version
 	        };
+	        // Add element to signal activeInfo Ready
+	        $('#wrapper').after('<div id="activeInfo"></div>');
 	        console.info("%c Organizr %c ".concat(currentVersion, " "), "color: white; background: #66D9EF; font-weight: 700; font-size: 24px; font-family: Monospace;", "color: #66D9EF; background: white; font-weight: 700; font-size: 24px; font-family: Monospace;");
 	        console.info("%c Status %c ".concat("Starting Up...", " "), "color: white; background: #F92671; font-weight: 700;", "color: #F92671; background: white; font-weight: 700;");
 	        local('set','initial',true);

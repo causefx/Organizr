@@ -171,13 +171,13 @@ trait SSOFunctions
 				//"password" => ($oAuthToken ? "" : $password), // not needed yet
 				"authToken" => $oAuthToken
 			);
-			$endpoint = '/api/v1/auth/login';
+			$endpoint = '/api/v1/auth/plex';
 			$options = $this->requestOptions($url, false, 60);
 			$response = Requests::post($url . $endpoint, $headers, json_encode($data), $options);
 			if ($response->success) {
 				$user = json_decode($response->body, true); // not really needed yet
 				$token = $response->cookies['connect.sid']->value;
-				$this->writeLog('success', 'Overseerr Token Function - Grabbed token', $user['username']);
+				$this->writeLog('success', 'Overseerr Token Function - Grabbed token', $user['plexUsername']);
 			} else {
 				if ($fallback) {
 					$this->writeLog('error', 'Overseerr Token Function - Overseerr did not return Token - Will retry using fallback credentials', $username);
