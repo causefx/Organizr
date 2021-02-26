@@ -1074,7 +1074,7 @@ $(document).on("click", ".savecustomHTMLtwoTextarea", function () {
     $('.customHTMLtwoTextarea').val(customHTMLtwoEditor.getValue()).trigger('change');
 });
 
-$(document).on('focusout', 'input.pick-a-color', function(e) {
+$(document).on('focusout', 'input.pick-a-color-custom-options', function(e) {
     var original = $(this).attr('data-original');
     var newValue = $(this).val();
     if((original !== newValue) && (newValue !== '#987654') && newValue !== ''){

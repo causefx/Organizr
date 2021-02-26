@@ -1434,7 +1434,7 @@ class Organizr
 					'name' => 'headerColor',
 					'label' => 'Nav Bar Color',
 					'value' => $this->config['headerColor'],
-					'class' => 'pick-a-color',
+					'class' => 'pick-a-color-custom-options',
 					'attr' => 'data-original="' . $this->config['headerColor'] . '"'
 				),
 				array(
@@ -1442,7 +1442,7 @@ class Organizr
 					'name' => 'headerTextColor',
 					'label' => 'Nav Bar Text Color',
 					'value' => $this->config['headerTextColor'],
-					'class' => 'pick-a-color',
+					'class' => 'pick-a-color-custom-options',
 					'attr' => 'data-original="' . $this->config['headerTextColor'] . '"'
 				),
 				array(
@@ -1450,7 +1450,7 @@ class Organizr
 					'name' => 'sidebarColor',
 					'label' => 'Side Bar Color',
 					'value' => $this->config['sidebarColor'],
-					'class' => 'pick-a-color',
+					'class' => 'pick-a-color-custom-options',
 					'attr' => 'data-original="' . $this->config['sidebarColor'] . '"'
 				),
 				array(
@@ -1458,7 +1458,7 @@ class Organizr
 					'name' => 'sidebarTextColor',
 					'label' => 'Side Bar Text Color',
 					'value' => $this->config['sidebarTextColor'],
-					'class' => 'pick-a-color',
+					'class' => 'pick-a-color-custom-options',
 					'attr' => 'data-original="' . $this->config['sidebarTextColor'] . '"'
 				),
 				array(
@@ -1466,7 +1466,7 @@ class Organizr
 					'name' => 'accentColor',
 					'label' => 'Accent Color',
 					'value' => $this->config['accentColor'],
-					'class' => 'pick-a-color',
+					'class' => 'pick-a-color-custom-options',
 					'attr' => 'data-original="' . $this->config['accentColor'] . '"'
 				),
 				array(
@@ -1474,7 +1474,7 @@ class Organizr
 					'name' => 'accentTextColor',
 					'label' => 'Accent Text Color',
 					'value' => $this->config['accentTextColor'],
-					'class' => 'pick-a-color',
+					'class' => 'pick-a-color-custom-options',
 					'attr' => 'data-original="' . $this->config['accentTextColor'] . '"'
 				),
 				array(
@@ -1482,7 +1482,7 @@ class Organizr
 					'name' => 'buttonColor',
 					'label' => 'Button Color',
 					'value' => $this->config['buttonColor'],
-					'class' => 'pick-a-color',
+					'class' => 'pick-a-color-custom-options',
 					'attr' => 'data-original="' . $this->config['buttonColor'] . '"'
 				),
 				array(
@@ -1490,7 +1490,7 @@ class Organizr
 					'name' => 'buttonTextColor',
 					'label' => 'Button Text Color',
 					'value' => $this->config['buttonTextColor'],
-					'class' => 'pick-a-color',
+					'class' => 'pick-a-color-custom-options',
 					'attr' => 'data-original="' . $this->config['buttonTextColor'] . '"'
 				),
 				array(

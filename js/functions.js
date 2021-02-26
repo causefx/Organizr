@@ -669,14 +669,14 @@ function switchTab(tab, type, split = null){
 				newTab.addClass("show").removeClass('hidden');
                 setTabInfo(cleanClass(tab),'active',true);
 			}else{
-				$("#preloader").fadeIn();
+				//$("#preloader").fadeIn();
 				organizrConsole('Tab Function','Loading new tab for: '+tab);
 				$('#menu-'+tab+' a').children().addClass('tabLoaded');
 				newTab.addClass("show loaded").removeClass('hidden');
 				loadInternal(tabURL,cleanClass(tab), split);
                 setTabInfo(cleanClass(tab),'active',true);
                 setTabInfo(cleanClass(tab),'loaded',true);
-				$("#preloader").fadeOut();
+				//$("#preloader").fadeOut();
 			}
 			break;
 		case 1:
@@ -824,7 +824,7 @@ function reloadTab(tab, type){
 	$("#preloader").fadeOut();
 }
 function reloadCurrentTab(){
-	$("#preloader").fadeIn();
+	//$("#preloader").fadeIn();
 	organizrConsole('Tab Function','Reloading Current tab');
 	var iframe = $('.iFrame-listing').find('.show');
 	var internal = $('.internal-listing').find('.show');
@@ -864,7 +864,7 @@ function reloadCurrentTab(){
 		default:
 			console.error('Tab Function: Action not set');
 	}
-	$("#preloader").fadeOut();
+	//$("#preloader").fadeOut();
 }
 function loadNextTab(){
 	var next = $('#page-wrapper').find('.loaded').attr('data-name');
@@ -1966,7 +1966,7 @@ function buildCustomizeAppearance(){
             $('.javaThemeTextarea').val(javaThemeEditor.getValue());
             $('#customize-appearance-form-save').removeClass('hidden');
         });
-		$("input.pick-a-color").ColorPickerSliders({
+		$("input.pick-a-color-custom-options").ColorPickerSliders({
 			placement: 'bottom',
 			color: '#987654',
 			hsvpanel: true,
