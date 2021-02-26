@@ -130,6 +130,7 @@ return array(
 	'homepageJackettAuth' => '1',
 	'jackettURL' => '',
 	'jackettToken' => '',
+	'homepageJackettBackholeDownload' => false,
 	'homepageCalendarEnabled' => false,
 	'homepageCalendarAuth' => '4',
 	'calendariCal' => '',
