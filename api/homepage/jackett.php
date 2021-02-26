@@ -41,7 +41,15 @@ trait JackettHomepageItem
 						'value' => $this->config['jackettToken']
 					)
 				),
-				'Options' => array(),
+				'Options' => array(
+				    array(
+                	    'type' => 'switch',
+                		'name' => 'homepageJackettBackholeDownload',
+                		'label' => 'Prefer black hole download',
+                		'help' => 'Prefer black hole download link instead of direct/magnet download',
+                		'value' => $this->config['homepageJackettBackholeDownload']
+                	)
+                ),
 			)
 		);
 	}
@@ -114,6 +122,43 @@ trait JackettHomepageItem
 		};
 		$api['content'] = isset($api['content']) ? $api['content'] : false;
 		$this->setAPIResponse('success', null, 200, $api);
+		return $api;
+	}
+
+	public function performJackettBackHoleDownload($url = null)
+	{
+		if (!$this->homepageItemPermissions($this->jackettHomepagePermissions('main'), true)) {
+			return false;
+		}
+		if (!$url) {
+			$this->setAPIResponse('error', 'URL was not supplied', 422);
+			return false;
+		}
+		$apiURL = $this->qualifyURL($this->config['jackettURL']);
+		$endpoint = $apiURL . $url;
+		error_log($endpoint);
+		try {
+			$headers = array();
+			$options = array('timeout' => 120);
+			$response = Requests::get($endpoint, $headers, $options);
+			if ($response->success) {
+				$apiData = json_decode($response->body, true);
+				$api['content'] = $apiData;
+				unset($apiData);
+			}
+		} catch (Requests_Exception $e) {
+			$this->writeLog('error', 'Jackett blackhole download failed ' . $e->getMessage(), 'SYSTEM');
+			$this->setAPIResponse('error', $e->getMessage(), 500);
+			return false;
+		};
+		$api['content'] = isset($api['content']) ? $api['content'] : false;
+		if ($api['content'] && $api['content']['result'] == 'success') {
+			$this->setAPIResponse('success', null, 200, $api);
+		} else if ($api['content']) {
+			$this->setAPIResponse('error', $api['content']['error'], 400, $api);
+		} else {
+			$this->setAPIResponse('error', 'Unknown error', 400, $api);
+		}
 		return $api;
 	}
 }

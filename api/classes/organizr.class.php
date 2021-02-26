@@ -3474,6 +3474,9 @@ class Organizr
 					'ombiDefaultFilterUnapproved' => $this->config['ombiDefaultFilterUnapproved'] ? true : false,
 					'ombiDefaultFilterDenied' => $this->config['ombiDefaultFilterDenied'] ? true : false
 				),
+				'jackett' => array(
+					'homepageJackettBackholeDownload' => $this->config['homepageJackettBackholeDownload'] ? true : false
+				),
 				'options' => array(
 					'alternateHomepageHeaders' => $this->config['alternateHomepageHeaders'],
 					'healthChecksTags' => $this->config['healthChecksTags'],
