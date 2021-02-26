@@ -341,5 +341,12 @@
     "new": "ignore cert to transmission (#1177)|ignore cert to qbit (#1177)|no tabs api function|log functions",
     "fixed": "Jellyfin SSO fails behind reverse proxy (#1585)|Unable to use \"@\" in username during initial account setup (#1584)|Re-add JWT claims removed from token (#1577)|heart on dependency|refresh to add new user|organizr-area css",
     "notes": "remove spinner css classes"
+  },
+  "2.1.228": {
+    "date": "2021-02-26 19:30",
+    "title": "Weekly Update - kinda",
+    "new": "Bookmark plugin - leet1994|Petio and Bookstack Images|Prometheus icon|arrive framework js|icon and image select to categories|consolidate binding of new image and new icon for all events|add new div for activeInfo being ready|settings changes to plugins array - now includes settings - bind - api path|change pluginFiles function to include option to include settings js file|update pluginFiles function",
+    "fixed": "Update Overseerr Plex auth endpoint|update all plugin js files|update bookmark php file for new template|new 2 bookmark endpoints for setup|update bookmark.png|update bookmark plugin to include setup function|visual changes to bookmark settings panel",
+    "notes": "remove preload spinner on reload"
   }
 }
