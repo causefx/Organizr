@@ -422,6 +422,7 @@ class Organizr
 		switch ($type) {
 			case 'js':
 				foreach (glob(dirname(__DIR__, 1) . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . 'js' . DIRECTORY_SEPARATOR . '*.js') as $filename) {
+					$pluginEnabled = false;
 					$keyOriginal = strtoupper(basename($filename, '.js'));
 					$key = str_replace('-SETTINGS', '', $keyOriginal);
 					$continue = false;
@@ -438,15 +439,22 @@ class Organizr
 						case 'PHP-MAILER':
 							$key = 'PHPMAILER';
 							break;
+						case 'NGXC':
+							$key = 'ngxc';
+							break;
 						default:
 							$key = $key;
 					}
-					if ($this->config[$key . '-enabled'] || $settings) {
+					if (isset($this->config[$key . '-enabled'])) {
+						if ($this->config[$key . '-enabled']) {
+							$pluginEnabled = true;
+						}
+					}
+					if ($pluginEnabled || $settings) {
 						if ($continue) {
 							$files .= '<script src="api/plugins/js/' . basename($filename) . '?v=' . $this->fileHash . '" defer="true"></script>';
 						}
 					}
-					
 				}
 				break;
 			case 'css':
