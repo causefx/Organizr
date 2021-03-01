@@ -111,10 +111,6 @@ trait DelugeHomepageItem
 			$this->setAPIResponse('error', 'Deluge URL is not defined', 422);
 			return false;
 		}
-		if (empty($this->config['delugePassword'])) {
-			$this->setAPIResponse('error', 'Deluge Password is not defined', 422);
-			return false;
-		}
 		try {
 			$deluge = new deluge($this->config['delugeURL'], $this->decrypt($this->config['delugePassword']));
 			$torrents = $deluge->getTorrents(null, 'comment, download_payload_rate, eta, hash, is_finished, is_seed, message, name, paused, progress, queue, state, total_size, upload_payload_rate');
@@ -139,8 +135,7 @@ trait DelugeHomepageItem
 					'homepageDelugeAuth'
 				],
 				'not_empty' => [
-					'delugeURL',
-					'delugePassword'
+					'delugeURL'
 				]
 			]
 		];
