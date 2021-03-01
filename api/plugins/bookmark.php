@@ -372,11 +372,11 @@ class Bookmark extends Organizr
 				<div class="row">
 					<div class="form-group col-lg-4">
 						<label class="control-label" for="new-bookmark-tab-form-inputBackgroundColorNew" lang="en">Background Color</label>
-						<input type="text" class="form-control" id="new-bookmark-tab-form-inputBackgroundColorNew" name="background_color" required="">
+						<input type="text" class="form-control pick-a-color-bookmark" id="new-bookmark-tab-form-inputBackgroundColorNew" name="background_color" required="">
 					</div>
 					<div class="form-group col-lg-4">
 						<label class="control-label" for="new-bookmark-tab-form-inputTextColorNew" lang="en">Text Color</label>
-						<input type="text" class="form-control" id="new-bookmark-tab-form-inputTextColorNew" name="text_color" required="">
+						<input type="text" class="form-control pick-a-color-bookmark" id="new-bookmark-tab-form-inputTextColorNew" name="text_color" required="">
 					</div>
 				</div>
 			</fieldset>
@@ -419,11 +419,11 @@ class Bookmark extends Organizr
 				<div class="row">
 					<div class="form-group col-lg-4">
 						<label class="control-label" for="new-bookmark-tab-form-inputBackgroundColor" lang="en">Background Color</label>
-						<input type="text" class="form-control" id="new-bookmark-tab-form-inputBackgroundColor" name="background_color" required="">
+						<input type="text" class="form-control pick-a-color-bookmark" id="new-bookmark-tab-form-inputBackgroundColor" name="background_color" required="">
 					</div>
 					<div class="form-group col-lg-4">
 						<label class="control-label" for="new-bookmark-tab-form-inputTextColor" lang="en">Text Color</label>
-						<input type="text" class="form-control" id="new-bookmark-tab-form-inputTextColor" name="text_color" required="">
+						<input type="text" class="form-control pick-a-color-bookmark" id="new-bookmark-tab-form-inputTextColor" name="text_color" required="">
 					</div>
 				</div>
 			</fieldset>
