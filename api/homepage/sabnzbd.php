@@ -84,8 +84,20 @@ trait SabNZBdHomepageItem
 				$options = ($this->localURL($url)) ? array('verify' => false) : array();
 				$response = Requests::get($url, array(), $options);
 				if ($response->success) {
-					$this->setAPIResponse('success', 'API Connection succeeded', 200);
+					$data = json_decode($response->body, true);
+					$status = 'success';
+					$responseCode = 200;
+					$message = 'API Connection succeeded';
+					if (isset($data['error'])) {
+						$status = 'error';
+						$responseCode = 500;
+						$message = $data['error'];
+					}
+					$this->setAPIResponse($status, $message, $responseCode, $data);
 					return true;
+				} else {
+					$this->setAPIResponse('error', $response->body, 500);
+					return false;
 				}
 			} catch (Requests_Exception $e) {
 				$this->setAPIResponse('error', $e->getMessage(), 500);
