@@ -4934,11 +4934,72 @@ class Organizr
 		$response = Requests::get($url, array(), $options);
 		if ($response->success) {
 			$api = json_decode($response->body, true);
+			foreach ($api as $k => $backer) {
+				$api[$k] = array_merge($api[$k], ['sortName' => strtolower($backer['name'])]);
+			}
 			$this->setAPIResponse('success', '', 200, $api);
 			return $api;
 		}
 		$this->setAPIResponse('error', 'Error connecting to Open Collective', 409);
 		return false;
+	}
+	
+	public function getGithubSponsors()
+	{
+		$url = 'https://github.com/sponsors/causefx';
+		$options = ($this->localURL($url)) ? array('verify' => false) : array();
+		$response = Requests::get($url, array(), $options);
+		if ($response->success) {
+			$sponsors = [];
+			$dom = new PHPHtmlParser\Dom;
+			try {
+				$dom->loadStr($response->body);
+				$contents = $dom->find('#sponsors .clearfix div');
+				foreach ($contents as $content) {
+					$html = $content->innerHtml;
+					preg_match('/(@[a-zA-Z])\w+/', $html, $username);
+					preg_match('/(?i)\b((?:https?:\/\/|www\d{0,3}[.]|[a-z0-9.\-]+[.][a-z]{2,4}\/)(?:[^\s()<>]+|\(([^\s()<>]+|(\([^\s()<>]+\)))*\))+(?:\(([^\s()<>]+|(\([^\s()<>]+\)))*\)|[^\s`!()\[\]{};:\'\".,<>?«»“”‘’]))/', $html, $image);
+					if (isset($image[0]) && isset($username[0])) {
+						$sponsors[] = [
+							'name' => str_replace('@', '', $username[0]),
+							'sortName' => str_replace('@', '', strtolower($username[0])),
+							'image' => str_replace('s=60', 's=200', $image[0]),
+							'isActive' => true,
+							'type' => 'USER',
+							'role' => 'BACKER'
+						];
+					}
+				}
+				$this->setAPIResponse('success', '', 200, $sponsors);
+				return $sponsors;
+			} catch (\PHPHtmlParser\Exceptions\ChildNotFoundException | \PHPHtmlParser\Exceptions\CircularException | \PHPHtmlParser\Exceptions\LogicalException | \PHPHtmlParser\Exceptions\StrictException | \PHPHtmlParser\Exceptions\ContentLengthException | \PHPHtmlParser\Exceptions\NotLoadedException $e) {
+				$this->setAPIResponse('error', 'Error connecting to Github', 409);
+				return false;
+			}
+		}
+		$this->setAPIResponse('error', 'Error connecting to Github', 409);
+		return false;
+	}
+	
+	public function getAllSponsors()
+	{
+		$sponsors = [];
+		$list = [
+			'openCollective' => $this->getOpenCollectiveBackers(),
+			'github' => $this->getGithubSponsors()
+		];
+		foreach ($list as $k => $sponsor) {
+			if ($sponsor) {
+				$sponsors = array_merge($sponsor, $sponsors);
+			}
+		}
+		if ($sponsors) {
+			usort($sponsors, function ($a, $b) {
+				return $a['sortName'] <=> $b['sortName'];
+			});
+		}
+		$this->setAPIResponse('success', '', 200, $sponsors);
+		return $sponsors;
 	}
 	
 	public function getOrganizrSmtpFromAPI()

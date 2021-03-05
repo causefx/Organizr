@@ -3562,7 +3562,7 @@ function sponsorLoad(){
     });
 }
 function backersLoad(){
-	organizrAPI2('GET','api/v2/opencollective').success(function(data) {
+	organizrAPI2('GET','api/v2/sponsors/all').success(function(data) {
 		try {
 			let json = data.response;
 			$('#backersList').html(buildBackers(json.data));
