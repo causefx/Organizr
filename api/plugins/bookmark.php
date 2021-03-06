@@ -372,11 +372,11 @@ class Bookmark extends Organizr
 				<div class="row">
 					<div class="form-group col-lg-4">
 						<label class="control-label" for="new-bookmark-tab-form-inputBackgroundColor" lang="en">Background Color</label>
-						<input type="text" class="form-control pick-a-color-bookmark" id="new-bookmark-tab-form-inputBackgroundColor" name="background_color" required="" value="#fff">
+						<input type="text" class="form-control bookmark-pick-a-color" id="new-bookmark-tab-form-inputBackgroundColor" name="background_color" required="" value="#fff">
 					</div>
 					<div class="form-group col-lg-4">
 						<label class="control-label" for="new-bookmark-tab-form-inputTextColor" lang="en">Text Color</label>
-						<input type="text" class="form-control pick-a-color-bookmark" id="new-bookmark-tab-form-inputTextColor" name="text_color" required="" value="#000">
+						<input type="text" class="form-control bookmark-pick-a-color" id="new-bookmark-tab-form-inputTextColor" name="text_color" required="" value="#000">
 					</div>
 					<div class="form-group col-lg-4">
 						<label class="control-label" for="new-bookmark-preview" lang="en">Preview</label>
@@ -423,11 +423,11 @@ class Bookmark extends Organizr
 				<div class="row">
 					<div class="form-group col-lg-4">
 						<label class="control-label" for="edit-bookmark-tab-form-inputBackgroundColor" lang="en">Background Color</label>
-						<input type="text" class="form-control pick-a-color-bookmark" id="edit-bookmark-tab-form-inputBackgroundColor" name="background_color" required="">
+						<input type="text" class="form-control bookmark-pick-a-color" id="edit-bookmark-tab-form-inputBackgroundColor" name="background_color" required="">
 					</div>
 					<div class="form-group col-lg-4">
 						<label class="control-label" for="edit-bookmark-tab-form-inputTextColor" lang="en">Text Color</label>
-						<input type="text" class="form-control pick-a-color-bookmark" id="edit-bookmark-tab-form-inputTextColor" name="text_color" required="">
+						<input type="text" class="form-control bookmark-pick-a-color" id="edit-bookmark-tab-form-inputTextColor" name="text_color" required="">
 					</div>
 					<div class="form-group col-lg-4">
 						<label class="control-label" for="edit-bookmark-preview" lang="en">Preview</label>

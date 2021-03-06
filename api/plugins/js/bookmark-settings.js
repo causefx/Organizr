@@ -55,6 +55,11 @@ function bookmarkTabsLaunch(){
 	$('#settings-main-tab-editor .nav-tabs').append(menuList);
 }
 
+function getColorPickerOptionsWithCallback(func){
+	return ;
+}
+
+var colorPickerInitialized = false;
 function buildBookmarkTabEditor(){
 	organizrAPI2('GET','api/v2/plugins/bookmark/tabs').success(function(data) {
 		try {
@@ -63,6 +68,22 @@ function buildBookmarkTabEditor(){
 			organizrCatchError(e,data);
 		}
 		$('#bookmarkTabEditorTable').html(buildBookmarkTabEditorItem(response.data));
+		
+		// initialize color pickers only first time
+		if(!colorPickerInitialized){
+			$("input.bookmark-pick-a-color").ColorPickerSliders({
+				placement: 'bottom',
+				color: '#987654',
+				hsvpanel: true,
+				previewformat: 'hex',
+				flat: true,
+				onchange: function(container, color){ 
+					generatePreviewBookmarkNewTab();
+					generatePreviewBookmarkEditTab();
+				}
+			});
+			colorPickerInitialized = true;
+		}
 	}).fail(function(xhr) {
 		OrganizrApiError(xhr);
 	});
@@ -135,8 +156,8 @@ function editBookmarkTabForm(id){
 			$('#originalBookmarkTabName').html(response.data.name);
 			$('#edit-bookmark-tab-form [name=url]').val(response.data.url);
 			$('#edit-bookmark-tab-form [name=image]').val(response.data.image);
-			$('#edit-bookmark-tab-form [name=background_color]').val(response.data.background_color);
-			$('#edit-bookmark-tab-form [name=text_color]').val(response.data.text_color);
+			$('#edit-bookmark-tab-form [name=background_color]').val(response.data.background_color).change();
+			$('#edit-bookmark-tab-form [name=text_color]').val(response.data.text_color).change();
 			$('#edit-bookmark-tab-form [name=id]').val(response.data.id);
 			if( response.data.url.indexOf('/?v') > 0){
 				$('#edit-bookmark-tab-form [name=url]').prop('disabled', 'true');
@@ -449,6 +470,18 @@ $(document).on('input', "#edit-bookmark-tab-form-inputName", generatePreviewBook
 $(document).on('input change', "#edit-bookmark-tab-form-inputImage", generatePreviewBookmarkEditTab);
 $(document).on('input', "#edit-bookmark-tab-form-inputBackgroundColor", generatePreviewBookmarkEditTab);
 $(document).on('input', "#edit-bookmark-tab-form-inputTextColor", generatePreviewBookmarkEditTab);
+
+//TODO
+/*$(document).on('focusout', 'input.bookmark-pick-a-color', function(e) {
+    var original = $(this).attr('data-original');
+    var newValue = $(this).val();
+    if((original !== newValue) && (newValue !== '#987654') && newValue !== ''){
+        $(this).change();
+        $(this).attr('data-original', newValue);
+    }else if(newValue == ''){
+        $(this).attr('style','');
+    }
+});*/
 
 // CATEGORY MANAGEMENT
 function bookmarkCategoriesLaunch(){
