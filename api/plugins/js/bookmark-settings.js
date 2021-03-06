@@ -143,12 +143,17 @@ function editBookmarkTabForm(id){
 			}else{
 				$('#edit-bookmark-tab-form [name=url]').prop('disabled', null);
 			}
+			generatePreviewBookmarkEditTab();
 		}catch(e) {
 			organizrCatchError(e,data);
 		}
 	}).fail(function(xhr) {
 		OrganizrApiError(xhr, 'Tab Error');
 	});
+}
+
+function newBookmarkTabForm(){
+	generatePreviewBookmarkNewTab();
 }
 
 // CHANGE ENABLED TAB
@@ -362,27 +367,88 @@ function submitBookmarkTabOrder(newTabs){
 $(document).on('change', "#new-bookmark-tab-form-chooseImage", function (e) {
 	var newIcon = $('#new-bookmark-tab-form-chooseImage').val();
 	if(newIcon !== 'Select or type Icon'){
-		$('#new-bookmark-tab-form-inputImageNew').val(newIcon);
+		$('#new-bookmark-tab-form-inputImage').val(newIcon).change();
 	}
 });
 $(document).on('change', "#edit-bookmark-tab-form-chooseImage", function (e) {
 	var newIcon = $('#edit-bookmark-tab-form-chooseImage').val();
 	if(newIcon !== 'Select or type Icon'){
-		$('#edit-bookmark-tab-form-inputImage').val(newIcon);
+		$('#edit-bookmark-tab-form-inputImage').val(newIcon).change();
 	}
 });
 $(document).on('change', "#new-bookmark-tab-form-chooseIcon", function (e) {
 	var newIcon = $('#new-bookmark-tab-form-chooseIcon').val();
 	if(newIcon !== 'Select or type Icon'){
-		$('#new-bookmark-tab-form-inputImageNew').val(newIcon);
+		$('#new-bookmark-tab-form-inputImage').val(newIcon).change();
 	}
 });
 $(document).on('change', "#edit-bookmark-tab-form-chooseIcon", function (e) {
 	var newIcon = $('#edit-bookmark-tab-form-chooseIcon').val();
 	if(newIcon !== 'Select or type Icon'){
-		$('#edit-bookmark-tab-form-inputImage').val(newIcon);
+		$('#edit-bookmark-tab-form-inputImage').val(newIcon).change();
 	}
 });
+
+// TAB PREVIEWS
+function adjustBrightness(hexCode, adjustPercent){
+	hexCode = hexCode.replace('#','');
+    if(hexCode.length != 6 && hexCode.length != 3) return;
+    if(hexCode.length == 3)
+   		hexCode = hexCode[0]+hexCode[0]+hexCode[1]+hexCode[1]+hexCode[2]+hexCode[2];
+    var result = ['#'];
+	for (var i = 0; i < 3; ++i) {
+    	var color = parseInt(hexCode[2*i] + hexCode[2*i+1], 16);
+        var adjustableLimit = adjustPercent < 0 ? color : 255 - color;
+		var adjustAmount = Math.ceil(adjustableLimit * adjustPercent);
+        var hex = (color + adjustAmount).toString(16).padStart(2, '0');
+        result.push(hex);
+    }
+	return result.join('');
+}
+
+function generatePreview(preview, name, image, colorBg, colorText){
+	var result = '<div class="BOOKMARK-category-content"> \
+					<a href="#" target="_SELF"> \
+						<div class="BOOKMARK-tab" style="border-color: ' + adjustBrightness(colorBg, 0.3) + '; background: linear-gradient(90deg, ' + adjustBrightness(colorBg, -0.3) + ' 0%, ' + colorBg + ' 70%, ' + adjustBrightness(colorBg, 0.1) + ' 100%);"> \
+							<span class="BOOKMARK-tab-image">' + iconPrefix(image) + '</span> \
+							<span class="BOOKMARK-tab-title" style="color: ' + colorText + ';">' + name + '</span> \
+						</div> \
+					</a> \
+				</div>';
+
+	preview.html(result);
+	$(".BOOKMARK-tab-image>img, .BOOKMARK-tab-image>i").removeClass("fa-fw");
+}
+
+function generatePreviewBookmarkNewTab(){
+	var preview = $('#new-bookmark-preview');
+	var name = $('#new-bookmark-tab-form-inputName').val();
+	var image = $('#new-bookmark-tab-form-inputImage').val();
+	var colorBg = $('#new-bookmark-tab-form-inputBackgroundColor').val();
+	var colorText = $('#new-bookmark-tab-form-inputTextColor').val();
+
+	generatePreview(preview, name, image, colorBg, colorText);
+}
+
+function generatePreviewBookmarkEditTab(){
+	var preview = $('#edit-bookmark-preview');
+	var name = $('#edit-bookmark-tab-form-inputName').val();
+	var image = $('#edit-bookmark-tab-form-inputImage').val();
+	var colorBg = $('#edit-bookmark-tab-form-inputBackgroundColor').val();
+	var colorText = $('#edit-bookmark-tab-form-inputTextColor').val();
+
+	generatePreview(preview, name, image, colorBg, colorText);
+}
+
+$(document).on('input', "#new-bookmark-tab-form-inputName", generatePreviewBookmarkNewTab);
+$(document).on('input change', "#new-bookmark-tab-form-inputImage", generatePreviewBookmarkNewTab);
+$(document).on('input', "#new-bookmark-tab-form-inputBackgroundColor", generatePreviewBookmarkNewTab);
+$(document).on('input', "#new-bookmark-tab-form-inputTextColor", generatePreviewBookmarkNewTab);
+
+$(document).on('input', "#edit-bookmark-tab-form-inputName", generatePreviewBookmarkEditTab);
+$(document).on('input change', "#edit-bookmark-tab-form-inputImage", generatePreviewBookmarkEditTab);
+$(document).on('input', "#edit-bookmark-tab-form-inputBackgroundColor", generatePreviewBookmarkEditTab);
+$(document).on('input', "#edit-bookmark-tab-form-inputTextColor", generatePreviewBookmarkEditTab);
 
 // CATEGORY MANAGEMENT
 function bookmarkCategoriesLaunch(){
@@ -567,5 +633,3 @@ function submitBookmarkCategoryOrder(){
 		OrganizrApiError(xhr, 'Update Error');
 	});
 }
-
-// TAB MANAGEMENT
