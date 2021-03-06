@@ -471,18 +471,6 @@ $(document).on('input change', "#edit-bookmark-tab-form-inputImage", generatePre
 $(document).on('input', "#edit-bookmark-tab-form-inputBackgroundColor", generatePreviewBookmarkEditTab);
 $(document).on('input', "#edit-bookmark-tab-form-inputTextColor", generatePreviewBookmarkEditTab);
 
-//TODO
-/*$(document).on('focusout', 'input.bookmark-pick-a-color', function(e) {
-    var original = $(this).attr('data-original');
-    var newValue = $(this).val();
-    if((original !== newValue) && (newValue !== '#987654') && newValue !== ''){
-        $(this).change();
-        $(this).attr('data-original', newValue);
-    }else if(newValue == ''){
-        $(this).attr('style','');
-    }
-});*/
-
 // CATEGORY MANAGEMENT
 function bookmarkCategoriesLaunch(){
 	var menuList = `<li onclick="changeSettingsMenu('Settings::Tab Editor::Bookmark Categories');loadSettingsPage2('api/v2/plugins/bookmark/settings_tab_editor_bookmark_categories','#settings-tab-editor-tabs','Tab Editor');" role="presentation"><a id="settings-tab-editor-tabs-anchor" href="#settings-tab-editor-tabs" aria-controls="home" role="tab" data-toggle="tab" aria-expanded="true"><span class="visible-xs"><i class="ti-layout-tab-v"></i></span><span class="hidden-xs" lang="en">Bookmark Categories</span></a></li>`;
