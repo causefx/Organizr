@@ -15,6 +15,7 @@
     "slim/slim": "^4.0",
     "slim/psr7": "^1.1",
     "zircote/swagger-php": "^3.0",
-    "bogstag/oauth2-trakt": "^1.0"
+    "bogstag/oauth2-trakt": "^1.0",
+    "paquettg/php-html-parser": "^3.1"
   }
 }

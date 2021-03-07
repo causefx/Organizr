@@ -348,5 +348,12 @@
     "new": "Bookmark plugin - leet1994|Added option to use blackhole download for Jackett homepage component (#1600)|Petio and Bookstack Images|Prometheus icon|arrive framework js|icon and image select to categories|consolidate binding of new image and new icon for all events|add new div for activeInfo being ready|settings changes to plugins array - now includes settings - bind - api path|change pluginFiles function to include option to include settings js file|update pluginFiles function",
     "fixed": "Fix username in overseerr SSO logs (#1599)|Update /token/validate API endpoint (#1597)|Update Overseerr Plex auth endpoint|update all plugin js files|update bookmark php file for new template|new 2 bookmark endpoints for setup|update bookmark.png|update bookmark plugin to include setup function|visual changes to bookmark settings panel",
     "notes": "remove preload spinner on reload"
+  },
+  "2.1.241": {
+    "date": "2021-03-05 19:45",
+    "title": "Weekly Update",
+    "new": "Github backers now included in about page",
+    "fixed": "plugin files error|sab test button|update bookmark class for input|obligatory url for api",
+    "notes": ""
   }
 }
