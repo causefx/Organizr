@@ -58,6 +58,7 @@ trait DelugeHomepageItem
 						'type' => 'password',
 						'name' => 'delugePassword',
 						'label' => 'Password',
+						'help' => 'Note that using a blank password might not work correctly.',
 						'value' => $this->config['delugePassword']
 					)
 				),
@@ -90,7 +91,7 @@ trait DelugeHomepageItem
 				'Test Connection' => array(
 					array(
 						'type' => 'blank',
-						'label' => 'Please Save before Testing'
+						'label' => 'Please Save before Testing. Note that using a blank password might not work correctly.'
 					),
 					array(
 						'type' => 'button',
