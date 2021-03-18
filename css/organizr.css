@@ -76,7 +76,7 @@ span.jsgrid-pager-page.jsgrid-pager-current-page.btn.btn-primary{
 
 .iframe {
     width: 100%;
-    height: calc(100vh - 40px);
+    height: 100%;
     position: inherit;
     display: block;
 }
@@ -120,7 +120,7 @@ span.jsgrid-pager-page.jsgrid-pager-current-page.btn.btn-primary{
 }
 .organizr-area,
 .organizr-area-right {
-    height: calc(100vh - 40px);
+    height: 100%;
     position: absolute;
     width: 100%;
 }
@@ -1477,7 +1477,7 @@ img.img-chooser {
     display: none;
 }
 .chat-main-box {
-    height: calc(100vh - 40px);
+    height: 100%;
 }
 .chat-list,
 .chatonline {
@@ -1668,10 +1668,20 @@ span.has-coupon {
 .content-wrapper #page-wrapper {
     width: 100%;
 }
+#page-wrapper .simplebar-content,
+#page-wrapper-right .simplebar-content {
+    height: 100%;
+}
 #page-wrapper-right {
     height: calc(100% - 40px);
     overflow: auto;
     position: absolute;
+}
+.iFrame-listing {
+    height: 100%;
+}
+.frame-container {
+    height: 100%;
 }
 html{
     overflow: hidden !important;
