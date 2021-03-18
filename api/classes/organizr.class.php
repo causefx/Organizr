@@ -220,7 +220,8 @@ class Organizr
 			if ($group !== null) {
 				if ((isset($_SERVER['HTTP_X_FORWARDED_SERVER']) && $_SERVER['HTTP_X_FORWARDED_SERVER'] == 'traefik') || $this->config['traefikAuthEnable']) {
 					$return = (isset($_SERVER['HTTP_X_FORWARDED_HOST']) && isset($_SERVER['HTTP_X_FORWARDED_URI']) && isset($_SERVER['HTTP_X_FORWARDED_PROTO'])) ? '?return=' . $_SERVER['HTTP_X_FORWARDED_PROTO'] . '://' . $_SERVER['HTTP_X_FORWARDED_HOST'] . $_SERVER['HTTP_X_FORWARDED_URI'] : '';
-					$redirect = 'Location: ' . $this->getServerPath() . $return;
+					$redirectDomain = ($this->config['traefikDomainOverride'] !== '') ? $this->config['traefikDomainOverride'] : $this->getServerPath();
+					$redirect = 'Location: ' . $redirectDomain . $return;
 				}
 				if ($this->qualifyRequest($group) && $unlocked) {
 					header("X-Organizr-User: $currentUser");
@@ -1976,6 +1977,12 @@ class Organizr
 					'placeholder' => ''
 				),
 				array(
+					'type' => 'switch',
+					'name' => 'lockoutSystem',
+					'label' => 'Inactivity Lock',
+					'value' => $this->config['lockoutSystem']
+				),
+				array(
 					'type' => 'select',
 					'name' => 'lockoutMinAuth',
 					'label' => 'Lockout Groups From',
@@ -1991,9 +1998,18 @@ class Organizr
 				),
 				array(
 					'type' => 'switch',
-					'name' => 'lockoutSystem',
-					'label' => 'Inactivity Lock',
-					'value' => $this->config['lockoutSystem']
+					'name' => 'traefikAuthEnable',
+					'label' => 'Enable Traefik Auth Redirect',
+					'help' => 'This will enable the webserver to forward errors so traefik will accept them',
+					'value' => $this->config['traefikAuthEnable']
+				),
+				array(
+					'type' => 'input',
+					'name' => 'traefikDomainOverride',
+					'label' => 'Traefik Domain for Return Override',
+					'value' => $this->config['traefikDomainOverride'],
+					'help' => 'Please use a FQDN on this URL Override',
+					'placeholder' => 'http(s)://domain'
 				),
 				array(
 					'type' => 'select',
@@ -2001,14 +2017,6 @@ class Organizr
 					'label' => 'Minimum Authentication for Debug Area',
 					'value' => $this->config['debugAreaAuth'],
 					'options' => $this->groupSelect()
-				),
-				array(
-					'type' => 'switch',
-					'name' => 'authDebug',
-					'label' => 'Nginx Auth Debug',
-					'help' => 'Important! Do not keep this enabled for too long as this opens up Authentication while testing.',
-					'value' => $this->config['authDebug'],
-					'class' => 'authDebug'
 				),
 				array(
 					'type' => 'select2',
@@ -2055,14 +2063,7 @@ class Organizr
 							'value' => 'allow-downloads'
 						),
 					)
-				),
-				array(
-					'type' => 'switch',
-					'name' => 'traefikAuthEnable',
-					'label' => 'Enable Traefik Auth Redirect',
-					'help' => 'This will enable the webserver to forward errors so traefik will accept them',
-					'value' => $this->config['traefikAuthEnable']
-				),
+				)
 			),
 			'Performance' => array(
 				array(
@@ -5027,7 +5028,7 @@ class Organizr
 	
 	public function guestHash($start, $end)
 	{
-		$ip = $_SERVER['REMOTE_ADDR'];
+		$ip = $this->userIP();
 		$ip = md5($ip);
 		return substr($ip, $start, $end);
 	}

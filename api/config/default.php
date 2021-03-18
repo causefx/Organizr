@@ -340,6 +340,7 @@ return array(
 	'performanceDisableIconDropdown' => false,
 	'performanceDisableImageDropdown' => false,
 	'traefikAuthEnable' => false,
+	'traefikDomainOverride' => '',
 	'homepageTautulliEnabled' => false,
 	'homepageTautulliAuth' => '1',
 	'homepageTautulliLibraryAuth' => '1',
