@@ -1,0 +1,32 @@
+/*
+/*    dP   dP                                                                  dP        */
+/*    88   88                                                                  88        */
+/*  d8888P 88d888b. .d8888b. 88d8b.d8b. .d8888b.    88d888b. .d8888b. 88d888b. 88  .dP   */
+/*    88   88'  `88 88ooood8 88'`88'`88 88ooood8    88'  `88 88'  `88 88'  `88 88888"    */
+/*    88   88    88 88.  ... 88  88  88 88.  ...    88.  .88 88.  .88 88       88  `8b.  */
+/*    dP   dP    dP `88888P' dP  dP  dP `88888P' 88 88Y888P' `88888P8 dP       dP   `YP  */
+/*                                                  88                                   */
+/*                                                  dP					 */
+
+/*		   		        Made by @gilbN					 */
+/*			      https://github.com/gilbN/theme.park			 */
+
+/* ORGANIZR DARK THEME */
+@import 'Organizr.css';
+@import url(https://gilbn.github.io/theme.park/CSS/themes/organizr/organizr-base.css);
+:root {
+  --main-bg-color: radial-gradient(circle, #3a3a3a, #2d2d2d, #202020, #141414, #000000) center center/cover no-repeat fixed;
+  --modal-bg-color: radial-gradient(circle , #3a3a3a, #2d2d2d, #202020, #141414, #000000) center center/cover no-repeat fixed;
+  --link-color: #2cabe3;
+  --custom-buttons-color: rgba(255, 255, 255, 0.2);
+  --hompage-item-hover: radial-gradient(farthest-corner at 50% 50%,rgba(0, 0, 0, 0.1) 50%,#000000f2  100%);
+  --notification-box-line: #2cabe3;
+
+  --calendar-tv-premier: #FFEB3B;
+  --calendar-tv-missing: #ff7676;
+  --calendar-tv-available: #53e69d;
+  --calendar-tv-unreleased: #eeeeee;
+  --calendar-movie-missing: #ff7676;
+  --calendar-movie-available: #53e69d;
+  --calendar-movie-unreleased: #eeeeee;
+  }
