@@ -99,5 +99,29 @@
 		},
 		"css": {},
 		"javascript": {}
-	}	
+	},
+	"Plex Theme (theme.park)": {
+		"author": "GilbN",
+		"category": "Community",
+		"description": "A Plex colored theme for Organizr ",
+		"icon": "https://raw.githubusercontent.com/gilbN/theme.park/master/Resources/organizr/plex/theme-park-organizr-plex-logo.png",
+		"contact": null,
+		"website": "https://github.com/gilbN/theme.park",
+		"version": "1.0.1",
+		"release_date": "2021-03-21",
+		"last_updated": "2020-07-25",
+		"github_folder": "Plex_themepark_theme",
+		"license": "personal,business",
+		"files": {
+			"/css/themes": "Plex_theme_park.css"
+		},
+		"images": {
+			"Login": "https://raw.githubusercontent.com/gilbN/theme.park/master/Resources/organizr/plex/plex_login.jpg",
+			"Splash": "https://raw.githubusercontent.com/gilbN/theme.park/master/Resources/organizr/plex/plex_splash.jpg",
+			"Homepage": "https://raw.githubusercontent.com/gilbN/theme.park/master/Resources/organizr/plex/plex_homepage.jpg",
+			"Search": "https://raw.githubusercontent.com/gilbN/theme.park/master/Resources/organizr/plex/plex_search.jpg"
+		},
+		"css": {},
+		"javascript": {}
+	}		
 }
