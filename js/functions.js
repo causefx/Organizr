@@ -5216,7 +5216,7 @@ function buildRequest(array){
 	}else{
 		var header = `
 		<div class="panel-heading bg-info p-t-10 p-b-10">
-			<span class="pull-left m-t-5 mouse homepage-element-title" onclick="homepageRequests()"><img class="lazyload homepageImageTitle" data-src="plugins/images/tabs/ombi.png"> &nbsp; Requests</span>
+			<span class="pull-left m-t-5 mouse homepage-element-title" onclick="homepageRequests()"><img class="lazyload homepageImageTitle" data-src="plugins/images/tabs/ombi.png"><span lang="en"> &nbsp; Requests</span></span>
 			<div class="btn-group pull-right">
 					`+builtDropdown+`
 			</div>
