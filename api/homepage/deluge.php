@@ -64,6 +64,7 @@ trait DelugeHomepageItem
 						'type' => 'password',
 						'name' => 'delugePassword',
 						'label' => 'Password',
+						'help' => 'Note that using a blank password might not work correctly.',
 						'value' => $this->config['delugePassword']
 					)
 				),
@@ -96,7 +97,7 @@ trait DelugeHomepageItem
 				'Test Connection' => array(
 					array(
 						'type' => 'blank',
-						'label' => 'Please Save before Testing'
+						'label' => 'Please Save before Testing. Note that using a blank password might not work correctly.'
 					),
 					array(
 						'type' => 'button',
@@ -116,10 +117,6 @@ trait DelugeHomepageItem
 	{
 		if (empty($this->config['delugeURL'])) {
 			$this->setAPIResponse('error', 'Deluge URL is not defined', 422);
-			return false;
-		}
-		if (empty($this->config['delugePassword'])) {
-			$this->setAPIResponse('error', 'Deluge Password is not defined', 422);
 			return false;
 		}
 		try {
@@ -146,8 +143,7 @@ trait DelugeHomepageItem
 					'homepageDelugeAuth'
 				],
 				'not_empty' => [
-					'delugeURL',
-					'delugePassword'
+					'delugeURL'
 				]
 			]
 		];
