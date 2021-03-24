@@ -3993,7 +3993,9 @@ class Organizr
 		$items = $this->getSettingsHomepage();
 		foreach ($items as $k => $v) {
 			if (strtolower($v['name']) === strtolower($item)) {
-				return $v;
+				$functionName = $v['settingsArray'];
+				return $this->$functionName();
+				
 			}
 		}
 		$this->setAPIResponse('error', 'Homepage item was not found', 404);
