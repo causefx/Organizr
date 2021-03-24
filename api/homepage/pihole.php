@@ -2,13 +2,19 @@
 
 trait PiHoleHomepageItem
 {
-	public function piholeSettingsArray()
+	public function piholeSettingsArray($infoOnly = false)
 	{
-		return array(
+		$homepageInformation = [
 			'name' => 'Pi-hole',
 			'enabled' => true,
 			'image' => 'plugins/images/tabs/pihole.png',
 			'category' => 'Monitor',
+			'settingsArray' => __FUNCTION__
+		];
+		if ($infoOnly) {
+			return $homepageInformation;
+		}
+		$homepageSettings = array(
 			'settings' => array(
 				'Enable' => array(
 					array(
@@ -67,6 +73,7 @@ trait PiHoleHomepageItem
 				)
 			)
 		);
+		return array_merge($homepageInformation, $homepageSettings);
 	}
 	
 	public function testConnectionPihole()

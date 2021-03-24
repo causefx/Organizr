@@ -2,13 +2,19 @@
 
 trait WeatherHomepageItem
 {
-	public function weatherSettingsArray()
+	public function weatherSettingsArray($infoOnly = false)
 	{
-		return array(
+		$homepageInformation = [
 			'name' => 'Weather-Air',
 			'enabled' => true,
 			'image' => 'plugins/images/tabs/wind.png',
 			'category' => 'Monitor',
+			'settingsArray' => __FUNCTION__
+		];
+		if ($infoOnly) {
+			return $homepageInformation;
+		}
+		$homepageSettings = array(
 			'settings' => array(
 				'Enable' => array(
 					array(
@@ -115,6 +121,7 @@ trait WeatherHomepageItem
 				),
 			)
 		);
+		return array_merge($homepageInformation, $homepageSettings);
 	}
 	
 	public function weatherHomepagePermissions($key = null)

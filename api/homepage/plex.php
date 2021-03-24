@@ -3,8 +3,18 @@
 trait PlexHomepageItem
 {
 	
-	public function plexSettingsArray()
+	public function plexSettingsArray($infoOnly = false)
 	{
+		$homepageInformation = [
+			'name' => 'Plex',
+			'enabled' => strpos('personal', $this->config['license']) !== false,
+			'image' => 'plugins/images/tabs/plex.png',
+			'category' => 'Media Server',
+			'settingsArray' => __FUNCTION__
+		];
+		if ($infoOnly) {
+			return $homepageInformation;
+		}
 		if ($this->config['plexID'] !== '' && $this->config['plexToken'] !== '') {
 			$loop = $this->plexLibraryList('key')['libraries'];
 			foreach ($loop as $key => $value) {
@@ -22,7 +32,7 @@ trait PlexHomepageItem
 				),
 			);
 		}
-		return array(
+		$homepageSettings = array(
 			'name' => 'Plex',
 			'enabled' => strpos('personal', $this->config['license']) !== false,
 			'image' => 'plugins/images/tabs/plex.png',
@@ -282,6 +292,7 @@ trait PlexHomepageItem
 				)
 			)
 		);
+		return array_merge($homepageInformation, $homepageSettings);
 	}
 	
 	public function testConnectionPlex()

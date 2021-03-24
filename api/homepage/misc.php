@@ -2,13 +2,19 @@
 
 trait MiscHomepageItem
 {
-	public function miscSettingsArray()
+	public function miscSettingsArray($infoOnly = false)
 	{
-		return array(
+		$homepageInformation = [
 			'name' => 'Misc',
 			'enabled' => true,
 			'image' => 'plugins/images/organizr/logo-no-border.png',
 			'category' => 'Custom',
+			'settingsArray' => __FUNCTION__
+		];
+		if ($infoOnly) {
+			return $homepageInformation;
+		}
+		$homepageSettings = array(
 			'settings' => array(
 				'YouTube' => array(
 					array(
@@ -27,6 +33,7 @@ trait MiscHomepageItem
 				)
 			)
 		);
+		return array_merge($homepageInformation, $homepageSettings);
 	}
 	
 }

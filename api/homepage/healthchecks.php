@@ -2,13 +2,19 @@
 
 trait HealthChecksHomepageItem
 {
-	public function healthChecksSettingsArray()
+	public function healthChecksSettingsArray($infoOnly = false)
 	{
-		return array(
+		$homepageInformation = [
 			'name' => 'HealthChecks',
 			'enabled' => true,
 			'image' => 'plugins/images/tabs/healthchecks.png',
 			'category' => 'Monitor',
+			'settingsArray' => __FUNCTION__
+		];
+		if ($infoOnly) {
+			return $homepageInformation;
+		}
+		$homepageSettings = array(
 			'settings' => array(
 				'Enable' => array(
 					array(
@@ -60,6 +66,7 @@ trait HealthChecksHomepageItem
 				),
 			)
 		);
+		return array_merge($homepageInformation, $homepageSettings);
 	}
 	
 	public function healthChecksHomepagePermissions($key = null)

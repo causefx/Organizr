@@ -85,13 +85,19 @@ trait NetDataHomepageItem
 		
 	}
 	
-	public function netdataSettingsArray()
+	public function netdataSettingsArray($infoOnly = false)
 	{
-		$array = array(
+		$homepageInformation = [
 			'name' => 'Netdata',
 			'enabled' => true,
 			'image' => 'plugins/images/tabs/netdata.png',
 			'category' => 'Monitor',
+			'settingsArray' => __FUNCTION__
+		];
+		if ($infoOnly) {
+			return $homepageInformation;
+		}
+		$homepageSettings = array(
 			'settings' => array(
 				'Enable' => array(
 					array(
@@ -124,7 +130,7 @@ trait NetDataHomepageItem
 			)
 		);
 		for ($i = 1; $i <= 7; $i++) {
-			$array['settings']['Chart ' . $i] = array(
+			$homepageSettings['settings']['Chart ' . $i] = array(
 				array(
 					'type' => 'switch',
 					'name' => 'netdata' . $i . 'Enabled',
@@ -194,7 +200,7 @@ trait NetDataHomepageItem
 				),
 			);
 		}
-		$array['settings']['Custom data'] = array(
+		$homepageSettings['settings']['Custom data'] = array(
 			array(
 				'type' => 'html',
 				'label' => '',
@@ -272,7 +278,7 @@ trait NetDataHomepageItem
 				'value' => $this->config['netdataCustom'],
 			)
 		);
-		$array['settings']['Options'] = array(
+		$homepageSettings['settings']['Options'] = array(
 			array(
 				'type' => 'select',
 				'name' => 'homepageNetdataRefresh',
@@ -281,7 +287,7 @@ trait NetDataHomepageItem
 				'options' => $this->timeOptions()
 			),
 		);
-		return $array;
+		return array_merge($homepageInformation, $homepageSettings);
 	}
 	
 	public function netdataHomepagePermissions($key = null)

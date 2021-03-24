@@ -2,13 +2,19 @@
 
 trait OctoPrintHomepageItem
 {
-	public function octoprintSettingsArray()
+	public function octoprintSettingsArray($infoOnly = false)
 	{
-		return array(
+		$homepageInformation = [
 			'name' => 'Octoprint',
 			'enabled' => true,
 			'image' => 'plugins/images/tabs/octoprint.png',
 			'category' => 'Monitor',
+			'settingsArray' => __FUNCTION__
+		];
+		if ($infoOnly) {
+			return $homepageInformation;
+		}
+		$homepageSettings = array(
 			'settings' => array(
 				'Enable' => array(
 					array(
@@ -59,6 +65,7 @@ trait OctoPrintHomepageItem
 				),
 			)
 		);
+		return array_merge($homepageInformation, $homepageSettings);
 	}
 	
 	public function octoprintHomepagePermissions($key = null)

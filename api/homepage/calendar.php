@@ -2,13 +2,19 @@
 
 trait CalendarHomepageItem
 {
-	public function calendarSettingsArray()
+	public function calendarSettingsArray($infoOnly = false)
 	{
-		return array(
+		$homepageInformation = [
 			'name' => 'iCal',
 			'enabled' => strpos('personal', $this->config['license']) !== false,
 			'image' => 'plugins/images/tabs/calendar.png',
 			'category' => 'HOMEPAGE',
+			'settingsArray' => __FUNCTION__
+		];
+		if ($infoOnly) {
+			return $homepageInformation;
+		}
+		$homepageSettings = array(
 			'settings' => array(
 				'Enable' => array(
 					array(
@@ -92,6 +98,7 @@ trait CalendarHomepageItem
 				),
 			)
 		);
+		return array_merge($homepageInformation, $homepageSettings);
 	}
 	
 	public function calendarHomepagePermissions($key = null)

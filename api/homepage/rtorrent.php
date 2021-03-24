@@ -2,14 +2,21 @@
 
 trait RTorrentHomepageItem
 {
-	public function rTorrentSettingsArray()
+	public function rTorrentSettingsArray($infoOnly = false)
 	{
-		$xmlStatus = (extension_loaded('xmlrpc')) ? 'Installed' : 'Not Installed';
-		return array(
+		
+		$homepageInformation = [
 			'name' => 'rTorrent',
 			'enabled' => strpos('personal', $this->config['license']) !== false,
 			'image' => 'plugins/images/tabs/rTorrent.png',
 			'category' => 'Downloader',
+			'settingsArray' => __FUNCTION__
+		];
+		if ($infoOnly) {
+			return $homepageInformation;
+		}
+		$xmlStatus = (extension_loaded('xmlrpc')) ? 'Installed' : 'Not Installed';
+		$homepageSettings = array(
 			'settings' => array(
 				'FYI' => array(
 					array(
@@ -150,6 +157,7 @@ trait RTorrentHomepageItem
 				)
 			)
 		);
+		return array_merge($homepageInformation, $homepageSettings);
 	}
 	
 	public function testConnectionRTorrent()

@@ -2,13 +2,19 @@
 
 trait UnifiHomepageItem
 {
-	public function unifiSettingsArray()
+	public function unifiSettingsArray($infoOnly = false)
 	{
-		return array(
+		$homepageInformation = [
 			'name' => 'UniFi',
 			'enabled' => true,
 			'image' => 'plugins/images/tabs/unifi.png',
 			'category' => 'Monitor',
+			'settingsArray' => __FUNCTION__
+		];
+		if ($infoOnly) {
+			return $homepageInformation;
+		}
+		$homepageSettings = array(
 			'settings' => array(
 				'Enable' => array(
 					array(
@@ -91,8 +97,9 @@ trait UnifiHomepageItem
 				)
 			)
 		);
+		return array_merge($homepageInformation, $homepageSettings);
 	}
-
+	
 	public function unifiHomepagePermissions($key = null)
 	{
 		$permissions = [
@@ -118,7 +125,7 @@ trait UnifiHomepageItem
 			return [];
 		}
 	}
-
+	
 	public function homepageOrderunifi()
 	{
 		if ($this->homepageItemPermissions($this->unifiHomepagePermissions('main'))) {
@@ -134,7 +141,7 @@ trait UnifiHomepageItem
 				';
 		}
 	}
-
+	
 	public function getUnifiSiteName()
 	{
 		if (empty($this->config['unifiURL'])) {
@@ -183,9 +190,9 @@ trait UnifiHomepageItem
 			$this->setAPIResponse('error', $e->getMessage(), 500);
 			return false;
 		}
-
+		
 	}
-
+	
 	public function testConnectionUnifi()
 	{
 		if (empty($this->config['unifiURL'])) {
@@ -227,7 +234,7 @@ trait UnifiHomepageItem
 				$cookie['csrf_token'] = ($response->cookies['csrf_token']->value) ?? false;
 				$cookie['Token'] = ($response->cookies['Token']->value) ?? false;
 				$options['cookies'] = $response->cookies;
-
+				
 			} else {
 				$this->setAPIResponse('error', 'Unifi response error - Check Credentials', 409);
 				return false;
@@ -251,7 +258,7 @@ trait UnifiHomepageItem
 		$this->setAPIResponse('success', 'API Connection succeeded', 200);
 		return true;
 	}
-
+	
 	public function getUnifiHomepageData()
 	{
 		if (!$this->homepageItemPermissions($this->unifiHomepagePermissions('main'), true)) {
@@ -284,7 +291,7 @@ trait UnifiHomepageItem
 				$cookie['csrf_token'] = ($response->cookies['csrf_token']->value) ?? false;
 				$cookie['Token'] = ($response->cookies['Token']->value) ?? false;
 				$options['cookies'] = $response->cookies;
-
+				
 			} else {
 				$this->setAPIResponse('error', 'Unifi response error - Check Credentials', 409);
 				return false;

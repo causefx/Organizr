@@ -3,13 +3,19 @@
 trait CouchPotatoHomepageItem
 {
 	
-	public function couchPotatoSettingsArray()
+	public function couchPotatoSettingsArray($infoOnly = false)
 	{
-		return array(
+		$homepageInformation = [
 			'name' => 'CouchPotato',
 			'enabled' => strpos('personal', $this->config['license']) !== false,
 			'image' => 'plugins/images/tabs/couchpotato.png',
 			'category' => 'PVR',
+			'settingsArray' => __FUNCTION__
+		];
+		if ($infoOnly) {
+			return $homepageInformation;
+		}
+		$homepageSettings = array(
 			'settings' => array(
 				'Enable' => array(
 					array(
@@ -88,6 +94,7 @@ trait CouchPotatoHomepageItem
 				)
 			)
 		);
+		return array_merge($homepageInformation, $homepageSettings);
 	}
 	
 	public function couchPotatoHomepagePermissions($key = null)

@@ -2,13 +2,19 @@
 
 trait JDownloaderHomepageItem
 {
-	public function jDownloaderSettingsArray()
+	public function jDownloaderSettingsArray($infoOnly = false)
 	{
-		return array(
+		$homepageInformation = [
 			'name' => 'JDownloader',
 			'enabled' => strpos('personal', $this->config['license']) !== false,
 			'image' => 'plugins/images/tabs/jdownloader.png',
 			'category' => 'Downloader',
+			'settingsArray' => __FUNCTION__
+		];
+		if ($infoOnly) {
+			return $homepageInformation;
+		}
+		$homepageSettings = array(
 			'settings' => array(
 				'custom' => '
 				<div class="row">
@@ -85,6 +91,7 @@ trait JDownloaderHomepageItem
 				)
 			)
 		);
+		return array_merge($homepageInformation, $homepageSettings);
 	}
 	
 	public function testConnectionJDownloader()

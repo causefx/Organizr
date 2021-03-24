@@ -2,13 +2,19 @@
 
 trait MonitorrHomepageItem
 {
-	public function monitorrSettingsArray()
+	public function monitorrSettingsArray($infoOnly = false)
 	{
-		return array(
+		$homepageInformation = [
 			'name' => 'Monitorr',
 			'enabled' => true,
 			'image' => 'plugins/images/tabs/monitorr.png',
 			'category' => 'Monitor',
+			'settingsArray' => __FUNCTION__
+		];
+		if ($infoOnly) {
+			return $homepageInformation;
+		}
+		$homepageSettings = array(
 			'settings' => array(
 				'Enable' => array(
 					array(
@@ -67,6 +73,7 @@ trait MonitorrHomepageItem
 				),
 			)
 		);
+		return array_merge($homepageInformation, $homepageSettings);
 	}
 	
 	public function monitorrHomepagePermissions($key = null)

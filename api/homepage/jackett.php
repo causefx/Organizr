@@ -2,13 +2,19 @@
 
 trait JackettHomepageItem
 {
-	public function jackettSettingsArray()
+	public function jackettSettingsArray($infoOnly = false)
 	{
-		return array(
+		$homepageInformation = [
 			'name' => 'Jackett',
 			'enabled' => true,
 			'image' => 'plugins/images/tabs/jackett.png',
 			'category' => 'Utility',
+			'settingsArray' => __FUNCTION__
+		];
+		if ($infoOnly) {
+			return $homepageInformation;
+		}
+		$homepageSettings = array(
 			'settings' => array(
 				'Enable' => array(
 					array(
@@ -42,16 +48,17 @@ trait JackettHomepageItem
 					)
 				),
 				'Options' => array(
-				    array(
-                	    'type' => 'switch',
-                		'name' => 'homepageJackettBackholeDownload',
-                		'label' => 'Prefer black hole download',
-                		'help' => 'Prefer black hole download link instead of direct/magnet download',
-                		'value' => $this->config['homepageJackettBackholeDownload']
-                	)
-                ),
+					array(
+						'type' => 'switch',
+						'name' => 'homepageJackettBackholeDownload',
+						'label' => 'Prefer black hole download',
+						'help' => 'Prefer black hole download link instead of direct/magnet download',
+						'value' => $this->config['homepageJackettBackholeDownload']
+					)
+				),
 			)
 		);
+		return array_merge($homepageInformation, $homepageSettings);
 	}
 	
 	public function jackettHomepagePermissions($key = null)
@@ -124,7 +131,7 @@ trait JackettHomepageItem
 		$this->setAPIResponse('success', null, 200, $api);
 		return $api;
 	}
-
+	
 	public function performJackettBackHoleDownload($url = null)
 	{
 		if (!$this->homepageItemPermissions($this->jackettHomepagePermissions('main'), true)) {

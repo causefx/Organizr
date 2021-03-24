@@ -2,13 +2,19 @@
 
 trait SonarrHomepageItem
 {
-	public function sonarrSettingsArray()
+	public function sonarrSettingsArray($infoOnly = false)
 	{
-		return array(
+		$homepageInformation = [
 			'name' => 'Sonarr',
 			'enabled' => strpos('personal', $this->config['license']) !== false,
 			'image' => 'plugins/images/tabs/sonarr.png',
 			'category' => 'PVR',
+			'settingsArray' => __FUNCTION__
+		];
+		if ($infoOnly) {
+			return $homepageInformation;
+		}
+		$homepageSettings = array(
 			'docs' => 'https://docs.organizr.app/books/setup-features/page/sonarr',
 			'settings' => array(
 				'About' => array(
@@ -196,6 +202,7 @@ trait SonarrHomepageItem
 				)
 			)
 		);
+		return array_merge($homepageInformation, $homepageSettings);
 	}
 	
 	public function testConnectionSonarr()

@@ -16,7 +16,7 @@ trait HomepageFunctions
 		$list = $this->getHomepageSettingsList();
 		$combined = [];
 		foreach ($list as $item) {
-			$combined[] = $this->$item();
+			$combined[] = $this->$item(true);
 		}
 		return $combined;
 	}
