@@ -44,3 +44,18 @@ $app->any('/socks/lidarr/{route:.*}', function ($request, $response) {
 		->withHeader('Content-Type', 'application/json;charset=UTF-8')
 		->withStatus($GLOBALS['responseCode']);
 });
+$app->any('/socks/sabnzbd/{route:.*}', function ($request, $response) {
+	$Organizr = ($request->getAttribute('Organizr')) ?? new Organizr();
+	$socks = $Organizr->socks(
+		'sabnzbdURL',
+		'sabnzbdSocksEnabled',
+		'sabnzbdSocksAuth',
+		$request,
+		null
+	);
+	$data = $socks ?? jsonE($GLOBALS['api']);
+	$response->getBody()->write($data);
+	return $response
+		->withHeader('Content-Type', 'application/json;charset=UTF-8')
+		->withStatus($GLOBALS['responseCode']);
+});

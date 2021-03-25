@@ -48,6 +48,36 @@ trait SabNZBdHomepageItem
 						'value' => $this->config['sabnzbdToken']
 					)
 				),
+				'API SOCKS' => array(
+					array(
+						'type' => 'html',
+						'override' => 12,
+						'label' => '',
+						'html' => '
+							<div class="panel panel-default">
+								<div class="panel-wrapper collapse in">
+									<div class="panel-body">
+										<h3 lang="en">Sabnzbd SOCKS API Connection</h3>
+										<p>Using this feature allows you to access the Sonarr API without having to reverse proxy it.  Just access it from: </p>
+										<code>' . $this->getServerPath() . 'api/v2/socks/sabnzbd/</code>
+									</div>
+								</div>
+							</div>'
+					),
+					array(
+						'type' => 'switch',
+						'name' => 'sabnzbdSocksEnabled',
+						'label' => 'Enable',
+						'value' => $this->config['sabnzbdSocksEnabled']
+					),
+					array(
+						'type' => 'select',
+						'name' => 'sabnzbdSocksAuth',
+						'label' => 'Minimum Authentication',
+						'value' => $this->config['sabnzbdSocksAuth'],
+						'options' => $this->groupOptions
+					),
+				),
 				'Misc Options' => array(
 					array(
 						'type' => 'select',

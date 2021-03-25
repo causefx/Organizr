@@ -88,6 +88,8 @@ return array(
 	'jdownloaderCombine' => false,
 	'sabnzbdURL' => '',
 	'sabnzbdToken' => '',
+	'sabnzbdSocksEnabled' => false,
+	'sabnzbdSocksAuth' => '999',
 	'sabnzbdCombine' => false,
 	'nzbgetURL' => '',
 	'nzbgetUsername' => '',
