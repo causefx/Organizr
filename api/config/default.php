@@ -94,6 +94,8 @@ return array(
 	'nzbgetURL' => '',
 	'nzbgetUsername' => '',
 	'nzbgetPassword' => '',
+	'nzbgetSocksEnabled' => false,
+	'nzbgetSocksAuth' => '999',
 	'nzbgetCombine' => false,
 	'transmissionURL' => '',
 	'transmissionUsername' => '',

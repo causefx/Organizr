@@ -53,6 +53,36 @@ trait NZBGetHomepageItem
 						'value' => $this->config['nzbgetPassword']
 					)
 				),
+				'API SOCKS' => array(
+					array(
+						'type' => 'html',
+						'override' => 12,
+						'label' => '',
+						'html' => '
+							<div class="panel panel-default">
+								<div class="panel-wrapper collapse in">
+									<div class="panel-body">
+										<h3 lang="en">Nzbget SOCKS API Connection</h3>
+										<p>Using this feature allows you to access the API without having to reverse proxy it.  Just access it from: </p>
+										<code>' . $this->getServerPath() . 'api/v2/socks/nzbget/</code>
+									</div>
+								</div>
+							</div>'
+					),
+					array(
+						'type' => 'switch',
+						'name' => 'nzbgetSocksEnabled',
+						'label' => 'Enable',
+						'value' => $this->config['nzbgetSocksEnabled']
+					),
+					array(
+						'type' => 'select',
+						'name' => 'nzbgetSocksAuth',
+						'label' => 'Minimum Authentication',
+						'value' => $this->config['nzbgetSocksAuth'],
+						'options' => $this->groupOptions
+					),
+				),
 				'Misc Options' => array(
 					array(
 						'type' => 'select',
