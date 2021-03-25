@@ -284,6 +284,13 @@ img.lazyload.tabImages {
     width: 150px;
     position: relative;
 }
+#backersList .recent-sponsor {
+    background-position: center;
+    background-size: cover;
+    height: 75px;
+    width: 75px;
+    position: relative;
+}
 .recent-poster {
     background-position: center;
     background-size: cover;
