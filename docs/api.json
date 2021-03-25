@@ -7,7 +7,7 @@
     },
     "servers": [
         {
-            "url": "https://dev.organizr.app/",
+            "url": "https://organizr.dev/",
             "description": "This Organizr Install"
         },
         {
