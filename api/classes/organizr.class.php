@@ -277,7 +277,7 @@ class Organizr
 	{
 		switch ($request->getMethod()) {
 			case 'POST':
-				if ($request->getHeaderLine('Content-Type') == 'application/json') {
+				if (strpos($request->getHeaderLine('Content-Type'), 'application/json') !== false) {
 					return json_decode(file_get_contents('php://input', 'r'), true);
 				} else {
 					return $request->getParsedBody();
