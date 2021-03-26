@@ -6028,6 +6028,16 @@ class Organizr
 					$headers[$header] = $headerKey;
 				}
 			}
+			$debugInformation = [
+				'type' => $requestObject->getMethod(),
+				'headerType' => $requestObject->getHeaderLine('Content-Type'),
+				'header' => $header,
+				'headers' => $headers,
+				'url' => $url,
+				'options' => $options,
+				'data' => $apiData
+			];
+			//$this->debug(json_encode($debugInformation));
 			switch ($requestObject->getMethod()) {
 				case 'GET':
 					$call = Requests::get($url, $headers, $options);
