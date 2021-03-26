@@ -47,7 +47,8 @@ trait SSOFunctions
 			}
 		}
 		if ($this->config['ssoPetio']) {
-			$petioToken = $this->getPetioToken($this->getSSOUserFor('petio', $userobj), $password, $token);
+			$fallback = ($this->config['petioFallbackUser'] !== '' && $this->config['petioFallbackPassword'] !== '');
+			$petioToken = $this->getPetioToken($this->getSSOUserFor('petio', $userobj), $password, $token, $fallback);
 			if ($petioToken) {
 				$this->coookie('set', 'petio_jwt', $petioToken, $this->config['rememberMeDays'], false);
 			}
