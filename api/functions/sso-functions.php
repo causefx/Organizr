@@ -8,7 +8,8 @@ trait SSOFunctions
 			'jellyfin' => 'username',
 			'ombi' => 'username',
 			'overseerr' => 'username',
-			'tautulli' => 'username'
+			'tautulli' => 'username',
+			'petio' => 'username'
 		);
 		return (gettype($userobj) == 'string') ? $userobj : $userobj[$map[$app]];
 	}
@@ -43,6 +44,12 @@ trait SSOFunctions
 			$overseerrToken = $this->getOverseerrToken($this->getSSOUserFor('overseerr', $userobj), $password, $token);
 			if ($overseerrToken) {
 				$this->coookie('set', 'connect.sid', $overseerrToken, $this->config['rememberMeDays'], false);
+			}
+		}
+		if ($this->config['ssoPetio']) {
+			$petioToken = $this->getPetioToken($this->getSSOUserFor('petio', $userobj), $password, $token);
+			if ($petioToken) {
+				$this->coookie('set', 'petio_jwt', $petioToken, $this->config['rememberMeDays'], false);
 			}
 		}
 		return true;
@@ -197,4 +204,46 @@ trait SSOFunctions
 		}
 	}
 	
+	public function getPetioToken($username, $password, $oAuthToken = null, $fallback = false)
+	{
+		$token = null;
+		try {
+			$url = $this->qualifyURL($this->config['petioURL']);
+			$headers = array(
+				"Content-Type" => "application/json"
+			);
+			$data = array(
+				'user' => [
+					'username' => ($oAuthToken ? '' : $username),
+					'password' => ($oAuthToken ? '' : $password),
+					'type' => 1,
+				],
+				'authToken' => false,
+				'token' => $oAuthToken
+			);
+			$endpoint = ($oAuthToken) ? '/api/login/plex_login' : '/api/login';
+			$options = $this->requestOptions($url, false, 60);
+			$response = Requests::post($url . $endpoint, $headers, json_encode($data), $options);
+			if ($response->success) {
+				$user = json_decode($response->body, true)['user'];
+				$token = json_decode($response->body, true)['token'];
+				$this->writeLog('success', 'Petio Token Function - Grabbed token', $user['username']);
+			} else {
+				if ($fallback) {
+					$this->writeLog('error', 'Petio Token Function - Petio did not return Token - Will retry using fallback credentials', $username);
+				} else {
+					$this->writeLog('error', 'Petio Token Function - Petio did not return Token', $username);
+				}
+			}
+		} catch (Requests_Exception $e) {
+			$this->writeLog('error', 'Petio Token Function - Error: ' . $e->getMessage(), $username);
+		}
+		if ($token) {
+			return $token;
+		} elseif ($fallback) {
+			return $this->getPetioToken($this->config['petioFallbackUser'], $this->decrypt($this->config['petioFallbackPassword']), null, false);
+		} else {
+			return false;
+		}
+	}
 }
