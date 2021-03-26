@@ -30,7 +30,7 @@ $app->any('/socks/{app}/{route:.*}', function ($request, $response, $args) {
 			$url = 'nzbgetURL';
 			$enabled = 'nzbgetSocksEnabled';
 			$auth = 'nzbgetSocksAuth';
-			$header = null;
+			$header = 'Authorization';
 			break;
 		default:
 			$Organizr->setAPIResponse('error', 'Application not supported for socks', 404);
