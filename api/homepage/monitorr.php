@@ -175,7 +175,7 @@ trait MonitorrHomepageItem
 						$base64 = 'data:image/' . $ext . ';base64,' . base64_encode($img->body);
 						$statuses[$service]['image'] = $base64;
 					} else {
-						$statuses[$service]['image'] = $cacheDirectory . 'no-list.png';
+						$statuses[$service]['image'] = 'plugins/images/cache/no-list.png';
 					}
 					$linkMatch = [];
 					$linkPattern = '/<a class="servicetile" href="(.*)" target="_blank" style="display: block"><div id="serviceimg"><div><img id="' . strtolower($service) . '-service-img/';
