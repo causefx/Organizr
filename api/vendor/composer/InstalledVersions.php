@@ -29,7 +29,7 @@ private static $installed = array (
     'aliases' => 
     array (
     ),
-    'reference' => '178b03ea57831f8952256b9c0078e5784c0518a8',
+    'reference' => '77336ee3aa0cae2c7d4db514402d14eee0792e88',
     'name' => '__root__',
   ),
   'versions' => 
@@ -41,7 +41,7 @@ private static $installed = array (
       'aliases' => 
       array (
       ),
-      'reference' => '178b03ea57831f8952256b9c0078e5784c0518a8',
+      'reference' => '77336ee3aa0cae2c7d4db514402d14eee0792e88',
     ),
     'adldap2/adldap2' => 
     array (
