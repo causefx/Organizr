@@ -153,6 +153,15 @@ trait PlexHomepageItem
 						'options' => $this->groupOptions
 					),
 					array(
+						'type' => 'select2',
+						'class' => 'select2-multiple',
+						'id' => 'plex-recent-exclude-select',
+						'name' => 'homepagePlexRecentExclude',
+						'label' => 'Libraries to Exclude',
+						'value' => $this->config['homepagePlexRecentExclude'],
+						'options' => $libraryList
+					),
+					array(
 						'type' => 'number',
 						'name' => 'homepageRecentLimit',
 						'label' => 'Item Limit',
@@ -179,6 +188,15 @@ trait PlexHomepageItem
 						'label' => 'Minimum Authorization',
 						'value' => $this->config['mediaSearchAuth'],
 						'options' => $this->groupOptions
+					),
+					array(
+						'type' => 'select2',
+						'class' => 'select2-multiple',
+						'id' => 'plex-search-exclude-select',
+						'name' => 'homepagePlexSearchExclude',
+						'label' => 'Libraries to Exclude',
+						'value' => $this->config['homepagePlexSearchExclude'],
+						'options' => $libraryList
 					),
 					array(
 						'type' => 'select',
@@ -490,6 +508,7 @@ trait PlexHomepageItem
 			return false;
 		}
 		$ignore = array();
+		$exclude = explode(',', $this->config['homepagePlexRecentExclude']);
 		$resolve = true;
 		$url = $this->qualifyURL($this->config['plexURL']);
 		$urls['movie'] = $url . "/hubs/home/recentlyAdded?X-Plex-Token=" . $this->config['plexToken'] . "&X-Plex-Container-Start=0&X-Plex-Container-Size=" . $this->config['homepageRecentLimit'] . "&type=1";
@@ -503,7 +522,7 @@ trait PlexHomepageItem
 				$items = array();
 				$plex = simplexml_load_string($response->body);
 				foreach ($plex as $child) {
-					if (!in_array($child['type'], $ignore) && isset($child['librarySectionID'])) {
+					if (!in_array($child['type'], $ignore) && !in_array($child['librarySectionID'], $exclude) && isset($child['librarySectionID'])) {
 						$items[] = $this->resolvePlexItem($child);
 					}
 				}
@@ -612,6 +631,7 @@ trait PlexHomepageItem
 			return false;
 		}
 		$ignore = array('artist', 'episode');
+		$exclude = explode(',', $this->config['homepagePlexSearchExclude']);
 		$resolve = true;
 		$url = $this->qualifyURL($this->config['plexURL']);
 		$url = $url . "/search?query=" . rawurlencode($query) . "&X-Plex-Token=" . $this->config['plexToken'];
@@ -622,7 +642,7 @@ trait PlexHomepageItem
 			$items = array();
 			$plex = simplexml_load_string($response->body);
 			foreach ($plex as $child) {
-				if (!in_array($child['type'], $ignore) && isset($child['librarySectionID'])) {
+				if (!in_array($child['type'], $ignore) && !in_array($child['librarySectionID'], $exclude) && isset($child['librarySectionID'])) {
 					$items[] = $this->resolvePlexItem($child);
 				}
 			}
