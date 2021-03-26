@@ -2390,6 +2390,41 @@ class Organizr
 					'value' => $this->config['ssoOverseerr']
 				)
 			),
+			'Petio' => array(
+				array(
+					'type' => 'input',
+					'name' => 'petioURL',
+					'label' => 'Petio URL',
+					'value' => $this->config['petioURL'],
+					'help' => 'Please make sure to use local IP address and port - You also may use local dns name too.',
+					'placeholder' => 'http(s)://hostname:port'
+				),
+				array(
+					'type' => 'password-alt',
+					'name' => 'petioToken',
+					'label' => 'Token',
+					'value' => $this->config['petioToken']
+				),
+				array(
+					'type' => 'input',
+					'name' => 'petioFallbackUser',
+					'label' => 'Petio Fallback User',
+					'value' => $this->config['petioFallbackUser'],
+					'help' => 'Organizr will request an Petio User Token based off of this user credentials',
+				),
+				array(
+					'type' => 'password-alt',
+					'name' => 'petioFallbackPassword',
+					'label' => 'Petio Fallback Password',
+					'value' => $this->config['petioFallbackPassword'],
+				),
+				array(
+					'type' => 'switch',
+					'name' => 'ssoPetio',
+					'label' => 'Enable',
+					'value' => $this->config['ssoPetio']
+				)
+			),
 			'Ombi' => array(
 				array(
 					'type' => 'input',
@@ -3148,6 +3183,7 @@ class Organizr
 		$this->coookie('delete', 'oAuth');
 		$this->coookie('delete', 'jellyfin_credentials');
 		$this->coookie('delete', 'connect.sid');
+		$this->coookie('delete', 'petio_jwt');
 		$this->clearTautulliTokens();
 		$this->revokeTokenCurrentUser($this->user['token']);
 		$this->user = null;
