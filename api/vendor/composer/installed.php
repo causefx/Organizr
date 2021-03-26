@@ -6,7 +6,7 @@
     'aliases' => 
     array (
     ),
-    'reference' => '97eb7ed7197678decba9c8f766af5558dda95fc6',
+    'reference' => '7e9a4efa44fc1396837620eb2d675a4194d97cd5',
     'name' => '__root__',
   ),
   'versions' => 
@@ -18,7 +18,7 @@
       'aliases' => 
       array (
       ),
-      'reference' => '97eb7ed7197678decba9c8f766af5558dda95fc6',
+      'reference' => '7e9a4efa44fc1396837620eb2d675a4194d97cd5',
     ),
     'adldap2/adldap2' => 
     array (
@@ -188,15 +188,6 @@
       array (
       ),
       'reference' => '181d480e08d9476e61381e04a71b34dc0432e812',
-    ),
-    'opis/closure' => 
-    array (
-      'pretty_version' => '3.6.1',
-      'version' => '3.6.1.0',
-      'aliases' => 
-      array (
-      ),
-      'reference' => '943b5d70cc5ae7483f6aff6ff43d7e34592ca0f5',
     ),
     'paquettg/php-html-parser' => 
     array (
@@ -417,15 +408,6 @@
       ),
       'reference' => '0905e0775f8c1cfb3bbcfabeb6588dcfd8b82d3f',
     ),
-    'spatie/async' => 
-    array (
-      'pretty_version' => '1.5.3',
-      'version' => '1.5.3.0',
-      'aliases' => 
-      array (
-      ),
-      'reference' => 'd371b76ff876530c4906596490fd977720477e48',
-    ),
     'symfony/deprecation-contracts' => 
     array (
       'pretty_version' => 'v2.1.3',
@@ -497,15 +479,6 @@
       array (
       ),
       'reference' => '8e15d04ba3440984d23e7964b2ee1d25c8de1581',
-    ),
-    'symfony/process' => 
-    array (
-      'pretty_version' => 'v5.2.4',
-      'version' => '5.2.4.0',
-      'aliases' => 
-      array (
-      ),
-      'reference' => '313a38f09c77fbcdc1d223e57d368cea76a2fd2f',
     ),
     'symfony/var-dumper' => 
     array (
