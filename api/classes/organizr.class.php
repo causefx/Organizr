@@ -811,6 +811,7 @@ class Organizr
 		$status['version'] = $this->version;
 		$status['os'] = $this->getOS();
 		$status['php'] = phpversion();
+		$status['php_user'] = get_current_user();
 		$status['userConfigPath'] = $this->userConfigPath;
 		return $status;
 	}
@@ -6051,7 +6052,7 @@ class Organizr
 		if (!$error) {
 			$pre = explode('/api/v2/socks/', $requestObject->getUri()->getPath());
 			$endpoint = explode('/', $pre[1]);
-			$new = urldecode(preg_replace('/'.$endpoint[0].'/', '', $pre[1], 1));
+			$new = urldecode(preg_replace('/' . $endpoint[0] . '/', '', $pre[1], 1));
 			$getParams = ($_GET) ? '?' . http_build_query($_GET) : '';
 			$url = $this->qualifyURL($this->config[$url]) . $new . $getParams;
 			$url = $this->cleanPath($url);
