@@ -27,7 +27,7 @@ trait JDownloaderHomepageItem
                                 <div class="panel-body">
 									<ul class="list-icons">
                                         <li><i class="fa fa-chevron-right text-danger"></i> <a href="https://pypi.org/project/myjd-api/" target="_blank">Download [myjd-api] Module</a></li>
-                                        <li><i class="fa fa-chevron-right text-danger"></i> Add <b>/api/myjd</b> to the URL if you are using <a href="https://pypi.org/project/RSScrawler/" target="_blank">RSScrawler</a></li>
+                                        <li><i class="fa fa-chevron-right text-danger"></i> Add <b>/api/myjd</b> to the URL if you are using <a href="https://pypi.org/project/FeedCrawler/" target="_blank">FeedCrawler</a></li>
                                     </ul>
                                 </div>
                             </div>
