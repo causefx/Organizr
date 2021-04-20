@@ -72,7 +72,7 @@ class HealthChecks extends Organizr
 	
 	public function _healthCheckPluginUUID($uuid, $pass = false)
 	{
-		if (!$uuid || !$pass || $this->config['HEALTHCHECKS-PingURL'] == '') {
+		if (!$uuid || $this->config['HEALTHCHECKS-PingURL'] == '') {
 			return false;
 		}
 		$url = $this->qualifyURL($this->config['HEALTHCHECKS-PingURL']);
@@ -134,7 +134,7 @@ class HealthChecks extends Organizr
 						$pass = true;
 					}
 				}
-				$this->_healthCheckPluginUUID($v['UUID'], 'true');
+				$this->_healthCheckPluginUUID($v['UUID'], $pass);
 			}
 			$this->setAPIResponse('success', null, 200, $allItems);
 		} else {
