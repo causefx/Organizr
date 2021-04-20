@@ -6039,7 +6039,7 @@ class Organizr
 		}
 	}
 	
-	public function socks($url, $enabled, $auth, $requestObject, $header = null)
+	public function socks($url, $enabled, $auth, $requestObject, $header = null, $multiple = null)
 	{
 		$error = false;
 		if (!$this->config[$enabled]) {
@@ -6049,14 +6049,35 @@ class Organizr
 		if (!$this->qualifyRequest($this->config[$auth], true)) {
 			$error = true;
 		}
+		if (strpos($this->config[$url], ',') !== false) {
+			if (!$multiple) {
+				$error = true;
+				$this->setAPIResponse('error', 'Multiple URLs found in field, please use /api/v2/multiple/socks endpoint', 409);
+			}
+		} else {
+			if ($multiple) {
+				$error = true;
+				$this->setAPIResponse('error', 'Multiple endpoint accessed but multiple URLs not found in field, please use /api/v2/socks endpoint', 409);
+			}
+		}
 		if (!$error) {
-			$pre = explode('/api/v2/socks/', $requestObject->getUri()->getPath());
+			if ($multiple) {
+				$instance = $multiple - 1;
+				$pre = explode('/api/v2/multiple/socks/', $requestObject->getUri()->getPath());
+				$pre[1] = $this->replace_first('/' . $multiple . '/', '/', $pre[1]);
+				// sent url twice since we arent using tokens
+				$list = $this->csvHomepageUrlToken($this->config[$url], $this->config[$url]);
+				$appURL = $list[$instance]['url'];
+			} else {
+				$pre = explode('/api/v2/socks/', $requestObject->getUri()->getPath());
+				$appURL = $this->config[$url];
+			}
 			$endpoint = explode('/', $pre[1]);
 			$new = urldecode(preg_replace('/' . $endpoint[0] . '/', '', $pre[1], 1));
 			$getParams = ($_GET) ? '?' . http_build_query($_GET) : '';
-			$url = $this->qualifyURL($this->config[$url]) . $new . $getParams;
+			$url = $this->qualifyURL($appURL) . $new . $getParams;
 			$url = $this->cleanPath($url);
-			$options = ($this->localURL($url)) ? array('verify' => false) : array();
+			$options = ($this->localURL($appURL)) ? array('verify' => false) : array();
 			$headers = [];
 			$apiData = $this->json_validator($this->apiData($requestObject)) ? json_encode($this->apiData($requestObject)) : $this->apiData($requestObject);
 			if ($header) {
