@@ -926,7 +926,7 @@ function closeCurrentTab(event){
 			organizrConsole('Organizr Function','Closing tab: '+tab);
 			$('#menu-'+cleanClass(tab)+' a').removeClass("active");
 			$('#menu-'+tab+' a').children().removeClass('tabLoaded');
-			$('#container'+extra+'-'+cleanClass(tab)).removeClass("loaded show");
+			$('#container'+extra+'-'+cleanClass(tab)).removeClass("loaded show").addClass("hidden");
 			$('#frame'+extra+'-'+cleanClass(tab)).remove();
             setTabInfo(cleanClass(tab),'loaded',false);
             setTabInfo(cleanClass(tab),'active',false);
