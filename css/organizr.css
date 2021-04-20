@@ -1669,7 +1669,6 @@ span.has-coupon {
 #page-wrapper {
     height: calc(100% - 40px);
     width: calc(100% - 60px);
-    overflow: auto;
     position: absolute;
 }
 .content-wrapper #page-wrapper {
@@ -1681,7 +1680,6 @@ span.has-coupon {
 }
 #page-wrapper-right {
     height: calc(100% - 40px);
-    overflow: auto;
     position: absolute;
 }
 .iFrame-listing {
@@ -1690,6 +1688,11 @@ span.has-coupon {
 .frame-container {
     height: 100%;
 }
+.internal-container {
+    height: 100%;
+}.internal-listing {
+     height: 100%;
+ }
 html{
     overflow: hidden !important;
 }
