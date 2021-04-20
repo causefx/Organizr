@@ -557,6 +557,11 @@ trait NormalFunctions
 		}
 		return false;
 	}
+	
+	public function replace_first($search_str, $replacement_str, $src_str)
+	{
+		return (false !== ($pos = strpos($src_str, $search_str))) ? substr_replace($src_str, $replacement_str, $pos, strlen($search_str)) : $src_str;
+	}
 }
 
 // Leave for deluge class
