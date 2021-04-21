@@ -14,6 +14,7 @@ lang.init({
 	allowCookieOverride: true
 });
 var OAuthLoginNeeded = false;
+var directToHash = false;
 var pingOrg = false;
 var timeouts = {};
 var increment = 0;
@@ -416,6 +417,7 @@ function getDefault(tabName,tabType){
 		var hashTab = getHash();
 		var hashType = getTabType(hashTab);
 		if (typeof hashTab !== 'undefined' && typeof hashType !== 'undefined') {
+			directToHash = true;
 			switchTab(hashTab,hashType);
 		}else{
 			console.warn("Tab Function: "+hashTab+" is not a defined tab");
@@ -2916,13 +2918,14 @@ function buildSplashScreenItem(arrayItems){
     return (splashList !== '') ? splashList : false;
 }
 function buildSplashScreen(json){
+	let hiddenSplash = (directToHash) ? 'hidden' : 'in';
     var items = buildSplashScreenItem(json);
     var menu = '<li ><a href="javascript:void(0)" onclick="$(\'.splash-screen\').removeClass(\'hidden\').addClass(\'in\')"><i class="ti-layout-grid2 fa-fw"></i> <span lang="en">Splash Page</span></a></li>';
     if(items){
         closeSideMenu();
 	    organizrConsole('Organizr Function','Adding Splash Screen');
         var splash = `
-        <section id="splashScreen" class="lock-screen splash-screen fade in">
+        <section id="splashScreen" class="lock-screen splash-screen fade ${hiddenSplash}">
             <div class="row p-20 flexbox">`+items+`</div>
             <div class="row p-20 p-t-0 flexbox">
                 <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12 mouse hvr-wobble-bottom bottom-close-splash" onclick="$('.splash-screen').addClass('hidden').removeClass('in')">
