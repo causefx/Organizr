@@ -25,6 +25,31 @@ class Bookmark extends Organizr
 		parent::writeLog($type, "Plugin 'Bookmark': " . $message, $username);
 	}
 	
+	public function _bookmarkGetOrganizrTabInfo()
+	{
+		$response = [
+			array(
+				'function' => 'fetch',
+				'query' => array(
+					'SELECT * FROM tabs',
+					'WHERE url = ?',
+					'api/v2/plugins/bookmark/page'
+				)
+			),
+		];
+		return $this->processQueries($response);
+	}
+	
+	public function _bookmarkGetOrganizrTabGroupId()
+	{
+		$tab = $this->_bookmarkGetOrganizrTabInfo();
+		if ($tab) {
+			return $tab['group_id'];
+		} else {
+			return 999;
+		}
+	}
+	
 	public function _checkRequest($request)
 	{
 		$result = false;
