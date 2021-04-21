@@ -4666,8 +4666,18 @@ function setSSO(){
 		if(v !== false){
 			local('set', i, v);
 		}else{
-		    local('r', i);
-        }
+			local('r', i);
+		}
+	});
+	// other items to remove
+	$.each(localStorage, function(i,v) {
+		if(typeof v == 'string'){
+			if(i.startsWith('user-')){
+				if(typeof activeInfo.sso[i] == 'undefined'){
+					local('r', i);
+				}
+			}
+		}
 	});
 }
 function buildStreamItem(array,source){
