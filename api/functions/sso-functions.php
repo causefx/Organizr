@@ -2,6 +2,25 @@
 
 trait SSOFunctions
 {
+	public function ssoCookies()
+	{
+		$cookies = array(
+			'myPlexAccessToken' => isset($_COOKIE['mpt']) ? $_COOKIE['mpt'] : false,
+			'id_token' => isset($_COOKIE['Auth']) ? $_COOKIE['Auth'] : false,
+			'jellyfin_credentials' => isset($_COOKIE['jellyfin_credentials']) ? $_COOKIE['jellyfin_credentials'] : false,
+		);
+		// Jellyfin cookie
+		foreach (array_keys($_COOKIE) as $k => $v) {
+			if (strpos($v, 'user-') !== false) {
+				$cookiesToAdd = [
+					$v => $_COOKIE[$v]
+				];
+				$cookies = array_merge($cookies, $cookiesToAdd);
+			}
+		}
+		return $cookies;
+	}
+	
 	public function getSSOUserFor($app, $userobj)
 	{
 		$map = array(
@@ -37,7 +56,9 @@ trait SSOFunctions
 		if ($this->config['ssoJellyfin']) {
 			$jellyfinToken = $this->getJellyfinToken($this->getSSOUserFor('jellyfin', $userobj), $password);
 			if ($jellyfinToken) {
-				$this->coookie('set', 'jellyfin_credentials', $jellyfinToken, $this->config['rememberMeDays'], false);
+				foreach ($jellyfinToken as $k => $v) {
+					$this->coookie('set', $k, $v, $this->config['rememberMeDays'], false);
+				}
 			}
 		}
 		if ($this->config['ssoOverseerr']) {
@@ -77,7 +98,10 @@ trait SSOFunctions
 			if ($response->success) {
 				$token = json_decode($response->body, true);
 				$this->writeLog('success', 'Jellyfin Token Function - Grabbed token.', $username);
-				return '{"Servers":[{"ManualAddress":"' . $ssoUrl . '","Id":"' . $token['ServerId'] . '","UserId":"' . $token['User']['Id'] . '","AccessToken":"' . $token['AccessToken'] . '"}]}';
+				$key = 'user-' . $token['User']['Id'] . '-' . $token['ServerId'];
+				$jellyfin[$key] = json_encode($token['User']);
+				$jellyfin['jellyfin_credentials'] = '{"Servers":[{"ManualAddress":"' . $ssoUrl . '","Id":"' . $token['ServerId'] . '","UserId":"' . $token['User']['Id'] . '","AccessToken":"' . $token['AccessToken'] . '"}]}';
+				return $jellyfin;
 			} else {
 				$this->writeLog('error', 'Jellyfin Token Function - Jellyfin did not return Token', $username);
 			}

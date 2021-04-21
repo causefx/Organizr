@@ -3182,10 +3182,10 @@ class Organizr
 		$this->coookie('delete', 'mpt');
 		$this->coookie('delete', 'Auth');
 		$this->coookie('delete', 'oAuth');
-		$this->coookie('delete', 'jellyfin_credentials');
 		$this->coookie('delete', 'connect.sid');
 		$this->coookie('delete', 'petio_jwt');
 		$this->clearTautulliTokens();
+		$this->clearJellyfinTokens();
 		$this->revokeTokenCurrentUser($this->user['token']);
 		$this->user = null;
 		return true;
