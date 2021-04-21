@@ -14,7 +14,7 @@ $app->get('/plugins/bookmark/settings', function ($request, $response, $args) {
 $app->get('/plugins/bookmark/page', function ($request, $response, $args) {
 	$Bookmark = new Bookmark();
 	if ($Bookmark->_checkRequest($request) && $Bookmark->checkRoute($request)) {
-		if ($Bookmark->qualifyRequest(1, true)) {
+		if ($Bookmark->qualifyRequest(4, true)) {
 			$GLOBALS['api']['response']['data'] = $Bookmark->_getPage();
 		}
 	}
