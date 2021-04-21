@@ -6039,6 +6039,19 @@ class Organizr
 		}
 	}
 	
+	public function socksHeadingHTML($app)
+	{
+		return '
+		<h3 lang="en">' . ucwords($app) . ' SOCKS API Connection</h3>
+		<p>Using this feature allows you to access the API without having to reverse proxy it.  Just access it from: </p>
+		<code>' . $this->getServerPath() . 'api/v2/socks/' . $app . '/</code>
+		<p>If you are using multiple URL\'s (using the csv method) you will have to use the url like these: </p>
+		<code>' . $this->getServerPath() . 'api/v2/multiple/socks/' . $app . '/1</code>
+		<br/>
+		<code>' . $this->getServerPath() . 'api/v2/multiple/socks/' . $app . '/2</code>
+		';
+	}
+	
 	public function socks($url, $enabled, $auth, $requestObject, $header = null, $multiple = null)
 	{
 		$error = false;

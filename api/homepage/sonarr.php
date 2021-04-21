@@ -72,11 +72,7 @@ trait SonarrHomepageItem
 						'html' => '
 							<div class="panel panel-default">
 								<div class="panel-wrapper collapse in">
-									<div class="panel-body">
-										<h3 lang="en">Sonarr SOCKS API Connection</h3>
-										<p>Using this feature allows you to access the API without having to reverse proxy it.  Just access it from: </p>
-										<code>' . $this->getServerPath() . 'api/v2/socks/sonarr/</code>
-									</div>
+									<div class="panel-body">' . $this->socksHeadingHTML('sonarr') . '</div>
 								</div>
 							</div>'
 					),
