@@ -6090,7 +6090,7 @@ class Organizr
 			$getParams = ($_GET) ? '?' . http_build_query($_GET) : '';
 			$url = $this->qualifyURL($appURL) . $new . $getParams;
 			$url = $this->cleanPath($url);
-			$options = ($this->localURL($appURL)) ? array('verify' => false) : array();
+			$options = ($this->localURL($appURL)) ? array('verify' => false, 'timeout' => 120) : array('timeout' => 120);
 			$headers = [];
 			$apiData = $this->json_validator($this->apiData($requestObject)) ? json_encode($this->apiData($requestObject)) : $this->apiData($requestObject);
 			if ($header) {
