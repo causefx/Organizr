@@ -18,6 +18,7 @@
   z-index: 1043;
   position: fixed;
   outline: none !important;
+  overflow-y: auto;
   -webkit-backface-visibility: hidden; }
 
 .mfp-container {
