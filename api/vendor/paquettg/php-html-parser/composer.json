@@ -1,0 +1,38 @@
+{
+    "name": "paquettg/php-html-parser",
+    "type": "library",
+    "description": "An HTML DOM parser. It allows you to manipulate HTML. Find tags on an HTML page with selectors just like jQuery.",
+    "keywords": ["html", "dom", "parser"],
+    "homepage": "https://github.com/paquettg/php-html-parser",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Gilles Paquette",
+            "email": "paquettg@gmail.com",
+            "homepage": "http://gillespaquette.ca"
+        }
+    ],
+    "require": {
+        "php": ">=7.2",
+        "ext-mbstring": "*",
+        "ext-zlib": "*",
+        "ext-curl": "*",
+        "paquettg/string-encode": "~1.0.0",
+        "php-http/httplug": "^2.1",
+        "guzzlehttp/guzzle": "^7.0",
+        "guzzlehttp/psr7": "^1.6",
+        "myclabs/php-enum": "^1.7"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^7.5.1",
+        "mockery/mockery": "^1.2",
+        "infection/infection": "^0.13.4",
+        "phan/phan": "^2.4",
+        "friendsofphp/php-cs-fixer": "^2.16"
+    },
+    "autoload": {
+        "psr-4": { 
+        	"PHPHtmlParser\\": "src/PHPHtmlParser"
+       	}
+    }
+}

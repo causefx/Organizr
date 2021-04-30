@@ -60,7 +60,7 @@ class Organizr
 	
 	// ===================================
 	// Organizr Version
-	public $version = '2.1.235';
+	public $version = '2.1.306';
 	// ===================================
 	// Quick php Version check
 	public $minimumPHP = '7.2';
@@ -220,7 +220,8 @@ class Organizr
 			if ($group !== null) {
 				if ((isset($_SERVER['HTTP_X_FORWARDED_SERVER']) && $_SERVER['HTTP_X_FORWARDED_SERVER'] == 'traefik') || $this->config['traefikAuthEnable']) {
 					$return = (isset($_SERVER['HTTP_X_FORWARDED_HOST']) && isset($_SERVER['HTTP_X_FORWARDED_URI']) && isset($_SERVER['HTTP_X_FORWARDED_PROTO'])) ? '?return=' . $_SERVER['HTTP_X_FORWARDED_PROTO'] . '://' . $_SERVER['HTTP_X_FORWARDED_HOST'] . $_SERVER['HTTP_X_FORWARDED_URI'] : '';
-					$redirect = 'Location: ' . $this->getServerPath() . $return;
+					$redirectDomain = ($this->config['traefikDomainOverride'] !== '') ? $this->config['traefikDomainOverride'] : $this->getServerPath();
+					$redirect = 'Location: ' . $redirectDomain . $return;
 				}
 				if ($this->qualifyRequest($group) && $unlocked) {
 					header("X-Organizr-User: $currentUser");
@@ -276,13 +277,13 @@ class Organizr
 	{
 		switch ($request->getMethod()) {
 			case 'POST':
-				if ($request->getHeaderLine('Content-Type') == 'application/json') {
+				if (stripos($request->getHeaderLine('Content-Type'), 'application/json') !== false) {
 					return json_decode(file_get_contents('php://input', 'r'), true);
 				} else {
 					return $request->getParsedBody();
 				}
 			default:
-				if ($request->getHeaderLine('Content-Type') == 'application/json') {
+				if (stripos($request->getHeaderLine('Content-Type'), 'application/json') !== false) {
 					return json_decode(file_get_contents('php://input', 'r'), true);
 				} else {
 					return null;
@@ -422,6 +423,7 @@ class Organizr
 		switch ($type) {
 			case 'js':
 				foreach (glob(dirname(__DIR__, 1) . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . 'js' . DIRECTORY_SEPARATOR . '*.js') as $filename) {
+					$pluginEnabled = false;
 					$keyOriginal = strtoupper(basename($filename, '.js'));
 					$key = str_replace('-SETTINGS', '', $keyOriginal);
 					$continue = false;
@@ -438,15 +440,22 @@ class Organizr
 						case 'PHP-MAILER':
 							$key = 'PHPMAILER';
 							break;
+						case 'NGXC':
+							$key = 'ngxc';
+							break;
 						default:
 							$key = $key;
 					}
-					if ($this->config[$key . '-enabled'] || $settings) {
+					if (isset($this->config[$key . '-enabled'])) {
+						if ($this->config[$key . '-enabled']) {
+							$pluginEnabled = true;
+						}
+					}
+					if ($pluginEnabled || $settings) {
 						if ($continue) {
 							$files .= '<script src="api/plugins/js/' . basename($filename) . '?v=' . $this->fileHash . '" defer="true"></script>';
 						}
 					}
-					
 				}
 				break;
 			case 'css':
@@ -802,6 +811,7 @@ class Organizr
 		$status['version'] = $this->version;
 		$status['os'] = $this->getOS();
 		$status['php'] = phpversion();
+		$status['php_user'] = get_current_user();
 		$status['userConfigPath'] = $this->userConfigPath;
 		return $status;
 	}
@@ -1968,6 +1978,12 @@ class Organizr
 					'placeholder' => ''
 				),
 				array(
+					'type' => 'switch',
+					'name' => 'lockoutSystem',
+					'label' => 'Inactivity Lock',
+					'value' => $this->config['lockoutSystem']
+				),
+				array(
 					'type' => 'select',
 					'name' => 'lockoutMinAuth',
 					'label' => 'Lockout Groups From',
@@ -1983,9 +1999,18 @@ class Organizr
 				),
 				array(
 					'type' => 'switch',
-					'name' => 'lockoutSystem',
-					'label' => 'Inactivity Lock',
-					'value' => $this->config['lockoutSystem']
+					'name' => 'traefikAuthEnable',
+					'label' => 'Enable Traefik Auth Redirect',
+					'help' => 'This will enable the webserver to forward errors so traefik will accept them',
+					'value' => $this->config['traefikAuthEnable']
+				),
+				array(
+					'type' => 'input',
+					'name' => 'traefikDomainOverride',
+					'label' => 'Traefik Domain for Return Override',
+					'value' => $this->config['traefikDomainOverride'],
+					'help' => 'Please use a FQDN on this URL Override',
+					'placeholder' => 'http(s)://domain'
 				),
 				array(
 					'type' => 'select',
@@ -1993,14 +2018,6 @@ class Organizr
 					'label' => 'Minimum Authentication for Debug Area',
 					'value' => $this->config['debugAreaAuth'],
 					'options' => $this->groupSelect()
-				),
-				array(
-					'type' => 'switch',
-					'name' => 'authDebug',
-					'label' => 'Nginx Auth Debug',
-					'help' => 'Important! Do not keep this enabled for too long as this opens up Authentication while testing.',
-					'value' => $this->config['authDebug'],
-					'class' => 'authDebug'
 				),
 				array(
 					'type' => 'select2',
@@ -2047,14 +2064,7 @@ class Organizr
 							'value' => 'allow-downloads'
 						),
 					)
-				),
-				array(
-					'type' => 'switch',
-					'name' => 'traefikAuthEnable',
-					'label' => 'Enable Traefik Auth Redirect',
-					'help' => 'This will enable the webserver to forward errors so traefik will accept them',
-					'value' => $this->config['traefikAuthEnable']
-				),
+				)
 			),
 			'Performance' => array(
 				array(
@@ -2379,6 +2389,41 @@ class Organizr
 					'name' => 'ssoOverseerr',
 					'label' => 'Enable',
 					'value' => $this->config['ssoOverseerr']
+				)
+			),
+			'Petio' => array(
+				array(
+					'type' => 'input',
+					'name' => 'petioURL',
+					'label' => 'Petio URL',
+					'value' => $this->config['petioURL'],
+					'help' => 'Please make sure to use local IP address and port - You also may use local dns name too.',
+					'placeholder' => 'http(s)://hostname:port'
+				),
+				array(
+					'type' => 'password-alt',
+					'name' => 'petioToken',
+					'label' => 'Token',
+					'value' => $this->config['petioToken']
+				),
+				array(
+					'type' => 'input',
+					'name' => 'petioFallbackUser',
+					'label' => 'Petio Fallback User',
+					'value' => $this->config['petioFallbackUser'],
+					'help' => 'Organizr will request an Petio User Token based off of this user credentials',
+				),
+				array(
+					'type' => 'password-alt',
+					'name' => 'petioFallbackPassword',
+					'label' => 'Petio Fallback Password',
+					'value' => $this->config['petioFallbackPassword'],
+				),
+				array(
+					'type' => 'switch',
+					'name' => 'ssoPetio',
+					'label' => 'Enable',
+					'value' => $this->config['ssoPetio']
 				)
 			),
 			'Ombi' => array(
@@ -3137,9 +3182,10 @@ class Organizr
 		$this->coookie('delete', 'mpt');
 		$this->coookie('delete', 'Auth');
 		$this->coookie('delete', 'oAuth');
-		$this->coookie('delete', 'jellyfin_credentials');
 		$this->coookie('delete', 'connect.sid');
+		$this->coookie('delete', 'petio_jwt');
 		$this->clearTautulliTokens();
+		$this->clearJellyfinTokens();
 		$this->revokeTokenCurrentUser($this->user['token']);
 		$this->user = null;
 		return true;
@@ -3984,7 +4030,9 @@ class Organizr
 		$items = $this->getSettingsHomepage();
 		foreach ($items as $k => $v) {
 			if (strtolower($v['name']) === strtolower($item)) {
-				return $v;
+				$functionName = $v['settingsArray'];
+				return $this->$functionName();
+				
 			}
 		}
 		$this->setAPIResponse('error', 'Homepage item was not found', 404);
@@ -4926,11 +4974,72 @@ class Organizr
 		$response = Requests::get($url, array(), $options);
 		if ($response->success) {
 			$api = json_decode($response->body, true);
+			foreach ($api as $k => $backer) {
+				$api[$k] = array_merge($api[$k], ['sortName' => strtolower($backer['name'])]);
+			}
 			$this->setAPIResponse('success', '', 200, $api);
 			return $api;
 		}
 		$this->setAPIResponse('error', 'Error connecting to Open Collective', 409);
 		return false;
+	}
+	
+	public function getGithubSponsors()
+	{
+		$url = 'https://github.com/sponsors/causefx';
+		$options = ($this->localURL($url)) ? array('verify' => false) : array();
+		$response = Requests::get($url, array(), $options);
+		if ($response->success) {
+			$sponsors = [];
+			$dom = new PHPHtmlParser\Dom;
+			try {
+				$dom->loadStr($response->body);
+				$contents = $dom->find('#sponsors .clearfix div');
+				foreach ($contents as $content) {
+					$html = $content->innerHtml;
+					preg_match('/(@[a-zA-Z])\w+/', $html, $username);
+					preg_match('/(?i)\b((?:https?:\/\/|www\d{0,3}[.]|[a-z0-9.\-]+[.][a-z]{2,4}\/)(?:[^\s()<>]+|\(([^\s()<>]+|(\([^\s()<>]+\)))*\))+(?:\(([^\s()<>]+|(\([^\s()<>]+\)))*\)|[^\s`!()\[\]{};:\'\".,<>?«»“”‘’]))/', $html, $image);
+					if (isset($image[0]) && isset($username[0])) {
+						$sponsors[] = [
+							'name' => str_replace('@', '', $username[0]),
+							'sortName' => str_replace('@', '', strtolower($username[0])),
+							'image' => str_replace('s=60', 's=200', $image[0]),
+							'isActive' => true,
+							'type' => 'USER',
+							'role' => 'BACKER'
+						];
+					}
+				}
+				$this->setAPIResponse('success', '', 200, $sponsors);
+				return $sponsors;
+			} catch (\PHPHtmlParser\Exceptions\ChildNotFoundException | \PHPHtmlParser\Exceptions\CircularException | \PHPHtmlParser\Exceptions\LogicalException | \PHPHtmlParser\Exceptions\StrictException | \PHPHtmlParser\Exceptions\ContentLengthException | \PHPHtmlParser\Exceptions\NotLoadedException $e) {
+				$this->setAPIResponse('error', 'Error connecting to Github', 409);
+				return false;
+			}
+		}
+		$this->setAPIResponse('error', 'Error connecting to Github', 409);
+		return false;
+	}
+	
+	public function getAllSponsors()
+	{
+		$sponsors = [];
+		$list = [
+			'openCollective' => $this->getOpenCollectiveBackers(),
+			'github' => $this->getGithubSponsors()
+		];
+		foreach ($list as $k => $sponsor) {
+			if ($sponsor) {
+				$sponsors = array_merge($sponsor, $sponsors);
+			}
+		}
+		if ($sponsors) {
+			usort($sponsors, function ($a, $b) {
+				return $a['sortName'] <=> $b['sortName'];
+			});
+		}
+		$this->setAPIResponse('success', '', 200, $sponsors);
+		return $sponsors;
 	}
 	
 	public function getOrganizrSmtpFromAPI()
@@ -4958,7 +5067,7 @@ class Organizr
 	
 	public function guestHash($start, $end)
 	{
-		$ip = $_SERVER['REMOTE_ADDR'];
+		$ip = $this->userIP();
 		$ip = md5($ip);
 		return substr($ip, $start, $end);
 	}
@@ -5930,7 +6039,20 @@ class Organizr
 		}
 	}
 	
-	public function socks($url, $enabled, $auth, $requestObject, $header = null)
+	public function socksHeadingHTML($app)
+	{
+		return '
+		<h3 lang="en">' . ucwords($app) . ' SOCKS API Connection</h3>
+		<p>Using this feature allows you to access the API without having to reverse proxy it.  Just access it from: </p>
+		<code>' . $this->getServerPath() . 'api/v2/socks/' . $app . '/</code>
+		<p>If you are using multiple URL\'s (using the csv method) you will have to use the url like these: </p>
+		<code>' . $this->getServerPath() . 'api/v2/multiple/socks/' . $app . '/1</code>
+		<br/>
+		<code>' . $this->getServerPath() . 'api/v2/multiple/socks/' . $app . '/2</code>
+		';
+	}
+	
+	public function socks($url, $enabled, $auth, $requestObject, $header = null, $multiple = null)
 	{
 		$error = false;
 		if (!$this->config[$enabled]) {
@@ -5940,14 +6062,35 @@ class Organizr
 		if (!$this->qualifyRequest($this->config[$auth], true)) {
 			$error = true;
 		}
+		if (strpos($this->config[$url], ',') !== false) {
+			if (!$multiple) {
+				$error = true;
+				$this->setAPIResponse('error', 'Multiple URLs found in field, please use /api/v2/multiple/socks endpoint', 409);
+			}
+		} else {
+			if ($multiple) {
+				$error = true;
+				$this->setAPIResponse('error', 'Multiple endpoint accessed but multiple URLs not found in field, please use /api/v2/socks endpoint', 409);
+			}
+		}
 		if (!$error) {
-			$pre = explode('/api/v2/socks/', $requestObject->getUri()->getPath());
+			if ($multiple) {
+				$instance = $multiple - 1;
+				$pre = explode('/api/v2/multiple/socks/', $requestObject->getUri()->getPath());
+				$pre[1] = $this->replace_first('/' . $multiple . '/', '/', $pre[1]);
+				// sent url twice since we arent using tokens
+				$list = $this->csvHomepageUrlToken($this->config[$url], $this->config[$url]);
+				$appURL = $list[$instance]['url'];
+			} else {
+				$pre = explode('/api/v2/socks/', $requestObject->getUri()->getPath());
+				$appURL = $this->config[$url];
+			}
 			$endpoint = explode('/', $pre[1]);
-			$new = str_ireplace($endpoint[0], '', $pre[1]);
+			$new = urldecode(preg_replace('/' . $endpoint[0] . '/', '', $pre[1], 1));
 			$getParams = ($_GET) ? '?' . http_build_query($_GET) : '';
-			$url = $this->qualifyURL($this->config[$url]) . $new . $getParams;
+			$url = $this->qualifyURL($appURL) . $new . $getParams;
 			$url = $this->cleanPath($url);
-			$options = ($this->localURL($url)) ? array('verify' => false) : array();
+			$options = ($this->localURL($appURL)) ? array('verify' => false, 'timeout' => 120) : array('timeout' => 120);
 			$headers = [];
 			$apiData = $this->json_validator($this->apiData($requestObject)) ? json_encode($this->apiData($requestObject)) : $this->apiData($requestObject);
 			if ($header) {
@@ -5956,6 +6099,16 @@ class Organizr
 					$headers[$header] = $headerKey;
 				}
 			}
+			$debugInformation = [
+				'type' => $requestObject->getMethod(),
+				'headerType' => $requestObject->getHeaderLine('Content-Type'),
+				'header' => $header,
+				'headers' => $headers,
+				'url' => $url,
+				'options' => $options,
+				'data' => $apiData
+			];
+			//$this->debug(json_encode($debugInformation));
 			switch ($requestObject->getMethod()) {
 				case 'GET':
 					$call = Requests::get($url, $headers, $options);

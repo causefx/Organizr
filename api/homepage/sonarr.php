@@ -2,13 +2,19 @@
 
 trait SonarrHomepageItem
 {
-	public function sonarrSettingsArray()
+	public function sonarrSettingsArray($infoOnly = false)
 	{
-		return array(
+		$homepageInformation = [
 			'name' => 'Sonarr',
 			'enabled' => strpos('personal', $this->config['license']) !== false,
 			'image' => 'plugins/images/tabs/sonarr.png',
 			'category' => 'PVR',
+			'settingsArray' => __FUNCTION__
+		];
+		if ($infoOnly) {
+			return $homepageInformation;
+		}
+		$homepageSettings = array(
 			'docs' => 'https://docs.organizr.app/books/setup-features/page/sonarr',
 			'settings' => array(
 				'About' => array(
@@ -66,11 +72,7 @@ trait SonarrHomepageItem
 						'html' => '
 							<div class="panel panel-default">
 								<div class="panel-wrapper collapse in">
-									<div class="panel-body">
-										<h3 lang="en">Sonarr SOCKS API Connection</h3>
-										<p>Using this feature allows you to access the Sonarr API without having to reverse proxy it.  Just access it from: </p>
-										<code>' . $this->getServerPath() . 'api/v2/socks/sonarr/</code>
-									</div>
+									<div class="panel-body">' . $this->socksHeadingHTML('sonarr') . '</div>
 								</div>
 							</div>'
 					),
@@ -196,6 +198,7 @@ trait SonarrHomepageItem
 				)
 			)
 		);
+		return array_merge($homepageInformation, $homepageSettings);
 	}
 	
 	public function testConnectionSonarr()

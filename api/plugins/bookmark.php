@@ -25,6 +25,31 @@ class Bookmark extends Organizr
 		parent::writeLog($type, "Plugin 'Bookmark': " . $message, $username);
 	}
 	
+	public function _bookmarkGetOrganizrTabInfo()
+	{
+		$response = [
+			array(
+				'function' => 'fetch',
+				'query' => array(
+					'SELECT * FROM tabs',
+					'WHERE url = ?',
+					'api/v2/plugins/bookmark/page'
+				)
+			),
+		];
+		return $this->processQueries($response);
+	}
+	
+	public function _bookmarkGetOrganizrTabGroupId()
+	{
+		$tab = $this->_bookmarkGetOrganizrTabInfo();
+		if ($tab) {
+			return $tab['group_id'];
+		} else {
+			return 999;
+		}
+	}
+	
 	public function _checkRequest($request)
 	{
 		$result = false;
@@ -314,7 +339,7 @@ class Bookmark extends Organizr
 		<div class="panel bg-org panel-info">
 			<div class="panel-heading">
 				<span lang="en">Bookmark Tab Editor</span>
-				<button type="button" class="btn btn-info btn-circle pull-right popup-with-form m-r-5" href="#new-bookmark-tab-form" data-effect="mfp-3d-unfold"><i class="fa fa-plus"></i> </button>
+				<button type="button" class="btn btn-info btn-circle pull-right popup-with-form m-r-5" href="#new-bookmark-tab-form" onclick="newBookmarkTabForm()" data-effect="mfp-3d-unfold"><i class="fa fa-plus"></i> </button>
 				<button onclick="submitBookmarkTabOrder(newBookmarkTabsGlobal)" class="btn btn-sm btn-info btn-rounded waves-effect waves-light pull-right animated loop-animation rubberBand m-r-20 saveBookmarkTabOrderButton hidden" type="button"><span class="btn-label"><i class="fa fa-save"></i></span><span lang="en">Save Tab Order</span></button>
 			</div>
 			<div class="table-responsive">
@@ -342,12 +367,12 @@ class Bookmark extends Organizr
 			<h1 lang="en">Add New Tab</h1>
 			<fieldset style="border:0;">
 				<div class="form-group">
-					<label class="control-label" for="new-bookmark-tab-form-inputNameNew" lang="en">Tab Name</label>
-					<input type="text" class="form-control" id="new-bookmark-tab-form-inputNameNew" name="name" required="" autofocus>
+					<label class="control-label" for="new-bookmark-tab-form-inputName" lang="en">Tab Name</label>
+					<input type="text" class="form-control" id="new-bookmark-tab-form-inputName" name="name" required="" autofocus>
 				</div>
 				<div class="form-group">
-					<label class="control-label" for="new-bookmark-tab-form-inputURLNew" lang="en">Tab URL</label>
-					<input type="text" class="form-control" id="new-bookmark-tab-form-inputURLNew" name="url"  required="">
+					<label class="control-label" for="new-bookmark-tab-form-inputURL" lang="en">Tab URL</label>
+					<input type="text" class="form-control" id="new-bookmark-tab-form-inputURL" name="url"  required="">
 				</div>
 				<div class="row">
 					<div class="form-group col-lg-4">
@@ -366,17 +391,21 @@ class Bookmark extends Organizr
 					</div>
 				</div>
 				<div class="form-group">
-					<label class="control-label" for="new-bookmark-tab-form-inputImageNew" lang="en">Tab Image</label>
-					<input type="text" class="form-control" id="new-bookmark-tab-form-inputImageNew" name="image" required="">
+					<label class="control-label" for="new-bookmark-tab-form-inputImage" lang="en">Tab Image</label>
+					<input type="text" class="form-control" id="new-bookmark-tab-form-inputImage" name="image" required="">
 				</div>
 				<div class="row">
 					<div class="form-group col-lg-4">
-						<label class="control-label" for="new-bookmark-tab-form-inputBackgroundColorNew" lang="en">Background Color</label>
-						<input type="text" class="form-control" id="new-bookmark-tab-form-inputBackgroundColorNew" name="background_color" required="">
+						<label class="control-label" for="new-bookmark-tab-form-inputBackgroundColor" lang="en">Background Color</label>
+						<input type="text" class="form-control bookmark-pick-a-color" id="new-bookmark-tab-form-inputBackgroundColor" name="background_color" required="" value="#fff">
 					</div>
 					<div class="form-group col-lg-4">
-						<label class="control-label" for="new-bookmark-tab-form-inputTextColorNew" lang="en">Text Color</label>
-						<input type="text" class="form-control" id="new-bookmark-tab-form-inputTextColorNew" name="text_color" required="">
+						<label class="control-label" for="new-bookmark-tab-form-inputTextColor" lang="en">Text Color</label>
+						<input type="text" class="form-control bookmark-pick-a-color" id="new-bookmark-tab-form-inputTextColor" name="text_color" required="" value="#000">
+					</div>
+					<div class="form-group col-lg-4">
+						<label class="control-label" for="new-bookmark-preview" lang="en">Preview</label>
+						<div id="new-bookmark-preview"></div>
 					</div>
 				</div>
 			</fieldset>
@@ -418,12 +447,16 @@ class Bookmark extends Organizr
 				</div>
 				<div class="row">
 					<div class="form-group col-lg-4">
-						<label class="control-label" for="new-bookmark-tab-form-inputBackgroundColor" lang="en">Background Color</label>
-						<input type="text" class="form-control" id="new-bookmark-tab-form-inputBackgroundColor" name="background_color" required="">
+						<label class="control-label" for="edit-bookmark-tab-form-inputBackgroundColor" lang="en">Background Color</label>
+						<input type="text" class="form-control bookmark-pick-a-color" id="edit-bookmark-tab-form-inputBackgroundColor" name="background_color" required="">
 					</div>
 					<div class="form-group col-lg-4">
-						<label class="control-label" for="new-bookmark-tab-form-inputTextColor" lang="en">Text Color</label>
-						<input type="text" class="form-control" id="new-bookmark-tab-form-inputTextColor" name="text_color" required="">
+						<label class="control-label" for="edit-bookmark-tab-form-inputTextColor" lang="en">Text Color</label>
+						<input type="text" class="form-control bookmark-pick-a-color" id="edit-bookmark-tab-form-inputTextColor" name="text_color" required="">
+					</div>
+					<div class="form-group col-lg-4">
+						<label class="control-label" for="edit-bookmark-preview" lang="en">Preview</label>
+						<div id="edit-bookmark-preview"></div>
 					</div>
 				</div>
 			</fieldset>
@@ -709,8 +742,8 @@ class Bookmark extends Organizr
 		<h1 lang="en">Add New Bookmark Category</h1>
 		<fieldset style="border:0;">
 			<div class="form-group">
-				<label class="control-label" for="new-bookmark-category-form-inputNameNew" lang="en">Category Name</label>
-				<input type="text" class="form-control" id="new-bookmark-category-form-inputNameNew" name="category" required="" autofocus>
+				<label class="control-label" for="new-bookmark-category-form-inputName" lang="en">Category Name</label>
+				<input type="text" class="form-control" id="new-bookmark-category-form-inputName" name="category" required="" autofocus>
 			</div>
 		</fieldset>
 		<button class="btn btn-sm btn-info btn-rounded waves-effect waves-light pull-right row b-none addNewBookmarkCategory" type="button"><span class="btn-label"><i class="fa fa-plus"></i></span><span lang="en">Add Category</span></button>

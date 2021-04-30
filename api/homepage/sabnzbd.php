@@ -3,13 +3,19 @@
 trait SabNZBdHomepageItem
 {
 	
-	public function sabNZBdSettingsArray()
+	public function sabNZBdSettingsArray($infoOnly = false)
 	{
-		return array(
+		$homepageInformation = [
 			'name' => 'SabNZBD',
 			'enabled' => strpos('personal', $this->config['license']) !== false,
 			'image' => 'plugins/images/tabs/sabnzbd.png',
 			'category' => 'Downloader',
+			'settingsArray' => __FUNCTION__
+		];
+		if ($infoOnly) {
+			return $homepageInformation;
+		}
+		$homepageSettings = array(
 			'settings' => array(
 				'Enable' => array(
 					array(
@@ -42,6 +48,32 @@ trait SabNZBdHomepageItem
 						'value' => $this->config['sabnzbdToken']
 					)
 				),
+				'API SOCKS' => array(
+					array(
+						'type' => 'html',
+						'override' => 12,
+						'label' => '',
+						'html' => '
+							<div class="panel panel-default">
+								<div class="panel-wrapper collapse in">
+									<div class="panel-body">' . $this->socksHeadingHTML('sabnzbd') . '</div>
+								</div>
+							</div>'
+					),
+					array(
+						'type' => 'switch',
+						'name' => 'sabnzbdSocksEnabled',
+						'label' => 'Enable',
+						'value' => $this->config['sabnzbdSocksEnabled']
+					),
+					array(
+						'type' => 'select',
+						'name' => 'sabnzbdSocksAuth',
+						'label' => 'Minimum Authentication',
+						'value' => $this->config['sabnzbdSocksAuth'],
+						'options' => $this->groupOptions
+					),
+				),
 				'Misc Options' => array(
 					array(
 						'type' => 'select',
@@ -73,6 +105,7 @@ trait SabNZBdHomepageItem
 				)
 			)
 		);
+		return array_merge($homepageInformation, $homepageSettings);
 	}
 	
 	public function testConnectionSabNZBd()
@@ -84,8 +117,20 @@ trait SabNZBdHomepageItem
 				$options = ($this->localURL($url)) ? array('verify' => false) : array();
 				$response = Requests::get($url, array(), $options);
 				if ($response->success) {
-					$this->setAPIResponse('success', 'API Connection succeeded', 200);
+					$data = json_decode($response->body, true);
+					$status = 'success';
+					$responseCode = 200;
+					$message = 'API Connection succeeded';
+					if (isset($data['error'])) {
+						$status = 'error';
+						$responseCode = 500;
+						$message = $data['error'];
+					}
+					$this->setAPIResponse($status, $message, $responseCode, $data);
 					return true;
+				} else {
+					$this->setAPIResponse('error', $response->body, 500);
+					return false;
 				}
 			} catch (Requests_Exception $e) {
 				$this->setAPIResponse('error', $e->getMessage(), 500);

@@ -2,13 +2,19 @@
 
 trait HTMLHomepageItem
 {
-	public function htmlOneSettingsArray()
+	public function htmlOneSettingsArray($infoOnly = false)
 	{
-		return array(
+		$homepageInformation = [
 			'name' => 'CustomHTML-1',
 			'enabled' => strpos('personal,business', $this->config['license']) !== false,
 			'image' => 'plugins/images/tabs/custom1.png',
 			'category' => 'Custom',
+			'settingsArray' => __FUNCTION__
+		];
+		if ($infoOnly) {
+			return $homepageInformation;
+		}
+		$homepageSettings = array(
 			'settings' => array(
 				'Enable' => array(
 					array(
@@ -42,11 +48,22 @@ trait HTMLHomepageItem
 				)
 			)
 		);
+		return array_merge($homepageInformation, $homepageSettings);
 	}
 	
-	public function htmlTwoSettingsArray()
+	public function htmlTwoSettingsArray($infoOnly = false)
 	{
-		return array(
+		$homepageInformation = [
+			'name' => 'CustomHTML-2',
+			'enabled' => strpos('personal,business', $this->config['license']) !== false,
+			'image' => 'plugins/images/tabs/custom2.png',
+			'category' => 'Custom',
+			'settingsArray' => __FUNCTION__
+		];
+		if ($infoOnly) {
+			return $homepageInformation;
+		}
+		$homepageSettings = array(
 			'name' => 'CustomHTML-2',
 			'enabled' => strpos('personal,business', $this->config['license']) !== false,
 			'image' => 'plugins/images/tabs/custom2.png',
@@ -84,6 +101,7 @@ trait HTMLHomepageItem
 				)
 			)
 		);
+		return array_merge($homepageInformation, $homepageSettings);
 	}
 	
 	public function htmlHomepagePermissions($key = null)

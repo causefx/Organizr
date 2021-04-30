@@ -2,13 +2,19 @@
 
 trait RadarrHomepageItem
 {
-	public function radarrSettingsArray()
+	public function radarrSettingsArray($infoOnly = false)
 	{
-		return array(
+		$homepageInformation = [
 			'name' => 'Radarr',
 			'enabled' => strpos('personal', $this->config['license']) !== false,
 			'image' => 'plugins/images/tabs/radarr.png',
 			'category' => 'PVR',
+			'settingsArray' => __FUNCTION__
+		];
+		if ($infoOnly) {
+			return $homepageInformation;
+		}
+		$homepageSettings = array(
 			'settings' => array(
 				'Enable' => array(
 					array(
@@ -49,11 +55,7 @@ trait RadarrHomepageItem
 						'html' => '
 							<div class="panel panel-default">
 								<div class="panel-wrapper collapse in">
-									<div class="panel-body">
-										<h3 lang="en">Radarr SOCKS API Connection</h3>
-										<p>Using this feature allows you to access the Radarr API without having to reverse proxy it.  Just access it from: </p>
-										<code>' . $this->getServerPath() . 'api/v2/socks/radarr/</code>
-									</div>
+									<div class="panel-body">' . $this->socksHeadingHTML('radarr') . '</div>
 								</div>
 							</div>'
 					),
@@ -197,6 +199,7 @@ trait RadarrHomepageItem
 				)
 			)
 		);
+		return array_merge($homepageInformation, $homepageSettings);
 	}
 	
 	public function testConnectionRadarr()

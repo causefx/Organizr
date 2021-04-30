@@ -2,13 +2,19 @@
 
 trait TraktHomepageItem
 {
-	public function traktSettingsArray()
+	public function traktSettingsArray($infoOnly = false)
 	{
-		return array(
+		$homepageInformation = [
 			'name' => 'Trakt',
 			'enabled' => strpos('personal', $this->config['license']) !== false,
 			'image' => 'plugins/images/tabs/trakt.png',
 			'category' => 'Calendar',
+			'settingsArray' => __FUNCTION__
+		];
+		if ($infoOnly) {
+			return $homepageInformation;
+		}
+		$homepageSettings = array(
 			'docs' => 'https://docs.organizr.app/books/setup-features/page/trakt',
 			'settings' => array(
 				'About' => array(
@@ -135,6 +141,7 @@ trait TraktHomepageItem
 				)
 			)
 		);
+		return array_merge($homepageInformation, $homepageSettings);
 	}
 	
 	public function traktHomepagePermissions($key = null)
@@ -354,6 +361,6 @@ trait TraktHomepageItem
 		if ($i != 0) {
 			return $gotCalendar;
 		}
-		return false;
+		return [];
 	}
 }

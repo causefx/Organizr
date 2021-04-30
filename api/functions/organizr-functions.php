@@ -573,6 +573,16 @@ trait OrganizrFunctions
 		}
 	}
 	
+	public function clearJellyfinTokens()
+	{
+		foreach (array_keys($_COOKIE) as $k => $v) {
+			if (strpos($v, 'user-') !== false) {
+				$this->coookie('delete', $v);
+			}
+		}
+		$this->coookie('delete', 'jellyfin_credentials');
+	}
+	
 	public function analyzeIP($ip)
 	{
 		if (strpos($ip, '/') !== false) {

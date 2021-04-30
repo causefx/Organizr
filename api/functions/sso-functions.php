@@ -2,13 +2,33 @@
 
 trait SSOFunctions
 {
+	public function ssoCookies()
+	{
+		$cookies = array(
+			'myPlexAccessToken' => isset($_COOKIE['mpt']) ? $_COOKIE['mpt'] : false,
+			'id_token' => isset($_COOKIE['Auth']) ? $_COOKIE['Auth'] : false,
+			'jellyfin_credentials' => isset($_COOKIE['jellyfin_credentials']) ? $_COOKIE['jellyfin_credentials'] : false,
+		);
+		// Jellyfin cookie
+		foreach (array_keys($_COOKIE) as $k => $v) {
+			if (strpos($v, 'user-') !== false) {
+				$cookiesToAdd = [
+					$v => $_COOKIE[$v]
+				];
+				$cookies = array_merge($cookies, $cookiesToAdd);
+			}
+		}
+		return $cookies;
+	}
+	
 	public function getSSOUserFor($app, $userobj)
 	{
 		$map = array(
 			'jellyfin' => 'username',
 			'ombi' => 'username',
 			'overseerr' => 'username',
-			'tautulli' => 'username'
+			'tautulli' => 'username',
+			'petio' => 'username'
 		);
 		return (gettype($userobj) == 'string') ? $userobj : $userobj[$map[$app]];
 	}
@@ -36,13 +56,22 @@ trait SSOFunctions
 		if ($this->config['ssoJellyfin']) {
 			$jellyfinToken = $this->getJellyfinToken($this->getSSOUserFor('jellyfin', $userobj), $password);
 			if ($jellyfinToken) {
-				$this->coookie('set', 'jellyfin_credentials', $jellyfinToken, $this->config['rememberMeDays'], false);
+				foreach ($jellyfinToken as $k => $v) {
+					$this->coookie('set', $k, $v, $this->config['rememberMeDays'], false);
+				}
 			}
 		}
 		if ($this->config['ssoOverseerr']) {
 			$overseerrToken = $this->getOverseerrToken($this->getSSOUserFor('overseerr', $userobj), $password, $token);
 			if ($overseerrToken) {
 				$this->coookie('set', 'connect.sid', $overseerrToken, $this->config['rememberMeDays'], false);
+			}
+		}
+		if ($this->config['ssoPetio']) {
+			$fallback = ($this->config['petioFallbackUser'] !== '' && $this->config['petioFallbackPassword'] !== '');
+			$petioToken = $this->getPetioToken($this->getSSOUserFor('petio', $userobj), $password, $token, $fallback);
+			if ($petioToken) {
+				$this->coookie('set', 'petio_jwt', $petioToken, $this->config['rememberMeDays'], false);
 			}
 		}
 		return true;
@@ -69,7 +98,10 @@ trait SSOFunctions
 			if ($response->success) {
 				$token = json_decode($response->body, true);
 				$this->writeLog('success', 'Jellyfin Token Function - Grabbed token.', $username);
-				return '{"Servers":[{"ManualAddress":"' . $ssoUrl . '","Id":"' . $token['ServerId'] . '","UserId":"' . $token['User']['Id'] . '","AccessToken":"' . $token['AccessToken'] . '"}]}';
+				$key = 'user-' . $token['User']['Id'] . '-' . $token['ServerId'];
+				$jellyfin[$key] = json_encode($token['User']);
+				$jellyfin['jellyfin_credentials'] = '{"Servers":[{"ManualAddress":"' . $ssoUrl . '","Id":"' . $token['ServerId'] . '","UserId":"' . $token['User']['Id'] . '","AccessToken":"' . $token['AccessToken'] . '"}]}';
+				return $jellyfin;
 			} else {
 				$this->writeLog('error', 'Jellyfin Token Function - Jellyfin did not return Token', $username);
 			}
@@ -197,4 +229,46 @@ trait SSOFunctions
 		}
 	}
 	
+	public function getPetioToken($username, $password, $oAuthToken = null, $fallback = false)
+	{
+		$token = null;
+		try {
+			$url = $this->qualifyURL($this->config['petioURL']);
+			$headers = array(
+				"Content-Type" => "application/json"
+			);
+			$data = array(
+				'user' => [
+					'username' => ($oAuthToken ? '' : $username),
+					'password' => ($oAuthToken ? '' : $password),
+					'type' => 1,
+				],
+				'authToken' => false,
+				'token' => $oAuthToken
+			);
+			$endpoint = ($oAuthToken) ? '/api/login/plex_login' : '/api/login';
+			$options = $this->requestOptions($url, false, 60);
+			$response = Requests::post($url . $endpoint, $headers, json_encode($data), $options);
+			if ($response->success) {
+				$user = json_decode($response->body, true)['user'];
+				$token = json_decode($response->body, true)['token'];
+				$this->writeLog('success', 'Petio Token Function - Grabbed token', $user['username']);
+			} else {
+				if ($fallback) {
+					$this->writeLog('error', 'Petio Token Function - Petio did not return Token - Will retry using fallback credentials', $username);
+				} else {
+					$this->writeLog('error', 'Petio Token Function - Petio did not return Token', $username);
+				}
+			}
+		} catch (Requests_Exception $e) {
+			$this->writeLog('error', 'Petio Token Function - Error: ' . $e->getMessage(), $username);
+		}
+		if ($token) {
+			return $token;
+		} elseif ($fallback) {
+			return $this->getPetioToken($this->config['petioFallbackUser'], $this->decrypt($this->config['petioFallbackPassword']), null, false);
+		} else {
+			return false;
+		}
+	}
 }

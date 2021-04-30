@@ -6,7 +6,7 @@
     'aliases' => 
     array (
     ),
-    'reference' => '4e3765a9a4e63d1a4353ba100264632bad9e38ed',
+    'reference' => '7e9a4efa44fc1396837620eb2d675a4194d97cd5',
     'name' => '__root__',
   ),
   'versions' => 
@@ -18,7 +18,7 @@
       'aliases' => 
       array (
       ),
-      'reference' => '4e3765a9a4e63d1a4353ba100264632bad9e38ed',
+      'reference' => '7e9a4efa44fc1396837620eb2d675a4194d97cd5',
     ),
     'adldap2/adldap2' => 
     array (
@@ -92,12 +92,12 @@
     ),
     'guzzlehttp/guzzle' => 
     array (
-      'pretty_version' => '6.5.2',
-      'version' => '6.5.2.0',
+      'pretty_version' => '7.1.1',
+      'version' => '7.1.1.0',
       'aliases' => 
       array (
       ),
-      'reference' => '43ece0e75098b7ecd8d13918293029e555a50f82',
+      'reference' => '7427d6f99df41cc01f33cd59832f721c150ffdf3',
     ),
     'guzzlehttp/promises' => 
     array (
@@ -171,6 +171,15 @@
       ),
       'reference' => 'badb01e62383430706433191b82506b6df24ad98',
     ),
+    'myclabs/php-enum' => 
+    array (
+      'pretty_version' => '1.8.0',
+      'version' => '1.8.0.0',
+      'aliases' => 
+      array (
+      ),
+      'reference' => '46cf3d8498b095bd33727b13fd5707263af99421',
+    ),
     'nikic/fast-route' => 
     array (
       'pretty_version' => 'v1.3.0',
@@ -179,6 +188,24 @@
       array (
       ),
       'reference' => '181d480e08d9476e61381e04a71b34dc0432e812',
+    ),
+    'paquettg/php-html-parser' => 
+    array (
+      'pretty_version' => '3.1.1',
+      'version' => '3.1.1.0',
+      'aliases' => 
+      array (
+      ),
+      'reference' => '4e01a438ad5961cc2d7427eb9798d213c8a12629',
+    ),
+    'paquettg/string-encode' => 
+    array (
+      'pretty_version' => '1.0.1',
+      'version' => '1.0.1.0',
+      'aliases' => 
+      array (
+      ),
+      'reference' => 'a8708e9fac9d5ddfc8fc2aac6004e2cd05d80fee',
     ),
     'paragonie/constant_time_encoding' => 
     array (
@@ -207,6 +234,24 @@
       ),
       'reference' => '3f2fd07977541b4d630ea0365ad0eceddee5179c',
     ),
+    'php-http/httplug' => 
+    array (
+      'pretty_version' => '2.2.0',
+      'version' => '2.2.0.0',
+      'aliases' => 
+      array (
+      ),
+      'reference' => '191a0a1b41ed026b717421931f8d3bd2514ffbf9',
+    ),
+    'php-http/promise' => 
+    array (
+      'pretty_version' => '1.1.0',
+      'version' => '1.1.0.0',
+      'aliases' => 
+      array (
+      ),
+      'reference' => '4c4c1f9b7289a2ec57cde7f1e9762a5789506f88',
+    ),
     'phpmailer/phpmailer' => 
     array (
       'pretty_version' => 'v6.2.0',
@@ -233,6 +278,22 @@
       array (
       ),
       'reference' => 'b7ce3b176482dbbc1245ebf52b181af44c2cf55f',
+    ),
+    'psr/http-client' => 
+    array (
+      'pretty_version' => '1.0.1',
+      'version' => '1.0.1.0',
+      'aliases' => 
+      array (
+      ),
+      'reference' => '2dfb5f6c5eff0e91e20e913f8c5452ed95b86621',
+    ),
+    'psr/http-client-implementation' => 
+    array (
+      'provided' => 
+      array (
+        0 => '1.0',
+      ),
     ),
     'psr/http-factory' => 
     array (

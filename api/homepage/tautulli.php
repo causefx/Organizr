@@ -2,13 +2,19 @@
 
 trait TautulliHomepageItem
 {
-	public function tautulliSettingsArray()
+	public function tautulliSettingsArray($infoOnly = false)
 	{
-		return array(
+		$homepageInformation = [
 			'name' => 'Tautulli',
 			'enabled' => strpos('personal', $this->config['license']) !== false,
 			'image' => 'plugins/images/tabs/tautulli.png',
 			'category' => 'Monitor',
+			'settingsArray' => __FUNCTION__
+		];
+		if ($infoOnly) {
+			return $homepageInformation;
+		}
+		$homepageSettings = array(
 			'settings' => array(
 				'Enable' => array(
 					array(
@@ -163,6 +169,7 @@ trait TautulliHomepageItem
 				)
 			)
 		);
+		return array_merge($homepageInformation, $homepageSettings);
 	}
 	
 	public function testConnectionTautulli()

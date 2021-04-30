@@ -3,13 +3,19 @@
 trait JellyfinHomepageItem
 {
 	
-	public function jellyfinSettingsArray()
+	public function jellyfinSettingsArray($infoOnly = false)
 	{
-		return array(
+		$homepageInformation = [
 			'name' => 'Jellyfin',
 			'enabled' => strpos('personal', $this->config['license']) !== false,
 			'image' => 'plugins/images/tabs/jellyfin.png',
 			'category' => 'Media Server',
+			'settingsArray' => __FUNCTION__
+		];
+		if ($infoOnly) {
+			return $homepageInformation;
+		}
+		$homepageSettings = array(
 			'settings' => array(
 				'Enable' => array(
 					array(
@@ -168,6 +174,7 @@ trait JellyfinHomepageItem
 				)
 			)
 		);
+		return array_merge($homepageInformation, $homepageSettings);
 	}
 	
 	public function testConnectionJellyfin()

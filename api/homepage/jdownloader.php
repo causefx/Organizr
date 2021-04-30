@@ -2,13 +2,19 @@
 
 trait JDownloaderHomepageItem
 {
-	public function jDownloaderSettingsArray()
+	public function jDownloaderSettingsArray($infoOnly = false)
 	{
-		return array(
+		$homepageInformation = [
 			'name' => 'JDownloader',
 			'enabled' => strpos('personal', $this->config['license']) !== false,
 			'image' => 'plugins/images/tabs/jdownloader.png',
 			'category' => 'Downloader',
+			'settingsArray' => __FUNCTION__
+		];
+		if ($infoOnly) {
+			return $homepageInformation;
+		}
+		$homepageSettings = array(
 			'settings' => array(
 				'custom' => '
 				<div class="row">
@@ -21,7 +27,7 @@ trait JDownloaderHomepageItem
                                 <div class="panel-body">
 									<ul class="list-icons">
                                         <li><i class="fa fa-chevron-right text-danger"></i> <a href="https://pypi.org/project/myjd-api/" target="_blank">Download [myjd-api] Module</a></li>
-                                        <li><i class="fa fa-chevron-right text-danger"></i> Add <b>/api/myjd</b> to the URL if you are using <a href="https://pypi.org/project/RSScrawler/" target="_blank">RSScrawler</a></li>
+                                        <li><i class="fa fa-chevron-right text-danger"></i> Add <b>/api/myjd</b> to the URL if you are using <a href="https://pypi.org/project/FeedCrawler/" target="_blank">FeedCrawler</a></li>
                                     </ul>
                                 </div>
                             </div>
@@ -85,6 +91,7 @@ trait JDownloaderHomepageItem
 				)
 			)
 		);
+		return array_merge($homepageInformation, $homepageSettings);
 	}
 	
 	public function testConnectionJDownloader()

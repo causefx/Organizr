@@ -348,5 +348,19 @@
     "new": "Bookmark plugin - leet1994|Added option to use blackhole download for Jackett homepage component (#1600)|Petio and Bookstack Images|Prometheus icon|arrive framework js|icon and image select to categories|consolidate binding of new image and new icon for all events|add new div for activeInfo being ready|settings changes to plugins array - now includes settings - bind - api path|change pluginFiles function to include option to include settings js file|update pluginFiles function",
     "fixed": "Fix username in overseerr SSO logs (#1599)|Update /token/validate API endpoint (#1597)|Update Overseerr Plex auth endpoint|update all plugin js files|update bookmark php file for new template|new 2 bookmark endpoints for setup|update bookmark.png|update bookmark plugin to include setup function|visual changes to bookmark settings panel",
     "notes": "remove preload spinner on reload"
+  },
+  "2.1.241": {
+    "date": "2021-03-05 19:45",
+    "title": "Weekly Update",
+    "new": "Github backers now included in about page",
+    "fixed": "plugin files error|sab test button|update bookmark class for input|obligatory url for api",
+    "notes": ""
+  },
+  "2.1.306": {
+    "date": "2021-04-30 19:45",
+    "title": "It has been awhile",
+    "new": "petio SSO|sabnzbd socks component|nzbget socks component|exclude to search and recent plex items (#1540)|komga image (#1590)|change homepage settings to individual settingsArray|preview to bookmark tab|traefik domain override|new radarr 4k icon (#1629)|Ignore splash page if organizr accessed alongside tab hash (#1627)|code to remove jellyfin localStorage item after logout (#1609)|replace_first function|new api endpoint for multiple instances|note about socks multiple api endpoint",
+    "fixed": "socks fixes (#1520)|socks case insensitive on string pos (#1520)|make message clear on socks info box|rewrite socks route endpoint function to be only one wildcard endpoint|NZBGet socks fixes|revamp dependencies page|fix Monitorr image paths not working (#1612)|Jellyfin API for SSO (#1609)|increase socks timeout|allow correct group to view bookmarks (#1632)|modal width on small screens|Transmission Connection Failure when using special characters in password|EOF Line change|Petio SSO fallback|backers css to smaller avatar|add param to settingsArray to only include homepage info and not settings|add missing class on close tab|height view|clean request header fo non breakable space|allow empty password for deluge|missing lang span on ombi request",
+    "notes": "updated guzzle framework|RSScrawler renamed to FeedCrawler"
   }
 }

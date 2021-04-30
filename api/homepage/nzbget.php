@@ -2,13 +2,19 @@
 
 trait NZBGetHomepageItem
 {
-	public function nzbgetSettingsArray()
+	public function nzbgetSettingsArray($infoOnly = false)
 	{
-		return array(
+		$homepageInformation = [
 			'name' => 'NZBGet',
 			'enabled' => strpos('personal', $this->config['license']) !== false,
 			'image' => 'plugins/images/tabs/nzbget.png',
 			'category' => 'Downloader',
+			'settingsArray' => __FUNCTION__
+		];
+		if ($infoOnly) {
+			return $homepageInformation;
+		}
+		$homepageSettings = array(
 			'settings' => array(
 				'Enable' => array(
 					array(
@@ -47,6 +53,32 @@ trait NZBGetHomepageItem
 						'value' => $this->config['nzbgetPassword']
 					)
 				),
+				'API SOCKS' => array(
+					array(
+						'type' => 'html',
+						'override' => 12,
+						'label' => '',
+						'html' => '
+							<div class="panel panel-default">
+								<div class="panel-wrapper collapse in">
+									<div class="panel-body">' . $this->socksHeadingHTML('nzbget') . '</div>
+								</div>
+							</div>'
+					),
+					array(
+						'type' => 'switch',
+						'name' => 'nzbgetSocksEnabled',
+						'label' => 'Enable',
+						'value' => $this->config['nzbgetSocksEnabled']
+					),
+					array(
+						'type' => 'select',
+						'name' => 'nzbgetSocksAuth',
+						'label' => 'Minimum Authentication',
+						'value' => $this->config['nzbgetSocksAuth'],
+						'options' => $this->groupOptions
+					),
+				),
 				'Misc Options' => array(
 					array(
 						'type' => 'select',
@@ -78,6 +110,7 @@ trait NZBGetHomepageItem
 				)
 			)
 		);
+		return array_merge($homepageInformation, $homepageSettings);
 	}
 	
 	public function testConnectionNZBGet()

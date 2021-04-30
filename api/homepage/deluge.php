@@ -2,13 +2,19 @@
 
 trait DelugeHomepageItem
 {
-	public function delugeSettingsArray()
+	public function delugeSettingsArray($infoOnly = false)
 	{
-		return array(
+		$homepageInformation = [
 			'name' => 'Deluge',
 			'enabled' => strpos('personal', $this->config['license']) !== false,
 			'image' => 'plugins/images/tabs/deluge.png',
 			'category' => 'Downloader',
+			'settingsArray' => __FUNCTION__
+		];
+		if ($infoOnly) {
+			return $homepageInformation;
+		}
+		$homepageSettings = array(
 			'settings' => array(
 				'custom' => '
 				<div class="row">
@@ -58,6 +64,7 @@ trait DelugeHomepageItem
 						'type' => 'password',
 						'name' => 'delugePassword',
 						'label' => 'Password',
+						'help' => 'Note that using a blank password might not work correctly.',
 						'value' => $this->config['delugePassword']
 					)
 				),
@@ -90,7 +97,7 @@ trait DelugeHomepageItem
 				'Test Connection' => array(
 					array(
 						'type' => 'blank',
-						'label' => 'Please Save before Testing'
+						'label' => 'Please Save before Testing. Note that using a blank password might not work correctly.'
 					),
 					array(
 						'type' => 'button',
@@ -103,16 +110,13 @@ trait DelugeHomepageItem
 				)
 			)
 		);
+		return array_merge($homepageInformation, $homepageSettings);
 	}
 	
 	public function testConnectionDeluge()
 	{
 		if (empty($this->config['delugeURL'])) {
 			$this->setAPIResponse('error', 'Deluge URL is not defined', 422);
-			return false;
-		}
-		if (empty($this->config['delugePassword'])) {
-			$this->setAPIResponse('error', 'Deluge Password is not defined', 422);
 			return false;
 		}
 		try {
@@ -139,8 +143,7 @@ trait DelugeHomepageItem
 					'homepageDelugeAuth'
 				],
 				'not_empty' => [
-					'delugeURL',
-					'delugePassword'
+					'delugeURL'
 				]
 			]
 		];

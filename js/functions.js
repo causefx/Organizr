@@ -14,6 +14,7 @@ lang.init({
 	allowCookieOverride: true
 });
 var OAuthLoginNeeded = false;
+var directToHash = false;
 var pingOrg = false;
 var timeouts = {};
 var increment = 0;
@@ -416,6 +417,7 @@ function getDefault(tabName,tabType){
 		var hashTab = getHash();
 		var hashType = getTabType(hashTab);
 		if (typeof hashTab !== 'undefined' && typeof hashType !== 'undefined') {
+			directToHash = true;
 			switchTab(hashTab,hashType);
 		}else{
 			console.warn("Tab Function: "+hashTab+" is not a defined tab");
@@ -926,7 +928,7 @@ function closeCurrentTab(event){
 			organizrConsole('Organizr Function','Closing tab: '+tab);
 			$('#menu-'+cleanClass(tab)+' a').removeClass("active");
 			$('#menu-'+tab+' a').children().removeClass('tabLoaded');
-			$('#container'+extra+'-'+cleanClass(tab)).removeClass("loaded show");
+			$('#container'+extra+'-'+cleanClass(tab)).removeClass("loaded show").addClass("hidden");
 			$('#frame'+extra+'-'+cleanClass(tab)).remove();
             setTabInfo(cleanClass(tab),'loaded',false);
             setTabInfo(cleanClass(tab),'active',false);
@@ -1818,6 +1820,7 @@ function buildFormGroup(array){
                         if (typeof value === 'object'){
                             builtItems += '<div class="row m-b-40">';
                             $.each(value, function(number,formItem) {
+                            	let clearfix = (formItem.type == 'blank') ? '<div class="clearfix"></div>' : '';
                                 builtItems += `
                                     <!-- INPUT BOX  Yes Multiple -->
                                     <div class="col-md-6 p-b-10">
@@ -1826,6 +1829,7 @@ function buildFormGroup(array){
                                             <div class="col-md-12">${buildFormItem(formItem)}</div> <!-- end div -->
                                         </div>
                                     </div>
+                                    ${clearfix}
                                     <!--/ INPUT BOX -->
                                 `;
                             });
@@ -2916,13 +2920,14 @@ function buildSplashScreenItem(arrayItems){
     return (splashList !== '') ? splashList : false;
 }
 function buildSplashScreen(json){
+	let hiddenSplash = (directToHash) ? 'hidden' : 'in';
     var items = buildSplashScreenItem(json);
     var menu = '<li ><a href="javascript:void(0)" onclick="$(\'.splash-screen\').removeClass(\'hidden\').addClass(\'in\')"><i class="ti-layout-grid2 fa-fw"></i> <span lang="en">Splash Page</span></a></li>';
     if(items){
         closeSideMenu();
 	    organizrConsole('Organizr Function','Adding Splash Screen');
         var splash = `
-        <section id="splashScreen" class="lock-screen splash-screen fade in">
+        <section id="splashScreen" class="lock-screen splash-screen fade ${hiddenSplash}">
             <div class="row p-20 flexbox">`+items+`</div>
             <div class="row p-20 p-t-0 flexbox">
                 <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12 mouse hvr-wobble-bottom bottom-close-splash" onclick="$('.splash-screen').addClass('hidden').removeClass('in')">
@@ -3562,7 +3567,7 @@ function sponsorLoad(){
     });
 }
 function backersLoad(){
-	organizrAPI2('GET','api/v2/opencollective').success(function(data) {
+	organizrAPI2('GET','api/v2/sponsors/all').success(function(data) {
 		try {
 			let json = data.response;
 			$('#backersList').html(buildBackers(json.data));
@@ -4208,25 +4213,54 @@ function buildDependencyCheck(orgdata){
 	$("#preloader").fadeOut();
 }
 function buildDependencyInfo(arrayItems){
-	var listing = '';
+	let listing = '';
 	$.each(arrayItems.data.status.dependenciesActive, function(i,v) {
 			listing += '<li class="depenency-item" data-name="'+v+'"><a href="javascript:void(0)"><i class="fa fa-check text-success"></i> '+v+'</a></li>';
 		});
 	$.each(arrayItems.data.status.dependenciesInactive, function(i,v) {
 		listing += '<li class="depenency-item" data-name="'+v+'"><a href="javascript:void(0)"><i class="fa fa-close text-danger"><div class="notify"><span class="heartbit depend-heartbit"></span></div></i> '+v+'</a></li>';
 	});
+
+	let className = (arrayItems.data.status.dependenciesInactive.length !== 0) ? 'bg-danger text-warning' : 'bg-primary';
+	let icon = (arrayItems.data.status.dependenciesInactive.length !== 0) ? 'fa fa-exclamation-triangle' : 'fa fa-check-circle';//dependency-dependencies-check-listing-header
+	let header = (arrayItems.data.status.dependenciesInactive.length !== 0) ? 'panel-danger' : 'panel-info';
+	let listingIcon = (arrayItems.data.status.dependenciesInactive.length !== 0) ? 'ti-alert' : 'ti-check-box';
+	let listingText = (arrayItems.data.status.dependenciesInactive.length !== 0) ? 'Dependencies Missing' : 'Dependencies OK';
+
+	$('.dependency-dependencies-check-listing-header').removeClass('panel-danger').addClass(header);
+	$('.dependency-dependencies-check-listing i').first().removeClass('ti-alert').addClass(listingIcon);
+	$('.dependency-dependencies-check-listing span').text(listingText);
+	$('.dependency-dependencies-check').removeClass('bg-warning').addClass(className);
+	$('.dependency-dependencies-check i').removeClass('fa fa-spin fa-spinner').addClass(icon);
 	return listing;
 }
 function buildWebFolder(arrayItems){
-	var writable = (arrayItems.data.status.writable == 'yes') ? 'Writable - All Good' : 'Not Writable - Please fix permissions';
-	var className = (writable == 'Writable - All Good') ? 'bg-primary' : 'bg-danger text-warning';
+	let writable = 'Not Writable - Please fix permissions';
+	let className = 'bg-danger text-warning';
+	let icon = 'fa fa-exclamation-triangle';
+	if(arrayItems.data.status.writable == 'yes'){
+		writable = 'Writable - All Good';
+		className = 'bg-primary';
+		icon = 'fa fa-check-circle';
+	}
+	$('.dependency-permissions-check').removeClass('bg-warning').addClass(className);
+	$('.dependency-permissions-check i').removeClass('fa fa-spin fa-spinner').addClass(icon);
 	$('#web-folder').addClass(className);
 	return writable;
 }
 function buildPHPCheck(arrayItems){
-	var phpTest = (arrayItems.data.status.minVersion == 'yes') ? 'PHP Version Approved' : 'Upgrade PHP Version to 7.0';
-	var className = (arrayItems.data.status.minVersion == 'yes') ? 'bg-primary' : 'bg-danger text-warning';
+	let phpTest = 'Upgrade PHP Version to 7.2+';
+	let className = 'bg-danger text-warning';
+	let icon = 'fa fa-exclamation-triangle';
+	if(arrayItems.data.status.minVersion == 'yes'){
+		phpTest = 'PHP Version Approved';
+		className = 'bg-primary';
+		icon = 'fa fa-check-circle';
+	}
+	$('.dependency-phpversion-check').removeClass('bg-warning').addClass(className);
+	$('.dependency-phpversion-check i').removeClass('fa fa-spin fa-spinner').addClass(icon);
 	$('#php-version-check').addClass(className);
+	$('#php-version-check-user').html('<span lang="en">Webserver User</span>: ' + arrayItems.data.status.php_user)
 	return phpTest;
 }
 function buildBrowserInfo(){
@@ -4634,8 +4668,18 @@ function setSSO(){
 		if(v !== false){
 			local('set', i, v);
 		}else{
-		    local('r', i);
-        }
+			local('r', i);
+		}
+	});
+	// other items to remove
+	$.each(localStorage, function(i,v) {
+		if(typeof v == 'string'){
+			if(i.startsWith('user-')){
+				if(typeof activeInfo.sso[i] == 'undefined'){
+					local('r', i);
+				}
+			}
+		}
 	});
 }
 function buildStreamItem(array,source){
@@ -5216,7 +5260,7 @@ function buildRequest(array){
 	}else{
 		var header = `
 		<div class="panel-heading bg-info p-t-10 p-b-10">
-			<span class="pull-left m-t-5 mouse homepage-element-title" onclick="homepageRequests()"><img class="lazyload homepageImageTitle" data-src="plugins/images/tabs/ombi.png"> &nbsp; Requests</span>
+			<span class="pull-left m-t-5 mouse homepage-element-title" onclick="homepageRequests()"><img class="lazyload homepageImageTitle" data-src="plugins/images/tabs/ombi.png"> &nbsp; <span lang="en">Requests</span></span>
 			<div class="btn-group pull-right">
 					`+builtDropdown+`
 			</div>

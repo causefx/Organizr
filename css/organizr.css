@@ -76,16 +76,27 @@ span.jsgrid-pager-page.jsgrid-pager-current-page.btn.btn-primary{
 
 .iframe {
     width: 100%;
-    height: calc(100vh - 40px);
+    height: 100%;
     position: inherit;
     display: block;
 }
-.orgErrorAlert {
-    min-width: 478px;
-    width: calc(100% - 40px);
-    max-width: 1200px;
-    background-color: #1f1f1f !important;
+@media screen and (max-width: 767px) {
+    .orgErrorAlert {
+        min-width: 200px;
+        width: calc(100% - 40px);
+        max-width: 727px;
+        background-color: #1f1f1f !important;
+    }
 }
+@media screen and (min-width: 768px) {
+    .orgErrorAlert {
+        min-width: 478px;
+        width: calc(100% - 40px);
+        max-width: 1200px;
+        background-color: #1f1f1f !important;
+    }
+}
+
 .tab1 { padding-left: 1em; }
 .tab2 { padding-left: 2em; }
 .tab3 { padding-left: 3em; }
@@ -120,7 +131,7 @@ span.jsgrid-pager-page.jsgrid-pager-current-page.btn.btn-primary{
 }
 .organizr-area,
 .organizr-area-right {
-    height: calc(100vh - 40px);
+    height: 100%;
     position: absolute;
     width: 100%;
 }
@@ -282,6 +293,13 @@ img.lazyload.tabImages {
     background-size: cover;
     height: 150px;
     width: 150px;
+    position: relative;
+}
+#backersList .recent-sponsor {
+    background-position: center;
+    background-size: cover;
+    height: 75px;
+    width: 75px;
     position: relative;
 }
 .recent-poster {
@@ -1477,7 +1495,7 @@ img.img-chooser {
     display: none;
 }
 .chat-main-box {
-    height: calc(100vh - 40px);
+    height: 100%;
 }
 .chat-list,
 .chatonline {
@@ -1662,17 +1680,30 @@ span.has-coupon {
 #page-wrapper {
     height: calc(100% - 40px);
     width: calc(100% - 60px);
-    overflow: auto;
     position: absolute;
 }
 .content-wrapper #page-wrapper {
     width: 100%;
 }
+#page-wrapper .simplebar-content,
+#page-wrapper-right .simplebar-content {
+    height: 100%;
+}
 #page-wrapper-right {
     height: calc(100% - 40px);
-    overflow: auto;
     position: absolute;
 }
+.iFrame-listing {
+    height: 100%;
+}
+.frame-container {
+    height: 100%;
+}
+.internal-container {
+    height: 100%;
+}.internal-listing {
+     height: 100%;
+ }
 html{
     overflow: hidden !important;
 }

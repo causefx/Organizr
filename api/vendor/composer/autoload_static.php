@@ -52,15 +52,21 @@ class ComposerStaticInitcbdc783d76f8e7563dcce7d8af053ecb
             'Psr\\Log\\' => 8,
             'Psr\\Http\\Server\\' => 16,
             'Psr\\Http\\Message\\' => 17,
+            'Psr\\Http\\Client\\' => 16,
             'Psr\\Container\\' => 14,
             'PragmaRX\\Google2FA\\Tests\\' => 25,
             'PragmaRX\\Google2FA\\' => 19,
             'ParagonIE\\ConstantTime\\' => 23,
             'PHPMailer\\PHPMailer\\' => 20,
+            'PHPHtmlParser\\' => 14,
         ),
         'O' => 
         array (
             'OpenApi\\' => 8,
+        ),
+        'M' => 
+        array (
+            'MyCLabs\\Enum\\' => 13,
         ),
         'L' => 
         array (
@@ -76,6 +82,11 @@ class ComposerStaticInitcbdc783d76f8e7563dcce7d8af053ecb
         'I' => 
         array (
             'Illuminate\\Contracts\\' => 21,
+        ),
+        'H' => 
+        array (
+            'Http\\Promise\\' => 13,
+            'Http\\Client\\' => 12,
         ),
         'G' => 
         array (
@@ -178,6 +189,10 @@ class ComposerStaticInitcbdc783d76f8e7563dcce7d8af053ecb
             0 => __DIR__ . '/..' . '/psr/http-factory/src',
             1 => __DIR__ . '/..' . '/psr/http-message/src',
         ),
+        'Psr\\Http\\Client\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/psr/http-client/src',
+        ),
         'Psr\\Container\\' => 
         array (
             0 => __DIR__ . '/..' . '/psr/container/src',
@@ -198,9 +213,17 @@ class ComposerStaticInitcbdc783d76f8e7563dcce7d8af053ecb
         array (
             0 => __DIR__ . '/..' . '/phpmailer/phpmailer/src',
         ),
+        'PHPHtmlParser\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/paquettg/php-html-parser/src/PHPHtmlParser',
+        ),
         'OpenApi\\' => 
         array (
             0 => __DIR__ . '/..' . '/zircote/swagger-php/src',
+        ),
+        'MyCLabs\\Enum\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/myclabs/php-enum/src',
         ),
         'League\\OAuth2\\Client\\' => 
         array (
@@ -225,6 +248,14 @@ class ComposerStaticInitcbdc783d76f8e7563dcce7d8af053ecb
         'Illuminate\\Contracts\\' => 
         array (
             0 => __DIR__ . '/..' . '/illuminate/contracts',
+        ),
+        'Http\\Promise\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/php-http/promise/src',
+        ),
+        'Http\\Client\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/php-http/httplug/src',
         ),
         'GuzzleHttp\\Psr7\\' => 
         array (
@@ -269,6 +300,13 @@ class ComposerStaticInitcbdc783d76f8e7563dcce7d8af053ecb
     );
 
     public static $prefixesPsr0 = array (
+        's' => 
+        array (
+            'stringEncode' => 
+            array (
+                0 => __DIR__ . '/..' . '/paquettg/string-encode/src',
+            ),
+        ),
         'R' => 
         array (
             'Requests' => 
