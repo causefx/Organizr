@@ -80,12 +80,23 @@ span.jsgrid-pager-page.jsgrid-pager-current-page.btn.btn-primary{
     position: inherit;
     display: block;
 }
-.orgErrorAlert {
-    min-width: 478px;
-    width: calc(100% - 40px);
-    max-width: 1200px;
-    background-color: #1f1f1f !important;
+@media screen and (max-width: 767px) {
+    .orgErrorAlert {
+        min-width: 200px;
+        width: calc(100% - 40px);
+        max-width: 727px;
+        background-color: #1f1f1f !important;
+    }
 }
+@media screen and (min-width: 768px) {
+    .orgErrorAlert {
+        min-width: 478px;
+        width: calc(100% - 40px);
+        max-width: 1200px;
+        background-color: #1f1f1f !important;
+    }
+}
+
 .tab1 { padding-left: 1em; }
 .tab2 { padding-left: 2em; }
 .tab3 { padding-left: 3em; }

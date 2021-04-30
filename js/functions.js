@@ -1820,6 +1820,7 @@ function buildFormGroup(array){
                         if (typeof value === 'object'){
                             builtItems += '<div class="row m-b-40">';
                             $.each(value, function(number,formItem) {
+                            	let clearfix = (formItem.type == 'blank') ? '<div class="clearfix"></div>' : '';
                                 builtItems += `
                                     <!-- INPUT BOX  Yes Multiple -->
                                     <div class="col-md-6 p-b-10">
@@ -1828,6 +1829,7 @@ function buildFormGroup(array){
                                             <div class="col-md-12">${buildFormItem(formItem)}</div> <!-- end div -->
                                         </div>
                                     </div>
+                                    ${clearfix}
                                     <!--/ INPUT BOX -->
                                 `;
                             });
