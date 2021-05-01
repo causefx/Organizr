@@ -52,7 +52,7 @@ class HealthChecks extends Organizr
 	public function _healthCheckPluginTest($url)
 	{
 		$success = false;
-		$options = array('verify' => false, 'verifyname' => false, 'follow_redirects' => true, 'redirects' => 1);
+		$options = array('verify' => false, 'verifyname' => false, 'follow_redirects' => true, 'redirects' => 10);
 		$headers = array('Token' => $this->config['organizrAPI']);
 		$url = $this->qualifyURL($url);
 		try {
