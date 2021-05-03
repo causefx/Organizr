@@ -60,10 +60,10 @@ class Organizr
 	
 	// ===================================
 	// Organizr Version
-	public $version = '2.1.306';
+	public $version = '2.1.308';
 	// ===================================
 	// Quick php Version check
-	public $minimumPHP = '7.2';
+	public $minimumPHP = '7.3';
 	// ===================================
 	protected $db;
 	protected $otherDb;
@@ -5810,12 +5810,21 @@ class Organizr
 		return openssl_decrypt($password, 'AES-256-CBC', $key, 0, $this->fillString($key, 16));
 	}
 	
+	public function checkValidCert($file)
+	{
+		if (file_exists($file)) {
+			return filesize($file) > 0;
+		} else {
+			return false;
+		}
+	}
+	
 	public function getCert()
 	{
 		$url = 'http://curl.haxx.se/ca/cacert.pem';
 		$file = dirname(__DIR__, 1) . DIRECTORY_SEPARATOR . 'functions' . DIRECTORY_SEPARATOR . 'cert' . DIRECTORY_SEPARATOR . 'cacert.pem';
 		$file2 = dirname(__DIR__, 1) . DIRECTORY_SEPARATOR . 'functions' . DIRECTORY_SEPARATOR . 'cert' . DIRECTORY_SEPARATOR . 'cacert-initial.pem';
-		$useCert = (file_exists($file)) ? $file : $file2;
+		$useCert = ($this->checkValidCert($file)) ? $file : $file2;
 		if ($this->config['selfSignedCert'] !== '') {
 			if (file_exists($this->config['selfSignedCert'])) {
 				return $this->config['selfSignedCert'];
@@ -5829,12 +5838,10 @@ class Organizr
 				)
 			)
 		);
-		if (!file_exists($file)) {
-			file_put_contents($file, fopen($url, 'r', false, $context));
-		} elseif (file_exists($file) && time() - 2592000 > filemtime($file)) {
+		if (!$this->checkValidCert($file) || (file_exists($file) && time() - 2592000 > filemtime($file))) {
 			file_put_contents($file, fopen($url, 'r', false, $context));
 		}
-		return $file;
+		return ($this->checkValidCert($file)) ? $file : $file2;
 	}
 	
 	public function plexJoinAPI($array)
