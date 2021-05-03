@@ -1,5 +1,14 @@
 [
   {
+    "title": "Minimum PHP Version change",
+    "subTitle": "Users that use containers are fine",
+    "date": "2021-05-03 04:25",
+    "body": "Starting from version 2.1.306 - The minimum needed php version is 7.3.0 - Make sure to update php before updating Organizr",
+    "author": "CauseFX",
+    "important": true,
+    "id": 12
+  },
+  {
     "title": "Important Messages - Each message can now be ignored using ignore button",
     "subTitle": "I know they were annoying to some people",
     "date": "2021-01-24 15:30",
