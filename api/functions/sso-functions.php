@@ -86,7 +86,8 @@ trait SSOFunctions
 			$headers = array(
 				'X-Emby-Authorization' => 'MediaBrowser Client="Organizr Jellyfin Tab", Device="Organizr_PHP", DeviceId="Organizr_SSO", Version="1.0"',
 				"Accept" => "application/json",
-				"Content-Type" => "application/json"
+				"Content-Type" => "application/json",
+				"X-Forwarded-For" => $this->userIP()
 			);
 			$data = array(
 				"Username" => $username,
@@ -118,7 +119,8 @@ trait SSOFunctions
 			$url = $this->qualifyURL($this->config['ombiURL']);
 			$headers = array(
 				"Accept" => "application/json",
-				"Content-Type" => "application/json"
+				"Content-Type" => "application/json",
+				"X-Forwarded-For" => $this->userIP()
 			);
 			$data = array(
 				"username" => ($oAuthToken ? "" : $username),
@@ -162,7 +164,8 @@ trait SSOFunctions
 					$headers = array(
 						"Accept" => "application/json",
 						"Content-Type" => "application/x-www-form-urlencoded",
-						"User-Agent" => isset($_SERVER ['HTTP_USER_AGENT']) ? $_SERVER ['HTTP_USER_AGENT'] : null
+						"User-Agent" => isset($_SERVER ['HTTP_USER_AGENT']) ? $_SERVER ['HTTP_USER_AGENT'] : null,
+						"X-Forwarded-For" => $this->userIP()
 					);
 					$data = array(
 						"username" => ($plexToken ? "" : $username),
@@ -196,7 +199,8 @@ trait SSOFunctions
 		try {
 			$url = $this->qualifyURL($this->config['overseerrURL']);
 			$headers = array(
-				"Content-Type" => "application/json"
+				"Content-Type" => "application/json",
+				"X-Forwarded-For" => $this->userIP()
 			);
 			$data = array(
 				//"username" => ($oAuthToken ? "" : $username), // not needed yet
@@ -235,7 +239,8 @@ trait SSOFunctions
 		try {
 			$url = $this->qualifyURL($this->config['petioURL']);
 			$headers = array(
-				"Content-Type" => "application/json"
+				"Content-Type" => "application/json",
+				"X-Forwarded-For" => $this->userIP()
 			);
 			$data = array(
 				'user' => [
