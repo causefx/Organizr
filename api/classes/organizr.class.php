@@ -2041,15 +2041,24 @@ class Organizr
 							'value' => 'allow-same-origin'
 						),
 						array(
+							'name' => 'Allow Orientation Lock',
+							'value' => 'allow-orientation-lock'
+						),
+						array(
 							'name' => 'Allow Pointer Lock',
 							'value' => 'allow-pointer-lock'
 						),
 						array(
 							'name' => 'Allow Scripts',
 							'value' => 'allow-scripts'
-						), array(
+						),
+						array(
 							'name' => 'Allow Popups',
 							'value' => 'allow-popups'
+						),
+						array(
+							'name' => 'Allow Popups To Escape Sandbox',
+							'value' => 'allow-popups-to-escape-sandbox'
 						),
 						array(
 							'name' => 'Allow Modals',
@@ -2058,6 +2067,10 @@ class Organizr
 						array(
 							'name' => 'Allow Top Navigation',
 							'value' => 'allow-top-navigation'
+						),
+						array(
+							'name' => 'Allow Top Navigation By User Activation',
+							'value' => 'allow-top-navigation-by-user-activation'
 						),
 						array(
 							'name' => 'Allow Downloads',
@@ -2266,24 +2279,31 @@ class Organizr
 			'FYI' => array(
 				array(
 					'type' => 'html',
-					'label' => 'Important Information',
+					'label' => '',
 					'override' => 12,
 					'html' => '
-				<div class="row">
-							<div class="col-lg-12">
-								<div class="panel panel-info">
-									<div class="panel-heading">
-										<span lang="en">Notice</span>
+					<div class="row">
+						<div class="col-lg-12">
+							<div class="panel panel-danger">
+								<div class="panel-heading"><span lang="en">Please Read First</span></div>
+								<div class="panel-wrapper collapse in" aria-expanded="true">
+									<div class="panel-body">
+										<span lang="en">Using multiple SSO application will cause your Cookie Header item to increase.  If you haven\'t increased it by now, please follow this guide</span>
+										<span><a href="https://docs.organizr.app/books/troubleshooting/page/login-error-api-connection-failed" target="_blank">Cookie Header Guide</a></span>
 									</div>
-									<div class="panel-wrapper collapse in" aria-expanded="true">
-										<div class="panel-body">
-											<span lang="en">This is not the same as database authentication - i.e. Plex Authentication | Emby Authentication | FTP Authentication<br/>Click Main on the sub-menu above.</span>
-										</div>
+								</div>
+							</div>
+							<div class="panel panel-info">
+								<div class="panel-heading"><span lang="en">Notice</span></div>
+								<div class="panel-wrapper collapse in" aria-expanded="true">
+									<div class="panel-body">
+										<span lang="en">This is not the same as database authentication - i.e. Plex Authentication | Emby Authentication | FTP Authentication<br/>Click Main on the sub-menu above.</span>
 									</div>
 								</div>
 							</div>
 						</div>
-				'
+					</div>
+					'
 				)
 			),
 			'Plex' => array(
