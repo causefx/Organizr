@@ -2751,7 +2751,7 @@ function buildFrame(name,url, split = null){
     sandbox = sandbox.replace(/,/gi, ' ');
     sandbox = (sandbox) ? ' sandbox="' + sandbox + '"' : '';
 	return `
-		<iframe allowfullscreen="true" frameborder="0" id="frame-`+extra+cleanClass(name)+`" data-name="`+cleanClass(name)+`" `+sandbox+` scrolling="auto" src="`+url+`" class="iframe"></iframe>
+		<iframe allow="clipboard-read; clipboard-write" allowfullscreen="true" frameborder="0" id="frame-`+extra+cleanClass(name)+`" data-name="`+cleanClass(name)+`" `+sandbox+` scrolling="auto" src="`+url+`" class="iframe"></iframe>
 	`;
 }
 function buildFrameContainer(name,url,type, split = null){
