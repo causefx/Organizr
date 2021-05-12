@@ -239,7 +239,7 @@ trait TransmissionHomepageItem
 						$torrents = json_decode($response->body, true)['arguments']['torrents'];
 					}
 					usort($torrents, function ($a, $b) {
-						return $a["addedDate"] < $b["addedDate"];
+						return $a["addedDate"] <=> $b["addedDate"];
 					});
 					$api['content']['queueItems'] = $torrents;
 					$api['content']['historyItems'] = false;
@@ -254,7 +254,7 @@ trait TransmissionHomepageItem
 			$this->setAPIResponse('error', $e->getMessage(), 500);
 			return false;
 		};
-		$api['content'] = isset($api['content']) ? $api['content'] : false;
+		$api['content'] = $api['content'] ?? false;
 		$this->setAPIResponse('success', null, 200, $api);
 		return $api;
 	}
