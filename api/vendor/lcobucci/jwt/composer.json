@@ -31,7 +31,12 @@
     "autoload": {
         "psr-4": {
             "Lcobucci\\JWT\\": "src"
-        }
+        },
+        "files": [
+            "compat/class-aliases.php",
+            "compat/json-exception-polyfill.php",
+            "compat/lcobucci-clock-polyfill.php"
+        ]
     },
     "autoload-dev": {
         "psr-4": {
@@ -40,6 +45,9 @@
                 "test/functional"
             ]
         }
+    },
+    "suggest": {
+        "lcobucci/clock": "*"
     },
     "extra": {
         "branch-alias": {

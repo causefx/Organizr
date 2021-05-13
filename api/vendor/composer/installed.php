@@ -6,7 +6,7 @@
     'aliases' => 
     array (
     ),
-    'reference' => 'c369707471ade0c58c1013f42a2bb039a4f14f9e',
+    'reference' => '52153456a85d5d77cca0365ed49decf8d1012206',
     'name' => '__root__',
   ),
   'versions' => 
@@ -18,7 +18,7 @@
       'aliases' => 
       array (
       ),
-      'reference' => 'c369707471ade0c58c1013f42a2bb039a4f14f9e',
+      'reference' => '52153456a85d5d77cca0365ed49decf8d1012206',
     ),
     'adldap2/adldap2' => 
     array (
@@ -155,12 +155,12 @@
     ),
     'lcobucci/jwt' => 
     array (
-      'pretty_version' => '3.3.1',
-      'version' => '3.3.1.0',
+      'pretty_version' => '3.4.5',
+      'version' => '3.4.5.0',
       'aliases' => 
       array (
       ),
-      'reference' => 'a11ec5f4b4d75d1fcd04e133dede4c317aac9e18',
+      'reference' => '511629a54465e89a31d3d7e4cf0935feab8b14c1',
     ),
     'league/oauth2-client' => 
     array (

@@ -7,7 +7,7 @@
     },
     "servers": [
         {
-            "url": "https://organizr.dev/",
+            "url": "http://docker:8000/",
             "description": "This Organizr Install"
         },
         {

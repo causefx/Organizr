@@ -9,18 +9,22 @@ namespace Lcobucci\JWT\Signer;
 
 use Exception;
 use InvalidArgumentException;
+use Lcobucci\JWT\Signer\Key\FileCouldNotBeRead;
 use SplFileObject;
+
+use function strpos;
+use function substr;
 
 /**
  * @author Luís Otávio Cobucci Oblonczyk <lcobucci@gmail.com>
  * @since 3.0.4
  */
-final class Key
+class Key
 {
     /**
      * @var string
      */
-    private $content;
+    protected $content;
 
     /**
      * @var string
@@ -31,7 +35,7 @@ final class Key
      * @param string $content
      * @param string $passphrase
      */
-    public function __construct($content, $passphrase = null)
+    public function __construct($content, $passphrase = '')
     {
         $this->setContent($content);
         $this->passphrase = $passphrase;
@@ -60,21 +64,39 @@ final class Key
      */
     private function readFile($content)
     {
+        $path = substr($content, 7);
+
         try {
-            $file    = new SplFileObject(substr($content, 7));
-            $content = '';
-
-            while (! $file->eof()) {
-                $content .= $file->fgets();
-            }
-
-            return $content;
+            $file = new SplFileObject($path);
         } catch (Exception $exception) {
-            throw new InvalidArgumentException('You must provide a valid key file', 0, $exception);
+            throw FileCouldNotBeRead::onPath($path, $exception);
         }
+
+        $content = '';
+
+        while (! $file->eof()) {
+            $content .= $file->fgets();
+        }
+
+        return $content;
+    }
+
+    /** @return string */
+    public function contents()
+    {
+        return $this->content;
+    }
+
+    /** @return string */
+    public function passphrase()
+    {
+        return $this->passphrase;
     }
 
     /**
+     * @deprecated This method is no longer part of the public interface
+     * @see Key::contents()
+     *
      * @return string
      */
     public function getContent()
@@ -83,6 +105,9 @@ final class Key
     }
 
     /**
+     * @deprecated This method is no longer part of the public interface
+     * @see Key::passphrase()
+     *
      * @return string
      */
     public function getPassphrase()
