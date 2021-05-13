@@ -29,7 +29,7 @@ private static $installed = array (
     'aliases' => 
     array (
     ),
-    'reference' => '6f6953dc61bfde8a4b317a2ada537aaa3e82b296',
+    'reference' => 'd85afc49ef7049063cc939f169cfada102f84818',
     'name' => '__root__',
   ),
   'versions' => 
@@ -41,7 +41,7 @@ private static $installed = array (
       'aliases' => 
       array (
       ),
-      'reference' => '6f6953dc61bfde8a4b317a2ada537aaa3e82b296',
+      'reference' => 'd85afc49ef7049063cc939f169cfada102f84818',
     ),
     'adldap2/adldap2' => 
     array (
@@ -133,12 +133,12 @@ private static $installed = array (
     ),
     'guzzlehttp/psr7' => 
     array (
-      'pretty_version' => '1.6.1',
-      'version' => '1.6.1.0',
+      'pretty_version' => '1.8.2',
+      'version' => '1.8.2.0',
       'aliases' => 
       array (
       ),
-      'reference' => '239400de7a173fe9901b9ac7c06497751f00727a',
+      'reference' => 'dc960a912984efb74d0a90222870c72c87f10c91',
     ),
     'illuminate/contracts' => 
     array (
