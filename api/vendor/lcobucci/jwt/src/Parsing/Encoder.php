@@ -7,13 +7,7 @@
 
 namespace Lcobucci\JWT\Parsing;
 
-use JsonException;
-use Lcobucci\JWT\Encoding\CannotEncodeContent;
 use RuntimeException;
-
-use function json_encode;
-use function json_last_error;
-use function json_last_error_msg;
 
 /**
  * Class that encodes data according with the specs of RFC-4648
@@ -35,21 +29,13 @@ class Encoder
      */
     public function jsonEncode($data)
     {
-        if (PHP_VERSION_ID < 70300) {
-            $json = json_encode($data);
+        $json = json_encode($data);
 
-            if (json_last_error() != JSON_ERROR_NONE) {
-                throw CannotEncodeContent::jsonIssues(new JsonException(json_last_error_msg()));
-            }
-
-            return $json;
+        if (json_last_error() != JSON_ERROR_NONE) {
+            throw new RuntimeException('Error while encoding to JSON: ' . json_last_error_msg());
         }
 
-        try {
-            return json_encode($data, JSON_THROW_ON_ERROR);
-        } catch (JsonException $exception) {
-            throw CannotEncodeContent::jsonIssues($exception);
-        }
+        return $json;
     }
 
     /**

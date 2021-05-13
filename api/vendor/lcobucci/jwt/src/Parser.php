@@ -7,16 +7,9 @@
 
 namespace Lcobucci\JWT;
 
-use DateTimeImmutable;
 use InvalidArgumentException;
+use Lcobucci\JWT\Claim\Factory as ClaimFactory;
 use Lcobucci\JWT\Parsing\Decoder;
-use Lcobucci\JWT\Token\DataSet;
-use Lcobucci\JWT\Token\InvalidTokenStructure;
-use Lcobucci\JWT\Token\RegisteredClaims;
-use Lcobucci\JWT\Token\UnsupportedHeaderFound;
-use RuntimeException;
-use function array_key_exists;
-use function is_array;
 
 /**
  * This class parses the JWT strings and convert them into tokens
@@ -34,13 +27,24 @@ class Parser
     private $decoder;
 
     /**
+     * The claims factory
+     *
+     * @var ClaimFactory
+     */
+    private $claimFactory;
+
+    /**
      * Initializes the object
      *
      * @param Decoder $decoder
+     * @param ClaimFactory $claimFactory
      */
-    public function __construct(Decoder $decoder = null)
-    {
+    public function __construct(
+        Decoder $decoder = null,
+        ClaimFactory $claimFactory = null
+    ) {
         $this->decoder = $decoder ?: new Decoder();
+        $this->claimFactory = $claimFactory ?: new ClaimFactory();
     }
 
     /**
@@ -49,9 +53,6 @@ class Parser
      * @param string $jwt
      *
      * @return Token
-     *
-     * @throws InvalidArgumentException  When JWT is not a string or is invalid.
-     * @throws RuntimeException          When something goes wrong while decoding
      */
     public function parse($jwt)
     {
@@ -66,12 +67,11 @@ class Parser
             }
         }
 
-        return new Token(
-            new DataSet($header, $data[0]),
-            new DataSet($claims, $data[1]),
-            $signature,
-            ['', '']
-        );
+        if ($signature === null) {
+            unset($data[2]);
+        }
+
+        return new Token($header, $claims, $signature, $data);
     }
 
     /**
@@ -86,13 +86,13 @@ class Parser
     protected function splitJwt($jwt)
     {
         if (!is_string($jwt)) {
-            throw InvalidTokenStructure::missingOrNotEnoughSeparators();
+            throw new InvalidArgumentException('The JWT string must have two dots');
         }
 
         $data = explode('.', $jwt);
 
         if (count($data) != 3) {
-            throw InvalidTokenStructure::missingOrNotEnoughSeparators();
+            throw new InvalidArgumentException('The JWT string must have two dots');
         }
 
         return $data;
@@ -105,17 +105,17 @@ class Parser
      *
      * @return array
      *
-     * @throws UnsupportedHeaderFound When an invalid header is informed
+     * @throws InvalidArgumentException When an invalid header is informed
      */
     protected function parseHeader($data)
     {
         $header = (array) $this->decoder->jsonDecode($this->decoder->base64UrlDecode($data));
 
         if (isset($header['enc'])) {
-            throw UnsupportedHeaderFound::encryption();
+            throw new InvalidArgumentException('Encryption is not supported yet');
         }
 
-        return $this->convertItems($header);
+        return $header;
     }
 
     /**
@@ -129,29 +129,11 @@ class Parser
     {
         $claims = (array) $this->decoder->jsonDecode($this->decoder->base64UrlDecode($data));
 
-        return $this->convertItems($claims);
-    }
-
-    /**
-     * @param array<string, mixed> $items
-     *
-     * @return array<string, mixed>
-     */
-    private function convertItems(array $items)
-    {
-        foreach (RegisteredClaims::DATE_CLAIMS as $name) {
-            if (! array_key_exists($name, $items)) {
-                continue;
-            }
-
-            $items[$name] = new DateTimeImmutable('@' . ((int) $items[$name]));
+        foreach ($claims as $name => &$value) {
+            $value = $this->claimFactory->create($name, $value);
         }
 
-        if (array_key_exists(RegisteredClaims::AUDIENCE, $items) && ! is_array($items[RegisteredClaims::AUDIENCE])) {
-            $items[RegisteredClaims::AUDIENCE] = [$items[RegisteredClaims::AUDIENCE]];
-        }
-
-        return $items;
+        return $claims;
     }
 
     /**
@@ -165,11 +147,11 @@ class Parser
     protected function parseSignature(array $header, $data)
     {
         if ($data == '' || !isset($header['alg']) || $header['alg'] == 'none') {
-            return Signature::fromEmptyData();
+            return null;
         }
 
         $hash = $this->decoder->base64UrlDecode($data);
 
-        return new Signature($hash, $data);
+        return new Signature($hash);
     }
 }

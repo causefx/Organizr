@@ -2,6 +2,9 @@
 namespace Lcobucci\JWT\Signer;
 
 use InvalidArgumentException;
+use Lcobucci\JWT\Signer;
+use function assert;
+use function is_array;
 use function is_resource;
 use function openssl_error_string;
 use function openssl_free_key;
@@ -21,7 +24,9 @@ abstract class OpenSSL extends BaseSigner
             $signature = '';
 
             if (! openssl_sign($payload, $signature, $privateKey, $this->getAlgorithm())) {
-                throw CannotSignPayload::errorHappened(openssl_error_string());
+                throw new InvalidArgumentException(
+                    'There was an error while creating the signature: ' . openssl_error_string()
+                );
             }
 
             return $signature;
@@ -47,7 +52,7 @@ abstract class OpenSSL extends BaseSigner
     /**
      * @param $expected
      * @param $payload
-     * @param $key
+     * @param $pem
      * @return bool
      */
     public function doVerify($expected, $payload, Key $key)
@@ -82,13 +87,15 @@ abstract class OpenSSL extends BaseSigner
     private function validateKey($key)
     {
         if (! is_resource($key)) {
-            throw InvalidKeyProvided::cannotBeParsed(openssl_error_string());
+            throw new InvalidArgumentException(
+                'It was not possible to parse your key, reason: ' . openssl_error_string()
+            );
         }
 
         $details = openssl_pkey_get_details($key);
 
         if (! isset($details['key']) || $details['type'] !== $this->getKeyType()) {
-            throw InvalidKeyProvided::incompatibleKey();
+            throw new InvalidArgumentException('This key is not compatible with this signer');
         }
     }
 

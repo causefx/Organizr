@@ -11,6 +11,7 @@
  */
 namespace Lcobucci\JWT\Signer\Ecdsa;
 
+use InvalidArgumentException;
 use function bin2hex;
 use function dechex;
 use function hex2bin;
@@ -40,7 +41,7 @@ final class MultibyteStringConverter implements SignatureConverter
         $signature = bin2hex($signature);
 
         if (self::octetLength($signature) !== $length) {
-            throw ConversionFailed::invalidLength();
+            throw new InvalidArgumentException('Invalid signature length.');
         }
 
         $pointR = self::preparePositiveInteger(mb_substr($signature, 0, $length, '8bit'));
@@ -87,7 +88,7 @@ final class MultibyteStringConverter implements SignatureConverter
         $position = 0;
 
         if (self::readAsn1Content($message, $position, self::BYTE_SIZE) !== self::ASN1_SEQUENCE) {
-            throw ConversionFailed::incorrectStartSequence();
+            throw new InvalidArgumentException('Invalid data. Should start with a sequence.');
         }
 
         if (self::readAsn1Content($message, $position, self::BYTE_SIZE) === self::ASN1_LENGTH_2BYTES) {
@@ -113,7 +114,7 @@ final class MultibyteStringConverter implements SignatureConverter
     private static function readAsn1Integer($message, &$position)
     {
         if (self::readAsn1Content($message, $position, self::BYTE_SIZE) !== self::ASN1_INTEGER) {
-            throw ConversionFailed::integerExpected();
+            throw new InvalidArgumentException('Invalid data. Should contain an integer.');
         }
 
         $length = (int) hexdec(self::readAsn1Content($message, $position, self::BYTE_SIZE));

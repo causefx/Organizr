@@ -29,7 +29,7 @@ private static $installed = array (
     'aliases' => 
     array (
     ),
-    'reference' => '52153456a85d5d77cca0365ed49decf8d1012206',
+    'reference' => 'd116a5555c0c9912ce0b22091539443ff3a9711a',
     'name' => '__root__',
   ),
   'versions' => 
@@ -41,7 +41,7 @@ private static $installed = array (
       'aliases' => 
       array (
       ),
-      'reference' => '52153456a85d5d77cca0365ed49decf8d1012206',
+      'reference' => 'd116a5555c0c9912ce0b22091539443ff3a9711a',
     ),
     'adldap2/adldap2' => 
     array (
@@ -178,12 +178,12 @@ private static $installed = array (
     ),
     'lcobucci/jwt' => 
     array (
-      'pretty_version' => '3.4.5',
-      'version' => '3.4.5.0',
+      'pretty_version' => '3.3.1',
+      'version' => '3.3.1.0',
       'aliases' => 
       array (
       ),
-      'reference' => '511629a54465e89a31d3d7e4cf0935feab8b14c1',
+      'reference' => 'a11ec5f4b4d75d1fcd04e133dede4c317aac9e18',
     ),
     'league/oauth2-client' => 
     array (
