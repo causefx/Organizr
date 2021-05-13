@@ -1,7 +1,7 @@
 {
 	"name": "rmccue/requests",
 	"description": "A HTTP library written in PHP, for human beings.",
-	"homepage": "http://github.com/rmccue/Requests",
+	"homepage": "http://github.com/WordPress/Requests",
 	"license": "ISC",
 	"keywords": ["http", "idna", "iri", "ipv6", "curl", "sockets", "fsockopen"],
 	"authors": [
@@ -14,10 +14,34 @@
 		"php": ">=5.2"
 	},
 	"require-dev": {
-		"requests/test-server": "dev-master"
+		"requests/test-server": "dev-master",
+		"phpunit/phpunit": "^4.8 || ^5.7 || ^6.5 || ^7.5",
+		"squizlabs/php_codesniffer": "^3.5",
+		"phpcompatibility/php-compatibility": "^9.0",
+		"wp-coding-standards/wpcs": "^2.0",
+		"dealerdirect/phpcodesniffer-composer-installer": "^0.7",
+		"php-parallel-lint/php-parallel-lint": "^1.3",
+		"php-parallel-lint/php-console-highlighter": "^0.5.0"
 	},
 	"type": "library",
 	"autoload": {
 		"psr-0": {"Requests": "library/"}
+	},
+	"scripts" : {
+		"lint": [
+			"@php ./vendor/php-parallel-lint/php-parallel-lint/parallel-lint . -e php --exclude vendor --exclude .git"
+		],
+		"checkcs": [
+			"@php ./vendor/squizlabs/php_codesniffer/bin/phpcs"
+		],
+		"fixcs": [
+			"@php ./vendor/squizlabs/php_codesniffer/bin/phpcbf"
+		],
+		"test": [
+			"@php ./vendor/phpunit/phpunit/phpunit --no-coverage"
+		],
+		"coverage": [
+			"@php ./vendor/phpunit/phpunit/phpunit"
+		]
 	}
 }

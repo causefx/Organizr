@@ -29,7 +29,7 @@ private static $installed = array (
     'aliases' => 
     array (
     ),
-    'reference' => '7e9a4efa44fc1396837620eb2d675a4194d97cd5',
+    'reference' => '5c900f78cd085c22ff9708874ea29f6afca2d98d',
     'name' => '__root__',
   ),
   'versions' => 
@@ -41,7 +41,7 @@ private static $installed = array (
       'aliases' => 
       array (
       ),
-      'reference' => '7e9a4efa44fc1396837620eb2d675a4194d97cd5',
+      'reference' => '5c900f78cd085c22ff9708874ea29f6afca2d98d',
     ),
     'adldap2/adldap2' => 
     array (
@@ -406,12 +406,12 @@ private static $installed = array (
     ),
     'rmccue/requests' => 
     array (
-      'pretty_version' => 'v1.7.0',
-      'version' => '1.7.0.0',
+      'pretty_version' => 'v1.8.0',
+      'version' => '1.8.0.0',
       'aliases' => 
       array (
       ),
-      'reference' => '87932f52ffad70504d93f04f15690cf16a089546',
+      'reference' => 'afbe4790e4def03581c4a0963a1e8aa01f6030f1',
     ),
     'slim/psr7' => 
     array (
