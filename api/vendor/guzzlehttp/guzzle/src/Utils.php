@@ -49,9 +49,7 @@ final class Utils
 
         foreach ($lines as $line) {
             $parts = \explode(':', $line, 2);
-            $headers[\trim($parts[0])][] = isset($parts[1])
-                ? \trim($parts[1])
-                : null;
+            $headers[\trim($parts[0])][] = isset($parts[1]) ? \trim($parts[1]) : null;
         }
 
         return $headers;
@@ -73,12 +71,7 @@ final class Utils
             return \STDOUT;
         }
 
-        $resource = \fopen('php://output', 'w');
-        if (false === $resource) {
-            throw new \RuntimeException('Can not open php output for writing to debug the resource.');
-        }
-
-        return $resource;
+        return \GuzzleHttp\Psr7\Utils::tryFopen('php://output', 'w');
     }
 
     /**
@@ -106,8 +99,7 @@ final class Utils
                 ? Proxy::wrapStreaming($handler, new StreamHandler())
                 : new StreamHandler();
         } elseif (!$handler) {
-            throw new \RuntimeException('GuzzleHttp requires cURL, the '
-                . 'allow_url_fopen ini setting, or a custom HTTP handler.');
+            throw new \RuntimeException('GuzzleHttp requires cURL, the allow_url_fopen ini setting, or a custom HTTP handler.');
         }
 
         return $handler;
@@ -235,7 +227,7 @@ EOT
         // Strip port if present.
         if (\strpos($host, ':')) {
             /** @var string[] $hostParts will never be false because of the checks above */
-            $hostParts = \explode($host, ':', 2);
+            $hostParts = \explode(':', $host, 2);
             $host = $hostParts[0];
         }
 
@@ -280,9 +272,7 @@ EOT
     {
         $data = \json_decode($json, $assoc, $depth, $options);
         if (\JSON_ERROR_NONE !== \json_last_error()) {
-            throw new InvalidArgumentException(
-                'json_decode error: ' . \json_last_error_msg()
-            );
+            throw new InvalidArgumentException('json_decode error: ' . \json_last_error_msg());
         }
 
         return $data;
@@ -303,9 +293,7 @@ EOT
     {
         $json = \json_encode($value, $options, $depth);
         if (\JSON_ERROR_NONE !== \json_last_error()) {
-            throw new InvalidArgumentException(
-                'json_encode error: ' . \json_last_error_msg()
-            );
+            throw new InvalidArgumentException('json_encode error: ' . \json_last_error_msg());
         }
 
         /** @var string */

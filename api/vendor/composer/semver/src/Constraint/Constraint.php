@@ -54,7 +54,7 @@ class Constraint implements ConstraintInterface
         self::OP_NE => '!=',
     );
 
-    /** @var string */
+    /** @var int */
     protected $operator;
 
     /** @var string */
@@ -134,7 +134,7 @@ class Constraint implements ConstraintInterface
      * @param string $a
      * @param string $b
      * @param string $operator
-     * @param bool $compareBranches
+     * @param bool   $compareBranches
      *
      * @throws \InvalidArgumentException if invalid operator is given.
      *
@@ -167,7 +167,7 @@ class Constraint implements ConstraintInterface
 
     /**
      * @param Constraint $provider
-     * @param bool $compareBranches
+     * @param bool       $compareBranches
      *
      * @return bool
      */
@@ -184,7 +184,7 @@ class Constraint implements ConstraintInterface
         // '!=' operator is match when other operator is not '==' operator or version is not match
         // these kinds of comparisons always have a solution
         if ($isNonEqualOp || $isProviderNonEqualOp) {
-            return !$isEqualOp && !$isProviderEqualOp
+            return (!$isEqualOp && !$isProviderEqualOp)
                 || $this->versionCompare($provider->version, $this->version, '!=', $compareBranches);
         }
 
@@ -197,13 +197,9 @@ class Constraint implements ConstraintInterface
         if ($this->versionCompare($provider->version, $this->version, self::$transOpInt[$this->operator], $compareBranches)) {
             // special case, e.g. require >= 1.0 and provide < 1.0
             // 1.0 >= 1.0 but 1.0 is outside of the provided interval
-            if ($provider->version === $this->version
+            return !($provider->version === $this->version
                 && self::$transOpInt[$provider->operator] === $providerNoEqualOp
-                && self::$transOpInt[$this->operator] !== $noEqualOp) {
-                return false;
-            }
-
-            return true;
+                && self::$transOpInt[$this->operator] !== $noEqualOp);
         }
 
         return false;

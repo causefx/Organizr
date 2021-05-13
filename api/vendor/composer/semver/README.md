@@ -46,7 +46,7 @@ The `Composer\Semver\Comparator` class provides the following methods for compar
 * equalTo($v1, $v2)
 * notEqualTo($v1, $v2)
 
-Each function takes two version strings as arguments. For example:
+Each function takes two version strings as arguments and returns a boolean. For example:
 
 ```php
 use Composer\Semver\Comparator;
