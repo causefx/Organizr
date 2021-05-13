@@ -6,7 +6,7 @@
     'aliases' => 
     array (
     ),
-    'reference' => '5c900f78cd085c22ff9708874ea29f6afca2d98d',
+    'reference' => '6f6953dc61bfde8a4b317a2ada537aaa3e82b296',
     'name' => '__root__',
   ),
   'versions' => 
@@ -18,7 +18,7 @@
       'aliases' => 
       array (
       ),
-      'reference' => '5c900f78cd085c22ff9708874ea29f6afca2d98d',
+      'reference' => '6f6953dc61bfde8a4b317a2ada537aaa3e82b296',
     ),
     'adldap2/adldap2' => 
     array (
