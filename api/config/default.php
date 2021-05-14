@@ -369,6 +369,8 @@ return array(
 	'tautulliHeader' => 'Tautulli',
 	'tautulliHeaderToggle' => true,
 	'tautulliFriendlyName' => true,
+	'tautulliSocksEnabled' => false,
+	'tautulliSocksAuth' => '999',
 	'homepagePiholeEnabled' => false,
 	'homepagePiholeAuth' => '1',
 	'homepagePiholeRefresh' => '10000',

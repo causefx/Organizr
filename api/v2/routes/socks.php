@@ -32,6 +32,12 @@ $app->any('/multiple/socks/{app}/{instance}/{route:.*}', function ($request, $re
 			$auth = 'nzbgetSocksAuth';
 			$header = 'Authorization';
 			break;
+		case 'tautulli':
+			$url = 'tautulliURL';
+			$enabled = 'tautulliSocksEnabled';
+			$auth = 'tautulliSocksAuth';
+			$header = null;
+			break;
 		default:
 			$Organizr->setAPIResponse('error', 'Application not supported for socks', 404);
 			$response->getBody()->write(jsonE($GLOBALS['api']));
@@ -78,6 +84,12 @@ $app->any('/socks/{app}/{route:.*}', function ($request, $response, $args) {
 			$enabled = 'nzbgetSocksEnabled';
 			$auth = 'nzbgetSocksAuth';
 			$header = 'Authorization';
+			break;
+		case 'tautulli':
+			$url = 'tautulliURL';
+			$enabled = 'tautulliSocksEnabled';
+			$auth = 'tautulliSocksAuth';
+			$header = null;
 			break;
 		default:
 			$Organizr->setAPIResponse('error', 'Application not supported for socks', 404);

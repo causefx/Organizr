@@ -70,6 +70,32 @@ trait TautulliHomepageItem
 						'options' => $this->timeOptions()
 					),
 				),
+				'API SOCKS' => array(
+					array(
+						'type' => 'html',
+						'override' => 12,
+						'label' => '',
+						'html' => '
+							<div class="panel panel-default">
+								<div class="panel-wrapper collapse in">
+									<div class="panel-body">' . $this->socksHeadingHTML('tautulli') . '</div>
+								</div>
+							</div>'
+					),
+					array(
+						'type' => 'switch',
+						'name' => 'tautulliSocksEnabled',
+						'label' => 'Enable',
+						'value' => $this->config['tautulliSocksEnabled']
+					),
+					array(
+						'type' => 'select',
+						'name' => 'tautulliSocksAuth',
+						'label' => 'Minimum Authentication',
+						'value' => $this->config['tautulliSocksAuth'],
+						'options' => $this->groupOptions
+					),
+				),
 				'Library Stats' => array(
 					array(
 						'type' => 'switch',
