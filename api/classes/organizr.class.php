@@ -6079,8 +6079,69 @@ class Organizr
 		';
 	}
 	
-	public function socks($url, $enabled, $auth, $requestObject, $header = null, $multiple = null)
+	public function socksListing($app = null)
 	{
+		switch ($app) {
+			case 'sonarr':
+				$appDetails = [
+					'url' => 'sonarrURL',
+					'enabled' => 'sonarrSocksEnabled',
+					'auth' => 'sonarrSocksAuth',
+					'header' => 'X-Api-Key'
+				];
+				break;
+			case 'radarr':
+				$appDetails = [
+					'url' => 'radarrURL',
+					'enabled' => 'radarrSocksEnabled',
+					'auth' => 'radarrSocksAuth',
+					'header' => 'X-Api-Key'
+				];
+				break;
+			case 'lidarr':
+				$appDetails = [
+					'url' => 'lidarrURL',
+					'enabled' => 'lidarrSocksEnabled',
+					'auth' => 'lidarrSocksAuth',
+					'header' => 'X-Api-Key'
+				];
+				break;
+			case 'sabnzbd':
+				$appDetails = [
+					'url' => 'sabnzbdURL',
+					'enabled' => 'sabnzbdSocksEnabled',
+					'auth' => 'sonarrSocksAuth',
+					'header' => null
+				];
+				break;
+			case 'nzbget':
+				$appDetails = [
+					'url' => 'nzbgetURL',
+					'enabled' => 'nzbgetSocksEnabled',
+					'auth' => 'nzbgetSocksAuth',
+					'header' => 'Authorization'
+				];
+				break;
+			case 'tautulli':
+				$appDetails = [
+					'url' => 'tautulliURL',
+					'enabled' => 'tautulliSocksEnabled',
+					'auth' => 'tautulliSocksAuth',
+					'header' => null
+				];
+				break;
+			default:
+				$appDetails = null;
+		}
+		return $appDetails;
+	}
+	
+	public function socks($appDetails, $requestObject, $multiple = null)
+	{
+		$url = $appDetails['url'];
+		$enabled = $appDetails['enabled'];
+		$auth = $appDetails['auth'];
+		$header = $appDetails['header'];
 		$error = false;
 		if (!$this->config[$enabled]) {
 			$error = true;
