@@ -6110,7 +6110,7 @@ class Organizr
 				$appDetails = [
 					'url' => 'sabnzbdURL',
 					'enabled' => 'sabnzbdSocksEnabled',
-					'auth' => 'sonarrSocksAuth',
+					'auth' => 'sabnzbdSocksAuth',
 					'header' => null
 				];
 				break;
