@@ -2751,7 +2751,7 @@ function buildFrame(name,url, split = null){
     sandbox = sandbox.replace(/,/gi, ' ');
     sandbox = (sandbox) ? ' sandbox="' + sandbox + '"' : '';
 	return `
-		<iframe allowfullscreen="true" frameborder="0" id="frame-`+extra+cleanClass(name)+`" data-name="`+cleanClass(name)+`" `+sandbox+` scrolling="auto" src="`+url+`" class="iframe"></iframe>
+		<iframe allow="clipboard-read; clipboard-write" allowfullscreen="true" frameborder="0" id="frame-`+extra+cleanClass(name)+`" data-name="`+cleanClass(name)+`" `+sandbox+` scrolling="auto" src="`+url+`" class="iframe"></iframe>
 	`;
 }
 function buildFrameContainer(name,url,type, split = null){
@@ -5516,6 +5516,10 @@ function ombiActions(id,action,type){
 	});
 }
 function doneTyping () {
+	let title = $('#request-input').val();
+	if(title == ''){
+		return false;
+	}
 	var page = ($('#request-page').val()) ? $('#request-page').val() : 1;
 	if(typeof searchTerm !== 'undefined'){
 		if(searchTerm !== $('#request-input').val()){
@@ -5523,7 +5527,6 @@ function doneTyping () {
 		}
 	}
 	ajaxloader('.search-div', 'in');
-	var title = $('#request-input').val();
 	searchTerm = title;
 	$('#request-page').val(page);
 	requestSearch(title, page).success(function(data) {

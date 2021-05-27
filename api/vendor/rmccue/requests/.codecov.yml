@@ -1,0 +1,21 @@
+codecov:
+    notify:
+        after_n_builds: 2
+
+coverage:
+  round: nearest
+  # Status will be green when coverage is between 85 and 100%.
+  range: "85...100"
+  status:
+    project:
+      default:
+        threshold: 1%
+        paths:
+          - "library"
+    patch:
+      default:
+        threshold: 0%
+        paths:
+          - "library"
+
+comment: false

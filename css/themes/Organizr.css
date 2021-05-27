@@ -190,11 +190,6 @@ input,
 .no-bg-addon .input-group-addon {
   background-color: #1f1f1f;
 }
-.panel-blue .panel-heading, .panel-info .panel-heading {
-  border-color: #2cabe3;
-  color: #fff;
-  background-color: #232323;
-}
 .bg-title .breadcrumb .active {
   color: #e6d086;
 }

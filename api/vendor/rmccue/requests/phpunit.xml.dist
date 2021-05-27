@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/7.5/phpunit.xsd"
+	backupGlobals="true"
+	bootstrap="tests/bootstrap.php"
+	colors="true"
+	verbose="true"
+	>
+	<testsuites>
+		<testsuite name="Authentication">
+			<directory suffix=".php">tests/Auth</directory>
+		</testsuite>
+		<testsuite name="Transports">
+			<directory suffix=".php">tests/Transport</directory>
+		</testsuite>
+		<testsuite name="Proxies">
+			<directory suffix=".php">tests/Proxy</directory>
+		</testsuite>
+		<testsuite name="General">
+			<file>tests/ChunkedEncoding.php</file>
+			<file>tests/Cookies.php</file>
+			<file>tests/Encoding.php</file>
+			<file>tests/IDNAEncoder.php</file>
+			<file>tests/IRI.php</file>
+			<file>tests/Requests.php</file>
+			<file>tests/Response/Headers.php</file>
+			<file>tests/Session.php</file>
+			<file>tests/SSL.php</file>
+			<file>tests/Utility/FilteredIterator.php</file>
+		</testsuite>
+	</testsuites>
+
+	<logging>
+		<log type="coverage-html" target="tests/coverage" lowUpperBound="35" highLowerBound="90"/>
+	</logging>
+
+	<filter>
+		<whitelist addUncoveredFilesFromWhitelist="true">
+			<directory suffix=".php">library</directory>
+		</whitelist>
+	</filter>
+</phpunit>

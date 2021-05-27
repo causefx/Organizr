@@ -12,17 +12,15 @@ $(document).on('click', '#HEALTHCHECKS-settings-button', function() {
         var response = data.response;
         $('#HEALTHCHECKS-settings-items').html(buildFormGroup(response.data));
         var elAddButtonStart = $('#HEALTHCHECKS-settings-page [id*="Services"] .row.start');
-        var testone = $('#HEALTHCHECKS-settings-page [id*="Services"] .row.m-b-40').first('span')
-        var testtwo = $('#HEALTHCHECKS-settings-page [id*="Services"] .row.m-b-40 span')
+        var items = $('#HEALTHCHECKS-settings-page [id*="Services"] .row.m-b-40 span');
         $(elAddButtonStart).after('<div class="row"><button type="button" class="btn btn-info pull-right m-r-20 addNewHCService" ><i class="fa fa-plus"></i> Add New Service</button></div>');
-        $.each(testtwo, function(key,val) {
+        $.each(items, function(key,val) {
             var el = $(val);
             var text = el.text();
             if(text === 'Service Name'){
                 $(this).after('&nbsp;<div class="pull-right text-danger removeHCService mouse"><i class="fa fa-close text-danger"></i></div>');
             }
         })
-
     }).fail(function(xhr) {
         console.error("Organizr Function: API Connection Failed");
     });

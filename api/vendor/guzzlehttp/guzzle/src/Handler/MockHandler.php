@@ -4,6 +4,7 @@ namespace GuzzleHttp\Handler;
 
 use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\HandlerStack;
+use GuzzleHttp\Promise as P;
 use GuzzleHttp\Promise\PromiseInterface;
 use GuzzleHttp\TransferStats;
 use GuzzleHttp\Utils;
@@ -51,11 +52,8 @@ class MockHandler implements \Countable
      * @param callable|null $onFulfilled Callback to invoke when the return value is fulfilled.
      * @param callable|null $onRejected  Callback to invoke when the return value is rejected.
      */
-    public static function createWithMiddleware(
-        array $queue = null,
-        callable $onFulfilled = null,
-        callable $onRejected = null
-    ): HandlerStack {
+    public static function createWithMiddleware(array $queue = null, callable $onFulfilled = null, callable $onRejected = null): HandlerStack
+    {
         return HandlerStack::create(new self($queue, $onFulfilled, $onRejected));
     }
 
@@ -68,11 +66,8 @@ class MockHandler implements \Countable
      * @param callable|null          $onFulfilled Callback to invoke when the return value is fulfilled.
      * @param callable|null          $onRejected  Callback to invoke when the return value is rejected.
      */
-    public function __construct(
-        array $queue = null,
-        callable $onFulfilled = null,
-        callable $onRejected = null
-    ) {
+    public function __construct(array $queue = null, callable $onFulfilled = null, callable $onRejected = null)
+    {
         $this->onFulfilled = $onFulfilled;
         $this->onRejected = $onRejected;
 
@@ -113,8 +108,8 @@ class MockHandler implements \Countable
         }
 
         $response = $response instanceof \Throwable
-            ? \GuzzleHttp\Promise\rejection_for($response)
-            : \GuzzleHttp\Promise\promise_for($response);
+            ? P\Create::rejectionFor($response)
+            : P\Create::promiseFor($response);
 
         return $response->then(
             function (?ResponseInterface $value) use ($request, $options) {
@@ -143,7 +138,7 @@ class MockHandler implements \Countable
                 if ($this->onRejected) {
                     ($this->onRejected)($reason);
                 }
-                return \GuzzleHttp\Promise\rejection_for($reason);
+                return P\Create::rejectionFor($reason);
             }
         );
     }

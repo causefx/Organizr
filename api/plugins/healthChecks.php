@@ -21,6 +21,36 @@ class HealthChecks extends Organizr
 	public function _healthCheckPluginGetSettings()
 	{
 		return array(
+			'FYI' => array(
+				array(
+					'type' => 'html',
+					'label' => '',
+					'override' => 12,
+					'html' => '
+						<div class="row">
+						    <div class="col-lg-12">
+						        <div class="panel panel-info">
+						            <div class="panel-heading">
+						                <span lang="en">ATTENTION</span>
+						            </div>
+						            <div class="panel-wrapper collapse in" aria-expanded="true">
+						                <div class="panel-body">
+						                	<h4 lang="en">Once this plugin is setup, you will need to setup a CRON job</h4>
+						                    <br/>
+						                    <span>
+						                    	<h4><b lang="en">CRON Job URL</b></h4>
+						                    	<code>' . $this->getServerPath() . 'api/v2/plugins/healthchecks/run</code><br/>
+						                    	<h5><b lang="en">Frequency</b></h5>
+						                    	<span lang="en">As often as you like - i.e. every 1 minute</span>
+						                    </span>
+						                </div>
+						            </div>
+						        </div>
+						    </div>
+						</div>
+						'
+				)
+			),
 			'Options' => array(
 				array(
 					'type' => 'select',
@@ -52,7 +82,7 @@ class HealthChecks extends Organizr
 	public function _healthCheckPluginTest($url)
 	{
 		$success = false;
-		$options = array('verify' => false, 'verifyname' => false, 'follow_redirects' => true, 'redirects' => 1);
+		$options = array('verify' => false, 'verifyname' => false, 'follow_redirects' => true, 'redirects' => 10);
 		$headers = array('Token' => $this->config['organizrAPI']);
 		$url = $this->qualifyURL($url);
 		try {

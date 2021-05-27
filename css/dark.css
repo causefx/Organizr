@@ -1550,7 +1550,7 @@ table.dataTable thead .sorting:after {
 .panel-info .panel-heading {
     border-color: #2cabe3;
     color: #fff;
-    background-color: #2cabe3;
+    background-color: #232323;
 }
 .panel-blue .panel-heading a,
 .panel-info .panel-heading a {
