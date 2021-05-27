@@ -369,5 +369,12 @@
     "new": "",
     "fixed": "",
     "notes": "This version and version 2.1.306 need minimum php version 7.3.0"
+  },
+  "2.1.333": {
+    "date": "2021-05-27 21:30",
+    "title": "Small fixes and a Tau update",
+    "new": "tautulli socks|X-Forwarded-For to SSO functions|allow clipboard|new sanbox options to iframe|unify socks function and list|note about cron url for healthchecks api",
+    "fixed": "options array for requests|sabnzbd auth for socks|Transmission home page module hangs on PHP 8 (#1648)|Ombi Search Box Error (#1651)|Redirects on healthchecks plugin|panel-blue css|Tautulli cmd change",
+    "notes": "update rmccue\\requests framework|update guzzlehttp/psr7|add if stmt to stale workflow to ignore issues that have bypass-activity"
   }
 }
