@@ -621,10 +621,10 @@ trait OrganizrFunctions
 		$options = [];
 		if (is_numeric($timeout)) {
 			$timeout = $timeout / 1000;
-			array_push($options, array('timeout' => $timeout));
+			$options = array_merge($options, array('timeout' => $timeout));
 		}
 		if ($this->localURL($url, $override)) {
-			array_push($options, array('verify' => false));
+			$options = array_merge($options, array('verify' => false));
 			
 		}
 		return $options;
