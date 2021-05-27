@@ -304,7 +304,7 @@ trait TautulliHomepageItem
 				$platform = $api['homestats']['data'][$key]['rows'][0]['platform_name'];
 				$this->cacheImage($url . '/images/platforms/' . $platform . '.svg', 'tautulli-' . $platform, 'svg');
 			}
-			$libstatsUrl = $apiURL . '&cmd=get_libraries';
+			$libstatsUrl = $apiURL . '&cmd=get_libraries_table';
 			$options = $this->requestOptions($this->config['tautulliURL'], false, $this->config['homepageTautulliRefresh']);
 			$libstats = Requests::get($libstatsUrl, [], $options);
 			if ($libstats->success) {
