@@ -309,7 +309,7 @@ trait TautulliHomepageItem
 			$libstats = Requests::get($libstatsUrl, [], $options);
 			if ($libstats->success) {
 				$libstats = json_decode($libstats->body, true);
-				$api['libstats'] = $libstats['response'];
+				$api['libstats'] = $libstats['response']['data'];
 				$categories = ['movie.svg', 'show.svg', 'artist.svg'];
 				foreach ($categories as $cat) {
 					$parts = explode('.', $cat);
