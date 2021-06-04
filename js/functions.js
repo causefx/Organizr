@@ -6539,6 +6539,7 @@ function buildHealthChecksItem(array){
     $.each(array, function(i,v) {
         var hasIcon = healthCheckIcon(v.tags);
         v.name = (v.name) ? v.name : 'New Item';
+	v.desc = (v.desc) ? '<h5>Notes: '+v.desc+'</h5>' : '';
         switch(v.status){
             case 'up':
                 var statusColor = 'success';
@@ -6576,6 +6577,14 @@ function buildHealthChecksItem(array){
                 var nextPing = 'Waiting...';
                 var lastPing = 'n/a';
         }
+    	var tagPrimaryElem = '', tagSecondaryElem = '';
+	if (v.tags){
+		v.tags = v.tags.split(' ');
+		tagPrimaryElem = '<span class="pull-right mt-3 mr-2"><span class="label text-uppercase bg-'+statusColor.replace('animated-3 loop-animation flash','')+' label-rounded font-12">'+v.tags[0]+'</span></span>';
+		tagSecondaryElem = '<h5>Tags: ';
+		tagSecondaryElem += v.tags.map(i => { return i }).join(', ');
+		tagSecondaryElem += '</h5>'
+	}
         checks += `
             <div class="col-xl-2 col-lg-3 col-md-4 col-sm-6 col-xs-12">
                 <div class="card bg-inverse text-white mb-3 showMoreHealth mouse" data-id="`+i+`">
@@ -6583,10 +6592,11 @@ function buildHealthChecksItem(array){
                         <div class="d-flex no-block align-items-center">
                             <div class="left-health bg-`+statusColor+`"></div>
                             <div class="ml-1 w-100">
-                                <i class="`+statusIcon+` font-20 pull-right mt-3 mb-2"></i>
+                                <span class="pull-right mt-3 mb-2"><i class="`+statusIcon+` font-20"></i></span>
+				`+tagPrimaryElem+`
                                 <h3 class="d-flex no-block align-items-center mt-2 mb-2">`+hasIcon+v.name+`</h3>
                                 <div class="clearfix"></div>
-                                <div class="d-none showMoreHealthDiv-`+i+`"><h5>Last: `+lastPing+`</h5><h5>Next: `+nextPing+`</h5></div>
+                                <div class="d-none showMoreHealthDiv-`+i+`"><h5>Last: `+lastPing+`</h5><h5>Next: `+nextPing+`</h5>`+v.desc+tagSecondaryElem+`</div>
                                 <div class="clearfix"></div>
                             </div>
                         </div>
