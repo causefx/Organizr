@@ -136,6 +136,11 @@ class HealthChecks extends Organizr
 					unset($allItems[$k]);
 				}
 			}
+			$limit = 30;
+			if (count($allItems) > 0){
+				$limit = count($allItems) * 20;
+			}
+			set_time_limit($limit);
 			foreach ($allItems as $k => $v) {
 				$testLocal = $v['Internal URL'] !== '' ?? false;
 				$testExternal = $v['External URL'] !== '' ?? false;
