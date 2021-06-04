@@ -6582,7 +6582,7 @@ function buildHealthChecksItem(array){
 		v.tags = v.tags.split(' ');
 		tagPrimaryElem = '<span class="pull-right mt-3 mr-2"><span class="label text-uppercase bg-'+statusColor.replace('animated-3 loop-animation flash','')+' label-rounded font-12">'+v.tags[0]+'</span></span>';
 		tagSecondaryElem = '<h5>Tags: ';
-		tagSecondaryElem += v.tags.map(i => { return i }).join(', ');
+		tagSecondaryElem += v.tags.map(t => { return t }).join(', ');
 		tagSecondaryElem += '</h5>'
 	}
         checks += `
