@@ -137,7 +137,7 @@ class HealthChecks extends Organizr
 				}
 			}
 			$limit = 30;
-			if (count($allItems) > 0){
+			if (!empty($allItems)){
 				$limit = count($allItems) * 20;
 			}
 			set_time_limit($limit);
