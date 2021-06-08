@@ -6234,14 +6234,23 @@ class Organizr
 			'X-Plex-Client-Identifier' => '01010101-10101010',
 			'X-Plex-Token' => $this->config['plexToken'],
 		];
-		$response = Requests::get($url, $headers, $options);
-		libxml_use_internal_errors(true);
-		if ($response->success) {
-			$items = array();
-			$plex = simplexml_load_string($response->body);
-			foreach ($plex as $server) {
-				if ($ownedOnly) {
-					if ($server['owned'] == 1) {
+		try {
+			$response = Requests::get($url, $headers, $options);
+			libxml_use_internal_errors(true);
+			if ($response->success) {
+				$items = array();
+				$plex = simplexml_load_string($response->body);
+				foreach ($plex as $server) {
+					if ($ownedOnly) {
+						if ($server['owned'] == 1) {
+							$items[] = array(
+								'name' => (string)$server['name'],
+								'address' => (string)$server['address'],
+								'machineIdentifier' => (string)$server['machineIdentifier'],
+								'owned' => (float)$server['owned'],
+							);
+						}
+					} else {
 						$items[] = array(
 							'name' => (string)$server['name'],
 							'address' => (string)$server['address'],
@@ -6249,20 +6258,15 @@ class Organizr
 							'owned' => (float)$server['owned'],
 						);
 					}
-				} else {
-					$items[] = array(
-						'name' => (string)$server['name'],
-						'address' => (string)$server['address'],
-						'machineIdentifier' => (string)$server['machineIdentifier'],
-						'owned' => (float)$server['owned'],
-					);
+					
 				}
-				
+				$this->setAPIResponse('success', null, 200, $items);
+				return $items;
 			}
-			$this->setAPIResponse('success', null, 200, $items);
-			return $items;
+		} catch (Requests_Exception $e) {
+			$this->writeLog('success', 'Plex Get Servers Function - Error: ' . $e->getMessage(), 'SYSTEM');
+			$this->setAPIResponse('error', $e->getMessage(), 500);
 		}
-		
 	}
 	
 	public function getIcons()
