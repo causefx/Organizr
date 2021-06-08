@@ -657,7 +657,7 @@ class Sonarr
 				    $versionCheck = '';
 				    break;
 			    case 'radarr':
-			    	$versionCheck =  ($compare->lessThan('2.9.9', $versionCheck)) ? 'v3/' : '';
+			    	$versionCheck =  'v3/';
 			    	break;
 			    case 'lidarr':
 				    $versionCheck = 'v1/';
