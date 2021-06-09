@@ -1395,6 +1395,12 @@ class Organizr
 					'value' => $this->config['autoCollapseCategories']
 				),
 				array(
+					'type' => 'switch',
+					'name' => 'autoExpandNavBar',
+					'label' => 'Auto-Expand Nav Bar',
+					'value' => $this->config['autoExpandNavBar']
+				),
+				array(
 					'type' => 'select',
 					'name' => 'unsortedTabs',
 					'label' => 'Unsorted Tab Placement',
@@ -3640,7 +3646,8 @@ class Organizr
 				'debugErrors' => $this->config['debugErrors'],
 				'sandbox' => $this->config['sandbox'],
 				'expandCategoriesByDefault' => $this->config['expandCategoriesByDefault'],
-				'autoCollapseCategories' => $this->config['autoCollapseCategories']
+				'autoCollapseCategories' => $this->config['autoCollapseCategories'],
+				'autoExpandNavBar' => $this->config['autoExpandNavBar']
 			),
 			'menuLink' => array(
 				'githubMenuLink' => $this->config['githubMenuLink'],

@@ -4503,6 +4503,22 @@ function loadAppearance(appearance){
 			}
 		`;
 	}
+	if(activeInfo['settings']['misc']['autoExpandNavBar'] == false){
+		cssSettings += `
+			@media only screen and (min-width: 768px) {
+				.sidebar:hover .hide-menu {
+					display: none;
+				}
+				.sidebar:hover .sidebar-head,
+				.sidebar:hover {
+					width: 60px;
+				}
+				.sidebar:hover .nav-second-level li a {
+					padding-left: 15px;
+				}
+			}
+		`;
+	}
 	if(cssSettings !== ''){
 		$('#user-appearance').html(cssSettings);
 	}

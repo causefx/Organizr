@@ -484,5 +484,6 @@ return array(
 	'traktAccessToken' => '',
 	'traktAccessTokenExpires' => '',
 	'traktRefreshToken' => '',
-	'autoCollapseCategories' => false
+	'autoCollapseCategories' => false,
+	'autoExpandNavBar' => true
 );
