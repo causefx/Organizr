@@ -483,5 +483,6 @@ return array(
 	'traktClientSecret' => '',
 	'traktAccessToken' => '',
 	'traktAccessTokenExpires' => '',
-	'traktRefreshToken' => ''
+	'traktRefreshToken' => '',
+	'autoCollapseCategories' => false
 );

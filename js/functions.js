@@ -2806,7 +2806,6 @@ function tabProcess(arrayItems) {
                         $(menuList).appendTo($('.category-'+v.category_id));
                     }
                 }
-                $('#side-menu').metisMenu({ toggle: false });
 				switch (v.type) {
 					case 0:
 					case '0':
@@ -2851,6 +2850,7 @@ function tabProcess(arrayItems) {
 				}
 			}
 		});
+		$('#side-menu').metisMenu({ toggle: activeInfo.settings.misc.autoCollapseCategories });
 		getDefault(defaultTabName,defaultTabType);
 	}else{
 		noTabs(arrayItems);

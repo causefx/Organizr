@@ -1389,6 +1389,12 @@ class Organizr
 					'value' => $this->config['expandCategoriesByDefault']
 				),
 				array(
+					'type' => 'switch',
+					'name' => 'autoCollapseCategories',
+					'label' => 'Auto-Collapse Categories',
+					'value' => $this->config['autoCollapseCategories']
+				),
+				array(
 					'type' => 'select',
 					'name' => 'unsortedTabs',
 					'label' => 'Unsorted Tab Placement',
@@ -3633,7 +3639,8 @@ class Organizr
 				'debugArea' => $this->qualifyRequest($this->config['debugAreaAuth']),
 				'debugErrors' => $this->config['debugErrors'],
 				'sandbox' => $this->config['sandbox'],
-				'expandCategoriesByDefault' => $this->config['expandCategoriesByDefault']
+				'expandCategoriesByDefault' => $this->config['expandCategoriesByDefault'],
+				'autoCollapseCategories' => $this->config['autoCollapseCategories']
 			),
 			'menuLink' => array(
 				'githubMenuLink' => $this->config['githubMenuLink'],
@@ -6258,7 +6265,6 @@ class Organizr
 							'owned' => (float)$server['owned'],
 						);
 					}
-					
 				}
 				$this->setAPIResponse('success', null, 200, $items);
 				return $items;
