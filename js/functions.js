@@ -6400,6 +6400,7 @@ function buildCalendarMetadata(array){
 function buildHealthChecks(array){
     if(array === false){ return ''; }
     var checks = (typeof array.content.checks !== 'undefined') ? array.content.checks.length : false;
+    console.log(array);
     return (checks) ? `
 	<div id="allHealthChecks" class="m-b-30">
 		<div class="el-element-overlay row">
@@ -6410,7 +6411,7 @@ function buildHealthChecks(array){
 			<div class="clearfix"></div>
 		    <!-- .cards -->
 		    <div class="healthCheckCards">
-			    `+buildHealthChecksItem(array.content.checks)+`
+			    `+buildHealthChecksItem(array)+`
 			</div>
 		    <!-- /.cards-->
 		</div>
@@ -6552,10 +6553,10 @@ function healthCheckIcon(tags){
 }
 function buildHealthChecksItem(array){
     var checks = '';
-    $.each(array, function(i,v) {
+    $.each(array.content.checks, function(i,v) {
         var hasIcon = healthCheckIcon(v.tags);
         v.name = (v.name) ? v.name : 'New Item';
-	v.desc = (v.desc) ? '<h5>Notes: '+v.desc+'</h5>' : '';
+	    v.desc = (array.options.desc && v.desc) ? '<h5>Notes: '+v.desc+'</h5>' : '';
         switch(v.status){
             case 'up':
                 var statusColor = 'success';
@@ -6594,13 +6595,13 @@ function buildHealthChecksItem(array){
                 var lastPing = 'n/a';
         }
     	var tagPrimaryElem = '', tagSecondaryElem = '';
-	if (v.tags){
-		v.tags = v.tags.split(' ');
-		tagPrimaryElem = '<span class="pull-right mt-3 mr-2"><span class="label text-uppercase bg-'+statusColor.replace('animated-3 loop-animation flash','')+' label-rounded font-12">'+v.tags[0]+'</span></span>';
-		tagSecondaryElem = '<h5>Tags: ';
-		tagSecondaryElem += v.tags.map(t => { return t }).join(', ');
-		tagSecondaryElem += '</h5>'
-	}
+        if (array.options.tags && v.tags){
+            v.tags = v.tags.split(' ');
+            tagPrimaryElem = '<span class="pull-right mt-3 mr-2"><span class="label text-uppercase bg-'+statusColor.replace('animated-3 loop-animation flash','')+' label-rounded font-12">'+v.tags[0]+'</span></span>';
+            tagSecondaryElem = '<h5>Tags: ';
+            tagSecondaryElem += v.tags.map(t => { return t }).join(', ');
+            tagSecondaryElem += '</h5>'
+        }
         checks += `
             <div class="col-xl-2 col-lg-3 col-md-4 col-sm-6 col-xs-12">
                 <div class="card bg-inverse text-white mb-3 showMoreHealth mouse" data-id="`+i+`">
