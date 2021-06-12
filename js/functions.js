@@ -6400,7 +6400,6 @@ function buildCalendarMetadata(array){
 function buildHealthChecks(array){
     if(array === false){ return ''; }
     var checks = (typeof array.content.checks !== 'undefined') ? array.content.checks.length : false;
-    console.log(array);
     return (checks) ? `
 	<div id="allHealthChecks" class="m-b-30">
 		<div class="el-element-overlay row">
