@@ -63,9 +63,9 @@ trait JDownloaderHomepageItem
 				'Misc Options' => array(
 					array(
 						'type' => 'select',
-						'name' => 'homepageDownloadRefresh',
+						'name' => 'jdownloaderRefresh',
 						'label' => 'Refresh Seconds',
-						'value' => $this->config['homepageDownloadRefresh'],
+						'value' => $this->config['jdownloaderRefresh'],
 						'options' => $this->timeOptions()
 					),
 					array(
@@ -102,7 +102,7 @@ trait JDownloaderHomepageItem
 		}
 		$url = $this->qualifyURL($this->config['jdownloaderURL']);
 		try {
-			$options = $this->requestOptions($this->config['jdownloaderURL'], false, $this->config['homepageDownloadRefresh']);
+			$options = $this->requestOptions($this->config['jdownloaderURL'], false, $this->config['jdownloaderRefresh']);
 			$response = Requests::get($url, array(), $options);
 			if ($response->success) {
 				$this->setAPIResponse('success', 'API Connection succeeded', 200);
@@ -153,7 +153,7 @@ trait JDownloaderHomepageItem
 					<script>
 		                // homepageOrderjdownloader
 		                ' . $builder . '
-		                homepageDownloader("jdownloader", "' . $this->config['homepageDownloadRefresh'] . '");
+		                homepageDownloader("jdownloader", "' . $this->config['jdownloaderRefresh'] . '");
 		                // End homepageOrderjdownloader
 	                </script>
 				</div>
@@ -168,7 +168,7 @@ trait JDownloaderHomepageItem
 		}
 		$url = $this->qualifyURL($this->config['jdownloaderURL']);
 		try {
-			$options = $this->requestOptions($this->config['jdownloaderURL'], false, $this->config['homepageDownloadRefresh']);
+			$options = $this->requestOptions($this->config['jdownloaderURL'], false, $this->config['jdownloaderRefresh']);
 			$response = Requests::get($url, array(), $options);
 			if ($response->success) {
 				$temp = json_decode($response->body, true);

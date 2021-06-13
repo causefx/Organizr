@@ -77,9 +77,9 @@ trait SabNZBdHomepageItem
 				'Misc Options' => array(
 					array(
 						'type' => 'select',
-						'name' => 'homepageDownloadRefresh',
+						'name' => 'sabnzbdRefresh',
 						'label' => 'Refresh Seconds',
-						'value' => $this->config['homepageDownloadRefresh'],
+						'value' => $this->config['sabnzbdRefresh'],
 						'options' => $this->timeOptions()
 					),
 					array(
@@ -178,7 +178,7 @@ trait SabNZBdHomepageItem
 					<script>
 		                // homepageOrdersabnzbd
 		                ' . $builder . '
-		                homepageDownloader("sabnzbd", "' . $this->config['homepageDownloadRefresh'] . '");
+		                homepageDownloader("sabnzbd", "' . $this->config['sabnzbdRefresh'] . '");
 		                // End homepageOrdersabnzbd
 	                </script>
 				</div>
