@@ -214,6 +214,8 @@ return array(
 	'healthChecksToken' => '',
 	'healthChecksTags' => '',
 	'homepageHealthChecksAuth' => '1',
+	'homepageHealthChecksShowDesc' => false,
+	'homepageHealthChecksShowTags' => false,
 	'homepageOrdercustomhtml' => '1',
 	'homepageOrdercustomhtmlTwo' => '2',
 	'homepageOrdertransmission' => '3',
