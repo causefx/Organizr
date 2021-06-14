@@ -60,7 +60,7 @@ class Organizr
 	
 	// ===================================
 	// Organizr Version
-	public $version = '2.1.333';
+	public $version = '2.1.400';
 	// ===================================
 	// Quick php Version check
 	public $minimumPHP = '7.3';
@@ -303,6 +303,7 @@ class Organizr
 					}
 				}
 			}
+			asort($pluginList);
 			return $pluginList;
 		}
 		return false;
@@ -396,71 +397,57 @@ class Organizr
 		return ($encode) ? json_encode($files) : $files;
 	}
 	
-	/* Old function
-	public function pluginFiles($type)
-	{
-		$files = '';
-		switch ($type) {
-			case 'js':
-				foreach (glob(dirname(__DIR__, 1) . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . 'js' . DIRECTORY_SEPARATOR . "*.js") as $filename) {
-					$files .= '<script src="api/plugins/js/' . basename($filename) . '?v=' . $this->fileHash . '" defer="true"></script>';
-				}
-				break;
-			case 'css':
-				foreach (glob(dirname(__DIR__, 1) . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . 'css' . DIRECTORY_SEPARATOR . "*.css") as $filename) {
-					$files .= '<link href="api/plugins/css/' . basename($filename) . '?v=' . $this->fileHash . '" rel="stylesheet">';
-				}
-				break;
-			default:
-				break;
-		}
-		return $files;
-	}
-	*/
 	public function pluginFiles($type, $settings = false)
 	{
 		$files = '';
+		$folder = dirname(__DIR__, 1) . DIRECTORY_SEPARATOR . 'plugins';
+		$directoryIterator = new RecursiveDirectoryIterator($folder, FilesystemIterator::SKIP_DOTS);
+		$iteratorIterator = new RecursiveIteratorIterator($directoryIterator);
 		switch ($type) {
 			case 'js':
-				foreach (glob(dirname(__DIR__, 1) . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . 'js' . DIRECTORY_SEPARATOR . '*.js') as $filename) {
-					$pluginEnabled = false;
-					$keyOriginal = strtoupper(basename($filename, '.js'));
-					$key = str_replace('-SETTINGS', '', $keyOriginal);
-					$continue = false;
-					if ($settings) {
-						if (stripos($keyOriginal, '-SETTINGS') !== false) {
-							$continue = true;
+				foreach ($iteratorIterator as $info) {
+					if (pathinfo($info->getPathname(), PATHINFO_EXTENSION) == 'js') {
+						$pluginEnabled = false;
+						$keyOriginal = strtoupper(basename(dirname($info->getPathname())));
+						$key = str_replace('-SETTINGS', '', $keyOriginal);
+						$continue = false;
+						if ($settings) {
+							if ($info->getFilename() == 'settings.js') {
+								$continue = true;
+							}
+						} else {
+							if ($info->getFilename() !== 'settings.js') {
+								$continue = true;
+							}
 						}
-					} else {
-						if (stripos($keyOriginal, '-SETTINGS') == false) {
-							$continue = true;
+						switch ($key) {
+							case 'PHP-MAILER':
+								$key = 'PHPMAILER';
+								break;
+							case 'NGXC':
+								$key = 'ngxc';
+								break;
+							default:
+								$key = $key;
 						}
-					}
-					switch ($key) {
-						case 'PHP-MAILER':
-							$key = 'PHPMAILER';
-							break;
-						case 'NGXC':
-							$key = 'ngxc';
-							break;
-						default:
-							$key = $key;
-					}
-					if (isset($this->config[$key . '-enabled'])) {
-						if ($this->config[$key . '-enabled']) {
-							$pluginEnabled = true;
+						if (isset($this->config[$key . '-enabled'])) {
+							if ($this->config[$key . '-enabled']) {
+								$pluginEnabled = true;
+							}
 						}
-					}
-					if ($pluginEnabled || $settings) {
-						if ($continue) {
-							$files .= '<script src="api/plugins/js/' . basename($filename) . '?v=' . $this->fileHash . '" defer="true"></script>';
+						if ($pluginEnabled || $settings) {
+							if ($continue) {
+								$files .= '<script src="api/plugins/' . basename(dirname($info->getPathname())) . '/' . basename($info->getFilename()) . '?v=' . $this->fileHash . '" defer="true"></script>';
+							}
 						}
 					}
 				}
 				break;
 			case 'css':
-				foreach (glob(dirname(__DIR__, 1) . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . 'css' . DIRECTORY_SEPARATOR . '*.css') as $filename) {
-					$files .= '<link href="api/plugins/css/' . basename($filename) . '?v=' . $this->fileHash . '" rel="stylesheet">';
+				foreach ($iteratorIterator as $info) {
+					if (pathinfo($info->getPathname(), PATHINFO_EXTENSION) == 'css') {
+						$files .= '<link href="api/plugins/' . basename(dirname($info->getPathname())) . '/' . basename($info->getFilename()) . '?v=' . $this->fileHash . '" rel="stylesheet">';
+					}
 				}
 				break;
 			default:
@@ -536,6 +523,14 @@ class Organizr
 			// End Upgrade check start for version above
 			// Upgrade check start for version below
 			$versionCheck = '2.1.0';
+			if ($compare->lessThan($oldVer, $versionCheck)) {
+				$updateDB = false;
+				$oldVer = $versionCheck;
+				$this->upgradeToVersion($versionCheck);
+			}
+			// End Upgrade check start for version above
+			// Upgrade check start for version below
+			$versionCheck = '2.1.400';
 			if ($compare->lessThan($oldVer, $versionCheck)) {
 				$updateDB = false;
 				$oldVer = $versionCheck;
@@ -741,8 +736,13 @@ class Organizr
 			$loadedDefaults = $path;
 		}
 		// Include all plugin config files
-		foreach (glob(dirname(__DIR__, 1) . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . 'config' . DIRECTORY_SEPARATOR . "*.php") as $filename) {
-			$loadedDefaults = array_merge($loadedDefaults, $this->loadConfig($filename));
+		$folder = dirname(__DIR__, 1) . DIRECTORY_SEPARATOR . 'plugins';
+		$directoryIterator = new RecursiveDirectoryIterator($folder, FilesystemIterator::SKIP_DOTS);
+		$iteratorIterator = new RecursiveIteratorIterator($directoryIterator);
+		foreach ($iteratorIterator as $info) {
+			if ($info->getFilename() == 'config.php') {
+				$loadedDefaults = array_merge($loadedDefaults, $this->loadConfig($info->getPathname()));
+			}
 		}
 		return (is_array($loadedDefaults) ? $this->fillDefaultConfig_recurse($array, $loadedDefaults) : false);
 	}

@@ -162,6 +162,12 @@ api/plugins/*
 !api/plugins/config/bookmark.php
 !api/plugins/js/bookmark-settings.js
 !api/plugins/css/bookmark.css
+!api/plugins/bookmark/
+!api/plugins/chat/
+!api/plugins/healthChecks/
+!api/plugins/invites/
+!api/plugins/php-mailer/
+!api/plugins/speedTest/
 
 # =========================
 # Custom files

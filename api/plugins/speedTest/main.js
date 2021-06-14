@@ -16,7 +16,7 @@ function startStop(){
 		initUI();
 	}else{
 		//test is not running, begin
-		w=new Worker('api/plugins/misc/speedTest/speedtest_worker.min.js');
+		w=new Worker('api/plugins/speedTest/misc/speedtest_worker.min.js');
 		w.postMessage('start'); //Add optional parameters as a JSON object to this command
 		$('#speedTestButtonText').text('Running');
 		w.onmessage=function(e){

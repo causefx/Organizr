@@ -2,7 +2,7 @@
 // PLUGIN INFORMATION
 use Pusher\PusherException;
 
-$GLOBALS['plugins'][]['chat'] = array( // Plugin Name
+$GLOBALS['plugins'][]['Chat'] = array( // Plugin Name
 	'name' => 'Chat', // Plugin Name
 	'author' => 'CauseFX', // Who wrote the plugin
 	'category' => 'Utilities', // One to Two Word Description
@@ -11,7 +11,7 @@ $GLOBALS['plugins'][]['chat'] = array( // Plugin Name
 	'idPrefix' => 'CHAT', // html element id prefix
 	'configPrefix' => 'CHAT', // config file prefix for array items without the hypen
 	'version' => '1.0.0', // SemVer of plugin
-	'image' => 'plugins/images/chat.png', // 1:1 non transparent image for plugin
+	'image' => 'api/plugins/chat/logo.png', // 1:1 non transparent image for plugin
 	'settings' => true, // does plugin need a settings modal?
 	'bind' => true, // use default bind to make settings page - true or false
 	'api' => 'api/v2/plugins/chat/settings', // api route for settings page

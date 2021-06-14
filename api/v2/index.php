@@ -105,8 +105,13 @@ foreach (glob(__DIR__ . DIRECTORY_SEPARATOR . 'routes' . DIRECTORY_SEPARATOR . '
 /*
  * Include all Plugin routes
  */
-foreach (glob(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'api' . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . 'api' . DIRECTORY_SEPARATOR . "*.php") as $filename) {
-	require_once $filename;
+$folder = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'api' . DIRECTORY_SEPARATOR . 'plugins';
+$directoryIterator = new RecursiveDirectoryIterator($folder, FilesystemIterator::SKIP_DOTS);
+$iteratorIterator = new RecursiveIteratorIterator($directoryIterator);
+foreach ($iteratorIterator as $info) {
+	if ($info->getFilename() == 'api.php') {
+		require_once $info->getPathname();
+	}
 }
 /*
  *

@@ -1,6 +1,6 @@
 <?php
 // PLUGIN INFORMATION
-$GLOBALS['plugins'][]['healthChecks'] = array( // Plugin Name
+$GLOBALS['plugins'][]['HealthChecks'] = array( // Plugin Name
 	'name' => 'HealthChecks', // Plugin Name
 	'author' => 'CauseFX', // Who wrote the plugin
 	'category' => 'Utilities', // One to Two Word Description
@@ -9,7 +9,7 @@ $GLOBALS['plugins'][]['healthChecks'] = array( // Plugin Name
 	'idPrefix' => 'HEALTHCHECKS', // html element id prefix
 	'configPrefix' => 'HEALTHCHECKS', // config file prefix for array items without the hyphen
 	'version' => '1.0.0', // SemVer of plugin
-	'image' => 'plugins/images/healthchecksio.png', // 1:1 non transparent image for plugin
+	'image' => 'api/plugins/healthChecks/logo.png', // 1:1 non transparent image for plugin
 	'settings' => true, // does plugin need a settings modal?
 	'bind' => false, // use default bind to make settings page - true or false
 	'api' => false, // api route for settings page
@@ -137,7 +137,7 @@ class HealthChecks extends Organizr
 				}
 			}
 			$limit = 30;
-			if (!empty($allItems)){
+			if (!empty($allItems)) {
 				$limit = count($allItems) * 20;
 			}
 			set_time_limit($limit);
