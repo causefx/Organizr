@@ -2,8 +2,8 @@
   "Test": {
     "author": "CauseFX",
     "category": "Testing",
-    "description": "Do not use!!! This is just a test! Some basic shit outlying what this shit does",
-    "icon": "https://pbs.twimg.com/profile_images/469017630796296193/R-bEN4UP.png",
+    "description": "This is a skeleton framework for an Organizr plugin - Please look at the file structure.",
+    "icon": "https://raw.githubusercontent.com/causefx/Organizr/v2-plugins/test/logo.png",
     "contact": "causefx@organizr.app",
     "website": "https://organizr.app",
     "version": "1.0.0",
@@ -12,8 +12,8 @@
     "github_folder": "test",
     "license": "personal,business",
     "images": {
-      "Main": "https://www.bloggingalways.com/wp-content/uploads/2017/11/Test-Logo.svg.png",
-      "Alternative": "https://lakeridgenewsonline.com/wp-content/uploads/2018/03/Testing.jpg"
+      "Main": "https://assets.hongkiat.com/uploads/automated-php-test/tdd-example.jpg",
+      "Alternative": "https://i.stack.imgur.com/mCYvN.png"
     }
   }
 }
