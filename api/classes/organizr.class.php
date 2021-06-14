@@ -4874,24 +4874,19 @@ class Organizr
 			$plugin = array_keys($array)[$key];
 		}
 		$array = $array[$plugin];
-		$downloadList = $this->marketplaceFileListFormat($array['files'], $array['github_folder'], 'plugins');
-		if (!$downloadList) {
-			$this->setAPIResponse('error', 'Could not get download list for plugin', 409);
-			return false;
-		}
 		$name = $plugin;
 		$version = $array['version'];
 		$installedPluginsNew = '';
-		foreach ($downloadList as $k => $v) {
-			$file = array(
-				'from' => $v['githubPath'],
-				'to' => str_replace(array('/', '\\'), DIRECTORY_SEPARATOR, $this->root . $v['path'] . $v['fileName']),
-				'path' => str_replace(array('/', '\\'), DIRECTORY_SEPARATOR, $this->root . $v['path'])
-			);
-			if (!$this->rrmdir($file['to'])) {
-				$this->writeLog('error', 'Plugin Function -  Remove File Failed  for: ' . $v['githubPath'], $this->user['username']);
+		$pluginDir = $this->root . DIRECTORY_SEPARATOR . 'api' . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . $array['github_folder'] . DIRECTORY_SEPARATOR;
+		$dirExists = file_exists($pluginDir);
+		if ($dirExists) {
+			if (!$this->rrmdir($pluginDir)) {
+				$this->writeLog('error', 'Plugin Function -  Remove File Failed  for: ' . $array['github_folder'], $this->user['username']);
 				return false;
 			}
+		} else {
+			$this->setAPIResponse('error', 'Plugin is not installed', 404);
+			return false;
 		}
 		if ($this->config['installedPlugins'] !== '') {
 			$installedPlugins = explode('|', $this->config['installedPlugins']);
@@ -4927,7 +4922,6 @@ class Organizr
 			);
 		}
 		return $filesList;
-		
 	}
 	
 	public function getPluginFilesFromGithub($plugin = 'test')
