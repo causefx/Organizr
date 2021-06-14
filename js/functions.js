@@ -6596,6 +6596,11 @@ function buildHealthChecksItem(array){
     	var tagPrimaryElem = '', tagSecondaryElem = '';
         if (array.options.tags && v.tags){
             v.tags = v.tags.split(' ');
+	        $.each(v.tags, function(key,value) {
+		        if(isURL(value)){
+			        v.tags = arrayRemove(v.tags , value);
+		        }
+	        });
             tagPrimaryElem = '<span class="pull-right mt-3 mr-2"><span class="label text-uppercase bg-'+statusColor.replace('animated-3 loop-animation flash','')+' label-rounded font-12">'+v.tags[0]+'</span></span>';
             tagSecondaryElem = '<h5>Tags: ';
             tagSecondaryElem += v.tags.map(t => { return t }).join(', ');
@@ -6622,6 +6627,21 @@ function buildHealthChecksItem(array){
         `
     });
     return checks;
+}
+function isURL(str) {
+	const pattern = new RegExp('^(https?:\\/\\/)?'+ // protocol
+		'((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|'+ // domain name
+		'((\\d{1,3}\\.){3}\\d{1,3}))'+ // OR ip (v4) address
+		'(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*'+ // port and path
+		'(\\?[;&a-z\\d%_.~+=-]*)?'+ // query string
+		'(\\#[-a-z\\d_]*)?$','i'); // fragment locator
+	return !!pattern.test(str);
+}
+function arrayRemove(arr, value) {
+
+	return arr.filter(function(ele){
+		return ele != value;
+	});
 }
 function buildPiholeItem(array){
     var stats = `
