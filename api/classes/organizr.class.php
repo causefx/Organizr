@@ -4916,6 +4916,31 @@ class Organizr
 		return true;
 	}
 	
+	public function pluginFileListFormat($files, $folder)
+	{
+		$filesList = false;
+		foreach ($files as $k => $v) {
+			$filesList[] = array(
+				'fileName' => $v['name'],
+				'path' => DIRECTORY_SEPARATOR . 'api' . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . $folder . DIRECTORY_SEPARATOR,
+				'githubPath' => $v['download_url']
+			);
+		}
+		return $filesList;
+		
+	}
+	
+	public function getPluginFilesFromGithub($plugin = 'test')
+	{
+		$url = 'https://api.github.com/repos/causefx/organizr/contents/' . $plugin . '?ref=v2-plugins';
+		$options = array('verify' => false);
+		$response = Requests::get($url, array(), $options);
+		if ($response->success) {
+			return json_decode($response->body, true);
+		}
+		return false;
+	}
+	
 	public function installPlugin($plugin)
 	{
 		$plugin = $this->reverseCleanClassName($plugin);
@@ -4933,7 +4958,14 @@ class Organizr
 			$plugin = array_keys($array)[$key];
 		}
 		$array = $array[$plugin];
-		$downloadList = $this->marketplaceFileListFormat($array['files'], $array['github_folder'], 'plugins');
+		$files = $this->getPluginFilesFromGithub($array['github_folder']);
+		if ($files) {
+			$downloadList = $this->pluginFileListFormat($files, $array['github_folder']);
+		} else {
+			$this->writeLog('error', 'Plugin Function -  Downloaded File Failed  for: ' . $array['github_folder'], $this->user['username']);
+			$this->setAPIResponse('error', 'Could not get download list for plugin', 409);
+			return false;
+		}
 		if (!$downloadList) {
 			$this->setAPIResponse('error', 'Could not get download list for plugin', 409);
 			return false;
