@@ -217,12 +217,16 @@ function orgDebugList(cmd){
     }
 }
 function updateIssueLink(line){
-    var preNumber = line.match(/\((.*?)\)/g);
+    let preNumber = line.match(/\S*\#(.*)/g);
     if(preNumber !== null){
         preNumber = preNumber.toString();
-        var issueNumber = preNumber.substr(2, (preNumber.length - 3));
-        var issueLink = 'https://github.com/causefx/Organizr/issues/' + issueNumber;
-        issueLink = '<a href="' + issueLink + '" target="_blank">' + preNumber + '</a>';
+	    let numberSplit = preNumber.split('#');
+	    let issueType = numberSplit[0].replace('(', '').replace(')', '');
+	    let issueNumber = numberSplit[1].replace('(', '').replace(')', '');
+	    let issueWord = issueType.toLowerCase() == 'fr' ? '<i class="icon-arrow-up-circle"></i> feature' : '<i class="fa fa-github"></i> issue';
+	    let colorType = issueType.toLowerCase() == 'fr' ? 'label-info' : 'label-primary';
+	    let issueLink = issueType.toLowerCase() == 'fr' ? 'https://vote.organizr.app/suggestions/' + issueNumber : 'https://github.com/causefx/Organizr/issues/' + issueNumber;
+        issueLink = '<span class="label upgrade-label text-uppercase ' + colorType + ' label-rounded font-12 pull-right"><a class="text-white text-uppercase" href="' + issueLink + '" target="_blank">' + issueWord + '</a></span>';
         return line.replace(preNumber, issueLink);
     }else{
         return line;
@@ -3377,7 +3381,7 @@ function buildTR(array,type,badge){
 			listing += `
 			<tr>
 				<td  width="70"><span class="label label-`+badge+`"><span lang="en">`+type+`</span></span></td>
-				<td>`+updateIssueLink(v)+`</td>
+				<td class="text-capitalize">`+updateIssueLink(v)+`</td>
 			</tr>
 			`;
 		});
