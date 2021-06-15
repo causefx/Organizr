@@ -2443,7 +2443,7 @@ class Organizr
 					'name' => 'petioFallbackUser',
 					'label' => 'Petio Fallback User',
 					'value' => $this->config['petioFallbackUser'],
-					'help' => 'Organizr will request an Petio User Token based off of this user credentials',
+					'help' => 'DO NOT SET THIS TO YOUR PETIO ADMIN ACCOUNT. We recommend you create a local account in Petio as a "catch all" for when Organizr is unable to perform SSO',
 				),
 				array(
 					'type' => 'password-alt',
