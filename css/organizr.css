@@ -4552,3 +4552,8 @@ html {
     padding-right: 0px !important;
     padding-left: 0px !important;
 }
+
+.upgrade-label {
+    max-width: 100px;
+    min-width: 100px;
+}
