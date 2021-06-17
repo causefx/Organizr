@@ -335,7 +335,9 @@ class Sonarr
         $response = [
             'uri' => $uri,
             'type' => 'get',
-            'data' => []
+            'data' => [
+            	'includeUnknownSeriesItems' => false
+            ]
         ];
 
         return $this->processRequest($response);
