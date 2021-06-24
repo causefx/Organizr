@@ -3013,6 +3013,7 @@ function buildTabTypeSelect(tabID, typeID, disabled){
     ];
 	var typeSelect = '';
 	var selected = '';
+	disabled = (disabled == 'disabled' && typeID !== 0) ? null : disabled;
 	$.each(array, function(i,v) {
 		selected = '';
 		if(v.type_id == typeID){
