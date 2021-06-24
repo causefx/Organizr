@@ -1685,6 +1685,34 @@ function homepageItemFormHTML(v){
 	</form>
 	`;
 }
+function clearHomepageOriginal(){
+	$('#editHomepageItem').html('');
+}
+function completeHomepageLoad(item){
+	if(item == 'CustomHTML-1'){
+		customHTMLoneEditor = ace.edit("customHTMLoneEditor");
+		let HTMLMode = ace.require("ace/mode/html").Mode;
+		customHTMLoneEditor.session.setMode(new HTMLMode());
+		customHTMLoneEditor.setTheme("ace/theme/idle_fingers");
+		customHTMLoneEditor.setShowPrintMargin(false);
+		customHTMLoneEditor.session.on('change', function(delta) {
+			$('.customHTMLoneTextarea').val(customHTMLoneEditor.getValue());
+			$('#homepage-CustomHTML-1-form-save').removeClass('hidden');
+		});
+	}
+	if(item == 'CustomHTML-2'){
+		customHTMLtwoEditor = ace.edit("customHTMLtwoEditor");
+		let HTMLMode = ace.require("ace/mode/html").Mode;
+		customHTMLtwoEditor.session.setMode(new HTMLMode());
+		customHTMLtwoEditor.setTheme("ace/theme/idle_fingers");
+		customHTMLtwoEditor.setShowPrintMargin(false);
+		customHTMLtwoEditor.session.on('change', function(delta) {
+			$('.customHTMLtwoTextarea').val(customHTMLtwoEditor.getValue());
+			$('#homepage-CustomHTML-2-form-save').removeClass('hidden');
+		});
+	}
+	pageLoad();
+}
 function editHomepageItem(item){
 	ajaxloader('.editHomepageItemBox-' + item, 'in');
 	organizrAPI2('GET','api/v2/settings/homepage/'+item).success(function(data) {
@@ -1692,7 +1720,7 @@ function editHomepageItem(item){
 			let response = data.response;
 			let html = homepageItemFormHTML(response.data);
 			$('#editHomepageItem').html(html);
-			$("#editHomepageItemCall").animatedModal({
+			/*$("#editHomepageItemCall").animatedModal({
 				top: '40px',
 				left: '0px',
 				color: '#000000eb',
@@ -1702,30 +1730,23 @@ function editHomepageItem(item){
 				afterClose: function() {
 					$('body, html').css({'overflow':'hidden'});
 				}
-			});
-			$('#editHomepageItemCall').click();
-			if(item == 'CustomHTML-1'){
-				customHTMLoneEditor = ace.edit("customHTMLoneEditor");
-				let HTMLMode = ace.require("ace/mode/html").Mode;
-				customHTMLoneEditor.session.setMode(new HTMLMode());
-				customHTMLoneEditor.setTheme("ace/theme/idle_fingers");
-				customHTMLoneEditor.setShowPrintMargin(false);
-				customHTMLoneEditor.session.on('change', function(delta) {
-					$('.customHTMLoneTextarea').val(customHTMLoneEditor.getValue());
-					$('#homepage-CustomHTML-1-form-save').removeClass('hidden');
-				});
-			}
-			if(item == 'CustomHTML-2'){
-				customHTMLtwoEditor = ace.edit("customHTMLtwoEditor");
-				let HTMLMode = ace.require("ace/mode/html").Mode;
-				customHTMLtwoEditor.session.setMode(new HTMLMode());
-				customHTMLtwoEditor.setTheme("ace/theme/idle_fingers");
-				customHTMLtwoEditor.setShowPrintMargin(false);
-				customHTMLtwoEditor.session.on('change', function(delta) {
-					$('.customHTMLtwoTextarea').val(customHTMLtwoEditor.getValue());
-					$('#homepage-CustomHTML-2-form-save').removeClass('hidden');
-				});
-			}
+			});*/
+			new Custombox.modal({
+				content: {
+					effect:"flip",
+					animateFrom:"left",
+					animateTo:"left",
+					target: '#editHomepageItemDiv',
+					width: '100%',
+					delay: 0,
+					fullscreen: true,
+					clone: false,
+					onComplete: completeHomepageLoad(item),
+					onClose: clearHomepageOriginal
+				},loader:{active:true}
+			}).open();
+			//$('#editHomepageItemCall').click();
+
 		}catch(e) {
 			organizrCatchError(e,data);
 		}

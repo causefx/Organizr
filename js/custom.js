@@ -1815,8 +1815,9 @@ $(document).on('click', '.imageManagerItem', function() {
 });
 
 $(document).on('click', '.close-editHomepageItemDiv',function () {
-	$('body').removeAttr('style');
-	$('html').removeAttr('style');
+	//$('body').removeAttr('style');
+	//$('html').removeAttr('style');
+	Custombox.modal.closeAll()
 })
 // Control init of custom plex JSON editor
 $(document).on('click', '#homepage-Plex-form li a[aria-controls="Misc Options"]', function() {

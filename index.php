@@ -38,8 +38,9 @@ $Organizr = new Organizr();
     <link href="plugins/bower_components/jsgrid/dist/jsgrid-theme.min.css" rel="stylesheet" type="text/css"/>
     <link href="plugins/bower_components/gallery/css/animated-masonry-gallery.css" rel="stylesheet" type="text/css"/>
     <link href="css/animate.css" rel="stylesheet">
-    <link href="plugins/bower_components/overlayScrollbars/OverlayScrollbars.min.css" rel="stylesheet">
-    <link href="css/plyr.css" rel="stylesheet">
+    <link href='plugins/bower_components/overlayScrollbars/OverlayScrollbars.min.css' rel='stylesheet'>
+    <link href='plugins/bower_components/custombox/dist/custombox.min.css' rel='stylesheet'>
+    <link href='css/plyr.css' rel='stylesheet'>
     <link id="style" href="css/dark.min.css?v=<?php echo $Organizr->fileHash; ?>" rel="stylesheet">
     <link href="css/organizr.min.css?v=<?php echo $Organizr->fileHash; ?>" rel="stylesheet">
 	<?php echo $Organizr->pluginFiles('css'); ?>
@@ -230,7 +231,8 @@ $Organizr = new Organizr();
 <script src="js/jquery.mousewheel.min.js"></script>
 <script src="js/ua-parser.min.js"></script>
 <script src="js/plyr.js"></script>
-<script src="plugins/bower_components/overlayScrollbars/jquery.overlayScrollbars.min.js"></script>
+<script src='plugins/bower_components/overlayScrollbars/jquery.overlayScrollbars.min.js'></script>
+<script src='plugins/bower_components/custombox/dist/custombox.min.js'></script>
 <script src="js/arrive.min.js"></script>
 <script src="https://apis.google.com/js/client.js?onload=googleApiClientReady"></script>
 <script src="js/functions.js?v=<?php echo $Organizr->fileHash; ?>"></script>
