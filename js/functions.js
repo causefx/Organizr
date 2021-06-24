@@ -1698,6 +1698,7 @@ function editHomepageItem(item){
 				color: '#000000eb',
 				animatedIn: 'bounceInUp',
 				animatedOut: 'bounceOutDown',
+				position: 'fixed',
 				afterClose: function() {
 					$('body, html').css({'overflow':'hidden'});
 				}
@@ -2164,12 +2165,12 @@ function buildLanguage(replace=false,newLang=null){
 	var lang = `
 		<li class="dropdown" id="languageDropdown">
 			<a class="dropdown-toggle waves-effect waves-light" data-toggle="dropdown" href="#" aria-expanded="false"> <i class="fa fa-language"></i><span></span></a>
-			<ul class="dropdown-menu mailbox animated bounceInDown">
+			<ul class="dropdown-menu mailbox animated bounceInDown language-box">
 				<li>
 					<div class="drop-title" lang="en">Choose Language</div>
 				</li>
 				<li>
-					<div class="message-center" data-simplebar>${languageItems}</div>
+					<div class="message-center default-scrollbar">${languageItems}</div>
 				</li>
 			</ul>
 			<!-- /.dropdown-messages -->
@@ -2860,7 +2861,6 @@ function tabProcess(arrayItems) {
 		noTabs(arrayItems);
 	}
 	$(menuExtras(arrayItems.data.user.loggedin)).appendTo($('#side-menu'));
-    new SimpleBar($('.sidebar')[0], { direction: 'rtl' });
 }
 function buildLogin(){
 	swapDisplay('login');
@@ -6131,7 +6131,7 @@ function buildDownloader(source){
 			`;
 		listing += `
 		<div role="tabpanel" class="tab-pane fade active in" id="`+source+`-queue">
-			<div class="inbox-center table-responsive" data-simplebar>
+			<div class="inbox-center table-responsive">
 				<table class="table table-hover">
 					<tbody class="`+source+`-queue"></tbody>
 				</table>
@@ -6146,7 +6146,7 @@ function buildDownloader(source){
 		`;
 		listing += `
 		<div role="tabpanel" class="tab-pane fade" id="`+source+`-history">
-			<div class="inbox-center table-responsive" data-simplebar>
+			<div class="inbox-center table-responsive">
 				<table class="table table-hover">
 					<tbody class="`+source+`-history"></tbody>
 				</table>
@@ -6229,7 +6229,7 @@ function buildDownloaderCombined(source){
 			`;
         listing += `
 		<div role="tabpanel" class="tab-pane fade active in" id="`+source+`-queue">
-			<div class="inbox-center table-responsive" data-simplebar>
+			<div class="inbox-center table-responsive">
 				<table class="table table-hover">
 					<tbody class="`+source+`-queue"></tbody>
 				</table>
@@ -6244,7 +6244,7 @@ function buildDownloaderCombined(source){
 		`;
         listing += `
 		<div role="tabpanel" class="tab-pane fade" id="`+source+`-history">
-			<div class="inbox-center table-responsive" data-simplebar>
+			<div class="inbox-center table-responsive">
 				<table class="table table-hover">
 					<tbody class="`+source+`-history"></tbody>
 				</table>
@@ -7191,7 +7191,7 @@ function buildTautulliItem(array){
                             </tr>
                             <tr>
                                 <td>
-                                    <div class="scrollable" data-simplebar>`;
+                                    <div class="scrollable default-scroller">`;
                                     for(var i = 0; i < data.length; i++) {
                                         var rowType = i == 0 ? 'tautulliFirstItem' : i == data.length-1 ? 'tautulliLastItem' : '';
                                         var rowValue = '';
@@ -7271,7 +7271,7 @@ function buildTautulliItem(array){
                                     card += cardTitle+`
                                 </tr>
                                 <tr>
-                                    <td><div class="scrollable" data-simplebar>`;
+                                    <td><div class="scrollable default-scroller">`;
                                         for(var i = 0; i < e['rows'].length; i++) {
                                             var item = e['rows'][i];
                                             var rowType = i == 0 ? 'tautulliFirstItem' : i == e['rows'].length-1 ? 'tautulliLastItem' : '';
@@ -7633,7 +7633,7 @@ var html = `
                     <nav>
                         <ul>${healthHeader}</ul>
                     </nav>
-                    <div class="content-wrap health-and-pollutant-section" data-simplebar>${healthSection}</div>
+                    <div class="content-wrap health-and-pollutant-section default-scroller">${healthSection}</div>
                     <!-- /content -->
                 </div>
                 <!-- /tabs -->
@@ -7675,7 +7675,7 @@ function buildPollutant(array){
                     <nav>
                         <ul>${pollutantHeader}</ul>
                     </nav>
-                    <div class="content-wrap health-and-pollutant-section" data-simplebar>${pollutantSection}</div>
+                    <div class="content-wrap health-and-pollutant-section default-scroller">${pollutantSection}</div>
                     <!-- /content -->
                 </div>
                 <!-- /tabs -->
@@ -9396,6 +9396,7 @@ function buildMediaResults(array,source,term){
         <button class="btn btn-info waves-effect waves-light filter-request-result" data-filter="request-result-music"><span>`+music+`</span> <i class="fa fa-music m-l-5 fa-fw"></i></button>
     </div>
     `;
+	results = '<div class="media-results">' + results + '</div>';
     return buttons+results;
 }
 function getPingList(arrayItems){
@@ -10642,6 +10643,24 @@ function checkForUpdates(){
 	if(activeInfo.user.loggedin && activeInfo.user.groupID <= 1){
 		updateCheck();
 		checkCommitLoad();
+	}
+}
+
+function loadJavascript(script = null, defer = false){
+	if(script){
+		console.log(script);
+		console.log('checking if script is loaded...');
+		let loaded = $('script[src="'+script+'"]').length;
+		///let loaded2 = document.querySelector('script[src="' + script + '"]');
+		if(!loaded){
+			console.log('script is NOT loaded... Loading now...');
+			let head = document.getElementsByTagName('head')[0];
+			let scriptEl = document.createElement('script');
+			scriptEl.type = 'text/javascript';
+			scriptEl.src = script;
+			scriptEl.defer = false;
+			head.appendChild(scriptEl);
+		}
 	}
 }
 function launch(){

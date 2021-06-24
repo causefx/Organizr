@@ -38,7 +38,7 @@ $Organizr = new Organizr();
     <link href="plugins/bower_components/jsgrid/dist/jsgrid-theme.min.css" rel="stylesheet" type="text/css"/>
     <link href="plugins/bower_components/gallery/css/animated-masonry-gallery.css" rel="stylesheet" type="text/css"/>
     <link href="css/animate.css" rel="stylesheet">
-    <link href="css/simplebar.css" rel="stylesheet">
+    <link href="plugins/bower_components/overlayScrollbars/OverlayScrollbars.min.css" rel="stylesheet">
     <link href="css/plyr.css" rel="stylesheet">
     <link id="style" href="css/dark.min.css?v=<?php echo $Organizr->fileHash; ?>" rel="stylesheet">
     <link href="css/organizr.min.css?v=<?php echo $Organizr->fileHash; ?>" rel="stylesheet">
@@ -119,7 +119,7 @@ $Organizr = new Organizr();
     <!-- ============================================================== -->
     <!-- Left Sidebar - style you can find in sidebar.scss  -->
     <!-- ============================================================== -->
-    <div class="navbar-default sidebar" role="navigation" data-simplebar-direction="rtl">
+    <div class="navbar-default sidebar nav-bar-rtl" role="navigation">
         <div class="sidebar-nav">
             <div class="sidebar-head">
                 <h3><span class="open-close m-r-5"><i class="ti-menu hidden-xs"></i><i class="ti-close visible-xs"></i></span>
@@ -175,7 +175,8 @@ $Organizr = new Organizr();
 <!-- /#wrapper -->
 <!-- jQuery -->
 <!--<script src="plugins/bower_components/jquery/dist/jquery.min.js"></script>-->
-<?php echo "<script>languageList = " . $Organizr->languagePacks(true) . ";\n</script>"; ?>
+<?php echo '<script>languageList = ' . $Organizr->languagePacks(true) . ";</script>\n"; ?>
+<?php //echo $Organizr->loadDefaultJavascriptFiles() . "\n"; ?>
 <script src="js/jquery-2.2.4.min.js"></script>
 <!--<script src="js/jquery-migrate-3.3.0.js"></script>-->
 <script src="bootstrap/dist/js/bootstrap.min.js"></script>
@@ -229,7 +230,7 @@ $Organizr = new Organizr();
 <script src="js/jquery.mousewheel.min.js"></script>
 <script src="js/ua-parser.min.js"></script>
 <script src="js/plyr.js"></script>
-<script src="js/simplebar.js"></script>
+<script src="plugins/bower_components/overlayScrollbars/jquery.overlayScrollbars.min.js"></script>
 <script src="js/arrive.min.js"></script>
 <script src="https://apis.google.com/js/client.js?onload=googleApiClientReady"></script>
 <script src="js/functions.js?v=<?php echo $Organizr->fileHash; ?>"></script>
