@@ -68,6 +68,47 @@ class HealthChecks extends Organizr
 					'placeholder' => 'HealthChecks Ping URL'
 				),
 			),
+			'Connection' => array(
+				array(
+					'type' => 'input',
+					'name' => 'healthChecksURL',
+					'label' => 'URL',
+					'value' => $this->config['healthChecksURL'],
+					'help' => 'URL for HealthChecks API',
+					'placeholder' => 'HealthChecks API URL'
+				),
+				array(
+					'type' => 'password-alt',
+					'name' => 'healthChecksToken',
+					'label' => 'Token',
+					'value' => $this->config['healthChecksToken']
+				),
+				array(
+					'type' => 'html',
+					'label' => '',
+					'override' => 12,
+					'html' => '
+						<div class="row">
+						    <div class="col-lg-12">
+						        <div class="panel panel-info">
+						            <div class="panel-heading">
+						                <span lang="en">ATTENTION</span>
+						            </div>
+						            <div class="panel-wrapper collapse in" aria-expanded="true">
+						                <div class="panel-body">
+						                	<h4 lang="en">This is only used for the import button...</h4>
+						                    <br/>
+						                    <span>
+						                    	<span lang="en">Make sure to save before using the import button on Services tab</span>
+						                    </span>
+						                </div>
+						            </div>
+						        </div>
+						    </div>
+						</div>
+						'
+				)
+			),
 			'Services' => array(
 				array(
 					'type' => 'arrayMultiple',

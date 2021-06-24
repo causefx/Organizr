@@ -1,0 +1,6 @@
+#HEALTHCHECKS-settings-items [id*="Services"] .row.m-b-40 {
+    background: #333;
+    margin: 10px;
+    padding: 10px;
+    border-radius: 5px;
+}
