@@ -1125,8 +1125,6 @@ input.has-success {
 .resultBox-inside {
     height: 100%;
     max-height: 85vh;
-    overflow-x: hidden;
-    overflow-y: auto;
 }
 .loginLogo {
     max-width: 350px;
@@ -4556,4 +4554,7 @@ html {
 .upgrade-label {
     max-width: 100px;
     min-width: 100px;
+}
+.language-box {
+    position: absolute !important;
 }
