@@ -2406,7 +2406,7 @@ class Organizr
 					'name' => 'overseerrFallbackUser',
 					'label' => 'Overseerr Fallback User',
 					'value' => $this->config['overseerrFallbackUser'],
-					'help' => 'Organizr will request an Overseerr User Token based off of this user credentials',
+					'help' => 'DO NOT SET THIS TO YOUR ADMIN ACCOUNT. We recommend you create a local account as a "catch all" for when Organizr is unable to perform SSO.  Organizr will request a User Token based off of this user credentials',
 					'attr' => 'disabled'
 				),
 				array(
@@ -2443,7 +2443,7 @@ class Organizr
 					'name' => 'petioFallbackUser',
 					'label' => 'Petio Fallback User',
 					'value' => $this->config['petioFallbackUser'],
-					'help' => 'DO NOT SET THIS TO YOUR PETIO ADMIN ACCOUNT. We recommend you create a local account in Petio as a "catch all" for when Organizr is unable to perform SSO',
+					'help' => 'DO NOT SET THIS TO YOUR ADMIN ACCOUNT. We recommend you create a local account as a "catch all" for when Organizr is unable to perform SSO.  Organizr will request a User Token based off of this user credentials',
 				),
 				array(
 					'type' => 'password-alt',
@@ -2478,7 +2478,7 @@ class Organizr
 					'name' => 'ombiFallbackUser',
 					'label' => 'Ombi Fallback User',
 					'value' => $this->config['ombiFallbackUser'],
-					'help' => 'Organizr will request an Ombi User Token based off of this user credentials'
+					'help' => 'DO NOT SET THIS TO YOUR ADMIN ACCOUNT. We recommend you create a local account as a "catch all" for when Organizr is unable to perform SSO.  Organizr will request a User Token based off of this user credentials'
 				),
 				array(
 					'type' => 'password-alt',
