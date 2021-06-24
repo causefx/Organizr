@@ -266,7 +266,8 @@ trait UnifiHomepageItem
 		}
 		$api['content']['unifi'] = array();
 		$url = $this->qualifyURL($this->config['unifiURL']);
-		$options = array('verify' => false, 'verifyname' => false, 'follow_redirects' => true);
+		$extras = array('verify' => false, 'verifyname' => false, 'follow_redirects' => true);
+		$options = $this->requestOptions($url, true, $this->config['homepageUnifiRefresh'], $extras);
 		$data = array(
 			'username' => $this->config['unifiUsername'],
 			'password' => $this->decrypt($this->config['unifiPassword']),
