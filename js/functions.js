@@ -1733,9 +1733,9 @@ function editHomepageItem(item){
 			});*/
 			new Custombox.modal({
 				content: {
-					effect:"flip",
-					animateFrom:"left",
-					animateTo:"left",
+					effect:"slidetogether",
+					animateFrom:"bottom",
+					animateTo:"bottom",
 					target: '#editHomepageItemDiv',
 					width: '100%',
 					delay: 0,
