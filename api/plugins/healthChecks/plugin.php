@@ -67,6 +67,18 @@ class HealthChecks extends Organizr
 					'help' => 'URL for HealthChecks Ping',
 					'placeholder' => 'HealthChecks Ping URL'
 				),
+				array(
+					'type' => 'switch',
+					'name' => 'HEALTHCHECKS-401-enabled',
+					'label' => '401 Error as Success',
+					'value' => $this->config['HEALTHCHECKS-401-enabled']
+				),
+				array(
+					'type' => 'switch',
+					'name' => 'HEALTHCHECKS-403-enabled',
+					'label' => '403 Error as Success',
+					'value' => $this->config['HEALTHCHECKS-403-enabled']
+				),
 			),
 			'Connection' => array(
 				array(
@@ -123,7 +135,7 @@ class HealthChecks extends Organizr
 	public function _healthCheckPluginTest($url)
 	{
 		$success = false;
-		$options = array('verify' => false, 'verifyname' => false, 'follow_redirects' => true, 'redirects' => 10);
+		$options = array('verify' => false, 'verifyname' => false, 'follow_redirects' => true, 'redirects' => 10, 'timeout' => 60);
 		$headers = array('Token' => $this->config['organizrAPI']);
 		$url = $this->qualifyURL($url);
 		try {
@@ -133,6 +145,16 @@ class HealthChecks extends Organizr
 			}
 			if ($response->status_code == 200) {
 				$success = true;
+			}
+			if ($this->config['HEALTHCHECKS-401-enabled']) {
+				if ($response->status_code == 401) {
+					$success = true;
+				}
+			}
+			if ($this->config['HEALTHCHECKS-403-enabled']) {
+				if ($response->status_code == 403) {
+					$success = true;
+				}
 			}
 		} catch (Requests_Exception $e) {
 			$this->writeLog('error', 'HealthChecks Plugin - Error: ' . $e->getMessage(), 'SYSTEM');
