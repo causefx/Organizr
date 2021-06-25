@@ -44,9 +44,13 @@ $(document).on('click', '.importNewHCService', function() {
 					}
 					$.each(checks, function(i,v) {
 						let alreadySetup = false;
-						let uuid = v.ping_url;
-						uuid = uuid.match(/([0-9a-fA-F]{8}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{12})/g);
-						uuid = uuid[0];
+						if(typeof v.unique_key !== 'undefined'){
+							var uuid = v.unique_key;
+						}else{
+							var uuid = v.ping_url;
+							uuid = uuid.match(/([0-9a-fA-F]{8}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{12})/g);
+							uuid = uuid[0];
+						}
 						if(uuid){
 							if(checksAlreadySetup){
 								$.each(checksAlreadySetup, function(index,val) {
