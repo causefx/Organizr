@@ -82,9 +82,9 @@ trait NZBGetHomepageItem
 				'Misc Options' => array(
 					array(
 						'type' => 'select',
-						'name' => 'homepageDownloadRefresh',
+						'name' => 'nzbgetRefresh',
 						'label' => 'Refresh Seconds',
-						'value' => $this->config['homepageDownloadRefresh'],
+						'value' => $this->config['nzbgetRefresh'],
 						'options' => $this->timeOptions()
 					),
 					array(
@@ -177,7 +177,7 @@ trait NZBGetHomepageItem
 					<script>
 		                // homepageOrdernzbget
 		                ' . $builder . '
-		                homepageDownloader("nzbget", "' . $this->config['homepageDownloadRefresh'] . '");
+		                homepageDownloader("nzbget", "' . $this->config['nzbgetRefresh'] . '");
 		                // End homepageOrdernzbget
 	                </script>
 				</div>

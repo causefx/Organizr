@@ -9,7 +9,7 @@ $GLOBALS['plugins'][]['PHP Mailer'] = array( // Plugin Name
 	'idPrefix' => 'PHPMAILER', // html element id prefix
 	'configPrefix' => 'PHPMAILER', // config file prefix for array items without the hyphen
 	'version' => '1.0.0', // SemVer of plugin
-	'image' => 'plugins/images/php-mailer.png', // 1:1 non transparent image for plugin
+	'image' => 'api/plugins/php-mailer/logo.png', // 1:1 non transparent image for plugin
 	'settings' => true, // does plugin need a settings modal?
 	'bind' => true, // use default bind to make settings page - true or false
 	'api' => 'api/v2/plugins/php-mailer/settings', // api route for settings page
@@ -50,7 +50,7 @@ class PhpMailer extends Organizr
 	
 	public function _phpMailerPluginGetTemplates()
 	{
-		foreach (glob(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'api' . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . 'misc' . DIRECTORY_SEPARATOR . 'emailTemplates' . DIRECTORY_SEPARATOR . "*.php") as $filename) {
+		foreach (glob(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . 'php-mailer' . DIRECTORY_SEPARATOR . 'misc' . DIRECTORY_SEPARATOR . 'emailTemplates' . DIRECTORY_SEPARATOR . "*.php") as $filename) {
 			$templates[] = array(
 				'name' => preg_replace('/\\.[^.\\s]{3,4}$/', '', basename($filename)),
 				'value' => preg_replace('/\\.[^.\\s]{3,4}$/', '', basename($filename))

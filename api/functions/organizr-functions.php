@@ -2,6 +2,34 @@
 
 trait OrganizrFunctions
 {
+	public function loadDefaultJavascriptFiles()
+	{
+		$javaFiles = [
+			'js/jquery-2.2.4.min.js',
+			'bootstrap/dist/js/bootstrap.min.js',
+			'plugins/bower_components/sidebar-nav/dist/sidebar-nav.min.js',
+			'js/jquery.slimscroll.js',
+			'plugins/bower_components/styleswitcher/jQuery.style.switcher.js',
+			'plugins/bower_components/moment/moment.js',
+			'plugins/bower_components/moment/moment-timezone.js',
+			'plugins/bower_components/jquery-wizard-master/dist/jquery-wizard.min.js',
+			'plugins/bower_components/jquery-wizard-master/libs/formvalidation/formValidation.min.js',
+			'plugins/bower_components/jquery-wizard-master/libs/formvalidation/bootstrap.min.js',
+			'js/bowser.min.js',
+			'js/jasny-bootstrap.js'
+		];
+		$scripts = '';
+		foreach ($javaFiles as $file) {
+			$scripts .= '<script src="' . $file . '?v=' . $this->fileHash . '"></script>' . "\n";
+		}
+		return $scripts;
+	}
+	
+	public function loadJavascriptFile($file)
+	{
+		return '<script>loadJavascript("' . $file . '?v=' . $this->fileHash . '");' . "</script>\n";
+	}
+	
 	public function embyJoinAPI($array)
 	{
 		$username = ($array['username']) ?? null;
@@ -424,7 +452,7 @@ trait OrganizrFunctions
 		}
 		$cacheFile = $cacheDirectory . $name . '.' . $extension;
 		$cacheTime = 604800;
-		if ((file_exists($cacheFile) && time() - $cacheTime < filemtime($cacheFile)) || !file_exists($cacheFile)) {
+		if ((file_exists($cacheFile) && (time() - $cacheTime) > filemtime($cacheFile)) || !file_exists($cacheFile)) {
 			@copy($url, $cacheFile);
 		}
 	}
@@ -616,9 +644,14 @@ trait OrganizrFunctions
 		return strtr($link, $variables);
 	}
 	
-	public function requestOptions($url, $override = false, $timeout = null)
+	public function requestOptions($url, $override = false, $timeout = null, $extras = null)
 	{
 		$options = [];
+		if ($extras) {
+			if (gettype($extras) == 'array') {
+				$options = array_merge($options, $extras);
+			}
+		}
 		if (is_numeric($timeout)) {
 			$timeout = $timeout / 1000;
 			$options = array_merge($options, array('timeout' => $timeout));

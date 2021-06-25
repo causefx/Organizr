@@ -1,6 +1,6 @@
 <?php
 // PLUGIN INFORMATION
-$GLOBALS['plugins'][]['healthChecks'] = array( // Plugin Name
+$GLOBALS['plugins'][]['HealthChecks'] = array( // Plugin Name
 	'name' => 'HealthChecks', // Plugin Name
 	'author' => 'CauseFX', // Who wrote the plugin
 	'category' => 'Utilities', // One to Two Word Description
@@ -9,7 +9,7 @@ $GLOBALS['plugins'][]['healthChecks'] = array( // Plugin Name
 	'idPrefix' => 'HEALTHCHECKS', // html element id prefix
 	'configPrefix' => 'HEALTHCHECKS', // config file prefix for array items without the hyphen
 	'version' => '1.0.0', // SemVer of plugin
-	'image' => 'plugins/images/healthchecksio.png', // 1:1 non transparent image for plugin
+	'image' => 'api/plugins/healthChecks/logo.png', // 1:1 non transparent image for plugin
 	'settings' => true, // does plugin need a settings modal?
 	'bind' => false, // use default bind to make settings page - true or false
 	'api' => false, // api route for settings page
@@ -67,6 +67,59 @@ class HealthChecks extends Organizr
 					'help' => 'URL for HealthChecks Ping',
 					'placeholder' => 'HealthChecks Ping URL'
 				),
+				array(
+					'type' => 'switch',
+					'name' => 'HEALTHCHECKS-401-enabled',
+					'label' => '401 Error as Success',
+					'value' => $this->config['HEALTHCHECKS-401-enabled']
+				),
+				array(
+					'type' => 'switch',
+					'name' => 'HEALTHCHECKS-403-enabled',
+					'label' => '403 Error as Success',
+					'value' => $this->config['HEALTHCHECKS-403-enabled']
+				),
+			),
+			'Connection' => array(
+				array(
+					'type' => 'input',
+					'name' => 'healthChecksURL',
+					'label' => 'URL',
+					'value' => $this->config['healthChecksURL'],
+					'help' => 'URL for HealthChecks API',
+					'placeholder' => 'HealthChecks API URL'
+				),
+				array(
+					'type' => 'password-alt',
+					'name' => 'healthChecksToken',
+					'label' => 'Token',
+					'value' => $this->config['healthChecksToken']
+				),
+				array(
+					'type' => 'html',
+					'label' => '',
+					'override' => 12,
+					'html' => '
+						<div class="row">
+						    <div class="col-lg-12">
+						        <div class="panel panel-info">
+						            <div class="panel-heading">
+						                <span lang="en">ATTENTION</span>
+						            </div>
+						            <div class="panel-wrapper collapse in" aria-expanded="true">
+						                <div class="panel-body">
+						                	<h4 lang="en">This is only used for the import button...</h4>
+						                    <br/>
+						                    <span>
+						                    	<span lang="en">Make sure to save before using the import button on Services tab</span>
+						                    </span>
+						                </div>
+						            </div>
+						        </div>
+						    </div>
+						</div>
+						'
+				)
 			),
 			'Services' => array(
 				array(
@@ -82,7 +135,7 @@ class HealthChecks extends Organizr
 	public function _healthCheckPluginTest($url)
 	{
 		$success = false;
-		$options = array('verify' => false, 'verifyname' => false, 'follow_redirects' => true, 'redirects' => 10);
+		$options = array('verify' => false, 'verifyname' => false, 'follow_redirects' => true, 'redirects' => 10, 'timeout' => 60);
 		$headers = array('Token' => $this->config['organizrAPI']);
 		$url = $this->qualifyURL($url);
 		try {
@@ -92,6 +145,16 @@ class HealthChecks extends Organizr
 			}
 			if ($response->status_code == 200) {
 				$success = true;
+			}
+			if ($this->config['HEALTHCHECKS-401-enabled']) {
+				if ($response->status_code == 401) {
+					$success = true;
+				}
+			}
+			if ($this->config['HEALTHCHECKS-403-enabled']) {
+				if ($response->status_code == 403) {
+					$success = true;
+				}
 			}
 		} catch (Requests_Exception $e) {
 			$this->writeLog('error', 'HealthChecks Plugin - Error: ' . $e->getMessage(), 'SYSTEM');
@@ -136,6 +199,11 @@ class HealthChecks extends Organizr
 					unset($allItems[$k]);
 				}
 			}
+			$limit = 30;
+			if (!empty($allItems)) {
+				$limit = count($allItems) * 20;
+			}
+			set_time_limit($limit);
 			foreach ($allItems as $k => $v) {
 				$testLocal = $v['Internal URL'] !== '' ?? false;
 				$testExternal = $v['External URL'] !== '' ?? false;

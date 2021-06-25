@@ -73,9 +73,9 @@ trait TransmissionHomepageItem
 					),
 					array(
 						'type' => 'select',
-						'name' => 'homepageDownloadRefresh',
+						'name' => 'transmissionRefresh',
 						'label' => 'Refresh Seconds',
-						'value' => $this->config['homepageDownloadRefresh'],
+						'value' => $this->config['transmissionRefresh'],
 						'options' => $this->timeOptions()
 					),
 					array(
@@ -114,7 +114,7 @@ trait TransmissionHomepageItem
 		$passwordInclude = ($this->config['transmissionUsername'] != '' && $this->config['transmissionPassword'] != '') ? $this->config['transmissionUsername'] . ':' . rawurlencode($this->decrypt($this->config['transmissionPassword'])) . "@" : '';
 		$url = $digest['scheme'] . '://' . $passwordInclude . $digest['host'] . $digest['port'] . $digest['path'] . '/rpc';
 		try {
-			$options = $this->requestOptions($this->config['transmissionURL'], $this->config['transmissionDisableCertCheck'], $this->config['homepageDownloadRefresh']);
+			$options = $this->requestOptions($this->config['transmissionURL'], $this->config['transmissionDisableCertCheck'], $this->config['transmissionRefresh']);
 			$response = Requests::get($url, array(), $options);
 			if ($response->headers['x-transmission-session-id']) {
 				$headers = array(
@@ -185,7 +185,7 @@ trait TransmissionHomepageItem
 					<script>
 		                // homepageOrdertransmission
 		                ' . $builder . '
-		                homepageDownloader("transmission", "' . $this->config['homepageDownloadRefresh'] . '");
+		                homepageDownloader("transmission", "' . $this->config['transmissionRefresh'] . '");
 		                // End homepageOrdertransmission
 	                </script>
 				</div>
@@ -202,7 +202,7 @@ trait TransmissionHomepageItem
 		$passwordInclude = ($this->config['transmissionUsername'] != '' && $this->config['transmissionPassword'] != '') ? $this->config['transmissionUsername'] . ':' . rawurlencode($this->decrypt($this->config['transmissionPassword'])) . "@" : '';
 		$url = $digest['scheme'] . '://' . $passwordInclude . $digest['host'] . $digest['port'] . $digest['path'] . '/rpc';
 		try {
-			$options = $this->requestOptions($this->config['transmissionURL'], $this->config['transmissionDisableCertCheck'], $this->config['homepageDownloadRefresh']);
+			$options = $this->requestOptions($this->config['transmissionURL'], $this->config['transmissionDisableCertCheck'], $this->config['transmissionRefresh']);
 			$response = Requests::get($url, array(), $options);
 			if ($response->headers['x-transmission-session-id']) {
 				$headers = array(

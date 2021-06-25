@@ -143,8 +143,12 @@ function pageLoad(){
         }
         myLazyLoad.update();
     });
-	new SimpleBar($('#page-wrapper')[0]);
-
+	$('#page-wrapper').overlayScrollbars({ scrollbars : { autoHide: "move"}});
+	$('.default-scroller').overlayScrollbars({ scrollbars : { autoHide: "scroll"}});
+	$('.nav-bar-rtl').overlayScrollbars({ scrollbars : { autoHide: "leave"}});
+	$('.inbox-center').overlayScrollbars({ scrollbars : { autoHide: "leave"}});
+	$('.mailbox').overlayScrollbars({ scrollbars : { autoHide: "leave"}});
+	$('.fc-scroller').overlayScrollbars({ scrollbars : { autoHide: "leave"}});
     /* ===== Tooltip Initialization ===== */
 
     $(function () {
@@ -264,14 +268,6 @@ $('.slimscrollsidebar').slimScroll({
     size: "6px",
     color: 'rgba(0,0,0,0.5)'
 });
-if(bowser.mobile !== true){
-    $('.inbox-center').slimScroll({
-        height: '100%',
-        position: 'right',
-        size: "5px",
-        color: '#dcdcdc'
-    });
-}
 $(".navbar-toggle").on("click", function () {
     $(".navbar-toggle i").toggleClass("ti-menu").addClass("ti-close");
 });
@@ -331,6 +327,7 @@ function doneTypingMediaSearch () {
 				    size: "5px",
 				    color: '#dcdcdc'
 			    });
+			    //$('.resultBox-inside').overlayScrollbars({ scrollbars : { autoHide: "leave"}});
 		    }
 	    }catch(e) {
 		    organizrCatchError(e,data);
@@ -1673,7 +1670,7 @@ $(document).on('change', "#choose-calender-filter, #choose-calender-filter-statu
     filter = $('#choose-calender-filter').val();
     filterDownload = $('#choose-calender-filter-status').val();
     $('#calendar').fullCalendar('rerenderEvents');
-    new SimpleBar($('.fc-scroller')[0]);
+	$('.fc-scroller').overlayScrollbars({ scrollbars : { autoHide: "leave"}});
 });
 $(document).on('keyup', "#debug-input", function(e  ){
 	console.log(this);
@@ -1818,8 +1815,9 @@ $(document).on('click', '.imageManagerItem', function() {
 });
 
 $(document).on('click', '.close-editHomepageItemDiv',function () {
-	$('body').removeAttr('style');
-	$('html').removeAttr('style');
+	//$('body').removeAttr('style');
+	//$('html').removeAttr('style');
+	Custombox.modal.closeAll()
 })
 // Control init of custom plex JSON editor
 $(document).on('click', '#homepage-Plex-form li a[aria-controls="Misc Options"]', function() {

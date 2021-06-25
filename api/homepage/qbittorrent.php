@@ -93,9 +93,9 @@ trait QBitTorrentHomepageItem
 					),
 					array(
 						'type' => 'select',
-						'name' => 'homepageDownloadRefresh',
+						'name' => 'qBittorrentRefresh',
 						'label' => 'Refresh Seconds',
-						'value' => $this->config['homepageDownloadRefresh'],
+						'value' => $this->config['qBittorrentRefresh'],
 						'options' => $this->timeOptions()
 					),
 					array(
@@ -136,7 +136,7 @@ trait QBitTorrentHomepageItem
 		$apiVersionQuery = ($this->config['qBittorrentApiVersion'] == '1') ? '/query/torrents?sort=' : '/api/v2/torrents/info?sort=';
 		$url = $digest['scheme'] . '://' . $digest['host'] . $digest['port'] . $digest['path'] . $apiVersionLogin;
 		try {
-			$options = $this->requestOptions($this->config['qBittorrentURL'], $this->config['qBittorrentDisableCertCheck'], $this->config['homepageDownloadRefresh']);
+			$options = $this->requestOptions($this->config['qBittorrentURL'], $this->config['qBittorrentDisableCertCheck'], $this->config['qBittorrentRefresh']);
 			$response = Requests::post($url, array(), $data, $options);
 			$reflection = new ReflectionClass($response->cookies);
 			$cookie = $reflection->getProperty("cookies");
@@ -209,7 +209,7 @@ trait QBitTorrentHomepageItem
 					<script>
 		                // homepageOrderqBittorrent
 		                ' . $builder . '
-		                homepageDownloader("qBittorrent", "' . $this->config['homepageDownloadRefresh'] . '");
+		                homepageDownloader("qBittorrent", "' . $this->config['qBittorrentRefresh'] . '");
 		                // End homepageOrderqBittorrent
 	                </script>
 				</div>
@@ -228,7 +228,7 @@ trait QBitTorrentHomepageItem
 		$apiVersionQuery = ($this->config['qBittorrentApiVersion'] == '1') ? '/query/torrents?sort=' : '/api/v2/torrents/info?sort=';
 		$url = $digest['scheme'] . '://' . $digest['host'] . $digest['port'] . $digest['path'] . $apiVersionLogin;
 		try {
-			$options = $this->requestOptions($this->config['qBittorrentURL'], $this->config['qBittorrentDisableCertCheck'], $this->config['homepageDownloadRefresh']);
+			$options = $this->requestOptions($this->config['qBittorrentURL'], $this->config['qBittorrentDisableCertCheck'], $this->config['qBittorrentRefresh']);
 			$response = Requests::post($url, array(), $data, $options);
 			$reflection = new ReflectionClass($response->cookies);
 			$cookie = $reflection->getProperty("cookies");

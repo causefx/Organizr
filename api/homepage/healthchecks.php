@@ -63,6 +63,18 @@ trait HealthChecksHomepageItem
 						'value' => $this->config['homepageHealthChecksRefresh'],
 						'options' => $this->timeOptions()
 					),
+					array(
+						'type' => 'switch',
+						'name' => 'homepageHealthChecksShowDesc',
+						'label' => 'Show Description',
+						'value' => $this->config['homepageHealthChecksShowDesc'],
+					),
+					array(
+						'type' => 'switch',
+						'name' => 'homepageHealthChecksShowTags',
+						'label' => 'Show Tags',
+						'value' => $this->config['homepageHealthChecksShowTags'],
+					),
 				),
 			)
 		);
@@ -135,6 +147,10 @@ trait HealthChecksHomepageItem
 		usort($api['content']['checks'], function ($a, $b) {
 			return $a['status'] <=> $b['status'];
 		});
+		$api['options'] = [
+			'desc' => $this->config['homepageHealthChecksShowDesc'],
+			'tags' => $this->config['homepageHealthChecksShowTags'],
+		];
 		$api['content']['checks'] = isset($api['content']['checks']) ? $api['content']['checks'] : false;
 		$this->setAPIResponse('success', null, 200, $api);
 		return $api;

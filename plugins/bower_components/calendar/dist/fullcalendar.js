@@ -9935,7 +9935,7 @@ var Scroller = FC.Scroller = Class.extend({
 
 
 	renderEl: function() {
-		return (this.scrollEl = $('<div style="ovnerflow:auto !important" class="fc-scroller" data-simplebar data-simplebar-force-enabled="true" data-simplebar-autohide="false" ></div>'));
+		return (this.scrollEl = $('<div style="ovnerflow:auto !important" class="fc-scroller"></div>'));
 	},
 
 
@@ -11010,6 +11010,8 @@ function Calendar_constructor(element, overrides) {
 
 		ignoreWindowResize--;
 		inlineLoad();
+
+		$('.fc-scroller').overlayScrollbars({ scrollbars : { autoHide: "leave"}});
 	}
 
 
@@ -11232,14 +11234,15 @@ function Calendar_constructor(element, overrides) {
 	function prev() {
 		date = currentView.computePrevDate(date);
 		renderView();
-        new SimpleBar($('.fc-scroller')[0]);
+		$('.fc-scroller').overlayScrollbars({ scrollbars : { autoHide: "leave"}});
+
 	}
 
 
 	function next() {
 		date = currentView.computeNextDate(date);
 		renderView();
-        new SimpleBar($('.fc-scroller')[0]);
+		$('.fc-scroller').overlayScrollbars({ scrollbars : { autoHide: "leave"}});
 	}
 
 

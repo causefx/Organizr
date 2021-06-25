@@ -82,9 +82,9 @@ trait DelugeHomepageItem
 					),
 					array(
 						'type' => 'select',
-						'name' => 'homepageDownloadRefresh',
+						'name' => 'delugeRefresh',
 						'label' => 'Refresh Seconds',
-						'value' => $this->config['homepageDownloadRefresh'],
+						'value' => $this->config['delugeRefresh'],
 						'options' => $this->timeOptions()
 					),
 					array(
@@ -167,7 +167,7 @@ trait DelugeHomepageItem
 					<script>
 		                // homepageOrderdeluge
 		                ' . $builder . '
-		                homepageDownloader("deluge", "' . $this->config['homepageDownloadRefresh'] . '");
+		                homepageDownloader("deluge", "' . $this->config['delugeRefresh'] . '");
 		                // End homepageOrderdeluge
 	                </script>
 				</div>

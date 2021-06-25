@@ -123,9 +123,9 @@ trait RTorrentHomepageItem
 					),
 					array(
 						'type' => 'select',
-						'name' => 'homepageDownloadRefresh',
+						'name' => 'rTorrentRefresh',
 						'label' => 'Refresh Seconds',
-						'value' => $this->config['homepageDownloadRefresh'],
+						'value' => $this->config['rTorrentRefresh'],
 						'options' => $this->timeOptions()
 					),
 					array(
@@ -228,7 +228,7 @@ trait RTorrentHomepageItem
 					<script>
 		                // homepageOrderrTorrent
 		                ' . $builder . '
-		                homepageDownloader("rTorrent", "' . $this->config['homepageDownloadRefresh'] . '");
+		                homepageDownloader("rTorrent", "' . $this->config['rTorrentRefresh'] . '");
 		                // End homepageOrderrTorrent
 	                </script>
 				</div>

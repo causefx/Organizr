@@ -60,7 +60,7 @@ class Organizr
 	
 	// ===================================
 	// Organizr Version
-	public $version = '2.1.333';
+	public $version = '2.1.400';
 	// ===================================
 	// Quick php Version check
 	public $minimumPHP = '7.3';
@@ -303,6 +303,7 @@ class Organizr
 					}
 				}
 			}
+			asort($pluginList);
 			return $pluginList;
 		}
 		return false;
@@ -396,71 +397,57 @@ class Organizr
 		return ($encode) ? json_encode($files) : $files;
 	}
 	
-	/* Old function
-	public function pluginFiles($type)
-	{
-		$files = '';
-		switch ($type) {
-			case 'js':
-				foreach (glob(dirname(__DIR__, 1) . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . 'js' . DIRECTORY_SEPARATOR . "*.js") as $filename) {
-					$files .= '<script src="api/plugins/js/' . basename($filename) . '?v=' . $this->fileHash . '" defer="true"></script>';
-				}
-				break;
-			case 'css':
-				foreach (glob(dirname(__DIR__, 1) . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . 'css' . DIRECTORY_SEPARATOR . "*.css") as $filename) {
-					$files .= '<link href="api/plugins/css/' . basename($filename) . '?v=' . $this->fileHash . '" rel="stylesheet">';
-				}
-				break;
-			default:
-				break;
-		}
-		return $files;
-	}
-	*/
 	public function pluginFiles($type, $settings = false)
 	{
 		$files = '';
+		$folder = dirname(__DIR__, 1) . DIRECTORY_SEPARATOR . 'plugins';
+		$directoryIterator = new RecursiveDirectoryIterator($folder, FilesystemIterator::SKIP_DOTS);
+		$iteratorIterator = new RecursiveIteratorIterator($directoryIterator);
 		switch ($type) {
 			case 'js':
-				foreach (glob(dirname(__DIR__, 1) . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . 'js' . DIRECTORY_SEPARATOR . '*.js') as $filename) {
-					$pluginEnabled = false;
-					$keyOriginal = strtoupper(basename($filename, '.js'));
-					$key = str_replace('-SETTINGS', '', $keyOriginal);
-					$continue = false;
-					if ($settings) {
-						if (stripos($keyOriginal, '-SETTINGS') !== false) {
-							$continue = true;
+				foreach ($iteratorIterator as $info) {
+					if (pathinfo($info->getPathname(), PATHINFO_EXTENSION) == 'js') {
+						$pluginEnabled = false;
+						$keyOriginal = strtoupper(basename(dirname($info->getPathname())));
+						$key = str_replace('-SETTINGS', '', $keyOriginal);
+						$continue = false;
+						if ($settings) {
+							if ($info->getFilename() == 'settings.js') {
+								$continue = true;
+							}
+						} else {
+							if ($info->getFilename() !== 'settings.js') {
+								$continue = true;
+							}
 						}
-					} else {
-						if (stripos($keyOriginal, '-SETTINGS') == false) {
-							$continue = true;
+						switch ($key) {
+							case 'PHP-MAILER':
+								$key = 'PHPMAILER';
+								break;
+							case 'NGXC':
+								$key = 'ngxc';
+								break;
+							default:
+								$key = $key;
 						}
-					}
-					switch ($key) {
-						case 'PHP-MAILER':
-							$key = 'PHPMAILER';
-							break;
-						case 'NGXC':
-							$key = 'ngxc';
-							break;
-						default:
-							$key = $key;
-					}
-					if (isset($this->config[$key . '-enabled'])) {
-						if ($this->config[$key . '-enabled']) {
-							$pluginEnabled = true;
+						if (isset($this->config[$key . '-enabled'])) {
+							if ($this->config[$key . '-enabled']) {
+								$pluginEnabled = true;
+							}
 						}
-					}
-					if ($pluginEnabled || $settings) {
-						if ($continue) {
-							$files .= '<script src="api/plugins/js/' . basename($filename) . '?v=' . $this->fileHash . '" defer="true"></script>';
+						if ($pluginEnabled || $settings) {
+							if ($continue) {
+								$files .= '<script src="api/plugins/' . basename(dirname($info->getPathname())) . '/' . basename($info->getFilename()) . '?v=' . $this->fileHash . '" defer="true"></script>';
+							}
 						}
 					}
 				}
 				break;
 			case 'css':
-				foreach (glob(dirname(__DIR__, 1) . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . 'css' . DIRECTORY_SEPARATOR . '*.css') as $filename) {
-					$files .= '<link href="api/plugins/css/' . basename($filename) . '?v=' . $this->fileHash . '" rel="stylesheet">';
+				foreach ($iteratorIterator as $info) {
+					if (pathinfo($info->getPathname(), PATHINFO_EXTENSION) == 'css') {
+						$files .= '<link href="api/plugins/' . basename(dirname($info->getPathname())) . '/' . basename($info->getFilename()) . '?v=' . $this->fileHash . '" rel="stylesheet">';
+					}
 				}
 				break;
 			default:
@@ -536,6 +523,14 @@ class Organizr
 			// End Upgrade check start for version above
 			// Upgrade check start for version below
 			$versionCheck = '2.1.0';
+			if ($compare->lessThan($oldVer, $versionCheck)) {
+				$updateDB = false;
+				$oldVer = $versionCheck;
+				$this->upgradeToVersion($versionCheck);
+			}
+			// End Upgrade check start for version above
+			// Upgrade check start for version below
+			$versionCheck = '2.1.400';
 			if ($compare->lessThan($oldVer, $versionCheck)) {
 				$updateDB = false;
 				$oldVer = $versionCheck;
@@ -741,8 +736,13 @@ class Organizr
 			$loadedDefaults = $path;
 		}
 		// Include all plugin config files
-		foreach (glob(dirname(__DIR__, 1) . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . 'config' . DIRECTORY_SEPARATOR . "*.php") as $filename) {
-			$loadedDefaults = array_merge($loadedDefaults, $this->loadConfig($filename));
+		$folder = dirname(__DIR__, 1) . DIRECTORY_SEPARATOR . 'plugins';
+		$directoryIterator = new RecursiveDirectoryIterator($folder, FilesystemIterator::SKIP_DOTS);
+		$iteratorIterator = new RecursiveIteratorIterator($directoryIterator);
+		foreach ($iteratorIterator as $info) {
+			if ($info->getFilename() == 'config.php') {
+				$loadedDefaults = array_merge($loadedDefaults, $this->loadConfig($info->getPathname()));
+			}
 		}
 		return (is_array($loadedDefaults) ? $this->fillDefaultConfig_recurse($array, $loadedDefaults) : false);
 	}
@@ -1387,6 +1387,18 @@ class Organizr
 					'name' => 'expandCategoriesByDefault',
 					'label' => 'Expand All Categories',
 					'value' => $this->config['expandCategoriesByDefault']
+				),
+				array(
+					'type' => 'switch',
+					'name' => 'autoCollapseCategories',
+					'label' => 'Auto-Collapse Categories',
+					'value' => $this->config['autoCollapseCategories']
+				),
+				array(
+					'type' => 'switch',
+					'name' => 'autoExpandNavBar',
+					'label' => 'Auto-Expand Nav Bar',
+					'value' => $this->config['autoExpandNavBar']
 				),
 				array(
 					'type' => 'select',
@@ -2394,7 +2406,7 @@ class Organizr
 					'name' => 'overseerrFallbackUser',
 					'label' => 'Overseerr Fallback User',
 					'value' => $this->config['overseerrFallbackUser'],
-					'help' => 'Organizr will request an Overseerr User Token based off of this user credentials',
+					'help' => 'DO NOT SET THIS TO YOUR ADMIN ACCOUNT. We recommend you create a local account as a "catch all" for when Organizr is unable to perform SSO.  Organizr will request a User Token based off of this user credentials',
 					'attr' => 'disabled'
 				),
 				array(
@@ -2431,7 +2443,7 @@ class Organizr
 					'name' => 'petioFallbackUser',
 					'label' => 'Petio Fallback User',
 					'value' => $this->config['petioFallbackUser'],
-					'help' => 'Organizr will request an Petio User Token based off of this user credentials',
+					'help' => 'DO NOT SET THIS TO YOUR ADMIN ACCOUNT. We recommend you create a local account as a "catch all" for when Organizr is unable to perform SSO.  Organizr will request a User Token based off of this user credentials',
 				),
 				array(
 					'type' => 'password-alt',
@@ -2466,7 +2478,7 @@ class Organizr
 					'name' => 'ombiFallbackUser',
 					'label' => 'Ombi Fallback User',
 					'value' => $this->config['ombiFallbackUser'],
-					'help' => 'Organizr will request an Ombi User Token based off of this user credentials'
+					'help' => 'DO NOT SET THIS TO YOUR ADMIN ACCOUNT. We recommend you create a local account as a "catch all" for when Organizr is unable to perform SSO.  Organizr will request a User Token based off of this user credentials'
 				),
 				array(
 					'type' => 'password-alt',
@@ -3633,7 +3645,9 @@ class Organizr
 				'debugArea' => $this->qualifyRequest($this->config['debugAreaAuth']),
 				'debugErrors' => $this->config['debugErrors'],
 				'sandbox' => $this->config['sandbox'],
-				'expandCategoriesByDefault' => $this->config['expandCategoriesByDefault']
+				'expandCategoriesByDefault' => $this->config['expandCategoriesByDefault'],
+				'autoCollapseCategories' => $this->config['autoCollapseCategories'],
+				'autoExpandNavBar' => $this->config['autoExpandNavBar']
 			),
 			'menuLink' => array(
 				'githubMenuLink' => $this->config['githubMenuLink'],
@@ -4860,24 +4874,19 @@ class Organizr
 			$plugin = array_keys($array)[$key];
 		}
 		$array = $array[$plugin];
-		$downloadList = $this->marketplaceFileListFormat($array['files'], $array['github_folder'], 'plugins');
-		if (!$downloadList) {
-			$this->setAPIResponse('error', 'Could not get download list for plugin', 409);
-			return false;
-		}
 		$name = $plugin;
 		$version = $array['version'];
 		$installedPluginsNew = '';
-		foreach ($downloadList as $k => $v) {
-			$file = array(
-				'from' => $v['githubPath'],
-				'to' => str_replace(array('/', '\\'), DIRECTORY_SEPARATOR, $this->root . $v['path'] . $v['fileName']),
-				'path' => str_replace(array('/', '\\'), DIRECTORY_SEPARATOR, $this->root . $v['path'])
-			);
-			if (!$this->rrmdir($file['to'])) {
-				$this->writeLog('error', 'Plugin Function -  Remove File Failed  for: ' . $v['githubPath'], $this->user['username']);
+		$pluginDir = $this->root . DIRECTORY_SEPARATOR . 'api' . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . $array['github_folder'] . DIRECTORY_SEPARATOR;
+		$dirExists = file_exists($pluginDir);
+		if ($dirExists) {
+			if (!$this->rrmdir($pluginDir)) {
+				$this->writeLog('error', 'Plugin Function -  Remove File Failed  for: ' . $array['github_folder'], $this->user['username']);
 				return false;
 			}
+		} else {
+			$this->setAPIResponse('error', 'Plugin is not installed', 404);
+			return false;
 		}
 		if ($this->config['installedPlugins'] !== '') {
 			$installedPlugins = explode('|', $this->config['installedPlugins']);
@@ -4902,6 +4911,30 @@ class Organizr
 		return true;
 	}
 	
+	public function pluginFileListFormat($files, $folder)
+	{
+		$filesList = false;
+		foreach ($files as $k => $v) {
+			$filesList[] = array(
+				'fileName' => $v['name'],
+				'path' => DIRECTORY_SEPARATOR . 'api' . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . $folder . DIRECTORY_SEPARATOR,
+				'githubPath' => $v['download_url']
+			);
+		}
+		return $filesList;
+	}
+	
+	public function getPluginFilesFromGithub($plugin = 'test')
+	{
+		$url = 'https://api.github.com/repos/causefx/organizr/contents/' . $plugin . '?ref=v2-plugins';
+		$options = array('verify' => false);
+		$response = Requests::get($url, array(), $options);
+		if ($response->success) {
+			return json_decode($response->body, true);
+		}
+		return false;
+	}
+	
 	public function installPlugin($plugin)
 	{
 		$plugin = $this->reverseCleanClassName($plugin);
@@ -4919,7 +4952,14 @@ class Organizr
 			$plugin = array_keys($array)[$key];
 		}
 		$array = $array[$plugin];
-		$downloadList = $this->marketplaceFileListFormat($array['files'], $array['github_folder'], 'plugins');
+		$files = $this->getPluginFilesFromGithub($array['github_folder']);
+		if ($files) {
+			$downloadList = $this->pluginFileListFormat($files, $array['github_folder']);
+		} else {
+			$this->writeLog('error', 'Plugin Function -  Downloaded File Failed  for: ' . $array['github_folder'], $this->user['username']);
+			$this->setAPIResponse('error', 'Could not get download list for plugin', 409);
+			return false;
+		}
 		if (!$downloadList) {
 			$this->setAPIResponse('error', 'Could not get download list for plugin', 409);
 			return false;
@@ -6234,14 +6274,23 @@ class Organizr
 			'X-Plex-Client-Identifier' => '01010101-10101010',
 			'X-Plex-Token' => $this->config['plexToken'],
 		];
-		$response = Requests::get($url, $headers, $options);
-		libxml_use_internal_errors(true);
-		if ($response->success) {
-			$items = array();
-			$plex = simplexml_load_string($response->body);
-			foreach ($plex as $server) {
-				if ($ownedOnly) {
-					if ($server['owned'] == 1) {
+		try {
+			$response = Requests::get($url, $headers, $options);
+			libxml_use_internal_errors(true);
+			if ($response->success) {
+				$items = array();
+				$plex = simplexml_load_string($response->body);
+				foreach ($plex as $server) {
+					if ($ownedOnly) {
+						if ($server['owned'] == 1) {
+							$items[] = array(
+								'name' => (string)$server['name'],
+								'address' => (string)$server['address'],
+								'machineIdentifier' => (string)$server['machineIdentifier'],
+								'owned' => (float)$server['owned'],
+							);
+						}
+					} else {
 						$items[] = array(
 							'name' => (string)$server['name'],
 							'address' => (string)$server['address'],
@@ -6249,20 +6298,14 @@ class Organizr
 							'owned' => (float)$server['owned'],
 						);
 					}
-				} else {
-					$items[] = array(
-						'name' => (string)$server['name'],
-						'address' => (string)$server['address'],
-						'machineIdentifier' => (string)$server['machineIdentifier'],
-						'owned' => (float)$server['owned'],
-					);
 				}
-				
+				$this->setAPIResponse('success', null, 200, $items);
+				return $items;
 			}
-			$this->setAPIResponse('success', null, 200, $items);
-			return $items;
+		} catch (Requests_Exception $e) {
+			$this->writeLog('success', 'Plex Get Servers Function - Error: ' . $e->getMessage(), 'SYSTEM');
+			$this->setAPIResponse('error', $e->getMessage(), 500);
 		}
-		
 	}
 	
 	public function getIcons()

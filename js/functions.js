@@ -217,12 +217,16 @@ function orgDebugList(cmd){
     }
 }
 function updateIssueLink(line){
-    var preNumber = line.match(/\((.*?)\)/g);
+    let preNumber = line.match(/\S*\#(.*)/g);
     if(preNumber !== null){
         preNumber = preNumber.toString();
-        var issueNumber = preNumber.substr(2, (preNumber.length - 3));
-        var issueLink = 'https://github.com/causefx/Organizr/issues/' + issueNumber;
-        issueLink = '<a href="' + issueLink + '" target="_blank">' + preNumber + '</a>';
+	    let numberSplit = preNumber.split('#');
+	    let issueType = numberSplit[0].replace('(', '').replace(')', '');
+	    let issueNumber = numberSplit[1].replace('(', '').replace(')', '');
+	    let issueWord = issueType.toLowerCase() == 'fr' ? '<i class="icon-arrow-up-circle"></i> feature' : '<i class="fa fa-github"></i> issue';
+	    let colorType = issueType.toLowerCase() == 'fr' ? 'label-info' : 'label-primary';
+	    let issueLink = issueType.toLowerCase() == 'fr' ? 'https://vote.organizr.app/suggestions/' + issueNumber : 'https://github.com/causefx/Organizr/issues/' + issueNumber;
+        issueLink = '<span class="label upgrade-label text-uppercase ' + colorType + ' label-rounded font-12 pull-right"><a class="text-white text-uppercase" href="' + issueLink + '" target="_blank">' + issueWord + '</a></span>';
         return line.replace(preNumber, issueLink);
     }else{
         return line;
@@ -1681,6 +1685,34 @@ function homepageItemFormHTML(v){
 	</form>
 	`;
 }
+function clearHomepageOriginal(){
+	$('#editHomepageItem').html('');
+}
+function completeHomepageLoad(item){
+	if(item == 'CustomHTML-1'){
+		customHTMLoneEditor = ace.edit("customHTMLoneEditor");
+		let HTMLMode = ace.require("ace/mode/html").Mode;
+		customHTMLoneEditor.session.setMode(new HTMLMode());
+		customHTMLoneEditor.setTheme("ace/theme/idle_fingers");
+		customHTMLoneEditor.setShowPrintMargin(false);
+		customHTMLoneEditor.session.on('change', function(delta) {
+			$('.customHTMLoneTextarea').val(customHTMLoneEditor.getValue());
+			$('#homepage-CustomHTML-1-form-save').removeClass('hidden');
+		});
+	}
+	if(item == 'CustomHTML-2'){
+		customHTMLtwoEditor = ace.edit("customHTMLtwoEditor");
+		let HTMLMode = ace.require("ace/mode/html").Mode;
+		customHTMLtwoEditor.session.setMode(new HTMLMode());
+		customHTMLtwoEditor.setTheme("ace/theme/idle_fingers");
+		customHTMLtwoEditor.setShowPrintMargin(false);
+		customHTMLtwoEditor.session.on('change', function(delta) {
+			$('.customHTMLtwoTextarea').val(customHTMLtwoEditor.getValue());
+			$('#homepage-CustomHTML-2-form-save').removeClass('hidden');
+		});
+	}
+	pageLoad();
+}
 function editHomepageItem(item){
 	ajaxloader('.editHomepageItemBox-' + item, 'in');
 	organizrAPI2('GET','api/v2/settings/homepage/'+item).success(function(data) {
@@ -1688,39 +1720,33 @@ function editHomepageItem(item){
 			let response = data.response;
 			let html = homepageItemFormHTML(response.data);
 			$('#editHomepageItem').html(html);
-			$("#editHomepageItemCall").animatedModal({
+			/*$("#editHomepageItemCall").animatedModal({
 				top: '40px',
 				left: '0px',
 				color: '#000000eb',
 				animatedIn: 'bounceInUp',
 				animatedOut: 'bounceOutDown',
+				position: 'fixed',
 				afterClose: function() {
 					$('body, html').css({'overflow':'hidden'});
 				}
-			});
-			$('#editHomepageItemCall').click();
-			if(item == 'CustomHTML-1'){
-				customHTMLoneEditor = ace.edit("customHTMLoneEditor");
-				let HTMLMode = ace.require("ace/mode/html").Mode;
-				customHTMLoneEditor.session.setMode(new HTMLMode());
-				customHTMLoneEditor.setTheme("ace/theme/idle_fingers");
-				customHTMLoneEditor.setShowPrintMargin(false);
-				customHTMLoneEditor.session.on('change', function(delta) {
-					$('.customHTMLoneTextarea').val(customHTMLoneEditor.getValue());
-					$('#homepage-CustomHTML-1-form-save').removeClass('hidden');
-				});
-			}
-			if(item == 'CustomHTML-2'){
-				customHTMLtwoEditor = ace.edit("customHTMLtwoEditor");
-				let HTMLMode = ace.require("ace/mode/html").Mode;
-				customHTMLtwoEditor.session.setMode(new HTMLMode());
-				customHTMLtwoEditor.setTheme("ace/theme/idle_fingers");
-				customHTMLtwoEditor.setShowPrintMargin(false);
-				customHTMLtwoEditor.session.on('change', function(delta) {
-					$('.customHTMLtwoTextarea').val(customHTMLtwoEditor.getValue());
-					$('#homepage-CustomHTML-2-form-save').removeClass('hidden');
-				});
-			}
+			});*/
+			new Custombox.modal({
+				content: {
+					effect:"slidetogether",
+					animateFrom:"bottom",
+					animateTo:"bottom",
+					target: '#editHomepageItemDiv',
+					width: '100%',
+					delay: 0,
+					fullscreen: true,
+					clone: false,
+					onComplete: completeHomepageLoad(item),
+					onClose: clearHomepageOriginal
+				},loader:{active:true}
+			}).open();
+			//$('#editHomepageItemCall').click();
+
 		}catch(e) {
 			organizrCatchError(e,data);
 		}
@@ -2160,12 +2186,12 @@ function buildLanguage(replace=false,newLang=null){
 	var lang = `
 		<li class="dropdown" id="languageDropdown">
 			<a class="dropdown-toggle waves-effect waves-light" data-toggle="dropdown" href="#" aria-expanded="false"> <i class="fa fa-language"></i><span></span></a>
-			<ul class="dropdown-menu mailbox animated bounceInDown">
+			<ul class="dropdown-menu mailbox animated bounceInDown language-box">
 				<li>
 					<div class="drop-title" lang="en">Choose Language</div>
 				</li>
 				<li>
-					<div class="message-center" data-simplebar>${languageItems}</div>
+					<div class="message-center default-scrollbar">${languageItems}</div>
 				</li>
 			</ul>
 			<!-- /.dropdown-messages -->
@@ -2806,7 +2832,6 @@ function tabProcess(arrayItems) {
                         $(menuList).appendTo($('.category-'+v.category_id));
                     }
                 }
-                $('#side-menu').metisMenu({ toggle: false });
 				switch (v.type) {
 					case 0:
 					case '0':
@@ -2851,12 +2876,12 @@ function tabProcess(arrayItems) {
 				}
 			}
 		});
+		$('#side-menu').metisMenu({ toggle: activeInfo.settings.misc.autoCollapseCategories });
 		getDefault(defaultTabName,defaultTabType);
 	}else{
 		noTabs(arrayItems);
 	}
 	$(menuExtras(arrayItems.data.user.loggedin)).appendTo($('#side-menu'));
-    new SimpleBar($('.sidebar')[0], { direction: 'rtl' });
 }
 function buildLogin(){
 	swapDisplay('login');
@@ -2988,6 +3013,7 @@ function buildTabTypeSelect(tabID, typeID, disabled){
     ];
 	var typeSelect = '';
 	var selected = '';
+	disabled = (disabled == 'disabled' && typeID !== 0) ? null : disabled;
 	$.each(array, function(i,v) {
 		selected = '';
 		if(v.type_id == typeID){
@@ -3377,7 +3403,7 @@ function buildTR(array,type,badge){
 			listing += `
 			<tr>
 				<td  width="70"><span class="label label-`+badge+`"><span lang="en">`+type+`</span></span></td>
-				<td>`+updateIssueLink(v)+`</td>
+				<td class="text-capitalize">`+updateIssueLink(v)+`</td>
 			</tr>
 			`;
 		});
@@ -4500,6 +4526,22 @@ function loadAppearance(appearance){
 			    -ms-user-select: none;
 			    -o-user-select: none;
 			    user-select: none;
+			}
+		`;
+	}
+	if(activeInfo['settings']['misc']['autoExpandNavBar'] == false){
+		cssSettings += `
+			@media only screen and (min-width: 768px) {
+				.sidebar:hover .hide-menu {
+					display: none;
+				}
+				.sidebar:hover .sidebar-head,
+				.sidebar:hover {
+					width: 60px;
+				}
+				.sidebar:hover .nav-second-level li a {
+					padding-left: 15px;
+				}
 			}
 		`;
 	}
@@ -6111,7 +6153,7 @@ function buildDownloader(source){
 			`;
 		listing += `
 		<div role="tabpanel" class="tab-pane fade active in" id="`+source+`-queue">
-			<div class="inbox-center table-responsive" data-simplebar>
+			<div class="inbox-center table-responsive">
 				<table class="table table-hover">
 					<tbody class="`+source+`-queue"></tbody>
 				</table>
@@ -6126,7 +6168,7 @@ function buildDownloader(source){
 		`;
 		listing += `
 		<div role="tabpanel" class="tab-pane fade" id="`+source+`-history">
-			<div class="inbox-center table-responsive" data-simplebar>
+			<div class="inbox-center table-responsive">
 				<table class="table table-hover">
 					<tbody class="`+source+`-history"></tbody>
 				</table>
@@ -6209,7 +6251,7 @@ function buildDownloaderCombined(source){
 			`;
         listing += `
 		<div role="tabpanel" class="tab-pane fade active in" id="`+source+`-queue">
-			<div class="inbox-center table-responsive" data-simplebar>
+			<div class="inbox-center table-responsive">
 				<table class="table table-hover">
 					<tbody class="`+source+`-queue"></tbody>
 				</table>
@@ -6224,7 +6266,7 @@ function buildDownloaderCombined(source){
 		`;
         listing += `
 		<div role="tabpanel" class="tab-pane fade" id="`+source+`-history">
-			<div class="inbox-center table-responsive" data-simplebar>
+			<div class="inbox-center table-responsive">
 				<table class="table table-hover">
 					<tbody class="`+source+`-history"></tbody>
 				</table>
@@ -6394,7 +6436,7 @@ function buildHealthChecks(array){
 			<div class="clearfix"></div>
 		    <!-- .cards -->
 		    <div class="healthCheckCards">
-			    `+buildHealthChecksItem(array.content.checks)+`
+			    `+buildHealthChecksItem(array)+`
 			</div>
 		    <!-- /.cards-->
 		</div>
@@ -6536,9 +6578,10 @@ function healthCheckIcon(tags){
 }
 function buildHealthChecksItem(array){
     var checks = '';
-    $.each(array, function(i,v) {
+    $.each(array.content.checks, function(i,v) {
         var hasIcon = healthCheckIcon(v.tags);
         v.name = (v.name) ? v.name : 'New Item';
+	    v.desc = (array.options.desc && v.desc) ? '<h5>Notes: '+v.desc+'</h5>' : '';
         switch(v.status){
             case 'up':
                 var statusColor = 'success';
@@ -6576,6 +6619,19 @@ function buildHealthChecksItem(array){
                 var nextPing = 'Waiting...';
                 var lastPing = 'n/a';
         }
+    	var tagPrimaryElem = '', tagSecondaryElem = '';
+        if (array.options.tags && v.tags){
+            v.tags = v.tags.split(' ');
+	        $.each(v.tags, function(key,value) {
+		        if(isURL(value)){
+			        v.tags = arrayRemove(v.tags , value);
+		        }
+	        });
+            tagPrimaryElem = '<span class="pull-right mt-3 mr-2"><span class="label text-uppercase bg-'+statusColor.replace('animated-3 loop-animation flash','')+' label-rounded font-12">'+v.tags[0]+'</span></span>';
+            tagSecondaryElem = '<h5>Tags: ';
+            tagSecondaryElem += v.tags.map(t => { return t }).join(', ');
+            tagSecondaryElem += '</h5>'
+        }
         checks += `
             <div class="col-xl-2 col-lg-3 col-md-4 col-sm-6 col-xs-12">
                 <div class="card bg-inverse text-white mb-3 showMoreHealth mouse" data-id="`+i+`">
@@ -6583,10 +6639,11 @@ function buildHealthChecksItem(array){
                         <div class="d-flex no-block align-items-center">
                             <div class="left-health bg-`+statusColor+`"></div>
                             <div class="ml-1 w-100">
-                                <i class="`+statusIcon+` font-20 pull-right mt-3 mb-2"></i>
+                                <span class="pull-right mt-3 mb-2"><i class="`+statusIcon+` font-20"></i></span>
+				`+tagPrimaryElem+`
                                 <h3 class="d-flex no-block align-items-center mt-2 mb-2">`+hasIcon+v.name+`</h3>
                                 <div class="clearfix"></div>
-                                <div class="d-none showMoreHealthDiv-`+i+`"><h5>Last: `+lastPing+`</h5><h5>Next: `+nextPing+`</h5></div>
+                                <div class="d-none showMoreHealthDiv-`+i+`"><h5>Last: `+lastPing+`</h5><h5>Next: `+nextPing+`</h5>`+v.desc+tagSecondaryElem+`</div>
                                 <div class="clearfix"></div>
                             </div>
                         </div>
@@ -6596,6 +6653,21 @@ function buildHealthChecksItem(array){
         `
     });
     return checks;
+}
+function isURL(str) {
+	const pattern = new RegExp('^(https?:\\/\\/)?'+ // protocol
+		'((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|'+ // domain name
+		'((\\d{1,3}\\.){3}\\d{1,3}))'+ // OR ip (v4) address
+		'(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*'+ // port and path
+		'(\\?[;&a-z\\d%_.~+=-]*)?'+ // query string
+		'(\\#[-a-z\\d_]*)?$','i'); // fragment locator
+	return !!pattern.test(str);
+}
+function arrayRemove(arr, value) {
+
+	return arr.filter(function(ele){
+		return ele != value;
+	});
 }
 function buildPiholeItem(array){
     var stats = `
@@ -7141,7 +7213,7 @@ function buildTautulliItem(array){
                             </tr>
                             <tr>
                                 <td>
-                                    <div class="scrollable" data-simplebar>`;
+                                    <div class="scrollable default-scroller">`;
                                     for(var i = 0; i < data.length; i++) {
                                         var rowType = i == 0 ? 'tautulliFirstItem' : i == data.length-1 ? 'tautulliLastItem' : '';
                                         var rowValue = '';
@@ -7221,7 +7293,7 @@ function buildTautulliItem(array){
                                     card += cardTitle+`
                                 </tr>
                                 <tr>
-                                    <td><div class="scrollable" data-simplebar>`;
+                                    <td><div class="scrollable default-scroller">`;
                                         for(var i = 0; i < e['rows'].length; i++) {
                                             var item = e['rows'][i];
                                             var rowType = i == 0 ? 'tautulliFirstItem' : i == e['rows'].length-1 ? 'tautulliLastItem' : '';
@@ -7583,7 +7655,7 @@ var html = `
                     <nav>
                         <ul>${healthHeader}</ul>
                     </nav>
-                    <div class="content-wrap health-and-pollutant-section" data-simplebar>${healthSection}</div>
+                    <div class="content-wrap health-and-pollutant-section default-scroller">${healthSection}</div>
                     <!-- /content -->
                 </div>
                 <!-- /tabs -->
@@ -7625,7 +7697,7 @@ function buildPollutant(array){
                     <nav>
                         <ul>${pollutantHeader}</ul>
                     </nav>
-                    <div class="content-wrap health-and-pollutant-section" data-simplebar>${pollutantSection}</div>
+                    <div class="content-wrap health-and-pollutant-section default-scroller">${pollutantSection}</div>
                     <!-- /content -->
                 </div>
                 <!-- /tabs -->
@@ -9346,6 +9418,7 @@ function buildMediaResults(array,source,term){
         <button class="btn btn-info waves-effect waves-light filter-request-result" data-filter="request-result-music"><span>`+music+`</span> <i class="fa fa-music m-l-5 fa-fw"></i></button>
     </div>
     `;
+	results = '<div class="media-results">' + results + '</div>';
     return buttons+results;
 }
 function getPingList(arrayItems){
@@ -10592,6 +10665,24 @@ function checkForUpdates(){
 	if(activeInfo.user.loggedin && activeInfo.user.groupID <= 1){
 		updateCheck();
 		checkCommitLoad();
+	}
+}
+
+function loadJavascript(script = null, defer = false){
+	if(script){
+		console.log(script);
+		console.log('checking if script is loaded...');
+		let loaded = $('script[src="'+script+'"]').length;
+		///let loaded2 = document.querySelector('script[src="' + script + '"]');
+		if(!loaded){
+			console.log('script is NOT loaded... Loading now...');
+			let head = document.getElementsByTagName('head')[0];
+			let scriptEl = document.createElement('script');
+			scriptEl.type = 'text/javascript';
+			scriptEl.src = script;
+			scriptEl.defer = false;
+			head.appendChild(scriptEl);
+		}
 	}
 }
 function launch(){
