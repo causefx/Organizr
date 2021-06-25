@@ -378,10 +378,10 @@
     "notes": "update rmccue\\requests framework|update guzzlehttp/psr7|add if stmt to stale workflow to ignore issues that have bypass-activity"
   },
   "2.1.400": {
-    "date": "2021-06-14 16:00",
+    "date": "2021-06-25 21:40",
     "title": "Code changes to plugins",
-    "new": "Refactored the way plugins are stored so it is cleaner|Updated healthChecks plugin|option to Auto-collapse categories (FR#150933)|option to disable auto expand of navbar FR#150876",
-    "fixed": "SSO failing due to timeout error white getting tokens (#1665)|force Radarr to use v3 endpoint now (#1663)|plex error not catching|update downloader refresh times to be independent",
+    "new": "Updated UI on update page|Refactored the way plugins are stored so it is cleaner|Updated healthChecks plugin|option to Auto-collapse categories (FR#150933)|option to disable auto expand of navbar FR#150876|language-box css class|add extras to unifi homepage call|warning to sso functions|healthchecks import to plugin|toggle for 401 and 403 bypass for healthchecks plugin",
+    "fixed": "SSO failing due to timeout error white getting tokens (#1665)|force Radarr to use v3 endpoint now (#1663)|plex error not catching|update downloader refresh times to be independent|update requestOptions function|updated scrollbars again|change to edit homepage modal|set correct tab type after re-adding the homepage (#1671)",
     "notes": ""
   }
 }
