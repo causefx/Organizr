@@ -3075,12 +3075,17 @@ class Organizr
 		// Check if Auth Proxy is enabled
 		if ($this->config['authProxyEnabled'] && $this->config['authProxyHeaderName'] !== '' && $this->config['authProxyWhitelist'] !== '') {
 			if (isset($this->getallheaders()[$this->config['authProxyHeaderName']])) {
+				$this->debug('Auth Proxy is enabled', 'Auth_Proxy');
 				$usernameHeader = $this->getallheaders()[$this->config['authProxyHeaderName']] ?? $username;
+				$this->debug('Auth Proxy username Header: ' . $this->config['authProxyHeaderName'], 'Auth_Proxy');
 				$emailHeader = $this->getallheaders()[$this->config['authProxyHeaderNameEmail']] ?? null;
+				$this->debug('Auth Proxy email Header: ' . $this->config['authProxyHeaderNameEmail'], 'Auth_Proxy');
 				$this->writeLog('success', 'Auth Proxy Function - Starting Verification for IP: ' . $this->userIP() . ' for request on: ' . $_SERVER['REMOTE_ADDR'] . ' against IP/Subnet: ' . $this->config['authProxyWhitelist'], $usernameHeader);
 				$whitelistRange = $this->analyzeIP($this->config['authProxyWhitelist']);
 				$authProxy = $this->authProxyRangeCheck($whitelistRange['from'], $whitelistRange['to']);
 				$username = ($authProxy) ? $usernameHeader : $username;
+				$this->debug('Auth Proxy username: ' . $username, 'Auth_Proxy');
+				$this->debug('Auth Proxy email: ' . $emailHeader, 'Auth_Proxy');
 				$password = ($password == null) ? $this->random_ascii_string(10) : $password;
 				$addEmailToAuthProxy = ($authProxy && $emailHeader) ? ['email' => $emailHeader] : true;
 				if ($authProxy) {
