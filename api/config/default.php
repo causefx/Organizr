@@ -343,6 +343,7 @@ return array(
 	'homepagePlexRecentlyAddedMethod' => 'legacy',
 	'authProxyEnabled' => false,
 	'authProxyHeaderName' => '',
+	'authProxyHeaderNameEmail' => '',
 	'authProxyWhitelist' => '',
 	'ignoreTFALocal' => false,
 	'unifiURL' => '',

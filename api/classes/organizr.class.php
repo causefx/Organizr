@@ -2203,6 +2203,14 @@ class Organizr
 				),
 				array(
 					'type' => 'input',
+					'name' => 'authProxyWhitelist',
+					'label' => 'Auth Proxy Whitelist',
+					'value' => $this->config['authProxyWhitelist'],
+					'placeholder' => 'i.e. 10.0.0.0/24 or 10.0.0.20',
+					'help' => 'IPv4 only at the moment - This must be set to work, will accept subnet or IP address'
+				),
+				array(
+					'type' => 'input',
 					'name' => 'authProxyHeaderName',
 					'label' => 'Auth Proxy Header Name',
 					'value' => $this->config['authProxyHeaderName'],
@@ -2211,12 +2219,12 @@ class Organizr
 				),
 				array(
 					'type' => 'input',
-					'name' => 'authProxyWhitelist',
-					'label' => 'Auth Proxy Whitelist',
-					'value' => $this->config['authProxyWhitelist'],
-					'placeholder' => 'i.e. 10.0.0.0/24 or 10.0.0.20',
-					'help' => 'IPv4 only at the moment - This must be set to work, will accept subnet or IP address'
-				),
+					'name' => 'authProxyHeaderNameEmail',
+					'label' => 'Auth Proxy Header Name for Email',
+					'value' => $this->config['authProxyHeaderNameEmail'],
+					'placeholder' => 'i.e. X-Forwarded-Email',
+					'help' => 'Please choose a unique value for added security'
+				)
 			),
 			'Ping' => array(
 				array(
@@ -3057,6 +3065,7 @@ class Organizr
 		$function = 'plugin_auth_' . $this->config['authBackend'];
 		$authSuccess = false;
 		$authProxy = false;
+		$addEmailToAuthProxy = true;
 		// Check Login attempts and kill if over limit
 		if ($loginAttempts > $this->config['loginAttempts'] || isset($_COOKIE['lockout'])) {
 			$this->coookieSeconds('set', 'lockout', $this->config['loginLockout'], $this->config['loginLockout']);
@@ -3066,11 +3075,14 @@ class Organizr
 		// Check if Auth Proxy is enabled
 		if ($this->config['authProxyEnabled'] && $this->config['authProxyHeaderName'] !== '' && $this->config['authProxyWhitelist'] !== '') {
 			if (isset($this->getallheaders()[$this->config['authProxyHeaderName']])) {
-				$usernameHeader = isset($this->getallheaders()[$this->config['authProxyHeaderName']]) ? $this->getallheaders()[$this->config['authProxyHeaderName']] : $username;
+				$usernameHeader = $this->getallheaders()[$this->config['authProxyHeaderName']] ?? $username;
+				$emailHeader = $this->getallheaders()[$this->config['authProxyHeaderNameEmail']] ?? null;
 				$this->writeLog('success', 'Auth Proxy Function - Starting Verification for IP: ' . $this->userIP() . ' for request on: ' . $_SERVER['REMOTE_ADDR'] . ' against IP/Subnet: ' . $this->config['authProxyWhitelist'], $usernameHeader);
 				$whitelistRange = $this->analyzeIP($this->config['authProxyWhitelist']);
 				$authProxy = $this->authProxyRangeCheck($whitelistRange['from'], $whitelistRange['to']);
 				$username = ($authProxy) ? $usernameHeader : $username;
+				$password = ($password == null) ? $this->random_ascii_string(10) : $password;
+				$addEmailToAuthProxy = ($authProxy && $emailHeader) ? ['email' => $emailHeader] : true;
 				if ($authProxy) {
 					$this->writeLog('success', 'Auth Proxy Function - IP: ' . $this->userIP() . ' has been verified', $usernameHeader);
 				} else {
@@ -3103,7 +3115,7 @@ class Organizr
 						}
 					}
 			}
-			$authSuccess = ($authProxy) ? true : $authSuccess;
+			$authSuccess = ($authProxy) ? $addEmailToAuthProxy : $authSuccess;
 		} else {
 			// Has oAuth Token!
 			switch ($oAuthType) {
