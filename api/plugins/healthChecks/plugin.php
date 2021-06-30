@@ -102,17 +102,18 @@ class HealthChecks extends Organizr
 					'html' => '
 						<div class="row">
 						    <div class="col-lg-12">
-						        <div class="panel panel-info">
+						        <div class="panel panel-danger">
 						            <div class="panel-heading">
 						                <span lang="en">ATTENTION</span>
 						            </div>
 						            <div class="panel-wrapper collapse in" aria-expanded="true">
 						                <div class="panel-body">
-						                	<h4 lang="en">This is only used for the import button...</h4>
+						                	<h4 lang="en">Please use a Full Access Token</h4>
 						                    <br/>
-						                    <span>
-						                    	<span lang="en">Make sure to save before using the import button on Services tab</span>
-						                    </span>
+						                    <div>
+						                    	<p lang="en">Do not use a Read-Only Token as that will not give a correct UUID for sending the results to HealthChecks.io</p>
+						                    	<p lang="en">Make sure to save before using the import button on Services tab</p>
+						                    </div>
 						                </div>
 						            </div>
 						        </div>

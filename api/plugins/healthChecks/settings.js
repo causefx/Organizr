@@ -45,7 +45,8 @@ $(document).on('click', '.importNewHCService', function() {
 					$.each(checks, function(i,v) {
 						let alreadySetup = false;
 						if(typeof v.unique_key !== 'undefined'){
-							var uuid = v.unique_key;
+							data = 'Please use a Full Access Token';
+							throw new Error('Read-Only Token Used');
 						}else{
 							var uuid = v.ping_url;
 							uuid = uuid.match(/([0-9a-fA-F]{8}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{12})/g);
