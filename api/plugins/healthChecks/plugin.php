@@ -164,12 +164,37 @@ class HealthChecks extends Organizr
 		return $success;
 	}
 	
+	public function _healthCheckSelfHostedURLValidation($url, $checkOnly = false)
+	{
+		$selfHosted = true;
+		$url = $this->qualifyURL($url);
+		if (stripos($url, 'hc-ping.com') == false) {
+			if (stripos($url, '/ping') == false) {
+				$url = $url . '/ping';
+			}
+		} else {
+			$selfHosted = false;
+		}
+		return $checkOnly ? $selfHosted : $url;
+	}
+	
+	public function _healthCheckPluginStartUUID($uuid)
+	{
+		if (!$uuid || $this->config['HEALTHCHECKS-PingURL'] == '') {
+			return false;
+		}
+		$url = $this->_healthCheckSelfHostedURLValidation($this->config['HEALTHCHECKS-PingURL']);
+		$uuid = '/' . $uuid;
+		$options = ($this->localURL($url)) ? array('verify' => false) : array('verify' => $this->getCert());
+		return Requests::get($url . $uuid . '/start', [], $options);
+	}
+	
 	public function _healthCheckPluginUUID($uuid, $pass = false)
 	{
 		if (!$uuid || $this->config['HEALTHCHECKS-PingURL'] == '') {
 			return false;
 		}
-		$url = $this->qualifyURL($this->config['HEALTHCHECKS-PingURL']);
+		$url = $this->_healthCheckSelfHostedURLValidation($this->config['HEALTHCHECKS-PingURL']);
 		$uuid = '/' . $uuid;
 		$path = !$pass ? '/fail' : '';
 		$options = ($this->localURL($url)) ? array('verify' => false) : array('verify' => $this->getCert());
@@ -210,6 +235,9 @@ class HealthChecks extends Organizr
 				$testExternal = $v['External URL'] !== '' ?? false;
 				$testBoth = ($testLocal && $testExternal) ?? false;
 				$pass = false;
+				if ($testLocal || $testExternal || $testBoth) {
+					$this->_healthCheckPluginStartUUID($v['UUID']);
+				}
 				if ($testLocal) {
 					$allItems[$k]['results']['internal'] = ($this->_healthCheckPluginTest($v['Internal URL'])) ? 'Success' : 'Error';
 				}
