@@ -1717,6 +1717,16 @@ class Organizr
 	public function getSettingsMain()
 	{
 		return array(
+			'Settings Page' => array(
+				array(
+					'type' => 'select',
+					'name' => 'defaultSettingsTab',
+					'label' => 'Default Settings Tab',
+					'value' => $this->config['defaultSettingsTab'],
+					'options' => $this->getSettingsTabs(),
+					'help' => 'Choose which Settings Tab to be default when opening settings page'
+				),
+			),
 			'Github' => array(
 				array(
 					'type' => 'select',
@@ -2090,22 +2100,6 @@ class Organizr
 						),
 					)
 				)
-			),
-			'Performance' => array(
-				array(
-					'type' => 'switch',
-					'name' => 'performanceDisableIconDropdown',
-					'label' => 'Disable Icon Dropdown',
-					'help' => 'Disable select dropdown boxes on new and edit tab forms',
-					'value' => $this->config['performanceDisableIconDropdown'],
-				),
-				array(
-					'type' => 'switch',
-					'name' => 'performanceDisableImageDropdown',
-					'label' => 'Disable Image Dropdown',
-					'help' => 'Disable select dropdown boxes on new and edit tab forms',
-					'value' => $this->config['performanceDisableImageDropdown'],
-				),
 			),
 			'Login' => array(
 				array(

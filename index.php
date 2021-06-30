@@ -192,7 +192,6 @@ $Organizr = new Organizr();
 <script src="plugins/bower_components/jquery-wizard-master/libs/formvalidation/bootstrap.min.js"></script>
 <script src="js/bowser.min.js"></script>
 <script src="js/jasny-bootstrap.js"></script>
-<script src="js/cbpFWTabs.js?v=<?php echo $Organizr->fileHash; ?>"></script>
 <script src="js/js.cookie.js"></script>
 <script src="js/jquery-lang.min.js"></script>
 <script src="js/jquery-ui.min.js"></script>

@@ -283,6 +283,36 @@ trait OrganizrFunctions
 		);
 	}
 	
+	public function getSettingsTabs()
+	{
+		return array(
+			array(
+				'name' => 'Tab Editor',
+				'value' => '0'
+			),
+			array(
+				'name' => 'Customize',
+				'value' => '1'
+			),
+			array(
+				'name' => 'User Management',
+				'value' => '2'
+			),
+			array(
+				'name' => 'Image Manager',
+				'value' => '3'
+			),
+			array(
+				'name' => 'Plugins',
+				'value' => '4'
+			),
+			array(
+				'name' => 'System Settings',
+				'value' => '5'
+			)
+		);
+	}
+	
 	public function getAuthTypes()
 	{
 		return array(

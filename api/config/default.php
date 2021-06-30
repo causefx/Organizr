@@ -495,5 +495,6 @@ return array(
 	'traktAccessTokenExpires' => '',
 	'traktRefreshToken' => '',
 	'autoCollapseCategories' => false,
-	'autoExpandNavBar' => true
+	'autoExpandNavBar' => true,
+	'defaultSettingsTab' => '5'
 );
