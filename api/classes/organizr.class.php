@@ -232,20 +232,20 @@ class Organizr
 				"group" => $currentGroup,
 				"email" => $currentEmail,
 				"user_ip" => $currentIP,
-				"requested_group" => $group,
-				"result" => "User is not Authorized or User is locked"
+				"requested_group" => $group
 			];
+			$responseMessage = 'User is not Authorized or User is locked';
 			if ($whitelist) {
 				if (in_array($currentIP, $this->arrayIP($whitelist))) {
-					$userInfo['result'] = 'User is whitelisted';
-					$this->setAPIResponse('success', null, 200, $userInfo);
+					$responseMessage = 'User is whitelisted';
+					$this->setAPIResponse('success', $responseMessage, 200, $userInfo);
 					return true;
 				}
 			}
 			if ($blacklist) {
 				if (in_array($currentIP, $this->arrayIP($blacklist))) {
-					$userInfo['result'] = 'User is blacklisted';
-					$this->setAPIResponse('error', null, 401, $userInfo);
+					$responseMessage = 'User is blacklisted';
+					$this->setAPIResponse('error', $responseMessage, 401, $userInfo);
 					return true;
 				}
 			}
@@ -259,11 +259,11 @@ class Organizr
 					header("X-Organizr-User: $currentUser");
 					header("X-Organizr-Email: $currentEmail");
 					header("X-Organizr-Group: $currentGroup");
-					$userInfo['result'] = 'User is authorized';
-					$this->setAPIResponse('success', null, 200, $userInfo);
+					$responseMessage = 'User is authorized';
+					$this->setAPIResponse('success', $responseMessage, 200, $userInfo);
 				} else {
 					if (!$redirect) {
-						$this->setAPIResponse('error', null, 401, $userInfo);
+						$this->setAPIResponse('error', $responseMessage, 401, $userInfo);
 					} else {
 						exit(http_response_code(401) . header($redirect));
 					}
