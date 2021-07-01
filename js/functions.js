@@ -1112,7 +1112,8 @@ function buildFormItem(item){
 			break;
 		case 'select2':
             var select2ID = (item.id) ? '#'+item.id : '.'+item.name;
-            return smallLabel+'<select class="m-b-10 '+extraClass+'"'+placeholder+value+id+name+disabled+type+label+attr+' multiple="multiple" data-placeholder="Choose">'+selectOptions(item.options, item.value)+'</select><script>$("'+select2ID+'").select2();</script>';
+            let settings = (item.settings) ? item.settings : '{}';
+            return smallLabel+'<select class="m-b-10 '+extraClass+'"'+placeholder+value+id+name+disabled+type+label+attr+' multiple="multiple" data-placeholder="Choose">'+selectOptions(item.options, item.value)+'</select><script>$("'+select2ID+'").select2('+settings+');</script>';
 			break;
 		case 'switch':
 		case 'checkbox':

@@ -138,6 +138,8 @@ class Organizr
 		$this->upgradeCheck();
 		// Is Page load Organizr OAuth?
 		$this->checkForOrganizrOAuth();
+		// Is user Blacklisted?
+		$this->checkIfUserIsBlacklisted();
 	}
 	
 	protected function connectDB()
@@ -176,6 +178,16 @@ class Organizr
 		if ($this->config['authProxyEnabled'] && $this->config['authProxyHeaderName'] !== '' && $this->config['authProxyWhitelist'] !== '') {
 			if (isset(getallheaders()[$this->config['authProxyHeaderName']])) {
 				$this->coookieSeconds('set', 'organizrOAuth', 'true', 20000, false);
+			}
+		}
+	}
+	
+	public function checkIfUserIsBlacklisted()
+	{
+		if ($this->hasDB()) {
+			$currentIP = $this->userIP();
+			if (in_array($currentIP, $this->arrayIP($this->config['blacklisted']))) {
+				die($this->config['blacklistedMessage']);
 			}
 		}
 	}
@@ -2072,7 +2084,8 @@ class Organizr
 					'name' => 'debugAreaAuth',
 					'label' => 'Minimum Authentication for Debug Area',
 					'value' => $this->config['debugAreaAuth'],
-					'options' => $this->groupSelect()
+					'options' => $this->groupSelect(),
+					'settings' => '{}'
 				),
 				array(
 					'type' => 'select2',
@@ -2132,7 +2145,26 @@ class Organizr
 							'value' => 'allow-downloads'
 						),
 					)
-				)
+				),
+				array(
+					'type' => 'select2',
+					'class' => 'select2-multiple',
+					'id' => 'blacklisted-select',
+					'name' => 'blacklisted',
+					'label' => 'Blacklisted IP\'s',
+					'value' => $this->config['blacklisted'],
+					'help' => 'WARNING! This can potentially mess up your iFrames',
+					'options' => $this->makeOptionsFromValues($this->config['blacklisted']),
+					'settings' => '{tags: true}',
+				),
+				array(
+					'type' => 'textbox',
+					'name' => 'blacklistedMessage',
+					'class' => '',
+					'label' => 'Blacklisted Error Message',
+					'value' => $this->config['blacklistedMessage'],
+					'attr' => 'rows="10"',
+				),
 			),
 			'Login' => array(
 				array(

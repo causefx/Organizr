@@ -496,5 +496,7 @@ return array(
 	'traktRefreshToken' => '',
 	'autoCollapseCategories' => false,
 	'autoExpandNavBar' => true,
-	'defaultSettingsTab' => '5'
+	'defaultSettingsTab' => '5',
+	'blacklisted' => '',
+	'blacklistedMessage' => 'You have been blacklisted from this site.'
 );
