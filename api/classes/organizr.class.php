@@ -183,8 +183,29 @@ class Organizr
 	public function auth()
 	{
 		if ($this->hasDB()) {
-			$whitelist = isset($_GET['whitelist']) ? $_GET['whitelist'] : false;
-			$blacklist = isset($_GET['blacklist']) ? $_GET['blacklist'] : false;
+			if (isset($_GET['type'])) {
+				switch (strtolower($_GET['type'])) {
+					case 'whitelist':
+					case 'white':
+					case 'w':
+					case 'wl':
+					case 'allow':
+						$_GET['whitelist'] = $_GET['ips'] ?? false;
+						break;
+					case 'blacklist':
+					case 'black':
+					case 'b':
+					case 'bl':
+					case 'deny':
+						$_GET['blacklist'] = $_GET['ips'] ?? false;
+						break;
+					default:
+						$this->setAPIResponse('error', $_GET['type'] . ' is not a valid type', 401);
+						return true;
+				}
+			}
+			$whitelist = $_GET['whitelist'] ?? false;
+			$blacklist = $_GET['blacklist'] ?? false;
 			$group = 0;
 			$groupParam = ($_GET['group']) ?? 0;
 			$redirect = false;
@@ -196,7 +217,7 @@ class Organizr
 				}
 			}
 			$currentIP = $this->userIP();
-			$unlocked = ($this->user['locked'] == '1') ? false : true;
+			$unlocked = !($this->user['locked'] == '1');
 			if (isset($this->user)) {
 				$currentUser = $this->user['username'];
 				$currentGroup = $this->user['groupID'];
@@ -206,15 +227,26 @@ class Organizr
 				$currentGroup = $this->getUserLevel();
 				$currentEmail = 'guest@guest.com';
 			}
-			$userInfo = "User: $currentUser | Group: $currentGroup | IP: $currentIP | Requesting Access to Group $group | Result: ";
+			$userInfo = [
+				"user" => $currentUser,
+				"group" => $currentGroup,
+				"email" => $currentEmail,
+				"user_ip" => $currentIP,
+				"requested_group" => $group,
+				"result" => "User is not Authorized or User is locked"
+			];
 			if ($whitelist) {
 				if (in_array($currentIP, $this->arrayIP($whitelist))) {
-					$this->setAPIResponse('success', 'User is whitelisted', 200);
+					$userInfo['result'] = 'User is whitelisted';
+					$this->setAPIResponse('success', null, 200, $userInfo);
+					return true;
 				}
 			}
 			if ($blacklist) {
 				if (in_array($currentIP, $this->arrayIP($blacklist))) {
-					$this->setAPIResponse('error', $userInfo . ' User is blacklisted', 401);
+					$userInfo['result'] = 'User is blacklisted';
+					$this->setAPIResponse('error', null, 401, $userInfo);
+					return true;
 				}
 			}
 			if ($group !== null) {
@@ -227,10 +259,11 @@ class Organizr
 					header("X-Organizr-User: $currentUser");
 					header("X-Organizr-Email: $currentEmail");
 					header("X-Organizr-Group: $currentGroup");
-					$this->setAPIResponse('success', $userInfo . ' User is Authorized', 200);
+					$userInfo['result'] = 'User is authorized';
+					$this->setAPIResponse('success', null, 200, $userInfo);
 				} else {
 					if (!$redirect) {
-						$this->setAPIResponse('error', $userInfo . ' User is not Authorized or User is locked', 401);
+						$this->setAPIResponse('error', null, 401, $userInfo);
 					} else {
 						exit(http_response_code(401) . header($redirect));
 					}
