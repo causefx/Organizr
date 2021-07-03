@@ -3644,9 +3644,6 @@ function buildBackers(array){
         <!-- /.usercard-->
     `;
 	return backers;
-
-
-
 }
 function sponsorDetails(id){
 	sponsorsJSON().success(function(data) {
