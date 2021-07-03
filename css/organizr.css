@@ -4559,3 +4559,12 @@ html {
 .language-box {
     position: absolute !important;
 }
+.password-alt li.select2-selection__choice {
+    -webkit-text-security: disc;
+}
+.password-alt li.select2-selection__choice:hover {
+    -webkit-text-security: unset;
+}
+span.select2-selection__choice__remove {
+    -webkit-text-security: initial;
+}

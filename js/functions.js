@@ -1113,7 +1113,7 @@ function buildFormItem(item){
 		case 'select2':
             var select2ID = (item.id) ? '#'+item.id : '.'+item.name;
             let settings = (item.settings) ? item.settings : '{}';
-            return smallLabel+'<select class="m-b-10 '+extraClass+'"'+placeholder+value+id+name+disabled+type+label+attr+' multiple="multiple" data-placeholder="Choose">'+selectOptions(item.options, item.value)+'</select><script>$("'+select2ID+'").select2('+settings+');</script>';
+            return smallLabel+'<select class="m-b-10 password-alt '+extraClass+'"'+placeholder+value+id+name+disabled+type+label+attr+' multiple="multiple" data-placeholder="Choose">'+selectOptions(item.options, item.value)+'</select><script>$("'+select2ID+'").select2('+settings+');</script>';
 			break;
 		case 'switch':
 		case 'checkbox':
@@ -9846,6 +9846,29 @@ function messageSingle(heading,text,position,color,icon,timeout){
         setTimeout(function(){ messageSingle(heading,text,position,color,icon,timeout); }, 100);
     }
 }
+
+function closeAllMessages(){
+	let bb = activeInfo.settings.notifications.backbone;
+	if(notificationsReady){
+		switch (bb) {
+			case 'toastr':
+				$.toast().reset('all');
+				break;
+			case 'izi':
+				iziToast.destroy();
+				break;
+			case 'alertify':
+				alertify.dismissAll();
+				break;
+			case 'noty':
+				Noty.closeAll();
+				break;
+			default:
+				return false;
+		}
+	}
+}
+
 function blockDev(e) {
     var evtobj = window.event ? event : e;
     if (evtobj.keyCode == 73 && evtobj.shiftKey && evtobj.ctrlKey){

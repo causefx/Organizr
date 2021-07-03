@@ -361,6 +361,16 @@ trait OrganizrFunctions
 			return strpos($v, 'plugin_auth_') === 0;
 		}) as $value) {
 			$name = str_replace('plugin_auth_', '', $value);
+			if ($name == 'ldap') {
+				if (!function_exists('ldap_connect')) {
+					continue;
+				}
+			}
+			if ($name == 'ldap_disabled') {
+				if (function_exists('ldap_connect')) {
+					continue;
+				}
+			}
 			if (strpos($name, 'disabled') === false) {
 				$backendOptions[] = array(
 					'name' => ucwords(str_replace('_', ' ', $name)),
