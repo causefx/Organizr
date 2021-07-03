@@ -16,7 +16,7 @@ lang.init({
 var OAuthLoginNeeded = false;
 var directToHash = false;
 var pingOrg = false;
-var checkCommitLoad = false;
+var checkCommitLoadStatus = false;
 var timeouts = {};
 var increment = 0;
 var tabInformation = {};
@@ -3556,8 +3556,8 @@ function newsLoad(){
 }
 function checkCommitLoad(){
     if(activeInfo.settings.misc.docker && activeInfo.settings.misc.githubCommit !== 'n/a' && activeInfo.settings.misc.githubCommit !== null) {
-	    if(checkCommitLoad == false) {
-		    checkCommitLoad = true;
+	    if(checkCommitLoadStatus == false) {
+		    checkCommitLoadStatus = true;
 		    getLatestCommitJSON().success(function (data) {
 			    try {
 				    var latest = data.sha.toString().trim();
@@ -3572,10 +3572,10 @@ function checkCommitLoad(){
 			    } catch (e) {
 				    organizrCatchError(e, data);
 			    }
-			    checkCommitLoad = false;
+			    checkCommitLoadStatus = false;
 		    }).fail(function (xhr) {
 			    console.error("Organizr Function: Github Connection Failed");
-			    checkCommitLoad = false;
+			    checkCommitLoadStatus = false;
 		    });
 	    }
     }
