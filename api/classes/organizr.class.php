@@ -2153,7 +2153,7 @@ class Organizr
 					'name' => 'blacklisted',
 					'label' => 'Blacklisted IP\'s',
 					'value' => $this->config['blacklisted'],
-					'help' => 'WARNING! This can potentially mess up your iFrames',
+					'help' => 'WARNING! This will block anyone with these IP\'s',
 					'options' => $this->makeOptionsFromValues($this->config['blacklisted']),
 					'settings' => '{tags: true}',
 				),
