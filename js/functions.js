@@ -3481,6 +3481,7 @@ function updateCheck(){
 		if(latest !== currentVersion) {
 			organizrConsole('Update Function','Update to ' + latest + ' is available', 'warning');
             if (activeInfo.settings.misc.docker === false) {
+	            closeAllMessages();
                 messageSingle(window.lang.translate('Update Available'), latest + ' ' + window.lang.translate('is available, goto') + ' <a href="javascript:void(0)" onclick="tabActions(event,\'Settings\',0);clickPath(\'update\')"><span lang="en">Update Tab</span></a>', activeInfo.settings.notifications.position, '#FFF', 'update', '60000');
             }
         }else{
@@ -3560,6 +3561,7 @@ function checkCommitLoad(){
                 var current = activeInfo.settings.misc.githubCommit.toString().trim();
                 var link = 'https://github.com/causefx/Organizr/compare/'+current+'...'+latest;
                 if(latest !== current) {
+	                closeAllMessages();
                     messageSingle(window.lang.translate('Update Available'),' <a href="'+link+'" target="_blank"><span lang="en">Compare Difference</span></a> <span lang="en">or</span> <a href="javascript:void(0)" onclick="updateNow()"><span lang="en">Update Now</span></a>', activeInfo.settings.notifications.position, '#FFF', 'update', '600000');
                 }else{
 	                organizrConsole('Update Function','Organizr Docker - Up to date');
