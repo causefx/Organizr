@@ -16,6 +16,7 @@ lang.init({
 var OAuthLoginNeeded = false;
 var directToHash = false;
 var pingOrg = false;
+var checkCommitLoad = false;
 var timeouts = {};
 var increment = 0;
 var tabInformation = {};
@@ -3555,23 +3556,28 @@ function newsLoad(){
 }
 function checkCommitLoad(){
     if(activeInfo.settings.misc.docker && activeInfo.settings.misc.githubCommit !== 'n/a' && activeInfo.settings.misc.githubCommit !== null) {
-        getLatestCommitJSON().success(function (data) {
-            try {
-                var latest = data.sha.toString().trim();
-                var current = activeInfo.settings.misc.githubCommit.toString().trim();
-                var link = 'https://github.com/causefx/Organizr/compare/'+current+'...'+latest;
-                if(latest !== current) {
-	                closeAllMessages();
-                    messageSingle(window.lang.translate('Update Available'),' <a href="'+link+'" target="_blank"><span lang="en">Compare Difference</span></a> <span lang="en">or</span> <a href="javascript:void(0)" onclick="updateNow()"><span lang="en">Update Now</span></a>', activeInfo.settings.notifications.position, '#FFF', 'update', '600000');
-                }else{
-	                organizrConsole('Update Function','Organizr Docker - Up to date');
-                }
-            } catch (e) {
-	            organizrCatchError(e,data);
-            }
-        }).fail(function (xhr) {
-            console.error("Organizr Function: Github Connection Failed");
-        });
+	    if(checkCommitLoad == false) {
+		    checkCommitLoad = true;
+		    getLatestCommitJSON().success(function (data) {
+			    try {
+				    var latest = data.sha.toString().trim();
+				    var current = activeInfo.settings.misc.githubCommit.toString().trim();
+				    var link = 'https://github.com/causefx/Organizr/compare/' + current + '...' + latest;
+				    if (latest !== current) {
+					    closeAllMessages();
+					    messageSingle(window.lang.translate('Update Available'), ' <a href="' + link + '" target="_blank"><span lang="en">Compare Difference</span></a> <span lang="en">or</span> <a href="javascript:void(0)" onclick="updateNow()"><span lang="en">Update Now</span></a>', activeInfo.settings.notifications.position, '#FFF', 'update', '600000');
+				    } else {
+					    organizrConsole('Update Function', 'Organizr Docker - Up to date');
+				    }
+			    } catch (e) {
+				    organizrCatchError(e, data);
+			    }
+			    checkCommitLoad = false;
+		    }).fail(function (xhr) {
+			    console.error("Organizr Function: Github Connection Failed");
+			    checkCommitLoad = false;
+		    });
+	    }
     }
 }
 function sponsorLoad(){
