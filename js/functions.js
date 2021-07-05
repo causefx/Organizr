@@ -189,7 +189,7 @@ function formatDebug(result){
             formatted = result;
 
     }
-    return '<pre class="whitebox bg-org text-success">' + formatted + '</pre>';
+    return '<pre class="whitebox bg-org text-success default-scroller">' + formatted + '</pre>';
 }
 function getDebugPreInfo(){
     var formatted = 'Version: ' + activeInfo.version +
@@ -10714,6 +10714,11 @@ function loadJavascript(script = null, defer = false){
 		}
 	}
 }
+
+function tabShit(){
+
+}
+
 function launch(){
 	console.info('https://docs.organizr.app/books/setup-features/page/organizr-20--%3E-21-migration-guide');
 	organizrConsole('API V2 API','If you see a 404 Error for api/v2/launch below this line, you have not setup the new location block... See URL above this line', 'error');

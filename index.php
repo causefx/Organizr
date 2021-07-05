@@ -246,6 +246,7 @@ echo $Organizr->googleTracking();
 echo $Organizr->pluginFiles('js');
 echo $Organizr->formKey();
 echo $Organizr->loadCalendarJS();
+echo $Organizr->CBPFWTabs();
 ?>
 </body>
 
