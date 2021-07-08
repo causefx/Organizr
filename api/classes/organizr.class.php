@@ -3405,7 +3405,7 @@ class Organizr
 				);
 				$PhpMailer->_phpMailerPluginSendEmail($sendEmail);
 			}
-			if ($this->createToken($username, $this->gravatar($email), $this->config['rememberMeDays'])) {
+			if ($this->createToken($username, $email, $this->config['rememberMeDays'])) {
 				$this->writeLoginLog($username, 'success');
 				$this->writeLog('success', 'Login Function - A User has logged in', $username);
 				return true;
