@@ -1427,6 +1427,7 @@ img.dark-logo-side {
     position: relative;
     vertical-align: middle;
     width: 100% !important;
+    z-index: 9999;
 }
 .select2-container--default .select2-selection--single .select2-selection__rendered {
     line-height: 38px;
@@ -4557,4 +4558,13 @@ html {
 }
 .language-box {
     position: absolute !important;
+}
+.password-alt li.select2-selection__choice {
+    -webkit-text-security: disc;
+}
+.password-alt li.select2-selection__choice:hover {
+    -webkit-text-security: unset;
+}
+span.select2-selection__choice__remove {
+    -webkit-text-security: initial;
 }

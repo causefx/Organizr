@@ -102,17 +102,18 @@ class HealthChecks extends Organizr
 					'html' => '
 						<div class="row">
 						    <div class="col-lg-12">
-						        <div class="panel panel-info">
+						        <div class="panel panel-danger">
 						            <div class="panel-heading">
 						                <span lang="en">ATTENTION</span>
 						            </div>
 						            <div class="panel-wrapper collapse in" aria-expanded="true">
 						                <div class="panel-body">
-						                	<h4 lang="en">This is only used for the import button...</h4>
+						                	<h4 lang="en">Please use a Full Access Token</h4>
 						                    <br/>
-						                    <span>
-						                    	<span lang="en">Make sure to save before using the import button on Services tab</span>
-						                    </span>
+						                    <div>
+						                    	<p lang="en">Do not use a Read-Only Token as that will not give a correct UUID for sending the results to HealthChecks.io</p>
+						                    	<p lang="en">Make sure to save before using the import button on Services tab</p>
+						                    </div>
 						                </div>
 						            </div>
 						        </div>
@@ -163,12 +164,37 @@ class HealthChecks extends Organizr
 		return $success;
 	}
 	
+	public function _healthCheckSelfHostedURLValidation($url, $checkOnly = false)
+	{
+		$selfHosted = true;
+		$url = $this->qualifyURL($url);
+		if (stripos($url, 'hc-ping.com') == false) {
+			if (stripos($url, '/ping') == false) {
+				$url = $url . '/ping';
+			}
+		} else {
+			$selfHosted = false;
+		}
+		return $checkOnly ? $selfHosted : $url;
+	}
+	
+	public function _healthCheckPluginStartUUID($uuid)
+	{
+		if (!$uuid || $this->config['HEALTHCHECKS-PingURL'] == '') {
+			return false;
+		}
+		$url = $this->_healthCheckSelfHostedURLValidation($this->config['HEALTHCHECKS-PingURL']);
+		$uuid = '/' . $uuid;
+		$options = ($this->localURL($url)) ? array('verify' => false) : array('verify' => $this->getCert());
+		return Requests::get($url . $uuid . '/start', [], $options);
+	}
+	
 	public function _healthCheckPluginUUID($uuid, $pass = false)
 	{
 		if (!$uuid || $this->config['HEALTHCHECKS-PingURL'] == '') {
 			return false;
 		}
-		$url = $this->qualifyURL($this->config['HEALTHCHECKS-PingURL']);
+		$url = $this->_healthCheckSelfHostedURLValidation($this->config['HEALTHCHECKS-PingURL']);
 		$uuid = '/' . $uuid;
 		$path = !$pass ? '/fail' : '';
 		$options = ($this->localURL($url)) ? array('verify' => false) : array('verify' => $this->getCert());
@@ -209,6 +235,9 @@ class HealthChecks extends Organizr
 				$testExternal = $v['External URL'] !== '' ?? false;
 				$testBoth = ($testLocal && $testExternal) ?? false;
 				$pass = false;
+				if ($testLocal || $testExternal || $testBoth) {
+					$this->_healthCheckPluginStartUUID($v['UUID']);
+				}
 				if ($testLocal) {
 					$allItems[$k]['results']['internal'] = ($this->_healthCheckPluginTest($v['Internal URL'])) ? 'Success' : 'Error';
 				}

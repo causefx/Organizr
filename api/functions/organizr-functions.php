@@ -283,6 +283,36 @@ trait OrganizrFunctions
 		);
 	}
 	
+	public function getSettingsTabs()
+	{
+		return array(
+			array(
+				'name' => 'Tab Editor',
+				'value' => '0'
+			),
+			array(
+				'name' => 'Customize',
+				'value' => '1'
+			),
+			array(
+				'name' => 'User Management',
+				'value' => '2'
+			),
+			array(
+				'name' => 'Image Manager',
+				'value' => '3'
+			),
+			array(
+				'name' => 'Plugins',
+				'value' => '4'
+			),
+			array(
+				'name' => 'System Settings',
+				'value' => '5'
+			)
+		);
+	}
+	
 	public function getAuthTypes()
 	{
 		return array(
@@ -331,6 +361,16 @@ trait OrganizrFunctions
 			return strpos($v, 'plugin_auth_') === 0;
 		}) as $value) {
 			$name = str_replace('plugin_auth_', '', $value);
+			if ($name == 'ldap') {
+				if (!function_exists('ldap_connect')) {
+					continue;
+				}
+			}
+			if ($name == 'ldap_disabled') {
+				if (function_exists('ldap_connect')) {
+					continue;
+				}
+			}
 			if (strpos($name, 'disabled') === false) {
 				$backendOptions[] = array(
 					'name' => ucwords(str_replace('_', ' ', $name)),

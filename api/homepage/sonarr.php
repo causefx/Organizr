@@ -50,18 +50,26 @@ trait SonarrHomepageItem
 				),
 				'Connection' => array(
 					array(
-						'type' => 'input',
+						'type' => 'select2',
+						'class' => 'select2-multiple',
+						'id' => 'sonarrURL-select',
 						'name' => 'sonarrURL',
-						'label' => 'URL',
+						'label' => 'Sonarr URL',
 						'value' => $this->config['sonarrURL'],
 						'help' => 'Please make sure to use local IP address and port - You also may use local dns name too.',
-						'placeholder' => 'http(s)://hostname:port'
+						'placeholder' => 'http(s)://hostname:port',
+						'options' => $this->makeOptionsFromValues($this->config['sonarrURL']),
+						'settings' => '{tags: true}',
 					),
 					array(
-						'type' => 'password-alt',
+						'type' => 'select2',
+						'class' => 'select2-multiple',
+						'id' => 'sonarrToken-select',
 						'name' => 'sonarrToken',
-						'label' => 'Token',
-						'value' => $this->config['sonarrToken']
+						'label' => 'Sonarr Token',
+						'value' => $this->config['sonarrToken'],
+						'options' => $this->makeOptionsFromValues($this->config['sonarrToken']),
+						'settings' => '{tags: true, theme: "default password-alt"}',
 					)
 				),
 				'API SOCKS' => array(

@@ -16,6 +16,7 @@ lang.init({
 var OAuthLoginNeeded = false;
 var directToHash = false;
 var pingOrg = false;
+var checkCommitLoadStatus = false;
 var timeouts = {};
 var increment = 0;
 var tabInformation = {};
@@ -188,7 +189,7 @@ function formatDebug(result){
             formatted = result;
 
     }
-    return '<pre class="whitebox bg-org text-success">' + formatted + '</pre>';
+    return '<pre class="whitebox bg-org text-success default-scroller">' + formatted + '</pre>';
 }
 function getDebugPreInfo(){
     var formatted = 'Version: ' + activeInfo.version +
@@ -1112,7 +1113,8 @@ function buildFormItem(item){
 			break;
 		case 'select2':
             var select2ID = (item.id) ? '#'+item.id : '.'+item.name;
-            return smallLabel+'<select class="m-b-10 '+extraClass+'"'+placeholder+value+id+name+disabled+type+label+attr+' multiple="multiple" data-placeholder="Choose">'+selectOptions(item.options, item.value)+'</select><script>$("'+select2ID+'").select2();</script>';
+            let settings = (item.settings) ? item.settings : '{}';
+            return smallLabel+'<select class="m-b-10 '+extraClass+'"'+placeholder+value+id+name+disabled+type+label+attr+' multiple="multiple" data-placeholder="Choose">'+selectOptions(item.options, item.value)+'</select><script>$("'+select2ID+'").select2('+settings+');</script>';
 			break;
 		case 'switch':
 		case 'checkbox':
@@ -3480,6 +3482,7 @@ function updateCheck(){
 		if(latest !== currentVersion) {
 			organizrConsole('Update Function','Update to ' + latest + ' is available', 'warning');
             if (activeInfo.settings.misc.docker === false) {
+	            closeAllMessages();
                 messageSingle(window.lang.translate('Update Available'), latest + ' ' + window.lang.translate('is available, goto') + ' <a href="javascript:void(0)" onclick="tabActions(event,\'Settings\',0);clickPath(\'update\')"><span lang="en">Update Tab</span></a>', activeInfo.settings.notifications.position, '#FFF', 'update', '60000');
             }
         }else{
@@ -3553,22 +3556,28 @@ function newsLoad(){
 }
 function checkCommitLoad(){
     if(activeInfo.settings.misc.docker && activeInfo.settings.misc.githubCommit !== 'n/a' && activeInfo.settings.misc.githubCommit !== null) {
-        getLatestCommitJSON().success(function (data) {
-            try {
-                var latest = data.sha.toString().trim();
-                var current = activeInfo.settings.misc.githubCommit.toString().trim();
-                var link = 'https://github.com/causefx/Organizr/compare/'+current+'...'+latest;
-                if(latest !== current) {
-                    messageSingle(window.lang.translate('Update Available'),' <a href="'+link+'" target="_blank"><span lang="en">Compare Difference</span></a> <span lang="en">or</span> <a href="javascript:void(0)" onclick="updateNow()"><span lang="en">Update Now</span></a>', activeInfo.settings.notifications.position, '#FFF', 'update', '600000');
-                }else{
-	                organizrConsole('Update Function','Organizr Docker - Up to date');
-                }
-            } catch (e) {
-	            organizrCatchError(e,data);
-            }
-        }).fail(function (xhr) {
-            console.error("Organizr Function: Github Connection Failed");
-        });
+	    if(checkCommitLoadStatus == false) {
+		    checkCommitLoadStatus = true;
+		    getLatestCommitJSON().success(function (data) {
+			    try {
+				    var latest = data.sha.toString().trim();
+				    var current = activeInfo.settings.misc.githubCommit.toString().trim();
+				    var link = 'https://github.com/causefx/Organizr/compare/' + current + '...' + latest;
+				    if (latest !== current) {
+					    closeAllMessages();
+					    messageSingle(window.lang.translate('Update Available'), ' <a href="' + link + '" target="_blank"><span lang="en">Compare Difference</span></a> <span lang="en">or</span> <a href="javascript:void(0)" onclick="updateNow()"><span lang="en">Update Now</span></a>', activeInfo.settings.notifications.position, '#FFF', 'update', '600000');
+				    } else {
+					    organizrConsole('Update Function', 'Organizr Docker - Up to date');
+				    }
+			    } catch (e) {
+				    organizrCatchError(e, data);
+			    }
+			    checkCommitLoadStatus = false;
+		    }).fail(function (xhr) {
+			    console.error("Organizr Function: Github Connection Failed");
+			    checkCommitLoadStatus = false;
+		    });
+	    }
     }
 }
 function sponsorLoad(){
@@ -3635,9 +3644,6 @@ function buildBackers(array){
         <!-- /.usercard-->
     `;
 	return backers;
-
-
-
 }
 function sponsorDetails(id){
 	sponsorsJSON().success(function(data) {
@@ -9845,6 +9851,29 @@ function messageSingle(heading,text,position,color,icon,timeout){
         setTimeout(function(){ messageSingle(heading,text,position,color,icon,timeout); }, 100);
     }
 }
+
+function closeAllMessages(){
+	let bb = activeInfo.settings.notifications.backbone;
+	if(notificationsReady){
+		switch (bb) {
+			case 'toastr':
+				$.toast().reset('all');
+				break;
+			case 'izi':
+				iziToast.destroy();
+				break;
+			case 'alertify':
+				alertify.dismissAll();
+				break;
+			case 'noty':
+				Noty.closeAll();
+				break;
+			default:
+				return false;
+		}
+	}
+}
+
 function blockDev(e) {
     var evtobj = window.event ? event : e;
     if (evtobj.keyCode == 73 && evtobj.shiftKey && evtobj.ctrlKey){
@@ -10685,6 +10714,11 @@ function loadJavascript(script = null, defer = false){
 		}
 	}
 }
+
+function tabShit(){
+
+}
+
 function launch(){
 	console.info('https://docs.organizr.app/books/setup-features/page/organizr-20--%3E-21-migration-guide');
 	organizrConsole('API V2 API','If you see a 404 Error for api/v2/launch below this line, you have not setup the new location block... See URL above this line', 'error');

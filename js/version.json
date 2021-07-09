@@ -383,5 +383,12 @@
     "new": "Updated UI on update page|Refactored the way plugins are stored so it is cleaner|Updated healthChecks plugin|option to Auto-collapse categories (FR#150933)|option to disable auto expand of navbar FR#150876|language-box css class|add extras to unifi homepage call|warning to sso functions|healthchecks import to plugin|toggle for 401 and 403 bypass for healthchecks plugin",
     "fixed": "SSO failing due to timeout error white getting tokens (#1665)|force Radarr to use v3 endpoint now (#1663)|plex error not catching|update downloader refresh times to be independent|update requestOptions function|updated scrollbars again|change to edit homepage modal|set correct tab type after re-adding the homepage (#1671)",
     "notes": ""
+  },
+  "2.1.426": {
+    "date": "2021-07-09 19:20",
+    "title": "Some new features",
+    "new": "global blacklist user feature|option to define which settings page tab will open by default|sonarr to use new input method for token and url|icon for Prowlarr|email for Auth Proxy|start time and url validation for selfhosted url|new auth URL scheme",
+    "fixed": "selfhosted healtcheck import issue|validate data on unused API endpoint|authRegister bug requiring 2 logins|help message for blacklist|catch all for single item parse on options|LDAP showing in backend|weather homepage|checking of commit",
+    "notes": "update HC Plugin to only use Full Access Token|closeAllMessages function to update call"
   }
 }

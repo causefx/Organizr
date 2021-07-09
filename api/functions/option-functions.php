@@ -2,6 +2,26 @@
 
 trait OptionsFunction
 {
+	public function makeOptionsFromValues($values = null)
+	{
+		$formattedValues = [];
+		if (strpos($values, ',') !== false) {
+			$explode = explode(',', $values);
+			foreach ($explode as $item) {
+				$formattedValues[] = [
+					'name' => $item,
+					'value' => $item
+				];
+			}
+		} else {
+			$formattedValues[] = [
+				'name' => $values,
+				'value' => $values
+			];
+		}
+		return $formattedValues;
+	}
+	
 	public function calendarLocaleOptions()
 	{
 		return [

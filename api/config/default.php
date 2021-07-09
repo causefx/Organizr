@@ -343,6 +343,7 @@ return array(
 	'homepagePlexRecentlyAddedMethod' => 'legacy',
 	'authProxyEnabled' => false,
 	'authProxyHeaderName' => '',
+	'authProxyHeaderNameEmail' => '',
 	'authProxyWhitelist' => '',
 	'ignoreTFALocal' => false,
 	'unifiURL' => '',
@@ -494,5 +495,8 @@ return array(
 	'traktAccessTokenExpires' => '',
 	'traktRefreshToken' => '',
 	'autoCollapseCategories' => false,
-	'autoExpandNavBar' => true
+	'autoExpandNavBar' => true,
+	'defaultSettingsTab' => '5',
+	'blacklisted' => '',
+	'blacklistedMessage' => 'You have been blacklisted from this site.'
 );

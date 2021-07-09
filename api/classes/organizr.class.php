@@ -60,7 +60,7 @@ class Organizr
 	
 	// ===================================
 	// Organizr Version
-	public $version = '2.1.400';
+	public $version = '2.1.426';
 	// ===================================
 	// Quick php Version check
 	public $minimumPHP = '7.3';
@@ -138,6 +138,8 @@ class Organizr
 		$this->upgradeCheck();
 		// Is Page load Organizr OAuth?
 		$this->checkForOrganizrOAuth();
+		// Is user Blacklisted?
+		$this->checkIfUserIsBlacklisted();
 	}
 	
 	protected function connectDB()
@@ -180,11 +182,42 @@ class Organizr
 		}
 	}
 	
+	public function checkIfUserIsBlacklisted()
+	{
+		if ($this->hasDB()) {
+			$currentIP = $this->userIP();
+			if (in_array($currentIP, $this->arrayIP($this->config['blacklisted']))) {
+				die($this->config['blacklistedMessage']);
+			}
+		}
+	}
+	
 	public function auth()
 	{
 		if ($this->hasDB()) {
-			$whitelist = isset($_GET['whitelist']) ? $_GET['whitelist'] : false;
-			$blacklist = isset($_GET['blacklist']) ? $_GET['blacklist'] : false;
+			if (isset($_GET['type'])) {
+				switch (strtolower($_GET['type'])) {
+					case 'whitelist':
+					case 'white':
+					case 'w':
+					case 'wl':
+					case 'allow':
+						$_GET['whitelist'] = $_GET['ips'] ?? false;
+						break;
+					case 'blacklist':
+					case 'black':
+					case 'b':
+					case 'bl':
+					case 'deny':
+						$_GET['blacklist'] = $_GET['ips'] ?? false;
+						break;
+					default:
+						$this->setAPIResponse('error', $_GET['type'] . ' is not a valid type', 401);
+						return true;
+				}
+			}
+			$whitelist = $_GET['whitelist'] ?? false;
+			$blacklist = $_GET['blacklist'] ?? false;
 			$group = 0;
 			$groupParam = ($_GET['group']) ?? 0;
 			$redirect = false;
@@ -196,7 +229,7 @@ class Organizr
 				}
 			}
 			$currentIP = $this->userIP();
-			$unlocked = ($this->user['locked'] == '1') ? false : true;
+			$unlocked = !($this->user['locked'] == '1');
 			if (isset($this->user)) {
 				$currentUser = $this->user['username'];
 				$currentGroup = $this->user['groupID'];
@@ -206,15 +239,26 @@ class Organizr
 				$currentGroup = $this->getUserLevel();
 				$currentEmail = 'guest@guest.com';
 			}
-			$userInfo = "User: $currentUser | Group: $currentGroup | IP: $currentIP | Requesting Access to Group $group | Result: ";
+			$userInfo = [
+				"user" => $currentUser,
+				"group" => $currentGroup,
+				"email" => $currentEmail,
+				"user_ip" => $currentIP,
+				"requested_group" => $group
+			];
+			$responseMessage = 'User is not Authorized or User is locked';
 			if ($whitelist) {
 				if (in_array($currentIP, $this->arrayIP($whitelist))) {
-					$this->setAPIResponse('success', 'User is whitelisted', 200);
+					$responseMessage = 'User is whitelisted';
+					$this->setAPIResponse('success', $responseMessage, 200, $userInfo);
+					return true;
 				}
 			}
 			if ($blacklist) {
 				if (in_array($currentIP, $this->arrayIP($blacklist))) {
-					$this->setAPIResponse('error', $userInfo . ' User is blacklisted', 401);
+					$responseMessage = 'User is blacklisted';
+					$this->setAPIResponse('error', $responseMessage, 401, $userInfo);
+					return true;
 				}
 			}
 			if ($group !== null) {
@@ -227,10 +271,11 @@ class Organizr
 					header("X-Organizr-User: $currentUser");
 					header("X-Organizr-Email: $currentEmail");
 					header("X-Organizr-Group: $currentGroup");
-					$this->setAPIResponse('success', $userInfo . ' User is Authorized', 200);
+					$responseMessage = 'User is authorized';
+					$this->setAPIResponse('success', $responseMessage, 200, $userInfo);
 				} else {
 					if (!$redirect) {
-						$this->setAPIResponse('error', $userInfo . ' User is not Authorized or User is locked', 401);
+						$this->setAPIResponse('error', $responseMessage, 401, $userInfo);
 					} else {
 						exit(http_response_code(401) . header($redirect));
 					}
@@ -1717,6 +1762,16 @@ class Organizr
 	public function getSettingsMain()
 	{
 		return array(
+			'Settings Page' => array(
+				array(
+					'type' => 'select',
+					'name' => 'defaultSettingsTab',
+					'label' => 'Default Settings Tab',
+					'value' => $this->config['defaultSettingsTab'],
+					'options' => $this->getSettingsTabs(),
+					'help' => 'Choose which Settings Tab to be default when opening settings page'
+				),
+			),
 			'Github' => array(
 				array(
 					'type' => 'select',
@@ -2029,7 +2084,8 @@ class Organizr
 					'name' => 'debugAreaAuth',
 					'label' => 'Minimum Authentication for Debug Area',
 					'value' => $this->config['debugAreaAuth'],
-					'options' => $this->groupSelect()
+					'options' => $this->groupSelect(),
+					'settings' => '{}'
 				),
 				array(
 					'type' => 'select2',
@@ -2089,22 +2145,25 @@ class Organizr
 							'value' => 'allow-downloads'
 						),
 					)
-				)
-			),
-			'Performance' => array(
-				array(
-					'type' => 'switch',
-					'name' => 'performanceDisableIconDropdown',
-					'label' => 'Disable Icon Dropdown',
-					'help' => 'Disable select dropdown boxes on new and edit tab forms',
-					'value' => $this->config['performanceDisableIconDropdown'],
 				),
 				array(
-					'type' => 'switch',
-					'name' => 'performanceDisableImageDropdown',
-					'label' => 'Disable Image Dropdown',
-					'help' => 'Disable select dropdown boxes on new and edit tab forms',
-					'value' => $this->config['performanceDisableImageDropdown'],
+					'type' => 'select2',
+					'class' => 'select2-multiple',
+					'id' => 'blacklisted-select',
+					'name' => 'blacklisted',
+					'label' => 'Blacklisted IP\'s',
+					'value' => $this->config['blacklisted'],
+					'help' => 'WARNING! This will block anyone with these IP\'s',
+					'options' => $this->makeOptionsFromValues($this->config['blacklisted']),
+					'settings' => '{tags: true}',
+				),
+				array(
+					'type' => 'textbox',
+					'name' => 'blacklistedMessage',
+					'class' => '',
+					'label' => 'Blacklisted Error Message',
+					'value' => $this->config['blacklistedMessage'],
+					'attr' => 'rows="10"',
 				),
 			),
 			'Login' => array(
@@ -2203,6 +2262,14 @@ class Organizr
 				),
 				array(
 					'type' => 'input',
+					'name' => 'authProxyWhitelist',
+					'label' => 'Auth Proxy Whitelist',
+					'value' => $this->config['authProxyWhitelist'],
+					'placeholder' => 'i.e. 10.0.0.0/24 or 10.0.0.20',
+					'help' => 'IPv4 only at the moment - This must be set to work, will accept subnet or IP address'
+				),
+				array(
+					'type' => 'input',
 					'name' => 'authProxyHeaderName',
 					'label' => 'Auth Proxy Header Name',
 					'value' => $this->config['authProxyHeaderName'],
@@ -2211,12 +2278,12 @@ class Organizr
 				),
 				array(
 					'type' => 'input',
-					'name' => 'authProxyWhitelist',
-					'label' => 'Auth Proxy Whitelist',
-					'value' => $this->config['authProxyWhitelist'],
-					'placeholder' => 'i.e. 10.0.0.0/24 or 10.0.0.20',
-					'help' => 'IPv4 only at the moment - This must be set to work, will accept subnet or IP address'
-				),
+					'name' => 'authProxyHeaderNameEmail',
+					'label' => 'Auth Proxy Header Name for Email',
+					'value' => $this->config['authProxyHeaderNameEmail'],
+					'placeholder' => 'i.e. X-Forwarded-Email',
+					'help' => 'Please choose a unique value for added security'
+				)
 			),
 			'Ping' => array(
 				array(
@@ -3057,6 +3124,7 @@ class Organizr
 		$function = 'plugin_auth_' . $this->config['authBackend'];
 		$authSuccess = false;
 		$authProxy = false;
+		$addEmailToAuthProxy = true;
 		// Check Login attempts and kill if over limit
 		if ($loginAttempts > $this->config['loginAttempts'] || isset($_COOKIE['lockout'])) {
 			$this->coookieSeconds('set', 'lockout', $this->config['loginLockout'], $this->config['loginLockout']);
@@ -3066,11 +3134,14 @@ class Organizr
 		// Check if Auth Proxy is enabled
 		if ($this->config['authProxyEnabled'] && $this->config['authProxyHeaderName'] !== '' && $this->config['authProxyWhitelist'] !== '') {
 			if (isset($this->getallheaders()[$this->config['authProxyHeaderName']])) {
-				$usernameHeader = isset($this->getallheaders()[$this->config['authProxyHeaderName']]) ? $this->getallheaders()[$this->config['authProxyHeaderName']] : $username;
+				$usernameHeader = $this->getallheaders()[$this->config['authProxyHeaderName']] ?? $username;
+				$emailHeader = $this->getallheaders()[$this->config['authProxyHeaderNameEmail']] ?? null;
 				$this->writeLog('success', 'Auth Proxy Function - Starting Verification for IP: ' . $this->userIP() . ' for request on: ' . $_SERVER['REMOTE_ADDR'] . ' against IP/Subnet: ' . $this->config['authProxyWhitelist'], $usernameHeader);
 				$whitelistRange = $this->analyzeIP($this->config['authProxyWhitelist']);
 				$authProxy = $this->authProxyRangeCheck($whitelistRange['from'], $whitelistRange['to']);
 				$username = ($authProxy) ? $usernameHeader : $username;
+				$password = ($password == null) ? $this->random_ascii_string(10) : $password;
+				$addEmailToAuthProxy = ($authProxy && $emailHeader) ? ['email' => $emailHeader] : true;
 				if ($authProxy) {
 					$this->writeLog('success', 'Auth Proxy Function - IP: ' . $this->userIP() . ' has been verified', $usernameHeader);
 				} else {
@@ -3103,7 +3174,7 @@ class Organizr
 						}
 					}
 			}
-			$authSuccess = ($authProxy) ? true : $authSuccess;
+			$authSuccess = ($authProxy) ? $addEmailToAuthProxy : $authSuccess;
 		} else {
 			// Has oAuth Token!
 			switch ($oAuthType) {
@@ -3334,7 +3405,7 @@ class Organizr
 				);
 				$PhpMailer->_phpMailerPluginSendEmail($sendEmail);
 			}
-			if ($this->createToken($username, $email, $this->gravatar($email), $this->config['rememberMeDays'])) {
+			if ($this->createToken($username, $email, $this->config['rememberMeDays'])) {
 				$this->writeLoginLog($username, 'success');
 				$this->writeLog('success', 'Login Function - A User has logged in', $username);
 				return true;
@@ -6104,6 +6175,95 @@ class Organizr
 			$this->setAPIResponse('error', $e->getMessage(), 500);
 			return false;
 		}
+	}
+	
+	public function CBPFWTabs()
+	{
+		return '
+		<script>
+		/**
+		* cbpFWTabs.js v1.0.0
+		* http://www.codrops.com
+		*
+		* Licensed under the MIT license.
+		* http://www.opensource.org/licenses/mit-license.php
+		*
+		* Copyright 2014, Codrops
+		* http://www.codrops.com
+		*/
+		;( function( window ) {
+			\'use strict\';
+		
+			function extend( a, b ) {
+				for( var key in b ) {
+					if( b.hasOwnProperty( key ) ) {
+						a[key] = b[key];
+					}
+				}
+				return a;
+			}
+		
+			function CBPFWTabs( el, options ) {
+				this.el = el;
+				this.options = extend( {}, this.options );
+		        extend( this.options, options );
+		        this._init();
+			}
+		
+			CBPFWTabs.prototype.options = {
+				start : 0
+			};
+		
+			CBPFWTabs.prototype._init = function() {
+				// tabs elems
+				this.tabs = [].slice.call( this.el.querySelectorAll( \'nav > ul > li\' ) );
+				// content items
+				this.items = [].slice.call( this.el.querySelectorAll( \'.content-wrap > section\' ) );
+				// current index
+				this.current = -1;
+				// show current content item
+				try{
+					if(this.tabs[0].innerHTML.indexOf(\'#settings\') >= 0){
+						this._show(' . $this->config['defaultSettingsTab'] . ');
+						let tabId = $(this.items[' . $this->config['defaultSettingsTab'] . ']).attr("id") + "-anchor";
+						$("#" + tabId).click();
+						$("#" + tabId + " a").click();
+					}else{
+						this._show();
+					}
+				}catch{
+					this._show();
+				}
+				// init events
+				this._initEvents();
+			};
+		
+			CBPFWTabs.prototype._initEvents = function() {
+				var self = this;
+				this.tabs.forEach( function( tab, idx ) {
+					tab.addEventListener( \'click\', function( ev ) {
+						ev.preventDefault();
+						self._show( idx );
+					} );
+				} );
+			};
+		
+			CBPFWTabs.prototype._show = function( idx ) {
+				if( this.current >= 0 ) {
+					this.tabs[ this.current ].className = this.items[ this.current ].className = \'\';
+				}
+				// change current
+				this.current = idx != undefined ? idx : this.options.start >= 0 && this.options.start < this.items.length ? this.options.start : 0;
+				this.tabs[ this.current ].className = \'tab-current\';
+				this.items[ this.current ].className = \'content-current\';
+			};
+		
+			// add to global namespace
+			window.CBPFWTabs = CBPFWTabs;
+		
+		})( window );
+		</script>
+		';
 	}
 	
 	public function socksHeadingHTML($app)
