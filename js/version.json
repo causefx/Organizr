@@ -386,7 +386,7 @@
   },
   "2.1.426": {
     "date": "2021-07-09 19:20",
-    "title": "Code changes to plugins",
+    "title": "Some new features",
     "new": "global blacklist user feature|option to define which settings page tab will open by default|sonarr to use new input method for token and url|icon for Prowlarr|email for Auth Proxy|start time and url validation for selfhosted url|new auth URL scheme",
     "fixed": "selfhosted healtcheck import issue|validate data on unused API endpoint|authRegister bug requiring 2 logins|help message for blacklist|catch all for single item parse on options|LDAP showing in backend|weather homepage|checking of commit",
     "notes": "update HC Plugin to only use Full Access Token|closeAllMessages function to update call"
