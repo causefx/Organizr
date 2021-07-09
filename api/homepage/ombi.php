@@ -303,7 +303,7 @@ trait OmbiHomepageItem
 									'id' => $value['tvDbId'],
 									'title' => $value['title'],
 									'overview' => $value['overview'],
-									'poster' => (isset($value['posterPath']) && $value['posterPath'] !== '') ? $value['posterPath'] : 'plugins/images/cache/no-list.png',
+									'poster' => (isset($value['posterPath']) && $value['posterPath'] !== '') ? (str_starts_with($value['posterPath'], '/') ? 'https://image.tmdb.org/t/p/w300/' . $value['posterPath'] : $value['posterPath']) : 'plugins/images/cache/no-list.png',
 									'background' => (isset($value['background']) && $value['background'] !== '') ? 'https://image.tmdb.org/t/p/w1280/' . $value['background'] : '',
 									'approved' => $value['childRequests'][0]['approved'],
 									'available' => $value['childRequests'][0]['available'],
