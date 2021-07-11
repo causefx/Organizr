@@ -186,8 +186,10 @@ class Organizr
 	{
 		if ($this->hasDB()) {
 			$currentIP = $this->userIP();
-			if (in_array($currentIP, $this->arrayIP($this->config['blacklisted']))) {
-				die($this->config['blacklistedMessage']);
+			if ($this->config['blacklisted'] !== '') {
+				if (in_array($currentIP, $this->arrayIP($this->config['blacklisted']))) {
+					die($this->config['blacklistedMessage']);
+				}
 			}
 		}
 	}
