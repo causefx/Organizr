@@ -305,6 +305,32 @@ class Organizr
 		}
 	}
 	
+	public function setResponse($responseCode = 200, $message = null, $data = null)
+	{
+		switch ($responseCode) {
+			case 200:
+			case 201:
+			case 204:
+				$result = 'success';
+				break;
+			default:
+				$result = 'error';
+				break;
+		}
+		if ($result) {
+			$GLOBALS['api']['response']['result'] = $result;
+		}
+		if ($message) {
+			$GLOBALS['api']['response']['message'] = $message;
+		}
+		if ($responseCode) {
+			$GLOBALS['responseCode'] = $responseCode;
+		}
+		if ($data) {
+			$GLOBALS['api']['response']['data'] = $data;
+		}
+	}
+	
 	public function checkRoute($request)
 	{
 		$route = '/api/v2/' . explode('api/v2/', $request->getUri()->getPath())[1];
