@@ -289,6 +289,28 @@ class Organizr
 		return true;
 	}
 	
+	public function getIpInfo($ip = null)
+	{
+		if (!$ip) {
+			$this->setResponse(422, 'No IP Address supplied');
+			return false;
+		}
+		try {
+			$options = array('verify' => false);
+			$response = Requests::get('https://ipinfo.io/' . $ip . '/?token=ddd0c072ad5021', array(), $options);
+			if ($response->success) {
+				$api = json_decode($response->body, true);
+				$this->setResponse(200, null, $api);
+				return true;
+			} else {
+				$this->setResponse(500, 'An error occurred', null);
+			}
+		} catch (Requests_Exception $e) {
+			$this->setResponse(500, 'An error occurred', $e->getMessage());
+		}
+		return false;
+	}
+	
 	public function setAPIResponse($result = null, $message = null, $responseCode = null, $data = null)
 	{
 		if ($result) {
