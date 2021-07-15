@@ -3430,19 +3430,26 @@ function buildVersion(array){
 		}else if (x === 0){
 			button = '<button class="btn btn-sm btn-info btn-rounded waves-effect waves-light pull-right row b-none" type="button" onclick="updateNow();"><span class="btn-label"><i class="fa fa-download"></i></span><span lang="en">Install Update</span></button>';
 		}
+		let tableClass = x == 0 ? '' : 'hidden';
+		let divClassPadding = x == 0 ? '' : 'p-b-0';
+		let divClassMargin = x == 0 ? '' : 'm-b-0';
+		let toggleButtonText = x == 0 ? 'Less' : 'More';
+		let toggleButtonIcon = x == 0 ? 'up' : 'down';
+		let divStatus = x == 0 ? 'opened' : 'closed';
 		versions += `
-		<div class="white-box bg-org">
+		<div class="white-box bg-org ${divClassPadding} update-main-div-${x}" data-status="${divStatus}">
 			<div class="col-md-3 col-sm-4 col-xs-6 pull-right">`+button+`</div>
-			<h3 class="box-title">`+i+`</h3>
+			<h3 class="box-title ${divClassMargin} update-box-title-${x}">`+i+`</h3>
 			<div class="row sales-report">
 				<div class="col-md-12 col-sm-12 col-xs-12">
-
+					<div class="pull-left">
 						<span class="tooltip-info" data-toggle="tooltip" data-placement="right" title="" data-original-title="`+moment(v.date).format('LL')+`">`+moment.utc(v.date, "YYYY-MM-DD hh:mm[Z]").local().fromNow()+`</span>
-
-					<p class="text-info p-0">`+v.title+`</p>
+						<p class="text-info p-0">`+v.title+`</p>
+					</div>
+					<button class="btn btn-sm btn-primary btn-rounded waves-effect waves-light pull-right" onclick="toggleGithubVersion(${x})" type="button"><span class="btn-label"><i class="fa fa-long-arrow-${toggleButtonIcon} toggleButtonIcon-${x}"></i></span><span lang="en" class="toggleButton-${x}">${toggleButtonText}</span></button>
 				</div>
 			</div>
-			<div class="table-responsive">
+			<div class="table-responsive ${tableClass} update-table-${x}">
 				<table class="table inverse-bordered-table">
 					<tbody>
 						`+listing+`
@@ -3457,7 +3464,25 @@ function buildVersion(array){
 	});
 	return versions;
 }
+function toggleGithubVersion(id){
+	let status = $('.update-main-div-' + id).attr('data-status');
+	if(status == 'opened'){
+		$('.update-main-div-' + id).attr('data-status', 'closed');
+		$('.update-main-div-' + id).addClass('p-b-0');
+		$('.update-box-title-' + id).addClass('m-b-0');
+		$('.update-table-' + id).addClass('hidden');
+		$('.toggleButton-' + id).text('More');
+		$('.toggleButtonIcon-' + id).removeClass('fa-long-arrow-up').addClass('fa-long-arrow-down');
+	}else{
+		$('.update-main-div-' + id).attr('data-status', 'opened');
+		$('.update-main-div-' + id).removeClass('p-b-0');
+		$('.update-box-title-' + id).removeClass('m-b-0');
+		$('.update-table-' + id).removeClass('hidden');
+		$('.toggleButton-' + id).text('Less');
+		$('.toggleButtonIcon-' + id).addClass('fa-long-arrow-up').removeClass('fa-long-arrow-down');
 
+	}
+}
 function manualUpdateCheck(){
     $('.buttonManualUpdateCheck').addClass('disabled');
     $('.buttonManualUpdateCheck i').removeClass('fa-globe').addClass('fa-refresh fa-spin');
