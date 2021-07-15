@@ -3,7 +3,7 @@
 		"author": "GilbN",
 		"category": "Community",
 		"description": "A Dracula colored theme for Organizr ",
-		"icon": "https://raw.githubusercontent.com/gilbN/theme.park/master/Resources/organizr/hotline/theme-park-organizr-hotline-logo.png",
+		"icon": "https://raw.githubusercontent.com/GilbN/theme.park/master/Resources/organizr/dracula/theme-park-organizr-dracula-logo.png",
 		"contact": null,
 		"website": "https://theme-park.dev",
 		"version": "1.0.0",
@@ -15,8 +15,8 @@
 			"/css/themes": "Dracula.css"
 		},
 		"images": {
-			"Login": "https://raw.githubusercontent.com/gilbN/theme.park/master/Resources/organizr/dracula/dracula_login.png",
-			"Splash": "https://raw.githubusercontent.com/gilbN/theme.park/master/Resources/organizr/dracula/dracula_splash.png",
+			"Login": "https://raw.githubusercontent.com/gilbN/theme.park/master/Resources/organizr/dracula/dracula_login.jpg",
+			"Splash": "https://raw.githubusercontent.com/GilbN/theme.park/master/Resources/organizr/dracula/dracula_splash.jpg",
 			"Homepage": "https://raw.githubusercontent.com/gilbN/theme.park/master/Resources/organizr/dracula/dracula_homepage.jpg",
 			"Search": "https://raw.githubusercontent.com/gilbN/theme.park/master/Resources/organizr/dracula/dracula_search.jpg"
 		},
