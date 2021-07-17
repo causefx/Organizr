@@ -492,6 +492,12 @@ class Organizr
 		return ($encode) ? json_encode($files) : $files;
 	}
 	
+	public function setTheme($theme = null)
+	{
+		$theme = $theme ?? $this->config['theme'];
+		return '<link id="theme" href="css/themes/' . $theme . '.css?v=' . $this->fileHash . '" rel="stylesheet">';
+	}
+	
 	public function pluginFiles($type, $settings = false)
 	{
 		$files = '';
@@ -3652,6 +3658,7 @@ class Organizr
 	
 	public function organizrSpecialSettings()
 	{
+		// js activeInfo
 		return array(
 			'homepage' => array(
 				'refresh' => $this->refreshList(),
