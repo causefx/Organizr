@@ -3507,7 +3507,6 @@ function updateCheck(){
 		if(latest !== currentVersion) {
 			organizrConsole('Update Function','Update to ' + latest + ' is available', 'warning');
             if (activeInfo.settings.misc.docker === false) {
-	            closeAllMessages();
                 messageSingle(window.lang.translate('Update Available'), latest + ' ' + window.lang.translate('is available, goto') + ' <a href="javascript:void(0)" onclick="tabActions(event,\'Settings\',0);clickPath(\'update\')"><span lang="en">Update Tab</span></a>', activeInfo.settings.notifications.position, '#FFF', 'update', '60000');
             }
         }else{
@@ -3589,7 +3588,6 @@ function checkCommitLoad(){
 				    var current = activeInfo.settings.misc.githubCommit.toString().trim();
 				    var link = 'https://github.com/causefx/Organizr/compare/' + current + '...' + latest;
 				    if (latest !== current) {
-					    closeAllMessages();
 					    messageSingle(window.lang.translate('Update Available'), ' <a href="' + link + '" target="_blank"><span lang="en">Compare Difference</span></a> <span lang="en">or</span> <a href="javascript:void(0)" onclick="updateNow()"><span lang="en">Update Now</span></a>', activeInfo.settings.notifications.position, '#FFF', 'update', '600000');
 				    } else {
 					    organizrConsole('Update Function', 'Organizr Docker - Up to date');
@@ -9636,7 +9634,7 @@ function messagePositions(){
         }
     };
 }
-function message(heading,text,position,color,icon,timeout){
+function message(heading,text,position,color,icon,timeout, single = false){
     var bb = (typeof activeInfo !== 'undefined') ? activeInfo.settings.notifications.backbone : 'izi';
     switch (bb) {
         case 'toastr':
@@ -9650,7 +9648,7 @@ function message(heading,text,position,color,icon,timeout){
                 var ready = (typeof eval(notificationFunction) !== undefined) ? true :false;
             } catch (e) {
                 if (e instanceof SyntaxError) {
-                    setTimeout(function(){ message(heading,text,position,color,icon,timeout); }, 100);
+                    setTimeout(function(){ message(heading,text,position,color,icon,timeout, single); }, 100);
                 }
             }
             break;
@@ -9660,10 +9658,28 @@ function message(heading,text,position,color,icon,timeout){
     if(notificationsReady && ready){
         oldPosition = position;
         position = messagePositions()[position][bb];
-        if(local('g','initial')){
-            setTimeout(function(){ message(heading,text,oldPosition,color,icon,timeout); }, 100);
+	    if(typeof activeInfo === 'undefined'){
+            setTimeout(function(){ message(heading,text,oldPosition,color,icon,timeout, single); }, 100);
             return false;
         }
+	    if(single){
+		    switch (bb) {
+			    case 'toastr':
+				    $.toast().reset('all');
+				    break;
+			    case 'izi':
+				    iziToast.destroy();
+				    break;
+			    case 'alertify':
+				    alertify.dismissAll();
+				    break;
+			    case 'noty':
+				    Noty.closeAll();
+				    break;
+			    default:
+				    return false;
+		    }
+	    }
         switch (bb) {
             case 'toastr':
                 $.toast({
@@ -9829,74 +9845,12 @@ function message(heading,text,position,color,icon,timeout){
         }
 
     }else{
-        setTimeout(function(){ message(heading,text,position,color,icon,timeout); }, 100);
+        setTimeout(function(){ message(heading,text,position,color,icon,timeout,single); }, 100);
     }
 
 }
 function messageSingle(heading,text,position,color,icon,timeout){
-    var bb = activeInfo.settings.notifications.backbone;
-    switch (bb) {
-        case 'toastr':
-            var ready = (eval( notificationFunction) !== undefined) ? true :false;
-            break;
-        case 'izi':
-        case 'alertify':
-        case 'noty':
-            try {
-                var ready = (typeof eval(notificationFunction) !== undefined) ? true :false;
-            } catch (e) {
-                if (e instanceof SyntaxError) {
-                    setTimeout(function(){ messageSingle(heading,text,position,color,icon,timeout); }, 100);
-                }
-            }
-            break;
-        default:
-            var ready = false;
-    }
-    if(notificationsReady && ready){
-        switch (bb) {
-            case 'toastr':
-                $.toast().reset('all');
-                break;
-            case 'izi':
-                iziToast.destroy();
-                break;
-            case 'alertify':
-                alertify.dismissAll();
-                break;
-            case 'noty':
-                Noty.closeAll();
-                break;
-            default:
-                return false;
-        }
-        message(heading,text,position,color,icon,timeout);
-
-    }else{
-        setTimeout(function(){ messageSingle(heading,text,position,color,icon,timeout); }, 100);
-    }
-}
-
-function closeAllMessages(){
-	let bb = activeInfo.settings.notifications.backbone;
-	if(notificationsReady){
-		switch (bb) {
-			case 'toastr':
-				$.toast().reset('all');
-				break;
-			case 'izi':
-				iziToast.destroy();
-				break;
-			case 'alertify':
-				alertify.dismissAll();
-				break;
-			case 'noty':
-				Noty.closeAll();
-				break;
-			default:
-				return false;
-		}
-	}
+	message(heading,text,position,color,icon,timeout, true);
 }
 
 function blockDev(e) {
@@ -10779,8 +10733,8 @@ function launch(){
 	        $('#wrapper').after('<div id="activeInfo"></div>');
 	        console.info("%c Organizr %c ".concat(currentVersion, " "), "color: white; background: #66D9EF; font-weight: 700; font-size: 24px; font-family: Monospace;", "color: #66D9EF; background: white; font-weight: 700; font-size: 24px; font-family: Monospace;");
 	        console.info("%c Status %c ".concat("Starting Up...", " "), "color: white; background: #F92671; font-weight: 700;", "color: #F92671; background: white; font-weight: 700;");
-	        local('set','initial',true);
-	        setTimeout(function(){ local('r','initial'); }, 3000);
+	        //local('set','initial',true);
+	        //setTimeout(function(){ local('r','initial'); }, 300);
 	        defineNotification();
 	        checkMessage();
 	        errorPage();
