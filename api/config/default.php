@@ -42,7 +42,6 @@ return array(
 	'embyTabName' => '',
 	'embyURL' => '',
 	'embyToken' => '',
-	'jellyfinTabURL' => '',
 	'jellyfinTabName' => '',
 	'jellyfinURL' => '',
 	'jellyfinToken' => '',
