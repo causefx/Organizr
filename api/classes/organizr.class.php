@@ -188,7 +188,7 @@ class Organizr
 			$currentIP = $this->userIP();
 			if ($this->config['blacklisted'] !== '') {
 				if (in_array($currentIP, $this->arrayIP($this->config['blacklisted']))) {
-					$this->debug('User was sent to blackhole');
+					$this->debug('User was sent to blackhole - Blacklisted IPs: ' . $this->config['blacklisted']);
 					die($this->config['blacklistedMessage']);
 				}
 			}
