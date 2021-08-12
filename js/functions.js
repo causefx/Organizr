@@ -4714,7 +4714,7 @@ function uriRedirect(uri=null){
         var redirect = local('get', 'uri');
         local('remove', 'uri');
         if(redirect !== null){
-            window.location.href = redirect;
+            window.location.href = decodeURIComponent(decodeURI(redirect));
         }
     }
 }
@@ -9888,8 +9888,11 @@ function openHomepage(){
     var tab = $("li[data-url='api/v2/page/homepage']").find('span').text();
     tabActions('click',tab,0);
 }
+function toggleFullScreenIcon(){
+	$('.fullscreen-icon').toggleClass('ti-fullscreen').toggleClass('mdi mdi-fullscreen-exit');
+}
 function toggleFullScreen() {
-    $('.fullscreen-icon').toggleClass('ti-fullscreen').toggleClass('mdi mdi-fullscreen-exit');
+	toggleFullScreenIcon();
     if (!document.fullscreenElement &&    // alternative standard method
         !document.mozFullScreenElement && !document.webkitFullscreenElement && !document.msFullscreenElement ) {  // current working methods
         if (document.documentElement.requestFullscreen) {
