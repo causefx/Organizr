@@ -44,7 +44,7 @@ $Organizr = new Organizr();
     <link id="style" href="css/dark.min.css?v=<?php echo $Organizr->fileHash; ?>" rel="stylesheet">
     <link href="css/organizr.min.css?v=<?php echo $Organizr->fileHash; ?>" rel="stylesheet">
 	<?php echo $Organizr->pluginFiles('css'); ?>
-    <link id="theme" href="css/themes/Organizr.css?v=<?php echo $Organizr->fileHash; ?>" rel="stylesheet">
+	<?php echo $Organizr->setTheme(); ?>
     <style id="user-appearance"></style>
     <style id="custom-theme-css"></style>
     <style id="custom-css"></style>

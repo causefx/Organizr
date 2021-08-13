@@ -60,7 +60,7 @@ class Organizr
 	
 	// ===================================
 	// Organizr Version
-	public $version = '2.1.426';
+	public $version = '2.1.446';
 	// ===================================
 	// Quick php Version check
 	public $minimumPHP = '7.3';
@@ -186,8 +186,11 @@ class Organizr
 	{
 		if ($this->hasDB()) {
 			$currentIP = $this->userIP();
-			if (in_array($currentIP, $this->arrayIP($this->config['blacklisted']))) {
-				die($this->config['blacklistedMessage']);
+			if ($this->config['blacklisted'] !== '') {
+				if (in_array($currentIP, $this->arrayIP($this->config['blacklisted']))) {
+					$this->debug('User was sent to blackhole - Blacklisted IPs: ' . $this->config['blacklisted']);
+					die($this->config['blacklistedMessage']);
+				}
 			}
 		}
 	}
@@ -287,8 +290,56 @@ class Organizr
 		return true;
 	}
 	
+	public function getIpInfo($ip = null)
+	{
+		if (!$ip) {
+			$this->setResponse(422, 'No IP Address supplied');
+			return false;
+		}
+		try {
+			$options = array('verify' => false);
+			$response = Requests::get('https://ipinfo.io/' . $ip . '/?token=ddd0c072ad5021', array(), $options);
+			if ($response->success) {
+				$api = json_decode($response->body, true);
+				$this->setResponse(200, null, $api);
+				return true;
+			} else {
+				$this->setResponse(500, 'An error occurred', null);
+			}
+		} catch (Requests_Exception $e) {
+			$this->setResponse(500, 'An error occurred', $e->getMessage());
+		}
+		return false;
+	}
+	
 	public function setAPIResponse($result = null, $message = null, $responseCode = null, $data = null)
 	{
+		if ($result) {
+			$GLOBALS['api']['response']['result'] = $result;
+		}
+		if ($message) {
+			$GLOBALS['api']['response']['message'] = $message;
+		}
+		if ($responseCode) {
+			$GLOBALS['responseCode'] = $responseCode;
+		}
+		if ($data) {
+			$GLOBALS['api']['response']['data'] = $data;
+		}
+	}
+	
+	public function setResponse($responseCode = 200, $message = null, $data = null)
+	{
+		switch ($responseCode) {
+			case 200:
+			case 201:
+			case 204:
+				$result = 'success';
+				break;
+			default:
+				$result = 'error';
+				break;
+		}
 		if ($result) {
 			$GLOBALS['api']['response']['result'] = $result;
 		}
@@ -440,6 +491,12 @@ class Organizr
 			return $a['language'] <=> $b['language'];
 		});
 		return ($encode) ? json_encode($files) : $files;
+	}
+	
+	public function setTheme($theme = null)
+	{
+		$theme = $theme ?? $this->config['theme'];
+		return '<link id="theme" href="css/themes/' . $theme . '.css?v=' . $this->fileHash . '" rel="stylesheet">';
 	}
 	
 	public function pluginFiles($type, $settings = false)
@@ -3602,6 +3659,7 @@ class Organizr
 	
 	public function organizrSpecialSettings()
 	{
+		// js activeInfo
 		return array(
 			'homepage' => array(
 				'refresh' => $this->refreshList(),

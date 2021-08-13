@@ -13,6 +13,8 @@ trait OptionsFunction
 					'value' => $item
 				];
 			}
+		} elseif ($values == '') {
+			$formattedValues = '';
 		} else {
 			$formattedValues[] = [
 				'name' => $values,

@@ -5,10 +5,15 @@
  *     description="Organizr Configuration Items"
  * )
  */
-$app->get('/config', function ($request, $response, $args) {
+$app->get('/config[/{item}]', function ($request, $response, $args) {
 	$Organizr = ($request->getAttribute('Organizr')) ?? new Organizr();
 	if ($Organizr->qualifyRequest(1, true)) {
-		$GLOBALS['api']['response']['data'] = $Organizr->config;
+		if (isset($args['item'])) {
+			$Organizr->getConfigItem($args['item']);
+		} else {
+			$GLOBALS['api']['response']['data'] = $Organizr->config;
+		}
+		
 	}
 	$response->getBody()->write(jsonE($GLOBALS['api']));
 	return $response

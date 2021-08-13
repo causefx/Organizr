@@ -970,7 +970,9 @@ function tabActions(event,name, type){
 		organizrConsole('Tab Function','Action not defined yet', 'info');
 	}else{
 		switchTab(cleanClass(name), type);
-        $('.splash-screen').removeClass('in').addClass('hidden');
+		if(type !== 2){
+			$('.splash-screen').removeClass('in').addClass('hidden');
+		}
 	}
 }
 function reverseObject(object) {
@@ -3430,19 +3432,26 @@ function buildVersion(array){
 		}else if (x === 0){
 			button = '<button class="btn btn-sm btn-info btn-rounded waves-effect waves-light pull-right row b-none" type="button" onclick="updateNow();"><span class="btn-label"><i class="fa fa-download"></i></span><span lang="en">Install Update</span></button>';
 		}
+		let tableClass = x == 0 ? '' : 'hidden';
+		let divClassPadding = x == 0 ? '' : 'p-b-0';
+		let divClassMargin = x == 0 ? '' : 'm-b-0';
+		let toggleButtonText = x == 0 ? 'Less' : 'More';
+		let toggleButtonIcon = x == 0 ? 'up' : 'down';
+		let divStatus = x == 0 ? 'opened' : 'closed';
 		versions += `
-		<div class="white-box bg-org">
+		<div class="white-box bg-org ${divClassPadding} update-main-div-${x}" data-status="${divStatus}">
 			<div class="col-md-3 col-sm-4 col-xs-6 pull-right">`+button+`</div>
-			<h3 class="box-title">`+i+`</h3>
+			<h3 class="box-title ${divClassMargin} update-box-title-${x}">`+i+`</h3>
 			<div class="row sales-report">
 				<div class="col-md-12 col-sm-12 col-xs-12">
-
+					<div class="pull-left">
 						<span class="tooltip-info" data-toggle="tooltip" data-placement="right" title="" data-original-title="`+moment(v.date).format('LL')+`">`+moment.utc(v.date, "YYYY-MM-DD hh:mm[Z]").local().fromNow()+`</span>
-
-					<p class="text-info p-0">`+v.title+`</p>
+						<p class="text-info p-0">`+v.title+`</p>
+					</div>
+					<button class="btn btn-sm btn-primary btn-rounded waves-effect waves-light pull-right" onclick="toggleGithubVersion(${x})" type="button"><span class="btn-label"><i class="fa fa-long-arrow-${toggleButtonIcon} toggleButtonIcon-${x}"></i></span><span lang="en" class="toggleButton-${x}">${toggleButtonText}</span></button>
 				</div>
 			</div>
-			<div class="table-responsive">
+			<div class="table-responsive ${tableClass} update-table-${x}">
 				<table class="table inverse-bordered-table">
 					<tbody>
 						`+listing+`
@@ -3457,7 +3466,25 @@ function buildVersion(array){
 	});
 	return versions;
 }
+function toggleGithubVersion(id){
+	let status = $('.update-main-div-' + id).attr('data-status');
+	if(status == 'opened'){
+		$('.update-main-div-' + id).attr('data-status', 'closed');
+		$('.update-main-div-' + id).addClass('p-b-0');
+		$('.update-box-title-' + id).addClass('m-b-0');
+		$('.update-table-' + id).addClass('hidden');
+		$('.toggleButton-' + id).text('More');
+		$('.toggleButtonIcon-' + id).removeClass('fa-long-arrow-up').addClass('fa-long-arrow-down');
+	}else{
+		$('.update-main-div-' + id).attr('data-status', 'opened');
+		$('.update-main-div-' + id).removeClass('p-b-0');
+		$('.update-box-title-' + id).removeClass('m-b-0');
+		$('.update-table-' + id).removeClass('hidden');
+		$('.toggleButton-' + id).text('Less');
+		$('.toggleButtonIcon-' + id).addClass('fa-long-arrow-up').removeClass('fa-long-arrow-down');
 
+	}
+}
 function manualUpdateCheck(){
     $('.buttonManualUpdateCheck').addClass('disabled');
     $('.buttonManualUpdateCheck i').removeClass('fa-globe').addClass('fa-refresh fa-spin');
@@ -3482,7 +3509,6 @@ function updateCheck(){
 		if(latest !== currentVersion) {
 			organizrConsole('Update Function','Update to ' + latest + ' is available', 'warning');
             if (activeInfo.settings.misc.docker === false) {
-	            closeAllMessages();
                 messageSingle(window.lang.translate('Update Available'), latest + ' ' + window.lang.translate('is available, goto') + ' <a href="javascript:void(0)" onclick="tabActions(event,\'Settings\',0);clickPath(\'update\')"><span lang="en">Update Tab</span></a>', activeInfo.settings.notifications.position, '#FFF', 'update', '60000');
             }
         }else{
@@ -3564,7 +3590,6 @@ function checkCommitLoad(){
 				    var current = activeInfo.settings.misc.githubCommit.toString().trim();
 				    var link = 'https://github.com/causefx/Organizr/compare/' + current + '...' + latest;
 				    if (latest !== current) {
-					    closeAllMessages();
 					    messageSingle(window.lang.translate('Update Available'), ' <a href="' + link + '" target="_blank"><span lang="en">Compare Difference</span></a> <span lang="en">or</span> <a href="javascript:void(0)" onclick="updateNow()"><span lang="en">Update Now</span></a>', activeInfo.settings.notifications.position, '#FFF', 'update', '600000');
 				    } else {
 					    organizrConsole('Update Function', 'Organizr Docker - Up to date');
@@ -4691,7 +4716,7 @@ function uriRedirect(uri=null){
         var redirect = local('get', 'uri');
         local('remove', 'uri');
         if(redirect !== null){
-            window.location.href = redirect;
+            window.location.href = decodeURIComponent(decodeURI(redirect));
         }
     }
 }
@@ -9611,7 +9636,7 @@ function messagePositions(){
         }
     };
 }
-function message(heading,text,position,color,icon,timeout){
+function message(heading,text,position,color,icon,timeout, single = false){
     var bb = (typeof activeInfo !== 'undefined') ? activeInfo.settings.notifications.backbone : 'izi';
     switch (bb) {
         case 'toastr':
@@ -9625,7 +9650,7 @@ function message(heading,text,position,color,icon,timeout){
                 var ready = (typeof eval(notificationFunction) !== undefined) ? true :false;
             } catch (e) {
                 if (e instanceof SyntaxError) {
-                    setTimeout(function(){ message(heading,text,position,color,icon,timeout); }, 100);
+                    setTimeout(function(){ message(heading,text,position,color,icon,timeout, single); }, 100);
                 }
             }
             break;
@@ -9635,10 +9660,28 @@ function message(heading,text,position,color,icon,timeout){
     if(notificationsReady && ready){
         oldPosition = position;
         position = messagePositions()[position][bb];
-        if(local('g','initial')){
-            setTimeout(function(){ message(heading,text,oldPosition,color,icon,timeout); }, 100);
+	    if(typeof activeInfo === 'undefined'){
+            setTimeout(function(){ message(heading,text,oldPosition,color,icon,timeout, single); }, 100);
             return false;
         }
+	    if(single){
+		    switch (bb) {
+			    case 'toastr':
+				    $.toast().reset('all');
+				    break;
+			    case 'izi':
+				    iziToast.destroy();
+				    break;
+			    case 'alertify':
+				    alertify.dismissAll();
+				    break;
+			    case 'noty':
+				    Noty.closeAll();
+				    break;
+			    default:
+				    return false;
+		    }
+	    }
         switch (bb) {
             case 'toastr':
                 $.toast({
@@ -9804,74 +9847,12 @@ function message(heading,text,position,color,icon,timeout){
         }
 
     }else{
-        setTimeout(function(){ message(heading,text,position,color,icon,timeout); }, 100);
+        setTimeout(function(){ message(heading,text,position,color,icon,timeout,single); }, 100);
     }
 
 }
 function messageSingle(heading,text,position,color,icon,timeout){
-    var bb = activeInfo.settings.notifications.backbone;
-    switch (bb) {
-        case 'toastr':
-            var ready = (eval( notificationFunction) !== undefined) ? true :false;
-            break;
-        case 'izi':
-        case 'alertify':
-        case 'noty':
-            try {
-                var ready = (typeof eval(notificationFunction) !== undefined) ? true :false;
-            } catch (e) {
-                if (e instanceof SyntaxError) {
-                    setTimeout(function(){ messageSingle(heading,text,position,color,icon,timeout); }, 100);
-                }
-            }
-            break;
-        default:
-            var ready = false;
-    }
-    if(notificationsReady && ready){
-        switch (bb) {
-            case 'toastr':
-                $.toast().reset('all');
-                break;
-            case 'izi':
-                iziToast.destroy();
-                break;
-            case 'alertify':
-                alertify.dismissAll();
-                break;
-            case 'noty':
-                Noty.closeAll();
-                break;
-            default:
-                return false;
-        }
-        message(heading,text,position,color,icon,timeout);
-
-    }else{
-        setTimeout(function(){ messageSingle(heading,text,position,color,icon,timeout); }, 100);
-    }
-}
-
-function closeAllMessages(){
-	let bb = activeInfo.settings.notifications.backbone;
-	if(notificationsReady){
-		switch (bb) {
-			case 'toastr':
-				$.toast().reset('all');
-				break;
-			case 'izi':
-				iziToast.destroy();
-				break;
-			case 'alertify':
-				alertify.dismissAll();
-				break;
-			case 'noty':
-				Noty.closeAll();
-				break;
-			default:
-				return false;
-		}
-	}
+	message(heading,text,position,color,icon,timeout, true);
 }
 
 function blockDev(e) {
@@ -9909,8 +9890,11 @@ function openHomepage(){
     var tab = $("li[data-url='api/v2/page/homepage']").find('span').text();
     tabActions('click',tab,0);
 }
+function toggleFullScreenIcon(){
+	$('.fullscreen-icon').toggleClass('ti-fullscreen').toggleClass('mdi mdi-fullscreen-exit');
+}
 function toggleFullScreen() {
-    $('.fullscreen-icon').toggleClass('ti-fullscreen').toggleClass('mdi mdi-fullscreen-exit');
+	toggleFullScreenIcon();
     if (!document.fullscreenElement &&    // alternative standard method
         !document.mozFullScreenElement && !document.webkitFullscreenElement && !document.msFullscreenElement ) {  // current working methods
         if (document.documentElement.requestFullscreen) {
@@ -10754,8 +10738,8 @@ function launch(){
 	        $('#wrapper').after('<div id="activeInfo"></div>');
 	        console.info("%c Organizr %c ".concat(currentVersion, " "), "color: white; background: #66D9EF; font-weight: 700; font-size: 24px; font-family: Monospace;", "color: #66D9EF; background: white; font-weight: 700; font-size: 24px; font-family: Monospace;");
 	        console.info("%c Status %c ".concat("Starting Up...", " "), "color: white; background: #F92671; font-weight: 700;", "color: #F92671; background: white; font-weight: 700;");
-	        local('set','initial',true);
-	        setTimeout(function(){ local('r','initial'); }, 3000);
+	        //local('set','initial',true);
+	        //setTimeout(function(){ local('r','initial'); }, 300);
 	        defineNotification();
 	        checkMessage();
 	        errorPage();

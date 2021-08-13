@@ -6,7 +6,6 @@ on:
 
 jobs:
   stale:
-    if: github.event.label.name != 'bypass-activity'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/stale@v3
@@ -18,3 +17,5 @@ jobs:
           stale-issue-label: "no-issue-activity"
           days-before-stale: 15
           days-before-close: 90
+          exempt-issue-labels: "bypass-activity"
+          exempt-pr-labels: "bypass-activity"
