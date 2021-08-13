@@ -390,5 +390,12 @@
     "new": "global blacklist user feature|option to define which settings page tab will open by default|sonarr to use new input method for token and url|icon for Prowlarr|email for Auth Proxy|start time and url validation for selfhosted url|new auth URL scheme",
     "fixed": "selfhosted healtcheck import issue|validate data on unused API endpoint|authRegister bug requiring 2 logins|help message for blacklist|catch all for single item parse on options|LDAP showing in backend|weather homepage|checking of commit",
     "notes": "update HC Plugin to only use Full Access Token|closeAllMessages function to update call"
+  },
+  "2.1.446": {
+    "date": "2021-08-13 19:20",
+    "title": "Some new features",
+    "new": "setResponse function|get config item to api|icons for TheLounge and Docsify services|small ui change to version section|change the way theme is set to fix loading ms issue",
+    "fixed": "Redirect uri that was encoded (#1690)|IP info on settings page|Ombi Missing Image for TVShow Posters that do not come with Full URL|only check for blacklisted ip if not blank|error handling of messages on startup",
+    "notes": "upgrade phpmailer/phpmailer to 6.5.0"
   }
 }
