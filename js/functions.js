@@ -970,7 +970,9 @@ function tabActions(event,name, type){
 		organizrConsole('Tab Function','Action not defined yet', 'info');
 	}else{
 		switchTab(cleanClass(name), type);
-        $('.splash-screen').removeClass('in').addClass('hidden');
+		if(type !== 2){
+			$('.splash-screen').removeClass('in').addClass('hidden');
+		}
 	}
 }
 function reverseObject(object) {
