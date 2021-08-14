@@ -562,6 +562,68 @@ trait NormalFunctions
 	{
 		return (false !== ($pos = strpos($src_str, $search_str))) ? substr_replace($src_str, $replacement_str, $pos, strlen($search_str)) : $src_str;
 	}
+	
+	/**
+	 *  Check if an array is a multidimensional array.
+	 *
+	 * @param array $arr The array to check
+	 * @return  boolean       Whether the the array is a multidimensional array or not
+	 */
+	public function is_multi_array($x)
+	{
+		if (count(array_filter($x, 'is_array')) > 0) return true;
+		return false;
+	}
+	
+	/**
+	 *  Convert an object to an array.
+	 *
+	 * @param array $object The object to convert
+	 * @return  array            The converted array
+	 */
+	public function object_to_array($object)
+	{
+		if (!is_object($object) && !is_array($object)) return $object;
+		return array_map(array($this, 'object_to_array'), (array)$object);
+	}
+	
+	/**
+	 *  Check if a value exists in the array/object.
+	 *
+	 * @param mixed   $needle   The value that you are searching for
+	 * @param mixed   $haystack The array/object to search
+	 * @param boolean $strict   Whether to use strict search or not
+	 * @return  boolean             Whether the value was found or not
+	 */
+	public function search_for_value($needle, $haystack, $strict = true)
+	{
+		$haystack = $this->object_to_array($haystack);
+		if (is_array($haystack)) {
+			if ($this->is_multi_array($haystack)) {   // Multidimensional array
+				foreach ($haystack as $subhaystack) {
+					if ($this->search_for_value($needle, $subhaystack, $strict)) {
+						return true;
+					}
+				}
+			} elseif (array_keys($haystack) !== range(0, count($haystack) - 1)) {    // Associative array
+				foreach ($haystack as $key => $val) {
+					if ($needle == $val && !$strict) {
+						return true;
+					} elseif ($needle === $val && $strict) {
+						return true;
+					}
+				}
+				return false;
+			} else {    // Normal array
+				if ($needle == $haystack && !$strict) {
+					return true;
+				} elseif ($needle === $haystack && $strict) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
 }
 
 // Leave for deluge class
