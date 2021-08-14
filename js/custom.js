@@ -1826,25 +1826,7 @@ $(document).on('click', '.close-editHomepageItemDiv',function () {
 	//$('html').removeAttr('style');
 	Custombox.modal.closeAll()
 })
-// Control init of custom plex JSON editor
-$(document).on('click', '#homepage-Plex-form li a[aria-controls="Misc Options"]', function() {
-    var resizeEditor = function(jsonEditor) {
-        const aceEditor = jsonEditor;
-        const newHeight = aceEditor.getSession().getScreenLength() * (aceEditor.renderer.lineHeight + aceEditor.renderer.scrollBar.getWidth());
-        aceEditor.container.style.height = newHeight + 'px';
-        aceEditor.resize();
-    }
 
-    jsonEditor = ace.edit("homepageCustomStreamNamesAce");
-    var JsonMode = ace.require("ace/mode/javascript").Mode;
-    jsonEditor.session.setMode(new JsonMode());
-    jsonEditor.setTheme("ace/theme/idle_fingers");
-    jsonEditor.setShowPrintMargin(false);
-    jsonEditor.session.on('change', function(delta) {
-        $('#homepageCustomStreamNamesText').val(jsonEditor.getValue());
-        $('#customize-appearance-form-save').removeClass('hidden');
-    });
-});
 // Trakt image fix
 $(document).on('click', '.get-tmdb-image', function() {
 	let target = $(this).attr('data-target');

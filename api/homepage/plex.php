@@ -267,31 +267,8 @@ trait PlexHomepageItem
 					array(
 						'type' => 'switch',
 						'name' => 'homepageUseCustomStreamNames',
-						'label' => 'Use custom names for users',
+						'label' => 'Use Tautulli custom names for users',
 						'value' => $this->config['homepageUseCustomStreamNames']
-					),
-					array(
-						'type' => 'html',
-						'name' => 'grabFromTautulli',
-						'label' => 'Grab from Tautulli. (Note, you must have set the Tautulli API key already)',
-						'override' => 6,
-						'html' => '<button type="button" onclick="getTautulliFriendlyNames()" class="btn btn-sm btn-success btn-rounded waves-effect waves-light b-none">Grab Names</button>',
-					),
-					array(
-						'type' => 'html',
-						'name' => 'homepageCustomStreamNamesAce',
-						'class' => 'jsonTextarea hidden',
-						'label' => 'Custom definitions for user names (JSON Object, with the key being the plex name, and the value what you want to override with)',
-						'override' => 12,
-						'html' => '<div id="homepageCustomStreamNamesAce" style="height: 300px;">' . htmlentities($this->config['homepageCustomStreamNames']) . '</div>',
-					),
-					array(
-						'type' => 'textbox',
-						'name' => 'homepageCustomStreamNames',
-						'class' => 'jsonTextarea hidden',
-						'id' => 'homepageCustomStreamNamesText',
-						'label' => '',
-						'value' => $this->config['homepageCustomStreamNames'],
 					)
 				),
 				'Test Connection' => array(
@@ -477,6 +454,7 @@ trait PlexHomepageItem
 		if (!$this->homepageItemPermissions($this->plexHomepagePermissions('streams'), true)) {
 			return false;
 		}
+		$this->setTautulliFriendlyNames();
 		$ignore = array();
 		$exclude = explode(',', $this->config['homepagePlexStreamsExclude']);
 		$resolve = true;
@@ -848,16 +826,16 @@ trait PlexHomepageItem
 		return $plexItem;
 	}
 	
-	public function getTautulliFriendlyNames()
+	public function getTautulliFriendlyNames($bypass = null)
 	{
-		if (!$this->qualifyRequest(1)) {
+		$names = [];
+		if (!$this->qualifyRequest(1) && !$bypass) {
 			return false;
 		}
 		$url = $this->qualifyURL($this->config['tautulliURL']);
 		$url .= '/api/v2?apikey=' . $this->config['tautulliApikey'];
 		$url .= '&cmd=get_users';
 		$response = Requests::get($url, [], []);
-		$names = [];
 		try {
 			$response = json_decode($response->body, true);
 			foreach ($response['response']['data'] as $user) {
@@ -869,6 +847,16 @@ trait PlexHomepageItem
 			$this->setAPIResponse('failure', null, 422, [$e->getMessage()]);
 		}
 		$this->setAPIResponse('success', null, 200, $names);
+		return $names;
+	}
+	
+	public function setTautulliFriendlyNames()
+	{
+		if ($this->config['tautulliURL'] && $this->config['tautulliApikey'] && $this->config['homepageUseCustomStreamNames']) {
+			$names = $this->getTautulliFriendlyNames(true);
+			$this->updateConfig(array('homepageCustomStreamNames' => json_encode($names)));
+			$this->config['homepageCustomStreamNames'] = json_encode($names);
+		}
 	}
 	
 	private function formatPlexUserName($item)
