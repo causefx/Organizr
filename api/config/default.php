@@ -130,6 +130,8 @@ return array(
 	'qBittorrentApiVersion' => '1',
 	'qBittorrentDisableCertCheck' => false,
 	'qBittorrentRefresh' => '60000',
+	'qBittorrentSocksEnabled' => false,
+	'qBittorrentSocksAuth' => '999',
 	'rTorrentURL' => '',
 	'rTorrentURLOverride' => '',
 	'rTorrentUsername' => '',

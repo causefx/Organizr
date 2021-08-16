@@ -6411,6 +6411,14 @@ class Organizr
 					'header' => null
 				];
 				break;
+			case 'qbittorrent':
+				$appDetails = [
+					'url' => 'qBittorrentURL',
+					'enabled' => 'qBittorrentSocksEnabled',
+					'auth' => 'qBittorrentSocksAuth',
+					'header' => null
+				];
+				break;
 			default:
 				$appDetails = null;
 		}
