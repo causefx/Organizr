@@ -1115,7 +1115,29 @@ class Organizr
 				'key' => 'groups'
 			),
 		];
-		return $this->processQueries($response);
+		$query = $this->processQueries($response);
+		$this->applyTabVariables($query['tabs']);
+		return $query;
+	}
+	
+	public function applyTabVariables($tabs)
+	{
+		$variables = [
+			'{domain}' => $this->getServer(),
+			'{username}' => $this->user['username'],
+			'{username_lower}' => $this->user['username'],
+			'{email}' => $this->user['email'],
+			'{group}' => $this->user['group'],
+			'{group_id}' => $this->user['groupID'],
+		];
+		if (empty($tabs)) {
+			return $tabs;
+		}
+		foreach ($tabs as $id => $tab) {
+			$tabs[$id]['url'] = $this->userDefinedIdReplacementLink($tab['url'], $variables);
+			$tabs[$id]['url_local'] = $this->userDefinedIdReplacementLink($tab['url'], $variables);
+		}
+		return $tabs;
 	}
 	
 	public function getUsers()
@@ -3596,6 +3618,7 @@ class Organizr
 			),
 		];
 		$queries = $this->processQueries($response);
+		$this->applyTabVariables($queries['tabs']);
 		$all['tabs'] = $queries['tabs'];
 		foreach ($queries['tabs'] as $k => $v) {
 			$v['access_url'] = (!empty($v['url_local']) && ($v['url_local'] !== null) && ($v['url_local'] !== 'null') && $this->isLocal() && $v['type'] !== 0) ? $v['url_local'] : $v['url'];
