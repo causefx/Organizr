@@ -4029,8 +4029,8 @@ function settingsAPI2(post, callbacks=null, asyncValue=true){
 }
 $.xhrPool.abortAll = function(url) {
 	$(this).each(function(i, jqXHR) { //  cycle through list of recorded connection
-		organizrConsole('Organizr API Abort',jqXHR.requestURL,'info');
 		if (!url || url === jqXHR.requestURL) {
+			organizrConsole('Organizr API Abort',jqXHR.requestURL,'info');
 			jqXHR.abort(); //  aborts connection
 			$.xhrPool.splice(i, 1); //  removes from list by index
 		}
@@ -4041,6 +4041,7 @@ $.ajaxPrefilter(function(options, originalOptions, jqXHR) {
 	jqXHR.requestURL = options.url;
 });
 function organizrAPI2(type,path,data=null,asyncValue=true){
+	$.xhrPool.abortAll(path);
 	var timeout = 10000;
 	switch(path){
 		case 'api/v2/windows/update':
@@ -4114,7 +4115,7 @@ function organizrAPI2(type,path,data=null,asyncValue=true){
 				beforeSend: function(request) {
 					request.setRequestHeader("Token", activeInfo.token);
 					request.setRequestHeader("formKey", local('g','formKey'));
-					xhrPool.push(request);
+					$.xhrPool.push(request);
 				},
 				complete: function(jqXHR) {
 					var i = $.xhrPool.indexOf(jqXHR); //  get index for current connection completed
