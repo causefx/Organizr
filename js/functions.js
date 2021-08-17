@@ -3302,8 +3302,33 @@ function submitSettingsForm(form){
 			}catch(e) {
 				organizrCatchError(e,data);
 			}
-			message('Updated Items',response.message,activeInfo.settings.notifications.position,"#FFF","success","5000");
+			//message('Updated Items',response.message,activeInfo.settings.notifications.position,"#FFF","success","5000");
 			if(callbacks){ callbacks.fire(); }
+			let html = `
+		        <div class="panel panel-default">
+                    <div class="panel-heading">Updated Items</div>
+                    <div class="panel-wrapper collapse in">
+                        <div class="panel-body">
+                            <div class="overlay-box">
+                                <div class="user-content">
+                                    <h4 class="text-white">${response.message}</h4>
+                                    <hr/>
+                                    <h4 lang="en">Close Homepage Settings?</h4>
+                                    <div class="button-box">
+				                        <button class="btn btn-info waves-effect waves-light" type="button" onclick="swal.close();Custombox.modal.close()"><span class="btn-label"><i class="ti-check"></i></span>Yes</button>
+				                        <button class="btn btn-danger waves-effect waves-light" type="button" onclick="swal.close()"><span class="btn-label"><i class="ti-close"></i></span>No</button>                        
+				                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+		    `;
+			swal({
+				content: createElementFromHTML(html),
+				buttons: false,
+				className: 'bg-org'
+			})
 		}).fail(function(xhr) {
 			OrganizrApiError(xhr, 'Update Error');
 		});
