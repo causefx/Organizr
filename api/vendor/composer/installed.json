@@ -2,17 +2,17 @@
     "packages": [
         {
             "name": "adldap2/adldap2",
-            "version": "v10.3.1",
-            "version_normalized": "10.3.1.0",
+            "version": "v10.3.3",
+            "version_normalized": "10.3.3.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Adldap2/Adldap2.git",
-                "reference": "936a4e2eb925d005198f716a75bb78068c4de94d"
+                "reference": "c2a8f72455d3438377d955fc0f4b9ed836b47463"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Adldap2/Adldap2/zipball/936a4e2eb925d005198f716a75bb78068c4de94d",
-                "reference": "936a4e2eb925d005198f716a75bb78068c4de94d",
+                "url": "https://api.github.com/repos/Adldap2/Adldap2/zipball/c2a8f72455d3438377d955fc0f4b9ed836b47463",
+                "reference": "c2a8f72455d3438377d955fc0f4b9ed836b47463",
                 "shasum": ""
             },
             "require": {
@@ -31,7 +31,7 @@
             "suggest": {
                 "ext-fileinfo": "fileinfo is required when retrieving user encoded thumbnails"
             },
-            "time": "2020-09-09T12:55:51+00:00",
+            "time": "2021-08-09T15:22:35+00:00",
             "type": "library",
             "installation-source": "dist",
             "autoload": {

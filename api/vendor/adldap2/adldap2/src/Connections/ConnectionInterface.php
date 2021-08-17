@@ -120,7 +120,7 @@ interface ConnectionInterface
      *
      * @link http://php.net/manual/en/function.ldap-get-entries.php
      *
-     * @param $searchResult
+     * @param resource $searchResult
      *
      * @return mixed
      */
@@ -131,7 +131,7 @@ interface ConnectionInterface
      *
      * @link http://php.net/manual/en/function.ldap-count-entries.php
      *
-     * @param $searchResult
+     * @param resource $searchResult
      *
      * @return int
      */
@@ -155,7 +155,7 @@ interface ConnectionInterface
      *
      * @link http://php.net/manual/en/function.ldap-first-entry.php
      *
-     * @param $searchResult
+     * @param resource $searchResult
      *
      * @return mixed
      */
