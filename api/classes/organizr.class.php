@@ -861,13 +861,17 @@ class Organizr
 		return $current;
 	}
 	
-	public function config()
+	public function config($tries = 1)
 	{
 		// Load config or default
 		if (file_exists($this->userConfigPath)) {
 			$config = $this->fillDefaultConfig($this->loadConfig($this->userConfigPath));
 		} else {
 			$config = $this->fillDefaultConfig($this->loadConfig($this->defaultConfigPath));
+		}
+		if (!is_array($config) && $tries < 5) {
+			$tries++;
+			return $this->config($tries);
 		}
 		return $config;
 	}
