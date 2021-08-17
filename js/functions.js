@@ -23,7 +23,7 @@ var tabInformation = {};
 var tabActionsList = [];
 tabActionsList['refresh'] = [];
 tabActionsList['close'] = [];
-
+$.xhrPool = [];
 // Add new jquery serializeObject function
 $.fn.serializeObject = function()
 {
@@ -767,6 +767,7 @@ function closeTab(tab){
                    if($('#menu-'+tab).attr('data-url') == 'api/v2/page/homepage'){
 	                   organizrConsole('Organizr Function','Clearing All Homepage AJAX calls');
                        clearAJAX('homepage');
+	                   $.xhrPool.abortAll();
                    }
 	               organizrConsole('Tab Function','Closing tab: '+tab);
                    $('#internal-'+cleanClass(tab)).html('');
@@ -807,6 +808,11 @@ function reloadTab(tab, type){
 		case 0:
 		case '0':
 		case 'internal':
+			if($('#menu-'+cleanClass(tab)).attr('data-url') == 'api/v2/page/homepage'){
+				organizrConsole('Organizr Function','Clearing All Homepage AJAX calls');
+				clearAJAX('homepage');
+				$.xhrPool.abortAll();
+			}
 		    var dataURL = $('.frame-'+cleanClass(tab)).attr('data-url');
 		    var dataName = $('.frame-'+cleanClass(tab)).attr('data-name');
             $('#frame-'+cleanClass(tab)).html('');
@@ -847,6 +853,11 @@ function reloadCurrentTab(){
 		case '0':
 		case 'internal':
 			var activeInternal = $('.internal-listing').find('.show');
+			if($(activeInternal).attr('data-url') == 'api/v2/page/homepage'){
+				organizrConsole('Organizr Function','Clearing All Homepage AJAX calls');
+				clearAJAX('homepage');
+				$.xhrPool.abortAll();
+			}
 			$(activeInternal).html('');
 			loadInternal(activeInternal.attr('data-url'),activeInternal.attr('data-name'));
 			break;
@@ -914,6 +925,7 @@ function closeCurrentTab(event){
             if($('#menu-'+cleanClass(tab)).attr('data-url') == 'api/v2/page/homepage'){
 	            organizrConsole('Organizr Function','Clearing All Homepage AJAX calls');
                 clearAJAX('homepage');
+	            $.xhrPool.abortAll();
             }
 			organizrConsole('Organizr Function','Closing tab: '+tab);
 			$('#internal'+extra+'-'+cleanClass(tab)).html('');
@@ -4015,6 +4027,19 @@ function settingsAPI2(post, callbacks=null, asyncValue=true){
 		console.error(post.error);
 	});
 }
+$.xhrPool.abortAll = function(url) {
+	$(this).each(function(i, jqXHR) { //  cycle through list of recorded connection
+		organizrConsole('Organizr API Abort',jqXHR.requestURL,'info');
+		if (!url || url === jqXHR.requestURL) {
+			jqXHR.abort(); //  aborts connection
+			$.xhrPool.splice(i, 1); //  removes from list by index
+		}
+	});
+};
+$.ajaxPrefilter(function(options, originalOptions, jqXHR) {
+	//organizrConsole('Organizr API Function',options.url,'info');
+	jqXHR.requestURL = options.url;
+});
 function organizrAPI2(type,path,data=null,asyncValue=true){
 	var timeout = 10000;
 	switch(path){
@@ -4035,6 +4060,11 @@ function organizrAPI2(type,path,data=null,asyncValue=true){
 				beforeSend: function(request) {
 					request.setRequestHeader("Token", activeInfo.token);
 					request.setRequestHeader("formKey", local('g','formKey'));
+					$.xhrPool.push(request);
+				},
+				complete: function(jqXHR) {
+					var i = $.xhrPool.indexOf(jqXHR); //  get index for current connection completed
+					if (i > -1) $.xhrPool.splice(i, 1); //  removes from list by index
 				},
 				timeout: timeout,
 			});
@@ -4047,6 +4077,11 @@ function organizrAPI2(type,path,data=null,asyncValue=true){
 				beforeSend: function(request) {
 					request.setRequestHeader("Token", activeInfo.token);
 					request.setRequestHeader("formKey", local('g','formKey'));
+					$.xhrPool.push(request);
+				},
+				complete: function(jqXHR) {
+					var i = $.xhrPool.indexOf(jqXHR); //  get index for current connection completed
+					if (i > -1) $.xhrPool.splice(i, 1); //  removes from list by index
 				},
 				timeout: timeout,
 			});
@@ -4061,6 +4096,11 @@ function organizrAPI2(type,path,data=null,asyncValue=true){
 				beforeSend: function(request) {
 					request.setRequestHeader("Token", activeInfo.token);
 					request.setRequestHeader("formKey", local('g','formKey'));
+					$.xhrPool.push(request);
+				},
+				complete: function(jqXHR) {
+					var i = $.xhrPool.indexOf(jqXHR); //  get index for current connection completed
+					if (i > -1) $.xhrPool.splice(i, 1); //  removes from list by index
 				},
 				data:data
 			});
@@ -4074,6 +4114,11 @@ function organizrAPI2(type,path,data=null,asyncValue=true){
 				beforeSend: function(request) {
 					request.setRequestHeader("Token", activeInfo.token);
 					request.setRequestHeader("formKey", local('g','formKey'));
+					xhrPool.push(request);
+				},
+				complete: function(jqXHR) {
+					var i = $.xhrPool.indexOf(jqXHR); //  get index for current connection completed
+					if (i > -1) $.xhrPool.splice(i, 1); //  removes from list by index
 				},
 				data:JSON.stringify(data),
 				contentType: "application/json"
