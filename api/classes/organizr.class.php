@@ -6486,23 +6486,28 @@ class Organizr
 				'data' => $apiData
 			];
 			//$this->debug(json_encode($debugInformation));
-			switch ($requestObject->getMethod()) {
-				case 'GET':
-					$call = Requests::get($url, $headers, $options);
-					break;
-				case 'POST':
-					$call = Requests::post($url, $headers, $apiData, $options);
-					break;
-				case 'DELETE':
-					$call = Requests::delete($url, $headers, $options);
-					break;
-				case 'PUT':
-					$call = Requests::put($url, $headers, $apiData, $options);
-					break;
-				default:
-					$call = Requests::get($url, $headers, $options);
+			try {
+				switch ($requestObject->getMethod()) {
+					case 'GET':
+						$call = Requests::get($url, $headers, $options);
+						break;
+					case 'POST':
+						$call = Requests::post($url, $headers, $apiData, $options);
+						break;
+					case 'DELETE':
+						$call = Requests::delete($url, $headers, $options);
+						break;
+					case 'PUT':
+						$call = Requests::put($url, $headers, $apiData, $options);
+						break;
+					default:
+						$call = Requests::get($url, $headers, $options);
+				}
+				return $call->body;
+			} catch (Requests_Exception $e) {
+				$this->setAPIResponse('error', $e->getMessage(), 500);
+				return null;
 			}
-			return $call->body;
 		} else {
 			return null;
 		}
