@@ -4237,14 +4237,13 @@ class Organizr
 			foreach ($service['settings'] as $category => $items) {
 				if ($category !== 'About' && $category !== 'Test Connection') {
 					foreach ($items as $item) {
-						if ($item['type'] !== 'html') {
-							if (stripos($item['name'], 'token') !== false) {
-								$debug[$category][$item['name']] = '**********';
-							} elseif (stripos($item['name'], 'key') !== false) {
-								$debug[$category][$item['name']] = '**********';
-							} else {
-								$debug[$category][$item['name']] = $item['value'];
+						if ($item['type'] !== 'html' && $item['type'] !== 'blank' && $item['type'] !== 'button') {
+							if ((stripos($item['name'], 'token') !== false) || (stripos($item['name'], 'key') !== false) || (stripos($item['name'], 'password'))) {
+								if ($item['value'] !== '') {
+									$item['value'] = '**********';
+								}
 							}
+							$debug[$category][$item['name']] = $item['value'];
 						}
 					}
 				}
