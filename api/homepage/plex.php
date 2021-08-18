@@ -854,8 +854,11 @@ trait PlexHomepageItem
 	{
 		if ($this->config['tautulliURL'] && $this->config['tautulliApikey'] && $this->config['homepageUseCustomStreamNames']) {
 			$names = $this->getTautulliFriendlyNames(true);
-			$this->updateConfig(array('homepageCustomStreamNames' => json_encode($names)));
-			$this->config['homepageCustomStreamNames'] = json_encode($names);
+			if (json_encode($names) !== $this->config['homepageCustomStreamNames']) {
+				$this->updateConfig(array('homepageCustomStreamNames' => json_encode($names)));
+				$this->config['homepageCustomStreamNames'] = json_encode($names);
+				$this->debug('Updating Tautulli custom names config item', 'SYSTEM');
+			}
 		}
 	}
 	
