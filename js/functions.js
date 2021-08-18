@@ -1678,15 +1678,32 @@ function themeStatus(name=null,version=null){
         return 'Not Installed';
     }
 }
+function copyHomepageJSON(item){
+	organizrAPI2('GET','api/v2/settings/homepage/'+item+'/debug').success(function(data) {
+		try {
+			let response = data.response;
+			let debug = response.data;
+			clipboard(true, JSON.stringify(debug,null,'\t'));
+			message("",window.lang.translate('Copied JSON to clipboard'),activeInfo.settings.notifications.position,"#FFF","success","5000");
+		}catch(e) {
+			organizrCatchError(e,data);
+		}
+	}).fail(function(xhr) {
+		OrganizrApiError(xhr, 'Copy JSON Failed');
+	});
+}
 function homepageItemFormHTML(v){
 	let docs = (typeof v.docs == 'undefined') ? '' : `<small class="pl-5"><a class="btn btn-sm btn-primary waves-effect waves-light" href="${v.docs}" target="_blank"> <i class="icon-docs m-r-5"></i> <span lang="en">Support Docs</span></a></small>`;
+	let debug = (typeof v.debug == 'undefined') ? false : true;
+	debug = (debug === true) ? (v.debug) : false;
+	debug = (debug === true) ? `<small class="pl-5"><a href="javascript:copyHomepageJSON('${v.name}')" class="btn btn-sm btn-info waves-effect waves-light copyHomepageJSON"> <i class="ti-clipboard m-r-5"></i> <span lang="en">Copy JSON</span></a></small>` : '';
 	return `
 	<a id="editHomepageItemCall" href="#editHomepageItemDiv" class="hidden">homepage item</a>
 	<form id="homepage-`+v.name+`-form" class="white-popup mfp-with-anim homepageForm addFormTick">
 		<fieldset style="border:0;" class="col-md-10 col-md-offset-1">
             <div class="panel bg-org panel-info">
                 <div class="panel-heading">
-                    <span class="" lang="en">`+v.name+`</span>${docs}
+                    <span class="" lang="en">`+v.name+`</span>${docs}${debug}
                     <button type="button" class="btn bg-org btn-circle close-popup pull-right close-editHomepageItemDiv"><i class="fa fa-times"></i> </button>
                     <button id="homepage-`+v.name+`-form-save" onclick="submitSettingsForm('homepage-`+v.name+`-form')" class="btn btn-sm btn-info btn-rounded waves-effect waves-light pull-right hidden animated loop-animation rubberBand m-r-20" type="button"><span class="btn-label"><i class="fa fa-save"></i></span><span lang="en">Save</span></button>
                 </div>

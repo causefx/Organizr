@@ -4223,8 +4223,33 @@ class Organizr
 			if (strtolower($v['name']) === strtolower($item)) {
 				$functionName = $v['settingsArray'];
 				return $this->$functionName();
-				
 			}
+		}
+		$this->setAPIResponse('error', 'Homepage item was not found', 404);
+		return null;
+	}
+	
+	public function getSettingsHomepageItemDebug($service)
+	{
+		$service = $this->getSettingsHomepageItem($service);
+		if ($service) {
+			$debug = [];
+			foreach ($service['settings'] as $category => $items) {
+				if ($category !== 'About' && $category !== 'Test Connection') {
+					foreach ($items as $item) {
+						if ($item['type'] !== 'html') {
+							if (stripos($item['name'], 'token') !== false) {
+								$debug[$category][$item['name']] = '**********';
+							} elseif (stripos($item['name'], 'key') !== false) {
+								$debug[$category][$item['name']] = '**********';
+							} else {
+								$debug[$category][$item['name']] = $item['value'];
+							}
+						}
+					}
+				}
+			}
+			return $debug;
 		}
 		$this->setAPIResponse('error', 'Homepage item was not found', 404);
 		return null;
