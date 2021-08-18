@@ -37,6 +37,7 @@ trait PlexHomepageItem
 			'enabled' => strpos('personal', $this->config['license']) !== false,
 			'image' => 'plugins/images/tabs/plex.png',
 			'category' => 'Media Server',
+			'debug' => true,
 			'settings' => array(
 				'Enable' => array(
 					array(

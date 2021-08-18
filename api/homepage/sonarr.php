@@ -16,6 +16,7 @@ trait SonarrHomepageItem
 		}
 		$homepageSettings = array(
 			'docs' => 'https://docs.organizr.app/books/setup-features/page/sonarr',
+			'debug' => true,
 			'settings' => array(
 				'About' => array(
 					array(

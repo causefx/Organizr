@@ -15,6 +15,7 @@ trait DelugeHomepageItem
 			return $homepageInformation;
 		}
 		$homepageSettings = array(
+			'debug' => true,
 			'settings' => array(
 				'custom' => '
 				<div class="row">
