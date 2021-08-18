@@ -647,6 +647,7 @@ class Organizr
 			// Update config.php version if different to the installed version
 			if ($updateSuccess && $this->version !== $this->config['configVersion']) {
 				$this->updateConfig(array('apply_CONFIG_VERSION' => $this->version));
+				$this->debug('Updated config version to ' . $this->version);
 			}
 			if ($updateSuccess == false) {
 				die('Database update failed - Please manually check logs and fix - Then reload this page');
@@ -869,7 +870,7 @@ class Organizr
 		} else {
 			$config = $this->fillDefaultConfig($this->loadConfig($this->defaultConfigPath));
 		}
-		if (!is_array($config) && $tries < 5) {
+		if ((!is_array($config) || !file_exists($this->userConfigPath)) && $tries < 5) {
 			$tries++;
 			return $this->config($tries);
 		}
