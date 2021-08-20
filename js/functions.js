@@ -1167,7 +1167,7 @@ function buildPluginsItem(array){
                     <button id="`+v.idPrefix+`-settings-page-save" onclick="submitSettingsForm('`+v.idPrefix+`-settings-page')" class="btn btn-sm btn-info btn-rounded waves-effect waves-light pull-right hidden animated loop-animation rubberBand m-r-20" type="button"><span class="btn-label"><i class="fa fa-save"></i></span><span lang="en">Save</span></button>
                 </div>
                 <div class="panel-wrapper collapse in" aria-expanded="true">
-                    <div class="panel-body bg-org">
+                    <div class="bg-org">
                         <fieldset id="`+v.idPrefix+`-settings-items" style="border:0;" class=""><h2>Loading...</h2></fieldset>
                     </div>
                     <div class="clearfix"></div>
@@ -1705,10 +1705,10 @@ function homepageItemFormHTML(v){
                 <div class="panel-heading">
                     <span class="" lang="en">`+v.name+`</span>${docs}${debug}
                     <button type="button" class="btn bg-org btn-circle close-popup pull-right close-editHomepageItemDiv"><i class="fa fa-times"></i> </button>
-                    <button id="homepage-`+v.name+`-form-save" onclick="submitSettingsForm('homepage-`+v.name+`-form')" class="btn btn-sm btn-info btn-rounded waves-effect waves-light pull-right hidden animated loop-animation rubberBand m-r-20" type="button"><span class="btn-label"><i class="fa fa-save"></i></span><span lang="en">Save</span></button>
+                    <button id="homepage-`+v.name+`-form-save" onclick="submitSettingsForm('homepage-`+v.name+`-form', true)" class="btn btn-sm btn-info btn-rounded waves-effect waves-light pull-right hidden animated loop-animation rubberBand m-r-20" type="button"><span class="btn-label"><i class="fa fa-save"></i></span><span lang="en">Save</span></button>
                 </div>
                 <div class="panel-wrapper collapse in" aria-expanded="true">
-                    <div class="panel-body bg-org">
+                    <div class="bg-org">
                         `+buildFormGroup(v.settings)+`
                     </div>
                 </div>
@@ -1840,8 +1840,8 @@ function buildHomepage(){
 }
 function buildFormGroup(array){
     var mainCount = 0;
-	var group = '<div class="tab-content">';
-	var uList = '<ul class="nav customtab nav-tabs nav-low-margin" role="tablist">';
+	var group = '<div class="tab-content w-100">';
+	var uList = '<div class="vtabs customvtab"><ul class="nav tabs-vertical" role="tablist">';
 	$.each(array, function(i,v) {
         mainCount++;
 		var count = 0;
@@ -1920,7 +1920,7 @@ function buildFormGroup(array){
 			group += '</div>';
 		}
 	});
-	return uList+'</ul>'+group;
+	return uList+'</ul>'+group+'</div>';
 }
 function createImageSwal(attr){
 	let title = attr.attr('data-title');
@@ -3289,7 +3289,7 @@ function getSubmitSettingsFormValueObject(form, index, value){
     values = {name: index, value: values, type: 'array'};
     return values;
 }
-function submitSettingsForm(form){
+function submitSettingsForm(form, homepageItem = false){
     var list = $( "#"+form ).serializeToJSON();
     var size = 0;
     var submit = {};
@@ -3319,17 +3319,15 @@ function submitSettingsForm(form){
 			}catch(e) {
 				organizrCatchError(e,data);
 			}
-			//message('Updated Items',response.message,activeInfo.settings.notifications.position,"#FFF","success","5000");
 			if(callbacks){ callbacks.fire(); }
-			let html = `
+			if(homepageItem) {
+				let html = `
 		        <div class="panel panel-default">
-                    <div class="panel-heading">Updated Items</div>
+                    <div class="panel-heading">${response.message}</div>
                     <div class="panel-wrapper collapse in">
                         <div class="panel-body">
                             <div class="overlay-box">
                                 <div class="user-content">
-                                    <h4 class="text-white">${response.message}</h4>
-                                    <hr/>
                                     <h4 lang="en">Close Homepage Settings?</h4>
                                     <div class="button-box">
 				                        <button class="btn btn-info waves-effect waves-light" type="button" onclick="swal.close();Custombox.modal.close()"><span class="btn-label"><i class="ti-check"></i></span>Yes</button>
@@ -3341,11 +3339,14 @@ function submitSettingsForm(form){
                     </div>
                 </div>
 		    `;
-			swal({
-				content: createElementFromHTML(html),
-				buttons: false,
-				className: 'bg-org'
-			})
+				swal({
+					content: createElementFromHTML(html),
+					buttons: false,
+					className: 'bg-org'
+				})
+			}else{
+				message('Updated Items',response.message,activeInfo.settings.notifications.position,"#FFF","success","5000");
+			}
 		}).fail(function(xhr) {
 			OrganizrApiError(xhr, 'Update Error');
 		});
