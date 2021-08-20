@@ -98,6 +98,7 @@ trait NetDataHomepageItem
 			return $homepageInformation;
 		}
 		$homepageSettings = array(
+			'debug' => true,
 			'settings' => array(
 				'Enable' => array(
 					array(

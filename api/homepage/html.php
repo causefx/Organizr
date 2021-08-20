@@ -15,6 +15,7 @@ trait HTMLHomepageItem
 			return $homepageInformation;
 		}
 		$homepageSettings = array(
+			'debug' => true,
 			'settings' => array(
 				'Enable' => array(
 					array(
@@ -68,6 +69,7 @@ trait HTMLHomepageItem
 			'enabled' => strpos('personal,business', $this->config['license']) !== false,
 			'image' => 'plugins/images/tabs/custom2.png',
 			'category' => 'Custom',
+			'debug' => true,
 			'settings' => array(
 				'Enable' => array(
 					array(

@@ -15,6 +15,7 @@ trait QBitTorrentHomepageItem
 			return $homepageInformation;
 		}
 		$homepageSettings = array(
+			'debug' => true,
 			'settings' => array(
 				'Enable' => array(
 					array(
@@ -65,6 +66,32 @@ trait QBitTorrentHomepageItem
 						'label' => 'Password',
 						'value' => $this->config['qBittorrentPassword']
 					)
+				),
+				'API SOCKS' => array(
+					array(
+						'type' => 'html',
+						'override' => 12,
+						'label' => '',
+						'html' => '
+							<div class="panel panel-default">
+								<div class="panel-wrapper collapse in">
+									<div class="panel-body">' . $this->socksHeadingHTML('qbittorrent') . '</div>
+								</div>
+							</div>'
+					),
+					array(
+						'type' => 'switch',
+						'name' => 'qBittorrentSocksEnabled',
+						'label' => 'Enable',
+						'value' => $this->config['qBittorrentSocksEnabled']
+					),
+					array(
+						'type' => 'select',
+						'name' => 'qBittorrentSocksAuth',
+						'label' => 'Minimum Authentication',
+						'value' => $this->config['qBittorrentSocksAuth'],
+						'options' => $this->groupOptions
+					),
 				),
 				'Misc Options' => array(
 					array(

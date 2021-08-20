@@ -23,7 +23,7 @@ var tabInformation = {};
 var tabActionsList = [];
 tabActionsList['refresh'] = [];
 tabActionsList['close'] = [];
-
+$.xhrPool = [];
 // Add new jquery serializeObject function
 $.fn.serializeObject = function()
 {
@@ -767,6 +767,7 @@ function closeTab(tab){
                    if($('#menu-'+tab).attr('data-url') == 'api/v2/page/homepage'){
 	                   organizrConsole('Organizr Function','Clearing All Homepage AJAX calls');
                        clearAJAX('homepage');
+	                   $.xhrPool.abortAll();
                    }
 	               organizrConsole('Tab Function','Closing tab: '+tab);
                    $('#internal-'+cleanClass(tab)).html('');
@@ -807,6 +808,11 @@ function reloadTab(tab, type){
 		case 0:
 		case '0':
 		case 'internal':
+			if($('#menu-'+cleanClass(tab)).attr('data-url') == 'api/v2/page/homepage'){
+				organizrConsole('Organizr Function','Clearing All Homepage AJAX calls');
+				clearAJAX('homepage');
+				$.xhrPool.abortAll();
+			}
 		    var dataURL = $('.frame-'+cleanClass(tab)).attr('data-url');
 		    var dataName = $('.frame-'+cleanClass(tab)).attr('data-name');
             $('#frame-'+cleanClass(tab)).html('');
@@ -847,6 +853,11 @@ function reloadCurrentTab(){
 		case '0':
 		case 'internal':
 			var activeInternal = $('.internal-listing').find('.show');
+			if($(activeInternal).attr('data-url') == 'api/v2/page/homepage'){
+				organizrConsole('Organizr Function','Clearing All Homepage AJAX calls');
+				clearAJAX('homepage');
+				$.xhrPool.abortAll();
+			}
 			$(activeInternal).html('');
 			loadInternal(activeInternal.attr('data-url'),activeInternal.attr('data-name'));
 			break;
@@ -914,6 +925,7 @@ function closeCurrentTab(event){
             if($('#menu-'+cleanClass(tab)).attr('data-url') == 'api/v2/page/homepage'){
 	            organizrConsole('Organizr Function','Clearing All Homepage AJAX calls');
                 clearAJAX('homepage');
+	            $.xhrPool.abortAll();
             }
 			organizrConsole('Organizr Function','Closing tab: '+tab);
 			$('#internal'+extra+'-'+cleanClass(tab)).html('');
@@ -1155,7 +1167,7 @@ function buildPluginsItem(array){
                     <button id="`+v.idPrefix+`-settings-page-save" onclick="submitSettingsForm('`+v.idPrefix+`-settings-page')" class="btn btn-sm btn-info btn-rounded waves-effect waves-light pull-right hidden animated loop-animation rubberBand m-r-20" type="button"><span class="btn-label"><i class="fa fa-save"></i></span><span lang="en">Save</span></button>
                 </div>
                 <div class="panel-wrapper collapse in" aria-expanded="true">
-                    <div class="panel-body bg-org">
+                    <div class="bg-org">
                         <fieldset id="`+v.idPrefix+`-settings-items" style="border:0;" class=""><h2>Loading...</h2></fieldset>
                     </div>
                     <div class="clearfix"></div>
@@ -1666,20 +1678,37 @@ function themeStatus(name=null,version=null){
         return 'Not Installed';
     }
 }
+function copyHomepageJSON(item){
+	organizrAPI2('GET','api/v2/settings/homepage/'+item+'/debug').success(function(data) {
+		try {
+			let response = data.response;
+			let debug = response.data;
+			clipboard(true, JSON.stringify(debug,null,'\t'));
+			message("",window.lang.translate('Copied JSON to clipboard'),activeInfo.settings.notifications.position,"#FFF","success","5000");
+		}catch(e) {
+			organizrCatchError(e,data);
+		}
+	}).fail(function(xhr) {
+		OrganizrApiError(xhr, 'Copy JSON Failed');
+	});
+}
 function homepageItemFormHTML(v){
 	let docs = (typeof v.docs == 'undefined') ? '' : `<small class="pl-5"><a class="btn btn-sm btn-primary waves-effect waves-light" href="${v.docs}" target="_blank"> <i class="icon-docs m-r-5"></i> <span lang="en">Support Docs</span></a></small>`;
+	let debug = (typeof v.debug == 'undefined') ? false : true;
+	debug = (debug === true) ? (v.debug) : false;
+	debug = (debug === true) ? `<small class="pl-5"><a href="javascript:copyHomepageJSON('${v.name}')" class="btn btn-sm btn-info waves-effect waves-light copyHomepageJSON"> <i class="ti-clipboard m-r-5"></i> <span lang="en">Copy JSON</span></a></small>` : '';
 	return `
 	<a id="editHomepageItemCall" href="#editHomepageItemDiv" class="hidden">homepage item</a>
 	<form id="homepage-`+v.name+`-form" class="white-popup mfp-with-anim homepageForm addFormTick">
 		<fieldset style="border:0;" class="col-md-10 col-md-offset-1">
             <div class="panel bg-org panel-info">
                 <div class="panel-heading">
-                    <span class="" lang="en">`+v.name+`</span>${docs}
+                    <span class="" lang="en">`+v.name+`</span>${docs}${debug}
                     <button type="button" class="btn bg-org btn-circle close-popup pull-right close-editHomepageItemDiv"><i class="fa fa-times"></i> </button>
-                    <button id="homepage-`+v.name+`-form-save" onclick="submitSettingsForm('homepage-`+v.name+`-form')" class="btn btn-sm btn-info btn-rounded waves-effect waves-light pull-right hidden animated loop-animation rubberBand m-r-20" type="button"><span class="btn-label"><i class="fa fa-save"></i></span><span lang="en">Save</span></button>
+                    <button id="homepage-`+v.name+`-form-save" onclick="submitSettingsForm('homepage-`+v.name+`-form', true)" class="btn btn-sm btn-info btn-rounded waves-effect waves-light pull-right hidden animated loop-animation rubberBand m-r-20" type="button"><span class="btn-label"><i class="fa fa-save"></i></span><span lang="en">Save</span></button>
                 </div>
                 <div class="panel-wrapper collapse in" aria-expanded="true">
-                    <div class="panel-body bg-org">
+                    <div class="bg-org">
                         `+buildFormGroup(v.settings)+`
                     </div>
                 </div>
@@ -1811,8 +1840,8 @@ function buildHomepage(){
 }
 function buildFormGroup(array){
     var mainCount = 0;
-	var group = '<div class="tab-content">';
-	var uList = '<ul class="nav customtab nav-tabs nav-low-margin" role="tablist">';
+	var group = '<div class="tab-content w-100">';
+	var uList = '<div class="vtabs customvtab"><ul class="nav tabs-vertical" role="tablist">';
 	$.each(array, function(i,v) {
         mainCount++;
 		var count = 0;
@@ -1891,7 +1920,7 @@ function buildFormGroup(array){
 			group += '</div>';
 		}
 	});
-	return uList+'</ul>'+group;
+	return uList+'</ul>'+group+'</div>';
 }
 function createImageSwal(attr){
 	let title = attr.attr('data-title');
@@ -2956,7 +2985,7 @@ function buildSplashScreen(json){
         closeSideMenu();
 	    organizrConsole('Organizr Function','Adding Splash Screen');
         var splash = `
-        <section id="splashScreen" class="lock-screen splash-screen fade ${hiddenSplash}">
+        <section id="splashScreen" class="lock-screen splash-screen default-scroller fade ${hiddenSplash}">
             <div class="row p-20 flexbox">`+items+`</div>
             <div class="row p-20 p-t-0 flexbox">
                 <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12 mouse hvr-wobble-bottom bottom-close-splash" onclick="$('.splash-screen').addClass('hidden').removeClass('in')">
@@ -3260,7 +3289,7 @@ function getSubmitSettingsFormValueObject(form, index, value){
     values = {name: index, value: values, type: 'array'};
     return values;
 }
-function submitSettingsForm(form){
+function submitSettingsForm(form, homepageItem = false){
     var list = $( "#"+form ).serializeToJSON();
     var size = 0;
     var submit = {};
@@ -3290,8 +3319,34 @@ function submitSettingsForm(form){
 			}catch(e) {
 				organizrCatchError(e,data);
 			}
-			message('Updated Items',response.message,activeInfo.settings.notifications.position,"#FFF","success","5000");
 			if(callbacks){ callbacks.fire(); }
+			if(homepageItem) {
+				let html = `
+		        <div class="panel panel-default">
+                    <div class="panel-heading">${response.message}</div>
+                    <div class="panel-wrapper collapse in">
+                        <div class="panel-body">
+                            <div class="overlay-box">
+                                <div class="user-content">
+                                    <h4 lang="en">Close Homepage Settings?</h4>
+                                    <div class="button-box">
+				                        <button class="btn btn-info waves-effect waves-light" type="button" onclick="swal.close();Custombox.modal.close()"><span class="btn-label"><i class="ti-check"></i></span>Yes</button>
+				                        <button class="btn btn-danger waves-effect waves-light" type="button" onclick="swal.close()"><span class="btn-label"><i class="ti-close"></i></span>No</button>                        
+				                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+		    `;
+				swal({
+					content: createElementFromHTML(html),
+					buttons: false,
+					className: 'bg-org'
+				})
+			}else{
+				message('Updated Items',response.message,activeInfo.settings.notifications.position,"#FFF","success","5000");
+			}
 		}).fail(function(xhr) {
 			OrganizrApiError(xhr, 'Update Error');
 		});
@@ -4015,7 +4070,21 @@ function settingsAPI2(post, callbacks=null, asyncValue=true){
 		console.error(post.error);
 	});
 }
+$.xhrPool.abortAll = function(url) {
+	$(this).each(function(i, jqXHR) { //  cycle through list of recorded connection
+		if (!url || url === jqXHR.requestURL) {
+			organizrConsole('Organizr API Abort',jqXHR.requestURL,'info');
+			jqXHR.abort(); //  aborts connection
+			$.xhrPool.splice(i, 1); //  removes from list by index
+		}
+	});
+};
+$.ajaxPrefilter(function(options, originalOptions, jqXHR) {
+	//organizrConsole('Organizr API Function',options.url,'info');
+	jqXHR.requestURL = options.url;
+});
 function organizrAPI2(type,path,data=null,asyncValue=true){
+	$.xhrPool.abortAll(path);
 	var timeout = 10000;
 	switch(path){
 		case 'api/v2/windows/update':
@@ -4035,6 +4104,11 @@ function organizrAPI2(type,path,data=null,asyncValue=true){
 				beforeSend: function(request) {
 					request.setRequestHeader("Token", activeInfo.token);
 					request.setRequestHeader("formKey", local('g','formKey'));
+					$.xhrPool.push(request);
+				},
+				complete: function(jqXHR) {
+					var i = $.xhrPool.indexOf(jqXHR); //  get index for current connection completed
+					if (i > -1) $.xhrPool.splice(i, 1); //  removes from list by index
 				},
 				timeout: timeout,
 			});
@@ -4047,6 +4121,11 @@ function organizrAPI2(type,path,data=null,asyncValue=true){
 				beforeSend: function(request) {
 					request.setRequestHeader("Token", activeInfo.token);
 					request.setRequestHeader("formKey", local('g','formKey'));
+					$.xhrPool.push(request);
+				},
+				complete: function(jqXHR) {
+					var i = $.xhrPool.indexOf(jqXHR); //  get index for current connection completed
+					if (i > -1) $.xhrPool.splice(i, 1); //  removes from list by index
 				},
 				timeout: timeout,
 			});
@@ -4061,6 +4140,11 @@ function organizrAPI2(type,path,data=null,asyncValue=true){
 				beforeSend: function(request) {
 					request.setRequestHeader("Token", activeInfo.token);
 					request.setRequestHeader("formKey", local('g','formKey'));
+					$.xhrPool.push(request);
+				},
+				complete: function(jqXHR) {
+					var i = $.xhrPool.indexOf(jqXHR); //  get index for current connection completed
+					if (i > -1) $.xhrPool.splice(i, 1); //  removes from list by index
 				},
 				data:data
 			});
@@ -4074,6 +4158,11 @@ function organizrAPI2(type,path,data=null,asyncValue=true){
 				beforeSend: function(request) {
 					request.setRequestHeader("Token", activeInfo.token);
 					request.setRequestHeader("formKey", local('g','formKey'));
+					$.xhrPool.push(request);
+				},
+				complete: function(jqXHR) {
+					var i = $.xhrPool.indexOf(jqXHR); //  get index for current connection completed
+					if (i > -1) $.xhrPool.splice(i, 1); //  removes from list by index
 				},
 				data:JSON.stringify(data),
 				contentType: "application/json"
@@ -8575,24 +8664,6 @@ function tryUpdateNetdata(array){
         }
     });
     return existing;
-}
-function getTautulliFriendlyNames()
-{
-    organizrAPI2('GET','api/v2/homepage/tautulli/names').success(function(data) {
-        try {
-            let response = data.response;
-            if(response.data !== null){
-                var string = JSON.stringify(response.data, null, 4);
-                jsonEditor = ace.edit("homepageCustomStreamNamesAce");
-                jsonEditor.setValue(string);
-                $('#homepage-Plex-form-save').removeClass('hidden');
-            }
-        }catch(e) {
-	        organizrCatchError(e,data);
-        }
-    }).fail(function(xhr) {
-	    OrganizrApiError(xhr);
-    });
 }
 function homepageJackett(){
 	if(activeInfo.settings.homepage.options.alternateHomepageHeaders){

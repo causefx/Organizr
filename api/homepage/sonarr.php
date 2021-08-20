@@ -16,6 +16,7 @@ trait SonarrHomepageItem
 		}
 		$homepageSettings = array(
 			'docs' => 'https://docs.organizr.app/books/setup-features/page/sonarr',
+			'debug' => true,
 			'settings' => array(
 				'About' => array(
 					array(
@@ -59,7 +60,7 @@ trait SonarrHomepageItem
 						'help' => 'Please make sure to use local IP address and port - You also may use local dns name too.',
 						'placeholder' => 'http(s)://hostname:port',
 						'options' => $this->makeOptionsFromValues($this->config['sonarrURL']),
-						'settings' => '{tags: true}',
+						'settings' => '{tags: true, selectOnClose: true, closeOnSelect: true}',
 					),
 					array(
 						'type' => 'select2',
@@ -69,7 +70,7 @@ trait SonarrHomepageItem
 						'label' => 'Sonarr Token',
 						'value' => $this->config['sonarrToken'],
 						'options' => $this->makeOptionsFromValues($this->config['sonarrToken']),
-						'settings' => '{tags: true, theme: "default password-alt"}',
+						'settings' => '{tags: true, theme: "default password-alt, selectOnClose: true, closeOnSelect: true"}',
 					)
 				),
 				'API SOCKS' => array(

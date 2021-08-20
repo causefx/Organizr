@@ -17,6 +17,7 @@ trait RTorrentHomepageItem
 		}
 		$xmlStatus = (extension_loaded('xmlrpc')) ? 'Installed' : 'Not Installed';
 		$homepageSettings = array(
+			'debug' => true,
 			'settings' => array(
 				'FYI' => array(
 					array(

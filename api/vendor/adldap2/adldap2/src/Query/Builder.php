@@ -509,16 +509,15 @@ class Builder
         do {
             $this->connection->controlPagedResult($perPage, $isCritical, $cookie);
 
-            // Run the search.
-            $resource = $this->run($filter);
-
-            if ($resource) {
-                // If we have been given a valid resource, we will retrieve the next
-                // pagination cookie to send for our next pagination request.
-                $this->connection->controlPagedResultResponse($resource, $cookie);
-
-                $pages[] = $this->parse($resource);
+            if (! $resource = $this->run($filter)) {
+                break;
             }
+
+            // If we have been given a valid resource, we will retrieve the next
+            // pagination cookie to send for our next pagination request.
+            $this->connection->controlPagedResultResponse($resource, $cookie);
+
+            $pages[] = $this->parse($resource);
         } while (!empty($cookie));
 
         // Reset paged result on the current connection. We won't pass in the current $perPage
@@ -559,23 +558,22 @@ class Builder
             // Update the server controls.
             $this->connection->setOption(LDAP_OPT_SERVER_CONTROLS, $controls);
 
-            // Run the search.
-            $resource = $this->run($filter);
-
-            if ($resource) {
-                $errorCode = $dn = $errorMessage = $refs = null;
-
-                // Update the server controls with the servers response.
-                $this->connection->parseResult($resource, $errorCode, $dn, $errorMessage, $refs, $controls);
-
-                $pages[] = $this->parse($resource);
-
-                // Reset paged result on the current connection. We won't pass in the current $perPage
-                // parameter since we want to reset the page size to the default '1000'. Sending '0'
-                // eliminates any further opportunity for running queries in the same request,
-                // even though that is supposed to be the correct usage.
-                $controls[LDAP_CONTROL_PAGEDRESULTS]['value']['size'] = $perPage;
+            if (! $resource = $this->run($filter)) {
+                break;
             }
+
+            $errorCode = $dn = $errorMessage = $refs = null;
+
+            // Update the server controls with the servers response.
+            $this->connection->parseResult($resource, $errorCode, $dn, $errorMessage, $refs, $controls);
+
+            $pages[] = $this->parse($resource);
+
+            // Reset paged result on the current connection. We won't pass in the current $perPage
+            // parameter since we want to reset the page size to the default '1000'. Sending '0'
+            // eliminates any further opportunity for running queries in the same request,
+            // even though that is supposed to be the correct usage.
+            $controls[LDAP_CONTROL_PAGEDRESULTS]['value']['size'] = $perPage;
         } while (!empty($controls[LDAP_CONTROL_PAGEDRESULTS]['value']['cookie']));
 
         // After running the query, we will clear the LDAP server controls. This
@@ -595,13 +593,13 @@ class Builder
      */
     protected function parse($resource)
     {
-        // Normalize entries. Get entries returns false on failure.
-        // We'll always want an array in this situation.
-        $entries = $this->connection->getEntries($resource) ?: [];
-
-        // Free up memory.
         if (is_resource($resource)) {
+            $entries = $this->connection->getEntries($resource);
+            
+            // Free up memory.
             $this->connection->freeResult($resource);
+        } else {
+            $entries = [];
         }
 
         return $entries;

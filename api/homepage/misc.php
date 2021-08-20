@@ -15,6 +15,7 @@ trait MiscHomepageItem
 			return $homepageInformation;
 		}
 		$homepageSettings = array(
+			'debug' => true,
 			'settings' => array(
 				'YouTube' => array(
 					array(

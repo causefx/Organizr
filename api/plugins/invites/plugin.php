@@ -190,6 +190,16 @@ class Invites extends Organizr
 							foreach ($plex->Server->Section as $child) {
 								$libraryList['libraries'][(string)$child['title']] = (string)$child['id'];
 							}
+							if ($this->config['INVITES-plexLibraries'] !== '') {
+								$noLongerId = 0;
+								$libraries = explode(',', $this->config['INVITES-plexLibraries']);
+								foreach ($libraries as $child) {
+									if ($this->search_for_value($child, $libraryList)) {
+										$libraryList['libraries']['No Longer Exists - ' . $noLongerId] = $child;
+										$noLongerId++;
+									}
+								}
+							}
 							$libraryList = array_change_key_case($libraryList, CASE_LOWER);
 							return $libraryList;
 						}

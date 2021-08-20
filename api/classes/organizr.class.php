@@ -60,7 +60,7 @@ class Organizr
 	
 	// ===================================
 	// Organizr Version
-	public $version = '2.1.446';
+	public $version = '2.1.472';
 	// ===================================
 	// Quick php Version check
 	public $minimumPHP = '7.3';
@@ -647,6 +647,7 @@ class Organizr
 			// Update config.php version if different to the installed version
 			if ($updateSuccess && $this->version !== $this->config['configVersion']) {
 				$this->updateConfig(array('apply_CONFIG_VERSION' => $this->version));
+				$this->debug('Updated config version to ' . $this->version);
 			}
 			if ($updateSuccess == false) {
 				die('Database update failed - Please manually check logs and fix - Then reload this page');
@@ -861,13 +862,17 @@ class Organizr
 		return $current;
 	}
 	
-	public function config()
+	public function config($tries = 1)
 	{
 		// Load config or default
 		if (file_exists($this->userConfigPath)) {
 			$config = $this->fillDefaultConfig($this->loadConfig($this->userConfigPath));
 		} else {
 			$config = $this->fillDefaultConfig($this->loadConfig($this->defaultConfigPath));
+		}
+		if ((!is_array($config) || !file_exists($this->userConfigPath)) && $tries < 5) {
+			$tries++;
+			return $this->config($tries);
 		}
 		return $config;
 	}
@@ -1115,7 +1120,29 @@ class Organizr
 				'key' => 'groups'
 			),
 		];
-		return $this->processQueries($response);
+		$query = $this->processQueries($response);
+		$this->applyTabVariables($query['tabs']);
+		return $query;
+	}
+	
+	public function applyTabVariables($tabs)
+	{
+		$variables = [
+			'{domain}' => $this->getServer(),
+			'{username}' => $this->user['username'],
+			'{username_lower}' => $this->user['username'],
+			'{email}' => $this->user['email'],
+			'{group}' => $this->user['group'],
+			'{group_id}' => $this->user['groupID'],
+		];
+		if (empty($tabs)) {
+			return $tabs;
+		}
+		foreach ($tabs as $id => $tab) {
+			$tabs[$id]['url'] = $this->userDefinedIdReplacementLink($tab['url'], $variables);
+			$tabs[$id]['url_local'] = $this->userDefinedIdReplacementLink($tab['url'], $variables);
+		}
+		return $tabs;
 	}
 	
 	public function getUsers()
@@ -3596,6 +3623,7 @@ class Organizr
 			),
 		];
 		$queries = $this->processQueries($response);
+		$this->applyTabVariables($queries['tabs']);
 		$all['tabs'] = $queries['tabs'];
 		foreach ($queries['tabs'] as $k => $v) {
 			$v['access_url'] = (!empty($v['url_local']) && ($v['url_local'] !== null) && ($v['url_local'] !== 'null') && $this->isLocal() && $v['type'] !== 0) ? $v['url_local'] : $v['url'];
@@ -4195,8 +4223,32 @@ class Organizr
 			if (strtolower($v['name']) === strtolower($item)) {
 				$functionName = $v['settingsArray'];
 				return $this->$functionName();
-				
 			}
+		}
+		$this->setAPIResponse('error', 'Homepage item was not found', 404);
+		return null;
+	}
+	
+	public function getSettingsHomepageItemDebug($service)
+	{
+		$service = $this->getSettingsHomepageItem($service);
+		if ($service) {
+			$debug = [];
+			foreach ($service['settings'] as $category => $items) {
+				if ($category !== 'About' && $category !== 'Test Connection') {
+					foreach ($items as $item) {
+						if ($item['type'] !== 'html' && $item['type'] !== 'blank' && $item['type'] !== 'button') {
+							if ((stripos($item['name'], 'token') !== false) || (stripos($item['name'], 'key') !== false) || (stripos($item['name'], 'password'))) {
+								if ($item['value'] !== '') {
+									$item['value'] = '**********';
+								}
+							}
+							$debug[$category][$item['name']] = $item['value'];
+						}
+					}
+				}
+			}
+			return $debug;
 		}
 		$this->setAPIResponse('error', 'Homepage item was not found', 404);
 		return null;
@@ -6388,6 +6440,14 @@ class Organizr
 					'header' => null
 				];
 				break;
+			case 'qbittorrent':
+				$appDetails = [
+					'url' => 'qBittorrentURL',
+					'enabled' => 'qBittorrentSocksEnabled',
+					'auth' => 'qBittorrentSocksAuth',
+					'header' => null
+				];
+				break;
 			default:
 				$appDetails = null;
 		}
@@ -6455,23 +6515,28 @@ class Organizr
 				'data' => $apiData
 			];
 			//$this->debug(json_encode($debugInformation));
-			switch ($requestObject->getMethod()) {
-				case 'GET':
-					$call = Requests::get($url, $headers, $options);
-					break;
-				case 'POST':
-					$call = Requests::post($url, $headers, $apiData, $options);
-					break;
-				case 'DELETE':
-					$call = Requests::delete($url, $headers, $options);
-					break;
-				case 'PUT':
-					$call = Requests::put($url, $headers, $apiData, $options);
-					break;
-				default:
-					$call = Requests::get($url, $headers, $options);
+			try {
+				switch ($requestObject->getMethod()) {
+					case 'GET':
+						$call = Requests::get($url, $headers, $options);
+						break;
+					case 'POST':
+						$call = Requests::post($url, $headers, $apiData, $options);
+						break;
+					case 'DELETE':
+						$call = Requests::delete($url, $headers, $options);
+						break;
+					case 'PUT':
+						$call = Requests::put($url, $headers, $apiData, $options);
+						break;
+					default:
+						$call = Requests::get($url, $headers, $options);
+				}
+				return $call->body;
+			} catch (Requests_Exception $e) {
+				$this->setAPIResponse('error', $e->getMessage(), 500);
+				return null;
 			}
-			return $call->body;
 		} else {
 			return null;
 		}

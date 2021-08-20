@@ -16,6 +16,7 @@ trait JellyfinHomepageItem
 			return $homepageInformation;
 		}
 		$homepageSettings = array(
+			'debug' => true,
 			'settings' => array(
 				'Enable' => array(
 					array(
@@ -125,13 +126,6 @@ trait JellyfinHomepageItem
 						'label' => 'Jellyfin Tab Name',
 						'value' => $this->config['jellyfinTabName'],
 						'placeholder' => 'Only use if you have Jellyfin in a reverse proxy'
-					),
-					array(
-						'type' => 'input',
-						'name' => 'jellyfinTabURL',
-						'label' => 'Jellyfin Tab WAN URL',
-						'value' => $this->config['jellyfinTabURL'],
-						'placeholder' => 'http(s)://hostname:port'
 					),
 					array(
 						'type' => 'select',
@@ -560,8 +554,8 @@ trait JellyfinHomepageItem
 		$jellyfinItem['address'] = $this->userDefinedIdReplacementLink($this->config['homepageJellyfinLink'], $jellfinVariablesForLink);
 		$jellyfinItem['nowPlayingOriginalImage'] = 'api/v2/homepage/image?source=jellyfin&type=' . $jellyfinItem['nowPlayingImageType'] . '&img=' . $jellyfinItem['nowPlayingThumb'] . '&height=' . $nowPlayingHeight . '&width=' . $nowPlayingWidth . '&key=' . $jellyfinItem['nowPlayingKey'] . '$' . $this->randString();
 		$jellyfinItem['originalImage'] = 'api/v2/homepage/image?source=jellyfin&type=' . $jellyfinItem['imageType'] . '&img=' . $jellyfinItem['thumb'] . '&height=' . $height . '&width=' . $width . '&key=' . $jellyfinItem['key'] . '$' . $this->randString();
-		$jellyfinItem['openTab'] = $this->config['jellyfinTabURL'] && $this->config['jellyfinTabName'] ? true : false;
-		$jellyfinItem['tabName'] = $this->config['jellyfinTabName'] ? $this->config['jellyfinTabName'] : '';
+		$jellyfinItem['openTab'] = (bool)$this->config['jellyfinTabName'];
+		$jellyfinItem['tabName'] = $this->config['jellyfinTabName'] ?: '';
 		// Stream info
 		$jellyfinItem['userStream'] = array(
 			'platform' => @(string)$itemDetails['Client'],

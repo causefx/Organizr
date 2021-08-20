@@ -16,6 +16,7 @@ trait TraktHomepageItem
 		}
 		$homepageSettings = array(
 			'docs' => 'https://docs.organizr.app/books/setup-features/page/trakt',
+			'debug' => true,
 			'settings' => array(
 				'About' => array(
 					array(

@@ -499,17 +499,35 @@ trait OrganizrFunctions
 	
 	public function checkFrame($array, $url)
 	{
+		
 		if (array_key_exists("x-frame-options", $array)) {
+			if (gettype($array['x-frame-options']) == 'array') {
+				$array['x-frame-options'] = $array['x-frame-options'][0];
+			}
+			$array['x-frame-options'] = strtolower($array['x-frame-options']);
 			if ($array['x-frame-options'] == "deny") {
 				return false;
 			} elseif ($array['x-frame-options'] == "sameorgin") {
 				$digest = parse_url($url);
-				$host = (isset($digest['host']) ? $digest['host'] : '');
+				$host = ($digest['host'] ?? '');
 				if ($this->getServer() == $host) {
 					return true;
 				} else {
 					return false;
 				}
+			} elseif (strpos($array['x-frame-options'], 'allow-from') !== false) {
+				$explodeServers = explode(' ', $array['x-frame-options']);
+				$allowed = false;
+				foreach ($explodeServers as $server) {
+					$digest = parse_url($server);
+					$host = ($digest['host'] ?? '');
+					if ($this->getServer() == $host) {
+						$allowed = true;
+					}
+				}
+				return $allowed;
+			} else {
+				return false;
 			}
 		} else {
 			if (!$array) {
