@@ -499,7 +499,6 @@ trait OrganizrFunctions
 	
 	public function checkFrame($array, $url)
 	{
-		
 		if (array_key_exists("x-frame-options", $array)) {
 			if (gettype($array['x-frame-options']) == 'array') {
 				$array['x-frame-options'] = $array['x-frame-options'][0];
