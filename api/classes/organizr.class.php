@@ -1140,7 +1140,7 @@ class Organizr
 		}
 		foreach ($tabs as $id => $tab) {
 			$tabs[$id]['url'] = $this->userDefinedIdReplacementLink($tab['url'], $variables);
-			$tabs[$id]['url_local'] = $this->userDefinedIdReplacementLink($tab['url'], $variables);
+			$tabs[$id]['url_local'] = $this->userDefinedIdReplacementLink($tab['url_local'], $variables);
 		}
 		return $tabs;
 	}
