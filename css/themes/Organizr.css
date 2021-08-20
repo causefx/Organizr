@@ -359,3 +359,7 @@ span.select2-results {
 #organizrNewsPanel .panel-body {
     background: #2d2c2c;
 }
+.nav>li>a:focus, .nav>li>a:hover {
+    text-decoration: none;
+    background-color: #191919;
+}
