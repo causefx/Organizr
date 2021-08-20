@@ -397,5 +397,12 @@
     "new": "setResponse function|get config item to api|icons for TheLounge and Docsify services|small ui change to version section|change the way theme is set to fix loading ms issue",
     "fixed": "Redirect uri that was encoded (#1690)|IP info on settings page|Ombi Missing Image for TVShow Posters that do not come with Full URL|only check for blacklisted ip if not blank|error handling of messages on startup",
     "notes": "upgrade phpmailer/phpmailer to 6.5.0"
+  },
+  "2.1.472": {
+    "date": "2021-08-20 19:10",
+    "title": "Weekly Update",
+    "new": "Pass variables through with URLs (FR#203150)|qbittorent socks (FR#196698)|framework for copy json button to homepage items|debug json to all homepage items|updated ui - change settings ui from horizontal to vertical|ui for Save homepage settings modal|make tautulli custom names dynamic|only update tautulli custom names config item if it doesn't match|prevent organizrHash from being displayed via API",
+    "fixed": "splashscreen scroll (#1692)|jellyin open tab (#1633)|test iframe|sonarr input box|plex invite with deleted library|catch error from socks api|clear ajax on reload|loop load config on load",
+    "notes": "update Adldap2/Adldap2"
   }
 }
