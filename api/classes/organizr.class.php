@@ -60,7 +60,7 @@ class Organizr
 	
 	// ===================================
 	// Organizr Version
-	public $version = '2.1.472';
+	public $version = '2.1.476';
 	// ===================================
 	// Quick php Version check
 	public $minimumPHP = '7.3';
@@ -1140,7 +1140,7 @@ class Organizr
 		}
 		foreach ($tabs as $id => $tab) {
 			$tabs[$id]['url'] = $this->userDefinedIdReplacementLink($tab['url'], $variables);
-			$tabs[$id]['url_local'] = $this->userDefinedIdReplacementLink($tab['url'], $variables);
+			$tabs[$id]['url_local'] = $this->userDefinedIdReplacementLink($tab['url_local'], $variables);
 		}
 		return $tabs;
 	}

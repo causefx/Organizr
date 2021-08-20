@@ -404,5 +404,12 @@
     "new": "Pass variables through with URLs (FR#203150)|qbittorent socks (FR#196698)|framework for copy json button to homepage items|debug json to all homepage items|updated ui - change settings ui from horizontal to vertical|ui for Save homepage settings modal|make tautulli custom names dynamic|only update tautulli custom names config item if it doesn't match|prevent organizrHash from being displayed via API",
     "fixed": "splashscreen scroll (#1692)|jellyin open tab (#1633)|test iframe|sonarr input box|plex invite with deleted library|catch error from socks api|clear ajax on reload|loop load config on load",
     "notes": "update Adldap2/Adldap2"
+  },
+  "2.1.476": {
+    "date": "2021-08-20 21:40",
+    "title": "Weekly Update - Patch",
+    "new": "",
+    "fixed": "Local URL being set as regual URL|Line spacing|updated Overseerr logo",
+    "notes": "See update notes for version 2.1.472"
   }
 }
