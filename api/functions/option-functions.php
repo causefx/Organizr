@@ -2,6 +2,330 @@
 
 trait OptionsFunction
 {
+	public function settingsOptionGroup($options = [])
+	{
+		$settings = [];
+		foreach ($options as $option) {
+			$optionType = $option[0] ? $option[0] : false;
+			$optionName = $option[1] ? $option[1] : null;
+			$optionExtras = $option[2] ? $option[2] : [];
+			$setting = $this->settingsOption($optionType, $optionName, $optionExtras);
+			array_push($settings, $setting);
+		}
+		return $settings;
+	}
+	
+	public function settingsOption($type, $name = null, $extras = null)
+	{
+		$type = strtolower(str_replace('-', '', $type));
+		$setting = [
+			'name' => $name,
+			'value' => $this->config[$name]
+		];
+		switch ($type) {
+			case 'enable':
+				$settingMerge = [
+					'type' => 'switch',
+					'label' => 'Enable',
+				];
+				break;
+			case 'auth':
+				$settingMerge = [
+					'type' => 'select',
+					'label' => 'Minimum Authentication',
+					'options' => $this->groupOptions
+				];
+				break;
+			case 'refresh':
+				$settingMerge = [
+					'type' => 'select',
+					'label' => 'Refresh Seconds',
+					'options' => $this->timeOptions()
+				];
+				break;
+			case 'combine':
+			case 'combine-downloader':
+				$settingMerge = [
+					'type' => 'switch',
+					'label' => 'Add to Combined Downloader',
+				];
+				break;
+			case 'test':
+				$settingMerge = [
+					'type' => 'button',
+					'label' => '',
+					'icon' => 'fa fa-flask',
+					'class' => 'pull-right',
+					'text' => 'Test Connection',
+					'attr' => 'onclick="testAPIConnection(\'' . $name . '\')"'
+				];
+				break;
+			case 'url':
+				$settingMerge = [
+					'type' => 'input',
+					'label' => 'URL',
+					'help' => 'Please make sure to use local IP address and port - You also may use local dns name too.',
+					'placeholder' => 'http(s)://hostname:port'
+				];
+				break;
+			case 'multipleurl':
+				$settingMerge = [
+					'type' => 'select2',
+					'class' => 'select2-multiple',
+					'id' => $name . '-select',
+					'label' => 'Multiple URL\'s',
+					'help' => 'Please make sure to use local IP address and port - You also may use local dns name too.',
+					'placeholder' => 'http(s)://hostname:port',
+					'options' => $this->makeOptionsFromValues($this->config[$name]),
+					'settings' => '{tags: true, selectOnClose: true, closeOnSelect: true}',
+				];
+				break;
+			case 'multiple':
+				$settingMerge = [
+					'type' => 'select2',
+					'class' => 'select2-multiple',
+					'id' => $name . '-select',
+					'label' => 'Multiple Values\'s',
+					'options' => $this->makeOptionsFromValues($this->config[$name]),
+					'settings' => '{tags: true, selectOnClose: true, closeOnSelect: true}',
+				];
+				break;
+			case 'username':
+				$settingMerge = [
+					'type' => 'input',
+					'label' => 'Username',
+				];
+				break;
+			case 'password':
+				$settingMerge = [
+					'type' => 'password',
+					'label' => 'Password',
+				];
+				break;
+			case 'passwordalt':
+				$settingMerge = [
+					'type' => 'password-alt',
+					'label' => 'Password',
+				];
+				break;
+			case 'apikey':
+			case 'token':
+				$settingMerge = [
+					'type' => 'password-alt',
+					'label' => 'API Key/Token',
+				];
+				break;
+			case 'multipleapikey':
+			case 'multipletoken':
+				$settingMerge = [
+					'type' => 'select2',
+					'class' => 'select2-multiple',
+					'id' => $name . '-select',
+					'label' => 'Multiple API Key/Token\'s',
+					'options' => $this->makeOptionsFromValues($this->config[$name]),
+					'settings' => '{tags: true, theme: "default password-alt", selectOnClose: true, closeOnSelect: true}',
+				];
+				break;
+			case 'socks':
+				$settingMerge = [
+					'type' => 'html',
+					'override' => 12,
+					'label' => '',
+					'html' => '
+						<div class="panel panel-default">
+							<div class="panel-wrapper collapse in">
+								<div class="panel-body">' . $this->socksHeadingHTML($name) . '</div>
+							</div>
+						</div>'
+				];
+				break;
+			case 'about':
+				$settingMerge = [
+					'type' => 'html',
+					'override' => 12,
+					'label' => '',
+					'html' => '
+						<div class="panel panel-default">
+							<div class="panel-wrapper collapse in">
+								<div class="panel-body">
+									<h3 lang="en">' . ucwords($name) . ' Homepage Item</h3>
+									<p lang="en">' . $extras["about"] . '</p>
+								</div>
+							</div>
+						</div>'
+				];
+				break;
+			case 'title':
+				$settingMerge = [
+					'type' => 'input',
+					'label' => 'Title',
+					'help' => 'Sets the title of this homepage module',
+				];
+				break;
+			case 'toggletitle':
+				$settingMerge = [
+					'type' => 'switch',
+					'label' => 'Toggle Title',
+					'help' => 'Shows/hides the title of this homepage module'
+				];
+				break;
+			case 'disablecertcheck':
+				$settingMerge = [
+					'type' => 'switch',
+					'label' => 'Disable Certificate Check',
+				];
+				break;
+			case 'usecustomcertificate':
+				$settingMerge = [
+					'type' => 'switch',
+					'label' => 'Use Custom Certificate',
+				];
+				break;
+			case 'hideseeding':
+				$settingMerge = [
+					'type' => 'switch',
+					'label' => 'Hide Seeding',
+				];
+			case 'hidecompleted':
+				$settingMerge = [
+					'type' => 'switch',
+					'label' => 'Hide Completed',
+				];
+				break;
+			case 'limit':
+				$settingMerge = [
+					'type' => 'number',
+					'label' => 'Item Limit',
+				];
+				break;
+			case 'mediasearchserver':
+				$settingMerge = [
+					'type' => 'select',
+					'label' => 'Media Search Server',
+					'options' => $this->mediaServerOptions()
+				];
+				break;
+			case 'imagecachequality':
+				$settingMerge = [
+					'type' => 'select',
+					'label' => 'Image Cache Quality',
+					'options' => [
+						[
+							'name' => 'Low',
+							'value' => '.5'
+						],
+						[
+							'name' => '1x',
+							'value' => '1'
+						],
+						[
+							'name' => '2x',
+							'value' => '2'
+						],
+						[
+							'name' => '3x',
+							'value' => '3'
+						]
+					]
+				];
+				break;
+			case 'blank':
+				$settingMerge = [
+					'type' => 'blank',
+					'label' => '',
+				];
+				break;
+			case 'plexlibraryexclude':
+				$settingMerge = [
+					'type' => 'select2',
+					'class' => 'select2-multiple',
+					'id' => $name . '-exclude-select',
+					'label' => 'Libraries to Exclude',
+					'options' => $extras['options']
+				];
+				break;
+			// HTML ITEMS
+			case 'precodeeditor':
+				$settingMerge = [
+					'type' => 'textbox',
+					'class' => 'hidden ' . $name . 'Textarea',
+					'label' => '',
+				];
+				break;
+			case 'codeeditor':
+				$settingMerge = [
+					'type' => 'html',
+					'override' => 12,
+					'label' => 'Custom Code',
+					'html' => '<button type="button" class="hidden save' . $name . 'Textarea btn btn-info btn-circle pull-right m-r-5 m-l-10"><i class="fa fa-save"></i> </button><div id="' . $name . 'Editor" style="height:300px">' . htmlentities($this->config[$name]) . '</div>'
+				];
+				break;
+			// CALENDAR ITEMS
+			case 'calendarstart':
+				$settingMerge = [
+					'type' => 'number',
+					'label' => '# of Days Before'
+				];
+				break;
+			case 'calendarend':
+				$settingMerge = [
+					'type' => 'number',
+					'label' => '# of Days After'
+				];
+				break;
+			case 'calendarstartingday':
+			case 'calendarstartday':
+			case 'calendarstart':
+				$settingMerge = [
+					'type' => 'select',
+					'label' => 'Start Day',
+					'options' => $this->daysOptions()
+				];
+				break;
+			case 'calendardefaultview':
+				$settingMerge = [
+					'type' => 'select',
+					'label' => 'Default View',
+					'options' => $this->calendarDefaultOptions()
+				];
+				break;
+			case 'calendartimeformat':
+				$settingMerge = [
+					'type' => 'select',
+					'label' => 'Time Format',
+					'options' => $this->timeFormatOptions()
+				];
+				break;
+			case 'calendarlocale':
+				$settingMerge = [
+					'type' => 'select',
+					'label' => 'Locale',
+					'options' => $this->calendarLocaleOptions()
+				];
+				break;
+			case 'calendarlimit':
+				$settingMerge = [
+					'type' => 'select',
+					'label' => 'Items Per Day',
+					'options' => $this->limitOptions()
+				];
+				break;
+			default:
+				$settingMerge = [
+					'type' => strtolower($type),
+					'label' => ''
+				];
+				break;
+		}
+		$setting = array_merge($settingMerge, $setting);
+		if ($extras) {
+			if (gettype($extras) == 'array') {
+				$setting = array_merge($setting, $extras);
+			}
+		}
+		return $setting;
+	}
+	
 	public function makeOptionsFromValues($values = null)
 	{
 		$formattedValues = [];
