@@ -94,7 +94,7 @@ trait SSOFunctions
 				"Pw" => $password
 			);
 			$endpoint = '/Users/authenticatebyname';
-			$options = $this->requestOptions($url, false, 60000);
+			$options = $this->requestOptions($url, 60000);
 			$response = Requests::post($url . $endpoint, $headers, json_encode($data), $options);
 			if ($response->success) {
 				$token = json_decode($response->body, true);
@@ -129,7 +129,7 @@ trait SSOFunctions
 				"plexToken" => $oAuthToken
 			);
 			$endpoint = ($oAuthToken) ? '/api/v1/Token/plextoken' : '/api/v1/Token';
-			$options = $this->requestOptions($url, false, 60000);
+			$options = $this->requestOptions($url, 60000);
 			$response = Requests::post($url . $endpoint, $headers, json_encode($data), $options);
 			if ($response->success) {
 				$token = json_decode($response->body, true)['access_token'];
@@ -173,7 +173,7 @@ trait SSOFunctions
 						"token" => $plexToken,
 						"remember_me" => 1,
 					);
-					$options = $this->requestOptions($url, false, 60000);
+					$options = $this->requestOptions($url, 60000);
 					$response = Requests::post($url . '/auth/signin', $headers, $data, $options);
 					if ($response->success) {
 						$qualifiedURL = $this->qualifyURL($url, true);
@@ -208,7 +208,7 @@ trait SSOFunctions
 				"authToken" => $oAuthToken
 			);
 			$endpoint = '/api/v1/auth/plex';
-			$options = $this->requestOptions($url, false, 60000);
+			$options = $this->requestOptions($url, 60000);
 			$response = Requests::post($url . $endpoint, $headers, json_encode($data), $options);
 			if ($response->success) {
 				$user = json_decode($response->body, true); // not really needed yet
@@ -252,7 +252,7 @@ trait SSOFunctions
 				'token' => $oAuthToken
 			);
 			$endpoint = ($oAuthToken) ? '/api/login/plex_login' : '/api/login';
-			$options = $this->requestOptions($url, false, 60000);
+			$options = $this->requestOptions($url, 60000);
 			$response = Requests::post($url . $endpoint, $headers, json_encode($data), $options);
 			if ($response->success) {
 				$user = json_decode($response->body, true)['user'];
