@@ -177,20 +177,29 @@ trait OrganizrFunctions
 		return (substr($s, -1, 1) == '\\') ? $s : $s . '\\';
 	}
 	
-	public function approvedFileExtension($filename)
+	public function approvedFileExtension($filename, $type = 'image')
 	{
 		$ext = strtolower(pathinfo($filename, PATHINFO_EXTENSION));
-		switch ($ext) {
-			case 'gif':
-			case 'png':
-			case 'jpeg':
-			case 'jpg':
-			case 'svg':
-				return true;
-				break;
-			default:
-				return false;
+		if ($type == 'image') {
+			switch ($ext) {
+				case 'gif':
+				case 'png':
+				case 'jpeg':
+				case 'jpg':
+				case 'svg':
+					return true;
+				default:
+					return false;
+			}
+		} elseif ($type == 'cert') {
+			switch ($ext) {
+				case 'pem':
+					return true;
+				default:
+					return false;
+			}
 		}
+		
 	}
 	
 	public function getImages()
@@ -701,21 +710,27 @@ trait OrganizrFunctions
 		return strtr($link, $variables);
 	}
 	
-	public function requestOptions($url, $override = false, $timeout = null, $extras = null)
+	public function requestOptions($url, $timeout = null, $override = false, $customCertificate = false, $extras = null)
 	{
 		$options = [];
+		if (is_numeric($timeout)) {
+			if ($timeout >= 1000) {
+				$timeout = $timeout / 1000;
+			}
+			$options = array_merge($options, array('timeout' => $timeout));
+		}
+		if ($customCertificate) {
+			if ($this->hasCustomCert()) {
+				$options = array_merge($options, array('verify' => $this->getCustomCert(), 'verifyname' => false));
+			}
+		}
+		if ($this->localURL($url, $override)) {
+			$options = array_merge($options, array('verify' => false, 'verifyname' => false));
+		}
 		if ($extras) {
 			if (gettype($extras) == 'array') {
 				$options = array_merge($options, $extras);
 			}
-		}
-		if (is_numeric($timeout)) {
-			$timeout = $timeout / 1000;
-			$options = array_merge($options, array('timeout' => $timeout));
-		}
-		if ($this->localURL($url, $override)) {
-			$options = array_merge($options, array('verify' => false));
-			
 		}
 		return $options;
 	}
