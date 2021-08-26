@@ -77,6 +77,7 @@ Github.txt
 Demo.txt
 Dev.txt
 config/cacert.pem
+config/custom.pem
 config/config.php
 config/config*.bak.php
 config/users/
@@ -103,6 +104,7 @@ api/config/config*
 upgrade/*
 api/upgrade*
 api/functions/cert/cacert.pem
+api/functions/cert/custom.pem
 wallpaper.jpg
 strings.json
 css/themes/*.css
