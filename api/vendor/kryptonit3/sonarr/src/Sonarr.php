@@ -11,14 +11,16 @@ class Sonarr
     protected $apiKey;
     protected $httpAuthUsername;
     protected $httpAuthPassword;
+    public $options;
 
-    public function __construct($url, $apiKey, $type = 'sonarr', $httpAuthUsername = null, $httpAuthPassword = null)
+    public function __construct($url, $apiKey, $type = 'sonarr', $httpAuthUsername = null, $httpAuthPassword = null, $options = [])
     {
         $this->url = rtrim($url, '/\\'); // Example: http://127.0.0.1:8989 (no trailing forward-backward slashes)
 	    $this->apiKey = $apiKey;
 	    $this->type = strtolower($type);
         $this->httpAuthUsername = $httpAuthUsername;
-        $this->httpAuthPassword = $httpAuthPassword;
+	    $this->httpAuthPassword = $httpAuthPassword;
+	    $this->options = $options;
     }
 
     /**
@@ -596,7 +598,7 @@ class Sonarr
      */
     protected function _request(array $params)
     {
-        $client = new Client(['verify' => getCert()]);
+        $client = new Client($this->options);
         $options = [
             'headers' => [
                 'X-Api-Key' => $this->apiKey

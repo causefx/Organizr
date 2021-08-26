@@ -5,12 +5,28 @@ class deluge
 	private $ch;
 	private $url;
 	private $request_id;
+	public $options;
 	
-	public function __construct($host, $password)
+	public function __construct($host, $password, $options)
 	{
+		$verify = (isset($options['verify'])) ? $options['verify'] : false;
 		$this->url = $host . (substr($host, -1) == "/" ? "" : "/") . "json";
 		$this->request_id = 0;
 		$this->ch = curl_init($this->url);
+		switch (gettype($options['verify'])) {
+			case 'string':
+				$cert = $options['custom_cert'];
+				$verify = 2;
+				break;
+			case 'NULL':
+				$cert = $options['organizr_cert'];
+				$verify = 2;
+				break;
+			default:
+				$cert = $options['organizr_cert'];
+				$verify = false;
+				break;
+		}
 		$curl_options = array(
 			CURLOPT_RETURNTRANSFER => true,
 			CURLOPT_HTTPHEADER => array("Accept: application/json", "Content-Type: application/json"),
@@ -18,10 +34,9 @@ class deluge
 			CURLOPT_COOKIEJAR => "",
 			CURLOPT_CONNECTTIMEOUT => 10,
 			CURLOPT_TIMEOUT => 10,
-			CURLOPT_CAINFO => getCert(),
-			CURLOPT_SSL_VERIFYHOST => localURL($host) ? 0 : 2,
-			CURLOPT_SSL_VERIFYPEER => localURL($host) ? 0 : 2,
-			//CURLOPT_SSL_VERIFYPEER => false, THIS IS INSECURE!! However, deluge appears not to send intermediate certificates, so it can be necessary. Use with caution!
+			CURLOPT_CAINFO => $cert,
+			CURLOPT_SSL_VERIFYHOST => $verify,
+			CURLOPT_SSL_VERIFYPEER => $verify,
 		);
 		curl_setopt_array($this->ch, $curl_options);
 		//Log in and get cookies

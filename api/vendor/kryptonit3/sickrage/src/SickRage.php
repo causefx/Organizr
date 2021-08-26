@@ -11,13 +11,15 @@ class SickRage
     protected $apiKey;
     protected $httpAuthUsername;
     protected $httpAuthPassword;
+    public $options;
 
-    public function __construct($url, $apiKey, $httpAuthUsername = null, $httpAuthPassword = null)
+    public function __construct($url, $apiKey, $httpAuthUsername = null, $httpAuthPassword = null, $options = [])
     {
         $this->url = rtrim($url, '/\\'); // Example: http://127.0.0.1:8081 (no trailing forward-backward slashes)
         $this->apiKey = $apiKey;
         $this->httpAuthUsername = $httpAuthUsername;
-        $this->httpAuthPassword = $httpAuthPassword;
+	    $this->httpAuthPassword = $httpAuthPassword;
+	    $this->options = $options;
     }
 
     /**
@@ -1258,7 +1260,7 @@ class SickRage
      */
     protected function _request(array $params)
     {
-        $client = new Client();
+	    $client = new Client($this->options);
 
         if ( $params['type'] == 'get' ) {
             $url = $this->url . '/api/' . $this->apiKey . '/?cmd=' . $params['uri'] . '&' . http_build_query($params['data']);
