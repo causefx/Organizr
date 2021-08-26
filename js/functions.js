@@ -10775,6 +10775,40 @@ function tabShit(){
 
 }
 
+function clickMenuItem(selector){
+	if($(selector).length >= 1){
+		$(selector).click();
+	}else{
+		$('body').arrive(selector, {onceOnly: true}, function() {
+			$(selector).click();
+		});
+	}
+
+}
+function shortcut(selectors = ''){
+	let timeout = 200;
+	if(typeof selectors == 'string') {
+		if(selectors == ''){
+			selectors = [];
+		}else{
+			switch (selectors){
+				case 'custom-cert':
+					selectors = ['#settings-main-system-settings-anchor','#settings-settings-main-anchor','a[href$="Certificate"]'];
+					break;
+				default:
+					selectors = ['#settings-main-system-settings-anchor'];
+
+			}
+		}
+	}
+	selectors.forEach(function(selector){
+		timeout = timeout + 200;
+		setTimeout(function(){
+			clickMenuItem(selector);
+		}, timeout);
+	});
+}
+
 function launch(){
 	console.info('https://docs.organizr.app/books/setup-features/page/organizr-20--%3E-21-migration-guide');
 	organizrConsole('API V2 API','If you see a 404 Error for api/v2/launch below this line, you have not setup the new location block... See URL above this line', 'error');
