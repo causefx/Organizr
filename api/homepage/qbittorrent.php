@@ -14,140 +14,41 @@ trait QBitTorrentHomepageItem
 		if ($infoOnly) {
 			return $homepageInformation;
 		}
-		$homepageSettings = array(
+		$homepageSettings = [
 			'debug' => true,
-			'settings' => array(
-				'Enable' => array(
-					array(
-						'type' => 'switch',
-						'name' => 'homepageqBittorrentEnabled',
-						'label' => 'Enable',
-						'value' => $this->config['homepageqBittorrentEnabled']
-					),
-					array(
-						'type' => 'select',
-						'name' => 'homepageqBittorrentAuth',
-						'label' => 'Minimum Authentication',
-						'value' => $this->config['homepageqBittorrentAuth'],
-						'options' => $this->groupOptions
-					)
-				),
-				'Connection' => array(
-					array(
-						'type' => 'input',
-						'name' => 'qBittorrentURL',
-						'label' => 'URL',
-						'value' => $this->config['qBittorrentURL'],
-						'help' => 'Please make sure to use local IP address and port - You also may use local dns name too.',
-						'placeholder' => 'http(s)://hostname:port'
-					),
-					array(
-						'type' => 'switch',
-						'name' => 'qBittorrentDisableCertCheck',
-						'label' => 'Disable Certificate Check',
-						'value' => $this->config['qBittorrentDisableCertCheck']
-					),
-					array(
-						'type' => 'select',
-						'name' => 'qBittorrentApiVersion',
-						'label' => 'API Version',
-						'value' => $this->config['qBittorrentApiVersion'],
-						'options' => $this->qBittorrentApiOptions()
-					),
-					array(
-						'type' => 'input',
-						'name' => 'qBittorrentUsername',
-						'label' => 'Username',
-						'value' => $this->config['qBittorrentUsername']
-					),
-					array(
-						'type' => 'password',
-						'name' => 'qBittorrentPassword',
-						'label' => 'Password',
-						'value' => $this->config['qBittorrentPassword']
-					)
-				),
-				'API SOCKS' => array(
-					array(
-						'type' => 'html',
-						'override' => 12,
-						'label' => '',
-						'html' => '
-							<div class="panel panel-default">
-								<div class="panel-wrapper collapse in">
-									<div class="panel-body">' . $this->socksHeadingHTML('qbittorrent') . '</div>
-								</div>
-							</div>'
-					),
-					array(
-						'type' => 'switch',
-						'name' => 'qBittorrentSocksEnabled',
-						'label' => 'Enable',
-						'value' => $this->config['qBittorrentSocksEnabled']
-					),
-					array(
-						'type' => 'select',
-						'name' => 'qBittorrentSocksAuth',
-						'label' => 'Minimum Authentication',
-						'value' => $this->config['qBittorrentSocksAuth'],
-						'options' => $this->groupOptions
-					),
-				),
-				'Misc Options' => array(
-					array(
-						'type' => 'switch',
-						'name' => 'qBittorrentHideSeeding',
-						'label' => 'Hide Seeding',
-						'value' => $this->config['qBittorrentHideSeeding']
-					),
-					array(
-						'type' => 'switch',
-						'name' => 'qBittorrentHideCompleted',
-						'label' => 'Hide Completed',
-						'value' => $this->config['qBittorrentHideCompleted']
-					),
-					array(
-						'type' => 'select',
-						'name' => 'qBittorrentSortOrder',
-						'label' => 'Order',
-						'value' => $this->config['qBittorrentSortOrder'],
-						'options' => $this->qBittorrentSortOptions()
-					), array(
-						'type' => 'switch',
-						'name' => 'qBittorrentReverseSorting',
-						'label' => 'Reverse Sorting',
-						'value' => $this->config['qBittorrentReverseSorting']
-					),
-					array(
-						'type' => 'select',
-						'name' => 'qBittorrentRefresh',
-						'label' => 'Refresh Seconds',
-						'value' => $this->config['qBittorrentRefresh'],
-						'options' => $this->timeOptions()
-					),
-					array(
-						'type' => 'switch',
-						'name' => 'qBittorrentCombine',
-						'label' => 'Add to Combined Downloader',
-						'value' => $this->config['qBittorrentCombine']
-					),
-				),
-				'Test Connection' => array(
-					array(
-						'type' => 'blank',
-						'label' => 'Please Save before Testing'
-					),
-					array(
-						'type' => 'button',
-						'label' => '',
-						'icon' => 'fa fa-flask',
-						'class' => 'pull-right',
-						'text' => 'Test Connection',
-						'attr' => 'onclick="testAPIConnection(\'qbittorrent\')"'
-					),
-				)
-			)
-		);
+			'settings' => [
+				'Enable' => [
+					$this->settingsOption('enable', 'homepageqBittorrentEnabled'),
+					$this->settingsOption('auth', 'homepageqBittorrentAuth'),
+				],
+				'Connection' => [
+					$this->settingsOption('url', 'qBittorrentURL'),
+					$this->settingsOption('select', 'qBittorrentApiVersion', ['label' => 'API Version', 'options' => $this->qBittorrentApiOptions()]),
+					$this->settingsOption('username', 'qBittorrentUsername'),
+					$this->settingsOption('password', 'qBittorrentPassword'),
+					$this->settingsOption('disable-cert-check', 'qBittorrentDisableCertCheck'),
+					$this->settingsOption('use-custom-certificate', 'qBittorrentUseCustomCertificate'),
+				],
+				'API SOCKS' => [
+					$this->settingsOption('socks', 'qbittorrent'),
+					$this->settingsOption('blank'),
+					$this->settingsOption('enable', 'qBittorrentSocksEnabled'),
+					$this->settingsOption('auth', 'qBittorrentSocksAuth'),
+				],
+				'Misc Options' => [
+					$this->settingsOption('hide-seeding', 'qBittorrentHideSeeding'),
+					$this->settingsOption('hide-completed', 'qBittorrentHideCompleted'),
+					$this->settingsOption('select', 'qBittorrentSortOrder', ['label' => 'Order', 'options' => $this->qBittorrentSortOptions()]),
+					$this->settingsOption('switch', 'qBittorrentReverseSorting', ['label' => 'Reverse Sorting']),
+					$this->settingsOption('refresh', 'qBittorrentRefresh'),
+					$this->settingsOption('combine', 'qBittorrentCombine'),
+				],
+				'Test Connection' => [
+					$this->settingsOption('blank', null, ['label' => 'Please Save before Testing']),
+					$this->settingsOption('test', 'qbittorrent'),
+				]
+			]
+		];
 		return array_merge($homepageInformation, $homepageSettings);
 	}
 	
@@ -163,8 +64,8 @@ trait QBitTorrentHomepageItem
 		$apiVersionQuery = ($this->config['qBittorrentApiVersion'] == '1') ? '/query/torrents?sort=' : '/api/v2/torrents/info?sort=';
 		$url = $digest['scheme'] . '://' . $digest['host'] . $digest['port'] . $digest['path'] . $apiVersionLogin;
 		try {
-			$options = $this->requestOptions($this->config['qBittorrentURL'], $this->config['qBittorrentDisableCertCheck'], $this->config['qBittorrentRefresh']);
-			$response = Requests::post($url, array(), $data, $options);
+			$options = $this->requestOptions($this->config['qBittorrentURL'], null, $this->config['qBittorrentDisableCertCheck'], $this->config['qBittorrentUseCustomCertificate']);
+			$response = Requests::post($url, [], $data, $options);
 			$reflection = new ReflectionClass($response->cookies);
 			$cookie = $reflection->getProperty("cookies");
 			$cookie->setAccessible(true);
@@ -255,8 +156,8 @@ trait QBitTorrentHomepageItem
 		$apiVersionQuery = ($this->config['qBittorrentApiVersion'] == '1') ? '/query/torrents?sort=' : '/api/v2/torrents/info?sort=';
 		$url = $digest['scheme'] . '://' . $digest['host'] . $digest['port'] . $digest['path'] . $apiVersionLogin;
 		try {
-			$options = $this->requestOptions($this->config['qBittorrentURL'], $this->config['qBittorrentDisableCertCheck'], $this->config['qBittorrentRefresh']);
-			$response = Requests::post($url, array(), $data, $options);
+			$options = $this->requestOptions($this->config['qBittorrentURL'], $this->config['qBittorrentRefresh'], $this->config['qBittorrentDisableCertCheck'], $this->config['qBittorrentUseCustomCertificate']);
+			$response = Requests::post($url, [], $data, $options);
 			$reflection = new ReflectionClass($response->cookies);
 			$cookie = $reflection->getProperty("cookies");
 			$cookie->setAccessible(true);
@@ -289,7 +190,7 @@ trait QBitTorrentHomepageItem
 					}
 					$api['content']['queueItems'] = $torrents;
 					$api['content']['historyItems'] = false;
-					$api['content'] = isset($api['content']) ? $api['content'] : false;
+					$api['content'] = $api['content'] ?? false;
 					$this->setAPIResponse('success', null, 200, $api);
 					return $api;
 				}

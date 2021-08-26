@@ -14,100 +14,33 @@ trait SickRageHomepageItem
 		if ($infoOnly) {
 			return $homepageInformation;
 		}
-		$homepageSettings = array(
+		$homepageSettings = [
 			'debug' => true,
-			'settings' => array(
-				'Enable' => array(
-					array(
-						'type' => 'switch',
-						'name' => 'homepageSickrageEnabled',
-						'label' => 'Enable',
-						'value' => $this->config['homepageSickrageEnabled']
-					),
-					array(
-						'type' => 'select',
-						'name' => 'homepageSickrageAuth',
-						'label' => 'Minimum Authentication',
-						'value' => $this->config['homepageSickrageAuth'],
-						'options' => $this->groupOptions
-					)
-				),
-				'Connection' => array(
-					array(
-						'type' => 'input',
-						'name' => 'sickrageURL',
-						'label' => 'URL',
-						'value' => $this->config['sickrageURL'],
-						'help' => 'Please make sure to use local IP address and port - You also may use local dns name too.',
-						'placeholder' => 'http(s)://hostname:port'
-					),
-					array(
-						'type' => 'password-alt',
-						'name' => 'sickrageToken',
-						'label' => 'Token',
-						'value' => $this->config['sickrageToken']
-					)
-				),
-				'Misc Options' => array(
-					array(
-						'type' => 'select',
-						'name' => 'calendarFirstDay',
-						'label' => 'Start Day',
-						'value' => $this->config['calendarFirstDay'],
-						'options' => $this->daysOptions()
-					),
-					array(
-						'type' => 'select',
-						'name' => 'calendarDefault',
-						'label' => 'Default View',
-						'value' => $this->config['calendarDefault'],
-						'options' => $this->calendarDefaultOptions()
-					),
-					array(
-						'type' => 'select',
-						'name' => 'calendarTimeFormat',
-						'label' => 'Time Format',
-						'value' => $this->config['calendarTimeFormat'],
-						'options' => $this->timeFormatOptions()
-					),
-					array(
-						'type' => 'select',
-						'name' => 'calendarLocale',
-						'label' => 'Locale',
-						'value' => $this->config['calendarLocale'],
-						'options' => $this->calendarLocaleOptions()
-					),
-					array(
-						'type' => 'select',
-						'name' => 'calendarLimit',
-						'label' => 'Items Per Day',
-						'value' => $this->config['calendarLimit'],
-						'options' => $this->limitOptions()
-					),
-					array(
-						'type' => 'select',
-						'name' => 'calendarRefresh',
-						'label' => 'Refresh Seconds',
-						'value' => $this->config['calendarRefresh'],
-						'options' => $this->timeOptions()
-					)
-				),
-				'Test Connection' => array(
-					array(
-						'type' => 'blank',
-						'label' => 'Please Save before Testing'
-					),
-					array(
-						'type' => 'button',
-						'label' => '',
-						'icon' => 'fa fa-flask',
-						'class' => 'pull-right',
-						'text' => 'Test Connection',
-						'attr' => 'onclick="testAPIConnection(\'sickrage\')"'
-					),
-				)
-			)
-		);
+			'settings' => [
+				'Enable' => [
+					$this->settingsOption('enable', 'homepageSickrageEnabled'),
+					$this->settingsOption('auth', 'homepageSickrageAuth'),
+				],
+				'Connection' => [
+					$this->settingsOption('url', 'sickrageURL'),
+					$this->settingsOption('token', 'sickrageToken'),
+					$this->settingsOption('disable-cert-check', 'sickrageDisableCertCheck'),
+					$this->settingsOption('use-custom-certificate', 'sickrageUseCustomCertificate'),
+				],
+				'Calendar' => [
+					$this->settingsOption('calendar-starting-day', 'calendarFirstDay'),
+					$this->settingsOption('calendar-default-view', 'calendarDefault'),
+					$this->settingsOption('calendar-time-format', 'calendarTimeFormat'),
+					$this->settingsOption('calendar-locale', 'calendarLocale'),
+					$this->settingsOption('calendar-limit', 'calendarLimit'),
+					$this->settingsOption('refresh', 'calendarRefresh'),
+				],
+				'Test Connection' => [
+					$this->settingsOption('blank', null, ['label' => 'Please Save before Testing']),
+					$this->settingsOption('test', 'sickrage'),
+				]
+			]
+		];
 		return array_merge($homepageInformation, $homepageSettings);
 	}
 	
@@ -126,7 +59,8 @@ trait SickRageHomepageItem
 		$list = $this->csvHomepageUrlToken($this->config['sickrageURL'], $this->config['sickrageToken']);
 		foreach ($list as $key => $value) {
 			try {
-				$downloader = new Kryptonit3\SickRage\SickRage($value['url'], $value['token']);
+				$options = $this->requestOptions($value['url'], null, $this->config['sickrageDisableCertCheck'], $this->config['sickrageUseCustomCertificate']);
+				$downloader = new Kryptonit3\SickRage\SickRage($value['url'], $value['token'], null, null, $options);
 				$results = $downloader->sb();
 				$downloadList = json_decode($results, true);
 				if (is_array($downloadList) || is_object($downloadList)) {
@@ -192,7 +126,8 @@ trait SickRageHomepageItem
 		$list = $this->csvHomepageUrlToken($this->config['sickrageURL'], $this->config['sickrageToken']);
 		foreach ($list as $key => $value) {
 			try {
-				$downloader = new Kryptonit3\SickRage\SickRage($value['url'], $value['token']);
+				$options = $this->requestOptions($value['url'], null, $this->config['sickrageDisableCertCheck'], $this->config['sickrageUseCustomCertificate']);
+				$downloader = new Kryptonit3\SickRage\SickRage($value['url'], $value['token'], null, null, $options);
 				$sickrageFuture = $this->formatSickrageCalendarWanted($downloader->future(), $key);
 				$sickrageHistory = $this->formatSickrageCalendarHistory($downloader->history("100", "downloaded"), $key);
 				if (!empty($sickrageFuture)) {

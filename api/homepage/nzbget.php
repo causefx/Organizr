@@ -14,103 +14,37 @@ trait NZBGetHomepageItem
 		if ($infoOnly) {
 			return $homepageInformation;
 		}
-		$homepageSettings = array(
+		$homepageSettings = [
 			'debug' => true,
-			'settings' => array(
-				'Enable' => array(
-					array(
-						'type' => 'switch',
-						'name' => 'homepageNzbgetEnabled',
-						'label' => 'Enable',
-						'value' => $this->config['homepageNzbgetEnabled']
-					),
-					array(
-						'type' => 'select',
-						'name' => 'homepageNzbgetAuth',
-						'label' => 'Minimum Authentication',
-						'value' => $this->config['homepageNzbgetAuth'],
-						'options' => $this->groupOptions
-					)
-				),
-				'Connection' => array(
-					array(
-						'type' => 'input',
-						'name' => 'nzbgetURL',
-						'label' => 'URL',
-						'value' => $this->config['nzbgetURL'],
-						'help' => 'Please make sure to use local IP address and port - You also may use local dns name too.',
-						'placeholder' => 'http(s)://hostname:port'
-					),
-					array(
-						'type' => 'input',
-						'name' => 'nzbgetUsername',
-						'label' => 'Username',
-						'value' => $this->config['nzbgetUsername']
-					),
-					array(
-						'type' => 'password',
-						'name' => 'nzbgetPassword',
-						'label' => 'Password',
-						'value' => $this->config['nzbgetPassword']
-					)
-				),
-				'API SOCKS' => array(
-					array(
-						'type' => 'html',
-						'override' => 12,
-						'label' => '',
-						'html' => '
-							<div class="panel panel-default">
-								<div class="panel-wrapper collapse in">
-									<div class="panel-body">' . $this->socksHeadingHTML('nzbget') . '</div>
-								</div>
-							</div>'
-					),
-					array(
-						'type' => 'switch',
-						'name' => 'nzbgetSocksEnabled',
-						'label' => 'Enable',
-						'value' => $this->config['nzbgetSocksEnabled']
-					),
-					array(
-						'type' => 'select',
-						'name' => 'nzbgetSocksAuth',
-						'label' => 'Minimum Authentication',
-						'value' => $this->config['nzbgetSocksAuth'],
-						'options' => $this->groupOptions
-					),
-				),
-				'Misc Options' => array(
-					array(
-						'type' => 'select',
-						'name' => 'nzbgetRefresh',
-						'label' => 'Refresh Seconds',
-						'value' => $this->config['nzbgetRefresh'],
-						'options' => $this->timeOptions()
-					),
-					array(
-						'type' => 'switch',
-						'name' => 'nzbgetCombine',
-						'label' => 'Add to Combined Downloader',
-						'value' => $this->config['nzbgetCombine']
-					),
-				),
-				'Test Connection' => array(
-					array(
-						'type' => 'blank',
-						'label' => 'Please Save before Testing'
-					),
-					array(
-						'type' => 'button',
-						'label' => '',
-						'icon' => 'fa fa-flask',
-						'class' => 'pull-right',
-						'text' => 'Test Connection',
-						'attr' => 'onclick="testAPIConnection(\'nzbget\')"'
-					),
-				)
-			)
-		);
+			'settings' => [
+				'Enable' => [
+					$this->settingsOption('enable', 'homepageNzbgetEnabled'),
+					$this->settingsOption('auth', 'homepageNzbgetAuth'),
+				],
+				'Connection' => [
+					$this->settingsOption('url', 'nzbgetURL'),
+					$this->settingsOption('blank'),
+					$this->settingsOption('username', 'nzbgetUsername'),
+					$this->settingsOption('password', 'nzbgetPassword'),
+					$this->settingsOption('disable-cert-check', 'nzbgetDisableCertCheck'),
+					$this->settingsOption('use-custom-certificate', 'nzbgetUseCustomCertificate'),
+				],
+				'API SOCKS' => [
+					$this->settingsOption('socks', 'nzbget'),
+					$this->settingsOption('blank'),
+					$this->settingsOption('enable', 'nzbgetSocksEnabled'),
+					$this->settingsOption('auth', 'nzbgetSocksAuth'),
+				],
+				'Misc Options' => [
+					$this->settingsOption('refresh', 'nzbgetRefresh'),
+					$this->settingsOption('combine', 'nzbgetCombine'),
+				],
+				'Test Connection' => [
+					$this->settingsOption('blank', null, ['label' => 'Please Save before Testing']),
+					$this->settingsOption('test', 'nzbget'),
+				]
+			]
+		];
 		return array_merge($homepageInformation, $homepageSettings);
 	}
 	
@@ -122,7 +56,7 @@ trait NZBGetHomepageItem
 		}
 		try {
 			$url = $this->qualifyURL($this->config['nzbgetURL']);
-			$options = ($this->localURL($url)) ? array('verify' => false) : array();
+			$options = $this->requestOptions($url, null, $this->config['nzbgetDisableCertCheck'], $this->config['nzbgetUseCustomCertificate']);
 			$urlGroups = $url . '/jsonrpc/listgroups';
 			if ($this->config['nzbgetUsername'] !== '' && $this->decrypt($this->config['nzbgetPassword']) !== '') {
 				$credentials = array('auth' => new Requests_Auth_Basic(array($this->config['nzbgetUsername'], $this->decrypt($this->config['nzbgetPassword']))));
@@ -193,7 +127,7 @@ trait NZBGetHomepageItem
 		}
 		try {
 			$url = $this->qualifyURL($this->config['nzbgetURL']);
-			$options = ($this->localURL($url)) ? array('verify' => false) : array();
+			$options = $this->requestOptions($url, $this->config['nzbgetRefresh'], $this->config['nzbgetDisableCertCheck'], $this->config['nzbgetUseCustomCertificate']);
 			$urlGroups = $url . '/jsonrpc/listgroups';
 			$urlHistory = $url . '/jsonrpc/history';
 			if ($this->config['nzbgetUsername'] !== '' && $this->decrypt($this->config['nzbgetPassword']) !== '') {

@@ -15,148 +15,42 @@ trait OmbiHomepageItem
 		if ($infoOnly) {
 			return $homepageInformation;
 		}
-		$homepageSettings = array(
+		$homepageSettings = [
 			'debug' => true,
-			'settings' => array(
-				'Enable' => array(
-					array(
-						'type' => 'switch',
-						'name' => 'homepageOmbiEnabled',
-						'label' => 'Enable',
-						'value' => $this->config['homepageOmbiEnabled']
-					),
-					array(
-						'type' => 'select',
-						'name' => 'homepageOmbiAuth',
-						'label' => 'Minimum Authentication',
-						'value' => $this->config['homepageOmbiAuth'],
-						'options' => $this->groupOptions
-					)
-				),
-				'Connection' => array(
-					array(
-						'type' => 'input',
-						'name' => 'ombiURL',
-						'label' => 'URL',
-						'value' => $this->config['ombiURL'],
-						'help' => 'Please make sure to use local IP address and port - You also may use local dns name too.',
-						'placeholder' => 'http(s)://hostname:port'
-					),
-					array(
-						'type' => 'password-alt',
-						'name' => 'ombiToken',
-						'label' => 'Token',
-						'value' => $this->config['ombiToken']
-					),
-					array(
-						'type' => 'input',
-						'name' => 'ombiFallbackUser',
-						'label' => 'Ombi Fallback User',
-						'value' => $this->config['ombiFallbackUser'],
-						'help' => 'Organizr will request an Ombi User Token based off of this user credentials'
-					),
-					array(
-						'type' => 'password-alt',
-						'name' => 'ombiFallbackPassword',
-						'label' => 'Ombi Fallback Password',
-						'value' => $this->config['ombiFallbackPassword']
-					),
-				),
-				'Misc Options' => array(
-					array(
-						'type' => 'select',
-						'name' => 'homepageOmbiRequestAuth',
-						'label' => 'Minimum Group to Request',
-						'value' => $this->config['homepageOmbiRequestAuth'],
-						'options' => $this->groupOptions
-					),
-					array(
-						'type' => 'select',
-						'name' => 'ombiTvDefault',
-						'label' => 'TV Show Default Request',
-						'value' => $this->config['ombiTvDefault'],
-						'options' => $this->ombiTvOptions()
-					),
-					array(
-						'type' => 'switch',
-						'name' => 'ombiLimitUser',
-						'label' => 'Limit to User',
-						'value' => $this->config['ombiLimitUser']
-					),
-					array(
-						'type' => 'number',
-						'name' => 'ombiLimit',
-						'label' => 'Item Limit',
-						'value' => $this->config['ombiLimit'],
-					),
-					array(
-						'type' => 'select',
-						'name' => 'ombiRefresh',
-						'label' => 'Refresh Seconds',
-						'value' => $this->config['ombiRefresh'],
-						'options' => $this->timeOptions()
-					),
-					array(
-						'type' => 'switch',
-						'name' => 'ombiAlias',
-						'label' => 'Use Ombi Alias Names',
-						'value' => $this->config['ombiAlias'],
-						'help' => 'Use Ombi Alias Names instead of Usernames - If Alias is blank, Alias will fallback to Username'
-					)
-				),
-				'Default Filter' => array(
-					array(
-						'type' => 'switch',
-						'name' => 'ombiDefaultFilterAvailable',
-						'label' => 'Show Available',
-						'value' => $this->config['ombiDefaultFilterAvailable'],
-						'help' => 'Show All Available Ombi Requests'
-					),
-					array(
-						'type' => 'switch',
-						'name' => 'ombiDefaultFilterUnavailable',
-						'label' => 'Show Unavailable',
-						'value' => $this->config['ombiDefaultFilterUnavailable'],
-						'help' => 'Show All Unavailable Ombi Requests'
-					),
-					array(
-						'type' => 'switch',
-						'name' => 'ombiDefaultFilterApproved',
-						'label' => 'Show Approved',
-						'value' => $this->config['ombiDefaultFilterApproved'],
-						'help' => 'Show All Approved Ombi Requests'
-					),
-					array(
-						'type' => 'switch',
-						'name' => 'ombiDefaultFilterUnapproved',
-						'label' => 'Show Unapproved',
-						'value' => $this->config['ombiDefaultFilterUnapproved'],
-						'help' => 'Show All Unapproved Ombi Requests'
-					),
-					array(
-						'type' => 'switch',
-						'name' => 'ombiDefaultFilterDenied',
-						'label' => 'Show Denied',
-						'value' => $this->config['ombiDefaultFilterDenied'],
-						'help' => 'Show All Denied Ombi Requests'
-					)
-				),
-				'Test Connection' => array(
-					array(
-						'type' => 'blank',
-						'label' => 'Please Save before Testing'
-					),
-					array(
-						'type' => 'button',
-						'label' => '',
-						'icon' => 'fa fa-flask',
-						'class' => 'pull-right',
-						'text' => 'Test Connection',
-						'attr' => 'onclick="testAPIConnection(\'ombi\')"'
-					),
-				)
-			)
-		);
+			'settings' => [
+				'Enable' => [
+					$this->settingsOption('enable', 'homepageOmbiEnabled'),
+					$this->settingsOption('auth', 'homepageOmbiAuth'),
+				],
+				'Connection' => [
+					$this->settingsOption('url', 'ombiURL'),
+					$this->settingsOption('token', 'ombiToken'),
+					$this->settingsOption('username', 'ombiFallbackUser', ['label' => 'Ombi Fallback User', 'help' => 'Organizr will request an Ombi User Token based off of this user credentials']),
+					$this->settingsOption('password', 'ombiFallbackPassword', ['label' => 'Ombi Fallback Password',]),
+					$this->settingsOption('disable-cert-check', 'ombiDisableCertCheck'),
+					$this->settingsOption('use-custom-certificate', 'ombiUseCustomCertificate'),
+				],
+				'Misc Options' => [
+					$this->settingsOption('auth', 'homepageOmbiRequestAuth', ['label' => 'Minimum Group to Request']),
+					$this->settingsOption('select', 'ombiTvDefault', ['label' => 'TV Show Default Request', 'options' => $this->ombiTvOptions()]),
+					$this->settingsOption('switch', 'ombiLimitUser', ['label' => 'Limit to User']),
+					$this->settingsOption('limit', 'ombiLimit'),
+					$this->settingsOption('refresh', 'ombiRefresh'),
+					$this->settingsOption('switch', 'ombiAlias', ['label' => 'Use Ombi Alias Names', 'help' => 'Use Ombi Alias Names instead of Usernames - If Alias is blank, Alias will fallback to Username']),
+				],
+				'Default Filter' => [
+					$this->settingsOption('switch', 'ombiDefaultFilterAvailable', ['label' => 'Show Available', 'help' => 'Show All Available Ombi Requests']),
+					$this->settingsOption('switch', 'ombiDefaultFilterUnavailable', ['label' => 'Show Unavailable', 'help' => 'Show All Unavailable Ombi Requests']),
+					$this->settingsOption('switch', 'ombiDefaultFilterApproved', ['label' => 'Show Approved', 'help' => 'Show All Approved Ombi Requests']),
+					$this->settingsOption('switch', 'ombiDefaultFilterUnapproved', ['label' => 'Show Unapproved', 'help' => 'Show All Unapproved Ombi Requests']),
+					$this->settingsOption('switch', 'ombiDefaultFilterDenied', ['label' => 'Show Denied', 'help' => 'Show All Denied Ombi Requests']),
+				],
+				'Test Connection' => [
+					$this->settingsOption('blank', null, ['label' => 'Please Save before Testing']),
+					$this->settingsOption('test', 'ombi'),
+				]
+			]
+		];
 		return array_merge($homepageInformation, $homepageSettings);
 	}
 	
@@ -176,7 +70,7 @@ trait OmbiHomepageItem
 		);
 		$url = $this->qualifyURL($this->config['ombiURL']);
 		try {
-			$options = ($this->localURL($url)) ? array('verify' => false) : array();
+			$options = $this->requestOptions($url, null, $this->config['ombiDisableCertCheck'], $this->config['ombiUseCustomCertificate']);
 			$test = Requests::get($url . "/api/v1/Settings/about", $headers, $options);
 			if ($test->success) {
 				$this->setAPIResponse('success', 'API Connection succeeded', 200);
@@ -250,7 +144,7 @@ trait OmbiHomepageItem
 		$requests = array();
 		$url = $this->qualifyURL($this->config['ombiURL']);
 		try {
-			$options = ($this->localURL($url)) ? array('verify' => false) : array();
+			$options = $this->requestOptions($url, $this->config['ombiRefresh'], $this->config['ombiDisableCertCheck'], $this->config['ombiUseCustomCertificate']);
 			switch ($type) {
 				case 'movie':
 					$movie = Requests::get($url . "/api/v1/Request/movie", $headers, $options);
@@ -374,7 +268,7 @@ trait OmbiHomepageItem
 				break;
 		}
 		try {
-			$options = ($this->localURL($url)) ? array('verify' => false, 'timeout' => 30) : array('timeout' => 30);
+			$options = array('timeout' => 30);
 			if (isset($_COOKIE['Auth'])) {
 				$headers = array(
 					"Accept" => "application/json",
@@ -428,6 +322,7 @@ trait OmbiHomepageItem
 				$this->setAPIResponse('error', 'Could not contact TMDB', 422);
 				return false;
 			}
+			$options = $this->requestOptions($url, null, $this->config['ombiDisableCertCheck'], $this->config['ombiUseCustomCertificate']);
 			$searchResponse = Requests::get($url . '/api/v1/Search/' . $type . '/' . urlencode($title), $headers, $options);
 			if ($searchResponse->success) {
 				$details = json_decode($searchResponse->body, true);
@@ -503,7 +398,7 @@ trait OmbiHomepageItem
 				break;
 		}
 		try {
-			$options = ($this->localURL($url)) ? array('verify' => false, 'timeout' => 30) : array('timeout' => 30);
+			$options = $this->requestOptions($url, 60, $this->config['ombiDisableCertCheck'], $this->config['ombiUseCustomCertificate']);
 			switch ($action) {
 				case 'approve':
 					$response = Requests::post($url . "/api/v1/Request/" . $type . "/approve", $headers, json_encode($data), $options);

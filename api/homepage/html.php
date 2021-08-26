@@ -14,41 +14,19 @@ trait HTMLHomepageItem
 		if ($infoOnly) {
 			return $homepageInformation;
 		}
-		$homepageSettings = array(
+		$homepageSettings = [
 			'debug' => true,
-			'settings' => array(
-				'Enable' => array(
-					array(
-						'type' => 'switch',
-						'name' => 'homepageCustomHTMLoneEnabled',
-						'label' => 'Enable',
-						'value' => $this->config['homepageCustomHTMLoneEnabled']
-					),
-					array(
-						'type' => 'select',
-						'name' => 'homepageCustomHTMLoneAuth',
-						'label' => 'Minimum Authentication',
-						'value' => $this->config['homepageCustomHTMLoneAuth'],
-						'options' => $this->groupOptions
-					)
-				),
-				'Code' => array(
-					array(
-						'type' => 'textbox',
-						'name' => 'customHTMLone',
-						'class' => 'hidden customHTMLoneTextarea',
-						'label' => '',
-						'value' => $this->config['customHTMLone'],
-					),
-					array(
-						'type' => 'html',
-						'override' => 12,
-						'label' => 'Custom HTML/JavaScript',
-						'html' => '<button type="button" class="hidden savecustomHTMLoneTextarea btn btn-info btn-circle pull-right m-r-5 m-l-10"><i class="fa fa-save"></i> </button><div id="customHTMLoneEditor" style="height:300px">' . htmlentities($this->config['customHTMLone']) . '</div>'
-					),
-				)
-			)
-		);
+			'settings' => [
+				'Enable' => [
+					$this->settingsOption('enable', 'homepageCustomHTMLoneEnabled'),
+					$this->settingsOption('auth', 'homepageCustomHTMLoneAuth'),
+				],
+				'Code' => [
+					$this->settingsOption('pre-code-editor', 'customHTMLone'),
+					$this->settingsOption('code-editor', 'customHTMLone'),
+				]
+			]
+		];
 		return array_merge($homepageInformation, $homepageSettings);
 	}
 	
@@ -64,45 +42,19 @@ trait HTMLHomepageItem
 		if ($infoOnly) {
 			return $homepageInformation;
 		}
-		$homepageSettings = array(
-			'name' => 'CustomHTML-2',
-			'enabled' => strpos('personal,business', $this->config['license']) !== false,
-			'image' => 'plugins/images/tabs/custom2.png',
-			'category' => 'Custom',
+		$homepageSettings = [
 			'debug' => true,
-			'settings' => array(
-				'Enable' => array(
-					array(
-						'type' => 'switch',
-						'name' => 'homepageCustomHTMLtwoEnabled',
-						'label' => 'Enable',
-						'value' => $this->config['homepageCustomHTMLtwoEnabled']
-					),
-					array(
-						'type' => 'select',
-						'name' => 'homepageCustomHTMLtwoAuth',
-						'label' => 'Minimum Authentication',
-						'value' => $this->config['homepageCustomHTMLtwoAuth'],
-						'options' => $this->groupOptions
-					)
-				),
-				'Code' => array(
-					array(
-						'type' => 'textbox',
-						'name' => 'customHTMLtwo',
-						'class' => 'hidden customHTMLtwoTextarea',
-						'label' => '',
-						'value' => $this->config['customHTMLtwo'],
-					),
-					array(
-						'type' => 'html',
-						'override' => 12,
-						'label' => 'Custom HTML/JavaScript',
-						'html' => '<button type="button" class="hidden savecustomHTMLtwoTextarea btn btn-info btn-circle pull-right m-r-5 m-l-10"><i class="fa fa-save"></i> </button><div id="customHTMLtwoEditor" style="height:300px">' . htmlentities($this->config['customHTMLtwo']) . '</div>'
-					),
-				)
-			)
-		);
+			'settings' => [
+				'Enable' => [
+					$this->settingsOption('enable', 'homepageCustomHTMLtwoEnabled'),
+					$this->settingsOption('auth', 'homepageCustomHTMLtwoAuth'),
+				],
+				'Code' => [
+					$this->settingsOption('pre-code-editor', 'customHTMLtwo'),
+					$this->settingsOption('code-editor', 'customHTMLtwo'),
+				]
+			]
+		];
 		return array_merge($homepageInformation, $homepageSettings);
 	}
 	

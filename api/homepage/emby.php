@@ -14,166 +14,44 @@ trait EmbyHomepageItem
 		if ($infoOnly) {
 			return $homepageInformation;
 		}
-		$homepageSettings = array(
+		$homepageSettings = [
 			'debug' => true,
-			'settings' => array(
-				'Enable' => array(
-					array(
-						'type' => 'switch',
-						'name' => 'homepageEmbyEnabled',
-						'label' => 'Enable',
-						'value' => $this->config['homepageEmbyEnabled']
-					),
-					array(
-						'type' => 'select',
-						'name' => 'homepageEmbyAuth',
-						'label' => 'Minimum Authentication',
-						'value' => $this->config['homepageEmbyAuth'],
-						'options' => $this->groupOptions
-					)
-				),
-				'Connection' => array(
-					array(
-						'type' => 'input',
-						'name' => 'embyURL',
-						'label' => 'URL',
-						'value' => $this->config['embyURL'],
-						'help' => 'Please make sure to use local IP address and port - You also may use local dns name too.',
-						'placeholder' => 'http(s)://hostname:port'
-					),
-					array(
-						'type' => 'password-alt',
-						'name' => 'embyToken',
-						'label' => 'Token',
-						'value' => $this->config['embyToken']
-					)
-				),
-				'Active Streams' => array(
-					array(
-						'type' => 'switch',
-						'name' => 'homepageEmbyStreams',
-						'label' => 'Enable',
-						'value' => $this->config['homepageEmbyStreams']
-					),
-					array(
-						'type' => 'select',
-						'name' => 'homepageEmbyStreamsAuth',
-						'label' => 'Minimum Authorization',
-						'value' => $this->config['homepageEmbyStreamsAuth'],
-						'options' => $this->groupOptions
-					),
-					array(
-						'type' => 'switch',
-						'name' => 'homepageShowStreamNames',
-						'label' => 'User Information',
-						'value' => $this->config['homepageShowStreamNames']
-					),
-					array(
-						'type' => 'select',
-						'name' => 'homepageShowStreamNamesAuth',
-						'label' => 'Minimum Authorization',
-						'value' => $this->config['homepageShowStreamNamesAuth'],
-						'options' => $this->groupOptions
-					),
-					array(
-						'type' => 'select',
-						'name' => 'homepageStreamRefresh',
-						'label' => 'Refresh Seconds',
-						'value' => $this->config['homepageStreamRefresh'],
-						'options' => $this->timeOptions()
-					),
-				),
-				'Recent Items' => array(
-					array(
-						'type' => 'switch',
-						'name' => 'homepageEmbyRecent',
-						'label' => 'Enable',
-						'value' => $this->config['homepageEmbyRecent']
-					),
-					array(
-						'type' => 'select',
-						'name' => 'homepageEmbyRecentAuth',
-						'label' => 'Minimum Authorization',
-						'value' => $this->config['homepageEmbyRecentAuth'],
-						'options' => $this->groupOptions
-					),
-					array(
-						'type' => 'number',
-						'name' => 'homepageRecentLimit',
-						'label' => 'Item Limit',
-						'value' => $this->config['homepageRecentLimit'],
-					),
-					array(
-						'type' => 'select',
-						'name' => 'homepageRecentRefresh',
-						'label' => 'Refresh Seconds',
-						'value' => $this->config['homepageRecentRefresh'],
-						'options' => $this->timeOptions()
-					),
-				),
-				'Misc Options' => array(
-					array(
-						'type' => 'input',
-						'name' => 'homepageEmbyLink',
-						'label' => 'Emby Homepage Link URL',
-						'value' => $this->config['homepageEmbyLink'],
-						'help' => 'Available variables: {id} {serverId}'
-					),
-					array(
-						'type' => 'input',
-						'name' => 'embyTabName',
-						'label' => 'Emby Tab Name',
-						'value' => $this->config['embyTabName'],
-						'placeholder' => 'Only use if you have Emby in a reverse proxy'
-					),
-					array(
-						'type' => 'input',
-						'name' => 'embyTabURL',
-						'label' => 'Emby Tab WAN URL',
-						'value' => $this->config['embyTabURL'],
-						'placeholder' => 'http(s)://hostname:port'
-					),
-					array(
-						'type' => 'select',
-						'name' => 'cacheImageSize',
-						'label' => 'Image Cache Size',
-						'value' => $this->config['cacheImageSize'],
-						'options' => array(
-							array(
-								'name' => 'Low',
-								'value' => '.5'
-							),
-							array(
-								'name' => '1x',
-								'value' => '1'
-							),
-							array(
-								'name' => '2x',
-								'value' => '2'
-							),
-							array(
-								'name' => '3x',
-								'value' => '3'
-							)
-						)
-					)
-				),
-				'Test Connection' => array(
-					array(
-						'type' => 'blank',
-						'label' => 'Please Save before Testing'
-					),
-					array(
-						'type' => 'button',
-						'label' => '',
-						'icon' => 'fa fa-flask',
-						'class' => 'pull-right',
-						'text' => 'Test Connection',
-						'attr' => 'onclick="testAPIConnection(\'emby\')"'
-					),
-				)
-			)
-		);
+			'settings' => [
+				'Enable' => [
+					$this->settingsOption('enable', 'homepageEmbyEnabled'),
+					$this->settingsOption('auth', 'homepageEmbyAuth'),
+				],
+				'Connection' => [
+					$this->settingsOption('url', 'embyURL'),
+					$this->settingsOption('token', 'embyToken'),
+					$this->settingsOption('disable-cert-check', 'embyDisableCertCheck'),
+					$this->settingsOption('use-custom-certificate', 'embyUseCustomCertificate'),
+				],
+				'Active Streams' => [
+					$this->settingsOption('enable', 'homepageEmbyStreams'),
+					$this->settingsOption('auth', 'homepageEmbyStreamsAuth'),
+					$this->settingsOption('switch', 'homepageShowStreamNames', ['label' => 'User Information']),
+					$this->settingsOption('auth', 'homepageShowStreamNamesAuth'),
+					$this->settingsOption('refresh', 'homepageStreamRefresh'),
+				],
+				'Recent Items' => [
+					$this->settingsOption('enable', 'homepageEmbyRecent'),
+					$this->settingsOption('auth', 'homepageEmbyRecentAuth'),
+					$this->settingsOption('limit', 'homepageRecentLimit'),
+					$this->settingsOption('refresh', 'homepageRecentRefresh'),
+				],
+				'Misc Options' => [
+					$this->settingsOption('input', 'homepageEmbyLink', ['label' => 'Emby Homepage Link URL', 'help' => 'Available variables: {id} {serverId}']),
+					$this->settingsOption('input', 'embyTabName', ['label' => 'Emby Tab Name', 'placeholder' => 'Only use if you have Emby in a reverse proxy']),
+					$this->settingsOption('input', 'embyTabURL', ['label' => 'Emby Tab WAN URL', 'placeholder' => 'Only use if you have Emby in a reverse proxy']),
+					$this->settingsOption('image-cache-quality', 'cacheImageSize'),
+				],
+				'Test Connection' => [
+					$this->settingsOption('blank', null, ['label' => 'Please Save before Testing']),
+					$this->settingsOption('test', 'emby'),
+				]
+			]
+		];
 		return array_merge($homepageInformation, $homepageSettings);
 	}
 	
@@ -189,9 +67,9 @@ trait EmbyHomepageItem
 		}
 		$url = $this->qualifyURL($this->config['embyURL']);
 		$url = $url . "/Users?api_key=" . $this->config['embyToken'];
-		$options = ($this->localURL($url)) ? array('verify' => false) : array();
+		$options = $this->requestOptions($url, null, $this->config['embyDisableCertCheck'], $this->config['embyUseCustomCertificate']);
 		try {
-			$response = Requests::get($url, array(), $options);
+			$response = Requests::get($url, [], $options);
 			if ($response->success) {
 				$this->setAPIResponse('success', 'API Connection succeeded', 200);
 				return true;
@@ -297,9 +175,9 @@ trait EmbyHomepageItem
 		}
 		$url = $this->qualifyURL($this->config['embyURL']);
 		$url = $url . '/Sessions?api_key=' . $this->config['embyToken'] . '&Fields=Overview,People,Genres,CriticRating,Studios,Taglines';
-		$options = ($this->localURL($url)) ? array('verify' => false) : array();
+		$options = $this->requestOptions($url, $this->config['homepageStreamRefresh'], $this->config['embyDisableCertCheck'], $this->config['embyUseCustomCertificate']);
 		try {
-			$response = Requests::get($url, array(), $options);
+			$response = Requests::get($url, [], $options);
 			if ($response->success) {
 				$items = array();
 				$emby = json_decode($response->body, true);
@@ -328,7 +206,7 @@ trait EmbyHomepageItem
 			return false;
 		}
 		$url = $this->qualifyURL($this->config['embyURL']);
-		$options = ($this->localURL($url)) ? array('verify' => false) : array();
+		$options = $this->requestOptions($url, $this->config['homepageRecentRefresh'], $this->config['embyDisableCertCheck'], $this->config['embyUseCustomCertificate']);
 		$username = false;
 		$showPlayed = false;
 		$userId = 0;
@@ -340,7 +218,7 @@ trait EmbyHomepageItem
 			}
 			// Get A User
 			$userIds = $url . "/Users?api_key=" . $this->config['embyToken'];
-			$response = Requests::get($userIds, array(), $options);
+			$response = Requests::get($userIds, [], $options);
 			if ($response->success) {
 				$emby = json_decode($response->body, true);
 				foreach ($emby as $value) { // Scan for admin user
@@ -358,7 +236,7 @@ trait EmbyHomepageItem
 				$this->setAPIResponse('error', 'Emby Error Occurred', 500);
 				return false;
 			}
-			$response = Requests::get($url, array(), $options);
+			$response = Requests::get($url, [], $options);
 			if ($response->success) {
 				$items = array();
 				$emby = json_decode($response->body, true);
@@ -392,19 +270,17 @@ trait EmbyHomepageItem
 			return false;
 		}
 		$url = $this->qualifyURL($this->config['embyURL']);
-		$options = ($this->localURL($url)) ? array('verify' => false) : array();
+		$options = $this->requestOptions($url, 60, $this->config['embyDisableCertCheck'], $this->config['embyUseCustomCertificate']);
 		$username = false;
 		$showPlayed = false;
 		$userId = 0;
 		try {
-			
-			
 			if (isset($this->user['username'])) {
 				$username = strtolower($this->user['username']);
 			}
 			// Get A User
 			$userIds = $url . "/Users?api_key=" . $this->config['embyToken'];
-			$response = Requests::get($userIds, array(), $options);
+			$response = Requests::get($userIds, [], $options);
 			if ($response->success) {
 				$emby = json_decode($response->body, true);
 				foreach ($emby as $value) { // Scan for admin user
@@ -422,7 +298,7 @@ trait EmbyHomepageItem
 				$this->setAPIResponse('error', 'Emby Error Occurred', 500);
 				return false;
 			}
-			$response = Requests::get($url, array(), $options);
+			$response = Requests::get($url, [], $options);
 			if ($response->success) {
 				$items = array();
 				$emby = json_decode($response->body, true);

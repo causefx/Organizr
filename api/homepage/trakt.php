@@ -14,15 +14,13 @@ trait TraktHomepageItem
 		if ($infoOnly) {
 			return $homepageInformation;
 		}
-		$homepageSettings = array(
+		$homepageSettings = [
 			'docs' => 'https://docs.organizr.app/books/setup-features/page/trakt',
 			'debug' => true,
-			'settings' => array(
-				'About' => array(
-					array(
-						'type' => 'html',
+			'settings' => [
+				'About' => [
+					$this->settingsOption('html', null, [
 						'override' => 12,
-						'label' => '',
 						'html' => '
 							<div class="panel panel-default">
 								<div class="panel-wrapper collapse in">
@@ -36,112 +34,30 @@ trait TraktHomepageItem
 									</div>
 								</div>
 							</div>'
-					),
-				),
-				'Enable' => array(
-					array(
-						'type' => 'switch',
-						'name' => 'homepageTraktEnabled',
-						'label' => 'Enable',
-						'value' => $this->config['homepageTraktEnabled']
-					),
-					array(
-						'type' => 'select',
-						'name' => 'homepageTraktAuth',
-						'label' => 'Minimum Authentication',
-						'value' => $this->config['homepageTraktAuth'],
-						'options' => $this->groupOptions
-					)
-				),
-				'Connection' => array(
-					array(
-						'type' => 'input',
-						'name' => 'traktClientId',
-						'label' => 'Client Id',
-						'value' => $this->config['traktClientId'],
-						'help' => 'Please make sure to use local IP address and port - You also may use local dns name too.'
-					),
-					array(
-						'type' => 'password-alt',
-						'name' => 'traktClientSecret',
-						'label' => 'Client Secret',
-						'value' => $this->config['traktClientSecret']
-					),
-					array(
-						'type' => 'blank',
-						'label' => 'Please Save before clicking button'
-					),
-					array(
-						'type' => 'button',
-						'label' => '',
-						'icon' => 'fa fa-user',
-						'class' => 'pull-right',
-						'text' => 'Connect Account',
-						'attr' => 'onclick="openOAuth(\'trakt\')"'
-					),
-				),
-				'Calendar' => array(
-					array(
-						'type' => 'number',
-						'name' => 'calendarStartTrakt',
-						'label' => '# of Days Before',
-						'value' => $this->config['calendarStartTrakt'],
-						'placeholder' => '',
-						'help' => 'Total Days (Adding start and end days) has a maximum of 33 Days from Trakt API'
-					),
-					array(
-						'type' => 'number',
-						'name' => 'calendarEndTrakt',
-						'label' => '# of Days After',
-						'value' => $this->config['calendarEndTrakt'],
-						'placeholder' => '',
-						'help' => 'Total Days (Adding start and end days) has a maximum of 33 Days from Trakt API'
-					),
-					array(
-						'type' => 'select',
-						'name' => 'calendarFirstDay',
-						'label' => 'Start Day',
-						'value' => $this->config['calendarFirstDay'],
-						'options' => $this->daysOptions()
-					),
-					array(
-						'type' => 'select',
-						'name' => 'calendarDefault',
-						'label' => 'Default View',
-						'value' => $this->config['calendarDefault'],
-						'options' => $this->calendarDefaultOptions()
-					),
-					array(
-						'type' => 'select',
-						'name' => 'calendarTimeFormat',
-						'label' => 'Time Format',
-						'value' => $this->config['calendarTimeFormat'],
-						'options' => $this->timeFormatOptions()
-					),
-					array(
-						'type' => 'select',
-						'name' => 'calendarLocale',
-						'label' => 'Locale',
-						'value' => $this->config['calendarLocale'],
-						'options' => $this->calendarLocaleOptions()
-					),
-					array(
-						'type' => 'select',
-						'name' => 'calendarLimit',
-						'label' => 'Items Per Day',
-						'value' => $this->config['calendarLimit'],
-						'options' => $this->limitOptions()
-					),
-					array(
-						'type' => 'select',
-						'name' => 'calendarRefresh',
-						'label' => 'Refresh Seconds',
-						'value' => $this->config['calendarRefresh'],
-						'options' => $this->timeOptions()
-					)
-				)
-			)
-		);
+					]),
+				],
+				'Enable' => [
+					$this->settingsOption('enable', 'homepageTraktEnabled'),
+					$this->settingsOption('auth', 'homepageTraktAuth'),
+				],
+				'Connection' => [
+					$this->settingsOption('input', 'traktClientId', ['label' => 'Client Id']),
+					$this->settingsOption('password-alt', 'traktClientSecret', ['label' => 'Client Secret']),
+					$this->settingsOption('blank'),
+					$this->settingsOption('button', '', ['label' => 'Please Save before clicking button', 'icon' => 'fa fa-user', 'class' => 'pull-right', 'text' => 'Connect Account', 'attr' => 'onclick="openOAuth(\'trakt\')"']),
+				],
+				'Calendar' => [
+					$this->settingsOption('calendar-start', 'calendarStartTrakt', ['help' => 'Total Days (Adding start and end days) has a maximum of 33 Days from Trakt API']),
+					$this->settingsOption('calendar-end', 'calendarEndTrakt', ['help' => 'Total Days (Adding start and end days) has a maximum of 33 Days from Trakt API']),
+					$this->settingsOption('calendar-starting-day', 'calendarFirstDay'),
+					$this->settingsOption('calendar-default-view', 'calendarDefault'),
+					$this->settingsOption('calendar-time-format', 'calendarTimeFormat'),
+					$this->settingsOption('calendar-locale', 'calendarLocale'),
+					$this->settingsOption('calendar-limit', 'calendarLimit'),
+					$this->settingsOption('refresh', 'calendarRefresh'),
+				]
+			]
+		];
 		return array_merge($homepageInformation, $homepageSettings);
 	}
 	
@@ -186,7 +102,7 @@ trait TraktHomepageItem
 			'trakt-api-key' => $this->config['traktClientId']
 		];
 		$url = $this->qualifyURL('https://api.trakt.tv/calendars/my/shows/' . $startDate . '/' . $totalDays . '?extended=full');
-		$options = $this->requestOptions($url, false, $this->config['calendarRefresh']);
+		$options = $this->requestOptions($url, $this->config['calendarRefresh']);
 		try {
 			$response = Requests::get($url, $headers, $options);
 			if ($response->success) {

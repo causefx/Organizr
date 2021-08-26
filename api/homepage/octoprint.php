@@ -14,58 +14,25 @@ trait OctoPrintHomepageItem
 		if ($infoOnly) {
 			return $homepageInformation;
 		}
-		$homepageSettings = array(
+		$homepageSettings = [
 			'debug' => true,
-			'settings' => array(
-				'Enable' => array(
-					array(
-						'type' => 'switch',
-						'name' => 'homepageOctoprintEnabled',
-						'label' => 'Enable',
-						'value' => $this->config['homepageOctoprintEnabled']
-					),
-					array(
-						'type' => 'select',
-						'name' => 'homepageOctoprintAuth',
-						'label' => 'Minimum Authentication',
-						'value' => $this->config['homepageOctoprintAuth'],
-						'options' => $this->groupOptions
-					)
-				),
-				'Connection' => array(
-					array(
-						'type' => 'input',
-						'name' => 'octoprintURL',
-						'label' => 'URL',
-						'value' => $this->config['octoprintURL'],
-						'help' => 'Enter the IP:PORT of your Octoprint instance e.g. http://octopi.local'
-					),
-					array(
-						'type' => 'input',
-						'name' => 'octoprintToken',
-						'label' => 'API Key',
-						'value' => $this->config['octoprintToken'],
-						'help' => 'Enter your Octoprint API key, found in Octoprint settings page.'
-					),
-				),
-				'Options' => array(
-					array(
-						'type' => 'input',
-						'name' => 'octoprintHeader',
-						'label' => 'Title',
-						'value' => $this->config['octoprintHeader'],
-						'help' => 'Sets the title of this homepage module',
-					),
-					array(
-						'type' => 'switch',
-						'name' => 'octoprintToggle',
-						'label' => 'Toggle Title',
-						'value' => $this->config['octoprintHeaderToggle'],
-						'help' => 'Shows/hides the title of this homepage module'
-					),
-				),
-			)
-		);
+			'settings' => [
+				'Enable' => [
+					$this->settingsOption('enable', 'homepageOctoprintEnabled'),
+					$this->settingsOption('auth', 'homepageOctoprintAuth'),
+				],
+				'Connection' => [
+					$this->settingsOption('url', 'octoprintURL'),
+					$this->settingsOption('token', 'octoprintToken'),
+					$this->settingsOption('disable-cert-check', 'octoprintDisableCertCheck'),
+					$this->settingsOption('use-custom-certificate', 'octoprintUseCustomCertificate'),
+				],
+				'Options' => [
+					$this->settingsOption('title', 'octoprintHeader'),
+					$this->settingsOption('toggle-title', 'octoprintHeaderToggle'),
+				],
+			]
+		];
 		return array_merge($homepageInformation, $homepageSettings);
 	}
 	
@@ -123,7 +90,8 @@ trait OctoPrintHomepageItem
 			$dataUrl = $url . '/api/' . $endpoint;
 			try {
 				$headers = array('X-API-KEY' => $this->config['octoprintToken']);
-				$response = Requests::get($dataUrl, $headers);
+				$options = $this->requestOptions($url, $this->config['homepageOctoprintRefresh'], $this->config['octoprintDisableCertCheck'], $this->config['octoprintUseCustomCertificate']);
+				$response = Requests::get($dataUrl, $headers, $options);
 				if ($response->success) {
 					$json = json_decode($response->body, true);
 					$api['data'][$endpoint] = $json;

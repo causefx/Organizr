@@ -14,140 +14,41 @@ trait LidarrHomepageItem
 		if ($infoOnly) {
 			return $homepageInformation;
 		}
-		$homepageSettings = array(
+		$homepageSettings = [
 			'debug' => true,
-			'settings' => array(
-				'Enable' => array(
-					array(
-						'type' => 'switch',
-						'name' => 'homepageLidarrEnabled',
-						'label' => 'Enable',
-						'value' => $this->config['homepageLidarrEnabled']
-					),
-					array(
-						'type' => 'select',
-						'name' => 'homepageLidarrAuth',
-						'label' => 'Minimum Authentication',
-						'value' => $this->config['homepageLidarrAuth'],
-						'options' => $this->groupOptions
-					)
-				),
-				'Connection' => array(
-					array(
-						'type' => 'input',
-						'name' => 'lidarrURL',
-						'label' => 'URL',
-						'value' => $this->config['lidarrURL'],
-						'help' => 'Please make sure to use local IP address and port - You also may use local dns name too.',
-						'placeholder' => 'http(s)://hostname:port'
-					),
-					array(
-						'type' => 'password-alt',
-						'name' => 'lidarrToken',
-						'label' => 'Token',
-						'value' => $this->config['lidarrToken']
-					)
-				),
-				'API SOCKS' => array(
-					array(
-						'type' => 'html',
-						'override' => 12,
-						'label' => '',
-						'html' => '
-							<div class="panel panel-default">
-								<div class="panel-wrapper collapse in">
-									<div class="panel-body">' . $this->socksHeadingHTML('lidarr') . '</div>
-								</div>
-							</div>'
-					),
-					array(
-						'type' => 'switch',
-						'name' => 'lidarrSocksEnabled',
-						'label' => 'Enable',
-						'value' => $this->config['lidarrSocksEnabled']
-					),
-					array(
-						'type' => 'select',
-						'name' => 'lidarrSocksAuth',
-						'label' => 'Minimum Authentication',
-						'value' => $this->config['lidarrSocksAuth'],
-						'options' => $this->groupOptions
-					),
-				),
-				'Misc Options' => array(
-					array(
-						'type' => 'number',
-						'name' => 'calendarStart',
-						'label' => '# of Days Before',
-						'value' => $this->config['calendarStart'],
-						'placeholder' => ''
-					),
-					array(
-						'type' => 'number',
-						'name' => 'calendarEnd',
-						'label' => '# of Days After',
-						'value' => $this->config['calendarEnd'],
-						'placeholder' => ''
-					),
-					array(
-						'type' => 'select',
-						'name' => 'calendarFirstDay',
-						'label' => 'Start Day',
-						'value' => $this->config['calendarFirstDay'],
-						'options' => $this->daysOptions()
-					),
-					array(
-						'type' => 'select',
-						'name' => 'calendarDefault',
-						'label' => 'Default View',
-						'value' => $this->config['calendarDefault'],
-						'options' => $this->calendarDefaultOptions()
-					),
-					array(
-						'type' => 'select',
-						'name' => 'calendarTimeFormat',
-						'label' => 'Time Format',
-						'value' => $this->config['calendarTimeFormat'],
-						'options' => $this->timeFormatOptions()
-					),
-					array(
-						'type' => 'select',
-						'name' => 'calendarLocale',
-						'label' => 'Locale',
-						'value' => $this->config['calendarLocale'],
-						'options' => $this->calendarLocaleOptions()
-					),
-					array(
-						'type' => 'select',
-						'name' => 'calendarLimit',
-						'label' => 'Items Per Day',
-						'value' => $this->config['calendarLimit'],
-						'options' => $this->limitOptions()
-					),
-					array(
-						'type' => 'select',
-						'name' => 'calendarRefresh',
-						'label' => 'Refresh Seconds',
-						'value' => $this->config['calendarRefresh'],
-						'options' => $this->timeOptions()
-					),
-				),
-				'Test Connection' => array(
-					array(
-						'type' => 'blank',
-						'label' => 'Please Save before Testing'
-					),
-					array(
-						'type' => 'button',
-						'label' => '',
-						'icon' => 'fa fa-flask',
-						'class' => 'pull-right',
-						'text' => 'Test Connection',
-						'attr' => 'onclick="testAPIConnection(\'lidarr\')"'
-					),
-				)
-			)
-		);
+			'settings' => [
+				'Enable' => [
+					$this->settingsOption('enable', 'homepageLidarrEnabled'),
+					$this->settingsOption('auth', 'homepageLidarrAuth'),
+				],
+				'Connection' => [
+					$this->settingsOption('multiple-url', 'lidarrURL'),
+					$this->settingsOption('multiple-token', 'lidarrToken'),
+					$this->settingsOption('disable-cert-check', 'lidarrDisableCertCheck'),
+					$this->settingsOption('use-custom-certificate', 'lidarrUseCustomCertificate'),
+				],
+				'API SOCKS' => [
+					$this->settingsOption('socks', 'lidarr'),
+					$this->settingsOption('blank'),
+					$this->settingsOption('enable', 'lidarrSocksEnabled'),
+					$this->settingsOption('auth', 'lidarrSocksAuth'),
+				],
+				'Misc Options' => [
+					$this->settingsOption('calendar-start', 'calendarStart'),
+					$this->settingsOption('calendar-end', 'calendarEnd'),
+					$this->settingsOption('calendar-starting-day', 'calendarFirstDay'),
+					$this->settingsOption('calendar-default-view', 'calendarDefault'),
+					$this->settingsOption('calendar-time-format', 'calendarTimeFormat'),
+					$this->settingsOption('calendar-locale', 'calendarLocale'),
+					$this->settingsOption('calendar-limit', 'calendarLimit'),
+					$this->settingsOption('refresh', 'calendarRefresh'),
+				],
+				'Test Connection' => [
+					$this->settingsOption('blank', null, ['label' => 'Please Save before Testing']),
+					$this->settingsOption('test', 'lidarr'),
+				]
+			]
+		];
 		return array_merge($homepageInformation, $homepageSettings);
 	}
 	
@@ -166,7 +67,8 @@ trait LidarrHomepageItem
 		$list = $this->csvHomepageUrlToken($this->config['lidarrURL'], $this->config['lidarrToken']);
 		foreach ($list as $key => $value) {
 			try {
-				$downloader = new Kryptonit3\Sonarr\Sonarr($value['url'], $value['token'], 'lidarr');
+				$options = $this->requestOptions($value['url'], null, $this->config['lidarrDisableCertCheck'], $this->config['lidarrUseCustomCertificate']);
+				$downloader = new Kryptonit3\Sonarr\Sonarr($value['url'], $value['token'], 'lidarr', null . null, $options);
 				$results = $downloader->getRootFolder();
 				$downloadList = json_decode($results, true);
 				if (is_array($downloadList) || is_object($downloadList)) {
@@ -246,7 +148,8 @@ trait LidarrHomepageItem
 		$list = $this->csvHomepageUrlToken($this->config['lidarrURL'], $this->config['lidarrToken']);
 		foreach ($list as $key => $value) {
 			try {
-				$downloader = new Kryptonit3\Sonarr\Sonarr($value['url'], $value['token'], 'lidarr');
+				$options = $this->requestOptions($value['url'], null, $this->config['lidarrDisableCertCheck'], $this->config['lidarrUseCustomCertificate']);
+				$downloader = new Kryptonit3\Sonarr\Sonarr($value['url'], $value['token'], 'lidarr', null, null, $options);
 				$results = $downloader->getQueue();
 				$downloadList = json_decode($results, true);
 				if (is_array($downloadList) || is_object($downloadList)) {
@@ -279,7 +182,8 @@ trait LidarrHomepageItem
 		$list = $this->csvHomepageUrlToken($this->config['lidarrURL'], $this->config['lidarrToken']);
 		foreach ($list as $key => $value) {
 			try {
-				$downloader = new Kryptonit3\Sonarr\Sonarr($value['url'], $value['token'], 'lidarr');
+				$options = $this->requestOptions($value['url'], null, $this->config['lidarrDisableCertCheck'], $this->config['lidarrUseCustomCertificate']);
+				$downloader = new Kryptonit3\Sonarr\Sonarr($value['url'], $value['token'], 'lidarr', null, null, $options);
 				$results = $downloader->getCalendar($startDate, $endDate);
 				$result = json_decode($results, true);
 				if (is_array($result) || is_object($result)) {

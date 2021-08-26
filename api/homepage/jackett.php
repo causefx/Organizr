@@ -14,51 +14,24 @@ trait JackettHomepageItem
 		if ($infoOnly) {
 			return $homepageInformation;
 		}
-		$homepageSettings = array(
+		$homepageSettings = [
 			'debug' => true,
-			'settings' => array(
-				'Enable' => array(
-					array(
-						'type' => 'switch',
-						'name' => 'homepageJackettEnabled',
-						'label' => 'Enable',
-						'value' => $this->config['homepageJackettEnabled']
-					),
-					array(
-						'type' => 'select',
-						'name' => 'homepageJackettAuth',
-						'label' => 'Minimum Authentication',
-						'value' => $this->config['homepageJackettAuth'],
-						'options' => $this->groupOptions
-					)
-				),
-				'Connection' => array(
-					array(
-						'type' => 'input',
-						'name' => 'jackettURL',
-						'label' => 'URL',
-						'value' => $this->config['jackettURL'],
-						'help' => 'Please make sure to use local IP address and port - You also may use local dns name too.',
-						'placeholder' => 'http(s)://hostname:port'
-					),
-					array(
-						'type' => 'password-alt',
-						'name' => 'jackettToken',
-						'label' => 'Token',
-						'value' => $this->config['jackettToken']
-					)
-				),
-				'Options' => array(
-					array(
-						'type' => 'switch',
-						'name' => 'homepageJackettBackholeDownload',
-						'label' => 'Prefer black hole download',
-						'help' => 'Prefer black hole download link instead of direct/magnet download',
-						'value' => $this->config['homepageJackettBackholeDownload']
-					)
-				),
-			)
-		);
+			'settings' => [
+				'Enable' => [
+					$this->settingsOption('enable', 'homepageJackettEnabled'),
+					$this->settingsOption('auth', 'homepageJackettAuth'),
+				],
+				'Connection' => [
+					$this->settingsOption('url', 'jackettURL'),
+					$this->settingsOption('token', 'jackettToken'),
+					$this->settingsOption('disable-cert-check', 'jackettDisableCertCheck'),
+					$this->settingsOption('use-custom-certificate', 'jackettUseCustomCertificate'),
+				],
+				'Options' => [
+					$this->settingsOption('switch', 'homepageJackettBackholeDownload', ['label' => 'Prefer black hole download', 'help' => 'Prefer black hole download link instead of direct/magnet download']),
+				],
+			]
+		];
 		return array_merge($homepageInformation, $homepageSettings);
 	}
 	
@@ -115,8 +88,8 @@ trait JackettHomepageItem
 		$apiURL = $this->qualifyURL($this->config['jackettURL']);
 		$endpoint = $apiURL . '/api/v2.0/indexers/all/results?apikey=' . $this->config['jackettToken'] . '&Query=' . urlencode($query);
 		try {
-			$headers = array();
-			$options = array('timeout' => 120);
+			$headers = [];
+			$options = $this->requestOptions($apiURL, 120, $this->config['jackettDisableCertCheck'], $this->config['jackettUseCustomCertificate']);
 			$response = Requests::get($endpoint, $headers, $options);
 			if ($response->success) {
 				$apiData = json_decode($response->body, true);
@@ -146,8 +119,8 @@ trait JackettHomepageItem
 		$endpoint = $apiURL . $url;
 		error_log($endpoint);
 		try {
-			$headers = array();
-			$options = array('timeout' => 120);
+			$headers = [];
+			$options = $this->requestOptions($apiURL, 120, $this->config['jackettDisableCertCheck'], $this->config['jackettUseCustomCertificate']);
 			$response = Requests::get($endpoint, $headers, $options);
 			if ($response->success) {
 				$apiData = json_decode($response->body, true);

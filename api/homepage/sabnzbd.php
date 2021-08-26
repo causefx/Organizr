@@ -15,97 +15,35 @@ trait SabNZBdHomepageItem
 		if ($infoOnly) {
 			return $homepageInformation;
 		}
-		$homepageSettings = array(
+		$homepageSettings = [
 			'debug' => true,
-			'settings' => array(
-				'Enable' => array(
-					array(
-						'type' => 'switch',
-						'name' => 'homepageSabnzbdEnabled',
-						'label' => 'Enable',
-						'value' => $this->config['homepageSabnzbdEnabled']
-					),
-					array(
-						'type' => 'select',
-						'name' => 'homepageSabnzbdAuth',
-						'label' => 'Minimum Authentication',
-						'value' => $this->config['homepageSabnzbdAuth'],
-						'options' => $this->groupOptions
-					)
-				),
-				'Connection' => array(
-					array(
-						'type' => 'input',
-						'name' => 'sabnzbdURL',
-						'label' => 'URL',
-						'value' => $this->config['sabnzbdURL'],
-						'help' => 'Please make sure to use local IP address and port - You also may use local dns name too.',
-						'placeholder' => 'http(s)://hostname:port'
-					),
-					array(
-						'type' => 'password-alt',
-						'name' => 'sabnzbdToken',
-						'label' => 'Token',
-						'value' => $this->config['sabnzbdToken']
-					)
-				),
-				'API SOCKS' => array(
-					array(
-						'type' => 'html',
-						'override' => 12,
-						'label' => '',
-						'html' => '
-							<div class="panel panel-default">
-								<div class="panel-wrapper collapse in">
-									<div class="panel-body">' . $this->socksHeadingHTML('sabnzbd') . '</div>
-								</div>
-							</div>'
-					),
-					array(
-						'type' => 'switch',
-						'name' => 'sabnzbdSocksEnabled',
-						'label' => 'Enable',
-						'value' => $this->config['sabnzbdSocksEnabled']
-					),
-					array(
-						'type' => 'select',
-						'name' => 'sabnzbdSocksAuth',
-						'label' => 'Minimum Authentication',
-						'value' => $this->config['sabnzbdSocksAuth'],
-						'options' => $this->groupOptions
-					),
-				),
-				'Misc Options' => array(
-					array(
-						'type' => 'select',
-						'name' => 'sabnzbdRefresh',
-						'label' => 'Refresh Seconds',
-						'value' => $this->config['sabnzbdRefresh'],
-						'options' => $this->timeOptions()
-					),
-					array(
-						'type' => 'switch',
-						'name' => 'sabnzbdCombine',
-						'label' => 'Add to Combined Downloader',
-						'value' => $this->config['sabnzbdCombine']
-					),
-				),
-				'Test Connection' => array(
-					array(
-						'type' => 'blank',
-						'label' => 'Please Save before Testing'
-					),
-					array(
-						'type' => 'button',
-						'label' => '',
-						'icon' => 'fa fa-flask',
-						'class' => 'pull-right',
-						'text' => 'Test Connection',
-						'attr' => 'onclick="testAPIConnection(\'sabnzbd\')"'
-					),
-				)
-			)
-		);
+			'settings' => [
+				'Enable' => [
+					$this->settingsOption('enable', 'homepageSabnzbdEnabled'),
+					$this->settingsOption('auth', 'homepageSabnzbdAuth'),
+				],
+				'Connection' => [
+					$this->settingsOption('url', 'sabnzbdURL'),
+					$this->settingsOption('token', 'sabnzbdToken'),
+					$this->settingsOption('disable-cert-check', 'sabnzbdDisableCertCheck'),
+					$this->settingsOption('use-custom-certificate', 'sabnzbdUseCustomCertificate'),
+				],
+				'API SOCKS' => [
+					$this->settingsOption('socks', 'sabnzbd'),
+					$this->settingsOption('blank'),
+					$this->settingsOption('enable', 'sabnzbdSocksEnabled'),
+					$this->settingsOption('auth', 'sabnzbdSocksAuth'),
+				],
+				'Misc Options' => [
+					$this->settingsOption('refresh', 'sabnzbdRefresh'),
+					$this->settingsOption('combine', 'sabnzbdCombine'),
+				],
+				'Test Connection' => [
+					$this->settingsOption('blank', null, ['label' => 'Please Save before Testing']),
+					$this->settingsOption('test', 'sabnzbd'),
+				]
+			]
+		];
 		return array_merge($homepageInformation, $homepageSettings);
 	}
 	
@@ -115,8 +53,8 @@ trait SabNZBdHomepageItem
 			$url = $this->qualifyURL($this->config['sabnzbdURL']);
 			$url = $url . '/api?mode=queue&output=json&apikey=' . $this->config['sabnzbdToken'];
 			try {
-				$options = ($this->localURL($url)) ? array('verify' => false) : array();
-				$response = Requests::get($url, array(), $options);
+				$options = $this->requestOptions($url, null, $this->config['sabnzbdDisableCertCheck'], $this->config['sabnzbdUseCustomCertificate']);
+				$response = Requests::get($url, [], $options);
 				if ($response->success) {
 					$data = json_decode($response->body, true);
 					$status = 'success';
@@ -195,8 +133,8 @@ trait SabNZBdHomepageItem
 		$url = $this->qualifyURL($this->config['sabnzbdURL']);
 		$url = $url . '/api?mode=queue&output=json&apikey=' . $this->config['sabnzbdToken'];
 		try {
-			$options = ($this->localURL($url)) ? array('verify' => false) : array();
-			$response = Requests::get($url, array(), $options);
+			$options = $this->requestOptions($url, $this->config['sabnzbdRefresh'], $this->config['sabnzbdDisableCertCheck'], $this->config['sabnzbdUseCustomCertificate']);
+			$response = Requests::get($url, [], $options);
 			if ($response->success) {
 				$api['content']['queueItems'] = json_decode($response->body, true);
 			}
@@ -232,8 +170,8 @@ trait SabNZBdHomepageItem
 		$id = ($target !== '' && $target !== 'main' && isset($target)) ? 'mode=queue&name=pause&value=' . $target . '&' : 'mode=pause';
 		$url = $url . '/api?' . $id . '&output=json&apikey=' . $this->config['sabnzbdToken'];
 		try {
-			$options = ($this->localURL($url)) ? array('verify' => false) : array();
-			$response = Requests::get($url, array(), $options);
+			$options = $this->requestOptions($url, $this->config['sabnzbdRefresh'], $this->config['sabnzbdDisableCertCheck'], $this->config['sabnzbdUseCustomCertificate']);
+			$response = Requests::get($url, [], $options);
 			if ($response->success) {
 				$api['content'] = json_decode($response->body, true);
 			}
@@ -256,8 +194,8 @@ trait SabNZBdHomepageItem
 		$id = ($target !== '' && $target !== 'main' && isset($target)) ? 'mode=queue&name=resume&value=' . $target . '&' : 'mode=resume';
 		$url = $url . '/api?' . $id . '&output=json&apikey=' . $this->config['sabnzbdToken'];
 		try {
-			$options = ($this->localURL($url)) ? array('verify' => false) : array();
-			$response = Requests::get($url, array(), $options);
+			$options = $this->requestOptions($url, $this->config['sabnzbdRefresh'], $this->config['sabnzbdDisableCertCheck'], $this->config['sabnzbdUseCustomCertificate']);
+			$response = Requests::get($url, [], $options);
 			if ($response->success) {
 				$api['content'] = json_decode($response->body, true);
 			}
