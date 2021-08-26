@@ -19,7 +19,7 @@ trait RadarrHomepageItem
 			'settings' => [
 				'Enable' => [
 					$this->settingsOption('enable', 'homepageRadarrEnabled'),
-					$this->settingsOption('auth', 'homepageRadarrEnabled'),
+					$this->settingsOption('auth', 'homepageRadarrAuth'),
 				],
 				'Connection' => [
 					$this->settingsOption('multiple-url', 'radarrURL'),
