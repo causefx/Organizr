@@ -1978,7 +1978,7 @@ class Organizr
 					'class' => 'ldapAuth ftpAuth switchAuth',
 					'label' => 'Host Address',
 					'value' => $this->config['authBackendHost'],
-					'placeholder' => 'http{s) | ftp(s) | ldap(s)://hostname:port'
+					'placeholder' => 'http(s) | ftp(s) | ldap(s)://hostname:port'
 				),
 				array(
 					'type' => 'input',
@@ -1987,15 +1987,6 @@ class Organizr
 					'label' => 'Host Base DN',
 					'value' => $this->config['authBaseDN'],
 					'placeholder' => 'cn=%s,dc=sub,dc=domain,dc=com'
-				),
-				array(
-					'type' => 'select',
-					'name' => 'ldapType',
-					'id' => 'ldapType',
-					'label' => 'LDAP Backend Type',
-					'class' => 'ldapAuth switchAuth',
-					'value' => $this->config['ldapType'],
-					'options' => $this->getLDAPOptions()
 				),
 				array(
 					'type' => 'input',
@@ -2027,8 +2018,17 @@ class Organizr
 					'type' => 'password',
 					'name' => 'ldapBindPassword',
 					'class' => 'ldapAuth switchAuth',
-					'label' => 'Password',
+					'label' => 'Bind Password',
 					'value' => $this->config['ldapBindPassword']
+				),
+				array(
+					'type' => 'select',
+					'name' => 'ldapType',
+					'id' => 'ldapType',
+					'label' => 'LDAP Backend Type',
+					'class' => 'ldapAuth switchAuth',
+					'value' => $this->config['ldapType'],
+					'options' => $this->getLDAPOptions()
 				),
 				array(
 					'type' => 'html',
