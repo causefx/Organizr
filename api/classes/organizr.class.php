@@ -328,7 +328,7 @@ class Organizr
 		}
 	}
 	
-	public function setResponse($responseCode = 200, $message = null, $data = null)
+	public function setResponse(int $responseCode = 200, string $message = null, $data = null)
 	{
 		switch ($responseCode) {
 			case 200:
@@ -340,9 +340,7 @@ class Organizr
 				$result = 'error';
 				break;
 		}
-		if ($result) {
-			$GLOBALS['api']['response']['result'] = $result;
-		}
+		$GLOBALS['api']['response']['result'] = $result;
 		if ($message) {
 			$GLOBALS['api']['response']['message'] = $message;
 		}
