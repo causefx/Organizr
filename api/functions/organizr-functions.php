@@ -352,7 +352,7 @@ trait OrganizrFunctions
 				'value' => '2'
 			),
 			array(
-				'name' => 'First IPA',
+				'name' => 'Free IPA',
 				'value' => '3'
 			),
 		);
