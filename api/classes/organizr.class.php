@@ -442,6 +442,7 @@ class Organizr
 	{
 		if ($this->config['gaTrackingID'] !== '') {
 			return '
+				<script src="https://apis.google.com/js/client.js?onload=googleApiClientReady"></script>
 				<script async src="https://www.googletagmanager.com/gtag/js?id=' . $this->config['gaTrackingID'] . '"></script>
 				<script>
 					window.dataLayer = window.dataLayer || [];

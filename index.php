@@ -233,7 +233,6 @@ $Organizr = new Organizr();
 <script src='plugins/bower_components/overlayScrollbars/jquery.overlayScrollbars.min.js'></script>
 <script src='plugins/bower_components/custombox/dist/custombox.min.js'></script>
 <script src="js/arrive.min.js"></script>
-<script src="https://apis.google.com/js/client.js?onload=googleApiClientReady"></script>
 <script src="js/functions.js?v=<?php echo $Organizr->fileHash; ?>"></script>
 <script src="js/custom.min.js?v=<?php echo $Organizr->fileHash; ?>"></script>
 <script id="custom-theme-javascript"></script>
