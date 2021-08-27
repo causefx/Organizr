@@ -411,5 +411,12 @@
     "new": "",
     "fixed": "Local URL being set as regual URL|Line spacing|updated Overseerr logo",
     "notes": "See update notes for version 2.1.472"
+  },
+  "2.1.496": {
+    "date": "2021-08-27 21:40",
+    "title": "Weekly Update - New Feature",
+    "new": "Self Signed SSL Cert option to all homepage items (#1177)|shortcut function for menu clicking - WIP",
+    "fixed": "move google js to load only when config value setup (#1699)|tooltips to homepage settings ui buttons|First IPA typo to Free IPA|typo and sort LDAP options|now playing spacing",
+    "notes": ""
   }
 }

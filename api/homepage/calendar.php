@@ -14,91 +14,26 @@ trait CalendarHomepageItem
 		if ($infoOnly) {
 			return $homepageInformation;
 		}
-		$homepageSettings = array(
+		$homepageSettings = [
 			'debug' => true,
-			'settings' => array(
-				'Enable' => array(
-					array(
-						'type' => 'switch',
-						'name' => 'homepageCalendarEnabled',
-						'label' => 'Enable iCal',
-						'value' => $this->config['homepageCalendarEnabled']
-					),
-					array(
-						'type' => 'select',
-						'name' => 'homepageCalendarAuth',
-						'label' => 'Minimum Authentication',
-						'value' => $this->config['homepageCalendarAuth'],
-						'options' => $this->groupOptions
-					),
-					array(
-						'type' => 'input',
-						'name' => 'calendariCal',
-						'label' => 'iCal URL\'s',
-						'value' => $this->config['calendariCal'],
-						'placeholder' => 'separate by comma\'s'
-					),
-				),
-				'Misc Options' => array(
-					array(
-						'type' => 'number',
-						'name' => 'calendarStart',
-						'label' => '# of Days Before',
-						'value' => $this->config['calendarStart'],
-						'placeholder' => ''
-					),
-					array(
-						'type' => 'number',
-						'name' => 'calendarEnd',
-						'label' => '# of Days After',
-						'value' => $this->config['calendarEnd'],
-						'placeholder' => ''
-					),
-					array(
-						'type' => 'select',
-						'name' => 'calendarFirstDay',
-						'label' => 'Start Day',
-						'value' => $this->config['calendarFirstDay'],
-						'options' => $this->daysOptions()
-					),
-					array(
-						'type' => 'select',
-						'name' => 'calendarDefault',
-						'label' => 'Default View',
-						'value' => $this->config['calendarDefault'],
-						'options' => $this->calendarDefaultOptions()
-					),
-					array(
-						'type' => 'select',
-						'name' => 'calendarTimeFormat',
-						'label' => 'Time Format',
-						'value' => $this->config['calendarTimeFormat'],
-						'options' => $this->timeFormatOptions()
-					),
-					array(
-						'type' => 'select',
-						'name' => 'calendarLocale',
-						'label' => 'Locale',
-						'value' => $this->config['calendarLocale'],
-						'options' => $this->calendarLocaleOptions()
-					),
-					array(
-						'type' => 'select',
-						'name' => 'calendarLimit',
-						'label' => 'Items Per Day',
-						'value' => $this->config['calendarLimit'],
-						'options' => $this->limitOptions()
-					),
-					array(
-						'type' => 'select',
-						'name' => 'calendarRefresh',
-						'label' => 'Refresh Seconds',
-						'value' => $this->config['calendarRefresh'],
-						'options' => $this->timeOptions()
-					)
-				),
-			)
-		);
+			'settings' => [
+				'Enable' => [
+					$this->settingsOption('enable', 'homepageCalendarEnabled'),
+					$this->settingsOption('auth', 'homepageCalendarAuth'),
+					$this->settingsOption('multiple-url', 'calendariCal', ['label' => 'iCal URL\'s']),
+				],
+				'Misc Options' => [
+					$this->settingsOption('calendar-start', 'calendarStart'),
+					$this->settingsOption('calendar-end', 'calendarEnd'),
+					$this->settingsOption('calendar-starting-day', 'calendarFirstDay'),
+					$this->settingsOption('calendar-default-view', 'calendarDefault'),
+					$this->settingsOption('calendar-time-format', 'calendarTimeFormat'),
+					$this->settingsOption('calendar-locale', 'calendarLocale'),
+					$this->settingsOption('calendar-limit', 'calendarLimit'),
+					$this->settingsOption('refresh', 'calendarRefresh'),
+				],
+			]
+		];
 		return array_merge($homepageInformation, $homepageSettings);
 	}
 	

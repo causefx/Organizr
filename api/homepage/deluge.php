@@ -14,103 +14,53 @@ trait DelugeHomepageItem
 		if ($infoOnly) {
 			return $homepageInformation;
 		}
-		$homepageSettings = array(
+		$homepageSettings = [
 			'debug' => true,
-			'settings' => array(
-				'custom' => '
-				<div class="row">
-                    <div class="col-lg-12">
-                        <div class="panel panel-info">
-                            <div class="panel-heading">
-								<span lang="en">Notice</span>
-                            </div>
-                            <div class="panel-wrapper collapse in" aria-expanded="true">
-                                <div class="panel-body">
-									<ul class="list-icons">
-                                        <li><i class="fa fa-chevron-right text-danger"></i> <a href="https://github.com/idlesign/deluge-webapi/tree/master/dist" target="_blank">Download Plugin</a></li>
-                                        <li><i class="fa fa-chevron-right text-danger"></i> Open Deluge Web UI, go to "Preferences -> Plugins -> Install plugin" and choose egg file.</li>
-                                        <li><i class="fa fa-chevron-right text-danger"></i> Activate WebAPI plugin </li>
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-				</div>
-				',
-				'Enable' => array(
-					array(
-						'type' => 'switch',
-						'name' => 'homepageDelugeEnabled',
-						'label' => 'Enable',
-						'value' => $this->config['homepageDelugeEnabled']
-					),
-					array(
-						'type' => 'select',
-						'name' => 'homepageDelugeAuth',
-						'label' => 'Minimum Authentication',
-						'value' => $this->config['homepageDelugeAuth'],
-						'options' => $this->groupOptions
+			'settings' => [
+				'FYI' => [
+					$this->settingsOption('html', null, ['override' => 12, 'html' => '
+						<div class="row">
+							<div class="col-lg-12">
+								<div class="panel panel-info">
+									<div class="panel-heading">
+										<span lang="en">Notice</span>
+									</div>
+									<div class="panel-wrapper collapse in" aria-expanded="true">
+										<div class="panel-body">
+											<ul class="list-icons">
+												<li><i class="fa fa-chevron-right text-danger"></i> <a href="https://github.com/idlesign/deluge-webapi/tree/master/dist" target="_blank">Download Plugin</a></li>
+												<li><i class="fa fa-chevron-right text-danger"></i> Open Deluge Web UI, go to "Preferences -> Plugins -> Install plugin" and choose egg file.</li>
+												<li><i class="fa fa-chevron-right text-danger"></i> Activate WebAPI plugin </li>
+											</ul>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>']
 					)
-				),
-				'Connection' => array(
-					array(
-						'type' => 'input',
-						'name' => 'delugeURL',
-						'label' => 'URL',
-						'value' => $this->config['delugeURL'],
-						'help' => 'Please make sure to use local IP address and port - You also may use local dns name too.',
-						'placeholder' => 'http(s)://hostname:port'
-					),
-					array(
-						'type' => 'password',
-						'name' => 'delugePassword',
-						'label' => 'Password',
-						'help' => 'Note that using a blank password might not work correctly.',
-						'value' => $this->config['delugePassword']
-					)
-				),
-				'Misc Options' => array(
-					array(
-						'type' => 'switch',
-						'name' => 'delugeHideSeeding',
-						'label' => 'Hide Seeding',
-						'value' => $this->config['delugeHideSeeding']
-					), array(
-						'type' => 'switch',
-						'name' => 'delugeHideCompleted',
-						'label' => 'Hide Completed',
-						'value' => $this->config['delugeHideCompleted']
-					),
-					array(
-						'type' => 'select',
-						'name' => 'delugeRefresh',
-						'label' => 'Refresh Seconds',
-						'value' => $this->config['delugeRefresh'],
-						'options' => $this->timeOptions()
-					),
-					array(
-						'type' => 'switch',
-						'name' => 'delugeCombine',
-						'label' => 'Add to Combined Downloader',
-						'value' => $this->config['delugeCombine']
-					),
-				),
-				'Test Connection' => array(
-					array(
-						'type' => 'blank',
-						'label' => 'Please Save before Testing. Note that using a blank password might not work correctly.'
-					),
-					array(
-						'type' => 'button',
-						'label' => '',
-						'icon' => 'fa fa-flask',
-						'class' => 'pull-right',
-						'text' => 'Test Connection',
-						'attr' => 'onclick="testAPIConnection(\'deluge\')"'
-					),
-				)
-			)
-		);
+				],
+				'Enable' => [
+					$this->settingsOption('enable', 'homepageDelugeEnabled'),
+					$this->settingsOption('auth', 'homepageDelugeAuth'),
+				],
+				'Connection' => [
+					$this->settingsOption('url', 'delugeURL'),
+					$this->settingsOption('password', 'delugePassword', ['help' => 'Note that using a blank password might not work correctly.']),
+					$this->settingsOption('disable-cert-check', 'delugeDisableCertCheck'),
+					$this->settingsOption('use-custom-certificate', 'delugeUseCustomCertificate'),
+				],
+				'Misc Options' => [
+					$this->settingsOption('hide-seeding', 'delugeHideSeeding'),
+					$this->settingsOption('hide-completed', 'delugeHideCompleted'),
+					$this->settingsOption('refresh', 'delugeRefresh'),
+					$this->settingsOption('combine', 'delugeCombine'),
+				],
+				'Test Connection' => [
+					$this->settingsOption('blank', null, ['label' => 'Please Save before Testing. Note that using a blank password might not work correctly.']),
+					$this->settingsOption('test', 'deluge'),
+				]
+			]
+		];
 		return array_merge($homepageInformation, $homepageSettings);
 	}
 	
@@ -121,7 +71,8 @@ trait DelugeHomepageItem
 			return false;
 		}
 		try {
-			$deluge = new deluge($this->config['delugeURL'], $this->decrypt($this->config['delugePassword']));
+			$options = $this->requestOptions($this->config['delugeURL'], $this->config['delugeRefresh'], $this->config['delugeDisableCertCheck'], $this->config['delugeUseCustomCertificate'], ['organizr_cert' => $this->getCert(), 'custom_cert' => $this->getCustomCert()]);
+			$deluge = new deluge($this->config['delugeURL'], $this->decrypt($this->config['delugePassword']), $options);
 			$torrents = $deluge->getTorrents(null, 'comment, download_payload_rate, eta, hash, is_finished, is_seed, message, name, paused, progress, queue, state, total_size, upload_payload_rate');
 			$this->setAPIResponse('success', 'API Connection succeeded', 200);
 			return true;
@@ -166,11 +117,11 @@ trait DelugeHomepageItem
 				<div id="' . __FUNCTION__ . '">
 					' . $loadingBox . '
 					<script>
-		                // homepageOrderdeluge
-		                ' . $builder . '
-		                homepageDownloader("deluge", "' . $this->config['delugeRefresh'] . '");
-		                // End homepageOrderdeluge
-	                </script>
+						// homepageOrderdeluge
+						' . $builder . '
+						homepageDownloader("deluge", "' . $this->config['delugeRefresh'] . '");
+						// End homepageOrderdeluge
+					</script>
 				</div>
 				';
 		}

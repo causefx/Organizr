@@ -1693,19 +1693,20 @@ function copyHomepageJSON(item){
 	});
 }
 function homepageItemFormHTML(v){
-	let docs = (typeof v.docs == 'undefined') ? '' : `<small class="pl-5"><a class="btn btn-sm btn-primary waves-effect waves-light" href="${v.docs}" target="_blank"> <i class="icon-docs m-r-5"></i> <span lang="en">Support Docs</span></a></small>`;
+	let docs = (typeof v.docs == 'undefined') ? '' : `<small class="pull-right m-r-5"><a data-toggle="tooltip" title="Goto Support Doc" data-placement="bottom" class="btn btn-circle btn-primary waves-effect waves-light" href="${v.docs}" target="_blank"> <i class="fa-fw fa fa-question-circle"></i></a></small>`;
 	let debug = (typeof v.debug == 'undefined') ? false : true;
 	debug = (debug === true) ? (v.debug) : false;
-	debug = (debug === true) ? `<small class="pl-5"><a href="javascript:copyHomepageJSON('${v.name}')" class="btn btn-sm btn-info waves-effect waves-light copyHomepageJSON"> <i class="ti-clipboard m-r-5"></i> <span lang="en">Copy JSON</span></a></small>` : '';
+	debug = (debug === true) ? `<small class="pull-right m-r-5"><a data-toggle="tooltip" title="Copy JSON Settings" data-placement="bottom" href="javascript:copyHomepageJSON('${v.name}')" class="btn btn-circle btn-info waves-effect waves-light copyHomepageJSON"> <i class="fa-fw ti-clipboard"></i></a></small>` : '';
 	return `
 	<a id="editHomepageItemCall" href="#editHomepageItemDiv" class="hidden">homepage item</a>
 	<form id="homepage-`+v.name+`-form" class="white-popup mfp-with-anim homepageForm addFormTick">
 		<fieldset style="border:0;" class="col-md-10 col-md-offset-1">
             <div class="panel bg-org panel-info">
                 <div class="panel-heading">
-                    <span class="" lang="en">`+v.name+`</span>${docs}${debug}
-                    <button type="button" class="btn bg-org btn-circle close-popup pull-right close-editHomepageItemDiv"><i class="fa fa-times"></i> </button>
-                    <button id="homepage-`+v.name+`-form-save" onclick="submitSettingsForm('homepage-`+v.name+`-form', true)" class="btn btn-sm btn-info btn-rounded waves-effect waves-light pull-right hidden animated loop-animation rubberBand m-r-20" type="button"><span class="btn-label"><i class="fa fa-save"></i></span><span lang="en">Save</span></button>
+                    <span class="" lang="en">`+v.name+`</span>
+                    <button data-toggle="tooltip" title="Close" data-placement="bottom"  type="button" class="btn btn-default btn-circle close-popup pull-right close-editHomepageItemDiv"><i class="fa fa-times"></i> </button>
+                    ${docs}${debug}
+                    <button data-toggle="tooltip" title="Save" data-placement="bottom" id="homepage-`+v.name+`-form-save" onclick="submitSettingsForm('homepage-`+v.name+`-form', true)" class="btn btn-success btn-circle waves-effect waves-light pull-right hidden animated loop-animation rubberBand m-r-5" type="button"><span class=""><i class="fa fa-save"></i></span></button>
                 </div>
                 <div class="panel-wrapper collapse in" aria-expanded="true">
                     <div class="bg-org">
@@ -4927,8 +4928,8 @@ function buildStreamItem(array,source){
 						<h3 class="box-title pull-left p-l-10 elip" style="width:90%">`+v.nowPlayingTitle+`</h3>
 						<h3 class="box-title pull-right vertical-middle" style="width:10%"><i class="icon-control-`+v.state+` fa-fw text-info" style=""></i></h3>
 						<div class="clearfix"></div>
-						<small class="pull-left p-l-10"><i class="`+icon+` fa-fw text-info"></i>`+v.nowPlayingBottom+`</small>
-						<small class="pull-right p-r-10">`+v.user+` <i class="icon-user"></i></small>
+						<small class="pull-left p-l-10 w-50 elip"><span class="pull-left"><i class="`+icon+` fa-fw text-info"></i>`+v.nowPlayingBottom+`</span></small>
+						<small class="pull-right p-r-10 w-50 elip"><span class="pull-right">`+v.user+` <i class="icon-user"></i></span></small>
 						<br>
 					</div>
 				</div>
@@ -10772,6 +10773,50 @@ function loadJavascript(script = null, defer = false){
 
 function tabShit(){
 
+}
+
+function msToTime(s) {
+	let pad = (n, z = 2) => ('00' + n).slice(-z);
+	let hours = (pad(s/3.6e6|0) !== '00') ? pad(s/3.6e6|0) + ':' : '';
+	let mins = pad((s%3.6e6)/6e4 | 0) + ':';
+	let secs = pad((s%6e4)/1000|0);
+	let ms = pad(s%1000, 3);
+	if(ms >= '500'){ secs = pad(parseFloat(secs) + 1, 2); }
+	return hours+mins+secs;
+}
+
+function clickMenuItem(selector){
+	if($(selector).length >= 1){
+		$(selector).click();
+	}else{
+		$('body').arrive(selector, {onceOnly: true}, function() {
+			$(selector).click();
+		});
+	}
+
+}
+function shortcut(selectors = ''){
+	let timeout = 200;
+	if(typeof selectors == 'string') {
+		if(selectors == ''){
+			selectors = [];
+		}else{
+			switch (selectors){
+				case 'custom-cert':
+					selectors = ['#settings-main-system-settings-anchor','#settings-settings-main-anchor','a[href$="Certificate"]'];
+					break;
+				default:
+					selectors = ['#settings-main-system-settings-anchor'];
+
+			}
+		}
+	}
+	selectors.forEach(function(selector){
+		timeout = timeout + 200;
+		setTimeout(function(){
+			clickMenuItem(selector);
+		}, timeout);
+	});
 }
 
 function launch(){

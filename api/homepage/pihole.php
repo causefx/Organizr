@@ -14,66 +14,26 @@ trait PiHoleHomepageItem
 		if ($infoOnly) {
 			return $homepageInformation;
 		}
-		$homepageSettings = array(
+		$homepageSettings = [
 			'debug' => true,
-			'settings' => array(
-				'Enable' => array(
-					array(
-						'type' => 'switch',
-						'name' => 'homepagePiholeEnabled',
-						'label' => 'Enable',
-						'value' => $this->config['homepagePiholeEnabled']
-					),
-					array(
-						'type' => 'select',
-						'name' => 'homepagePiholeAuth',
-						'label' => 'Minimum Authentication',
-						'value' => $this->config['homepagePiholeAuth'],
-						'options' => $this->groupOptions
-					)
-				),
-				'Connection' => array(
-					array(
-						'type' => 'input',
-						'name' => 'piholeURL',
-						'label' => 'URL',
-						'value' => $this->config['piholeURL'],
-						'help' => 'Please make sure to use local IP address and port and to include \'/admin/\' at the end of the URL. You can add multiple Pi-holes by comma separating the URLs.',
-						'placeholder' => 'http(s)://hostname:port/admin/'
-					),
-				),
-				'Misc' => array(
-					array(
-						'type' => 'switch',
-						'name' => 'piholeHeaderToggle',
-						'label' => 'Toggle Title',
-						'value' => $this->config['piholeHeaderToggle'],
-						'help' => 'Shows/hides the title of this homepage module'
-					),
-					array(
-						'type' => 'switch',
-						'name' => 'homepagePiholeCombine',
-						'label' => 'Combine stat cards',
-						'value' => $this->config['homepagePiholeCombine'],
-						'help' => 'This controls whether to combine the stats for multiple pihole instances into 1 card.',
-					),
-				),
-				'Test Connection' => array(
-					array(
-						'type' => 'blank',
-						'label' => 'Please Save before Testing'
-					),
-					array(
-						'type' => 'button',
-						'label' => '',
-						'icon' => 'fa fa-flask',
-						'class' => 'pull-right',
-						'text' => 'Test Connection',
-						'attr' => 'onclick="testAPIConnection(\'pihole\')"'
-					),
-				)
-			)
-		);
+			'settings' => [
+				'Enable' => [
+					$this->settingsOption('enable', 'homepagePiholeEnabled'),
+					$this->settingsOption('auth', 'homepagePiholeAuth'),
+				],
+				'Connection' => [
+					$this->settingsOption('url', 'piholeURL', ['help' => 'Please make sure to use local IP address and port and to include \'/admin/\' at the end of the URL. You can add multiple Pi-holes by comma separating the URLs.', 'placeholder' => 'http(s)://hostname:port/admin/']),
+				],
+				'Misc' => [
+					$this->settingsOption('toggle-title', 'piholeHeaderToggle'),
+					$this->settingsOption('switch', 'homepagePiholeCombine', ['label' => 'Combine stat cards', 'help' => 'This controls whether to combine the stats for multiple pihole instances into 1 card.']),
+				],
+				'Test Connection' => [
+					$this->settingsOption('blank', null, ['label' => 'Please Save before Testing']),
+					$this->settingsOption('test', 'pihole'),
+				]
+			]
+		];
 		return array_merge($homepageInformation, $homepageSettings);
 	}
 	

@@ -14,71 +14,27 @@ trait HealthChecksHomepageItem
 		if ($infoOnly) {
 			return $homepageInformation;
 		}
-		$homepageSettings = array(
+		$homepageSettings = [
 			'debug' => true,
-			'settings' => array(
-				'Enable' => array(
-					array(
-						'type' => 'switch',
-						'name' => 'homepageHealthChecksEnabled',
-						'label' => 'Enable',
-						'value' => $this->config['homepageHealthChecksEnabled']
-					),
-					array(
-						'type' => 'select',
-						'name' => 'homepageHealthChecksAuth',
-						'label' => 'Minimum Authentication',
-						'value' => $this->config['homepageHealthChecksAuth'],
-						'options' => $this->groupOptions
-					)
-				),
-				'Connection' => array(
-					array(
-						'type' => 'input',
-						'name' => 'healthChecksURL',
-						'label' => 'URL',
-						'value' => $this->config['healthChecksURL'],
-						'help' => 'URL for HealthChecks API',
-						'placeholder' => 'HealthChecks API URL'
-					),
-					array(
-						'type' => 'password-alt',
-						'name' => 'healthChecksToken',
-						'label' => 'Token',
-						'value' => $this->config['healthChecksToken']
-					)
-				),
-				'Misc Options' => array(
-					array(
-						'type' => 'input',
-						'name' => 'healthChecksTags',
-						'label' => 'Tags',
-						'value' => $this->config['healthChecksTags'],
-						'help' => 'Pull only checks with this tag - Blank for all',
-						'placeholder' => 'Multiple tags using CSV - tag1,tag2'
-					),
-					array(
-						'type' => 'select',
-						'name' => 'homepageHealthChecksRefresh',
-						'label' => 'Refresh Seconds',
-						'value' => $this->config['homepageHealthChecksRefresh'],
-						'options' => $this->timeOptions()
-					),
-					array(
-						'type' => 'switch',
-						'name' => 'homepageHealthChecksShowDesc',
-						'label' => 'Show Description',
-						'value' => $this->config['homepageHealthChecksShowDesc'],
-					),
-					array(
-						'type' => 'switch',
-						'name' => 'homepageHealthChecksShowTags',
-						'label' => 'Show Tags',
-						'value' => $this->config['homepageHealthChecksShowTags'],
-					),
-				),
-			)
-		);
+			'settings' => [
+				'Enable' => [
+					$this->settingsOption('enable', 'homepageHealthChecksEnabled'),
+					$this->settingsOption('auth', 'homepageHealthChecksAuth'),
+				],
+				'Connection' => [
+					$this->settingsOption('url', 'healthChecksURL'),
+					$this->settingsOption('multiple-token', 'healthChecksToken'),
+					$this->settingsOption('disable-cert-check', 'healthChecksDisableCertCheck'),
+					$this->settingsOption('use-custom-certificate', 'healthChecksUseCustomCertificate'),
+				],
+				'Misc Options' => [
+					$this->settingsOption('multiple', 'healthChecksTags', ['label' => 'Tags', 'help' => 'Pull only checks with this tag - Blank for all', 'placeholder' => 'Multiple tags using CSV - tag1,tag2']),
+					$this->settingsOption('refresh', 'homepageHealthChecksRefresh'),
+					$this->settingsOption('switch', 'homepageHealthChecksShowDesc', ['label' => 'Show Description']),
+					$this->settingsOption('switch', 'homepageHealthChecksShowTags', ['label' => 'Show Tags']),
+				],
+			]
+		];
 		return array_merge($homepageInformation, $homepageSettings);
 	}
 	
@@ -135,7 +91,7 @@ trait HealthChecksHomepageItem
 			$url = $this->qualifyURL($this->config['healthChecksURL']) . '/' . $tags;
 			try {
 				$headers = array('X-Api-Key' => $token);
-				$options = ($this->localURL($url)) ? array('verify' => false) : array('verify' => $this->getCert());
+				$options = $this->requestOptions($url, $this->config['homepageHealthChecksRefresh'], $this->config['healthChecksDisableCertCheck'], $this->config['healthChecksUseCustomCertificate']);
 				$response = Requests::get($url, $headers, $options);
 				if ($response->success) {
 					$healthResults = json_decode($response->body, true);

@@ -12,9 +12,9 @@ trait AuthFunctions
 			foreach ($ldapServers as $key => $value) {
 				// Calculate parts
 				$digest = parse_url(trim($value));
-				$scheme = strtolower((isset($digest['scheme']) ? $digest['scheme'] : 'ldap'));
-				$host = (isset($digest['host']) ? $digest['host'] : (isset($digest['path']) ? $digest['path'] : ''));
-				$port = (isset($digest['port']) ? $digest['port'] : (strtolower($scheme) == 'ldap' ? 389 : 636));
+				$scheme = strtolower(($digest['scheme'] ?? 'ldap'));
+				$host = ($digest['host'] ?? ($digest['path'] ?? ''));
+				$port = ($digest['port'] ?? (strtolower($scheme) == 'ldap' ? 389 : 636));
 				// Reassign
 				$ldapHosts[] = $host;
 				if ($i == 0) {
@@ -86,9 +86,9 @@ trait AuthFunctions
 			foreach ($ldapServers as $key => $value) {
 				// Calculate parts
 				$digest = parse_url(trim($value));
-				$scheme = strtolower((isset($digest['scheme']) ? $digest['scheme'] : 'ldap'));
-				$host = (isset($digest['host']) ? $digest['host'] : (isset($digest['path']) ? $digest['path'] : ''));
-				$port = (isset($digest['port']) ? $digest['port'] : (strtolower($scheme) == 'ldap' ? 389 : 636));
+				$scheme = strtolower(($digest['scheme'] ?? 'ldap'));
+				$host = ($digest['host'] ?? ($digest['path'] ?? ''));
+				$port = ($digest['port'] ?? (strtolower($scheme) == 'ldap' ? 389 : 636));
 				// Reassign
 				$ldapHosts[] = $host;
 				$ldapServersNew[$key] = $scheme . '://' . $host . ':' . $port; // May use this later
@@ -133,11 +133,11 @@ trait AuthFunctions
 					//return $user;
 					//return $user->getUserPrincipalName();
 					//return $user->getGroups(['cn']);
-					$this->setAPIResponse('success', 'LDAP connection successful', 200);
+					$this->setResponse(200, 'LDAP connection successful');
 					return true;
 				} else {
 					// Failed.
-					$this->setAPIResponse('error', 'Username/Password Failed to authenticate', 401);
+					$this->setResponse(401, 'Username/Password Failed to authenticate');
 					return false;
 				}
 			} catch (\Adldap\Auth\BindException $e) {

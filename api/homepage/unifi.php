@@ -14,90 +14,32 @@ trait UnifiHomepageItem
 		if ($infoOnly) {
 			return $homepageInformation;
 		}
-		$homepageSettings = array(
+		$homepageSettings = [
 			'debug' => true,
-			'settings' => array(
-				'Enable' => array(
-					array(
-						'type' => 'switch',
-						'name' => 'homepageUnifiEnabled',
-						'label' => 'Enable',
-						'value' => $this->config['homepageUnifiEnabled']
-					),
-					array(
-						'type' => 'select',
-						'name' => 'homepageUnifiAuth',
-						'label' => 'Minimum Authentication',
-						'value' => $this->config['homepageUnifiAuth'],
-						'options' => $this->groupOptions
-					)
-				),
-				'Connection' => array(
-					array(
-						'type' => 'input',
-						'name' => 'unifiURL',
-						'label' => 'URL',
-						'value' => $this->config['unifiURL'],
-						'help' => 'URL for Unifi',
-						'placeholder' => 'Unifi API URL'
-					),
-					array(
-						'type' => 'blank',
-						'label' => ''
-					),
-					array(
-						'type' => 'input',
-						'name' => 'unifiUsername',
-						'label' => 'Username',
-						'value' => $this->config['unifiUsername'],
-						'help' => 'Username is case-sensitive',
-					),
-					array(
-						'type' => 'password',
-						'name' => 'unifiPassword',
-						'label' => 'Password',
-						'value' => $this->config['unifiPassword']
-					),
-					array(
-						'type' => 'input',
-						'name' => 'unifiSiteName',
-						'label' => 'Site Name (Not for UnifiOS)',
-						'value' => $this->config['unifiSiteName'],
-						'help' => 'Site Name - not Site ID nor Site Description',
-					),
-					array(
-						'type' => 'button',
-						'label' => 'Grab Unifi Site (Not for UnifiOS)',
-						'icon' => 'fa fa-building',
-						'text' => 'Get Unifi Site',
-						'attr' => 'onclick="getUnifiSite()"'
-					),
-				),
-				'Misc Options' => array(
-					array(
-						'type' => 'select',
-						'name' => 'homepageUnifiRefresh',
-						'label' => 'Refresh Seconds',
-						'value' => $this->config['homepageUnifiRefresh'],
-						'options' => $this->timeOptions()
-					),
-				),
-				'Test Connection' => array(
-					array(
-						'type' => 'blank',
-						'label' => 'Please Save before Testing'
-					),
-					array(
-						'type' => 'button',
-						'label' => '',
-						'icon' => 'fa fa-flask',
-						'class' => 'pull-right',
-						'text' => 'Test Connection',
-						'attr' => 'onclick="testAPIConnection(\'unifi\')"'
-					),
-				)
-			)
-		);
+			'settings' => [
+				'Enable' => [
+					$this->settingsOption('enable', 'homepageUnifiEnabled'),
+					$this->settingsOption('auth', 'homepageUnifiAuth'),
+				],
+				'Connection' => [
+					$this->settingsOption('url', 'unifiURL'),
+					$this->settingsOption('blank'),
+					$this->settingsOption('disable-cert-check', 'unifiDisableCertCheck'),
+					$this->settingsOption('use-custom-certificate', 'unifiUseCustomCertificate'),
+					$this->settingsOption('username', 'unifiUsername', ['help' => 'Username is case-sensitive']),
+					$this->settingsOption('password', 'unifiPassword'),
+					$this->settingsOption('input', 'unifiSiteName', ['label' => 'Site Name (Not for UnifiOS)', 'help' => 'Site Name - not Site ID nor Site Description']),
+					$this->settingsOption('button', '', ['label' => 'Grab Unifi Site (Not for UnifiOS)', 'icon' => 'fa fa-building', 'text' => 'Get Unifi Site', 'attr' => 'onclick="getUnifiSite()"']),
+				],
+				'Misc Options' => [
+					$this->settingsOption('refresh', 'homepageUnifiRefresh'),
+				],
+				'Test Connection' => [
+					$this->settingsOption('blank', null, ['label' => 'Please Save before Testing']),
+					$this->settingsOption('test', 'unifi'),
+				]
+			]
+		];
 		return array_merge($homepageInformation, $homepageSettings);
 	}
 	
@@ -159,7 +101,7 @@ trait UnifiHomepageItem
 		}
 		$url = $this->qualifyURL($this->config['unifiURL']);
 		try {
-			$options = array('verify' => false, 'verifyname' => false, 'follow_redirects' => false);
+			$options = $this->requestOptions($url, $this->config['homepageUnifiRefresh'], $this->config['unifiDisableCertCheck'], $this->config['unifiUseCustomCertificate'], ['follow_redirects' => true]);
 			$data = array(
 				'username' => $this->config['unifiUsername'],
 				'password' => $this->decrypt($this->config['unifiPassword']),
@@ -210,7 +152,7 @@ trait UnifiHomepageItem
 		}
 		$api['content']['unifi'] = array();
 		$url = $this->qualifyURL($this->config['unifiURL']);
-		$options = array('verify' => false, 'verifyname' => false, 'follow_redirects' => true);
+		$options = $this->requestOptions($url, $this->config['homepageUnifiRefresh'], $this->config['unifiDisableCertCheck'], $this->config['unifiUseCustomCertificate'], ['follow_redirects' => true]);
 		$data = array(
 			'username' => $this->config['unifiUsername'],
 			'password' => $this->decrypt($this->config['unifiPassword']),
@@ -267,8 +209,7 @@ trait UnifiHomepageItem
 		}
 		$api['content']['unifi'] = array();
 		$url = $this->qualifyURL($this->config['unifiURL']);
-		$extras = array('verify' => false, 'verifyname' => false, 'follow_redirects' => true);
-		$options = $this->requestOptions($url, true, $this->config['homepageUnifiRefresh'], $extras);
+		$options = $this->requestOptions($url, $this->config['homepageUnifiRefresh'], $this->config['unifiDisableCertCheck'], $this->config['unifiUseCustomCertificate'], ['follow_redirects' => true]);
 		$data = array(
 			'username' => $this->config['unifiUsername'],
 			'password' => $this->decrypt($this->config['unifiPassword']),

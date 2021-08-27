@@ -14,66 +14,27 @@ trait MonitorrHomepageItem
 		if ($infoOnly) {
 			return $homepageInformation;
 		}
-		$homepageSettings = array(
+		$homepageSettings = [
 			'debug' => true,
-			'settings' => array(
-				'Enable' => array(
-					array(
-						'type' => 'switch',
-						'name' => 'homepageMonitorrEnabled',
-						'label' => 'Enable',
-						'value' => $this->config['homepageMonitorrEnabled']
-					),
-					array(
-						'type' => 'select',
-						'name' => 'homepageMonitorrAuth',
-						'label' => 'Minimum Authentication',
-						'value' => $this->config['homepageMonitorrAuth'],
-						'options' => $this->groupOptions
-					)
-				),
-				'Connection' => array(
-					array(
-						'type' => 'input',
-						'name' => 'monitorrURL',
-						'label' => 'URL',
-						'value' => $this->config['monitorrURL'],
-						'help' => 'URL for Monitorr. Please use the revers proxy URL i.e. https://domain.com/monitorr/.',
-						'placeholder' => 'http://domain.com/monitorr/'
-					),
-					array(
-						'type' => 'select',
-						'name' => 'homepageMonitorrRefresh',
-						'label' => 'Refresh Seconds',
-						'value' => $this->config['homepageMonitorrRefresh'],
-						'options' => $this->timeOptions()
-					),
-				),
-				'Options' => array(
-					array(
-						'type' => 'input',
-						'name' => 'monitorrHeader',
-						'label' => 'Title',
-						'value' => $this->config['monitorrHeader'],
-						'help' => 'Sets the title of this homepage module',
-					),
-					array(
-						'type' => 'switch',
-						'name' => 'monitorrHeaderToggle',
-						'label' => 'Toggle Title',
-						'value' => $this->config['monitorrHeaderToggle'],
-						'help' => 'Shows/hides the title of this homepage module'
-					),
-					array(
-						'type' => 'switch',
-						'name' => 'monitorrCompact',
-						'label' => 'Compact view',
-						'value' => $this->config['monitorrCompact'],
-						'help' => 'Toggles the compact view of this homepage module'
-					),
-				),
-			)
-		);
+			'settings' => [
+				'Enable' => [
+					$this->settingsOption('enable', 'homepageMonitorrEnabled'),
+					$this->settingsOption('auth', 'homepageMonitorrAuth'),
+				],
+				'Connection' => [
+					$this->settingsOption('url', 'monitorrURL', ['help' => 'URL for Monitorr. Please use the reverse proxy URL i.e. https://domain.com/monitorr/.', 'placeholder' => 'http://domain.com/monitorr/']),
+					$this->settingsOption('blank'),
+					$this->settingsOption('disable-cert-check', 'monitorrDisableCertCheck'),
+					$this->settingsOption('use-custom-certificate', 'monitorrUseCustomCertificate'),
+				],
+				'Options' => [
+					$this->settingsOption('refresh', 'homepageMonitorrRefresh'),
+					$this->settingsOption('switch', 'monitorrCompact', ['label' => 'Compact view', 'help' => 'Toggles the compact view of this homepage module']),
+					$this->settingsOption('title', 'monitorrHeader'),
+					$this->settingsOption('toggle-title', 'monitorrHeaderToggle'),
+				],
+			]
+		];
 		return array_merge($homepageInformation, $homepageSettings);
 	}
 	
@@ -126,7 +87,7 @@ trait MonitorrHomepageItem
 		$url = $this->qualifyURL($this->config['monitorrURL']);
 		$dataUrl = $url . '/assets/php/loop.php';
 		try {
-			$options = $this->requestOptions($this->config['monitorrURL'], false, $this->config['homepageMonitorrRefresh']);
+			$options = $this->requestOptions($url, $this->config['homepageMonitorrRefresh'], $this->config['monitorrDisableCertCheck'], $this->config['monitorrUseCustomCertificate']);
 			$response = Requests::get($dataUrl, ['Token' => $this->config['organizrAPI']], $options);
 			if ($response->success) {
 				$html = html_entity_decode($response->body);
@@ -170,7 +131,6 @@ trait MonitorrHomepageItem
 					$ext = $ext[key(array_slice($ext, -1, 1, true))];
 					$imageUrl = $url . '/assets' . $image;
 					$cacheDirectory = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . 'images' . DIRECTORY_SEPARATOR . 'cache' . DIRECTORY_SEPARATOR;
-					$options = $this->requestOptions($this->config['monitorrURL'], false, $this->config['homepageMonitorrRefresh']);
 					$img = Requests::get($imageUrl, ['Token' => $this->config['organizrAPI']], $options);
 					if ($img->success) {
 						$base64 = 'data:image/' . $ext . ';base64,' . base64_encode($img->body);

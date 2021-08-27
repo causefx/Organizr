@@ -14,199 +14,52 @@ trait SonarrHomepageItem
 		if ($infoOnly) {
 			return $homepageInformation;
 		}
-		$homepageSettings = array(
+		$homepageSettings = [
 			'docs' => 'https://docs.organizr.app/books/setup-features/page/sonarr',
 			'debug' => true,
-			'settings' => array(
-				'About' => array(
-					array(
-						'type' => 'html',
-						'override' => 12,
-						'label' => '',
-						'html' => '
-							<div class="panel panel-default">
-								<div class="panel-wrapper collapse in">
-									<div class="panel-body">
-										<h3 lang="en">Sonarr Homepage Item</h3>
-										<p lang="en">This item allows access to Sonarr\'s calendar data and aggregates it to Organizr\'s calendar.  Along with that you also have the Downloader function that allow access to Sonarr\'s queue.  The last item that is included is the API SOCKS function which acts as a middleman between API\'s which is useful if you are not port forwarding or reverse proxying Sonarr.</p>
-									</div>
-								</div>
-							</div>'
-					),
-				),
-				'Enable' => array(
-					array(
-						'type' => 'switch',
-						'name' => 'homepageSonarrEnabled',
-						'label' => 'Enable',
-						'value' => $this->config['homepageSonarrEnabled']
-					),
-					array(
-						'type' => 'select',
-						'name' => 'homepageSonarrAuth',
-						'label' => 'Minimum Authentication',
-						'value' => $this->config['homepageSonarrAuth'],
-						'options' => $this->groupOptions
-					)
-				),
-				'Connection' => array(
-					array(
-						'type' => 'select2',
-						'class' => 'select2-multiple',
-						'id' => 'sonarrURL-select',
-						'name' => 'sonarrURL',
-						'label' => 'Sonarr URL',
-						'value' => $this->config['sonarrURL'],
-						'help' => 'Please make sure to use local IP address and port - You also may use local dns name too.',
-						'placeholder' => 'http(s)://hostname:port',
-						'options' => $this->makeOptionsFromValues($this->config['sonarrURL']),
-						'settings' => '{tags: true, selectOnClose: true, closeOnSelect: true}',
-					),
-					array(
-						'type' => 'select2',
-						'class' => 'select2-multiple',
-						'id' => 'sonarrToken-select',
-						'name' => 'sonarrToken',
-						'label' => 'Sonarr Token',
-						'value' => $this->config['sonarrToken'],
-						'options' => $this->makeOptionsFromValues($this->config['sonarrToken']),
-						'settings' => '{tags: true, theme: "default password-alt, selectOnClose: true, closeOnSelect: true"}',
-					)
-				),
-				'API SOCKS' => array(
-					array(
-						'type' => 'html',
-						'override' => 12,
-						'label' => '',
-						'html' => '
-							<div class="panel panel-default">
-								<div class="panel-wrapper collapse in">
-									<div class="panel-body">' . $this->socksHeadingHTML('sonarr') . '</div>
-								</div>
-							</div>'
-					),
-					array(
-						'type' => 'switch',
-						'name' => 'sonarrSocksEnabled',
-						'label' => 'Enable',
-						'value' => $this->config['sonarrSocksEnabled']
-					),
-					array(
-						'type' => 'select',
-						'name' => 'sonarrSocksAuth',
-						'label' => 'Minimum Authentication',
-						'value' => $this->config['sonarrSocksAuth'],
-						'options' => $this->groupOptions
-					),
-				),
-				'Queue' => array(
-					array(
-						'type' => 'switch',
-						'name' => 'homepageSonarrQueueEnabled',
-						'label' => 'Enable',
-						'value' => $this->config['homepageSonarrQueueEnabled']
-					),
-					array(
-						'type' => 'select',
-						'name' => 'homepageSonarrQueueAuth',
-						'label' => 'Minimum Authentication',
-						'value' => $this->config['homepageSonarrQueueAuth'],
-						'options' => $this->groupOptions
-					),
-					array(
-						'type' => 'switch',
-						'name' => 'homepageSonarrQueueCombine',
-						'label' => 'Add to Combined Downloader',
-						'value' => $this->config['homepageSonarrQueueCombine']
-					),
-					array(
-						'type' => 'select',
-						'name' => 'homepageSonarrQueueRefresh',
-						'label' => 'Refresh Seconds',
-						'value' => $this->config['homepageSonarrQueueRefresh'],
-						'options' => $this->timeOptions()
-					),
-				),
-				'Calendar' => array(
-					array(
-						'type' => 'number',
-						'name' => 'calendarStart',
-						'label' => '# of Days Before',
-						'value' => $this->config['calendarStart'],
-						'placeholder' => ''
-					),
-					array(
-						'type' => 'number',
-						'name' => 'calendarEnd',
-						'label' => '# of Days After',
-						'value' => $this->config['calendarEnd'],
-						'placeholder' => ''
-					),
-					array(
-						'type' => 'select',
-						'name' => 'calendarFirstDay',
-						'label' => 'Start Day',
-						'value' => $this->config['calendarFirstDay'],
-						'options' => $this->daysOptions()
-					),
-					array(
-						'type' => 'select',
-						'name' => 'calendarDefault',
-						'label' => 'Default View',
-						'value' => $this->config['calendarDefault'],
-						'options' => $this->calendarDefaultOptions()
-					),
-					array(
-						'type' => 'select',
-						'name' => 'calendarTimeFormat',
-						'label' => 'Time Format',
-						'value' => $this->config['calendarTimeFormat'],
-						'options' => $this->timeFormatOptions()
-					),
-					array(
-						'type' => 'select',
-						'name' => 'calendarLocale',
-						'label' => 'Locale',
-						'value' => $this->config['calendarLocale'],
-						'options' => $this->calendarLocaleOptions()
-					),
-					array(
-						'type' => 'select',
-						'name' => 'calendarLimit',
-						'label' => 'Items Per Day',
-						'value' => $this->config['calendarLimit'],
-						'options' => $this->limitOptions()
-					),
-					array(
-						'type' => 'select',
-						'name' => 'calendarRefresh',
-						'label' => 'Refresh Seconds',
-						'value' => $this->config['calendarRefresh'],
-						'options' => $this->timeOptions()
-					),
-					array(
-						'type' => 'switch',
-						'name' => 'sonarrUnmonitored',
-						'label' => 'Show Unmonitored',
-						'value' => $this->config['sonarrUnmonitored']
-					)
-				),
-				'Test Connection' => array(
-					array(
-						'type' => 'blank',
-						'label' => 'Please Save before Testing'
-					),
-					array(
-						'type' => 'button',
-						'label' => '',
-						'icon' => 'fa fa-flask',
-						'class' => 'pull-right',
-						'text' => 'Test Connection',
-						'attr' => 'onclick="testAPIConnection(\'sonarr\')"'
-					),
-				)
-			)
-		);
+			'settings' => [
+				'About' => [
+					$this->settingsOption('about', 'Sonarr', ['about' => 'This item allows access to Sonarr\'s calendar data and aggregates it to Organizr\'s calendar.  Along with that you also have the Downloader function that allow access to Sonarr\'s queue.  The last item that is included is the API SOCKS function which acts as a middleman between API\'s which is useful if you are not port forwarding or reverse proxying Sonarr.']),
+				],
+				'Enable' => [
+					$this->settingsOption('enable', 'homepageSonarrEnabled'),
+					$this->settingsOption('auth', 'homepageSonarrAuth'),
+				],
+				'Connection' => [
+					$this->settingsOption('multiple-url', 'sonarrURL'),
+					$this->settingsOption('multiple-token', 'sonarrToken'),
+					$this->settingsOption('disable-cert-check', 'sonarrDisableCertCheck'),
+					$this->settingsOption('use-custom-certificate', 'sonarrUseCustomCertificate'),
+				],
+				'API SOCKS' => [
+					$this->settingsOption('socks', 'sonarr'),
+					$this->settingsOption('blank'),
+					$this->settingsOption('enable', 'sonarrSocksEnabled'),
+					$this->settingsOption('auth', 'sonarrSocksAuth'),
+				],
+				'Queue' => [
+					$this->settingsOption('enable', 'homepageSonarrQueueEnabled'),
+					$this->settingsOption('auth', 'homepageSonarrQueueAuth'),
+					$this->settingsOption('combine', 'homepageSonarrQueueCombine'),
+					$this->settingsOption('refresh', 'homepageSonarrQueueRefresh'),
+				],
+				'Calendar' => [
+					$this->settingsOption('calendar-start', 'calendarStart'),
+					$this->settingsOption('calendar-end', 'calendarEnd'),
+					$this->settingsOption('calendar-starting-day', 'calendarFirstDay'),
+					$this->settingsOption('calendar-default-view', 'calendarDefault'),
+					$this->settingsOption('calendar-time-format', 'calendarTimeFormat'),
+					$this->settingsOption('calendar-locale', 'calendarLocale'),
+					$this->settingsOption('calendar-limit', 'calendarLimit'),
+					$this->settingsOption('refresh', 'calendarRefresh'),
+					$this->settingsOption('switch', 'sonarrUnmonitored', ['label' => 'Show Unmonitored']),
+				],
+				'Test Connection' => [
+					$this->settingsOption('blank', null, ['label' => 'Please Save before Testing']),
+					$this->settingsOption('test', 'sonarr'),
+				]
+			]
+		];
 		return array_merge($homepageInformation, $homepageSettings);
 	}
 	
@@ -225,7 +78,8 @@ trait SonarrHomepageItem
 		$list = $this->csvHomepageUrlToken($this->config['sonarrURL'], $this->config['sonarrToken']);
 		foreach ($list as $key => $value) {
 			try {
-				$downloader = new Kryptonit3\Sonarr\Sonarr($value['url'], $value['token'], 'sonarr');
+				$options = $this->requestOptions($value['url'], null, $this->config['sonarrDisableCertCheck'], $this->config['sonarrUseCustomCertificate']);
+				$downloader = new Kryptonit3\Sonarr\Sonarr($value['url'], $value['token'], 'sonarr', null, null, $options);
 				$results = $downloader->getRootFolder();
 				$downloadList = json_decode($results, true);
 				if (is_array($downloadList) || is_object($downloadList)) {
@@ -324,7 +178,8 @@ trait SonarrHomepageItem
 		$list = $this->csvHomepageUrlToken($this->config['sonarrURL'], $this->config['sonarrToken']);
 		foreach ($list as $key => $value) {
 			try {
-				$downloader = new Kryptonit3\Sonarr\Sonarr($value['url'], $value['token'], 'sonarr');
+				$options = $this->requestOptions($value['url'], $this->config['homepageSonarrQueueRefresh'], $this->config['sonarrDisableCertCheck'], $this->config['sonarrUseCustomCertificate']);
+				$downloader = new Kryptonit3\Sonarr\Sonarr($value['url'], $value['token'], 'sonarr', null, null, $options);
 				$results = $downloader->getQueue();
 				$downloadList = json_decode($results, true);
 				if (is_array($downloadList) || is_object($downloadList)) {
@@ -357,7 +212,8 @@ trait SonarrHomepageItem
 		$list = $this->csvHomepageUrlToken($this->config['sonarrURL'], $this->config['sonarrToken']);
 		foreach ($list as $key => $value) {
 			try {
-				$sonarr = new Kryptonit3\Sonarr\Sonarr($value['url'], $value['token'], 'sonarr');
+				$options = $this->requestOptions($value['url'], null, $this->config['sonarrDisableCertCheck'], $this->config['sonarrUseCustomCertificate']);
+				$sonarr = new Kryptonit3\Sonarr\Sonarr($value['url'], $value['token'], 'sonarr', null, null, $options);
 				$sonarr = $sonarr->getCalendar($startDate, $endDate, $this->config['sonarrUnmonitored']);
 				$result = json_decode($sonarr, true);
 				if (is_array($result) || is_object($result)) {

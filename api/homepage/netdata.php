@@ -97,196 +97,99 @@ trait NetDataHomepageItem
 		if ($infoOnly) {
 			return $homepageInformation;
 		}
-		$homepageSettings = array(
+		$homepageSettings = [
 			'debug' => true,
-			'settings' => array(
-				'Enable' => array(
-					array(
-						'type' => 'switch',
-						'name' => 'homepageNetdataEnabled',
-						'label' => 'Enable',
-						'value' => $this->config['homepageNetdataEnabled']
-					),
-					array(
-						'type' => 'select',
-						'name' => 'homepageNetdataAuth',
-						'label' => 'Minimum Authentication',
-						'value' => $this->config['homepageNetdataAuth'],
-						'options' => $this->groupSelect()
-					)
-				),
-				'Connection' => array(
-					array(
-						'type' => 'input',
-						'name' => 'netdataURL',
-						'label' => 'URL',
-						'value' => $this->config['netdataURL'],
-						'help' => 'Please enter the local IP:PORT of your netdata instance'
-					),
-					array(
-						'type' => 'blank',
-						'label' => ''
-					),
-				),
-			)
-		);
+			'settings' => [
+				'Enable' => [
+					$this->settingsOption('enable', 'homepageNetdataEnabled'),
+					$this->settingsOption('auth', 'homepageNetdataAuth'),
+				],
+				'Connection' => [
+					$this->settingsOption('url', 'netdataURL'),
+					$this->settingsOption('blank'),
+					$this->settingsOption('disable-cert-check', 'netdataDisableCertCheck'),
+					$this->settingsOption('use-custom-certificate', 'netdataUseCustomCertificate'),
+				],
+			]
+		];
 		for ($i = 1; $i <= 7; $i++) {
 			$homepageSettings['settings']['Chart ' . $i] = array(
-				array(
-					'type' => 'switch',
-					'name' => 'netdata' . $i . 'Enabled',
-					'label' => 'Enable',
-					'value' => $this->config['netdata' . $i . 'Enabled']
-				),
-				array(
-					'type' => 'blank',
-					'label' => ''
-				),
-				array(
-					'type' => 'input',
-					'name' => 'netdata' . $i . 'Title',
-					'label' => 'Title',
-					'value' => $this->config['netdata' . $i . 'Title'],
-					'help' => 'Title for the netdata graph'
-				),
-				array(
-					'type' => 'select',
-					'name' => 'netdata' . $i . 'Data',
-					'label' => 'Data',
-					'value' => $this->config['netdata' . $i . 'Data'],
-					'options' => $this->netdataOptions(),
-				),
-				array(
-					'type' => 'select',
-					'name' => 'netdata' . $i . 'Chart',
-					'label' => 'Chart',
-					'value' => $this->config['netdata' . $i . 'Chart'],
-					'options' => $this->netdataChartOptions(),
-				),
-				array(
-					'type' => 'select',
-					'name' => 'netdata' . $i . 'Colour',
-					'label' => 'Colour',
-					'value' => $this->config['netdata' . $i . 'Colour'],
-					'options' => $this->netdataColourOptions(),
-				),
-				array(
-					'type' => 'select',
-					'name' => 'netdata' . $i . 'Size',
-					'label' => 'Size',
-					'value' => $this->config['netdata' . $i . 'Size'],
-					'options' => $this->netdataSizeOptions(),
-				),
-				array(
-					'type' => 'blank',
-					'label' => ''
-				),
-				array(
-					'type' => 'switch',
-					'name' => 'netdata' . $i . 'lg',
-					'label' => 'Show on large screens',
-					'value' => $this->config['netdata' . $i . 'lg']
-				),
-				array(
-					'type' => 'switch',
-					'name' => 'netdata' . $i . 'md',
-					'label' => 'Show on medium screens',
-					'value' => $this->config['netdata' . $i . 'md']
-				),
-				array(
-					'type' => 'switch',
-					'name' => 'netdata' . $i . 'sm',
-					'label' => 'Show on small screens',
-					'value' => $this->config['netdata' . $i . 'sm']
-				),
+				$this->settingsOption('enable', 'netdata' . $i . 'Enabled'),
+				$this->settingsOption('blank'),
+				$this->settingsOption('input', 'netdata' . $i . 'Title', ['label' => 'Title', 'help' => 'Title for the netdata graph']),
+				$this->settingsOption('select', 'netdata' . $i . 'Data', ['label' => 'Data', 'options' => $this->netdataOptions()]),
+				$this->settingsOption('select', 'netdata' . $i . 'Chart', ['label' => 'Chart', 'options' => $this->netdataChartOptions()]),
+				$this->settingsOption('select', 'netdata' . $i . 'Colour', ['label' => 'Colour', 'options' => $this->netdataColourOptions()]),
+				$this->settingsOption('select', 'netdata' . $i . 'Size', ['label' => 'Size', 'options' => $this->netdataSizeOptions()]),
+				$this->settingsOption('blank'),
+				$this->settingsOption('switch', 'netdata' . $i . 'lg', ['label' => 'Show on large screens']),
+				$this->settingsOption('switch', 'netdata' . $i . 'md', ['label' => 'Show on medium screens']),
+				$this->settingsOption('switch', 'netdata' . $i . 'sm', ['label' => 'Show on small screens']),
 			);
 		}
 		$homepageSettings['settings']['Custom data'] = array(
-			array(
-				'type' => 'html',
-				'label' => '',
-				'override' => 12,
-				'html' => '
+			$this->settingsOption('html', null, ['label' => '', 'override' => 12, 'html' => '
 			<div>
-			    <p>This is where you can define custom data sources for your netdata charts. To use a custom source, you need to select "Custom" in the data field for the chart.</p>
-			    <p>To define a custom data source, you need to add an entry to the JSON below, where the key is the chart number you want the custom data to be used for. Here is an example to set chart 1 custom data source to RAM percentage:</p>
-			    <pre>{
-			    "1": {
-			        "url": "/api/v1/data?chart=system.ram&format=array&points=540&group=average&gtime=0&options=absolute|percentage|jsonwrap|nonzero&after=-540&dimensions=used|buffers|active|wired",
-			        "value": "result,0",
-			        "units": "%",
-			        "max": 100
-			    }
-			}</pre>
-			    <p>The URL is appended to your netdata URL and returns JSON formatted data. The value field tells Organizr how to return the value you want from the netdata API. This should be formatted as comma-separated keys to access the desired value.</p>
-			    <table class="table table-striped">
-			        <thead>
-			            <tr>
-			                <th>Parameter</th>
-			                <th>Description</th>
-			                <th>Required</th>
-			            </tr>
-			        </thead>
-			        <tbody>
-			            <tr>
-			                <td>url</td>
-			                <td>Specifies the netdata API endpoint</td>
-			                <td><i class="fa fa-check text-success" aria-hidden="true"></i></td>
-			            </tr>
-			            <tr>
-			                <td>value</td>
-			                <td>Specifies the selector used to get the data form the netdata response</td>
-			                <td><i class="fa fa-check text-success" aria-hidden="true"></i></td>
-			            </tr>
-			            <tr>
-			                <td>units</td>
-			                <td>Specifies the units shown in the graph/chart. Defaults to %</td>
-			                <td><i class="fa fa-times text-danger" aria-hidden="true"></i></td>
-			            </tr>
-			            <tr>
-			                <td>max</td>
-			                <td>Specifies the maximum possible value for the data. Defaults to 100</td>
-			                <td><i class="fa fa-times text-danger" aria-hidden="true"></i></td>
-			            </tr>
-			            <tr>
-			                <td>mutator</td>
-			                <td>Used to perform simple mathematical operations on the result (+, -, /, *). For example: dividing the result by 1000 would be "/1000". These operations can be chained together by putting them in a comma-seprated format.</td>
-			                <td><i class="fa fa-times text-danger" aria-hidden="true"></i></td>
-			            </tr>
-			            <tr>
-			                <td>netdata</td>
-			                <td>Can be used to override the netdata instance data is retrieved from (in the format: http://IP:PORT)</td>
-			                <td><i class="fa fa-times text-danger" aria-hidden="true"></i></td>
-			            </tr>
-			        </tbody>
-			    </table>
-			</div>'
-			),
-			array(
-				'type' => 'html',
-				'name' => 'netdataCustomTextAce',
-				'class' => 'jsonTextarea hidden',
-				'label' => 'Custom definitions',
-				'override' => 12,
-				'html' => '<div id="netdataCustomTextAce" style="height: 300px;">' . htmlentities($this->config['netdataCustom']) . '</div>',
-			),
-			array(
-				'type' => 'textbox',
-				'name' => 'netdataCustom',
-				'class' => 'jsonTextarea hidden',
-				'id' => 'netdataCustomText',
-				'label' => '',
-				'value' => $this->config['netdataCustom'],
-			)
+				<p>This is where you can define custom data sources for your netdata charts. To use a custom source, you need to select "Custom" in the data field for the chart.</p>
+				<p>To define a custom data source, you need to add an entry to the JSON below, where the key is the chart number you want the custom data to be used for. Here is an example to set chart 1 custom data source to RAM percentage:</p>
+				<pre>
+{
+	"1": {
+		"url": "/api/v1/data?chart=system.ram&format=array&points=540&group=average&gtime=0&options=absolute|percentage|jsonwrap|nonzero&after=-540&dimensions=used|buffers|active|wired",
+		"value": "result,0",
+		"units": "%",
+		"max": 100
+	}
+}
+				</pre>
+				<p>The URL is appended to your netdata URL and returns JSON formatted data. The value field tells Organizr how to return the value you want from the netdata API. This should be formatted as comma-separated keys to access the desired value.</p>
+				<table class="table table-striped">
+					<thead>
+						<tr>
+							<th>Parameter</th>
+							<th>Description</th>
+							<th>Required</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<td>url</td>
+							<td>Specifies the netdata API endpoint</td>
+							<td><i class="fa fa-check text-success" aria-hidden="true"></i></td>
+						</tr>
+						<tr>
+							<td>value</td>
+							<td>Specifies the selector used to get the data form the netdata response</td>
+							<td><i class="fa fa-check text-success" aria-hidden="true"></i></td>
+						</tr>
+						<tr>
+							<td>units</td>
+							<td>Specifies the units shown in the graph/chart. Defaults to %</td>
+							<td><i class="fa fa-times text-danger" aria-hidden="true"></i></td>
+						</tr>
+						<tr>
+							<td>max</td>
+							<td>Specifies the maximum possible value for the data. Defaults to 100</td>
+							<td><i class="fa fa-times text-danger" aria-hidden="true"></i></td>
+						</tr>
+						<tr>
+							<td>mutator</td>
+							<td>Used to perform simple mathematical operations on the result (+, -, /, *). For example: dividing the result by 1000 would be "/1000". These operations can be chained together by putting them in a comma-seprated format.</td>
+							<td><i class="fa fa-times text-danger" aria-hidden="true"></i></td>
+						</tr>
+						<tr>
+							<td>netdata</td>
+							<td>Can be used to override the netdata instance data is retrieved from (in the format: http://IP:PORT)</td>
+							<td><i class="fa fa-times text-danger" aria-hidden="true"></i></td>
+						</tr>
+					</tbody>
+				</table>
+			</div>']),
+			$this->settingsOption('html', 'netdataCustomTextAce', ['class' => 'jsonTextarea hidden', 'label' => 'Custom definitions', 'override' => 12, 'html' => '<div id="netdataCustomTextAce" style="height: 300px;">' . htmlentities($this->config['netdataCustom']) . '</div>']),
+			$this->settingsOption('textbox', 'netdataCustom', ['class' => 'jsonTextarea hidden', 'id' => 'netdataCustomText', 'label' => '']),
 		);
 		$homepageSettings['settings']['Options'] = array(
-			array(
-				'type' => 'select',
-				'name' => 'homepageNetdataRefresh',
-				'label' => 'Refresh Seconds',
-				'value' => $this->config['homepageNetdataRefresh'],
-				'options' => $this->timeOptions()
-			),
+			$this->settingsOption('refresh', 'homepageNetdataRefresh'),
 		);
 		return array_merge($homepageInformation, $homepageSettings);
 	}
@@ -337,7 +240,8 @@ trait NetDataHomepageItem
 		// Get Data
 		$dataUrl = $url . '/api/v1/data?chart=system.io&dimensions=' . $dimension . '&format=array&points=540&group=average&gtime=0&options=absolute|jsonwrap|nonzero&after=-540';
 		try {
-			$response = Requests::get($dataUrl);
+			$options = $this->requestOptions($url, $this->config['homepageNetdataRefresh'], $this->config['netdataDisableCertCheck'], $this->config['netdataUseCustomCertificate']);
+			$response = Requests::get($dataUrl, [], $options);
 			if ($response->success) {
 				$json = json_decode($response->body, true);
 				$data['value'] = $json['latest_values'][0] / 1000;
@@ -357,7 +261,8 @@ trait NetDataHomepageItem
 		// Get Data
 		$dataUrl = $url . '/api/v1/data?chart=disk_space._&format=json&points=509&group=average&gtime=0&options=ms|jsonwrap|nonzero&after=-540&dimension=' . $dimension;
 		try {
-			$response = Requests::get($dataUrl);
+			$options = $this->requestOptions($url, $this->config['homepageNetdataRefresh'], $this->config['netdataDisableCertCheck'], $this->config['netdataUseCustomCertificate']);
+			$response = Requests::get($dataUrl, [], $options);
 			if ($response->success) {
 				$json = json_decode($response->body, true);
 				$data['value'] = $json['result']['data'][0][1];
@@ -377,7 +282,8 @@ trait NetDataHomepageItem
 		// Get Data
 		$dataUrl = $url . '/api/v1/data?chart=system.net&dimensions=' . $dimension . '&format=array&points=540&group=average&gtime=0&options=absolute|jsonwrap|nonzero&after=-540';
 		try {
-			$response = Requests::get($dataUrl);
+			$options = $this->requestOptions($url, $this->config['homepageNetdataRefresh'], $this->config['netdataDisableCertCheck'], $this->config['netdataUseCustomCertificate']);
+			$response = Requests::get($dataUrl, [], $options);
 			if ($response->success) {
 				$json = json_decode($response->body, true);
 				$data['value'] = $json['latest_values'][0] / 1000;
@@ -396,7 +302,8 @@ trait NetDataHomepageItem
 		$data = [];
 		$dataUrl = $url . '/api/v1/data?chart=system.cpu&format=array';
 		try {
-			$response = Requests::get($dataUrl);
+			$options = $this->requestOptions($url, $this->config['homepageNetdataRefresh'], $this->config['netdataDisableCertCheck'], $this->config['netdataUseCustomCertificate']);
+			$response = Requests::get($dataUrl, [], $options);
 			if ($response->success) {
 				$json = json_decode($response->body, true);
 				$data['value'] = $json[0];
@@ -415,7 +322,8 @@ trait NetDataHomepageItem
 		$data = [];
 		$dataUrl = $url . '/api/v1/data?chart=system.ram&format=array&points=540&group=average&gtime=0&options=absolute|percentage|jsonwrap|nonzero&after=-540&dimensions=used|buffers|active|wired';
 		try {
-			$response = Requests::get($dataUrl);
+			$options = $this->requestOptions($url, $this->config['homepageNetdataRefresh'], $this->config['netdataDisableCertCheck'], $this->config['netdataUseCustomCertificate']);
+			$response = Requests::get($dataUrl, [], $options);
 			if ($response->success) {
 				$json = json_decode($response->body, true);
 				$data['value'] = $json['result'][0];
@@ -434,7 +342,8 @@ trait NetDataHomepageItem
 		$data = [];
 		$dataUrl = $url . '/api/v1/data?chart=system.swap&format=array&points=540&group=average&gtime=0&options=absolute|percentage|jsonwrap|nonzero&after=-540&dimensions=used';
 		try {
-			$response = Requests::get($dataUrl);
+			$options = $this->requestOptions($url, $this->config['homepageNetdataRefresh'], $this->config['netdataDisableCertCheck'], $this->config['netdataUseCustomCertificate']);
+			$response = Requests::get($dataUrl, [], $options);
 			if ($response->success) {
 				$json = json_decode($response->body, true);
 				$data['value'] = $json['result'][0];
@@ -481,7 +390,8 @@ trait NetDataHomepageItem
 				}
 				$dataUrl = $url . '/' . $custom['url'];
 				try {
-					$response = Requests::get($dataUrl);
+					$options = $this->requestOptions($url, $this->config['homepageNetdataRefresh'], $this->config['netdataDisableCertCheck'], $this->config['netdataUseCustomCertificate']);
+					$response = Requests::get($dataUrl, [], $options);
 					if ($response->success) {
 						$json = json_decode($response->body, true);
 						if (!isset($custom['max']) || $custom['max'] == '') {

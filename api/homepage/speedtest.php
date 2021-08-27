@@ -14,57 +14,25 @@ trait SpeedTestHomepageItem
 		if ($infoOnly) {
 			return $homepageInformation;
 		}
-		$homepageSettings = array(
+		$homepageSettings = [
 			'debug' => true,
-			'settings' => array(
-				'Enable' => array(
-					array(
-						'type' => 'html',
-						'override' => 6,
-						'label' => 'Info',
-						'html' => '<p>This homepage item requires <a href="https://github.com/henrywhitaker3/Speedtest-Tracker" target="_blank" rel="noreferrer noopener">Speedtest-Tracker <i class="fa fa-external-link" aria-hidden="true"></i></a> to be running on your network.</p>'
-					),
-					array(
-						'type' => 'switch',
-						'name' => 'homepageSpeedtestEnabled',
-						'label' => 'Enable',
-						'value' => $this->config['homepageSpeedtestEnabled']
-					),
-					array(
-						'type' => 'select',
-						'name' => 'homepageSpeedtestAuth',
-						'label' => 'Minimum Authentication',
-						'value' => $this->config['homepageSpeedtestAuth'],
-						'options' => $this->groupOptions
-					)
-				),
-				'Connection' => array(
-					array(
-						'type' => 'input',
-						'name' => 'speedtestURL',
-						'label' => 'URL',
-						'value' => $this->config['speedtestURL'],
-						'help' => 'Enter the IP:PORT of your speedtest instance e.g. http(s)://<ip>:<port>'
-					),
-				),
-				'Options' => array(
-					array(
-						'type' => 'input',
-						'name' => 'speedtestHeader',
-						'label' => 'Title',
-						'value' => $this->config['speedtestHeader'],
-						'help' => 'Sets the title of this homepage module',
-					),
-					array(
-						'type' => 'switch',
-						'name' => 'speedtestHeaderToggle',
-						'label' => 'Toggle Title',
-						'value' => $this->config['speedtestHeaderToggle'],
-						'help' => 'Shows/hides the title of this homepage module'
-					),
-				),
-			)
-		);
+			'settings' => [
+				'Enable' => [
+					$this->settingsOption('html', null, ['override' => 6, 'label' => 'Info', 'html' => '<p>This homepage item requires <a href="https://github.com/henrywhitaker3/Speedtest-Tracker" target="_blank" rel="noreferrer noopener">Speedtest-Tracker <i class="fa fa-external-link" aria-hidden="true"></i></a> to be running on your network.</p>']),
+					$this->settingsOption('enable', 'homepageSpeedtestEnabled'),
+					$this->settingsOption('auth', 'homepageSpeedtestAuth'),
+				],
+				'Connection' => [
+					$this->settingsOption('url', 'speedtestURL'),
+					$this->settingsOption('disable-cert-check', 'speedtestDisableCertCheck'),
+					$this->settingsOption('use-custom-certificate', 'speedtestUseCustomCertificate'),
+				],
+				'Options' => [
+					$this->settingsOption('title', 'speedtestHeader'),
+					$this->settingsOption('toggle-title', 'speedtestHeaderToggle'),
+				],
+			]
+		];
 		return array_merge($homepageInformation, $homepageSettings);
 	}
 	
@@ -115,9 +83,10 @@ trait SpeedTestHomepageItem
 		}
 		$api = [];
 		$url = $this->qualifyURL($this->config['speedtestURL']);
+		$options = $this->requestOptions($url, null, $this->config['speedtestDisableCertCheck'], $this->config['speedtestUseCustomCertificate']);
 		$dataUrl = $url . '/api/speedtest/latest';
 		try {
-			$response = Requests::get($dataUrl);
+			$response = Requests::get($dataUrl, [], $options);
 			if ($response->success) {
 				$json = json_decode($response->body, true);
 				$api['data'] = [

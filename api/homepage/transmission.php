@@ -14,94 +14,33 @@ trait TransmissionHomepageItem
 		if ($infoOnly) {
 			return $homepageInformation;
 		}
-		$homepageSettings = array(
+		$homepageSettings = [
 			'debug' => true,
-			'settings' => array(
-				'Enable' => array(
-					array(
-						'type' => 'switch',
-						'name' => 'homepageTransmissionEnabled',
-						'label' => 'Enable',
-						'value' => $this->config['homepageTransmissionEnabled']
-					),
-					array(
-						'type' => 'select',
-						'name' => 'homepageTransmissionAuth',
-						'label' => 'Minimum Authentication',
-						'value' => $this->config['homepageTransmissionAuth'],
-						'options' => $this->groupOptions
-					)
-				),
-				'Connection' => array(
-					array(
-						'type' => 'input',
-						'name' => 'transmissionURL',
-						'label' => 'URL',
-						'value' => $this->config['transmissionURL'],
-						'help' => 'Please do not included /web in URL.  Please make sure to use local IP address and port - You also may use local dns name too.',
-						'placeholder' => 'http(s)://hostname:port'
-					),
-					array(
-						'type' => 'switch',
-						'name' => 'transmissionDisableCertCheck',
-						'label' => 'Disable Certificate Check',
-						'value' => $this->config['transmissionDisableCertCheck']
-					),
-					array(
-						'type' => 'input',
-						'name' => 'transmissionUsername',
-						'label' => 'Username',
-						'value' => $this->config['transmissionUsername']
-					),
-					array(
-						'type' => 'password',
-						'name' => 'transmissionPassword',
-						'label' => 'Password',
-						'value' => $this->config['transmissionPassword']
-					)
-				),
-				'Misc Options' => array(
-					array(
-						'type' => 'switch',
-						'name' => 'transmissionHideSeeding',
-						'label' => 'Hide Seeding',
-						'value' => $this->config['transmissionHideSeeding']
-					), array(
-						'type' => 'switch',
-						'name' => 'transmissionHideCompleted',
-						'label' => 'Hide Completed',
-						'value' => $this->config['transmissionHideCompleted']
-					),
-					array(
-						'type' => 'select',
-						'name' => 'transmissionRefresh',
-						'label' => 'Refresh Seconds',
-						'value' => $this->config['transmissionRefresh'],
-						'options' => $this->timeOptions()
-					),
-					array(
-						'type' => 'switch',
-						'name' => 'transmissionCombine',
-						'label' => 'Add to Combined Downloader',
-						'value' => $this->config['transmissionCombine']
-					),
-				),
-				'Test Connection' => array(
-					array(
-						'type' => 'blank',
-						'label' => 'Please Save before Testing'
-					),
-					array(
-						'type' => 'button',
-						'label' => '',
-						'icon' => 'fa fa-flask',
-						'class' => 'pull-right',
-						'text' => 'Test Connection',
-						'attr' => 'onclick="testAPIConnection(\'transmission\')"'
-					),
-				)
-			)
-		);
+			'settings' => [
+				'Enable' => [
+					$this->settingsOption('enable', 'homepageTransmissionEnabled'),
+					$this->settingsOption('auth', 'homepageTransmissionAuth'),
+				],
+				'Connection' => [
+					$this->settingsOption('url', 'transmissionURL', ['help' => 'Please do not included /web in URL.  Please make sure to use local IP address and port - You also may use local dns name too.']),
+					$this->settingsOption('blank'),
+					$this->settingsOption('username', 'transmissionUsername'),
+					$this->settingsOption('password', 'transmissionPassword'),
+					$this->settingsOption('disable-cert-check', 'transmissionDisableCertCheck'),
+					$this->settingsOption('use-custom-certificate', 'transmissionUseCustomCertificate'),
+				],
+				'Misc Options' => [
+					$this->settingsOption('hide-seeding', 'transmissionHideSeeding'),
+					$this->settingsOption('hide-completed', 'transmissionHideCompleted'),
+					$this->settingsOption('refresh', 'transmissionRefresh'),
+					$this->settingsOption('combine', 'transmissionCombine'),
+				],
+				'Test Connection' => [
+					$this->settingsOption('blank', null, ['label' => 'Please Save before Testing']),
+					$this->settingsOption('test', 'transmission'),
+				]
+			]
+		];
 		return array_merge($homepageInformation, $homepageSettings);
 	}
 	
@@ -115,8 +54,8 @@ trait TransmissionHomepageItem
 		$passwordInclude = ($this->config['transmissionUsername'] != '' && $this->config['transmissionPassword'] != '') ? $this->config['transmissionUsername'] . ':' . rawurlencode($this->decrypt($this->config['transmissionPassword'])) . "@" : '';
 		$url = $digest['scheme'] . '://' . $passwordInclude . $digest['host'] . $digest['port'] . $digest['path'] . '/rpc';
 		try {
-			$options = $this->requestOptions($this->config['transmissionURL'], $this->config['transmissionDisableCertCheck'], $this->config['transmissionRefresh']);
-			$response = Requests::get($url, array(), $options);
+			$options = $this->requestOptions($this->config['transmissionURL'], $this->config['transmissionRefresh'], $this->config['transmissionDisableCertCheck'], $this->config['transmissionUseCustomCertificate']);
+			$response = Requests::get($url, [], $options);
 			if ($response->headers['x-transmission-session-id']) {
 				$headers = array(
 					'X-Transmission-Session-Id' => $response->headers['x-transmission-session-id'],
@@ -203,7 +142,7 @@ trait TransmissionHomepageItem
 		$passwordInclude = ($this->config['transmissionUsername'] != '' && $this->config['transmissionPassword'] != '') ? $this->config['transmissionUsername'] . ':' . rawurlencode($this->decrypt($this->config['transmissionPassword'])) . "@" : '';
 		$url = $digest['scheme'] . '://' . $passwordInclude . $digest['host'] . $digest['port'] . $digest['path'] . '/rpc';
 		try {
-			$options = $this->requestOptions($this->config['transmissionURL'], $this->config['transmissionDisableCertCheck'], $this->config['transmissionRefresh']);
+			$options = $this->requestOptions($this->config['transmissionURL'], $this->config['transmissionRefresh'], $this->config['transmissionDisableCertCheck'], $this->config['transmissionUseCustomCertificate']);
 			$response = Requests::get($url, array(), $options);
 			if ($response->headers['x-transmission-session-id']) {
 				$headers = array(

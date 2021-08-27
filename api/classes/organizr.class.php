@@ -60,7 +60,7 @@ class Organizr
 	
 	// ===================================
 	// Organizr Version
-	public $version = '2.1.476';
+	public $version = '2.1.496';
 	// ===================================
 	// Quick php Version check
 	public $minimumPHP = '7.3';
@@ -328,7 +328,7 @@ class Organizr
 		}
 	}
 	
-	public function setResponse($responseCode = 200, $message = null, $data = null)
+	public function setResponse(int $responseCode = 200, string $message = null, $data = null)
 	{
 		switch ($responseCode) {
 			case 200:
@@ -340,9 +340,7 @@ class Organizr
 				$result = 'error';
 				break;
 		}
-		if ($result) {
-			$GLOBALS['api']['response']['result'] = $result;
-		}
+		$GLOBALS['api']['response']['result'] = $result;
 		if ($message) {
 			$GLOBALS['api']['response']['message'] = $message;
 		}
@@ -444,6 +442,7 @@ class Organizr
 	{
 		if ($this->config['gaTrackingID'] !== '') {
 			return '
+				<script src="https://apis.google.com/js/client.js?onload=googleApiClientReady"></script>
 				<script async src="https://www.googletagmanager.com/gtag/js?id=' . $this->config['gaTrackingID'] . '"></script>
 				<script>
 					window.dataLayer = window.dataLayer || [];
@@ -1325,7 +1324,7 @@ class Organizr
 		}
 		$approvedPath = 'plugins/images/userTabs/';
 		$removeImage = $approvedPath . pathinfo($image, PATHINFO_BASENAME);
-		if ($this->approvedFileExtension($removeImage)) {
+		if ($this->approvedFileExtension($removeImage, 'image')) {
 			if (file_exists(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . $removeImage)) {
 				$this->writeLog('success', 'Image Manager Function -  Deleted Image [' . pathinfo($image, PATHINFO_BASENAME) . ']', $this->user['username']);
 				$this->setAPIResponse(null, pathinfo($image, PATHINFO_BASENAME) . ' has been deleted', null);
@@ -1343,7 +1342,7 @@ class Organizr
 	public function uploadImage()
 	{
 		$filesCheck = array_filter($_FILES);
-		if (!empty($filesCheck) && $this->approvedFileExtension($_FILES['file']['name']) && strpos($_FILES['file']['type'], 'image/') !== false) {
+		if (!empty($filesCheck) && $this->approvedFileExtension($_FILES['file']['name'], 'image') && strpos($_FILES['file']['type'], 'image/') !== false) {
 			ini_set('upload_max_filesize', '10M');
 			ini_set('post_max_size', '10M');
 			$tempFile = $_FILES['file']['tmp_name'];
@@ -1845,6 +1844,7 @@ class Organizr
 	
 	public function getSettingsMain()
 	{
+		$certificateStatus = $this->hasCustomCert() ? '<span lang="en">Custom Certificate Loaded</span><br />Located at <span>' . $this->getCustomCert() . '</span>' : '<span lang="en">Custom Certificate not found - please upload below</span>';
 		return array(
 			'Settings Page' => array(
 				array(
@@ -1978,7 +1978,7 @@ class Organizr
 					'class' => 'ldapAuth ftpAuth switchAuth',
 					'label' => 'Host Address',
 					'value' => $this->config['authBackendHost'],
-					'placeholder' => 'http{s) | ftp(s) | ldap(s)://hostname:port'
+					'placeholder' => 'http(s) | ftp(s) | ldap(s)://hostname:port'
 				),
 				array(
 					'type' => 'input',
@@ -1987,15 +1987,6 @@ class Organizr
 					'label' => 'Host Base DN',
 					'value' => $this->config['authBaseDN'],
 					'placeholder' => 'cn=%s,dc=sub,dc=domain,dc=com'
-				),
-				array(
-					'type' => 'select',
-					'name' => 'ldapType',
-					'id' => 'ldapType',
-					'label' => 'LDAP Backend Type',
-					'class' => 'ldapAuth switchAuth',
-					'value' => $this->config['ldapType'],
-					'options' => $this->getLDAPOptions()
 				),
 				array(
 					'type' => 'input',
@@ -2027,8 +2018,17 @@ class Organizr
 					'type' => 'password',
 					'name' => 'ldapBindPassword',
 					'class' => 'ldapAuth switchAuth',
-					'label' => 'Password',
+					'label' => 'Bind Password',
 					'value' => $this->config['ldapBindPassword']
+				),
+				array(
+					'type' => 'select',
+					'name' => 'ldapType',
+					'id' => 'ldapType',
+					'label' => 'LDAP Backend Type',
+					'class' => 'ldapAuth switchAuth',
+					'value' => $this->config['ldapType'],
+					'options' => $this->getLDAPOptions()
 				),
 				array(
 					'type' => 'html',
@@ -2432,7 +2432,54 @@ class Organizr
 					'value' => $this->config['otherPingRefresh'],
 					'options' => $this->timeOptions()
 				),
-			)
+			),
+			'Certificate' => array(
+				array(
+					'type' => 'html',
+					'label' => '',
+					'override' => 12,
+					'html' => '
+					<script>
+						let myDropzone = new Dropzone("#upload-custom-certificate", {
+							url: "api/v2/certificate/custom",
+							headers:{ "formKey": local("g","formKey") },
+							init: function() {
+								this.on("complete", function(file) {
+									if(file["status"] === "success"){
+										$(".custom-certificate-status").html("<span lang=\"en\">Custom Certificate Loaded</span>");
+									}else{
+										$(".custom-certificate-status").html("<span lang=\"en\">Error Saving file...</span>");
+									}
+								});
+							}
+						});
+					</script>
+					<div class="row">
+						<div class="col-lg-12">
+							<div class="panel panel-info">
+								<div class="panel-heading"><span lang="en">Notice</span></div>
+								<div class="panel-wrapper collapse in" aria-expanded="true">
+									<div class="panel-body">
+										<span lang="en">By default, Organizr uses certificates from https://curl.se/docs/caextract.html<br/>If you would like to use your own certificate, please upload it below.  You will then need to enable each homepage item to use it.</span>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-md-12">
+							<div class="white-box">
+								<h3 class="box-title m-b-0">Custom Certificate Status</h3>
+								<p class="text-muted m-b-30 custom-certificate-status">' . $certificateStatus . '</p>
+								<form action="#" class="dropzone dz-clickable" id="upload-custom-certificate">
+									<div class="dz-default dz-message"><span lang="en">Drop Certificate file here to upload</span></div>
+								</form>
+							</div>
+						</div>
+					</div>
+					'
+				)
+			),
 		);
 	}
 	
@@ -6085,6 +6132,33 @@ class Organizr
 		return ($this->checkValidCert($file)) ? $file : $file2;
 	}
 	
+	public function hasCustomCert()
+	{
+		return file_exists(dirname(__DIR__, 1) . DIRECTORY_SEPARATOR . 'functions' . DIRECTORY_SEPARATOR . 'cert' . DIRECTORY_SEPARATOR . 'custom.pem');
+	}
+	
+	public function getCustomCert()
+	{
+		return ($this->hasCustomCert()) ? dirname(__DIR__, 1) . DIRECTORY_SEPARATOR . 'functions' . DIRECTORY_SEPARATOR . 'cert' . DIRECTORY_SEPARATOR . 'custom.pem' : false;
+	}
+	
+	public function uploadCert()
+	{
+		$filesCheck = array_filter($_FILES);
+		if (!empty($filesCheck) && $this->approvedFileExtension($_FILES['file']['name'], 'cert')) {
+			ini_set('upload_max_filesize', '10M');
+			ini_set('post_max_size', '10M');
+			$tempFile = $_FILES['file']['tmp_name'];
+			$targetPath = dirname(__DIR__, 1) . DIRECTORY_SEPARATOR . 'functions' . DIRECTORY_SEPARATOR . 'cert' . DIRECTORY_SEPARATOR;
+			$targetFile = $targetPath . 'custom.pem';
+			$this->setAPIResponse(null, pathinfo($_FILES['file']['name'], PATHINFO_BASENAME) . ' has been uploaded', null);
+			return move_uploaded_file($tempFile, $targetFile);
+		} else {
+			$this->setAPIResponse('error', pathinfo($_FILES['file']['name'], PATHINFO_BASENAME) . ' is not approved to be uploaded', 403);
+			return false;
+		}
+	}
+	
 	public function plexJoinAPI($array)
 	{
 		$username = ($array['username']) ?? null;
@@ -6316,8 +6390,8 @@ class Organizr
 			function CBPFWTabs( el, options ) {
 				this.el = el;
 				this.options = extend( {}, this.options );
-		        extend( this.options, options );
-		        this._init();
+				extend( this.options, options );
+				this._init();
 			}
 		
 			CBPFWTabs.prototype.options = {

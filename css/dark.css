@@ -3127,7 +3127,7 @@ ul.common li a:hover {
     display: table;
 }
 .vtabs .tabs-vertical {
-    width: 150px;
+    min-width: 150px;
     border-right: 1px solid rgba(120, 130, 140, 0.13);
     display: table-cell;
     vertical-align: top;
@@ -16172,6 +16172,7 @@ ul.pro-amenities li span i {
 @media (max-width: 480px) {
     .vtabs .tabs-vertical {
         width: auto;
+        min-width: 100px;
     }
     .stat-item {
         padding-right: 0;

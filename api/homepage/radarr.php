@@ -14,192 +14,51 @@ trait RadarrHomepageItem
 		if ($infoOnly) {
 			return $homepageInformation;
 		}
-		$homepageSettings = array(
+		$homepageSettings = [
 			'debug' => true,
-			'settings' => array(
-				'Enable' => array(
-					array(
-						'type' => 'switch',
-						'name' => 'homepageRadarrEnabled',
-						'label' => 'Enable',
-						'value' => $this->config['homepageRadarrEnabled']
-					),
-					array(
-						'type' => 'select',
-						'name' => 'homepageRadarrAuth',
-						'label' => 'Minimum Authentication',
-						'value' => $this->config['homepageRadarrAuth'],
-						'options' => $this->groupOptions
-					)
-				),
-				'Connection' => array(
-					array(
-						'type' => 'input',
-						'name' => 'radarrURL',
-						'label' => 'URL',
-						'value' => $this->config['radarrURL'],
-						'help' => 'Please make sure to use local IP address and port - You also may use local dns name too.',
-						'placeholder' => 'http(s)://hostname:port'
-					),
-					array(
-						'type' => 'password-alt',
-						'name' => 'radarrToken',
-						'label' => 'Token',
-						'value' => $this->config['radarrToken']
-					)
-				),
-				'API SOCKS' => array(
-					array(
-						'type' => 'html',
-						'override' => 12,
-						'label' => '',
-						'html' => '
-							<div class="panel panel-default">
-								<div class="panel-wrapper collapse in">
-									<div class="panel-body">' . $this->socksHeadingHTML('radarr') . '</div>
-								</div>
-							</div>'
-					),
-					array(
-						'type' => 'switch',
-						'name' => 'radarrSocksEnabled',
-						'label' => 'Enable',
-						'value' => $this->config['radarrSocksEnabled']
-					),
-					array(
-						'type' => 'select',
-						'name' => 'radarrSocksAuth',
-						'label' => 'Minimum Authentication',
-						'value' => $this->config['radarrSocksAuth'],
-						'options' => $this->groupOptions
-					),
-				),
-				'Queue' => array(
-					array(
-						'type' => 'switch',
-						'name' => 'homepageRadarrQueueEnabled',
-						'label' => 'Enable',
-						'value' => $this->config['homepageRadarrQueueEnabled']
-					),
-					array(
-						'type' => 'select',
-						'name' => 'homepageRadarrQueueAuth',
-						'label' => 'Minimum Authentication',
-						'value' => $this->config['homepageRadarrQueueAuth'],
-						'options' => $this->groupOptions
-					),
-					array(
-						'type' => 'switch',
-						'name' => 'homepageRadarrQueueCombine',
-						'label' => 'Add to Combined Downloader',
-						'value' => $this->config['homepageRadarrQueueCombine']
-					),
-					array(
-						'type' => 'select',
-						'name' => 'homepageRadarrQueueRefresh',
-						'label' => 'Refresh Seconds',
-						'value' => $this->config['homepageRadarrQueueRefresh'],
-						'options' => $this->timeOptions()
-					),
-				),
-				'Calendar' => array(
-					array(
-						'type' => 'number',
-						'name' => 'calendarStart',
-						'label' => '# of Days Before',
-						'value' => $this->config['calendarStart'],
-						'placeholder' => ''
-					),
-					array(
-						'type' => 'number',
-						'name' => 'calendarEnd',
-						'label' => '# of Days After',
-						'value' => $this->config['calendarEnd'],
-						'placeholder' => ''
-					),
-					array(
-						'type' => 'select',
-						'name' => 'calendarFirstDay',
-						'label' => 'Start Day',
-						'value' => $this->config['calendarFirstDay'],
-						'options' => $this->daysOptions()
-					),
-					array(
-						'type' => 'select',
-						'name' => 'calendarDefault',
-						'label' => 'Default View',
-						'value' => $this->config['calendarDefault'],
-						'options' => $this->calendarDefaultOptions()
-					),
-					array(
-						'type' => 'select',
-						'name' => 'calendarTimeFormat',
-						'label' => 'Time Format',
-						'value' => $this->config['calendarTimeFormat'],
-						'options' => $this->timeFormatOptions()
-					),
-					array(
-						'type' => 'select',
-						'name' => 'calendarLocale',
-						'label' => 'Locale',
-						'value' => $this->config['calendarLocale'],
-						'options' => $this->calendarLocaleOptions()
-					),
-					array(
-						'type' => 'select',
-						'name' => 'calendarLimit',
-						'label' => 'Items Per Day',
-						'value' => $this->config['calendarLimit'],
-						'options' => $this->limitOptions()
-					),
-					array(
-						'type' => 'select',
-						'name' => 'calendarRefresh',
-						'label' => 'Refresh Seconds',
-						'value' => $this->config['calendarRefresh'],
-						'options' => $this->timeOptions()
-					),
-					array(
-						'type' => 'switch',
-						'name' => 'radarrUnmonitored',
-						'label' => 'Show Unmonitored',
-						'value' => $this->config['radarrUnmonitored']
-					),
-					array(
-						'type' => 'switch',
-						'name' => 'radarrPhysicalRelease',
-						'label' => 'Show Physical Release',
-						'value' => $this->config['radarrPhysicalRelease']
-					),
-					array(
-						'type' => 'switch',
-						'name' => 'radarrDigitalRelease',
-						'label' => 'Show Digital Release',
-						'value' => $this->config['radarrDigitalRelease']
-					),
-					array(
-						'type' => 'switch',
-						'name' => 'radarrCinemaRelease',
-						'label' => 'Show Cinema Releases',
-						'value' => $this->config['radarrCinemaRelease']
-					)
-				),
-				'Test Connection' => array(
-					array(
-						'type' => 'blank',
-						'label' => 'Please Save before Testing'
-					),
-					array(
-						'type' => 'button',
-						'label' => '',
-						'icon' => 'fa fa-flask',
-						'class' => 'pull-right',
-						'text' => 'Test Connection',
-						'attr' => 'onclick="testAPIConnection(\'radarr\')"'
-					),
-				)
-			)
-		);
+			'settings' => [
+				'Enable' => [
+					$this->settingsOption('enable', 'homepageRadarrEnabled'),
+					$this->settingsOption('auth', 'homepageRadarrAuth'),
+				],
+				'Connection' => [
+					$this->settingsOption('multiple-url', 'radarrURL'),
+					$this->settingsOption('multiple-token', 'radarrToken'),
+					$this->settingsOption('disable-cert-check', 'radarrDisableCertCheck'),
+					$this->settingsOption('use-custom-certificate', 'radarrUseCustomCertificate'),
+				],
+				'API SOCKS' => [
+					$this->settingsOption('socks', 'radarr'),
+					$this->settingsOption('blank'),
+					$this->settingsOption('enable', 'radarrSocksEnabled'),
+					$this->settingsOption('auth', 'radarrSocksAuth'),
+				],
+				'Queue' => [
+					$this->settingsOption('enable', 'homepageRadarrQueueEnabled'),
+					$this->settingsOption('auth', 'homepageRadarrQueueAuth'),
+					$this->settingsOption('combine', 'homepageRadarrQueueCombine'),
+					$this->settingsOption('refresh', 'homepageRadarrQueueRefresh'),
+				],
+				'Calendar' => [
+					$this->settingsOption('calendar-start', 'calendarStart'),
+					$this->settingsOption('calendar-end', 'calendarEnd'),
+					$this->settingsOption('calendar-starting-day', 'calendarFirstDay'),
+					$this->settingsOption('calendar-default-view', 'calendarDefault'),
+					$this->settingsOption('calendar-time-format', 'calendarTimeFormat'),
+					$this->settingsOption('calendar-locale', 'calendarLocale'),
+					$this->settingsOption('calendar-limit', 'calendarLimit'),
+					$this->settingsOption('refresh', 'calendarRefresh'),
+					$this->settingsOption('switch', 'radarrUnmonitored', ['label' => 'Show Unmonitored']),
+					$this->settingsOption('switch', 'radarrPhysicalRelease', ['label' => 'Show Physical Releases']),
+					$this->settingsOption('switch', 'radarrDigitalRelease', ['label' => 'Show Digital Releases']),
+					$this->settingsOption('switch', 'radarrCinemaRelease', ['label' => 'Show Cinema Releases']),
+				],
+				'Test Connection' => [
+					$this->settingsOption('blank', null, ['label' => 'Please Save before Testing']),
+					$this->settingsOption('test', 'radarr'),
+				]
+			]
+		];
 		return array_merge($homepageInformation, $homepageSettings);
 	}
 	
@@ -218,7 +77,8 @@ trait RadarrHomepageItem
 		$list = $this->csvHomepageUrlToken($this->config['radarrURL'], $this->config['radarrToken']);
 		foreach ($list as $key => $value) {
 			try {
-				$downloader = new Kryptonit3\Sonarr\Sonarr($value['url'], $value['token'], 'radarr');
+				$options = $this->requestOptions($value['url'], null, $this->config['radarrDisableCertCheck'], $this->config['radarrUseCustomCertificate']);
+				$downloader = new Kryptonit3\Sonarr\Sonarr($value['url'], $value['token'], 'radarr', null, null, $options);
 				$results = $downloader->getRootFolder();
 				$downloadList = json_decode($results, true);
 				if (is_array($downloadList) || is_object($downloadList)) {
@@ -317,7 +177,8 @@ trait RadarrHomepageItem
 		$list = $this->csvHomepageUrlToken($this->config['radarrURL'], $this->config['radarrToken']);
 		foreach ($list as $key => $value) {
 			try {
-				$downloader = new Kryptonit3\Sonarr\Sonarr($value['url'], $value['token'], 'radarr');
+				$options = $this->requestOptions($value['url'], $this->config['homepageRadarrQueueRefresh'], $this->config['radarrDisableCertCheck'], $this->config['radarrUseCustomCertificate']);
+				$downloader = new Kryptonit3\Sonarr\Sonarr($value['url'], $value['token'], 'radarr', null, null, $options);
 				$results = $downloader->getQueue();
 				$downloadList = json_decode($results, true);
 				if (is_array($downloadList) || is_object($downloadList)) {
@@ -350,7 +211,8 @@ trait RadarrHomepageItem
 		$list = $this->csvHomepageUrlToken($this->config['radarrURL'], $this->config['radarrToken']);
 		foreach ($list as $key => $value) {
 			try {
-				$downloader = new Kryptonit3\Sonarr\Sonarr($value['url'], $value['token'], 'radarr');
+				$options = $this->requestOptions($value['url'], $this->config['homepageRadarrQueueRefresh'], $this->config['radarrDisableCertCheck'], $this->config['radarrUseCustomCertificate']);
+				$downloader = new Kryptonit3\Sonarr\Sonarr($value['url'], $value['token'], 'radarr', null, null, $options);
 				$results = $downloader->getCalendar($startDate, $endDate, $this->config['radarrUnmonitored']);
 				$result = json_decode($results, true);
 				if (is_array($result) || is_object($result)) {

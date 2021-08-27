@@ -15,279 +15,69 @@ trait PlexHomepageItem
 		if ($infoOnly) {
 			return $homepageInformation;
 		}
+		$libraryList = [['name' => 'Refresh page to update List', 'value' => '', 'disabled' => true]];
 		if ($this->config['plexID'] !== '' && $this->config['plexToken'] !== '') {
+			$libraryList = [];
 			$loop = $this->plexLibraryList('key')['libraries'];
 			foreach ($loop as $key => $value) {
-				$libraryList[] = array(
-					'name' => $key,
-					'value' => $value
-				);
+				$libraryList[] = ['name' => $key, 'value' => $value];
 			}
-		} else {
-			$libraryList = array(
-				array(
-					'name' => 'Refresh page to update List',
-					'value' => '',
-					'disabled' => true,
-				),
-			);
 		}
-		$homepageSettings = array(
-			'name' => 'Plex',
-			'enabled' => strpos('personal', $this->config['license']) !== false,
-			'image' => 'plugins/images/tabs/plex.png',
-			'category' => 'Media Server',
+		$homepageSettings = [
 			'debug' => true,
-			'settings' => array(
-				'Enable' => array(
-					array(
-						'type' => 'switch',
-						'name' => 'homepagePlexEnabled',
-						'label' => 'Enable',
-						'value' => $this->config['homepagePlexEnabled']
-					),
-					array(
-						'type' => 'select',
-						'name' => 'homepagePlexAuth',
-						'label' => 'Minimum Authentication',
-						'value' => $this->config['homepagePlexAuth'],
-						'options' => $this->groupOptions
-					)
-				),
-				'Connection' => array(
-					array(
-						'type' => 'input',
-						'name' => 'plexURL',
-						'label' => 'URL',
-						'value' => $this->config['plexURL'],
-						'help' => 'Please make sure to use local IP address and port - You also may use local dns name too.',
-						'placeholder' => 'http(s)://hostname:port'
-					),
-					array(
-						'type' => 'blank',
-						'name' => '',
-						'label' => '',
-					),
-					array(
-						'type' => 'password-alt',
-						'name' => 'plexToken',
-						'label' => 'Token',
-						'value' => $this->config['plexToken']
-					),
-					array(
-						'type' => 'button',
-						'label' => 'Get Plex Token',
-						'icon' => 'fa fa-ticket',
-						'text' => 'Retrieve',
-						'attr' => 'onclick="showPlexTokenForm(\'#homepage-Plex-form [name=plexToken]\')"'
-					),
-					array(
-						'type' => 'password-alt',
-						'name' => 'plexID',
-						'label' => 'Plex Machine',
-						'value' => $this->config['plexID']
-					),
-					array(
-						'type' => 'button',
-						'label' => 'Get Plex Machine',
-						'icon' => 'fa fa-id-badge',
-						'text' => 'Retrieve',
-						'attr' => 'onclick="showPlexMachineForm(\'#homepage-Plex-form [name=plexID]\')"'
-					),
-				),
-				'Active Streams' => array(
-					array(
-						'type' => 'switch',
-						'name' => 'homepagePlexStreams',
-						'label' => 'Enable',
-						'value' => $this->config['homepagePlexStreams']
-					),
-					array(
-						'type' => 'select',
-						'name' => 'homepagePlexStreamsAuth',
-						'label' => 'Minimum Authorization',
-						'value' => $this->config['homepagePlexStreamsAuth'],
-						'options' => $this->groupOptions
-					),
-					array(
-						'type' => 'switch',
-						'name' => 'homepageShowStreamNames',
-						'label' => 'User Information',
-						'value' => $this->config['homepageShowStreamNames']
-					),
-					array(
-						'type' => 'select2',
-						'class' => 'select2-multiple',
-						'id' => 'plex-stream-exclude-select',
-						'name' => 'homepagePlexStreamsExclude',
-						'label' => 'Libraries to Exclude',
-						'value' => $this->config['homepagePlexStreamsExclude'],
-						'options' => $libraryList
-					),
-					array(
-						'type' => 'select',
-						'name' => 'homepageShowStreamNamesAuth',
-						'label' => 'Minimum Authorization',
-						'value' => $this->config['homepageShowStreamNamesAuth'],
-						'options' => $this->groupOptions
-					),
-					array(
-						'type' => 'select',
-						'name' => 'homepageStreamRefresh',
-						'label' => 'Refresh Seconds',
-						'value' => $this->config['homepageStreamRefresh'],
-						'options' => $this->timeOptions()
-					),
-				),
-				'Recent Items' => array(
-					array(
-						'type' => 'switch',
-						'name' => 'homepagePlexRecent',
-						'label' => 'Enable',
-						'value' => $this->config['homepagePlexRecent']
-					),
-					array(
-						'type' => 'select',
-						'name' => 'homepagePlexRecentAuth',
-						'label' => 'Minimum Authorization',
-						'value' => $this->config['homepagePlexRecentAuth'],
-						'options' => $this->groupOptions
-					),
-					array(
-						'type' => 'select2',
-						'class' => 'select2-multiple',
-						'id' => 'plex-recent-exclude-select',
-						'name' => 'homepagePlexRecentExclude',
-						'label' => 'Libraries to Exclude',
-						'value' => $this->config['homepagePlexRecentExclude'],
-						'options' => $libraryList
-					),
-					array(
-						'type' => 'number',
-						'name' => 'homepageRecentLimit',
-						'label' => 'Item Limit',
-						'value' => $this->config['homepageRecentLimit'],
-					),
-					array(
-						'type' => 'select',
-						'name' => 'homepageRecentRefresh',
-						'label' => 'Refresh Seconds',
-						'value' => $this->config['homepageRecentRefresh'],
-						'options' => $this->timeOptions()
-					),
-				),
-				'Media Search' => array(
-					array(
-						'type' => 'switch',
-						'name' => 'mediaSearch',
-						'label' => 'Enable',
-						'value' => $this->config['mediaSearch']
-					),
-					array(
-						'type' => 'select',
-						'name' => 'mediaSearchAuth',
-						'label' => 'Minimum Authorization',
-						'value' => $this->config['mediaSearchAuth'],
-						'options' => $this->groupOptions
-					),
-					array(
-						'type' => 'select2',
-						'class' => 'select2-multiple',
-						'id' => 'plex-search-exclude-select',
-						'name' => 'homepagePlexSearchExclude',
-						'label' => 'Libraries to Exclude',
-						'value' => $this->config['homepagePlexSearchExclude'],
-						'options' => $libraryList
-					),
-					array(
-						'type' => 'select',
-						'name' => 'mediaSearchType',
-						'label' => 'Media Server',
-						'value' => $this->config['mediaSearchType'],
-						'options' => $this->mediaServerOptions()
-					),
-				),
-				'Playlists' => array(
-					array(
-						'type' => 'switch',
-						'name' => 'homepagePlexPlaylist',
-						'label' => 'Enable',
-						'value' => $this->config['homepagePlexPlaylist']
-					),
-					array(
-						'type' => 'select',
-						'name' => 'homepagePlexPlaylistAuth',
-						'label' => 'Minimum Authorization',
-						'value' => $this->config['homepagePlexPlaylistAuth'],
-						'options' => $this->groupOptions
-					),
-				),
-				'Misc Options' => array(
-					array(
-						'type' => 'input',
-						'name' => 'plexTabName',
-						'label' => 'Plex Tab Name',
-						'value' => $this->config['plexTabName'],
-						'placeholder' => 'Only use if you have Plex in a reverse proxy'
-					),
-					array(
-						'type' => 'input',
-						'name' => 'plexTabURL',
-						'label' => 'Plex Tab WAN URL',
-						'value' => $this->config['plexTabURL'],
-						'placeholder' => 'http(s)://hostname:port'
-					),
-					array(
-						'type' => 'select',
-						'name' => 'cacheImageSize',
-						'label' => 'Image Cache Size',
-						'value' => $this->config['cacheImageSize'],
-						'options' => array(
-							array(
-								'name' => 'Low',
-								'value' => '.5'
-							),
-							array(
-								'name' => '1x',
-								'value' => '1'
-							),
-							array(
-								'name' => '2x',
-								'value' => '2'
-							),
-							array(
-								'name' => '3x',
-								'value' => '3'
-							)
-						)
-					),
-					array(
-						'type' => 'blank',
-						'label' => ''
-					),
-					array(
-						'type' => 'switch',
-						'name' => 'homepageUseCustomStreamNames',
-						'label' => 'Use Tautulli custom names for users',
-						'value' => $this->config['homepageUseCustomStreamNames']
-					)
-				),
-				'Test Connection' => array(
-					array(
-						'type' => 'blank',
-						'label' => 'Please Save before Testing'
-					),
-					array(
-						'type' => 'button',
-						'label' => '',
-						'icon' => 'fa fa-flask',
-						'class' => 'pull-right',
-						'text' => 'Test Connection',
-						'attr' => 'onclick="testAPIConnection(\'plex\')"'
-					),
-				)
-			)
-		);
+			'settings' => [
+				'Enable' => [
+					$this->settingsOption('enable', 'homepagePlexEnabled'),
+					$this->settingsOption('auth', 'homepagePlexAuth'),
+				],
+				'Connection' => [
+					$this->settingsOption('url', 'plexURL'),
+					$this->settingsOption('blank'),
+					$this->settingsOption('disable-cert-check', 'plexDisableCertCheck'),
+					$this->settingsOption('use-custom-certificate', 'plexUseCustomCertificate'),
+					$this->settingsOption('token', 'plexToken'),
+					$this->settingsOption('button', '', ['label' => 'Get Plex Token', 'icon' => 'fa fa-ticket', 'text' => 'Retrieve', 'attr' => 'onclick="showPlexTokenForm(\'#homepage-Plex-form [name=plexToken]\')"']),
+					$this->settingsOption('password-alt', 'plexID', ['label' => 'Plex Machine']),
+					$this->settingsOption('button', '', ['label' => 'Get Plex Machine', 'icon' => 'fa fa-id-badge', 'text' => 'Retrieve', 'attr' => 'onclick="showPlexMachineForm(\'#homepage-Plex-form [name=plexID]\')"']),
+				],
+				'Active Streams' => [
+					$this->settingsOption('enable', 'homepagePlexStreams'),
+					$this->settingsOption('auth', 'homepagePlexStreamsAuth'),
+					$this->settingsOption('switch', 'homepageShowStreamNames', ['label' => 'User Information']),
+					$this->settingsOption('auth', 'homepageShowStreamNamesAuth'),
+					$this->settingsOption('refresh', 'homepageStreamRefresh'),
+					$this->settingsOption('plex-library-exclude', 'homepagePlexStreamsExclude', ['options' => $libraryList]),
+				],
+				'Recent Items' => [
+					$this->settingsOption('enable', 'homepagePlexRecent'),
+					$this->settingsOption('auth', 'homepagePlexRecentAuth'),
+					$this->settingsOption('plex-library-exclude', 'homepagePlexRecentExclude', ['options' => $libraryList]),
+					$this->settingsOption('limit', 'homepageRecentLimit'),
+					$this->settingsOption('refresh', 'homepageRecentRefresh'),
+				],
+				'Media Search' => [
+					$this->settingsOption('enable', 'mediaSearch'),
+					$this->settingsOption('auth', 'mediaSearchAuth'),
+					$this->settingsOption('plex-library-exclude', 'homepagePlexSearchExclude', ['options' => $libraryList]),
+					$this->settingsOption('media-search-server', 'mediaSearchType'),
+				],
+				'Playlists' => [
+					$this->settingsOption('enable', 'homepagePlexPlaylist'),
+					$this->settingsOption('auth', 'homepagePlexPlaylistAuth'),
+				],
+				'Misc Options' => [
+					$this->settingsOption('input', 'plexTabName', ['label' => 'Plex Tab Name', 'placeholder' => 'Only use if you have Plex in a reverse proxy']),
+					$this->settingsOption('input', 'plexTabURL', ['label' => 'Plex Tab WAN URL', 'placeholder' => 'http(s)://domain.com/plex']),
+					$this->settingsOption('image-cache-quality', 'cacheImageSize'),
+					$this->settingsOption('blank'),
+					$this->settingsOption('switch', 'homepageUseCustomStreamNames', ['label' => 'Use Tautulli custom names for users']),
+				],
+				'Test Connection' => [
+					$this->settingsOption('blank', null, ['label' => 'Please Save before Testing']),
+					$this->settingsOption('test', 'plex'),
+				]
+			]
+		];
 		return array_merge($homepageInformation, $homepageSettings);
 	}
 	
@@ -296,8 +86,8 @@ trait PlexHomepageItem
 		if (!empty($this->config['plexURL']) && !empty($this->config['plexToken'])) {
 			$url = $this->qualifyURL($this->config['plexURL']) . "/servers?X-Plex-Token=" . $this->config['plexToken'];
 			try {
-				$options = ($this->localURL($url)) ? array('verify' => false) : array();
-				$response = Requests::get($url, array(), $options);
+				$options = $this->requestOptions($url, null, $this->config['plexDisableCertCheck'], $this->config['plexUseCustomCertificate']);
+				$response = Requests::get($url, [], $options);
 				libxml_use_internal_errors(true);
 				if ($response->success) {
 					$this->setAPIResponse('success', 'API Connection succeeded', 200);
@@ -461,8 +251,8 @@ trait PlexHomepageItem
 		$resolve = true;
 		$url = $this->qualifyURL($this->config['plexURL']);
 		$url = $url . "/status/sessions?X-Plex-Token=" . $this->config['plexToken'];
-		$options = ($this->localURL($url)) ? array('verify' => false) : array();
-		$response = Requests::get($url, array(), $options);
+		$options = $this->requestOptions($url, $this->config['homepageStreamRefresh'], $this->config['plexDisableCertCheck'], $this->config['plexUseCustomCertificate']);
+		$response = Requests::get($url, [], $options);
 		libxml_use_internal_errors(true);
 		if ($response->success) {
 			$items = array();
@@ -494,8 +284,8 @@ trait PlexHomepageItem
 		$urls['tv'] = $url . "/hubs/home/recentlyAdded?X-Plex-Token=" . $this->config['plexToken'] . "&X-Plex-Container-Start=0&X-Plex-Container-Size=" . $this->config['homepageRecentLimit'] . "&type=2";
 		$urls['music'] = $url . "/hubs/home/recentlyAdded?X-Plex-Token=" . $this->config['plexToken'] . "&X-Plex-Container-Start=0&X-Plex-Container-Size=" . $this->config['homepageRecentLimit'] . "&type=8";
 		foreach ($urls as $k => $v) {
-			$options = ($this->localURL($v)) ? array('verify' => false) : array();
-			$response = Requests::get($v, array(), $options);
+			$options = $this->requestOptions($url, $this->config['homepageRecentRefresh'], $this->config['plexDisableCertCheck'], $this->config['plexUseCustomCertificate']);
+			$response = Requests::get($v, [], $options);
 			libxml_use_internal_errors(true);
 			if ($response->success) {
 				$items = array();
@@ -531,8 +321,8 @@ trait PlexHomepageItem
 		}
 		$url = $this->qualifyURL($this->config['plexURL']);
 		$url = $url . "/playlists?X-Plex-Token=" . $this->config['plexToken'];
-		$options = ($this->localURL($url)) ? array('verify' => false) : array();
-		$response = Requests::get($url, array(), $options);
+		$options = $this->requestOptions($url, null, $this->config['plexDisableCertCheck'], $this->config['plexUseCustomCertificate']);
+		$response = Requests::get($url, [], $options);
 		libxml_use_internal_errors(true);
 		if ($response->success) {
 			$items = array();
@@ -579,8 +369,8 @@ trait PlexHomepageItem
 		$resolve = true;
 		$url = $this->qualifyURL($this->config['plexURL']);
 		$url = $url . "/library/metadata/" . $key . "?X-Plex-Token=" . $this->config['plexToken'];
-		$options = ($this->localURL($url)) ? array('verify' => false) : array();
-		$response = Requests::get($url, array(), $options);
+		$options = $this->requestOptions($url, null, $this->config['plexDisableCertCheck'], $this->config['plexUseCustomCertificate']);
+		$response = Requests::get($url, [], $options);
 		libxml_use_internal_errors(true);
 		if ($response->success) {
 			$items = array();
@@ -614,8 +404,8 @@ trait PlexHomepageItem
 		$resolve = true;
 		$url = $this->qualifyURL($this->config['plexURL']);
 		$url = $url . "/search?query=" . rawurlencode($query) . "&X-Plex-Token=" . $this->config['plexToken'];
-		$options = ($this->localURL($url)) ? array('verify' => false) : array();
-		$response = Requests::get($url, array(), $options);
+		$options = $this->requestOptions($url, null, $this->config['plexDisableCertCheck'], $this->config['plexUseCustomCertificate']);
+		$response = Requests::get($url, [], $options);
 		libxml_use_internal_errors(true);
 		if ($response->success) {
 			$items = array();
@@ -836,7 +626,8 @@ trait PlexHomepageItem
 		$url = $this->qualifyURL($this->config['tautulliURL']);
 		$url .= '/api/v2?apikey=' . $this->config['tautulliApikey'];
 		$url .= '&cmd=get_users';
-		$response = Requests::get($url, [], []);
+		$options = $this->requestOptions($url, null, $this->config['tautulliDisableCertCheck'], $this->config['tautulliUseCustomCertificate']);
+		$response = Requests::get($url, [], $options);
 		try {
 			$response = json_decode($response->body, true);
 			foreach ($response['response']['data'] as $user) {
@@ -845,7 +636,7 @@ trait PlexHomepageItem
 				}
 			}
 		} catch (Exception $e) {
-			$this->setAPIResponse('failure', null, 422, [$e->getMessage()]);
+			$this->setAPIResponse('error', null, 422, [$e->getMessage()]);
 		}
 		$this->setAPIResponse('success', null, 200, $names);
 		return $names;
