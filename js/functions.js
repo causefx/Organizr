@@ -4929,7 +4929,7 @@ function buildStreamItem(array,source){
 						<h3 class="box-title pull-right vertical-middle" style="width:10%"><i class="icon-control-`+v.state+` fa-fw text-info" style=""></i></h3>
 						<div class="clearfix"></div>
 						<small class="pull-left p-l-10 w-50 elip"><span class="pull-left"><i class="`+icon+` fa-fw text-info"></i>`+v.nowPlayingBottom+`</span></small>
-						<small class="pull-right p-r-10 w-50 elip"><span class="pull-right">`+v.user+` <i class="icon-user"></i></span></small>
+						<small class="pull-right p-r-10 w-50"><span class="pull-right"><span class="">`+v.user+` <i class="icon-user"></i></span></span></small>
 						<br>
 					</div>
 				</div>
