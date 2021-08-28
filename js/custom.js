@@ -1796,7 +1796,7 @@ $(document).on('click', ".ipInfo", function(){
 });
 // set active for group list
 $(document).on('click', '.allGroupsList', function() {
-    $(this).toggleClass('active');
+    //$(this).toggleClass('active');
 });
 // Control init of custom netdata JSON editor
 $(document).on('click', 'li a[aria-controls="Custom data"]', function() {
