@@ -489,7 +489,7 @@ trait OrganizrFunctions
 			ob_end_flush(); // Send the output to the browser
 			die();
 		} else {
-			die("Invalid Request");
+			die($this->showHTML('Invalid Request', 'No image returned'));
 		}
 	}
 	
@@ -733,5 +733,31 @@ trait OrganizrFunctions
 			}
 		}
 		return $options;
+	}
+	
+	public function showHTML(string $title = 'Organizr Alert', string $notice = '')
+	{
+		return
+			'<!DOCTYPE html>
+			<html lang="en">
+			<head>
+				<link rel="stylesheet" href="' . $this->getServerPath() . '/css/mvp.css">
+				<meta charset="utf-8">
+				<meta name="description" content="Trakt OAuth">
+				<meta name="viewport" content="width=device-width, initial-scale=1.0">
+				<title>' . $title . '</title>
+			</head>
+
+			<body>
+				<main>
+					<section>
+						<aside>
+							<h3>' . $title . '</h3>
+							<p>' . $notice . '</p>
+						</aside>
+					</section>
+				</main>
+			</body>
+			</html>';
 	}
 }

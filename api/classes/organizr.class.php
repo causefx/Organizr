@@ -189,7 +189,7 @@ class Organizr
 			if ($this->config['blacklisted'] !== '') {
 				if (in_array($currentIP, $this->arrayIP($this->config['blacklisted']))) {
 					$this->debug('User was sent to blackhole - Blacklisted IPs: ' . $this->config['blacklisted']);
-					die($this->config['blacklistedMessage']);
+					die($this->showHTML('Blacklisted', $this->config['blacklistedMessage']));
 				}
 			}
 		}
@@ -570,7 +570,7 @@ class Organizr
 	private function checkPHP()
 	{
 		if (!(version_compare(PHP_VERSION, $this->minimumPHP) >= 0)) {
-			die('Organizr needs PHP Version: ' . $this->minimumPHP . '<br/> You have PHP Version: ' . PHP_VERSION);
+			die($this->showHTML('PHP Version', 'Organizr needs PHP Version: ' . $this->minimumPHP . '<br/> You have PHP Version: ' . PHP_VERSION));
 		}
 	}
 	
@@ -579,7 +579,7 @@ class Organizr
 		if ($this->hasDB()) {
 			$db = is_writable($this->config['dbLocation'] . $this->config['dbName']);
 			if (!$db) {
-				die('Organizr DB is not writable!!!  Please fix...');
+				die($this->showHTML('Organizr DB is not writable!', 'Please check permissions and/or disk space'));
 			}
 		}
 	}
@@ -595,7 +595,7 @@ class Organizr
 				@$this->rrmdir($cleanup);
 			}
 			if (file_exists($tempLock)) {
-				die('upgrading');
+				die($this->showHTML('Upgrading', 'Please wait...'));
 			}
 			$updateDB = false;
 			$updateSuccess = true;
@@ -649,7 +649,7 @@ class Organizr
 				$this->debug('Updated config version to ' . $this->version);
 			}
 			if ($updateSuccess == false) {
-				die('Database update failed - Please manually check logs and fix - Then reload this page');
+				die($this->showHTML('Database update failed', 'Please manually check logs and fix - Then reload this page'));
 			}
 			return true;
 		}
