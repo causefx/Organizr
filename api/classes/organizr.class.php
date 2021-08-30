@@ -4055,6 +4055,9 @@ class Organizr
 			//new way
 			if (method_exists($this, $key)) {
 				$homepageBuilt .= $this->$key();
+			} elseif (strpos($key, 'homepageOrdercustomhtml') !== false) {
+				$iteration = substr($key, -2);
+				$homepageBuilt .= $this->homepageOrdercustomhtml($iteration);
 			} else {
 				$homepageBuilt .= '<div id="' . $key . '"></div>';
 			}
