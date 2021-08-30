@@ -133,13 +133,7 @@ trait JellyfinHomepageItem
 				]
 			]
 		];
-		if (array_key_exists($key, $permissions)) {
-			return $permissions[$key];
-		} elseif ($key == 'all') {
-			return $permissions;
-		} else {
-			return [];
-		}
+		return $this->homepageCheckKeyPermissions($key, $permissions);
 	}
 	
 	public function homepageOrderjellyfinnowplaying()

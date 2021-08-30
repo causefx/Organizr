@@ -51,98 +51,15 @@ trait HTMLHomepageItem
 				]
 			];
 		}
-		if (array_key_exists($key, $permissions)) {
-			return $permissions[$key];
-		} elseif ($key == 'all') {
-			return $permissions;
-		} else {
-			return [];
-		}
+		return $this->homepageCheckKeyPermissions($key, $permissions);
 	}
 	
-	public function homepageOrdercustomhtml01()
+	public function homepageOrdercustomhtml($key)
 	{
-		if ($this->homepageItemPermissions($this->htmlHomepagePermissions('01'))) {
+		if ($this->homepageItemPermissions($this->htmlHomepagePermissions($key))) {
 			return '
 				<div id="' . __FUNCTION__ . '">
-					' . $this->config['customHTML01'] . '
-				</div>
-				';
-		}
-	}
-	
-	public function homepageOrdercustomhtml02()
-	{
-		if ($this->homepageItemPermissions($this->htmlHomepagePermissions('02'))) {
-			return '
-				<div id="' . __FUNCTION__ . '">
-					' . $this->config['customHTML02'] . '
-				</div>
-				';
-		}
-	}
-	
-	public function homepageOrdercustomhtml03()
-	{
-		if ($this->homepageItemPermissions($this->htmlHomepagePermissions('03'))) {
-			return '
-				<div id="' . __FUNCTION__ . '">
-					' . $this->config['customHTML03'] . '
-				</div>
-				';
-		}
-	}
-	
-	public function homepageOrdercustomhtml04()
-	{
-		if ($this->homepageItemPermissions($this->htmlHomepagePermissions('04'))) {
-			return '
-				<div id="' . __FUNCTION__ . '">
-					' . $this->config['customHTML04'] . '
-				</div>
-				';
-		}
-	}
-	
-	public function homepageOrdercustomhtml05()
-	{
-		if ($this->homepageItemPermissions($this->htmlHomepagePermissions('05'))) {
-			return '
-				<div id="' . __FUNCTION__ . '">
-					' . $this->config['customHTML05'] . '
-				</div>
-				';
-		}
-	}
-	
-	public function homepageOrdercustomhtml06()
-	{
-		if ($this->homepageItemPermissions($this->htmlHomepagePermissions('06'))) {
-			return '
-				<div id="' . __FUNCTION__ . '">
-					' . $this->config['customHTML06'] . '
-				</div>
-				';
-		}
-	}
-	
-	public function homepageOrdercustomhtml07()
-	{
-		if ($this->homepageItemPermissions($this->htmlHomepagePermissions('07'))) {
-			return '
-				<div id="' . __FUNCTION__ . '">
-					' . $this->config['customHTML07'] . '
-				</div>
-				';
-		}
-	}
-	
-	public function homepageOrdercustomhtml08()
-	{
-		if ($this->homepageItemPermissions($this->htmlHomepagePermissions('08'))) {
-			return '
-				<div id="' . __FUNCTION__ . '">
-					' . $this->config['customHTML08'] . '
+					' . $this->config['customHTML' . $key] . '
 				</div>
 				';
 		}
