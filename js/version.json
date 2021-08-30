@@ -418,5 +418,12 @@
     "new": "Self Signed SSL Cert option to all homepage items (#1177)|shortcut function for menu clicking - WIP",
     "fixed": "move google js to load only when config value setup (#1699)|tooltips to homepage settings ui buttons|First IPA typo to Free IPA|typo and sort LDAP options|now playing spacing",
     "notes": ""
+  },
+  "2.1.525": {
+    "date": "2021-08-29 21:40",
+    "title": "Added more Custom HTML homepage items",
+    "new": "",
+    "fixed": "",
+    "notes": ""
   }
 }

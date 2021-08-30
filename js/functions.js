@@ -23,6 +23,7 @@ var tabInformation = {};
 var tabActionsList = [];
 tabActionsList['refresh'] = [];
 tabActionsList['close'] = [];
+var customHTMLEditorObject = [];
 $.xhrPool = [];
 // Add new jquery serializeObject function
 $.fn.serializeObject = function()
@@ -1722,27 +1723,23 @@ function homepageItemFormHTML(v){
 function clearHomepageOriginal(){
 	$('#editHomepageItem').html('');
 }
-function completeHomepageLoad(item){
-	if(item == 'CustomHTML-1'){
-		customHTMLoneEditor = ace.edit("customHTMLoneEditor");
-		let HTMLMode = ace.require("ace/mode/html").Mode;
-		customHTMLoneEditor.session.setMode(new HTMLMode());
-		customHTMLoneEditor.setTheme("ace/theme/idle_fingers");
-		customHTMLoneEditor.setShowPrintMargin(false);
-		customHTMLoneEditor.session.on('change', function(delta) {
-			$('.customHTMLoneTextarea').val(customHTMLoneEditor.getValue());
-			$('#homepage-CustomHTML-1-form-save').removeClass('hidden');
-		});
-	}
-	if(item == 'CustomHTML-2'){
-		customHTMLtwoEditor = ace.edit("customHTMLtwoEditor");
-		let HTMLMode = ace.require("ace/mode/html").Mode;
-		customHTMLtwoEditor.session.setMode(new HTMLMode());
-		customHTMLtwoEditor.setTheme("ace/theme/idle_fingers");
-		customHTMLtwoEditor.setShowPrintMargin(false);
-		customHTMLtwoEditor.session.on('change', function(delta) {
-			$('.customHTMLtwoTextarea').val(customHTMLtwoEditor.getValue());
-			$('#homepage-CustomHTML-2-form-save').removeClass('hidden');
+function completeHomepageLoad(item, data){
+	if(item == 'CustomHTML'){
+		let iteration = 0;
+		$.each(data.settings, function(i,customItem) {
+			let iterationString = (parseInt(iteration, 10) + 101).toString().substr(1);
+			let customEditor = 'customHTML'+iterationString+'Editor';
+			let customTextarea = 'customHTML'+iterationString+'Textarea';
+			let HTMLMode = ace.require("ace/mode/html").Mode;
+			customHTMLEditorObject[iterationString] = ace.edit(customEditor);
+			customHTMLEditorObject[iterationString].session.setMode(new HTMLMode());
+			customHTMLEditorObject[iterationString].setTheme("ace/theme/idle_fingers");
+			customHTMLEditorObject[iterationString].setShowPrintMargin(false);
+			customHTMLEditorObject[iterationString].session.on('change', function(delta) {
+				$('.' + customTextarea).val(customHTMLEditorObject[iterationString].getValue());
+				$('#homepage-CustomHTML-form-save').removeClass('hidden');
+			});
+			iteration++;
 		});
 	}
 	pageLoad();
@@ -1775,7 +1772,7 @@ function editHomepageItem(item){
 					delay: 0,
 					fullscreen: true,
 					clone: false,
-					onComplete: completeHomepageLoad(item),
+					onComplete: completeHomepageLoad(item, response.data),
 					onClose: clearHomepageOriginal
 				},loader:{active:true}
 			}).open();

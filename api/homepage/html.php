@@ -2,40 +2,17 @@
 
 trait HTMLHomepageItem
 {
-	public function htmlOneSettingsArray($infoOnly = false)
+	public function customHtmlNumber()
 	{
-		$homepageInformation = [
-			'name' => 'CustomHTML-1',
-			'enabled' => strpos('personal,business', $this->config['license']) !== false,
-			'image' => 'plugins/images/tabs/custom1.png',
-			'category' => 'Custom',
-			'settingsArray' => __FUNCTION__
-		];
-		if ($infoOnly) {
-			return $homepageInformation;
-		}
-		$homepageSettings = [
-			'debug' => true,
-			'settings' => [
-				'Enable' => [
-					$this->settingsOption('enable', 'homepageCustomHTMLoneEnabled'),
-					$this->settingsOption('auth', 'homepageCustomHTMLoneAuth'),
-				],
-				'Code' => [
-					$this->settingsOption('pre-code-editor', 'customHTMLone'),
-					$this->settingsOption('code-editor', 'customHTMLone'),
-				]
-			]
-		];
-		return array_merge($homepageInformation, $homepageSettings);
+		return 8;
 	}
 	
-	public function htmlTwoSettingsArray($infoOnly = false)
+	public function customHtmlSettingsArray($infoOnly = false)
 	{
 		$homepageInformation = [
-			'name' => 'CustomHTML-2',
+			'name' => 'CustomHTML',
 			'enabled' => strpos('personal,business', $this->config['license']) !== false,
-			'image' => 'plugins/images/tabs/custom2.png',
+			'image' => 'plugins/images/tabs/HTML5.png',
 			'category' => 'Custom',
 			'settingsArray' => __FUNCTION__
 		];
@@ -44,46 +21,36 @@ trait HTMLHomepageItem
 		}
 		$homepageSettings = [
 			'debug' => true,
-			'settings' => [
-				'Enable' => [
-					$this->settingsOption('enable', 'homepageCustomHTMLtwoEnabled'),
-					$this->settingsOption('auth', 'homepageCustomHTMLtwoAuth'),
-				],
-				'Code' => [
-					$this->settingsOption('pre-code-editor', 'customHTMLtwo'),
-					$this->settingsOption('code-editor', 'customHTMLtwo'),
-				]
-			]
+			'settings' => []
 		];
+		for ($i = 1; $i <= $this->customHtmlNumber(); $i++) {
+			$i = sprintf('%02d', $i);
+			$homepageSettings['settings']['Custom HTML ' . $i] = array(
+				$this->settingsOption('enable', 'homepageCustomHTML' . $i . 'Enabled'),
+				$this->settingsOption('auth', 'homepageCustomHTML' . $i . 'Auth'),
+				$this->settingsOption('pre-code-editor', 'customHTML' . $i),
+				$this->settingsOption('code-editor', 'customHTML' . $i, ['label' => 'Custom HTML Code']),
+			);
+		}
 		return array_merge($homepageInformation, $homepageSettings);
 	}
 	
 	public function htmlHomepagePermissions($key = null)
 	{
-		$permissions = [
-			'one' => [
+		for ($i = 1; $i <= $this->customHtmlNumber(); $i++) {
+			$i = sprintf('%02d', $i);
+			$permissions[$i] = [
 				'enabled' => [
-					'homepageCustomHTMLoneEnabled'
+					'homepageCustomHTML' . $i . 'Enabled'
 				],
 				'auth' => [
-					'homepageCustomHTMLoneAuth'
+					'homepageCustomHTML' . $i . 'Auth'
 				],
 				'not_empty' => [
-					'customHTMLone'
+					'customHTML' . $i
 				]
-			],
-			'two' => [
-				'enabled' => [
-					'homepageCustomHTMLtwoEnabled'
-				],
-				'auth' => [
-					'homepageCustomHTMLtwoAuth'
-				],
-				'not_empty' => [
-					'customHTMLtwo'
-				]
-			]
-		];
+			];
+		}
 		if (array_key_exists($key, $permissions)) {
 			return $permissions[$key];
 		} elseif ($key == 'all') {
@@ -93,23 +60,89 @@ trait HTMLHomepageItem
 		}
 	}
 	
-	public function homepageOrdercustomhtml()
+	public function homepageOrdercustomhtml01()
 	{
-		if ($this->homepageItemPermissions($this->htmlHomepagePermissions('one'))) {
+		if ($this->homepageItemPermissions($this->htmlHomepagePermissions('01'))) {
 			return '
 				<div id="' . __FUNCTION__ . '">
-					' . $this->config['customHTMLone'] . '
+					' . $this->config['customHTML01'] . '
 				</div>
 				';
 		}
 	}
 	
-	public function homepageOrdercustomhtmlTwo()
+	public function homepageOrdercustomhtml02()
 	{
-		if ($this->homepageItemPermissions($this->htmlHomepagePermissions('two'))) {
+		if ($this->homepageItemPermissions($this->htmlHomepagePermissions('02'))) {
 			return '
 				<div id="' . __FUNCTION__ . '">
-					' . $this->config['customHTMLtwo'] . '
+					' . $this->config['customHTML02'] . '
+				</div>
+				';
+		}
+	}
+	
+	public function homepageOrdercustomhtml03()
+	{
+		if ($this->homepageItemPermissions($this->htmlHomepagePermissions('03'))) {
+			return '
+				<div id="' . __FUNCTION__ . '">
+					' . $this->config['customHTML03'] . '
+				</div>
+				';
+		}
+	}
+	
+	public function homepageOrdercustomhtml04()
+	{
+		if ($this->homepageItemPermissions($this->htmlHomepagePermissions('04'))) {
+			return '
+				<div id="' . __FUNCTION__ . '">
+					' . $this->config['customHTML04'] . '
+				</div>
+				';
+		}
+	}
+	
+	public function homepageOrdercustomhtml05()
+	{
+		if ($this->homepageItemPermissions($this->htmlHomepagePermissions('05'))) {
+			return '
+				<div id="' . __FUNCTION__ . '">
+					' . $this->config['customHTML05'] . '
+				</div>
+				';
+		}
+	}
+	
+	public function homepageOrdercustomhtml06()
+	{
+		if ($this->homepageItemPermissions($this->htmlHomepagePermissions('06'))) {
+			return '
+				<div id="' . __FUNCTION__ . '">
+					' . $this->config['customHTML06'] . '
+				</div>
+				';
+		}
+	}
+	
+	public function homepageOrdercustomhtml07()
+	{
+		if ($this->homepageItemPermissions($this->htmlHomepagePermissions('07'))) {
+			return '
+				<div id="' . __FUNCTION__ . '">
+					' . $this->config['customHTML07'] . '
+				</div>
+				';
+		}
+	}
+	
+	public function homepageOrdercustomhtml08()
+	{
+		if ($this->homepageItemPermissions($this->htmlHomepagePermissions('08'))) {
+			return '
+				<div id="' . __FUNCTION__ . '">
+					' . $this->config['customHTML08'] . '
 				</div>
 				';
 		}

@@ -1064,12 +1064,6 @@ $(document).on("click", ".saveJava", function () {
 $(document).on("click", ".saveThemeJava", function () {
     $('.javaThemeTextarea').val(javaThemeEditor.getValue()).trigger('change');
 });
-$(document).on("click", ".savecustomHTMLoneTextarea", function () {
-    $('.customHTMLoneTextarea').val(customHTMLoneEditor.getValue()).trigger('change');
-});
-$(document).on("click", ".savecustomHTMLtwoTextarea", function () {
-    $('.customHTMLtwoTextarea').val(customHTMLtwoEditor.getValue()).trigger('change');
-});
 
 $(document).on('focusout', 'input.pick-a-color-custom-options', function(e) {
     var original = $(this).attr('data-original');

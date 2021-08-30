@@ -10,6 +10,8 @@ trait UpgradeFunctions
 				$this->upgradeHomepageTabURL();
 			case '2.1.400':
 				$this->removeOldPluginDirectoriesAndFiles();
+			case '2.1.525':
+				$this->removeOldCustomHTML();
 			default:
 				$this->setAPIResponse('success', 'Ran update function for version: ' . $version, 200);
 				return true;
@@ -75,6 +77,52 @@ trait UpgradeFunctions
 				@$this->rrmdir($folder);
 			}
 		}
+		return true;
+	}
+	
+	public function removeOldCustomHTML()
+	{
+		$updateItems = [];
+		if ($this->config['homepageCustomHTMLoneEnabled']) {
+			if ($this->config['homepageCustomHTMLoneEnabled'] !== '') {
+				$updateItemsNew = ['homepageCustomHTML01Enabled' => $this->config['homepageCustomHTMLoneEnabled']];
+				$updateItems = array_merge($updateItems, $updateItemsNew);
+			}
+		}
+		if ($this->config['homepageCustomHTMLoneAuth']) {
+			if ($this->config['homepageCustomHTMLoneAuth'] !== '') {
+				$updateItemsNew = ['homepageCustomHTML01Auth' => $this->config['homepageCustomHTMLoneAuth']];
+				$updateItems = array_merge($updateItems, $updateItemsNew);
+			}
+		}
+		if ($this->config['customHTMLone']) {
+			if ($this->config['customHTMLone'] !== '') {
+				$updateItemsNew = ['customHTML01' => $this->config['customHTMLone']];
+				$updateItems = array_merge($updateItems, $updateItemsNew);
+			}
+		}
+		if ($this->config['homepageCustomHTMLtwoEnabled']) {
+			if ($this->config['homepageCustomHTMLtwoEnabled'] !== '') {
+				$updateItemsNew = ['homepageCustomHTML02Enabled' => $this->config['homepageCustomHTMLtwoEnabled']];
+				$updateItems = array_merge($updateItems, $updateItemsNew);
+			}
+		}
+		if ($this->config['homepageCustomHTMLtwoAuth']) {
+			if ($this->config['homepageCustomHTMLtwoAuth'] !== '') {
+				$updateItemsNew = ['homepageCustomHTML02Auth' => $this->config['homepageCustomHTMLtwoAuth']];
+				$updateItems = array_merge($updateItems, $updateItemsNew);
+			}
+		}
+		if ($this->config['customHTMLtwo']) {
+			if ($this->config['customHTMLtwo'] !== '') {
+				$updateItemsNew = ['customHTML02' => $this->config['customHTMLtwo']];
+				$updateItems = array_merge($updateItems, $updateItemsNew);
+			}
+		}
+		if (!empty($updateItems)) {
+			$this->updateConfig($updateItems);
+		}
+		$this->removeConfigItem(['homepageOrdercustomhtml', 'homepageOrdercustomhtmlTwo', 'homepageCustomHTMLoneEnabled', 'homepageCustomHTMLoneAuth', 'customHTMLone', 'homepageCustomHTMLtwoEnabled', 'homepageCustomHTMLtwoAuth', 'customHTMLtwo']);
 		return true;
 	}
 }

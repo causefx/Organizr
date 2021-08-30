@@ -60,7 +60,7 @@ class Organizr
 	
 	// ===================================
 	// Organizr Version
-	public $version = '2.1.496';
+	public $version = '2.1.525';
 	// ===================================
 	// Quick php Version check
 	public $minimumPHP = '7.3';
@@ -638,6 +638,14 @@ class Organizr
 				$this->upgradeToVersion($versionCheck);
 			}
 			// End Upgrade check start for version above
+			// Upgrade check start for version below
+			$versionCheck = '2.1.525';
+			if ($compare->lessThan($oldVer, $versionCheck)) {
+				$updateDB = false;
+				$oldVer = $versionCheck;
+				$this->upgradeToVersion($versionCheck);
+			}
+			// End Upgrade check start for version above
 			if ($updateDB == true) {
 				//return 'Upgraded Needed - Current Version '.$oldVer.' - New Version: '.$versionCheck;
 				// Upgrade database to latest version
@@ -812,6 +820,22 @@ class Organizr
 		// Inject Parts
 		foreach ($new as $k => $v) {
 			$current[$k] = $v;
+		}
+		// Return Create
+		return $this->createConfig($current);
+	}
+	
+	public function removeConfigItem($new, $current = false)
+	{
+		// Get config if not supplied
+		if ($current === false) {
+			$current = $this->config;
+		} elseif (is_string($current) && is_file($current)) {
+			$current = $this->loadConfig($current);
+		}
+		// Inject Parts
+		foreach ($new as $k) {
+			unset($current[$k]);
 		}
 		// Return Create
 		return $this->createConfig($current);
@@ -4044,17 +4068,18 @@ class Organizr
 		$inputList = '<form id="homepage-values" class="row">';
 		foreach ($homepageOrder as $key => $val) {
 			switch ($key) {
-				case 'homepageOrdercustomhtml':
+				case 'homepageOrdercustomhtml01':
+				case 'homepageOrdercustomhtml02':
+				case 'homepageOrdercustomhtml03':
+				case 'homepageOrdercustomhtml04':
+				case 'homepageOrdercustomhtml05':
+				case 'homepageOrdercustomhtml06':
+				case 'homepageOrdercustomhtml07':
+				case 'homepageOrdercustomhtml08':
+					$iteration = substr($key, -2);
 					$class = 'bg-info';
-					$image = 'plugins/images/tabs/custom1.png';
-					if (!$this->config['homepageCustomHTMLoneEnabled']) {
-						$class .= ' faded';
-					}
-					break;
-				case 'homepageOrdercustomhtmlTwo':
-					$class = 'bg-info';
-					$image = 'plugins/images/tabs/custom2.png';
-					if (!$this->config['homepageCustomHTMLtwoEnabled']) {
+					$image = 'plugins/images/tabs/HTML5.png';
+					if (!$this->config['homepageCustomHTML' . $iteration . 'Enabled']) {
 						$class .= ' faded';
 					}
 					break;
