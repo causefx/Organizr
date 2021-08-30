@@ -1882,3 +1882,9 @@ $(document).on('change', '[id*=-form-chooseI]', function (e) {
 		$('#'+pasteId).val(newValue);
 	}
 });
+// SETTINGS DROPDOWN CHANGE
+$(document).on("change", ".settings-dropdown-box", function () {
+	let id = $(this).val();
+	$(id).click();
+	console.log(id);
+});
