@@ -4187,10 +4187,10 @@ function loadInternal(url,tabName, split = null){
 	organizrAPI2('get',url).success(function(data) {
 		try {
 			var html = data.response;
+			$('#internal-'+extra+tabName).html(html.data);
 		}catch(e) {
 			organizrCatchError(e,data);
 		}
-		$('#internal-'+extra+tabName).html(html.data);
 	}).fail(function(xhr) {
 		OrganizrApiError(xhr);
 	});
