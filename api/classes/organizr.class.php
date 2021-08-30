@@ -835,6 +835,9 @@ class Organizr
 		}
 		// Inject Parts
 		foreach ($new as $k) {
+			if (isset($current[$k])) {
+				$current['deletedConfigItems'][$k] = $current[$k];
+			}
 			unset($current[$k]);
 		}
 		// Return Create

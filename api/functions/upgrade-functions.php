@@ -80,49 +80,41 @@ trait UpgradeFunctions
 		return true;
 	}
 	
-	public function removeOldCustomHTML()
+	public function checkForConfigKeyAddToArray($keys)
 	{
 		$updateItems = [];
-		if ($this->config['homepageCustomHTMLoneEnabled']) {
-			if ($this->config['homepageCustomHTMLoneEnabled'] !== '') {
-				$updateItemsNew = ['homepageCustomHTML01Enabled' => $this->config['homepageCustomHTMLoneEnabled']];
-				$updateItems = array_merge($updateItems, $updateItemsNew);
+		foreach ($keys as $new => $old) {
+			if ($this->config[$old]) {
+				if ($this->config[$old] !== '') {
+					$updateItemsNew = [$new => $this->config[$old]];
+					$updateItems = array_merge($updateItems, $updateItemsNew);
+				}
 			}
 		}
-		if ($this->config['homepageCustomHTMLoneAuth']) {
-			if ($this->config['homepageCustomHTMLoneAuth'] !== '') {
-				$updateItemsNew = ['homepageCustomHTML01Auth' => $this->config['homepageCustomHTMLoneAuth']];
-				$updateItems = array_merge($updateItems, $updateItemsNew);
-			}
-		}
-		if ($this->config['customHTMLone']) {
-			if ($this->config['customHTMLone'] !== '') {
-				$updateItemsNew = ['customHTML01' => $this->config['customHTMLone']];
-				$updateItems = array_merge($updateItems, $updateItemsNew);
-			}
-		}
-		if ($this->config['homepageCustomHTMLtwoEnabled']) {
-			if ($this->config['homepageCustomHTMLtwoEnabled'] !== '') {
-				$updateItemsNew = ['homepageCustomHTML02Enabled' => $this->config['homepageCustomHTMLtwoEnabled']];
-				$updateItems = array_merge($updateItems, $updateItemsNew);
-			}
-		}
-		if ($this->config['homepageCustomHTMLtwoAuth']) {
-			if ($this->config['homepageCustomHTMLtwoAuth'] !== '') {
-				$updateItemsNew = ['homepageCustomHTML02Auth' => $this->config['homepageCustomHTMLtwoAuth']];
-				$updateItems = array_merge($updateItems, $updateItemsNew);
-			}
-		}
-		if ($this->config['customHTMLtwo']) {
-			if ($this->config['customHTMLtwo'] !== '') {
-				$updateItemsNew = ['customHTML02' => $this->config['customHTMLtwo']];
-				$updateItems = array_merge($updateItems, $updateItemsNew);
-			}
-		}
+		return $updateItems;
+	}
+	
+	public function removeOldCustomHTML()
+	{
+		$keys = [
+			'homepageCustomHTML01Enabled' => 'homepageCustomHTMLoneEnabled',
+			'homepageCustomHTML01Auth' => 'homepageCustomHTMLoneAuth',
+			'customHTML01' => 'customHTMLone',
+			'homepageCustomHTML02Enabled' => 'homepageCustomHTMLtwoEnabled',
+			'homepageCustomHTML02Auth' => 'homepageCustomHTMLtwoAuth',
+			'customHTML02' => 'customHTMLtwo',
+		];
+		$updateItems = $this->checkForConfigKeyAddToArray($keys);
+		$updateComplete = false;
 		if (!empty($updateItems)) {
-			$this->updateConfig($updateItems);
+			$updateComplete = $this->updateConfig($updateItems);
 		}
-		$this->removeConfigItem(['homepageOrdercustomhtml', 'homepageOrdercustomhtmlTwo', 'homepageCustomHTMLoneEnabled', 'homepageCustomHTMLoneAuth', 'customHTMLone', 'homepageCustomHTMLtwoEnabled', 'homepageCustomHTMLtwoAuth', 'customHTMLtwo']);
-		return true;
+		if ($updateComplete) {
+			$this->config = $this->config();
+			$this->removeConfigItem(['homepageOrdercustomhtml', 'homepageOrdercustomhtmlTwo', 'homepageCustomHTMLoneEnabled', 'homepageCustomHTMLoneAuth', 'customHTMLone', 'homepageCustomHTMLtwoEnabled', 'homepageCustomHTMLtwoAuth', 'customHTMLtwo']);
+			$this->config = $this->config();
+			return true;
+		}
+		return false;
 	}
 }
