@@ -96,24 +96,27 @@ trait UpgradeFunctions
 	
 	public function removeOldCustomHTML()
 	{
-		$keys = [
-			'homepageCustomHTML01Enabled' => 'homepageCustomHTMLoneEnabled',
-			'homepageCustomHTML01Auth' => 'homepageCustomHTMLoneAuth',
-			'customHTML01' => 'customHTMLone',
-			'homepageCustomHTML02Enabled' => 'homepageCustomHTMLtwoEnabled',
-			'homepageCustomHTML02Auth' => 'homepageCustomHTMLtwoAuth',
-			'customHTML02' => 'customHTMLtwo',
-		];
-		$updateItems = $this->checkForConfigKeyAddToArray($keys);
-		$updateComplete = false;
-		if (!empty($updateItems)) {
-			$updateComplete = $this->updateConfig($updateItems);
-		}
-		if ($updateComplete) {
-			$this->config = $this->config();
-			$this->removeConfigItem(['homepageOrdercustomhtml', 'homepageOrdercustomhtmlTwo', 'homepageCustomHTMLoneEnabled', 'homepageCustomHTMLoneAuth', 'customHTMLone', 'homepageCustomHTMLtwoEnabled', 'homepageCustomHTMLtwoAuth', 'customHTMLtwo']);
-			$this->config = $this->config();
-			return true;
+		$backup = $this->backupOrganizr();
+		if ($backup) {
+			$keys = [
+				'homepageCustomHTML01Enabled' => 'homepageCustomHTMLoneEnabled',
+				'homepageCustomHTML01Auth' => 'homepageCustomHTMLoneAuth',
+				'customHTML01' => 'customHTMLone',
+				'homepageCustomHTML02Enabled' => 'homepageCustomHTMLtwoEnabled',
+				'homepageCustomHTML02Auth' => 'homepageCustomHTMLtwoAuth',
+				'customHTML02' => 'customHTMLtwo',
+			];
+			$updateItems = $this->checkForConfigKeyAddToArray($keys);
+			$updateComplete = false;
+			if (!empty($updateItems)) {
+				$updateComplete = $this->updateConfig($updateItems);
+			}
+			if ($updateComplete) {
+				$this->config = $this->config();
+				$this->removeConfigItem(['homepageOrdercustomhtml', 'homepageOrdercustomhtmlTwo', 'homepageCustomHTMLoneEnabled', 'homepageCustomHTMLoneAuth', 'customHTMLone', 'homepageCustomHTMLtwoEnabled', 'homepageCustomHTMLtwoAuth', 'customHTMLtwo']);
+				$this->config = $this->config();
+				return true;
+			}
 		}
 		return false;
 	}
