@@ -126,7 +126,8 @@ trait DelugeHomepageItem
 			return false;
 		}
 		try {
-			$deluge = new deluge($this->config['delugeURL'], $this->decrypt($this->config['delugePassword']));
+			$options = $this->requestOptions($this->config['delugeURL'], $this->config['delugeRefresh'], $this->config['delugeDisableCertCheck'], $this->config['delugeUseCustomCertificate'], ['organizr_cert' => $this->getCert(), 'custom_cert' => $this->getCustomCert()]);
+			$deluge = new deluge($this->config['delugeURL'], $this->decrypt($this->config['delugePassword']),$options);
 			$torrents = $deluge->getTorrents(null, 'comment, download_payload_rate, eta, hash, is_finished, is_seed, message, name, paused, progress, queue, state, total_size, upload_payload_rate');
 			foreach ($torrents as $key => $value) {
 				$tempStatus = $this->delugeStatus($value->queue, $value->state, $value->progress);
