@@ -770,7 +770,7 @@ trait OrganizrFunctions
 			$anchorShort = str_replace('-anchor', '', $menuItem['anchor']);
 			$active = ($menuItem['active']) ? 'active' : '';
 			$apiPage = ($menuItem['api']) ? 'loadSettingsPage2(\'' . $menuItem['api'] . '\',\'#' . $anchorShort . '\',\'' . $menuItem['name'] . '\');' : '';
-			$onClick = ($menuItem['onclick']) ? $menuItem['onclick'] : '';
+			$onClick = (isset($menuItem['onclick'])) ? $menuItem['onclick'] : '';
 			$selectMenuItems .= '<option value="#' . $menuItem['anchor'] . '" lang="en">' . $menuItem['name'] . '</option>';
 			$unorderedListMenuItems .= '
 				<li onclick="changeSettingsMenu(\'Settings::' . $menuName . '::' . $menuItem['name'] . '\'); ' . $apiPage . $onClick . '" role="presentation" class="' . $active . '">
