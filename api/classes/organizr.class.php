@@ -2797,13 +2797,13 @@ class Organizr
 			],
 			[
 				'active' => false,
-				'api' => 'api/v2/page/settings_settings_sso',
+				'api' => 'api/v2/page/settings_tab_editor_homepage',
 				'anchor' => 'settings-tab-editor-homepage-anchor',
 				'name' => 'Homepage Items'
 			],
 			[
 				'active' => false,
-				'api' => 'api/v2/page/settings_settings_logs',
+				'api' => 'api/v2/page/settings_tab_editor_homepage_order',
 				'anchor' => 'settings-tab-editor-homepage-order-anchor',
 				'name' => 'Homepage Order'
 			],
