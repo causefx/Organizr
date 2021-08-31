@@ -66,8 +66,7 @@ trait DelugeHomepageItem
 	
 	public function testConnectionDeluge()
 	{
-		if (empty($this->config['delugeURL'])) {
-			$this->setAPIResponse('error', 'Deluge URL is not defined', 422);
+		if (!$this->homepageItemPermissions($this->delugeHomepagePermissions('main'), true)) {
 			return false;
 		}
 		try {
