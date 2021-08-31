@@ -20,14 +20,14 @@ trait OrganizrFunctions
 		];
 		$scripts = '';
 		foreach ($javaFiles as $file) {
-			$scripts .= '<script src="' . $file . '?v=' . $this->fileHash . '"></script>' . "\n";
+			$scripts .= '<script src="' . $file . '?v=' . trim($this->fileHash) . '"></script>' . "\n";
 		}
 		return $scripts;
 	}
 	
 	public function loadJavascriptFile($file)
 	{
-		return '<script>loadJavascript("' . $file . '?v=' . $this->fileHash . '");' . "</script>\n";
+		return '<script>loadJavascript("' . $file . '?v=' . trim($this->fileHash) . '");' . "</script>\n";
 	}
 	
 	public function embyJoinAPI($array)
