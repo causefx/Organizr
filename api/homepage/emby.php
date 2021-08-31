@@ -57,12 +57,7 @@ trait EmbyHomepageItem
 	
 	public function testConnectionEmby()
 	{
-		if (empty($this->config['embyURL'])) {
-			$this->setAPIResponse('error', 'Emby URL is not defined', 422);
-			return false;
-		}
-		if (empty($this->config['embyToken'])) {
-			$this->setAPIResponse('error', 'Emby Token is not defined', 422);
+		if (!$this->homepageItemPermissions($this->embyHomepagePermissions('test'), true)) {
 			return false;
 		}
 		$url = $this->qualifyURL($this->config['embyURL']);
@@ -86,6 +81,18 @@ trait EmbyHomepageItem
 	public function embyHomepagePermissions($key = null)
 	{
 		$permissions = [
+			'test' => [
+				'enabled' => [
+					'homepageEmbyEnabled',
+				],
+				'auth' => [
+					'homepageEmbyAuth',
+				],
+				'not_empty' => [
+					'embyURL',
+					'embyToken'
+				]
+			],
 			'streams' => [
 				'enabled' => [
 					'homepageEmbyEnabled',
