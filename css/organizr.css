@@ -4568,3 +4568,25 @@ html {
 span.select2-selection__choice__remove {
     -webkit-text-security: initial;
 }
+.dropside .dropdown-menu, .navbar-fixed-bottom .dropdown .dropdown-menu {
+    margin-bottom: 2px;
+    margin-left: 60px;
+    top: 0;
+}
+.dropside.open>.dropdown-menu {
+     display: inline-flex;
+}
+.dropside .dropdown-menu>li>a {
+      display: inline;
+      padding: 3px 20px;
+      clear: both;
+      font-weight: 400;
+      line-height: 1.42857143;
+      white-space: nowrap;
+}
+.sortable-ghost {
+     background: #151515;
+}
+.sortable-chosen {
+     background: #2f2f2f;
+}

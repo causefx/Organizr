@@ -3186,15 +3186,24 @@ function buildTabEditorItem(array){
 			<input type="hidden" class="form-control" name="tab[`+v.id+`].id" value="`+v.id+`">
 			<input type="hidden" class="form-control order" name="tab[`+v.id+`].order" value="`+v.order+`">
 			<input type="hidden" class="form-control" name="tab[`+v.id+`].originalOrder" value="`+v.order+`">
+			<td class="mouse sort-tabs-handle">
+				<i class="icon-options-vertical m-r-5"></i> 
+				<!-- May use later on
+				<div class="btn-group dropside visible-xs">
+					<button aria-expanded="false" data-toggle="dropdown" class="btn btn-default btn-outline dropdown-toggle waves-effect waves-light" type="button"> <i class="icon-options-vertical m-r-5"></i> <span class="caret"></span></button>
+					<ul role="menu" class="dropdown-menu">
+						<li><a href="#"><i class="fa fa-angle-double-up"></i></a></li>
+						<li><a href="#"><i class="fa fa-angle-up"></i></a></li>
+						<li><a href="#"><i class="fa fa-angle-double-down"></i></a></li>
+						<li><a href="#"><i class="fa fa-angle-down"></i></a></li>
+					</ul>
+				</div>
+				-->
+			</td>
 			<td style="text-align:center" class="text-center el-element-overlay">
 				<div class="el-card-item p-0">
 					<div class="el-card-avatar el-overlay-1 m-0">
 						<div class="tabEditorIcon">`+iconPrefix(v.image)+`</div>
-						<div class="el-overlay bg-org">
-							<ul class="el-info">
-								<i class="fa fa-bars"></i>
-							</ul>
-						</div>
 					</div>
 				</div>
 			</td>
@@ -10757,18 +10766,19 @@ function checkForUpdates(){
 
 function loadJavascript(script = null, defer = false){
 	if(script){
-		console.log(script);
-		console.log('checking if script is loaded...');
+		organizrConsole('JS Loader',script);
+		organizrConsole('JS Loader','Checking if script is loaded...');
 		let loaded = $('script[src="'+script+'"]').length;
-		///let loaded2 = document.querySelector('script[src="' + script + '"]');
 		if(!loaded){
-			console.log('script is NOT loaded... Loading now...');
+			organizrConsole('JS Loader','Script is NOT loaded... Loading now...');
 			let head = document.getElementsByTagName('head')[0];
 			let scriptEl = document.createElement('script');
 			scriptEl.type = 'text/javascript';
 			scriptEl.src = script;
 			scriptEl.defer = false;
 			head.appendChild(scriptEl);
+		}else{
+			organizrConsole('JS Loader','Script already loaded');
 		}
 	}
 }

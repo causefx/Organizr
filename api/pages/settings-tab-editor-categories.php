@@ -67,15 +67,15 @@ function get_page_settings_tab_editor_categories($Organizr)
 	return '
 <script>
 buildCategoryEditor();
-$( \'#categoryEditorTable\' ).sortable({
-	stop: function () {
-		var inputs = $(\'input.order\');
-		var nbElems = inputs.length;
-		inputs.each(function(idx) {
+
+let el = document.getElementById(\'categoryEditorTable\');
+let sortable = new Sortable(el, {
+	onUpdate: function (evt) {
+		$(\'input.order\').each(function(idx) {
 			$(this).val(idx + 1);
 		});
 		submitCategoryOrder();
-	}
+	},
 });
 ' . $iconSelectors . '
 </script>

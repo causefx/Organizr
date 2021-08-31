@@ -13,7 +13,7 @@ function get_page_settings($Organizr)
 	}
 	$Organizr->writeLog('success', 'Admin Function -  Accessed Settings Page', $Organizr->user['username']);
 	$systemMenus = $Organizr->systemMenuLists();
-	return $Organizr->pluginFiles('js', true) . '
+	return $Organizr->pluginFiles('js', true) . $Organizr->loadJavascriptFile('js/Sortable.min.js') . '
 <script>
 	(function() {
 		updateCheck();
