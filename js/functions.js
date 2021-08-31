@@ -1212,12 +1212,17 @@ function buildPluginsItem(array){
 	activePlugins = (activePlugins.length !== 0) ? activePlugins : '<h2 class="text-center" lang="en">Nothing Active</h2>';
 	inactivePlugins = (inactivePlugins.length !== 0) ? inactivePlugins : '<h2 class="text-center" lang="en">Everything Active</h2>';
 	var panes = `
-	<ul class="nav customtab2 nav-tabs" role="tablist">
-		<li onclick="changeSettingsMenu('Settings::Plugins::Active')" role="presentation" class="active"><a href="#settings-plugins-active" aria-controls="home" role="tab" data-toggle="tab" aria-expanded="false"><span class="visible-xs"><i class="ti-file"></i></span><span class="hidden-xs" lang="en">Active</span></a>
+	<select class="form-control settings-dropdown-box plugin-menu w-100 visible-xs">
+		<option value="#settings-plugins-active-anchor" lang="en">Active</option>
+		<option value="#settings-plugins-inactive-anchor" lang="en">Inactive</option>
+		<option value="#settings-plugins-marketplace-anchor" lang="en">Marketplace</option>
+	</select>
+	<ul class="nav customtab2 nav-tabs nav-non-mobile hidden-xs" data-dropdown="plugin-menu" role="tablist">
+		<li onclick="changeSettingsMenu('Settings::Plugins::Active')" role="presentation" class="active"><a id="settings-plugins-active-anchor" href="#settings-plugins-active" aria-controls="home" role="tab" data-toggle="tab" aria-expanded="false"><span class="visible-xs"><i class="ti-file"></i></span><span class="hidden-xs" lang="en">Active</span></a>
 		</li>
-		<li onclick="changeSettingsMenu('Settings::Plugins::Inactive')" role="presentation" class=""><a href="#settings-plugins-inactive" aria-controls="home" role="tab" data-toggle="tab" aria-expanded="false"><span class="visible-xs"><i class="ti-zip"></i></span><span class="hidden-xs" lang="en">Inactive</span></a>
+		<li onclick="changeSettingsMenu('Settings::Plugins::Inactive')" role="presentation" class=""><a id="settings-plugins-inactive-anchor" href="#settings-plugins-inactive" aria-controls="home" role="tab" data-toggle="tab" aria-expanded="false"><span class="visible-xs"><i class="ti-zip"></i></span><span class="hidden-xs" lang="en">Inactive</span></a>
 		</li>
-		<li onclick="changeSettingsMenu('Settings::Plugins::Marketplace');loadMarketplace('plugins');" role="presentation" class=""><a href="#settings-plugins-marketplace" aria-controls="home" role="tab" data-toggle="tab" aria-expanded="false"><span class="visible-xs"><i class="ti-shopping-cart-full"></i></span><span class="hidden-xs" lang="en">Marketplace</span></a>
+		<li onclick="changeSettingsMenu('Settings::Plugins::Marketplace');loadMarketplace('plugins');" role="presentation" class=""><a id="settings-plugins-marketplace-anchor" href="#settings-plugins-marketplace" aria-controls="home" role="tab" data-toggle="tab" aria-expanded="false"><span class="visible-xs"><i class="ti-shopping-cart-full"></i></span><span class="hidden-xs" lang="en">Marketplace</span></a>
 		</li>
 	</ul>
 	<!-- Tab panes -->
@@ -1793,15 +1798,15 @@ function buildHomepageItem(array){
 		$.each(array, function(i,v) {
 			if(v.enabled){
 				listing += `
-				<div class="col-lg-2 col-md-2 col-sm-4 col-xs-4">
+				<div class="col-lg-2 col-md-2 col-sm-6 col-xs-6">
 					<div class="white-box bg-org m-0">
 						<div class="el-card-item p-0 editHomepageItemBox-`+v.name+`">
 							<div class="el-card-avatar el-overlay-1">
 								<a onclick="editHomepageItem('`+v.name+`')"><img class="lazyload tabImages mouse" data-src="`+v.image+`"></a>
 							</div>
 							<div class="el-card-content">
-								<h3 class="box-title">`+v.name+`</h3>
-								<small class="elip text-uppercase">`+v.category+`</small><br>
+								<h3 class="box-title elip">`+v.name+`</h3>
+								<small class="elip text-uppercase elip">`+v.category+`</small><br>
 							</div>
 						</div>
 					</div>
@@ -10013,7 +10018,7 @@ function clickPath(type,path=null){
             break;
         case 'update':
             $('#settings-main-system-settings-anchor').trigger('click');
-            $('#update-button').trigger('click');
+            $('#settings-settings-updates-anchor').trigger('click');
             break;
         case 'sso':
             $('#settings-main-system-settings-anchor').trigger('click');

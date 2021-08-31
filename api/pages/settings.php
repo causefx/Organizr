@@ -12,6 +12,7 @@ function get_page_settings($Organizr)
 		return false;
 	}
 	$Organizr->writeLog('success', 'Admin Function -  Accessed Settings Page', $Organizr->user['username']);
+	$systemMenus = $Organizr->systemMenuLists();
 	return $Organizr->pluginFiles('js', true) . '
 <script>
 	(function() {
@@ -57,16 +58,7 @@ function get_page_settings($Organizr)
 				<div class="content-wrap">
 					<! -- TAB EDITOR -->
 					<section id="settings-main-tab-editor">
-						<ul class="nav customtab2 nav-tabs" role="tablist">
-							<li onclick="changeSettingsMenu(\'Settings::Tab Editor::Tabs\');loadSettingsPage2(\'api/v2/page/settings_tab_editor_tabs\',\'#settings-tab-editor-tabs\',\'Tab Editor\');" role="presentation" class=""><a id="settings-tab-editor-tabs-anchor" href="#settings-tab-editor-tabs" aria-controls="home" role="tab" data-toggle="tab" aria-expanded="false"><span class="visible-xs"><i class="ti-layout-tab-v"></i></span><span class="hidden-xs" lang="en">Tabs</span></a>
-							</li>
-							<li onclick="changeSettingsMenu(\'Settings::Tab Editor::Categories\');loadSettingsPage2(\'api/v2/page/settings_tab_editor_categories\',\'#settings-tab-editor-categories\',\'Category Editor\');" role="presentation" class=""><a id="settings-tab-editor-categories-anchor" href="#settings-tab-editor-categories" aria-controls="home" role="tab" data-toggle="tab" aria-expanded="false"><span class="visible-xs"><i class="ti-layout-list-thumb"></i></span><span class="hidden-xs" lang="en">Categories</span></a>
-							</li>
-							<li onclick="changeSettingsMenu(\'Settings::Tab Editor::Homepage Items\');loadSettingsPage2(\'api/v2/page/settings_tab_editor_homepage\',\'#settings-tab-editor-homepage\',\'Homepage Items\');" role="presentation" class=""><a id="settings-tab-editor-homepage-anchor" href="#settings-tab-editor-homepage" aria-controls="home" role="tab" data-toggle="tab" aria-expanded="false"><span class="visible-xs"><i class="ti-home"></i></span><span class="hidden-xs" lang="en">Homepage Items</span></a>
-							</li>
-							<li onclick="changeSettingsMenu(\'Settings::Tab Editor::Homepage Order\');loadSettingsPage2(\'api/v2/page/settings_tab_editor_homepage_order\',\'#settings-tab-editor-homepage-order\',\'Homepage Order\');" role="presentation" class=""><a id="settings-tab-editor-homepage-order-anchor" href="#settings-tab-editor-homepage-order" aria-controls="home" role="tab" data-toggle="tab" aria-expanded="false"><span class="visible-xs"><i class="ti-exchange-vertical"></i></span><span class="hidden-xs" lang="en">Homepage Order</span></a>
-							</li>
-						</ul>
+						' . $systemMenus['tab_editor'] . '
 						<!-- Tab panes -->
 						<div class="tab-content">
 							<div role="tabpanel" class="tab-pane fade" id="settings-tab-editor-tabs">
@@ -80,17 +72,13 @@ function get_page_settings($Organizr)
 								<h2 lang="en">Loading...</h2>
 							</div>
 							<div role="tabpanel" class="tab-pane fade" id="settings-tab-editor-homepage-order">
-								<h2 lang="en">Coming Soon...</h2>
+								<h2 lang="en">Loading...</h2>
 							</div>
 						</div>
 					</section>
 					<! -- Customize -->
 					<section id="settings-main-customize">
-						<ul class="nav customtab2 nav-tabs" role="tablist">
-							<li onclick="changeSettingsMenu(\'Settings::Customize::Appearance\');loadSettingsPage2(\'api/v2/page/settings_customize_appearance\',\'#settings-customize-appearance\',\'Customize Appearance\');" role="presentation" class=""><a id="settings-customize-appearance-anchor" href="#settings-customize-appearance" aria-controls="home" role="tab" data-toggle="tab" aria-expanded="false"><span class="visible-xs"><i class="ti-eye"></i></span><span class="hidden-xs" lang="en">Appearance</span></a>
-							</li>
-							<li onclick="changeSettingsMenu(\'Settings::Customize::Marketplace\');loadMarketplace(\'themes\');" role="presentation" class=""><a id="settings-customize-marketplace-anchor" href="#settings-customize-marketplace" aria-controls="home" role="tab" data-toggle="tab" aria-expanded="false"><span class="visible-xs"><i class="ti-shopping-cart-full"></i></span><span class="hidden-xs" lang="en">Marketplace</span></a></li>
-						</ul>
+						' . $systemMenus['customize'] . '
 						<!-- Tab panes -->
 						<div class="tab-content">
 							<div role="tabpanel" class="tab-pane fade" id="settings-customize-appearance">
@@ -126,14 +114,7 @@ function get_page_settings($Organizr)
 					</section>
 					<! -- USER MANAGEMENT -->
 					<section id="settings-main-user-management">
-						<ul class="nav customtab2 nav-tabs" role="tablist">
-							<li onclick="changeSettingsMenu(\'Settings::User Management::Manage Users\');loadSettingsPage2(\'api/v2/page/settings_user_manage_users\',\'#settings-user-manage-users\',\'User Management\');" role="presentation" class=""><a id="settings-user-manage-users-anchor" href="#settings-user-manage-users" aria-controls="home" role="tab" data-toggle="tab" aria-expanded="false"><span class="visible-xs"><i class="ti-id-badge"></i></span><span class="hidden-xs" lang="en">Users</span></a>
-							</li>
-							<li onclick="changeSettingsMenu(\'Settings::User Management::Manage Groups\');loadSettingsPage2(\'api/v2/page/settings_user_manage_groups\',\'#settings-user-manage-groups\',\'Group Management\');" role="presentation" class=""><a id="settings-user-manage-groups-anchor" href="#settings-user-manage-groups" aria-controls="home" role="tab" data-toggle="tab" aria-expanded="false"><span class="visible-xs"><i class="ti-briefcase"></i></span><span class="hidden-xs" lang="en">Groups</span></a>
-							</li>
-							<li onclick="changeSettingsMenu(\'Settings::User Management::Import Users\');" role="presentation" class=""><a id="settings-user-import-users-anchor" href="#settings-user-import-users" aria-controls="home" role="tab" data-toggle="tab" aria-expanded="false"><span class="visible-xs"><i class="ti-import"></i></span><span class="hidden-xs" lang="en">Import</span></a>
-							</li>
-						</ul>
+						' . $systemMenus['user_management'] . '
 						<!-- Tab panes -->
 						<div class="tab-content">
 							<div role="tabpanel" class="tab-pane fade" id="settings-user-manage-users">
@@ -166,31 +147,7 @@ function get_page_settings($Organizr)
 					</section>
 					<! -- SYSTEM SETTINGS -->
 					<section id="settings-main-system-settings">
-						<select class="form-control settings-dropdown-box w-100 visible-xs">
-							<option value="#settings-settings-about-anchor">About</option>
-							<option value="#settings-settings-main-anchor">Main</option>
-							<option value="#settings-settings-sso-anchor">SSO</option>
-							<option value="#settings-settings-logs-anchor">Logs</option>
-							<option value="#update-button">Updates</option>
-							<option value="#settings-settings-backup-anchor">Backup</option>
-							<option value="#settings-settings-donate-anchor">Donate</option>
-						</select>
-						<ul class="nav customtab2 nav-tabs hidden-xs" role="tablist">
-							<li onclick="changeSettingsMenu(\'Settings::System Settings::About\')" role="presentation" class="active"><a id="settings-settings-about-anchor" href="#settings-settings-about" aria-controls="home" role="tab" data-toggle="tab" aria-expanded="true"><span class="visible-xs"><i class="ti-info-alt"></i></span><span class="hidden-xs" lang="en">About</span></a>
-							</li>
-							<li onclick="changeSettingsMenu(\'Settings::System Settings::Main\');loadSettingsPage2(\'api/v2/page/settings_settings_main\',\'#settings-settings-main\',\'Main Settings\');" role="presentation" class=""><a id="settings-settings-main-anchor" href="#settings-settings-main" aria-controls="home" role="tab" data-toggle="tab" aria-expanded="false"><span class="visible-xs"><i class="ti-settings"></i></span><span class="hidden-xs" lang="en">Main</span></a>
-							</li>
-							<li onclick="changeSettingsMenu(\'Settings::System Settings::SSO\');loadSettingsPage2(\'api/v2/page/settings_settings_sso\',\'#settings-settings-sso\',\'SSO\');" role="presentation" class=""><a id="settings-settings-sso-anchor" href="#settings-settings-sso" aria-controls="home" role="tab" data-toggle="tab" aria-expanded="false"><span class="visible-xs"><i class="ti-key"></i></span><span class="hidden-xs" lang="en">Single Sign-On</span></a>
-							</li>
-							<li onclick="changeSettingsMenu(\'Settings::System Settings::Logs\');loadSettingsPage2(\'api/v2/page/settings_settings_logs\',\'#settings-settings-logs\',\'Log Viewer\');" role="presentation" class=""><a id="settings-settings-logs-anchor" href="#settings-settings-logs" aria-controls="home" role="tab" data-toggle="tab" aria-expanded="false"><span class="visible-xs"><i class="ti-receipt"></i></span><span class="hidden-xs" lang="en">Logs</span></a>
-							</li>
-							<li onclick="changeSettingsMenu(\'Settings::System Settings::Updates\')" role="presentation" class=""><a id="update-button" href="#settings-settings-updates" aria-controls="profile" role="tab" data-toggle="tab" aria-expanded="false"><span class="visible-xs"><i class="ti-package"></i></span> <span class="hidden-xs" lang="en">Updates</span></a>
-							</li>
-							<li onclick="changeSettingsMenu(\'Settings::System Settings::Backup\');loadSettingsPage2(\'api/v2/page/settings_settings_backup\',\'#settings-settings-backup\',\'Backup\');" role="presentation" class=""><a id="settings-settings-backup-anchor" href="#settings-settings-backup" aria-controls="home" role="tab" data-toggle="tab" aria-expanded="false"><span class="visible-xs"><i class="ti-export"></i></span><span class="hidden-xs" lang="en">Backup</span></a>
-							</li>
-							<li onclick="changeSettingsMenu(\'Settings::System Settings::Donate\')" role="presentation" class=""><a id="settings-settings-donate-anchor" href="#settings-settings-donate" aria-controls="profile" role="tab" data-toggle="tab" aria-expanded="false"><span class="visible-xs"><i class="ti-money"></i></span> <span class="hidden-xs" lang="en">Donate</span></a>
-							</li>
-						</ul>
+					' . $systemMenus['system_settings'] . '
 						<!-- Tab panes -->
 						<div class="tab-content">
 							<div role="tabpanel" class="tab-pane fade" id="settings-settings-main">

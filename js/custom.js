@@ -1886,5 +1886,10 @@ $(document).on('change', '[id*=-form-chooseI]', function (e) {
 $(document).on("change", ".settings-dropdown-box", function () {
 	let id = $(this).val();
 	$(id).click();
-	console.log(id);
+});
+$(document).on('click', '.nav-non-mobile li a', function() {
+	let id = $(this).attr('id');
+	let menu = $(this).parent().parent().attr('data-dropdown');
+	$('.' + menu).val('#' + id);
+
 });

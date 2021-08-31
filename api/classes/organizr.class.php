@@ -2745,6 +2745,120 @@ class Organizr
 		);
 	}
 	
+	public function systemMenuLists()
+	{
+		$userManagementMenu = [
+			[
+				'active' => false,
+				'api' => 'api/v2/page/settings_user_manage_users',
+				'anchor' => 'settings-user-manage-users-anchor',
+				'name' => 'Manage Users'
+			],
+			[
+				'active' => false,
+				'api' => 'api/v2/page/settings_user_manage_groups',
+				'anchor' => 'settings-user-manage-groups-anchor',
+				'name' => 'Manage Groups'
+			],
+			[
+				'active' => false,
+				'api' => false,
+				'anchor' => 'settings-user-import-users-anchor',
+				'name' => 'Import Users'
+			],
+		];
+		$customizeMenu = [
+			[
+				'active' => false,
+				'api' => 'api/v2/page/settings_customize_appearance',
+				'anchor' => 'settings-customize-appearance-anchor',
+				'name' => 'Appearance',
+			],
+			[
+				'active' => false,
+				'api' => false,
+				'anchor' => 'settings-customize-marketplace-anchor',
+				'name' => 'Marketplace',
+				'onclick' => 'loadMarketplace(\'themes\');'
+			],
+		];
+		$tabEditorMenu = [
+			[
+				'active' => false,
+				'api' => 'api/v2/page/settings_tab_editor_tabs',
+				'anchor' => 'settings-tab-editor-tabs-anchor',
+				'name' => 'Tabs'
+			],
+			[
+				'active' => false,
+				'api' => 'api/v2/page/settings_tab_editor_categories',
+				'anchor' => 'settings-tab-editor-categories-anchor',
+				'name' => 'Categories'
+			],
+			[
+				'active' => false,
+				'api' => 'api/v2/page/settings_settings_sso',
+				'anchor' => 'settings-tab-editor-homepage-anchor',
+				'name' => 'Homepage Items'
+			],
+			[
+				'active' => false,
+				'api' => 'api/v2/page/settings_settings_logs',
+				'anchor' => 'settings-tab-editor-homepage-order-anchor',
+				'name' => 'Homepage Order'
+			],
+		];
+		$systemSettingsMenu = [
+			[
+				'active' => true,
+				'api' => false,
+				'anchor' => 'settings-settings-about-anchor',
+				'name' => 'About'
+			],
+			[
+				'active' => false,
+				'api' => 'api/v2/page/settings_settings_main',
+				'anchor' => 'settings-settings-main-anchor',
+				'name' => 'Main'
+			],
+			[
+				'active' => false,
+				'api' => 'api/v2/page/settings_settings_sso',
+				'anchor' => 'settings-settings-sso-anchor',
+				'name' => 'SSO'
+			],
+			[
+				'active' => false,
+				'api' => 'api/v2/page/settings_settings_logs',
+				'anchor' => 'settings-settings-logs-anchor',
+				'name' => 'Logs'
+			],
+			[
+				'active' => false,
+				'api' => false,
+				'anchor' => 'settings-settings-updates-anchor',
+				'name' => 'Updates'
+			],
+			[
+				'active' => false,
+				'api' => 'api/v2/page/settings_settings_backup',
+				'anchor' => 'settings-settings-backup-anchor',
+				'name' => 'Backup'
+			],
+			[
+				'active' => false,
+				'api' => false,
+				'anchor' => 'settings-settings-donate-anchor',
+				'name' => 'Donate'
+			],
+		];
+		$systemMenus['system_settings'] = $this->buildSettingsMenus($systemSettingsMenu, 'System Settings');
+		$systemMenus['tab_editor'] = $this->buildSettingsMenus($tabEditorMenu, 'Tab Editor');
+		$systemMenus['customize'] = $this->buildSettingsMenus($customizeMenu, 'Customize');
+		$systemMenus['user_management'] = $this->buildSettingsMenus($userManagementMenu, 'User Management');
+		return $systemMenus;
+	}
+	
 	public function updateConfigMultiple($array)
 	{
 		return ($this->updateConfig($array)) ? true : false;
@@ -6486,11 +6600,11 @@ class Organizr
 		return '
 		<h3 lang="en">' . ucwords($app) . ' SOCKS API Connection</h3>
 		<p>Using this feature allows you to access the API without having to reverse proxy it.  Just access it from: </p>
-		<code>' . $this->getServerPath() . 'api/v2/socks/' . $app . '/</code>
+		<code class="elip hidden-xs">' . $this->getServerPath() . 'api/v2/socks/' . $app . '/</code>
 		<p>If you are using multiple URL\'s (using the csv method) you will have to use the url like these: </p>
-		<code>' . $this->getServerPath() . 'api/v2/multiple/socks/' . $app . '/1</code>
+		<code class="elip hidden-xs">' . $this->getServerPath() . 'api/v2/multiple/socks/' . $app . '/1</code>
 		<br/>
-		<code>' . $this->getServerPath() . 'api/v2/multiple/socks/' . $app . '/2</code>
+		<code class="elip hidden-xs">' . $this->getServerPath() . 'api/v2/multiple/socks/' . $app . '/2</code>
 		';
 	}
 	

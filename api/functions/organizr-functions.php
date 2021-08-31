@@ -760,4 +760,27 @@ trait OrganizrFunctions
 			</body>
 			</html>';
 	}
+	
+	public function buildSettingsMenus($menuItems, $menuName)
+	{
+		$selectMenuItems = '';
+		$unorderedListMenuItems = '';
+		$menuNameLower = strtolower(str_replace(' ', '-', $menuName));
+		foreach ($menuItems as $menuItem) {
+			$anchorShort = str_replace('-anchor', '', $menuItem['anchor']);
+			$active = ($menuItem['active']) ? 'active' : '';
+			$apiPage = ($menuItem['api']) ? 'loadSettingsPage2(\'' . $menuItem['api'] . '\',\'#' . $anchorShort . '\',\'' . $menuItem['name'] . '\');' : '';
+			$onClick = ($menuItem['onclick']) ? $menuItem['onclick'] : '';
+			$selectMenuItems .= '<option value="#' . $menuItem['anchor'] . '" lang="en">' . $menuItem['name'] . '</option>';
+			$unorderedListMenuItems .= '
+				<li onclick="changeSettingsMenu(\'Settings::' . $menuName . '::' . $menuItem['name'] . '\'); ' . $apiPage . $onClick . '" role="presentation" class="' . $active . '">
+					<a id="' . $menuItem['anchor'] . '" href="#' . $anchorShort . '" aria-controls="home" role="tab" data-toggle="tab" aria-expanded="true">
+						<span lang="en">' . $menuItem['name'] . '</span>
+					</a>
+			</li>';
+		}
+		$selectMenu = '<select class="form-control settings-dropdown-box ' . $menuNameLower . '-menu w-100 visible-xs">' . $selectMenuItems . '</select>';
+		$unorderedListMenu = '<ul class="nav customtab2 nav-tabs nav-non-mobile hidden-xs" data-dropdown="' . $menuNameLower . '-menu" role="tablist">' . $unorderedListMenuItems . '</ul>';
+		return $selectMenu . $unorderedListMenu;
+	}
 }
