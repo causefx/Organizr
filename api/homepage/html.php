@@ -54,7 +54,7 @@ trait HTMLHomepageItem
 		return $this->homepageCheckKeyPermissions($key, $permissions);
 	}
 	
-	public function homepageOrdercustomhtml($key)
+	public function homepageOrdercustomhtml($key = '01')
 	{
 		if ($this->homepageItemPermissions($this->htmlHomepagePermissions($key))) {
 			return '
