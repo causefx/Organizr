@@ -189,7 +189,7 @@ trait RTorrentHomepageItem
 			$extraPath = (strpos($this->config['rTorrentURL'], '.php') !== false) ? '' : '/RPC2';
 			$extraPath = (empty($this->config['rTorrentURLOverride'])) ? $extraPath : '';
 			$url = $digest['scheme'] . '://' . $digest['host'] . $digest['port'] . $digest['path'] . $extraPath;
-			$options = $this->requestOptions($url, $this->config['rTorrentRefresh'], $this->config['rTorrentDisableCertCheck'], $this->config['rtorrentUseCustomCertificate']);
+			$options = $this->requestOptions($url, $this->config['rTorrentRefresh'], $this->config['rTorrentDisableCertCheck'], $this->config['rTorrentUseCustomCertificate']);
 			if ($this->config['rTorrentUsername'] !== '' && $this->decrypt($this->config['rTorrentPassword']) !== '') {
 				$credentials = array('auth' => new Requests_Auth_Digest(array($this->config['rTorrentUsername'], $this->decrypt($this->config['rTorrentPassword']))));
 				$options = array_merge($options, $credentials);
