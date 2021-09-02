@@ -246,22 +246,27 @@ trait PlexHomepageItem
 		$url = $this->qualifyURL($this->config['plexURL']);
 		$url = $url . "/status/sessions?X-Plex-Token=" . $this->config['plexToken'];
 		$options = $this->requestOptions($url, $this->config['homepageStreamRefresh'], $this->config['plexDisableCertCheck'], $this->config['plexUseCustomCertificate']);
-		$response = Requests::get($url, [], $options);
-		libxml_use_internal_errors(true);
-		if ($response->success) {
-			$items = array();
-			$plex = simplexml_load_string($response->body);
-			foreach ($plex as $child) {
-				if (!in_array($child['type'], $ignore) && !in_array($child['librarySectionID'], $exclude) && isset($child['librarySectionID'])) {
-					$items[] = $this->resolvePlexItem($child);
+		try {
+			$response = Requests::get($url, [], $options);
+			libxml_use_internal_errors(true);
+			if ($response->success) {
+				$items = array();
+				$plex = simplexml_load_string($response->body);
+				foreach ($plex as $child) {
+					if (!in_array($child['type'], $ignore) && !in_array($child['librarySectionID'], $exclude) && isset($child['librarySectionID'])) {
+						$items[] = $this->resolvePlexItem($child);
+					}
 				}
+				$api['content'] = ($resolve) ? $items : $plex;
+				$api['plexID'] = $this->config['plexID'];
+				$api['showNames'] = true;
+				$api['group'] = '1';
+				$this->setAPIResponse('success', null, 200, $api);
+				return $api;
 			}
-			$api['content'] = ($resolve) ? $items : $plex;
-			$api['plexID'] = $this->config['plexID'];
-			$api['showNames'] = true;
-			$api['group'] = '1';
-			$this->setAPIResponse('success', null, 200, $api);
-			return $api;
+		} catch (Exception $e) {
+			$this->setAPIResponse('error', null, 422, [$e->getMessage()]);
+			return false;
 		}
 	}
 	
@@ -277,35 +282,40 @@ trait PlexHomepageItem
 		$urls['movie'] = $url . "/hubs/home/recentlyAdded?X-Plex-Token=" . $this->config['plexToken'] . "&X-Plex-Container-Start=0&X-Plex-Container-Size=" . $this->config['homepageRecentLimit'] . "&type=1";
 		$urls['tv'] = $url . "/hubs/home/recentlyAdded?X-Plex-Token=" . $this->config['plexToken'] . "&X-Plex-Container-Start=0&X-Plex-Container-Size=" . $this->config['homepageRecentLimit'] . "&type=2";
 		$urls['music'] = $url . "/hubs/home/recentlyAdded?X-Plex-Token=" . $this->config['plexToken'] . "&X-Plex-Container-Start=0&X-Plex-Container-Size=" . $this->config['homepageRecentLimit'] . "&type=8";
-		foreach ($urls as $k => $v) {
-			$options = $this->requestOptions($url, $this->config['homepageRecentRefresh'], $this->config['plexDisableCertCheck'], $this->config['plexUseCustomCertificate']);
-			$response = Requests::get($v, [], $options);
-			libxml_use_internal_errors(true);
-			if ($response->success) {
-				$items = array();
-				$plex = simplexml_load_string($response->body);
-				foreach ($plex as $child) {
-					if (!in_array($child['type'], $ignore) && !in_array($child['librarySectionID'], $exclude) && isset($child['librarySectionID'])) {
-						$items[] = $this->resolvePlexItem($child);
+		try {
+			foreach ($urls as $k => $v) {
+				$options = $this->requestOptions($url, $this->config['homepageRecentRefresh'], $this->config['plexDisableCertCheck'], $this->config['plexUseCustomCertificate']);
+				$response = Requests::get($v, [], $options);
+				libxml_use_internal_errors(true);
+				if ($response->success) {
+					$items = array();
+					$plex = simplexml_load_string($response->body);
+					foreach ($plex as $child) {
+						if (!in_array($child['type'], $ignore) && !in_array($child['librarySectionID'], $exclude) && isset($child['librarySectionID'])) {
+							$items[] = $this->resolvePlexItem($child);
+						}
+					}
+					if (isset($api)) {
+						$api['content'] = array_merge($api['content'], ($resolve) ? $items : $plex);
+					} else {
+						$api['content'] = ($resolve) ? $items : $plex;
 					}
 				}
-				if (isset($api)) {
-					$api['content'] = array_merge($api['content'], ($resolve) ? $items : $plex);
-				} else {
-					$api['content'] = ($resolve) ? $items : $plex;
-				}
 			}
+			if (isset($api['content'])) {
+				usort($api['content'], function ($a, $b) {
+					return $b['addedAt'] <=> $a['addedAt'];
+				});
+			}
+			$api['plexID'] = $this->config['plexID'];
+			$api['showNames'] = true;
+			$api['group'] = '1';
+			$this->setAPIResponse('success', null, 200, $api);
+			return $api;
+		} catch (Exception $e) {
+			$this->setAPIResponse('error', null, 422, [$e->getMessage()]);
+			return false;
 		}
-		if (isset($api['content'])) {
-			usort($api['content'], function ($a, $b) {
-				return $b['addedAt'] <=> $a['addedAt'];
-			});
-		}
-		$api['plexID'] = $this->config['plexID'];
-		$api['showNames'] = true;
-		$api['group'] = '1';
-		$this->setAPIResponse('success', null, 200, $api);
-		return $api;
 	}
 	
 	public function getPlexHomepagePlaylists()
@@ -316,35 +326,40 @@ trait PlexHomepageItem
 		$url = $this->qualifyURL($this->config['plexURL']);
 		$url = $url . "/playlists?X-Plex-Token=" . $this->config['plexToken'];
 		$options = $this->requestOptions($url, null, $this->config['plexDisableCertCheck'], $this->config['plexUseCustomCertificate']);
-		$response = Requests::get($url, [], $options);
-		libxml_use_internal_errors(true);
-		if ($response->success) {
-			$items = array();
-			$plex = simplexml_load_string($response->body);
-			foreach ($plex as $child) {
-				if ($child['playlistType'] == "video" && strpos(strtolower($child['title']), 'private') === false) {
-					$playlistTitleClean = preg_replace("/(\W)+/", "", (string)$child['title']);
-					$playlistURL = $this->qualifyURL($this->config['plexURL']);
-					$playlistURL = $playlistURL . $child['key'] . "?X-Plex-Token=" . $this->config['plexToken'];
-					$options = ($this->localURL($url)) ? array('verify' => false) : array();
-					$playlistResponse = Requests::get($playlistURL, array(), $options);
-					if ($playlistResponse->success) {
-						$playlistResponse = simplexml_load_string($playlistResponse->body);
-						$items[$playlistTitleClean]['title'] = (string)$child['title'];
-						foreach ($playlistResponse->Video as $playlistItem) {
-							$items[$playlistTitleClean][] = $this->resolvePlexItem($playlistItem);
+		try {
+			$response = Requests::get($url, [], $options);
+			libxml_use_internal_errors(true);
+			if ($response->success) {
+				$items = array();
+				$plex = simplexml_load_string($response->body);
+				foreach ($plex as $child) {
+					if ($child['playlistType'] == "video" && strpos(strtolower($child['title']), 'private') === false) {
+						$playlistTitleClean = preg_replace("/(\W)+/", "", (string)$child['title']);
+						$playlistURL = $this->qualifyURL($this->config['plexURL']);
+						$playlistURL = $playlistURL . $child['key'] . "?X-Plex-Token=" . $this->config['plexToken'];
+						$options = ($this->localURL($url)) ? array('verify' => false) : array();
+						$playlistResponse = Requests::get($playlistURL, array(), $options);
+						if ($playlistResponse->success) {
+							$playlistResponse = simplexml_load_string($playlistResponse->body);
+							$items[$playlistTitleClean]['title'] = (string)$child['title'];
+							foreach ($playlistResponse->Video as $playlistItem) {
+								$items[$playlistTitleClean][] = $this->resolvePlexItem($playlistItem);
+							}
 						}
 					}
 				}
+				$api['content'] = $items;
+				$api['plexID'] = $this->config['plexID'];
+				$api['showNames'] = true;
+				$api['group'] = '1';
+				$this->setAPIResponse('success', null, 200, $api);
+				return $api;
+			} else {
+				$this->setAPIResponse('error', 'Plex API error', 500);
+				return false;
 			}
-			$api['content'] = $items;
-			$api['plexID'] = $this->config['plexID'];
-			$api['showNames'] = true;
-			$api['group'] = '1';
-			$this->setAPIResponse('success', null, 200, $api);
-			return $api;
-		} else {
-			$this->setAPIResponse('error', 'Plex API error', 500);
+		} catch (Exception $e) {
+			$this->setAPIResponse('error', null, 422, [$e->getMessage()]);
 			return false;
 		}
 	}
@@ -364,22 +379,27 @@ trait PlexHomepageItem
 		$url = $this->qualifyURL($this->config['plexURL']);
 		$url = $url . "/library/metadata/" . $key . "?X-Plex-Token=" . $this->config['plexToken'];
 		$options = $this->requestOptions($url, null, $this->config['plexDisableCertCheck'], $this->config['plexUseCustomCertificate']);
-		$response = Requests::get($url, [], $options);
-		libxml_use_internal_errors(true);
-		if ($response->success) {
-			$items = array();
-			$plex = simplexml_load_string($response->body);
-			foreach ($plex as $child) {
-				if (!in_array($child['type'], $ignore) && isset($child['librarySectionID'])) {
-					$items[] = $this->resolvePlexItem($child);
+		try {
+			$response = Requests::get($url, [], $options);
+			libxml_use_internal_errors(true);
+			if ($response->success) {
+				$items = array();
+				$plex = simplexml_load_string($response->body);
+				foreach ($plex as $child) {
+					if (!in_array($child['type'], $ignore) && isset($child['librarySectionID'])) {
+						$items[] = $this->resolvePlexItem($child);
+					}
 				}
+				$api['content'] = ($resolve) ? $items : $plex;
+				$api['plexID'] = $this->config['plexID'];
+				$api['showNames'] = true;
+				$api['group'] = '1';
+				$this->setAPIResponse('success', null, 200, $api);
+				return $api;
 			}
-			$api['content'] = ($resolve) ? $items : $plex;
-			$api['plexID'] = $this->config['plexID'];
-			$api['showNames'] = true;
-			$api['group'] = '1';
-			$this->setAPIResponse('success', null, 200, $api);
-			return $api;
+		} catch (Exception $e) {
+			$this->setAPIResponse('error', null, 422, [$e->getMessage()]);
+			return false;
 		}
 	}
 	
@@ -399,22 +419,27 @@ trait PlexHomepageItem
 		$url = $this->qualifyURL($this->config['plexURL']);
 		$url = $url . "/search?query=" . rawurlencode($query) . "&X-Plex-Token=" . $this->config['plexToken'];
 		$options = $this->requestOptions($url, null, $this->config['plexDisableCertCheck'], $this->config['plexUseCustomCertificate']);
-		$response = Requests::get($url, [], $options);
-		libxml_use_internal_errors(true);
-		if ($response->success) {
-			$items = array();
-			$plex = simplexml_load_string($response->body);
-			foreach ($plex as $child) {
-				if (!in_array($child['type'], $ignore) && !in_array($child['librarySectionID'], $exclude) && isset($child['librarySectionID'])) {
-					$items[] = $this->resolvePlexItem($child);
+		try {
+			$response = Requests::get($url, [], $options);
+			libxml_use_internal_errors(true);
+			if ($response->success) {
+				$items = array();
+				$plex = simplexml_load_string($response->body);
+				foreach ($plex as $child) {
+					if (!in_array($child['type'], $ignore) && !in_array($child['librarySectionID'], $exclude) && isset($child['librarySectionID'])) {
+						$items[] = $this->resolvePlexItem($child);
+					}
 				}
+				$api['content'] = ($resolve) ? $items : $plex;
+				$api['plexID'] = $this->config['plexID'];
+				$api['showNames'] = true;
+				$api['group'] = '1';
+				$this->setAPIResponse('success', null, 200, $api);
+				return $api;
 			}
-			$api['content'] = ($resolve) ? $items : $plex;
-			$api['plexID'] = $this->config['plexID'];
-			$api['showNames'] = true;
-			$api['group'] = '1';
-			$this->setAPIResponse('success', null, 200, $api);
-			return $api;
+		} catch (Exception $e) {
+			$this->setAPIResponse('error', null, 422, [$e->getMessage()]);
+			return false;
 		}
 	}
 	
@@ -621,8 +646,8 @@ trait PlexHomepageItem
 		$url .= '/api/v2?apikey=' . $this->config['tautulliApikey'];
 		$url .= '&cmd=get_users';
 		$options = $this->requestOptions($url, null, $this->config['tautulliDisableCertCheck'], $this->config['tautulliUseCustomCertificate']);
-		$response = Requests::get($url, [], $options);
 		try {
+			$response = Requests::get($url, [], $options);
 			$response = json_decode($response->body, true);
 			foreach ($response['response']['data'] as $user) {
 				if ($user['user_id'] != 0) {
