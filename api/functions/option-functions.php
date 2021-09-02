@@ -20,7 +20,7 @@ trait OptionsFunction
 		$type = strtolower(str_replace('-', '', $type));
 		$setting = [
 			'name' => $name,
-			'value' => $this->config[$name]
+			'value' => $this->config[$name] ?? ''
 		];
 		switch ($type) {
 			case 'enable':
