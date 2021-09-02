@@ -113,8 +113,10 @@ trait UpgradeFunctions
 			}
 			if ($updateComplete) {
 				$this->config = $this->config();
-				$this->removeConfigItem(['homepageOrdercustomhtml', 'homepageOrdercustomhtmlTwo', 'homepageCustomHTMLoneEnabled', 'homepageCustomHTMLoneAuth', 'customHTMLone', 'homepageCustomHTMLtwoEnabled', 'homepageCustomHTMLtwoAuth', 'customHTMLtwo']);
-				$this->config = $this->config();
+				$removeConfigItems = $this->removeConfigItem(['homepageOrdercustomhtml', 'homepageOrdercustomhtmlTwo', 'homepageCustomHTMLoneEnabled', 'homepageCustomHTMLoneAuth', 'customHTMLone', 'homepageCustomHTMLtwoEnabled', 'homepageCustomHTMLtwoAuth', 'customHTMLtwo']);
+				if ($removeConfigItems) {
+					$this->config = $this->config();
+				}
 				return true;
 			}
 		}
