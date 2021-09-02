@@ -788,7 +788,7 @@ class Organizr
 			}
 		}
 		// Build output
-		$output = (!$nest ? "<?php\nreturn " : '') . "array(\n" . implode(",\n", $output) . "\n" . str_repeat("\t", $nest) . ')' . (!$nest ? ';' : '');
+		$output = (!$nest ? "<?php\nreturn " : '') . "[\n" . implode(",\n", $output) . "\n" . str_repeat("\t", $nest) . ']' . (!$nest ? ';' : '');
 		if (!$nest && $path) {
 			$pathDigest = pathinfo($path);
 			@mkdir($pathDigest['dirname'], 0770, true);
@@ -2595,22 +2595,10 @@ class Organizr
 					'value' => $this->config['ssoPlex']
 				)
 			),
-			'Tautulli' => array(
-				array(
-					'type' => 'input',
-					'name' => 'tautulliURL',
-					'label' => 'Tautulli URL',
-					'value' => $this->config['tautulliURL'],
-					'help' => 'Please make sure to use local IP address and port - You also may use local dns name too.',
-					'placeholder' => 'http(s)://hostname:port'
-				),
-				array(
-					'type' => 'switch',
-					'name' => 'ssoTautulli',
-					'label' => 'Enable',
-					'value' => $this->config['ssoTautulli']
-				)
-			),
+			'Tautulli' => [
+				$this->settingsOption('multiple-url', 'tautulliURL'),
+				$this->settingsOption('enable', 'ssoTautulli'),
+			],
 			'Overseerr' => array(
 				array(
 					'type' => 'input',
