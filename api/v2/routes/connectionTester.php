@@ -370,6 +370,29 @@ $app->post('/test/nzbget', function ($request, $response, $args) {
 		->withStatus($GLOBALS['responseCode']);
 	
 });
+$app->post('/test/utorrent', function ($request, $response, $args) {
+        /**
+         * @OA\Post(
+         *     security={{ "api_key":{} }},
+         *     tags={"test connection"},
+         *     path="/api/v2/test/utorrent",
+         *     summary="Test connection to uTorrent",
+         *     @OA\Response(response="200",description="Success",@OA\JsonContent(ref="#/components/schemas/success-message")),
+         *     @OA\Response(response="401",description="Unauthorized",@OA\JsonContent(ref="#/components/schemas/unauthorized-message")),
+         *     @OA\Response(response="400",description="Error",@OA\JsonContent(ref="#/components/schemas/error-message")),
+         *     @OA\Response(response="500",description="Error",@OA\JsonContent(ref="#/components/schemas/error-message")),
+         * )
+         */
+        $Organizr = ($request->getAttribute('Organizr')) ?? new Organizr();
+        if ($Organizr->qualifyRequest(1, true)) {
+                $Organizr->testConnectionuTorrent($Organizr->apiData($request));
+        }
+        $response->getBody()->write(jsonE($GLOBALS['api']));
+        return $response
+                ->withHeader('Content-Type', 'application/json;charset=UTF-8')
+                ->withStatus($GLOBALS['responseCode']);
+
+});
 $app->post('/test/deluge', function ($request, $response, $args) {
 	/**
 	 * @OA\Post(

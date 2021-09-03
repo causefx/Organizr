@@ -2169,6 +2169,8 @@ function checkTabHomepageItem(id, name, url, urlLocal){
         addEditHomepageItem(id,'qBittorrent');
     }else if(name.includes('rtorrent') || url.includes('rtorrent') || urlLocal.includes('rtorrent')){
         addEditHomepageItem(id,'rTorrent');
+    }else if(name.includes('utorrent') || url.includes('utorrent') || urlLocal.includes('utorrent')){
+        addEditHomepageItem(id,'utorrent');
     }else if(name.includes('deluge') || url.includes('deluge') || urlLocal.includes('deluge')){
         addEditHomepageItem(id,'Deluge');
     }else if(name.includes('ombi') || url.includes('ombi') || urlLocal.includes('ombi')){
@@ -6052,6 +6054,37 @@ function buildDownloaderItem(array, source, type='none'){
                 `;
             });
             break;
+        case 'utorrent':
+            if(array.content === false){
+                queue = '<tr><td class="max-texts" lang="en">Connection Error to ' + source + '</td></tr>';
+                break;
+            }
+            if(array.content.queueItems == 0){
+                queue = '<tr><td class="max-texts" lang="en">Nothing in queue</td></tr>';
+            }
+            $.each(array.content.queueItems, function(i,v) {
+                console.log(v);
+		count = count + 1;
+                var upload = v.upSpeed !== '' ? humanFileSize(v.upSpeed,false) : "0 B";
+                var download = v.downSpeed !== '' ? humanFileSize(v.downSpeed,false) : "0 B";
+		var size = v.Size !== '' ? humanFileSize(v.Size,false) : "0 B";
+                queue += `
+                <tr>
+                    <td class="max-texts"><span class="tooltip-info" data-toggle="tooltip" data-placement="right" title="">`+v.Name+`</span></td>
+		    <td class="hidden-xs utorrent-`+cleanClass(v.Status)+`">`+v.Status+`</td>
+                    <td class="hidden-xs"><span class="label label-info">`+v.Labels+`</span></td>
+		    <td class="hidden-xs"><span class="tooltip-info" data-toggle="tooltip" data-placement="right" title="" data-original-title="`+download+`"><i class="fa fa-download"></i>&nbsp;`+download+`</span></td>
+                    <td class="hidden-xs"><span class="tooltip-info" data-toggle="tooltip" data-placement="right" title="" data-original-title="`+upload+`"><i class="fa fa-upload"></i>&nbsp;`+upload+`</span></td>
+		    <td class="hidden-xs">`+size+`</td>
+                    <td class="text-right">
+                        <div class="progress progress-lg m-b-0">
+                            <div class="progress-bar progress-bar-info" style="width: `+v.Percent+`;" role="progressbar">`+v.Percent+`</div>
+                        </div>
+                    </td>
+                </tr>
+                `;
+            });
+            break;
 		case 'sonarr':
 			if(array.content === false){
 				queue = '<tr><td class="max-texts" lang="en">Connection Error to ' + source + '</td></tr>';
@@ -6246,6 +6279,9 @@ function buildDownloader(source){
         case 'transmission':
         case 'qBittorrent':
         case 'deluge':
+	case 'utorrent':
+            var queue = true;
+            break;
         case 'rTorrent':
 	    case 'sonarr':
 	    case 'radarr':
@@ -6344,6 +6380,9 @@ function buildDownloaderCombined(source){
         case 'nzbget':
             var queue = true;
             var history = true;
+            break;
+        case 'utorrent':
+            var queue = true;
             break;
         case 'transmission':
         case 'qBittorrent':
@@ -7049,9 +7088,12 @@ function homepageDownloader(type, timeout){
 		case 'deluge':
 			var action = 'getDeluge';
 			break;
-        case 'rTorrent':
-            var action = 'getrTorrent';
-            break;
+	        case 'rTorrent':
+			var action = 'getrTorrent';
+			break;
+                case 'utorrent':
+                        var action = 'getutorrent';
+                        break;
 		default:
 
 	}
