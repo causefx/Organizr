@@ -10,6 +10,8 @@ trait UpgradeFunctions
 				$this->upgradeHomepageTabURL();
 			case '2.1.400':
 				$this->removeOldPluginDirectoriesAndFiles();
+			case '2.1.525':
+				$this->removeOldCustomHTML();
 			default:
 				$this->setAPIResponse('success', 'Ran update function for version: ' . $version, 200);
 				return true;
@@ -76,5 +78,48 @@ trait UpgradeFunctions
 			}
 		}
 		return true;
+	}
+	
+	public function checkForConfigKeyAddToArray($keys)
+	{
+		$updateItems = [];
+		foreach ($keys as $new => $old) {
+			if ($this->config[$old]) {
+				if ($this->config[$old] !== '') {
+					$updateItemsNew = [$new => $this->config[$old]];
+					$updateItems = array_merge($updateItems, $updateItemsNew);
+				}
+			}
+		}
+		return $updateItems;
+	}
+	
+	public function removeOldCustomHTML()
+	{
+		$backup = $this->backupOrganizr();
+		if ($backup) {
+			$keys = [
+				'homepageCustomHTML01Enabled' => 'homepageCustomHTMLoneEnabled',
+				'homepageCustomHTML01Auth' => 'homepageCustomHTMLoneAuth',
+				'customHTML01' => 'customHTMLone',
+				'homepageCustomHTML02Enabled' => 'homepageCustomHTMLtwoEnabled',
+				'homepageCustomHTML02Auth' => 'homepageCustomHTMLtwoAuth',
+				'customHTML02' => 'customHTMLtwo',
+			];
+			$updateItems = $this->checkForConfigKeyAddToArray($keys);
+			$updateComplete = false;
+			if (!empty($updateItems)) {
+				$updateComplete = $this->updateConfig($updateItems);
+			}
+			if ($updateComplete) {
+				$this->config = $this->config();
+				$removeConfigItems = $this->removeConfigItem(['homepageOrdercustomhtml', 'homepageOrdercustomhtmlTwo', 'homepageCustomHTMLoneEnabled', 'homepageCustomHTMLoneAuth', 'customHTMLone', 'homepageCustomHTMLtwoEnabled', 'homepageCustomHTMLtwoAuth', 'customHTMLtwo']);
+				if ($removeConfigItems) {
+					$this->config = $this->config();
+				}
+				return true;
+			}
+		}
+		return false;
 	}
 }

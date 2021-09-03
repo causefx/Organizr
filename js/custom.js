@@ -1064,12 +1064,6 @@ $(document).on("click", ".saveJava", function () {
 $(document).on("click", ".saveThemeJava", function () {
     $('.javaThemeTextarea').val(javaThemeEditor.getValue()).trigger('change');
 });
-$(document).on("click", ".savecustomHTMLoneTextarea", function () {
-    $('.customHTMLoneTextarea').val(customHTMLoneEditor.getValue()).trigger('change');
-});
-$(document).on("click", ".savecustomHTMLtwoTextarea", function () {
-    $('.customHTMLtwoTextarea').val(customHTMLtwoEditor.getValue()).trigger('change');
-});
 
 $(document).on('focusout', 'input.pick-a-color-custom-options', function(e) {
     var original = $(this).attr('data-original');
@@ -1796,7 +1790,7 @@ $(document).on('click', ".ipInfo", function(){
 });
 // set active for group list
 $(document).on('click', '.allGroupsList', function() {
-    $(this).toggleClass('active');
+    //$(this).toggleClass('active');
 });
 // Control init of custom netdata JSON editor
 $(document).on('click', 'li a[aria-controls="Custom data"]', function() {
@@ -1887,4 +1881,15 @@ $(document).on('change', '[id*=-form-chooseI]', function (e) {
 	if(newValue !== 'Select or type Icon'){
 		$('#'+pasteId).val(newValue);
 	}
+});
+// SETTINGS DROPDOWN CHANGE
+$(document).on("change", ".settings-dropdown-box", function () {
+	let id = $(this).val();
+	$(id).click();
+});
+$(document).on('click', '.nav-non-mobile li a', function() {
+	let id = $(this).attr('id');
+	let menu = $(this).parent().parent().attr('data-dropdown');
+	$('.' + menu).val('#' + id);
+
 });

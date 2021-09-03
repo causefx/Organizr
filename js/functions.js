@@ -23,6 +23,7 @@ var tabInformation = {};
 var tabActionsList = [];
 tabActionsList['refresh'] = [];
 tabActionsList['close'] = [];
+var customHTMLEditorObject = [];
 $.xhrPool = [];
 // Add new jquery serializeObject function
 $.fn.serializeObject = function()
@@ -1211,12 +1212,17 @@ function buildPluginsItem(array){
 	activePlugins = (activePlugins.length !== 0) ? activePlugins : '<h2 class="text-center" lang="en">Nothing Active</h2>';
 	inactivePlugins = (inactivePlugins.length !== 0) ? inactivePlugins : '<h2 class="text-center" lang="en">Everything Active</h2>';
 	var panes = `
-	<ul class="nav customtab2 nav-tabs" role="tablist">
-		<li onclick="changeSettingsMenu('Settings::Plugins::Active')" role="presentation" class="active"><a href="#settings-plugins-active" aria-controls="home" role="tab" data-toggle="tab" aria-expanded="false"><span class="visible-xs"><i class="ti-file"></i></span><span class="hidden-xs" lang="en">Active</span></a>
+	<select class="form-control settings-dropdown-box plugin-menu w-100 visible-xs">
+		<option value="#settings-plugins-active-anchor" lang="en">Active</option>
+		<option value="#settings-plugins-inactive-anchor" lang="en">Inactive</option>
+		<option value="#settings-plugins-marketplace-anchor" lang="en">Marketplace</option>
+	</select>
+	<ul class="nav customtab2 nav-tabs nav-non-mobile hidden-xs" data-dropdown="plugin-menu" role="tablist">
+		<li onclick="changeSettingsMenu('Settings::Plugins::Active')" role="presentation" class="active"><a id="settings-plugins-active-anchor" href="#settings-plugins-active" aria-controls="home" role="tab" data-toggle="tab" aria-expanded="false"><span class="visible-xs"><i class="ti-file"></i></span><span class="hidden-xs" lang="en">Active</span></a>
 		</li>
-		<li onclick="changeSettingsMenu('Settings::Plugins::Inactive')" role="presentation" class=""><a href="#settings-plugins-inactive" aria-controls="home" role="tab" data-toggle="tab" aria-expanded="false"><span class="visible-xs"><i class="ti-zip"></i></span><span class="hidden-xs" lang="en">Inactive</span></a>
+		<li onclick="changeSettingsMenu('Settings::Plugins::Inactive')" role="presentation" class=""><a id="settings-plugins-inactive-anchor" href="#settings-plugins-inactive" aria-controls="home" role="tab" data-toggle="tab" aria-expanded="false"><span class="visible-xs"><i class="ti-zip"></i></span><span class="hidden-xs" lang="en">Inactive</span></a>
 		</li>
-		<li onclick="changeSettingsMenu('Settings::Plugins::Marketplace');loadMarketplace('plugins');" role="presentation" class=""><a href="#settings-plugins-marketplace" aria-controls="home" role="tab" data-toggle="tab" aria-expanded="false"><span class="visible-xs"><i class="ti-shopping-cart-full"></i></span><span class="hidden-xs" lang="en">Marketplace</span></a>
+		<li onclick="changeSettingsMenu('Settings::Plugins::Marketplace');loadMarketplace('plugins');" role="presentation" class=""><a id="settings-plugins-marketplace-anchor" href="#settings-plugins-marketplace" aria-controls="home" role="tab" data-toggle="tab" aria-expanded="false"><span class="visible-xs"><i class="ti-shopping-cart-full"></i></span><span class="hidden-xs" lang="en">Marketplace</span></a>
 		</li>
 	</ul>
 	<!-- Tab panes -->
@@ -1722,27 +1728,23 @@ function homepageItemFormHTML(v){
 function clearHomepageOriginal(){
 	$('#editHomepageItem').html('');
 }
-function completeHomepageLoad(item){
-	if(item == 'CustomHTML-1'){
-		customHTMLoneEditor = ace.edit("customHTMLoneEditor");
-		let HTMLMode = ace.require("ace/mode/html").Mode;
-		customHTMLoneEditor.session.setMode(new HTMLMode());
-		customHTMLoneEditor.setTheme("ace/theme/idle_fingers");
-		customHTMLoneEditor.setShowPrintMargin(false);
-		customHTMLoneEditor.session.on('change', function(delta) {
-			$('.customHTMLoneTextarea').val(customHTMLoneEditor.getValue());
-			$('#homepage-CustomHTML-1-form-save').removeClass('hidden');
-		});
-	}
-	if(item == 'CustomHTML-2'){
-		customHTMLtwoEditor = ace.edit("customHTMLtwoEditor");
-		let HTMLMode = ace.require("ace/mode/html").Mode;
-		customHTMLtwoEditor.session.setMode(new HTMLMode());
-		customHTMLtwoEditor.setTheme("ace/theme/idle_fingers");
-		customHTMLtwoEditor.setShowPrintMargin(false);
-		customHTMLtwoEditor.session.on('change', function(delta) {
-			$('.customHTMLtwoTextarea').val(customHTMLtwoEditor.getValue());
-			$('#homepage-CustomHTML-2-form-save').removeClass('hidden');
+function completeHomepageLoad(item, data){
+	if(item == 'CustomHTML'){
+		let iteration = 0;
+		$.each(data.settings, function(i,customItem) {
+			let iterationString = (parseInt(iteration, 10) + 101).toString().substr(1);
+			let customEditor = 'customHTML'+iterationString+'Editor';
+			let customTextarea = 'customHTML'+iterationString+'Textarea';
+			let HTMLMode = ace.require("ace/mode/html").Mode;
+			customHTMLEditorObject[iterationString] = ace.edit(customEditor);
+			customHTMLEditorObject[iterationString].session.setMode(new HTMLMode());
+			customHTMLEditorObject[iterationString].setTheme("ace/theme/idle_fingers");
+			customHTMLEditorObject[iterationString].setShowPrintMargin(false);
+			customHTMLEditorObject[iterationString].session.on('change', function(delta) {
+				$('.' + customTextarea).val(customHTMLEditorObject[iterationString].getValue());
+				$('#homepage-CustomHTML-form-save').removeClass('hidden');
+			});
+			iteration++;
 		});
 	}
 	pageLoad();
@@ -1775,7 +1777,7 @@ function editHomepageItem(item){
 					delay: 0,
 					fullscreen: true,
 					clone: false,
-					onComplete: completeHomepageLoad(item),
+					onComplete: completeHomepageLoad(item, response.data),
 					onClose: clearHomepageOriginal
 				},loader:{active:true}
 			}).open();
@@ -1796,15 +1798,15 @@ function buildHomepageItem(array){
 		$.each(array, function(i,v) {
 			if(v.enabled){
 				listing += `
-				<div class="col-lg-2 col-md-2 col-sm-4 col-xs-4">
+				<div class="col-lg-2 col-md-2 col-sm-6 col-xs-6">
 					<div class="white-box bg-org m-0">
 						<div class="el-card-item p-0 editHomepageItemBox-`+v.name+`">
 							<div class="el-card-avatar el-overlay-1">
 								<a onclick="editHomepageItem('`+v.name+`')"><img class="lazyload tabImages mouse" data-src="`+v.image+`"></a>
 							</div>
 							<div class="el-card-content">
-								<h3 class="box-title">`+v.name+`</h3>
-								<small class="elip text-uppercase">`+v.category+`</small><br>
+								<h3 class="box-title elip">`+v.name+`</h3>
+								<small class="elip text-uppercase elip">`+v.category+`</small><br>
 							</div>
 						</div>
 					</div>
@@ -3186,15 +3188,24 @@ function buildTabEditorItem(array){
 			<input type="hidden" class="form-control" name="tab[`+v.id+`].id" value="`+v.id+`">
 			<input type="hidden" class="form-control order" name="tab[`+v.id+`].order" value="`+v.order+`">
 			<input type="hidden" class="form-control" name="tab[`+v.id+`].originalOrder" value="`+v.order+`">
+			<td class="mouse sort-tabs-handle">
+				<i class="icon-options-vertical m-r-5"></i> 
+				<!-- May use later on
+				<div class="btn-group dropside visible-xs">
+					<button aria-expanded="false" data-toggle="dropdown" class="btn btn-default btn-outline dropdown-toggle waves-effect waves-light" type="button"> <i class="icon-options-vertical m-r-5"></i> <span class="caret"></span></button>
+					<ul role="menu" class="dropdown-menu">
+						<li><a href="#"><i class="fa fa-angle-double-up"></i></a></li>
+						<li><a href="#"><i class="fa fa-angle-up"></i></a></li>
+						<li><a href="#"><i class="fa fa-angle-double-down"></i></a></li>
+						<li><a href="#"><i class="fa fa-angle-down"></i></a></li>
+					</ul>
+				</div>
+				-->
+			</td>
 			<td style="text-align:center" class="text-center el-element-overlay">
 				<div class="el-card-item p-0">
 					<div class="el-card-avatar el-overlay-1 m-0">
 						<div class="tabEditorIcon">`+iconPrefix(v.image)+`</div>
-						<div class="el-overlay bg-org">
-							<ul class="el-info">
-								<i class="fa fa-bars"></i>
-							</ul>
-						</div>
 					</div>
 				</div>
 			</td>
@@ -4192,10 +4203,10 @@ function loadInternal(url,tabName, split = null){
 	organizrAPI2('get',url).success(function(data) {
 		try {
 			var html = data.response;
+			$('#internal-'+extra+tabName).html(html.data);
 		}catch(e) {
 			organizrCatchError(e,data);
 		}
-		$('#internal-'+extra+tabName).html(html.data);
 	}).fail(function(xhr) {
 		OrganizrApiError(xhr);
 	});
@@ -4931,7 +4942,7 @@ function buildStreamItem(array,source){
 						<h3 class="box-title pull-right vertical-middle" style="width:10%"><i class="icon-control-`+v.state+` fa-fw text-info" style=""></i></h3>
 						<div class="clearfix"></div>
 						<small class="pull-left p-l-10 w-50 elip"><span class="pull-left"><i class="`+icon+` fa-fw text-info"></i>`+v.nowPlayingBottom+`</span></small>
-						<small class="pull-right p-r-10 w-50 elip"><span class="pull-right">`+v.user+` <i class="icon-user"></i></span></small>
+						<small class="pull-right p-r-10 w-50"><span class="pull-right"><span class="">`+v.user+` <i class="icon-user"></i></span></span></small>
 						<br>
 					</div>
 				</div>
@@ -10058,7 +10069,7 @@ function clickPath(type,path=null){
             break;
         case 'update':
             $('#settings-main-system-settings-anchor').trigger('click');
-            $('#update-button').trigger('click');
+            $('#settings-settings-updates-anchor').trigger('click');
             break;
         case 'sso':
             $('#settings-main-system-settings-anchor').trigger('click');
@@ -10797,18 +10808,19 @@ function checkForUpdates(){
 
 function loadJavascript(script = null, defer = false){
 	if(script){
-		console.log(script);
-		console.log('checking if script is loaded...');
+		organizrConsole('JS Loader',script);
+		organizrConsole('JS Loader','Checking if script is loaded...');
 		let loaded = $('script[src="'+script+'"]').length;
-		///let loaded2 = document.querySelector('script[src="' + script + '"]');
 		if(!loaded){
-			console.log('script is NOT loaded... Loading now...');
+			organizrConsole('JS Loader','Script is NOT loaded... Loading now...');
 			let head = document.getElementsByTagName('head')[0];
 			let scriptEl = document.createElement('script');
 			scriptEl.type = 'text/javascript';
 			scriptEl.src = script;
 			scriptEl.defer = false;
 			head.appendChild(scriptEl);
+		}else{
+			organizrConsole('JS Loader','Script already loaded');
 		}
 	}
 }

@@ -51,8 +51,18 @@ function bookmarkLaunch(){
 
 // TAB MANAGEMENT
 function bookmarkTabsLaunch(){
-	var menuList = `<li onclick="changeSettingsMenu('Settings::Tab Editor::Bookmark Tabs');loadSettingsPage2('api/v2/plugins/bookmark/settings_tab_editor_bookmark_tabs','#settings-tab-editor-tabs','Tab Editor');" role="presentation"><a id="settings-tab-editor-tabs-anchor" href="#settings-tab-editor-tabs" aria-controls="home" role="tab" data-toggle="tab" aria-expanded="true"><span class="visible-xs"><i class="ti-layout-tab-v"></i></span><span class="hidden-xs" lang="en">Bookmark Tabs</span></a></li>`;
-	$('#settings-main-tab-editor .nav-tabs').append(menuList);
+	var menuList = `<li class="bookmarkTabsMenu-added" onclick="changeSettingsMenu('Settings::Tab Editor::Bookmark Tabs');loadSettingsPage2('api/v2/plugins/bookmark/settings_tab_editor_bookmark_tabs','#settings-tab-editor-bookmark-tabs','Bookmark Tab Editor');" role="presentation"><a id="settings-tab-editor-bookmark-tabs-anchor" href="#settings-tab-editor-bookmark-tabs" aria-controls="home" role="tab" data-toggle="tab" aria-expanded="true"><span class="visible-xs"><i class="ti-layout-tab-v"></i></span><span class="hidden-xs" lang="en">Bookmark Tabs</span></a></li>`;
+	let menuListAlt = `<option value="#settings-tab-editor-bookmark-tabs-anchor" lang="en">Bookmark Tabs</option>`;
+	let div = `
+	<div role="tabpanel" class="tab-pane fade" id="settings-tab-editor-bookmark-tabs">
+		<h2 lang="en">Loading...</h2>
+	</div>
+	`;
+	if($('.bookmarkCategoryMenu-added').length === 0 ){
+		$('#settings-main-tab-editor .nav-tabs').append(menuList);
+		$('.settings-dropdown-box.tab-editor-menu').append(menuListAlt);
+		$('#settings-main-tab-editor .tab-content').append(div);
+	}
 }
 
 function getColorPickerOptionsWithCallback(func){
@@ -68,7 +78,7 @@ function buildBookmarkTabEditor(){
 			organizrCatchError(e,data);
 		}
 		$('#bookmarkTabEditorTable').html(buildBookmarkTabEditorItem(response.data));
-		
+
 		// initialize color pickers only first time
 		if(!colorPickerInitialized){
 			$("input.bookmark-pick-a-color").ColorPickerSliders({
@@ -77,7 +87,7 @@ function buildBookmarkTabEditor(){
 				hsvpanel: true,
 				previewformat: 'hex',
 				flat: true,
-				onchange: function(container, color){ 
+				onchange: function(container, color){
 					generatePreviewBookmarkNewTab();
 					generatePreviewBookmarkEditTab();
 				}
@@ -473,8 +483,19 @@ $(document).on('input', "#edit-bookmark-tab-form-inputTextColor", generatePrevie
 
 // CATEGORY MANAGEMENT
 function bookmarkCategoriesLaunch(){
-	var menuList = `<li onclick="changeSettingsMenu('Settings::Tab Editor::Bookmark Categories');loadSettingsPage2('api/v2/plugins/bookmark/settings_tab_editor_bookmark_categories','#settings-tab-editor-tabs','Tab Editor');" role="presentation"><a id="settings-tab-editor-tabs-anchor" href="#settings-tab-editor-tabs" aria-controls="home" role="tab" data-toggle="tab" aria-expanded="true"><span class="visible-xs"><i class="ti-layout-tab-v"></i></span><span class="hidden-xs" lang="en">Bookmark Categories</span></a></li>`;
-	$('#settings-main-tab-editor .nav-tabs').append(menuList);
+	var menuList = `<li class="bookmarkCategoryMenu-added" onclick="changeSettingsMenu('Settings::Tab Editor::Bookmark Categories');loadSettingsPage2('api/v2/plugins/bookmark/settings_tab_editor_bookmark_categories','#settings-tab-editor-bookmark-categories','Bookmark Category Editor');" role="presentation"><a id="settings-tab-editor-bookmark-categories-anchor" href="#settings-tab-editor-bookmark-categories" aria-controls="home" role="tab" data-toggle="tab" aria-expanded="true"><span class="visible-xs"><i class="ti-layout-tab-v"></i></span><span class="hidden-xs" lang="en">Bookmark Categories</span></a></li>`;
+	let menuListAlt = `<option value="#settings-tab-editor-bookmark-categories-anchor" lang="en">Bookmark Categories</option>`;
+	let div = `
+	<div role="tabpanel" class="tab-pane fade" id="settings-tab-editor-bookmark-categories">
+		<h2 lang="en">Loading...</h2>
+	</div>
+	`;
+	if($('.bookmarkCategoryMenu-added').length === 0 ){
+		$('#settings-main-tab-editor .nav-tabs').append(menuList);
+		$('.settings-dropdown-box.tab-editor-menu').append(menuListAlt);
+		$('#settings-main-tab-editor .tab-content').append(div);
+	}
+
 }
 
 function buildBookmarkCategoryEditor(){

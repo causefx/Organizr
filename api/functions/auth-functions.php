@@ -482,7 +482,7 @@ trait AuthFunctions
 				if (is_array($json)) {
 					foreach ($json as $key => $value) { // Scan for this user
 						if (isset($value['ConnectUserName']) && isset($value['ConnectLinkType'])) { // Qualify as connect account
-							if (strtolower($value['ConnectUserName']) == $username || strtolower($value['Name']) == $username) {
+							if (strtolower($value['ConnectUserName']) == strtolower($username) || strtolower($value['Name']) == strtolower($username)) {
 								$connectUserName = $value['ConnectUserName'];
 								$this->writeLog('success', 'Emby Connect Auth Function - Found User', $username);
 								break;

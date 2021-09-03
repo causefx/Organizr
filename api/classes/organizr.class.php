@@ -61,7 +61,7 @@ class Organizr
 	
 	// ===================================
 	// Organizr Version
-	public $version = '2.1.496';
+	public $version = '2.1.525';
 	// ===================================
 	// Quick php Version check
 	public $minimumPHP = '7.3';
@@ -190,7 +190,7 @@ class Organizr
 			if ($this->config['blacklisted'] !== '') {
 				if (in_array($currentIP, $this->arrayIP($this->config['blacklisted']))) {
 					$this->debug('User was sent to blackhole - Blacklisted IPs: ' . $this->config['blacklisted']);
-					die($this->config['blacklistedMessage']);
+					die($this->showHTML('Blacklisted', $this->config['blacklistedMessage']));
 				}
 			}
 		}
@@ -571,7 +571,7 @@ class Organizr
 	private function checkPHP()
 	{
 		if (!(version_compare(PHP_VERSION, $this->minimumPHP) >= 0)) {
-			die('Organizr needs PHP Version: ' . $this->minimumPHP . '<br/> You have PHP Version: ' . PHP_VERSION);
+			die($this->showHTML('PHP Version', 'Organizr needs PHP Version: ' . $this->minimumPHP . '<br/> You have PHP Version: ' . PHP_VERSION));
 		}
 	}
 	
@@ -580,7 +580,7 @@ class Organizr
 		if ($this->hasDB()) {
 			$db = is_writable($this->config['dbLocation'] . $this->config['dbName']);
 			if (!$db) {
-				die('Organizr DB is not writable!!!  Please fix...');
+				die($this->showHTML('Organizr DB is not writable!', 'Please check permissions and/or disk space'));
 			}
 		}
 	}
@@ -596,7 +596,7 @@ class Organizr
 				@$this->rrmdir($cleanup);
 			}
 			if (file_exists($tempLock)) {
-				die('upgrading');
+				die($this->showHTML('Upgrading', 'Please wait...'));
 			}
 			$updateDB = false;
 			$updateSuccess = true;
@@ -639,6 +639,14 @@ class Organizr
 				$this->upgradeToVersion($versionCheck);
 			}
 			// End Upgrade check start for version above
+			// Upgrade check start for version below
+			$versionCheck = '2.1.525';
+			if ($compare->lessThan($oldVer, $versionCheck)) {
+				$updateDB = false;
+				$oldVer = $versionCheck;
+				$this->upgradeToVersion($versionCheck);
+			}
+			// End Upgrade check start for version above
 			if ($updateDB == true) {
 				//return 'Upgraded Needed - Current Version '.$oldVer.' - New Version: '.$versionCheck;
 				// Upgrade database to latest version
@@ -650,7 +658,7 @@ class Organizr
 				$this->debug('Updated config version to ' . $this->version);
 			}
 			if ($updateSuccess == false) {
-				die('Database update failed - Please manually check logs and fix - Then reload this page');
+				die($this->showHTML('Database update failed', 'Please manually check logs and fix - Then reload this page'));
 			}
 			return true;
 		}
@@ -781,7 +789,7 @@ class Organizr
 			}
 		}
 		// Build output
-		$output = (!$nest ? "<?php\nreturn " : '') . "array(\n" . implode(",\n", $output) . "\n" . str_repeat("\t", $nest) . ')' . (!$nest ? ';' : '');
+		$output = (!$nest ? "<?php\nreturn " : '') . "[\n" . implode(",\n", $output) . "\n" . str_repeat("\t", $nest) . ']' . (!$nest ? ';' : '');
 		if (!$nest && $path) {
 			$pathDigest = pathinfo($path);
 			@mkdir($pathDigest['dirname'], 0770, true);
@@ -813,6 +821,25 @@ class Organizr
 		// Inject Parts
 		foreach ($new as $k => $v) {
 			$current[$k] = $v;
+		}
+		// Return Create
+		return $this->createConfig($current);
+	}
+	
+	public function removeConfigItem($new, $current = false)
+	{
+		// Get config if not supplied
+		if ($current === false) {
+			$current = $this->config;
+		} elseif (is_string($current) && is_file($current)) {
+			$current = $this->loadConfig($current);
+		}
+		// Inject Parts
+		foreach ($new as $k) {
+			if (isset($current[$k])) {
+				$current['deletedConfigItems'][$k] = $current[$k];
+			}
+			unset($current[$k]);
 		}
 		// Return Create
 		return $this->createConfig($current);
@@ -2569,22 +2596,10 @@ class Organizr
 					'value' => $this->config['ssoPlex']
 				)
 			),
-			'Tautulli' => array(
-				array(
-					'type' => 'input',
-					'name' => 'tautulliURL',
-					'label' => 'Tautulli URL',
-					'value' => $this->config['tautulliURL'],
-					'help' => 'Please make sure to use local IP address and port - You also may use local dns name too.',
-					'placeholder' => 'http(s)://hostname:port'
-				),
-				array(
-					'type' => 'switch',
-					'name' => 'ssoTautulli',
-					'label' => 'Enable',
-					'value' => $this->config['ssoTautulli']
-				)
-			),
+			'Tautulli' => [
+				$this->settingsOption('multiple-url', 'tautulliURL'),
+				$this->settingsOption('enable', 'ssoTautulli'),
+			],
 			'Overseerr' => array(
 				array(
 					'type' => 'input',
@@ -2717,6 +2732,120 @@ class Organizr
 				)
 			)
 		);
+	}
+	
+	public function systemMenuLists()
+	{
+		$userManagementMenu = [
+			[
+				'active' => false,
+				'api' => 'api/v2/page/settings_user_manage_users',
+				'anchor' => 'settings-user-manage-users-anchor',
+				'name' => 'Manage Users'
+			],
+			[
+				'active' => false,
+				'api' => 'api/v2/page/settings_user_manage_groups',
+				'anchor' => 'settings-user-manage-groups-anchor',
+				'name' => 'Manage Groups'
+			],
+			[
+				'active' => false,
+				'api' => false,
+				'anchor' => 'settings-user-import-users-anchor',
+				'name' => 'Import Users'
+			],
+		];
+		$customizeMenu = [
+			[
+				'active' => false,
+				'api' => 'api/v2/page/settings_customize_appearance',
+				'anchor' => 'settings-customize-appearance-anchor',
+				'name' => 'Appearance',
+			],
+			[
+				'active' => false,
+				'api' => false,
+				'anchor' => 'settings-customize-marketplace-anchor',
+				'name' => 'Marketplace',
+				'onclick' => 'loadMarketplace(\'themes\');'
+			],
+		];
+		$tabEditorMenu = [
+			[
+				'active' => false,
+				'api' => 'api/v2/page/settings_tab_editor_tabs',
+				'anchor' => 'settings-tab-editor-tabs-anchor',
+				'name' => 'Tabs'
+			],
+			[
+				'active' => false,
+				'api' => 'api/v2/page/settings_tab_editor_categories',
+				'anchor' => 'settings-tab-editor-categories-anchor',
+				'name' => 'Categories'
+			],
+			[
+				'active' => false,
+				'api' => 'api/v2/page/settings_tab_editor_homepage',
+				'anchor' => 'settings-tab-editor-homepage-anchor',
+				'name' => 'Homepage Items'
+			],
+			[
+				'active' => false,
+				'api' => 'api/v2/page/settings_tab_editor_homepage_order',
+				'anchor' => 'settings-tab-editor-homepage-order-anchor',
+				'name' => 'Homepage Order'
+			],
+		];
+		$systemSettingsMenu = [
+			[
+				'active' => true,
+				'api' => false,
+				'anchor' => 'settings-settings-about-anchor',
+				'name' => 'About'
+			],
+			[
+				'active' => false,
+				'api' => 'api/v2/page/settings_settings_main',
+				'anchor' => 'settings-settings-main-anchor',
+				'name' => 'Main'
+			],
+			[
+				'active' => false,
+				'api' => 'api/v2/page/settings_settings_sso',
+				'anchor' => 'settings-settings-sso-anchor',
+				'name' => 'SSO'
+			],
+			[
+				'active' => false,
+				'api' => 'api/v2/page/settings_settings_logs',
+				'anchor' => 'settings-settings-logs-anchor',
+				'name' => 'Logs'
+			],
+			[
+				'active' => false,
+				'api' => false,
+				'anchor' => 'settings-settings-updates-anchor',
+				'name' => 'Updates'
+			],
+			[
+				'active' => false,
+				'api' => 'api/v2/page/settings_settings_backup',
+				'anchor' => 'settings-settings-backup-anchor',
+				'name' => 'Backup'
+			],
+			[
+				'active' => false,
+				'api' => false,
+				'anchor' => 'settings-settings-donate-anchor',
+				'name' => 'Donate'
+			],
+		];
+		$systemMenus['system_settings'] = $this->buildSettingsMenus($systemSettingsMenu, 'System Settings');
+		$systemMenus['tab_editor'] = $this->buildSettingsMenus($tabEditorMenu, 'Tab Editor');
+		$systemMenus['customize'] = $this->buildSettingsMenus($customizeMenu, 'Customize');
+		$systemMenus['user_management'] = $this->buildSettingsMenus($userManagementMenu, 'User Management');
+		return $systemMenus;
 	}
 	
 	public function updateConfigMultiple($array)
@@ -3205,7 +3334,7 @@ class Organizr
 		->identifiedBy('4f1g23a12aa', true)// Configures the id (jti claim), replicating as a header item
 		->issuedAt(time())// Configures the time that the token was issue (iat claim)
 		->expiresAt(time() + (86400 * $days))// Configures the expiration time of the token (exp claim)
-		//->withClaim('username', $result['username'])// Configures a new claim, called "username"
+		->withClaim('username', $result['username'])// Configures a new claim, called "username"
 		->withClaim('group', $result['group'])// Configures a new claim, called "group"
 		//->withClaim('groupID', $result['group_id'])// Configures a new claim, called "groupID"
 		//->withClaim('email', $result['email'])// Configures a new claim, called "email"
@@ -4029,6 +4158,9 @@ class Organizr
 			//new way
 			if (method_exists($this, $key)) {
 				$homepageBuilt .= $this->$key();
+			} elseif (strpos($key, 'homepageOrdercustomhtml') !== false) {
+				$iteration = substr($key, -2);
+				$homepageBuilt .= $this->homepageOrdercustomhtml($iteration);
 			} else {
 				$homepageBuilt .= '<div id="' . $key . '"></div>';
 			}
@@ -4045,17 +4177,18 @@ class Organizr
 		$inputList = '<form id="homepage-values" class="row">';
 		foreach ($homepageOrder as $key => $val) {
 			switch ($key) {
-				case 'homepageOrdercustomhtml':
+				case 'homepageOrdercustomhtml01':
+				case 'homepageOrdercustomhtml02':
+				case 'homepageOrdercustomhtml03':
+				case 'homepageOrdercustomhtml04':
+				case 'homepageOrdercustomhtml05':
+				case 'homepageOrdercustomhtml06':
+				case 'homepageOrdercustomhtml07':
+				case 'homepageOrdercustomhtml08':
+					$iteration = substr($key, -2);
 					$class = 'bg-info';
-					$image = 'plugins/images/tabs/custom1.png';
-					if (!$this->config['homepageCustomHTMLoneEnabled']) {
-						$class .= ' faded';
-					}
-					break;
-				case 'homepageOrdercustomhtmlTwo':
-					$class = 'bg-info';
-					$image = 'plugins/images/tabs/custom2.png';
-					if (!$this->config['homepageCustomHTMLtwoEnabled']) {
+					$image = 'plugins/images/tabs/HTML5.png';
+					if (!$this->config['homepageCustomHTML' . $iteration . 'Enabled']) {
 						$class .= ' faded';
 					}
 					break;
@@ -6463,11 +6596,11 @@ class Organizr
 		return '
 		<h3 lang="en">' . ucwords($app) . ' SOCKS API Connection</h3>
 		<p>Using this feature allows you to access the API without having to reverse proxy it.  Just access it from: </p>
-		<code>' . $this->getServerPath() . 'api/v2/socks/' . $app . '/</code>
+		<code class="elip hidden-xs">' . $this->getServerPath() . 'api/v2/socks/' . $app . '/</code>
 		<p>If you are using multiple URL\'s (using the csv method) you will have to use the url like these: </p>
-		<code>' . $this->getServerPath() . 'api/v2/multiple/socks/' . $app . '/1</code>
+		<code class="elip hidden-xs">' . $this->getServerPath() . 'api/v2/multiple/socks/' . $app . '/1</code>
 		<br/>
-		<code>' . $this->getServerPath() . 'api/v2/multiple/socks/' . $app . '/2</code>
+		<code class="elip hidden-xs">' . $this->getServerPath() . 'api/v2/multiple/socks/' . $app . '/2</code>
 		';
 	}
 	

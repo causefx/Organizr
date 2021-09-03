@@ -20,7 +20,7 @@ trait OptionsFunction
 		$type = strtolower(str_replace('-', '', $type));
 		$setting = [
 			'name' => $name,
-			'value' => $this->config[$name]
+			'value' => $this->config[$name] ?? ''
 		];
 		switch ($type) {
 			case 'enable':
@@ -257,7 +257,7 @@ trait OptionsFunction
 					'type' => 'html',
 					'override' => 12,
 					'label' => 'Custom Code',
-					'html' => '<button type="button" class="hidden save' . $name . 'Textarea btn btn-info btn-circle pull-right m-r-5 m-l-10"><i class="fa fa-save"></i> </button><div id="' . $name . 'Editor" style="height:300px">' . htmlentities($this->config[$name]) . '</div>'
+					'html' => '<div id="' . $name . 'Editor" style="height:300px">' . htmlentities($this->config[$name]) . '</div>'
 				];
 				break;
 			// CALENDAR ITEMS
