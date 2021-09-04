@@ -126,6 +126,8 @@ return [
 	'nzbgetSocksAuth' => '999',
 	'nzbgetCombine' => false,
 	'nzbgetRefresh' => '60000',
+	'nzbgetDisableCertCheck' => false,
+	'nzbgetUseCustomCertificate' => true,
 	'transmissionURL' => '',
 	'transmissionUsername' => '',
 	'transmissionPassword' => '',
