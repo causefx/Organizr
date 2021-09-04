@@ -166,6 +166,13 @@ trait uTorrentHomepageItem
                         $response = Requests::get($url, $headers, $options);
 			$httpResponse = $response->status_code;
 
+			if ($httpResponse == 400) {
+                                $this->writeLog('warn', 'uTorrent Token or Cookie Expired. Generating new session..', 'SYSTEM');
+                                $this->getuTorrentToken();
+				$response = Requests::get($url, $headers, $options);
+				$httpResponse = $response->status_code;
+			}
+
 			if ($httpResponse == 200) {
 	                        $responseData = json_decode($response->body);
 				$keyArray = (array) $responseData->torrents;
@@ -198,16 +205,7 @@ trait uTorrentHomepageItem
 	                        $api['content'] = $api['content'] ?? false;
 	                        $this->setAPIResponse('success', null, 200, $api);
 	                        return $api;
-                        } else if ($httpResponse == 400) {
-	                        $this->writeLog('warn', 'uTorrent Token or Cookie Expired. Generating new session..', 'SYSTEM');
-				$this->getuTorrentToken();
-				$response = Requests::get($url, $headers, $options);
-				$responseData = json_decode($response->body);
-                                $api['content']['queueItems'] = json_encode($responseData->torrents);
-                                $api['content'] = $api['content'] ?? false;
-                                $this->setAPIResponse('success', null, 200, $api);
-				return $api;
-			}
+                        }
 		} catch (Requests_Exception $e) {
                         $this->writeLog('error', 'uTorrent Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
                         $this->setAPIResponse('error', $e->getMessage(), 500);
