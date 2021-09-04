@@ -57,6 +57,7 @@ class Organizr
 	use TransmissionHomepageItem;
 	use UnifiHomepageItem;
 	use WeatherHomepageItem;
+        use uTorrentHomepageItem;
 	
 	// ===================================
 	// Organizr Version
@@ -4233,6 +4234,13 @@ class Organizr
 						$class .= ' faded';
 					}
 					break;
+                                case 'homepageOrderuTorrent':
+                                        $class = 'bg-qbit';
+                                        $image = 'plugins/images/tabs/utorrent.png';
+                                        if (!$this->config['homepageuTorrentEnabled']) {
+                                                $class .= ' faded';
+                                        }
+                                        break;
 				case 'homepageOrderrTorrent':
 					$class = 'bg-qbit';
 					$image = 'plugins/images/tabs/rTorrent.png';
@@ -4282,7 +4290,7 @@ class Organizr
 				case 'homepageOrderdownloader':
 					$class = 'bg-inverse';
 					$image = 'plugins/images/tabs/downloader.png';
-					if (!$this->config['jdownloaderCombine'] && !$this->config['sabnzbdCombine'] && !$this->config['nzbgetCombine'] && !$this->config['rTorrentCombine'] && !$this->config['delugeCombine'] && !$this->config['transmissionCombine'] && !$this->config['qBittorrentCombine']) {
+					if (!$this->config['jdownloaderCombine'] && !$this->config['sabnzbdCombine'] && !$this->config['nzbgetCombine'] && !$this->config['rTorrentCombine'] && !$this->config['delugeCombine'] && !$this->config['transmissionCombine'] && !$this->config['qBittorrentCombine'] && !$this->config['uTorrentCombine']) {
 						$class .= ' faded';
 					}
 					break;
