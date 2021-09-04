@@ -23,6 +23,7 @@ trait uTorrentHomepageItem
 				],
 				'Connection' => [
 					$this->settingsOption('url', 'uTorrentURL'),
+					$this->settingsOption('blank'),
 					$this->settingsOption('username', 'uTorrentUsername'),
 					$this->settingsOption('password', 'uTorrentPassword'),
 					$this->settingsOption('disable-cert-check', 'uTorrentDisableCertCheck'),
@@ -42,7 +43,7 @@ trait uTorrentHomepageItem
 		];
 		return array_merge($homepageInformation, $homepageSettings);
 	}
-
+	
 	public function uTorrentHomepagePermissions($key = null)
 	{
 		$permissions = [
@@ -66,30 +67,30 @@ trait uTorrentHomepageItem
 			return [];
 		}
 	}
-
-        public function testConnectionuTorrent()
-        {
-                if (empty($this->config['uTorrentURL'])) {
-                        $this->setAPIResponse('error', 'uTorrent URL is not defined', 422);
-                        return false;
-                }
-                try {
-
-                        $response = $this->getuTorrentToken();
-
-                } catch (Requests_Exception $e) {
-                        $this->writeLog('error', 'uTorrent Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
-                        $this->setAPIResponse('error', $e->getMessage(), 500);
-                        return false;
-                }
-        }
-
-        public function homepageOrderuTorrent()
-        {
-                if ($this->homepageItemPermissions($this->uTorrentHomepagePermissions('main'))) {
-                        $loadingBox = ($this->config['uTorrentCombine']) ? '' : '<div class="white-box homepage-loading-box"><h2 class="text-center" lang="en">Loading Download Queue...</h2></div>';
-                        $builder = ($this->config['uTorrentCombine']) ? 'buildDownloaderCombined(\'utorrent\');' : '$("#' . __FUNCTION__ . '").html(buildDownloader("utorrent"));';
-                        return '
+	
+	public function testConnectionuTorrent()
+	{
+		if (empty($this->config['uTorrentURL'])) {
+			$this->setAPIResponse('error', 'uTorrent URL is not defined', 422);
+			return false;
+		}
+		try {
+			
+			$response = $this->getuTorrentToken();
+			
+		} catch (Requests_Exception $e) {
+			$this->writeLog('error', 'uTorrent Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
+			$this->setAPIResponse('error', $e->getMessage(), 500);
+			return false;
+		}
+	}
+	
+	public function homepageOrderuTorrent()
+	{
+		if ($this->homepageItemPermissions($this->uTorrentHomepagePermissions('main'))) {
+			$loadingBox = ($this->config['uTorrentCombine']) ? '' : '<div class="white-box homepage-loading-box"><h2 class="text-center" lang="en">Loading Download Queue...</h2></div>';
+			$builder = ($this->config['uTorrentCombine']) ? 'buildDownloaderCombined(\'utorrent\');' : '$("#' . __FUNCTION__ . '").html(buildDownloader("utorrent"));';
+			return '
                                 <div id="' . __FUNCTION__ . '">
                                         ' . $loadingBox . '
                                         <script>
@@ -100,82 +101,77 @@ trait uTorrentHomepageItem
                         </script>
                                 </div>
                                 ';
-                }
-        }
-
-        public function getuTorrentToken()
-        {
+		}
+	}
+	
+	public function getuTorrentToken()
+	{
 		try {
-		        $tokenUrl = '/gui/token.html';
-		        $digest = $this->qualifyURL($this->config['uTorrentURL'], true);
-		        $url = $digest['scheme'] . '://' . $digest['host'] . $digest['port'] . $digest['path'] . $tokenUrl;
-	                $data = array('username' => $this->config['uTorrentUsername'], 'password' => $this->decrypt($this->config['uTorrentPassword']));
-	                $options = $this->requestOptions($url, null, $this->config['uTorrentDisableCertCheck'], $this->config['uTorrentUseCustomCertificate']);
-	                if ($this->config['uTorrentUsername'] !== '' && $this->decrypt($this->config['uTorrentPassword']) !== '') {
-		                $credentials = array('auth' => new Requests_Auth_Basic(array($this->config['uTorrentUsername'], $this->decrypt($this->config['uTorrentPassword']))));
-	                	$options = array_merge($options, $credentials);
-	                }
-	                $response = Requests::post($url, [], $data, $options);
-
+			$tokenUrl = '/gui/token.html';
+			$digest = $this->qualifyURL($this->config['uTorrentURL'], true);
+			$url = $digest['scheme'] . '://' . $digest['host'] . $digest['port'] . $digest['path'] . $tokenUrl;
+			$data = array('username' => $this->config['uTorrentUsername'], 'password' => $this->decrypt($this->config['uTorrentPassword']));
+			$options = $this->requestOptions($url, null, $this->config['uTorrentDisableCertCheck'], $this->config['uTorrentUseCustomCertificate']);
+			if ($this->config['uTorrentUsername'] !== '' && $this->decrypt($this->config['uTorrentPassword']) !== '') {
+				$credentials = array('auth' => new Requests_Auth_Basic(array($this->config['uTorrentUsername'], $this->decrypt($this->config['uTorrentPassword']))));
+				$options = array_merge($options, $credentials);
+			}
+			$response = Requests::post($url, [], $data, $options);
 			$doc = new DOMDocument();
 			$doc->loadHTML($response->body);
 			$id = $doc->getElementById('token');
 			$uTorrentConfig = new stdClass();
 			$uTorrentConfig->uTorrentToken = $id->textContent;
-
-                        $reflection = new ReflectionClass($response->cookies);
-                        $cookie = $reflection->getProperty("cookies");
-                        $cookie->setAccessible(true);
-                        $cookie = $cookie->getValue($response->cookies);
+			$reflection = new ReflectionClass($response->cookies);
+			$cookie = $reflection->getProperty("cookies");
+			$cookie->setAccessible(true);
+			$cookie = $cookie->getValue($response->cookies);
 			if ($cookie['GUID']) {
 				$uTorrentConfig->uTorrentCookie = $cookie['GUID']->value;
 			}
-                        if ($uTorrentConfig->uTorrentToken || $uTorrentConfig->uTorrentCookie) {
-                                $this->updateConfigItems($uTorrentConfig);
-                        }
-
+			if ($uTorrentConfig->uTorrentToken || $uTorrentConfig->uTorrentCookie) {
+				$this->updateConfigItems($uTorrentConfig);
+			}
+			
 		} catch (Requests_Exception $e) {
-	                $this->writeLog('error', 'uTorrent Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
-	                $this->setAPIResponse('error', $e->getMessage(), 500);
-                        return false;
-                }
-
-        }
-
-        public function getuTorrentHomepageQueue()
-        {
-                if (!$this->homepageItemPermissions($this->uTorrentHomepagePermissions('main'), true)) {
-                        return false;
-                }
+			$this->writeLog('error', 'uTorrent Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
+			$this->setAPIResponse('error', $e->getMessage(), 500);
+			return false;
+		}
+		
+	}
+	
+	public function getuTorrentHomepageQueue()
+	{
+		if (!$this->homepageItemPermissions($this->uTorrentHomepagePermissions('main'), true)) {
+			return false;
+		}
 		try {
 			if (!$this->config['uTorrentToken'] || !$this->config['uTorrentCookie']) {
 				$this->getuTorrentToken();
 			}
-
-			$queryUrl = '/gui/?token='.$this->config['uTorrentToken'].'&list=1';
-                        $digest = $this->qualifyURL($this->config['uTorrentURL'], true);
-                        $url = $digest['scheme'] . '://' . $digest['host'] . $digest['port'] . $digest['path'] . $queryUrl;
-                        $options = $this->requestOptions($url, null, $this->config['uTorrentDisableCertCheck'], $this->config['uTorrentUseCustomCertificate']);
-                        if ($this->config['uTorrentUsername'] !== '' && $this->decrypt($this->config['uTorrentPassword']) !== '') {
-                                $credentials = array('auth' => new Requests_Auth_Basic(array($this->config['uTorrentUsername'], $this->decrypt($this->config['uTorrentPassword']))));
-                                $options = array_merge($options, $credentials);
-                        }
-                        $headers = array(
-                                'Cookie' => 'GUID=' . $this->config['uTorrentCookie']
-                        );
-                        $response = Requests::get($url, $headers, $options);
+			$queryUrl = '/gui/?token=' . $this->config['uTorrentToken'] . '&list=1';
+			$digest = $this->qualifyURL($this->config['uTorrentURL'], true);
+			$url = $digest['scheme'] . '://' . $digest['host'] . $digest['port'] . $digest['path'] . $queryUrl;
+			$options = $this->requestOptions($url, null, $this->config['uTorrentDisableCertCheck'], $this->config['uTorrentUseCustomCertificate']);
+			if ($this->config['uTorrentUsername'] !== '' && $this->decrypt($this->config['uTorrentPassword']) !== '') {
+				$credentials = array('auth' => new Requests_Auth_Basic(array($this->config['uTorrentUsername'], $this->decrypt($this->config['uTorrentPassword']))));
+				$options = array_merge($options, $credentials);
+			}
+			$headers = array(
+				'Cookie' => 'GUID=' . $this->config['uTorrentCookie']
+			);
+			$response = Requests::get($url, $headers, $options);
 			$httpResponse = $response->status_code;
-
 			if ($httpResponse == 400) {
-                                $this->writeLog('warn', 'uTorrent Token or Cookie Expired. Generating new session..', 'SYSTEM');
-                                $this->getuTorrentToken();
+				$this->writeLog('warn', 'uTorrent Token or Cookie Expired. Generating new session..', 'SYSTEM');
+				$this->getuTorrentToken();
 				$response = Requests::get($url, $headers, $options);
 				$httpResponse = $response->status_code;
 			}
-
 			if ($httpResponse == 200) {
-	                        $responseData = json_decode($response->body);
-				$keyArray = (array) $responseData->torrents;
+				$responseData = json_decode($response->body);
+				$keyArray = (array)$responseData->torrents;
 				//Populate values
 				$valueArray = array();
 				foreach ($keyArray as $keyArr) {
@@ -184,8 +180,8 @@ trait uTorrentHomepageItem
 					if ($this->config['uTorrentHideSeeding'] && $Status == "Seeding") {
 						// Do Nothing
 					} else if ($this->config['uTorrentHideCompleted'] && $Status == "Finished") {
-                                                // Do Nothing
-                                        } else {
+						// Do Nothing
+					} else {
 						$value = array(
 							'Name' => $keyArr[2],
 							'Labels' => $keyArr[11],
@@ -201,17 +197,17 @@ trait uTorrentHomepageItem
 						array_push($valueArray, $value);
 					}
 				}
-	                        $api['content']['queueItems'] = $valueArray;
-	                        $api['content'] = $api['content'] ?? false;
-	                        $this->setAPIResponse('success', null, 200, $api);
-	                        return $api;
-                        }
+				$api['content']['queueItems'] = $valueArray;
+				$api['content'] = $api['content'] ?? false;
+				$this->setAPIResponse('success', null, 200, $api);
+				return $api;
+			}
 		} catch (Requests_Exception $e) {
-                        $this->writeLog('error', 'uTorrent Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
-                        $this->setAPIResponse('error', $e->getMessage(), 500);
-                        return false;
-                } 
-        }
-
-
+			$this->writeLog('error', 'uTorrent Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
+			$this->setAPIResponse('error', $e->getMessage(), 500);
+			return false;
+		}
+	}
+	
+	
 }
