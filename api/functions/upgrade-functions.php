@@ -84,7 +84,7 @@ trait UpgradeFunctions
 	{
 		$updateItems = [];
 		foreach ($keys as $new => $old) {
-			if ($this->config[$old]) {
+			if (isset($this->config[$old])) {
 				if ($this->config[$old] !== '') {
 					$updateItemsNew = [$new => $this->config[$old]];
 					$updateItems = array_merge($updateItems, $updateItemsNew);
@@ -112,12 +112,10 @@ trait UpgradeFunctions
 				$updateComplete = $this->updateConfig($updateItems);
 			}
 			if ($updateComplete) {
-				$this->config = $this->config();
-				$removeConfigItems = $this->removeConfigItem(['homepageOrdercustomhtml', 'homepageOrdercustomhtmlTwo', 'homepageCustomHTMLoneEnabled', 'homepageCustomHTMLoneAuth', 'customHTMLone', 'homepageCustomHTMLtwoEnabled', 'homepageCustomHTMLtwoAuth', 'customHTMLtwo']);
+				$removeConfigItems = $this->removeConfigItem(['homepagCustomHTMLoneAuth', 'homepagCustomHTMLoneEnabled', 'homepagCustomHTMLtwoAuth', 'homepagCustomHTMLtwoEnabled', 'homepageOrdercustomhtml', 'homepageOrdercustomhtmlTwo', 'homepageCustomHTMLoneEnabled', 'homepageCustomHTMLoneAuth', 'customHTMLone', 'homepageCustomHTMLtwoEnabled', 'homepageCustomHTMLtwoAuth', 'customHTMLtwo']);
 				if ($removeConfigItems) {
-					$this->config = $this->config();
+					return true;
 				}
-				return true;
 			}
 		}
 		return false;

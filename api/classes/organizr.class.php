@@ -57,7 +57,7 @@ class Organizr
 	use TransmissionHomepageItem;
 	use UnifiHomepageItem;
 	use WeatherHomepageItem;
-        use uTorrentHomepageItem;
+	use uTorrentHomepageItem;
 	
 	// ===================================
 	// Organizr Version
@@ -821,6 +821,7 @@ class Organizr
 		// Inject Parts
 		foreach ($new as $k => $v) {
 			$current[$k] = $v;
+			$this->config[$k] = $v;
 		}
 		// Return Create
 		return $this->createConfig($current);
@@ -838,8 +839,10 @@ class Organizr
 		foreach ($new as $k) {
 			if (isset($current[$k])) {
 				$current['deletedConfigItems'][$k] = $current[$k];
+				$this->config['deletedConfigItems'][$k] = $current[$k];
 			}
 			unset($current[$k]);
+			unset($this->config[$k]);
 		}
 		// Return Create
 		return $this->createConfig($current);
@@ -4234,13 +4237,13 @@ class Organizr
 						$class .= ' faded';
 					}
 					break;
-                                case 'homepageOrderuTorrent':
-                                        $class = 'bg-qbit';
-                                        $image = 'plugins/images/tabs/utorrent.png';
-                                        if (!$this->config['homepageuTorrentEnabled']) {
-                                                $class .= ' faded';
-                                        }
-                                        break;
+				case 'homepageOrderuTorrent':
+					$class = 'bg-qbit';
+					$image = 'plugins/images/tabs/utorrent.png';
+					if (!$this->config['homepageuTorrentEnabled']) {
+						$class .= ' faded';
+					}
+					break;
 				case 'homepageOrderrTorrent':
 					$class = 'bg-qbit';
 					$image = 'plugins/images/tabs/rTorrent.png';
