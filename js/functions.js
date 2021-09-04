@@ -287,7 +287,7 @@ function isNumberKey(evt) {
     return true;
 }
 function setTabInfo(tab,action,value){
-    if(tab == 'Organizr-Support' || tab == 'Organizr-Docs'){
+    if(tab == 'Organizr-Support' || tab == 'Organizr-Docs' || tab == 'Feature-Request'){
         return false;
     }
     if(tab !== null && action !== null && value !== null){
