@@ -2,6 +2,11 @@
 
 trait OrganizrFunctions
 {
+	public function docs($path): string
+	{
+		return 'https://organizr.gitbook.io/organizr/' . $path;
+	}
+	
 	public function loadDefaultJavascriptFiles()
 	{
 		$javaFiles = [
