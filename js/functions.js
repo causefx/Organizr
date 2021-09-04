@@ -1699,7 +1699,7 @@ function copyHomepageJSON(item){
 	});
 }
 function homepageItemFormHTML(v){
-	let docs = (typeof v.docs == 'undefined') ? '' : `<small class="pull-right m-r-5"><a data-toggle="tooltip" title="Goto Support Doc" data-placement="bottom" class="btn btn-circle btn-primary waves-effect waves-light" href="${v.docs}" target="_blank"> <i class="fa-fw fa fa-question-circle"></i></a></small>`;
+	let docs = (typeof v.docs == 'undefined') ? '' : `<small class="pull-right m-r-5"><a data-toggle="tooltip" title="Go to Support Doc" data-placement="bottom" class="btn btn-circle btn-primary waves-effect waves-light" href="${v.docs}" target="_blank"> <i class="fa-fw fa fa-question-circle"></i></a></small>`;
 	let debug = (typeof v.debug == 'undefined') ? false : true;
 	debug = (debug === true) ? (v.debug) : false;
 	debug = (debug === true) ? `<small class="pull-right m-r-5"><a data-toggle="tooltip" title="Copy JSON Settings" data-placement="bottom" href="javascript:copyHomepageJSON('${v.name}')" class="btn btn-circle btn-info waves-effect waves-light copyHomepageJSON"> <i class="fa-fw ti-clipboard"></i></a></small>` : '';
