@@ -484,7 +484,7 @@ trait PlexHomepageItem
 			case 'episode':
 				$plexItem['type'] = 'tv';
 				$plexItem['title'] = (string)$item['grandparentTitle'];
-				$plexItem['secondaryTitle'] = (string)$item['parentTitle'];
+				$plexItem['secondaryTitle'] = (string)$item['parentTitle'] . ' - Episode ' . (string)$item['index'];
 				$plexItem['summary'] = (string)$item['title'];
 				$plexItem['ratingKey'] = (string)$item['parentRatingKey'];
 				$plexItem['thumb'] = ($item['parentThumb'] ? (string)$item['parentThumb'] : (string)$item['grandparentThumb']);
