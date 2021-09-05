@@ -10874,7 +10874,7 @@ function shortcut(selectors = ''){
 }
 
 function launch(){
-	console.info('https://docs.organizr.app/books/setup-features/page/organizr-20--%3E-21-migration-guide');
+	console.info('https://docs.organizr.app/help/faq/migration-guide#version-2-0-greater-than-version-2-1');
 	organizrConsole('API V2 API','If you see a 404 Error for api/v2/launch below this line, you have not setup the new location block... See URL above this line', 'error');
 	organizrConnect('api/v2/launch').success(function (data) {
         try {
@@ -10971,7 +10971,7 @@ function launch(){
 	}).fail(function(xhr) {
 		defineNotification();
 		if(xhr.status == 404){
-			orgErrorAlert('<h2>Webserver not setup for Organizr v2.1</h2><h4>Please goto <a href="https://docs.organizr.app/books/setup-features/page/organizr-20--%3E-21-migration-guide">Migration guide to complete the changes...</a></h4><h3>Webserver Error:</h3>' + xhr.responseText);
+			orgErrorAlert('<h2>Webserver not setup for Organizr v2.1</h2><h4>Please goto <a href="https://docs.organizr.app/help/faq/migration-guide#version-2-0-greater-than-version-2-1">Migration guide to complete the changes...</a></h4><h3>Webserver Error:</h3>' + xhr.responseText);
 			message('FATAL ERROR','You need to update webserver location block... check browser console for migration URL','br','#FFF','error','60000');
 		}else{
 			orgErrorAlert('<h3>Webserver Error:</h3>' + xhr.responseText);
