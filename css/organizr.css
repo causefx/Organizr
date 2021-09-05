@@ -373,6 +373,9 @@ h2.m-b-0.font-medium.pull-right {
 .mouse {
     cursor: pointer;
 }
+.mouse-grab {
+    cursor: grab;
+}
 
 .el-element-overlay .el-card-item .el-overlay-1 img.imageSourceLeft {
     width: 56%;
@@ -4589,4 +4592,10 @@ span.select2-selection__choice__remove {
 }
 .sortable-chosen {
      background: #2f2f2f;
+}
+td.mouse-grab.sort-tabs-handle {
+     background: rgba(0,0,0,.25) !important;
+     max-width: 35px !important;
+     padding: 0;
+     padding-left: 5px;
 }
