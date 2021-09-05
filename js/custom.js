@@ -1374,7 +1374,8 @@ $(document).on("click", ".metadata-get", function(e) {
 });
 // sab play/resume
 $(document).on("click", ".downloader", function(e) {
-    let action = $(this).attr('data-action');
+	$(this).find('i').attr('class', 'fa fa-spin fa-circle-o-notch');
+	let action = $(this).attr('data-action');
 	let source = $(this).attr('data-source');
 	let target = $(this).attr('data-target');
 	let api = null;
