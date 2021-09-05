@@ -2500,8 +2500,8 @@ class Organizr
 					<div class="row">
 						<div class="col-md-12">
 							<div class="white-box">
-								<h3 class="box-title m-b-0">Custom Certificate Status</h3>
-								<p class="text-muted m-b-30 custom-certificate-status">' . $certificateStatus . '</p>
+								<h3 class="box-title m-b-0" lang="en">Custom Certificate Status</h3>
+								<p class="text-muted m-b-30 custom-certificate-status" lang="en">' . $certificateStatus . '</p>
 								<form action="#" class="dropzone dz-clickable" id="upload-custom-certificate">
 									<div class="dz-default dz-message"><span lang="en">Drop Certificate file here to upload</span></div>
 								</form>

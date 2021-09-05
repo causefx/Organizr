@@ -1095,7 +1095,7 @@ function buildFormItem(item){
 	var pwd1 = createRandomString(6);
 	var pwd2 = createRandomString(6);
 	var pwd3 = createRandomString(6);
-	var helpInfo = (item.help) ? '<div class="collapse" id="help-info-'+item.name+'"><blockquote>'+item.help+'</blockquote></div>' : '';
+	var helpInfo = (item.help) ? '<div class="collapse" id="help-info-'+item.name+'"><blockquote lang="en">'+item.help+'</blockquote></div>' : '';
     var smallLabel = (item.smallLabel) ? '<label><span lang="en">'+item.smallLabel+'</span></label>'+helpInfo : ''+helpInfo;
 	var pwgMgr = `
 	<input name="disable-pwd-mgr-`+pwd1+`" type="password" id="disable-pwd-mgr-`+pwd1+`" style="display: none;" value="disable-pwd-mgr-`+pwd1+`" />
@@ -1938,8 +1938,8 @@ function createImageSwal(attr){
                 <div class="panel-body">
                 	<h5 lang="en">Choose action:</h5>
 					<div class="button-box">
-                        <button class="btn btn-info waves-effect waves-light clipboard" type="button" data-clipboard-text="`+clipboardText+`"><span class="btn-label"><i class="ti-clipboard"></i></span>Copy to Clipboard</button>
-                        <button class="btn btn-danger waves-effect waves-light deleteImage" type="button" data-image-path="`+fullPath+`" data-image-name="`+name+`" data-image-name-ext="`+extension+`"><span class="btn-label"><i class="fa fa-trash"></i></span>Delete</button>                        
+                        <button class="btn btn-info waves-effect waves-light clipboard" type="button" data-clipboard-text="`+clipboardText+`"><span class="btn-label"><i class="ti-clipboard"></i></span><span lang="en">Copy to Clipboard</span></button>
+                        <button class="btn btn-danger waves-effect waves-light deleteImage" type="button" data-image-path="`+fullPath+`" data-image-name="`+name+`" data-image-name-ext="`+extension+`"><span class="btn-label"><i class="fa fa-trash"></i></span><span lang="en">Delete</span></button>                        
                     </div>
                 </div>
             </div>

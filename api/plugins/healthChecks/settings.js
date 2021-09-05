@@ -13,7 +13,7 @@ $(document).on('click', '#HEALTHCHECKS-settings-button', function() {
         $('#HEALTHCHECKS-settings-items').html(buildFormGroup(response.data));
         var elAddButtonStart = $('#HEALTHCHECKS-settings-page [id*="Services"] .row.start');
         var items = $('#HEALTHCHECKS-settings-page [id*="Services"] .row.m-b-40 span');
-        $(elAddButtonStart).after('<div class="row"><button type="button" class="btn btn-info pull-right m-r-20 addNewHCService" ><i class="fa fa-plus"></i> Add New Service</button><button type="button" class="btn btn-primary pull-right m-r-20 importNewHCService" ><i class="fa fa-database"></i> Import Services</button></div>');
+        $(elAddButtonStart).after('<div class="row"><button type="button" class="btn btn-info pull-right m-r-20 addNewHCService" ><i class="fa fa-plus"></i> <span lang="en">Add New Service</span></button><button type="button" class="btn btn-primary pull-right m-r-20 importNewHCService" ><i class="fa fa-database"></i> <span lang="en">Import Services</span></button></div>');
         $.each(items, function(key,val) {
             var el = $(val);
             var text = el.text();

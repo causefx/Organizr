@@ -33,12 +33,12 @@ class Chat extends Organizr
                             <div class="panel-wrapper collapse in" aria-expanded="true">
                                 <div class="panel-body">
 									<ul class="list-icons">
-                                        <li><i class="fa fa-chevron-right text-danger"></i> <a href="https://dashboard.pusher.com/accounts/sign_up" target="_blank">Signup for Pusher [FREE]</a></li>
-                                        <li><i class="fa fa-chevron-right text-danger"></i> Create an App called whatever you like and choose a cluster (Close to you)</li>
-                                        <li><i class="fa fa-chevron-right text-danger"></i> Frontend (JQuery) - Backend (PHP)</li>
-                                        <li><i class="fa fa-chevron-right text-danger"></i> Click the overview tab on top left</li>
-                                        <li><i class="fa fa-chevron-right text-danger"></i> Copy and paste the 4 values into Organizr</li>
-                                        <li><i class="fa fa-chevron-right text-danger"></i> Save and reload!</li>
+                                        <li><i class="fa fa-chevron-right text-danger"></i> <a href="https://dashboard.pusher.com/accounts/sign_up" target="_blank"><span lang="en">Signup for Pusher [FREE]</span></a></li>
+                                        <li><i class="fa fa-chevron-right text-danger"></i> <span lang="en">Create an App called whatever you like and choose a cluster (Close to you)</span></li>
+                                        <li><i class="fa fa-chevron-right text-danger"></i> <span lang="en">Frontend (JQuery) - Backend (PHP)</span></li>
+                                        <li><i class="fa fa-chevron-right text-danger"></i> <span lang="en">Click the overview tab on top left</span></li>
+                                        <li><i class="fa fa-chevron-right text-danger"></i> <span lang="en">Copy and paste the 4 values into Organizr</span></li>
+                                        <li><i class="fa fa-chevron-right text-danger"></i> <span lang="en">Save and reload!</span></li>
                                     </ul>
                                 </div>
                             </div>

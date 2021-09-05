@@ -36,7 +36,7 @@ function get_page_settings_settings_logs($Organizr)
         <button type="button" class="btn btn-default btn-outline waves-effect bg-org swapLog active" data-name="loginLog" data-path="' . $Organizr->organizrLoginLog . '" lang="en">Login Log</button>
         <button type="button" class="btn btn-default btn-outline waves-effect bg-org swapLog" data-name="orgLog" data-path="' . $Organizr->organizrLog . '" lang="en">Organizr Log</button>
     </div>
-    <button class="btn btn-danger btn-sm waves-effect waves-light pull-right purgeLog" type="button"><span class="btn-label"><i class="fa fa-trash"></i></span>Purge Log</button>
+    <button class="btn btn-danger btn-sm waves-effect waves-light pull-right purgeLog" type="button"><span class="btn-label"><i class="fa fa-trash"></i></span><span lang="en">Purge Log</span></button>
     <div class="clearfix"></div>
     <div class="white-box bg-org logTable loginLogDiv">
         <h3 class="box-title m-b-0" lang="en">Login Logs</h3>

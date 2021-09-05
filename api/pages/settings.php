@@ -287,19 +287,19 @@ function get_page_settings($Organizr)
 										</ul>
 										<div class="tab-content">
 											<div class="tab-pane active" id="donate-github">
-												<blockquote>Want to show support on Github?  Sponsor me :)<br/>Please click the button to continue.</blockquote>
+												<blockquote lang="en">Want to show support on Github?  Sponsor me :)<br/><span lang="en">Please click the button to continue.</span></blockquote>
 												<button onclick="window.open(\'https://github.com/sponsors/causefx\', \'_blank\')" class="btn btn-primary btn-rounded waves-effect waves-light" type="button"><span class="btn-label"><i class="fa fa-link"></i></span><span lang="en">Continue To Website</span></button>
 											</div>
 											<div class="tab-pane" id="donate-paypal">
-												<blockquote>I have chosen to go with PayPal Pools so everyone can see how much people have donated.<br/>Please click the button to continue.</blockquote>
+												<blockquote lang="en">I have chosen to go with PayPal Pools so everyone can see how much people have donated.<br/><span lang="en">Please click the button to continue.</span></blockquote>
 												<button onclick="window.open(\'https://paypal.me/pools/c/83JNaMBESR\', \'_blank\')" class="btn btn-primary btn-rounded waves-effect waves-light" type="button"><span class="btn-label"><i class="fa fa-link"></i></span><span lang="en">Continue To Website</span></button>
 											</div>
 											<div class="tab-pane" id="donate-square">
-												<blockquote>If you use the Square Cash App, you can donate with that if you like.<br/>Please click the button to continue.</blockquote>
+												<blockquote lang="en">If you use the Square Cash App, you can donate with that if you like.<br/><span lang="en">Please click the button to continue.</span></blockquote>
 												<button onclick="window.open(\'https://cash.me/$CauseFX\', \'_blank\')" class="btn btn-primary btn-rounded waves-effect waves-light" type="button"><span class="btn-label"><i class="fa fa-link"></i></span><span lang="en">Continue To Website</span></button>
 											</div>
 											<div class="tab-pane" id="donate-crypto">
-												<blockquote>Want to donate a small amount of Crypto?.<br/>Please use the QR Code or Wallet ID.</blockquote>
+												<blockquote lang="en">Want to donate a small amount of Crypto?.<br/>Please use the QR Code or Wallet ID.</blockquote>
 												<div class="col-lg-4 col-xs-12">
 													<div class="lazyload qr-code" data-src="plugins/images/Bitcoin_QR_code.png"></div>
 													<div class="clearfix"></div>
@@ -318,15 +318,15 @@ function get_page_settings($Organizr)
 												<div class="clearfix"></div>
 											</div>
 											<div class="tab-pane" id="donate-patreon">
-												<blockquote>Need specialized support or just want to support Organizr?  If so head to Patreon...<br/>Please click the button to continue.</blockquote>
+												<blockquote lang="en">Need specialized support or just want to support Organizr?  If so head to Patreon...<br/><span lang="en">Please click the button to continue.</span></blockquote>
 												<button onclick="window.open(\'https://www.patreon.com/join/organizr?\', \'_blank\')" class="btn btn-primary btn-rounded waves-effect waves-light" type="button"><span class="btn-label"><i class="fa fa-link"></i></span><span lang="en">Continue To Website</span></button>
 											</div>
 											<div class="tab-pane" id="donate-open-collective">
-												<blockquote>Need specialized support or just want to support Organizr?  If so head to Open Collective...<br/>Please click the button to continue.</blockquote>
+												<blockquote lang="en">Need specialized support or just want to support Organizr?  If so head to Open Collective...<br/><span lang="en">Please click the button to continue.</span></blockquote>
 												<button onclick="window.open(\'https://opencollective.com/organizr\', \'_blank\')" class="btn btn-primary btn-rounded waves-effect waves-light" type="button"><span class="btn-label"><i class="fa fa-link"></i></span><span lang="en">Continue To Website</span></button>
 											</div>
 											<div class="tab-pane" id="donate-ads">
-												<blockquote>Money not an option?  No problem.  Show some love to this Google Ad below:</blockquote>
+												<blockquote lang="en">Money not an option?  No problem.  Show some love to this Google Ad below:</blockquote>
 												 <button onclick="window.open(\'https://organizr.app/ads/google.html\', \'_blank\')" class="btn btn-primary btn-rounded waves-effect waves-light" type="button"><span class="btn-label"><i class="fa fa-link"></i></span><span lang="en">Continue To Website</span></button>
 											</div>
 										</div>

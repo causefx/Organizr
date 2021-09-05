@@ -345,7 +345,7 @@ class Invites extends Organizr
 				array(
 					'type' => 'html',
 					'label' => 'Note',
-					'html' => 'After enabling for the first time, please reload the page - Menu is located under User menu on top right'
+					'html' => '<span lang="en">After enabling for the first time, please reload the page - Menu is located under User menu on top right</span>'
 				)
 			)
 		);
