@@ -4176,7 +4176,7 @@ class Organizr
 	public function buildHomepageSettings()
 	{
 		$homepageOrder = $this->homepageOrderList();
-		$homepageList = '<h4>Drag Homepage Items to Order Them</h4><div id="homepage-items-sort" class="external-events">';
+		$homepageList = '<div class="col-lg-12"><h4 lang="en">Drag Homepage Items to Order Them</h4></div><div id="homepage-items-sort" class="external-events">';
 		$inputList = '<form id="homepage-values" class="row">';
 		foreach ($homepageOrder as $key => $val) {
 			switch ($key) {

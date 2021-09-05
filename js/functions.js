@@ -1325,7 +1325,7 @@ function loadMarketplacePluginsItems(plugins){
                     <br><span class="text-muted">`+v.author+`</span>
                 </td>
                 <td>`+v.category+`</td>
-                <td>`+v.status+`</td>
+                <td lang="en">`+v.status+`</td>
                 <td style="text-align:center"><button type="button" onclick='aboutPlugin(`+JSON.stringify(v)+`);' class="btn btn-success btn-outline btn-circle btn-lg popup-with-form" href="#about-plugin-form" data-effect="mfp-3d-unfold"><i class="fa fa-info"></i></button></td>
                 <td style="text-align:center"><button type="button" onclick='installPlugin("`+cleanClass(i)+`");' class="btn btn-info btn-outline btn-circle btn-lg"><i class="`+installButton+`"></i></button></td>
                 <td style="text-align:center"><button type="button" onclick='removePlugin("`+cleanClass(i)+`");' class="btn btn-danger btn-outline btn-circle btn-lg" `+removeButton+`><i class="fa fa-trash"></i></button></td>
@@ -1357,7 +1357,7 @@ function loadMarketplaceThemesItems(themes){
                     <br><span class="text-muted">${v.author}</span>
                 </td>
                 <td>${v.category}</td>
-                <td>${v.status}</td>
+                <td lang="en">${v.status}</td>
                 <td style="text-align:center"><button type="button" onclick='aboutTheme(${JSON.stringify(v)});' class="btn btn-success btn-outline btn-circle btn-lg popup-with-form" href="#about-theme-form" data-effect="mfp-3d-unfold"><i class="fa fa-info"></i></button></td>
                 <td style="text-align:center"><button type="button" onclick='installTheme("${cleanClass(i)}");themeAnalytics("${v.name}");' class="btn btn-info btn-outline btn-circle btn-lg"><i class="${installButton}"></i></button></td>
                 <td style="text-align:center"><button type="button" onclick='removeTheme("${cleanClass(i)}");' class="btn btn-danger btn-outline btn-circle btn-lg" ${removeButton}><i class="fa fa-trash"></i></button></td>
@@ -3188,7 +3188,7 @@ function buildTabEditorItem(array){
 			<input type="hidden" class="form-control" name="tab[`+v.id+`].id" value="`+v.id+`">
 			<input type="hidden" class="form-control order" name="tab[`+v.id+`].order" value="`+v.order+`">
 			<input type="hidden" class="form-control" name="tab[`+v.id+`].originalOrder" value="`+v.order+`">
-			<td class="mouse sort-tabs-handle">
+			<td class="mouse-grab sort-tabs-handle">
 				<i class="icon-options-vertical m-r-5"></i> 
 				<!-- May use later on
 				<div class="btn-group dropside visible-xs">
@@ -3724,7 +3724,7 @@ function buildBackers(array){
 			backers += `
 		        <!-- /.usercard -->
 		        <div class="item lazyload recent-sponsor imageSource"  data-src="${v.image}">
-		            <span class="elip recent-title" lang="en">${v.name}</span>
+		            <span class="elip recent-title">${v.name}</span>
 		        </div>
 		        <!-- /.usercard-->
 		    `;
