@@ -23,6 +23,54 @@
 		"css": {},
 		"javascript": {}
 	},
+	"Overseerr Theme": {
+		"author": "GilbN",
+		"category": "Community",
+		"description": "A Overseerr colored theme for Organizr ",
+		"icon": "https://raw.githubusercontent.com/GilbN/theme.park/master/Resources/organizr/overseerr/theme-park-organizr-overseerr-logo.png",
+		"contact": null,
+		"website": "https://theme-park.dev",
+		"version": "1.0.0",
+		"release_date": "2021-09-06",
+		"last_updated": "2021-09-06",
+		"github_folder": "Overseerr_theme",
+		"license": "personal,business",
+		"files": {
+			"/css/themes": "Overseerr.css"
+		},
+		"images": {
+			"Login": "https://raw.githubusercontent.com/gilbN/theme.park/master/Resources/organizr/overseerr/overseerr_login.jpg",
+			"Splash": "https://raw.githubusercontent.com/GilbN/theme.park/master/Resources/organizr/overseerr/overseerr_splash.jpg",
+			"Homepage": "https://raw.githubusercontent.com/gilbN/theme.park/master/Resources/organizr/overseerr/overseerr_homepage.jpg",
+			"Search": "https://raw.githubusercontent.com/gilbN/theme.park/master/Resources/organizr/overseerr/overseerr_search.jpg"
+		},
+		"css": {},
+		"javascript": {}
+	},
+	"Onedark Theme": {
+		"author": "GilbN",
+		"category": "Community",
+		"description": "A Onedark colored theme for Organizr ",
+		"icon": "https://raw.githubusercontent.com/GilbN/theme.park/master/Resources/organizr/onedark/theme-park-organizr-onedark-logo.png",
+		"contact": null,
+		"website": "https://theme-park.dev",
+		"version": "1.0.0",
+		"release_date": "2021-09-06",
+		"last_updated": "2021-09-06",
+		"github_folder": "Onedark_theme",
+		"license": "personal,business",
+		"files": {
+			"/css/themes": "Onedark.css"
+		},
+		"images": {
+			"Login": "https://raw.githubusercontent.com/gilbN/theme.park/master/Resources/organizr/onedark/onedark_login.jpg",
+			"Splash": "https://raw.githubusercontent.com/GilbN/theme.park/master/Resources/organizr/onedark/onedark_splash.jpg",
+			"Homepage": "https://raw.githubusercontent.com/gilbN/theme.park/master/Resources/organizr/onedark/onedark_homepage.jpg",
+			"Search": "https://raw.githubusercontent.com/gilbN/theme.park/master/Resources/organizr/onedark/onedark_search.jpg"
+		},
+		"css": {},
+		"javascript": {}
+	},
 	"Aquamarine Theme": {
 		"author": "GilbN",
 		"category": "Community",
@@ -39,8 +87,8 @@
 			"/css/themes": "Aquamarine.css"
 		},
 		"images": {
-			"Login": "https://raw.githubusercontent.com/gilbN/theme.park/master/Resources/organizr/aquamarine/aquamarine_login.png",
-			"Splash": "https://raw.githubusercontent.com/gilbN/theme.park/master/Resources/organizr/aquamarine/aquamarine_splash.png",
+			"Login": "https://raw.githubusercontent.com/gilbN/theme.park/master/Resources/organizr/aquamarine/aquamarine_login.jpg",
+			"Splash": "https://raw.githubusercontent.com/gilbN/theme.park/master/Resources/organizr/aquamarine/aquamarine_splash.jpg",
 			"Homepage": "https://raw.githubusercontent.com/gilbN/theme.park/master/Resources/organizr/aquamarine/aquamarine_homepage.jpg",
 			"Search": "https://raw.githubusercontent.com/gilbN/theme.park/master/Resources/organizr/aquamarine/aquamarine_search.png"
 		},
@@ -111,8 +159,8 @@
 			"/css/themes": "Dark_theme_park.css"
 		},
 		"images": {
-			"Login": "https://raw.githubusercontent.com/gilbN/theme.park/master/Resources/organizr/dark/dark_login.png",
-			"Splash": "https://raw.githubusercontent.com/gilbN/theme.park/master/Resources/organizr/dark/dark_splash.png",
+			"Login": "https://raw.githubusercontent.com/gilbN/theme.park/master/Resources/organizr/dark/dark_login.jpg",
+			"Splash": "https://raw.githubusercontent.com/gilbN/theme.park/master/Resources/organizr/dark/dark_splash.jpg",
 			"Homepage": "https://raw.githubusercontent.com/gilbN/theme.park/master/Resources/organizr/dark/dark_homepage.jpg",
 			"Search": "https://raw.githubusercontent.com/gilbN/theme.park/master/Resources/organizr/dark/dark_search.jpg"
 		},
@@ -135,10 +183,34 @@
 			"/css/themes": "Hotline.css"
 		},
 		"images": {
-			"Login": "https://raw.githubusercontent.com/gilbN/theme.park/master/Resources/organizr/hotline/hotline_login.png",
-			"Splash": "https://raw.githubusercontent.com/gilbN/theme.park/master/Resources/organizr/hotline/hotline_splash.png",
+			"Login": "https://raw.githubusercontent.com/gilbN/theme.park/master/Resources/organizr/hotline/hotline_login.jpg",
+			"Splash": "https://raw.githubusercontent.com/gilbN/theme.park/master/Resources/organizr/hotline/hotline_splash.jpg",
 			"Homepage": "https://raw.githubusercontent.com/gilbN/theme.park/master/Resources/organizr/hotline/hotline_homepage.jpg",
 			"Search": "https://raw.githubusercontent.com/gilbN/theme.park/master/Resources/organizr/hotline/hotline_search.jpg"
+		},
+		"css": {},
+		"javascript": {}
+	},
+	"Hotpink Theme": {
+		"author": "GilbN",
+		"category": "Community",
+		"description": "A pink and blue colored theme for Organizr ",
+		"icon": "https://raw.githubusercontent.com/gilbN/theme.park/master/Resources/organizr/hotpink/theme-park-organizr-hotpink-logo.png",
+		"contact": null,
+		"website": "https://theme-park.dev",
+		"version": "2.0.0",
+		"release_date": "2021-09-06",
+		"last_updated": "2021-09-06",
+		"github_folder": "Hotpink_theme",
+		"license": "personal,business",
+		"files": {
+			"/css/themes": "Hotpink.css"
+		},
+		"images": {
+			"Login": "https://raw.githubusercontent.com/gilbN/theme.park/master/Resources/organizr/hotpink/hotpink_login.jpg",
+			"Splash": "https://raw.githubusercontent.com/gilbN/theme.park/master/Resources/organizr/hotpink/hotpink_splash.jpg",
+			"Homepage": "https://raw.githubusercontent.com/gilbN/theme.park/master/Resources/organizr/hotpink/hotpink_homepage.jpg",
+			"Search": "https://raw.githubusercontent.com/gilbN/theme.park/master/Resources/organizr/hotpink/hotpink_search.jpg"
 		},
 		"css": {},
 		"javascript": {}
