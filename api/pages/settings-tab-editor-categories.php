@@ -82,7 +82,7 @@ let sortable = new Sortable(el, {
 <div class="panel bg-org panel-info">
 	<div class="panel-heading">
 		<span lang="en">Category Editor</span>
-		<button type="button" class="btn btn-success btn-circle pull-right popup-with-form m-r-5" href="#new-category-form" data-effect="mfp-3d-unfold"><i class="fa fa-plus"></i> </button>
+		<button type="button" class="btn btn-info btn-circle pull-right popup-with-form m-r-5" href="#new-category-form" data-effect="mfp-3d-unfold"><i class="fa fa-plus"></i> </button>
 	</div>
 	<div class="table-responsive">
 		<form id="submit-categories-form" onsubmit="return false;">

@@ -28,7 +28,7 @@ function get_page_settings_image_manager($Organizr)
 <div class="panel bg-org panel-info">
     <div class="panel-heading">
 		<span lang="en">View Images</span>
-        <button type="button" class="btn btn-success btn-circle pull-right popup-with-form m-r-5" href="#new-image-form" data-effect="mfp-3d-unfold"><i class="fa fa-upload"></i> </button>
+        <button type="button" class="btn btn-info btn-circle pull-right popup-with-form m-r-5" href="#new-image-form" data-effect="mfp-3d-unfold"><i class="fa fa-upload"></i> </button>
 	</div>
     <div class="panel-wrapper collapse in" aria-expanded="true">
         <div class="panel-body bg-org" >

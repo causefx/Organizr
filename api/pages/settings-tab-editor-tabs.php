@@ -81,8 +81,11 @@ function get_page_settings_tab_editor_tabs($Organizr)
 		}
 	});*/
 	let el = document.getElementById(\'tabEditorTable\');
-	let sortable = new Sortable(el, {
+	let tabSorter = new Sortable(el, {
 		handle: ".sort-tabs-handle",
+		ghostClass: "sortable-ghost",
+		multiDrag: true,
+		selectedClass: "multi-selected",
 		onUpdate: function (evt) {
 			$(\'input.order\').each(function(idx) {
 				$(this).val(idx + 1);
@@ -98,9 +101,9 @@ function get_page_settings_tab_editor_tabs($Organizr)
 	<div class="panel bg-org panel-info">
 		<div class="panel-heading">
 			<span lang="en">Tab Editor</span>
-			<button type="button" class="btn btn-info btn-circle pull-right popup-with-form m-r-5" href="#new-tab-form" data-effect="mfp-3d-unfold"><i class="fa fa-plus"></i> </button>
-			<button type="button" class="btn btn-info btn-circle pull-right m-r-5 help-modal" data-modal="tabs"><i class="fa fa-question-circle"></i> </button>
-			<button onclick="submitTabOrder(newTabsGlobal)" class="btn btn-sm btn-info btn-rounded waves-effect waves-light pull-right animated loop-animation rubberBand m-r-20 saveTabOrderButton hidden" type="button"><span class="btn-label"><i class="fa fa-save"></i></span><span lang="en">Save Tab Order</span></button>
+			<button type="button" data-toggle="tooltip" title="Add New Tab" data-placement="bottom" class="btn btn-info btn-circle pull-right popup-with-form m-r-5" href="#new-tab-form" data-effect="mfp-3d-unfold"><i class="fa fa-plus"></i> </button>
+			<button type="button" data-toggle="tooltip" title="Help" data-placement="bottom" class="btn btn-info btn-circle pull-right m-r-5 help-modal" data-modal="tabs"><i class="fa fa-question-circle"></i> </button>
+			<button onclick="submitTabOrder(newTabsGlobal)" data-toggle="tooltip" title="Save tab Order" data-placement="bottom" class="btn btn-info btn-circle waves-effect waves-light pull-right animated loop-animation rubberBand m-r-5 saveTabOrderButton hidden" type="button"><i class="fa fa-save"></i></button>
 		</div>
 		<div class="table-responsive">
 			<form id="submit-tabs-form" onsubmit="return false;">

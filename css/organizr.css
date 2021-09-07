@@ -4599,3 +4599,7 @@ td.mouse-grab.sort-tabs-handle {
      padding: 0;
      padding-left: 5px;
 }
+.multi-selected,
+.tabEditor.multi-selected:hover {
+    background: rgba(0,0,0,.25) !important;
+}
