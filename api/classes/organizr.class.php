@@ -86,6 +86,8 @@ class Organizr
 	public $paths;
 	public $updating;
 	public $groupOptions;
+	public $warnings;
+	public $errors;
 	
 	public function __construct($updating = false)
 	{
@@ -208,7 +210,7 @@ class Organizr
 		if ($disk['free'] <= $diskLevels['error']) {
 			die($this->showHTML('Low Disk Space', 'You are dangerously low on disk space.<br/>There is only ' . $disk['free']['human_readable'] . ' remaining.<br/><b>Percent Used = ' . $disk['used']['percent_used'] . '%</b>'));
 		} elseif ($disk['free'] <= $diskLevels['warn']) {
-			$GLOBALS['warnings'][] = 'You are low on disk space.  There is only ' . $disk['free']['human_readable'] . ' remaining.';
+			$this->warnings[] = 'You are low on disk space.  There is only ' . $disk['free']['human_readable'] . ' remaining.';
 		}
 		return true;
 	}
