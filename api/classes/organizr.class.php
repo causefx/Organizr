@@ -91,6 +91,8 @@ class Organizr
 	{
 		// First Check PHP Version
 		$this->checkPHP();
+		// Check Disk Space
+		$this->checkDiskSpace();
 		// Constructed from Updater?
 		$this->updating = $updating;
 		// Set Project Root directory
@@ -194,6 +196,63 @@ class Organizr
 				}
 			}
 		}
+	}
+	
+	public function checkDiskSpace()
+	{
+		$disk = $this->checkDisk('/');
+		$diskLevels = [
+			'warn' => 1000000000,
+			'error' => 100000000
+		];
+		if ($disk['free'] <= $diskLevels['error']) {
+			die($this->showHTML('Low Disk Space', 'You are dangerously low on disk space.<br/>There is only ' . $disk['free']['human_readable'] . ' remaining.<br/><b>Percent Used = ' . $disk['used']['percent_used'] . '%</b>'));
+		} elseif ($disk['free'] <= $diskLevels['warn']) {
+			$GLOBALS['warnings'][] = 'You are low on disk space.  There is only ' . $disk['free']['human_readable'] . ' remaining.';
+		}
+		return true;
+	}
+	
+	public function getFreeSpace($directory = '/')
+	{
+		$disk = disk_free_space($directory);
+		return [
+			'raw' => $disk,
+			'human_readable' => $this->human_filesize($disk, 0)
+		];
+	}
+	
+	public function getDiskSpace($directory = '/')
+	{
+		$disk = disk_total_space($directory);
+		return [
+			'raw' => $disk,
+			'human_readable' => $this->human_filesize($disk, 0)
+		];
+	}
+	
+	public function getUsedSpace($directory = '/')
+	{
+		$diskFree = $this->getFreeSpace($directory);
+		$diskTotal = $this->getDiskSpace($directory);
+		$diskUsed = $diskTotal['raw'] - $diskFree['raw'];
+		$percentUsed = ($diskUsed / $diskTotal['raw']) * 100;
+		$percentFree = 100 - $percentUsed;
+		return [
+			'raw' => $diskUsed,
+			'human_readable' => $this->human_filesize($diskUsed, 0),
+			'percent_used' => round($percentUsed),
+			'percent_free' => round($percentFree)
+		];
+	}
+	
+	public function checkDisk($directory = '/')
+	{
+		return [
+			'free' => $this->getFreeSpace('/'),
+			'used' => $this->getUsedSpace('/'),
+			'total' => $this->getDiskSpace('/'),
+		];
 	}
 	
 	public function auth()

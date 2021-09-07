@@ -126,6 +126,7 @@ $app->get('/launch', function ($request, $response, $args) {
 	$GLOBALS['api']['response']['data']['appearance'] = $Organizr->loadAppearance();
 	$GLOBALS['api']['response']['data']['status'] = $Organizr->status();
 	$GLOBALS['api']['response']['data']['sso'] = $Organizr->ssoCookies();
+	$GLOBALS['api']['response']['data']['warnings'] = $GLOBALS['warnings'];
 	$response->getBody()->write(jsonE($GLOBALS['api']));
 	return $response
 		->withHeader('Content-Type', 'application/json;charset=UTF-8')
