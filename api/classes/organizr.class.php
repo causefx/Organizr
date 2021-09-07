@@ -578,9 +578,13 @@ class Organizr
 	private function checkWritableDB()
 	{
 		if ($this->hasDB()) {
-			$db = is_writable($this->config['dbLocation'] . $this->config['dbName']);
-			if (!$db) {
-				die($this->showHTML('Organizr DB is not writable!', 'Please check permissions and/or disk space'));
+			if (isset($this->config['dbLocation']) && isset($this->config['dbName'])) {
+				$db = is_writable($this->config['dbLocation'] . $this->config['dbName']);
+				if (!$db) {
+					die($this->showHTML('Organizr DB is not writable!', 'Please check permissions and/or disk space'));
+				}
+			} else {
+				die($this->showHTML('Config File Malformed', 'dbLocation and/or dbName is not listed in config.php'));
 			}
 		}
 	}
@@ -2853,7 +2857,7 @@ class Organizr
 	
 	public function updateConfigMultiple($array)
 	{
-		return ($this->updateConfig($array)) ? true : false;
+		return (bool)$this->updateConfig($array);
 	}
 	
 	public function updateConfigItems($array)
@@ -2883,10 +2887,11 @@ class Organizr
 			}
 			if (strtolower($k) !== 'formkey') {
 				$newItem[$k] = $v;
+				$this->config[$k] = $v;
 			}
 		}
 		$this->setAPIResponse('success', 'Config items updated', 200);
-		return ($this->updateConfig($newItem)) ? true : false;
+		return (bool)$this->updateConfig($newItem);
 	}
 	
 	public function updateConfigItem($array)
@@ -2907,7 +2912,8 @@ class Organizr
 		$newItem = array(
 			$array['name'] => $array['value']
 		);
-		return ($this->updateConfig($newItem)) ? true : false;
+		$this->config[$array['name']] = $array['value'];
+		return (bool)$this->updateConfig($newItem);
 	}
 	
 	public function ignoreNewsId($id)
