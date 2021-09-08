@@ -109,8 +109,9 @@ class Organizr
 		$this->currentTime = gmdate("Y-m-d\TH:i:s\Z");
 		// Set variable if install is for official docker
 		$this->docker = (file_exists(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'Docker.txt'));
-		// Set variable if install is for develop
+		// Set variable if install is for develop and set php Error levels
 		$this->dev = (file_exists(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'Dev.txt'));
+		$this->phpErrors();
 		// Set variable if install is for demo
 		$this->demo = (file_exists(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'Demo.txt'));
 		// Set variable if install has commit hash
@@ -151,12 +152,20 @@ class Organizr
 	{
 		if ($this->hasDB()) {
 			try {
-				$this->db = new Connection([
+				$connect = [
 					'driver' => 'sqlite3',
 					'database' => $this->config['dbLocation'] . $this->config['dbName'],
-					//'onConnect' => array('PRAGMA journal_mode=WAL'),
-				]);
+				];
+				/*
+				if ($this->config['enableWAL']) {
+					$connect = array_merge([
+						'onConnect' => ['PRAGMA journal_mode = \'WAL\';']
+					], $connect);
+				}
+				*/
+				$this->db = new Connection($connect);
 			} catch (Dibi\Exception $e) {
+				//$this->debug($e->getMessage());
 				$this->db = null;
 			}
 		} else {
@@ -175,6 +184,14 @@ class Organizr
 		} catch (Dibi\Exception $e) {
 			$this->otherDb = null;
 		}
+	}
+	
+	public function phpErrors()
+	{
+		$errorTypes = $this->dev ? E_ERROR | E_WARNING | E_PARSE | E_NOTICE : 0;
+		$displayErrors = $this->dev ? 1 : 0;
+		error_reporting($errorTypes);
+		ini_set('display_errors', $displayErrors);
 	}
 	
 	public function checkForOrganizrOAuth()
@@ -1952,6 +1969,9 @@ class Organizr
 					'help' => 'Choose which Settings Tab to be default when opening settings page'
 				),
 			),
+			'Database' => [
+				$this->settingsOption('enable', 'enableWAL', ['label' => 'Enable WAL Mode', 'help' => 'Experimental!  Use at own risk']),
+			],
 			'Github' => array(
 				array(
 					'type' => 'select',
