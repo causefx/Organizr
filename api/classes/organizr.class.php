@@ -1154,10 +1154,12 @@ class Organizr
 	
 	protected function invalidToken($token)
 	{
-		if ($token == $_COOKIE[$this->cookieName]) {
-			$this->coookie('delete', $this->cookieName);
-			$this->user = null;
-			$this->debug('Token was invalid - deleting cookie and user session');
+		if (isset($_COOKIE[$this->cookieName])) {
+			if ($token == $_COOKIE[$this->cookieName]) {
+				$this->coookie('delete', $this->cookieName);
+				$this->user = null;
+				$this->debug('Token was invalid - deleting cookie and user session');
+			}
 		}
 	}
 	
