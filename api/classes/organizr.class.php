@@ -139,7 +139,7 @@ class Organizr
 		// Set cookie name for Organizr Instance
 		$this->cookieName = ($this->hasDB()) ? $this->config['uuid'] !== '' ? 'organizr_token_' . $this->config['uuid'] : 'organizr_token_temp' : 'organizr_token_temp';
 		// Get token form cookie and validate
-		$this->user = $this->hasCookie() ? $this->validateToken($_COOKIE[$this->cookieName]) ?? $this->guestUser() : $this->guestUser();
+		$this->setCurrentUser();
 		// might just run this at index
 		$this->upgradeCheck();
 		// Is Page load Organizr OAuth?
@@ -175,6 +175,27 @@ class Organizr
 			]);
 		} catch (Dibi\Exception $e) {
 			$this->otherDb = null;
+		}
+	}
+	
+	public function setCurrentUser()
+	{
+		$user = false;
+		if ($this->hasDB()) {
+			if ($this->hasCookie()) {
+				$user = $this->getUserFromToken($_COOKIE[$this->cookieName]);
+			}
+		}
+		$this->user = ($user) ?: $this->guestUser();
+		$this->checkUserTokenForValidation();
+	}
+	
+	public function checkUserTokenForValidation()
+	{
+		if ($this->hasDB()) {
+			if ($this->hasCookie()) {
+				$this->validateToken($_COOKIE[$this->cookieName]);
+			}
 		}
 	}
 	
@@ -1173,7 +1194,7 @@ class Organizr
 			$user = $this->getUserById($userInfo['userID']);
 			$tokenCheck = ($this->searchArray($allTokens, 'token', $token) !== false);
 			if (!$tokenCheck) {
-				$this->debug('Token failed check');
+				$this->debug('Token failed check Token listing: ' . json_encode($allTokens) . ' User Id: ' . $userInfo['userID']);
 				$this->invalidToken($token);
 				if ($api) {
 					$this->setResponse(403, 'Token was not in approved list');
@@ -1209,6 +1230,34 @@ class Organizr
 		}
 		if ($api) {
 			$this->setResponse(403, 'Token was invalid');
+		}
+		return false;
+	}
+	
+	public function getUserFromToken($token)
+	{
+		// Validate script
+		$userInfo = $this->jwtParse($token);
+		$validated = (bool)$userInfo;
+		if ($validated == true) {
+			$user = $this->getUserById($userInfo['userID']);
+			$allTokens = $this->getAllUserTokens($userInfo['userID']);
+			return array(
+				'token' => $token,
+				'tokenDate' => $userInfo['tokenDate'],
+				'tokenExpire' => $userInfo['tokenExpire'],
+				'username' => $user['username'],
+				'uid' => $this->guestHash(0, 5),
+				'group' => $user['group'],
+				'groupID' => $user['group_id'],
+				'email' => $user['email'],
+				'image' => $user['image'],
+				'userID' => $user['id'],
+				'loggedin' => true,
+				'locked' => $user['locked'],
+				'tokenList' => $allTokens,
+				'authService' => explode('::', $user['auth_service'])[0]
+			);
 		}
 		return false;
 	}
@@ -1350,7 +1399,7 @@ class Organizr
 	public function getUserLevel()
 	{
 		// Grab token
-		$requesterToken = isset($this->getallheaders()['Token']) ? $this->getallheaders()['Token'] : (isset($_GET['apikey']) ? $_GET['apikey'] : false);
+		$requesterToken = $this->getallheaders()['Token'] ?? ($_GET['apikey'] ?? false);
 		$apiKey = ($this->config['organizrAPI']) ?? null;
 		// Check token or API key
 		// If API key, return 0 for admin
