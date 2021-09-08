@@ -148,13 +148,18 @@ class Organizr
 		$this->checkIfUserIsBlacklisted();
 	}
 	
+	public function __destruct()
+	{
+		$this->disconnectDB();
+	}
+	
 	protected function connectDB()
 	{
 		if ($this->hasDB()) {
 			try {
 				$connect = [
 					'driver' => 'sqlite3',
-					'database' => $this->config['dbLocation'] . $this->config['dbName'],
+					'database' => $this->config['dbLocation'] . $this->config['dbName']
 				];
 				$this->db = new Connection($connect);
 			} catch (Dibi\Exception $e) {
@@ -162,6 +167,13 @@ class Organizr
 			}
 		} else {
 			$this->db = null;
+		}
+	}
+	
+	public function disconnectDB()
+	{
+		if ($this->hasDB()) {
+			$this->db->disconnect();
 		}
 	}
 	
