@@ -27,10 +27,10 @@ trait TokenFunctions
 					$result['valid'] = true;
 					$result['username'] = ($jwttoken->hasClaim('username')) ? $jwttoken->getClaim('username') : 'N/A';
 					$result['group'] = ($jwttoken->hasClaim('group')) ? $jwttoken->getClaim('group') : 'N/A';
-					//$result['groupID'] = $jwttoken->getClaim('groupID');
+					$result['groupID'] = $jwttoken->getClaim('groupID');
 					$result['userID'] = $jwttoken->getClaim('userID');
-					//$result['email'] = $jwttoken->getClaim('email');
-					//$result['image'] = $jwttoken->getClaim('image');
+					$result['email'] = $jwttoken->getClaim('email');
+					$result['image'] = $jwttoken->getClaim('image');
 					$result['tokenExpire'] = $jwttoken->getClaim('exp');
 					$result['tokenDate'] = $jwttoken->getClaim('iat');
 					//$result['token'] = $jwttoken->getClaim('exp');

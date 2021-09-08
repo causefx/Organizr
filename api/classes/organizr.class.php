@@ -1205,20 +1205,20 @@ class Organizr
 					$this->setResponse(200, 'Token is valid');
 				}
 				return array(
-					"token" => $token,
-					"tokenDate" => $userInfo['tokenDate'],
-					"tokenExpire" => $userInfo['tokenExpire'],
-					"username" => $user['username'],
-					"uid" => $this->guestHash(0, 5),
-					"group" => $user['group'],
-					"groupID" => $user['group_id'],
-					"email" => $user['email'],
-					"image" => $user['image'],
-					"userID" => $user['id'],
-					"loggedin" => true,
-					"locked" => $user['locked'],
-					"tokenList" => $allTokens,
-					"authService" => explode('::', $user['auth_service'])[0]
+					'token' => $token,
+					'tokenDate' => $userInfo['tokenDate'],
+					'tokenExpire' => $userInfo['tokenExpire'],
+					'username' => $user['username'] ?? $userInfo['username'],
+					'uid' => $this->guestHash(0, 5),
+					'group' => $user['group'] ?? $userInfo['group'],
+					'groupID' => $user['group_id'] ?? $userInfo['groupID'],
+					'email' => $user['email'] ?? $userInfo['email'],
+					'image' => $user['image'] ?? $userInfo['image'],
+					'userID' => $user['id'] ?? $userInfo['userID'],
+					'loggedin' => true,
+					'locked' => $user['locked'] ?? 0,
+					'tokenList' => $allTokens,
+					'authService' => explode('::', $user['auth_service'])[0]
 				);
 			}
 		} else {
@@ -1246,15 +1246,15 @@ class Organizr
 				'token' => $token,
 				'tokenDate' => $userInfo['tokenDate'],
 				'tokenExpire' => $userInfo['tokenExpire'],
-				'username' => $user['username'],
+				'username' => $user['username'] ?? $userInfo['username'],
 				'uid' => $this->guestHash(0, 5),
-				'group' => $user['group'],
-				'groupID' => $user['group_id'],
-				'email' => $user['email'],
-				'image' => $user['image'],
-				'userID' => $user['id'],
+				'group' => $user['group'] ?? $userInfo['group'],
+				'groupID' => $user['group_id'] ?? $userInfo['groupID'],
+				'email' => $user['email'] ?? $userInfo['email'],
+				'image' => $user['image'] ?? $userInfo['image'],
+				'userID' => $user['id'] ?? $userInfo['userID'],
 				'loggedin' => true,
-				'locked' => $user['locked'],
+				'locked' => $user['locked'] ?? 0,
 				'tokenList' => $allTokens,
 				'authService' => explode('::', $user['auth_service'])[0]
 			);
@@ -3490,9 +3490,9 @@ class Organizr
 		->expiresAt(time() + (86400 * $days))// Configures the expiration time of the token (exp claim)
 		->withClaim('username', $result['username'])// Configures a new claim, called "username"
 		->withClaim('group', $result['group'])// Configures a new claim, called "group"
-		//->withClaim('groupID', $result['group_id'])// Configures a new claim, called "groupID"
-		//->withClaim('email', $result['email'])// Configures a new claim, called "email"
-		//->withClaim('image', $result['image'])// Configures a new claim, called "image"
+		->withClaim('groupID', $result['group_id'])// Configures a new claim, called "groupID"
+		->withClaim('email', $result['email'])// Configures a new claim, called "email"
+		->withClaim('image', $result['image'])// Configures a new claim, called "image"
 		->withClaim('userID', $result['id'])// Configures a new claim, called "image"
 		->sign($signer, $this->config['organizrHash'])// creates a signature using "testing" as key
 		->getToken(); // Retrieves the generated token
@@ -7075,7 +7075,8 @@ class Organizr
 			}
 			
 		} catch (Exception $e) {
-			return $e;
+			$this->debug($e->getMessage());
+			return false;
 		}
 		return count($request) > 1 ? $results : $results[$firstKey];
 	}
