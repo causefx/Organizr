@@ -1152,25 +1152,31 @@ class Organizr
 		return $this->processQueries($response);
 	}
 	
-	protected function invalidToken()
+	protected function invalidToken($token)
 	{
-		$this->coookie('delete', $this->cookieName);
-		$this->user = null;
+		if ($token == $_COOKIE[$this->cookieName]) {
+			$this->coookie('delete', $this->cookieName);
+			$this->user = null;
+			$this->debug('Token was invalid - deleting cookie and user session');
+		}
 	}
 	
 	public function validateToken($token)
 	{
 		// Validate script
 		$userInfo = $this->jwtParse($token);
-		$validated = $userInfo ? true : false;
+		$validated = (bool)$userInfo;
 		if ($validated == true) {
 			$allTokens = $this->getAllUserTokens($userInfo['userID']);
 			$user = $this->getUserById($userInfo['userID']);
 			$tokenCheck = ($this->searchArray($allTokens, 'token', $token) !== false);
 			if (!$tokenCheck) {
-				$this->invalidToken();
+				$this->invalidToken($token);
+				$this->setResponse(403, 'Token was no in approved list');
+				$this->debug('Token was no in approved list');
 				return false;
 			} else {
+				$this->setResponse(200, 'Token is valid');
 				return array(
 					"token" => $token,
 					"tokenDate" => $userInfo['tokenDate'],
@@ -1189,8 +1195,12 @@ class Organizr
 				);
 			}
 		} else {
-			$this->invalidToken();
+			$this->setResponse(403, 'Token was invalid');
+			$this->debug('Token was invalid');
+			$this->invalidToken($token);
 		}
+		$this->setResponse(403, 'Token was invalid.');
+		$this->debug('Token was invalid.');
 		return false;
 	}
 	
