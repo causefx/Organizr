@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "a9cfe24cec195b73c109643bc90dc450",
+    "content-hash": "db7f63e80bb05dd9f7e63091879075a6",
     "packages": [
         {
             "name": "adldap2/adldap2",
@@ -208,47 +208,46 @@
         },
         {
             "name": "dibi/dibi",
-            "version": "v3.2.4",
+            "version": "v4.2.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/dg/dibi.git",
-                "reference": "d571460a6f8fa1334a04f7aaa1551bb0f12c2266"
+                "reference": "73e16eb1a322599e8cdf350adcfdbc15eaf16577"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/dg/dibi/zipball/d571460a6f8fa1334a04f7aaa1551bb0f12c2266",
-                "reference": "d571460a6f8fa1334a04f7aaa1551bb0f12c2266",
+                "url": "https://api.github.com/repos/dg/dibi/zipball/73e16eb1a322599e8cdf350adcfdbc15eaf16577",
+                "reference": "73e16eb1a322599e8cdf350adcfdbc15eaf16577",
                 "shasum": ""
             },
             "require": {
-                "php": ">=5.4.4"
+                "php": ">=7.2"
             },
             "replace": {
                 "dg/dibi": "*"
             },
             "require-dev": {
-                "nette/tester": "~1.7",
+                "nette/di": "^3.0",
+                "nette/tester": "~2.0",
+                "phpstan/phpstan": "^0.12",
                 "tracy/tracy": "~2.2"
             },
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "3.2-dev"
+                    "dev-master": "4.2-dev"
                 }
             },
             "autoload": {
                 "classmap": [
                     "src/"
-                ],
-                "files": [
-                    "src/loader.php"
                 ]
             },
             "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "BSD-3-Clause",
-                "GPL-2.0",
-                "GPL-3.0"
+                "GPL-2.0-only",
+                "GPL-3.0-only"
             ],
             "authors": [
                 {
@@ -273,9 +272,9 @@
             ],
             "support": {
                 "issues": "https://github.com/dg/dibi/issues",
-                "source": "https://github.com/dg/dibi/tree/v3.2.4"
+                "source": "https://github.com/dg/dibi/tree/v4.2.3"
             },
-            "time": "2020-03-26T03:05:01+00:00"
+            "time": "2021-07-23T08:49:27+00:00"
         },
         {
             "name": "doctrine/annotations",
