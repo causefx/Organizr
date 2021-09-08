@@ -158,7 +158,6 @@ class Organizr
 				];
 				$this->db = new Connection($connect);
 			} catch (Dibi\Exception $e) {
-				//$this->debug($e->getMessage());
 				$this->db = null;
 			}
 		} else {
