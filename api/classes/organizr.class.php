@@ -1173,6 +1173,7 @@ class Organizr
 			$user = $this->getUserById($userInfo['userID']);
 			$tokenCheck = ($this->searchArray($allTokens, 'token', $token) !== false);
 			if (!$tokenCheck) {
+				$this->debug('Token failed check');
 				$this->invalidToken($token);
 				if ($api) {
 					$this->setResponse(403, 'Token was no in approved list');
@@ -1203,6 +1204,7 @@ class Organizr
 			if ($api) {
 				$this->setResponse(403, 'Token was invalid');
 			}
+			$this->debug('Token was invalid');
 			$this->invalidToken($token);
 		}
 		if ($api) {
