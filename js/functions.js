@@ -4101,8 +4101,8 @@ function organizrAPI2(type,path,data=null,asyncValue=true){
 	$.xhrPool.abortAll(path);
 	var timeout = 10000;
 	switch(path){
-		case 'api/v2/windows/update':
-		case 'api/v2/docker/update':
+		case 'api/v2/update/windows':
+		case 'api/v2/update/docker':
 			timeout = 240000;
 			break;
 		default:
