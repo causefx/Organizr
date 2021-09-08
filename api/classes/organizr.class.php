@@ -4266,7 +4266,7 @@ class Organizr
 	
 	public function isApprovedRequest($method, $data)
 	{
-		$requesterToken = isset($this->getallheaders()['Token']) ? $this->getallheaders()['Token'] : (isset($_GET['apikey']) ? $_GET['apikey'] : false);
+		$requesterToken = $this->getallheaders()['Token'] ?? ($_GET['apikey'] ?? false);
 		$apiKey = ($this->config['organizrAPI']) ?? null;
 		if (isset($data['formKey'])) {
 			$formKey = $data['formKey'];
