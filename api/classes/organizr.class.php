@@ -1179,7 +1179,9 @@ class Organizr
 				}
 				return false;
 			} else {
-				$this->setResponse(200, 'Token is valid');
+				if ($api) {
+					$this->setResponse(200, 'Token is valid');
+				}
 				return array(
 					"token" => $token,
 					"tokenDate" => $userInfo['tokenDate'],
