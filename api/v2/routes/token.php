@@ -12,7 +12,7 @@ $app->get('/token/me', function ($request, $response, $args) {
 $app->post('/token/validate', function ($request, $response, $args) {
 	$Organizr = ($request->getAttribute('Organizr')) ?? new Organizr();
 	if ($Organizr->qualifyRequest(999, true)) {
-		$GLOBALS['api']['response']['data'] = $Organizr->validateToken($_REQUEST["Token"]);
+		$GLOBALS['api']['response']['data'] = $Organizr->validateToken($_REQUEST["Token"], true);
 	}
 	$response->getBody()->write(jsonE($GLOBALS['api']));
 	return $response

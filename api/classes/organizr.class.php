@@ -1163,7 +1163,7 @@ class Organizr
 		}
 	}
 	
-	public function validateToken($token)
+	public function validateToken($token, $api = false)
 	{
 		// Validate script
 		$userInfo = $this->jwtParse($token);
@@ -1174,8 +1174,9 @@ class Organizr
 			$tokenCheck = ($this->searchArray($allTokens, 'token', $token) !== false);
 			if (!$tokenCheck) {
 				$this->invalidToken($token);
-				$this->setResponse(403, 'Token was no in approved list');
-				$this->debug('Token was no in approved list');
+				if ($api) {
+					$this->setResponse(403, 'Token was no in approved list');
+				}
 				return false;
 			} else {
 				$this->setResponse(200, 'Token is valid');
@@ -1197,12 +1198,14 @@ class Organizr
 				);
 			}
 		} else {
-			$this->setResponse(403, 'Token was invalid');
-			$this->debug('Token was invalid');
+			if ($api) {
+				$this->setResponse(403, 'Token was invalid');
+			}
 			$this->invalidToken($token);
 		}
-		$this->setResponse(403, 'Token was invalid.');
-		$this->debug('Token was invalid.');
+		if ($api) {
+			$this->setResponse(403, 'Token was invalid');
+		}
 		return false;
 	}
 	
