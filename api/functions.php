@@ -1,5 +1,4 @@
 <?php
-//error_reporting(E_ALL);
 // Set UTC timeone
 date_default_timezone_set("UTC");
 // Autoload frameworks
