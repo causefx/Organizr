@@ -1176,7 +1176,7 @@ class Organizr
 				$this->debug('Token failed check');
 				$this->invalidToken($token);
 				if ($api) {
-					$this->setResponse(403, 'Token was no in approved list');
+					$this->setResponse(403, 'Token was not in approved list');
 				}
 				return false;
 			} else {
