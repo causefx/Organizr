@@ -10872,7 +10872,32 @@ function shortcut(selectors = ''){
 		}, timeout);
 	});
 }
-
+function getJournalMode(){
+	organizrAPI2('GET','api/v2/database/journal').success(function(data) {
+		try {
+			let response = data.response;
+			$('.journal-mode').html(response.data.journal_mode);
+		}catch(e) {
+			organizrCatchError(e,data);
+		}
+	}).fail(function(xhr) {
+		OrganizrApiError(xhr);
+	});
+}
+function setJournalMode(mode){
+	messageSingle('Setting New Journal Mode','',activeInfo.settings.notifications.position,"#FFF","info","1500");
+	organizrAPI2('PUT','api/v2/database/journal/' + mode, {}).success(function(data) {
+		try {
+			getJournalMode();
+			let response = data.response;
+			message('Set New Journal Mode',response.data.journal_mode,activeInfo.settings.notifications.position,"#FFF","success","5000");
+		}catch(e) {
+			organizrCatchError(e,data);
+		}
+	}).fail(function(xhr) {
+		OrganizrApiError(xhr);
+	});
+}
 function launch(){
 	console.info('https://docs.organizr.app/help/faq/migration-guide#version-2-0-greater-than-version-2-1');
 	organizrConsole('API V2 API','If you see a 404 Error for api/v2/launch below this line, you have not setup the new location block... See URL above this line', 'error');

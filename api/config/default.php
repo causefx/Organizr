@@ -1,7 +1,6 @@
 <?php
 return [
 	'branch' => 'v2-master',
-	'enableWAL' => false,
 	'authType' => 'internal',
 	'authBackend' => '',
 	'authBackendHost' => '',

@@ -156,13 +156,6 @@ class Organizr
 					'driver' => 'sqlite3',
 					'database' => $this->config['dbLocation'] . $this->config['dbName'],
 				];
-				/*
-				if ($this->config['enableWAL']) {
-					$connect = array_merge([
-						'onConnect' => ['PRAGMA journal_mode = \'WAL\';']
-					], $connect);
-				}
-				*/
 				$this->db = new Connection($connect);
 			} catch (Dibi\Exception $e) {
 				//$this->debug($e->getMessage());
@@ -1970,7 +1963,10 @@ class Organizr
 				),
 			),
 			'Database' => [
-				$this->settingsOption('enable', 'enableWAL', ['label' => 'Enable WAL Mode', 'help' => 'Experimental!  Use at own risk']),
+				$this->settingsOption('html', '', ['label' => 'Journal Mode Status', 'html' => '<script>getJournalMode();</script><h4 class="journal-mode font-bold text-uppercase"><i class="fa fa-spin fa-circle-o-notch"></i></h4>']),
+				$this->settingsOption('blank'),
+				$this->settingsOption('button', '', ['label' => 'Set DELETE Mode (Default)', 'icon' => 'icon-notebook', 'text' => 'Set', 'attr' => 'onclick="setJournalMode(\'DELETE\')"']),
+				$this->settingsOption('button', '', ['label' => 'Set WAL Mode', 'icon' => 'icon-notebook', 'text' => 'Set', 'attr' => 'onclick="setJournalMode(\'WAL\')"']),
 			],
 			'Github' => array(
 				array(
@@ -6920,6 +6916,56 @@ class Organizr
 		$goodIcons['results'] = array_slice($goodIcons['results'], $offset, $limit);
 		$goodIcons['pagination']['more'] = $page < (ceil($total / $limit));
 		return $goodIcons;
+	}
+	
+	public function getJournalMode()
+	{
+		$response = [
+			array(
+				'function' => 'fetch',
+				'query' => 'PRAGMA journal_mode',
+			),
+		];
+		$query = $this->processQueries($response);
+		if ($query) {
+			if ($query['journal_mode']) {
+				$this->setResponse(200, null, $query);
+			} else {
+				$this->setResponse(500, 'Error getting Journal Mode');
+			}
+		} else {
+			$this->setResponse(404, 'Journal Mode not found');
+		}
+		return $query;
+	}
+	
+	public function setJournalMode($option = 'WAL')
+	{
+		$option = strtoupper($option);
+		switch ($option) {
+			case 'WAL':
+			case 'DELETE':
+				break;
+			default:
+				return false;
+		}
+		$response = [
+			array(
+				'function' => 'fetch',
+				'query' => 'PRAGMA journal_mode = \'' . $option . '\';',
+			),
+		];
+		$query = $this->processQueries($response);
+		if ($query) {
+			if ($query['journal_mode']) {
+				$this->setResponse(200, 'Journal Mode updated to: ' . $option, $query);
+			} else {
+				$this->setResponse(500, 'Error getting Journal Mode');
+			}
+		} else {
+			$this->setResponse(404, 'Journal Mode not found');
+		}
+		return $query;
 	}
 	
 	protected function processQueries(array $request, $migration = false)
