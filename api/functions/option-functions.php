@@ -126,6 +126,29 @@ trait OptionsFunction
 					'settings' => '{tags: true, theme: "default password-alt", selectOnClose: true, closeOnSelect: true}',
 				];
 				break;
+			case 'notice':
+				$settingMerge = [
+					'type' => 'html',
+					'override' => 12,
+					'label' => '',
+					'html' => '
+						<div class="row">
+							<div class="col-lg-12">
+								<div class="panel panel-' . ($extras['notice'] ?? 'info') . '">
+									<div class="panel-heading">
+										<span lang="en">' . ($extras['title'] ?? 'Attention') . '</span>
+									</div>
+									<div class="panel-wrapper collapse in" aria-expanded="true">
+										<div class="panel-body">
+											<span lang="en">' . ($extras['body'] ?? '') . '</span>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+						'
+				];
+				break;
 			case 'socks':
 				$settingMerge = [
 					'type' => 'html',
