@@ -5,6 +5,8 @@
  * Copyright (c) 2005 David Grudl (https://davidgrudl.com)
  */
 
+declare(strict_types=1);
+
 namespace Dibi\Drivers;
 
 use Dibi;
@@ -12,7 +14,6 @@ use Dibi;
 
 /**
  * The reflector for SQLite database.
- * @internal
  */
 class SqliteReflector implements Dibi\Reflector
 {
@@ -30,9 +31,8 @@ class SqliteReflector implements Dibi\Reflector
 
 	/**
 	 * Returns list of tables.
-	 * @return array
 	 */
-	public function getTables()
+	public function getTables(): array
 	{
 		$res = $this->driver->query("
 			SELECT name, type = 'view' as view FROM sqlite_master WHERE type IN ('table', 'view')
@@ -50,10 +50,8 @@ class SqliteReflector implements Dibi\Reflector
 
 	/**
 	 * Returns metadata for all columns in a table.
-	 * @param  string
-	 * @return array
 	 */
-	public function getColumns($table)
+	public function getColumns(string $table): array
 	{
 		$res = $this->driver->query("PRAGMA table_info({$this->driver->escapeIdentifier($table)})");
 		$columns = [];
@@ -66,7 +64,7 @@ class SqliteReflector implements Dibi\Reflector
 				'fullname' => "$table.$column",
 				'nativetype' => strtoupper($type[0]),
 				'size' => isset($type[1]) ? (int) $type[1] : null,
-				'nullable' => $row['notnull'] == '0',
+				'nullable' => $row['notnull'] === 0,
 				'default' => $row['dflt_value'],
 				'autoincrement' => $row['pk'] && $type[0] === 'INTEGER',
 				'vendor' => $row,
@@ -78,10 +76,8 @@ class SqliteReflector implements Dibi\Reflector
 
 	/**
 	 * Returns metadata for all indexes in a table.
-	 * @param  string
-	 * @return array
 	 */
-	public function getIndexes($table)
+	public function getIndexes(string $table): array
 	{
 		$res = $this->driver->query("PRAGMA index_list({$this->driver->escapeIdentifier($table)})");
 		$indexes = [];
@@ -102,7 +98,7 @@ class SqliteReflector implements Dibi\Reflector
 			$column = $indexes[$index]['columns'][0];
 			$primary = false;
 			foreach ($columns as $info) {
-				if ($column == $info['name']) {
+				if ($column === $info['name']) {
 					$primary = $info['vendor']['pk'];
 					break;
 				}
@@ -129,10 +125,8 @@ class SqliteReflector implements Dibi\Reflector
 
 	/**
 	 * Returns metadata for all foreign keys in a table.
-	 * @param  string
-	 * @return array
 	 */
-	public function getForeignKeys($table)
+	public function getForeignKeys(string $table): array
 	{
 		$res = $this->driver->query("PRAGMA foreign_key_list({$this->driver->escapeIdentifier($table)})");
 		$keys = [];

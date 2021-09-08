@@ -5,6 +5,8 @@
  * Copyright (c) 2005 David Grudl (https://davidgrudl.com)
  */
 
+declare(strict_types=1);
+
 namespace Dibi;
 
 
@@ -13,7 +15,7 @@ namespace Dibi;
  */
 class Row implements \ArrayAccess, \IteratorAggregate, \Countable
 {
-	public function __construct($arr)
+	public function __construct(array $arr)
 	{
 		foreach ($arr as $k => $v) {
 			$this->$k = $v;
@@ -21,7 +23,7 @@ class Row implements \ArrayAccess, \IteratorAggregate, \Countable
 	}
 
 
-	public function toArray()
+	public function toArray(): array
 	{
 		return (array) $this;
 	}
@@ -29,11 +31,9 @@ class Row implements \ArrayAccess, \IteratorAggregate, \Countable
 
 	/**
 	 * Converts value to DateTime object.
-	 * @param  string key
-	 * @param  string format
 	 * @return DateTime|string|null
 	 */
-	public function asDateTime($key, $format = null)
+	public function asDateTime(string $key, string $format = null)
 	{
 		$time = $this[$key];
 		if (!$time instanceof DateTime) {
@@ -46,10 +46,16 @@ class Row implements \ArrayAccess, \IteratorAggregate, \Countable
 	}
 
 
-	public function __get($key)
+	public function __get(string $key)
 	{
 		$hint = Helpers::getSuggestion(array_keys((array) $this), $key);
 		trigger_error("Attempt to read missing column '$key'" . ($hint ? ", did you mean '$hint'?" : '.'), E_USER_NOTICE);
+	}
+
+
+	public function __isset(string $key): bool
+	{
+		return false;
 	}
 
 

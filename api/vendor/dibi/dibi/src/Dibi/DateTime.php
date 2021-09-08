@@ -5,70 +5,35 @@
  * Copyright (c) 2005 David Grudl (https://davidgrudl.com)
  */
 
+declare(strict_types=1);
+
 namespace Dibi;
 
 
 /**
  * DateTime.
  */
-class DateTime extends \DateTime
+class DateTime extends \DateTimeImmutable
 {
 	use Strict;
 
 	/**
-	 * @param  string|int
+	 * @param  string|int  $time
 	 */
 	public function __construct($time = 'now', \DateTimeZone $timezone = null)
 	{
+		$timezone = $timezone ?: new \DateTimeZone(date_default_timezone_get());
 		if (is_numeric($time)) {
-			parent::__construct('@' . $time);
-			$this->setTimeZone($timezone ?: new \DateTimeZone(date_default_timezone_get()));
-		} elseif ($timezone === null) {
-			parent::__construct($time);
+			$tmp = (new self('@' . $time))->setTimezone($timezone);
+			parent::__construct($tmp->format('Y-m-d H:i:s.u'), $tmp->getTimezone());
 		} else {
 			parent::__construct($time, $timezone);
 		}
 	}
 
 
-	public function modifyClone($modify = '')
-	{
-		$dolly = clone $this;
-		return $modify ? $dolly->modify($modify) : $dolly;
-	}
-
-
-	public function setTimestamp($timestamp)
-	{
-		$zone = $this->getTimezone();
-		$this->__construct('@' . $timestamp);
-		return $this->setTimeZone($zone);
-	}
-
-
-	public function getTimestamp()
-	{
-		$ts = $this->format('U');
-		return is_float($tmp = $ts * 1) ? $ts : $tmp;
-	}
-
-
-	public function __toString()
+	public function __toString(): string
 	{
 		return $this->format('Y-m-d H:i:s.u');
-	}
-
-
-	public function __wakeup()
-	{
-		if (isset($this->fix, $this->fix[1])) {
-			$this->__construct($this->fix[0], new \DateTimeZone($this->fix[1]));
-			unset($this->fix);
-		} elseif (isset($this->fix)) {
-			$this->__construct($this->fix[0]);
-			unset($this->fix);
-		} else {
-			parent::__wakeup();
-		}
 	}
 }

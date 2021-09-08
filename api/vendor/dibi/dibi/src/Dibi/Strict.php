@@ -5,6 +5,8 @@
  * Copyright (c) 2005 David Grudl (https://davidgrudl.com)
  */
 
+declare(strict_types=1);
+
 namespace Dibi;
 
 use ReflectionClass;
@@ -25,15 +27,14 @@ trait Strict
 	 * Call to undefined method.
 	 * @throws \LogicException
 	 */
-	public function __call($name, $args)
+	public function __call(string $name, array $args)
 	{
-		if ($cb = self::extensionMethod(get_class($this) . '::' . $name)) { // back compatiblity
-			array_unshift($args, $this);
-			return call_user_func_array($cb, $args);
-		}
-		$class = method_exists($this, $name) ? 'parent' : get_class($this);
+		$class = method_exists($this, $name) ? 'parent' : static::class;
 		$items = (new ReflectionClass($this))->getMethods(ReflectionMethod::IS_PUBLIC);
-		$hint = ($t = Helpers::getSuggestion($items, $name)) ? ", did you mean $t()?" : '.';
+		$items = array_map(function ($item) { return $item->getName(); }, $items);
+		$hint = ($t = Helpers::getSuggestion($items, $name))
+			? ", did you mean $t()?"
+			: '.';
 		throw new \LogicException("Call to undefined method $class::$name()$hint");
 	}
 
@@ -42,11 +43,14 @@ trait Strict
 	 * Call to undefined static method.
 	 * @throws \LogicException
 	 */
-	public static function __callStatic($name, $args)
+	public static function __callStatic(string $name, array $args)
 	{
-		$rc = new ReflectionClass(get_called_class());
-		$items = array_intersect($rc->getMethods(ReflectionMethod::IS_PUBLIC), $rc->getMethods(ReflectionMethod::IS_STATIC));
-		$hint = ($t = Helpers::getSuggestion($items, $name)) ? ", did you mean $t()?" : '.';
+		$rc = new ReflectionClass(static::class);
+		$items = array_filter($rc->getMethods(\ReflectionMethod::IS_STATIC), function ($m) { return $m->isPublic(); });
+		$items = array_map(function ($item) { return $item->getName(); }, $items);
+		$hint = ($t = Helpers::getSuggestion($items, $name))
+			? ", did you mean $t()?"
+			: '.';
 		throw new \LogicException("Call to undefined static method {$rc->getName()}::$name()$hint");
 	}
 
@@ -55,7 +59,7 @@ trait Strict
 	 * Access to undeclared property.
 	 * @throws \LogicException
 	 */
-	public function &__get($name)
+	public function &__get(string $name)
 	{
 		if ((method_exists($this, $m = 'get' . $name) || method_exists($this, $m = 'is' . $name))
 			&& (new ReflectionMethod($this, $m))->isPublic()
@@ -64,8 +68,11 @@ trait Strict
 			return $ret;
 		}
 		$rc = new ReflectionClass($this);
-		$items = array_diff($rc->getProperties(ReflectionProperty::IS_PUBLIC), $rc->getProperties(ReflectionProperty::IS_STATIC));
-		$hint = ($t = Helpers::getSuggestion($items, $name)) ? ", did you mean $$t?" : '.';
+		$items = array_filter($rc->getProperties(ReflectionProperty::IS_PUBLIC), function ($p) { return !$p->isStatic(); });
+		$items = array_map(function ($item) { return $item->getName(); }, $items);
+		$hint = ($t = Helpers::getSuggestion($items, $name))
+			? ", did you mean $$t?"
+			: '.';
 		throw new \LogicException("Attempt to read undeclared property {$rc->getName()}::$$name$hint");
 	}
 
@@ -74,19 +81,19 @@ trait Strict
 	 * Access to undeclared property.
 	 * @throws \LogicException
 	 */
-	public function __set($name, $value)
+	public function __set(string $name, $value)
 	{
 		$rc = new ReflectionClass($this);
-		$items = array_diff($rc->getProperties(ReflectionProperty::IS_PUBLIC), $rc->getProperties(ReflectionProperty::IS_STATIC));
-		$hint = ($t = Helpers::getSuggestion($items, $name)) ? ", did you mean $$t?" : '.';
+		$items = array_filter($rc->getProperties(ReflectionProperty::IS_PUBLIC), function ($p) { return !$p->isStatic(); });
+		$items = array_map(function ($item) { return $item->getName(); }, $items);
+		$hint = ($t = Helpers::getSuggestion($items, $name))
+			? ", did you mean $$t?"
+			: '.';
 		throw new \LogicException("Attempt to write to undeclared property {$rc->getName()}::$$name$hint");
 	}
 
 
-	/**
-	 * @return bool
-	 */
-	public function __isset($name)
+	public function __isset(string $name): bool
 	{
 		return false;
 	}
@@ -96,56 +103,9 @@ trait Strict
 	 * Access to undeclared property.
 	 * @throws \LogicException
 	 */
-	public function __unset($name)
+	public function __unset(string $name)
 	{
-		$class = get_class($this);
+		$class = static::class;
 		throw new \LogicException("Attempt to unset undeclared property $class::$$name.");
-	}
-
-
-	/**
-	 * @param  string  method name
-	 * @param  callable
-	 * @return mixed
-	 */
-	public static function extensionMethod($name, $callback = null)
-	{
-		if (strpos($name, '::') === false) {
-			$class = get_called_class();
-		} else {
-			list($class, $name) = explode('::', $name);
-			$class = (new ReflectionClass($class))->getName();
-		}
-
-		if (self::$extMethods === null) { // for backwards compatibility
-			$list = get_defined_functions();
-			foreach ($list['user'] as $fce) {
-				$pair = explode('_prototype_', $fce);
-				if (count($pair) === 2) {
-					trigger_error("Extension method defined as $fce() is deprecated, use $class::extensionMethod('$name', ...).", E_USER_DEPRECATED);
-					self::$extMethods[$pair[1]][(new ReflectionClass($pair[0]))->getName()] = $fce;
-					self::$extMethods[$pair[1]][''] = null;
-				}
-			}
-		}
-
-		$list = &self::$extMethods[strtolower($name)];
-		if ($callback === null) { // getter
-			$cache = &$list[''][$class];
-			if (isset($cache)) {
-				return $cache;
-			}
-
-			foreach ([$class] + class_parents($class) + class_implements($class) as $cl) {
-				if (isset($list[$cl])) {
-					return $cache = $list[$cl];
-				}
-			}
-			return $cache = false;
-
-		} else { // setter
-			$list[$class] = $callback;
-			$list[''] = null;
-		}
 	}
 }

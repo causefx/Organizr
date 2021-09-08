@@ -29,7 +29,7 @@ private static $installed = array (
     'aliases' => 
     array (
     ),
-    'reference' => '7bb47ec76fe2d84d5bb6e4102d47337ceb00fcec',
+    'reference' => 'f571aa755d372fc8205704b3cda8e1585aab0e3a',
     'name' => '__root__',
   ),
   'versions' => 
@@ -41,7 +41,7 @@ private static $installed = array (
       'aliases' => 
       array (
       ),
-      'reference' => '7bb47ec76fe2d84d5bb6e4102d47337ceb00fcec',
+      'reference' => 'f571aa755d372fc8205704b3cda8e1585aab0e3a',
     ),
     'adldap2/adldap2' => 
     array (
@@ -79,12 +79,12 @@ private static $installed = array (
     ),
     'dibi/dibi' => 
     array (
-      'pretty_version' => 'v3.2.4',
-      'version' => '3.2.4.0',
+      'pretty_version' => 'v4.2.3',
+      'version' => '4.2.3.0',
       'aliases' => 
       array (
       ),
-      'reference' => 'd571460a6f8fa1334a04f7aaa1551bb0f12c2266',
+      'reference' => '73e16eb1a322599e8cdf350adcfdbc15eaf16577',
     ),
     'doctrine/annotations' => 
     array (

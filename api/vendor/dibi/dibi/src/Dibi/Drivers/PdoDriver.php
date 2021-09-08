@@ -5,9 +5,12 @@
  * Copyright (c) 2005 David Grudl (https://davidgrudl.com)
  */
 
+declare(strict_types=1);
+
 namespace Dibi\Drivers;
 
 use Dibi;
+use Dibi\Helpers;
 use PDO;
 
 
@@ -22,18 +25,15 @@ use PDO;
  *   - resource (PDO) => existing connection
  *   - version
  */
-class PdoDriver implements Dibi\Driver, Dibi\ResultDriver
+class PdoDriver implements Dibi\Driver
 {
 	use Dibi\Strict;
 
 	/** @var PDO|null  Connection resource */
 	private $connection;
 
-	/** @var \PDOStatement|null  Resultset resource */
-	private $resultSet;
-
-	/** @var int|false  Affected rows */
-	private $affectedRows = false;
+	/** @var int|null  Affected rows */
+	private $affectedRows;
 
 	/** @var string */
 	private $driverName;
@@ -42,34 +42,29 @@ class PdoDriver implements Dibi\Driver, Dibi\ResultDriver
 	private $serverVersion = '';
 
 
-	/**
-	 * @throws Dibi\NotSupportedException
-	 */
-	public function __construct()
+	/** @throws Dibi\NotSupportedException */
+	public function __construct(array $config)
 	{
 		if (!extension_loaded('pdo')) {
 			throw new Dibi\NotSupportedException("PHP extension 'pdo' is not loaded.");
 		}
-	}
 
-
-	/**
-	 * Connects to a database.
-	 * @return void
-	 * @throws Dibi\Exception
-	 */
-	public function connect(array &$config)
-	{
 		$foo = &$config['dsn'];
 		$foo = &$config['options'];
-		Dibi\Helpers::alias($config, 'resource', 'pdo');
+		Helpers::alias($config, 'resource', 'pdo');
 
 		if ($config['resource'] instanceof PDO) {
 			$this->connection = $config['resource'];
 			unset($config['resource'], $config['pdo']);
+
+			if ($this->connection->getAttribute(PDO::ATTR_ERRMODE) !== PDO::ERRMODE_SILENT) {
+				throw new Dibi\DriverException('PDO connection in exception or warning error mode is not supported.');
+			}
+
 		} else {
 			try {
 				$this->connection = new PDO($config['dsn'], $config['username'], $config['password'], $config['options']);
+				$this->connection->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_SILENT);
 			} catch (\PDOException $e) {
 				if ($e->getMessage() === 'could not find driver') {
 					throw new Dibi\NotSupportedException('PHP extension for PDO is not loaded.');
@@ -78,22 +73,15 @@ class PdoDriver implements Dibi\Driver, Dibi\ResultDriver
 			}
 		}
 
-		if ($this->connection->getAttribute(PDO::ATTR_ERRMODE) !== PDO::ERRMODE_SILENT) {
-			throw new Dibi\DriverException('PDO connection in exception or warning error mode is not supported.');
-		}
-
 		$this->driverName = $this->connection->getAttribute(PDO::ATTR_DRIVER_NAME);
-		$this->serverVersion = isset($config['version'])
-			? $config['version']
-			: @$this->connection->getAttribute(PDO::ATTR_SERVER_VERSION); // @ - may be not supported
+		$this->serverVersion = (string) ($config['version'] ?? @$this->connection->getAttribute(PDO::ATTR_SERVER_VERSION)); // @ - may be not supported
 	}
 
 
 	/**
 	 * Disconnects from a database.
-	 * @return void
 	 */
-	public function disconnect()
+	public function disconnect(): void
 	{
 		$this->connection = null;
 	}
@@ -101,11 +89,9 @@ class PdoDriver implements Dibi\Driver, Dibi\ResultDriver
 
 	/**
 	 * Executes the SQL query.
-	 * @param  string      SQL statement.
-	 * @return Dibi\ResultDriver|null
 	 * @throws Dibi\DriverException
 	 */
-	public function query($sql)
+	public function query(string $sql): ?Dibi\ResultDriver
 	{
 		$res = $this->connection->query($sql);
 		if ($res) {
@@ -113,9 +99,9 @@ class PdoDriver implements Dibi\Driver, Dibi\ResultDriver
 			return $res->columnCount() ? $this->createResultDriver($res) : null;
 		}
 
-		$this->affectedRows = false;
+		$this->affectedRows = null;
 
-		list($sqlState, $code, $message) = $this->connection->errorInfo();
+		[$sqlState, $code, $message] = $this->connection->errorInfo();
 		$message = "SQLSTATE[$sqlState]: $message";
 		switch ($this->driverName) {
 			case 'mysql':
@@ -128,7 +114,7 @@ class PdoDriver implements Dibi\Driver, Dibi\ResultDriver
 				throw PostgreDriver::createException($message, $sqlState, $sql);
 
 			case 'sqlite':
-				throw Sqlite3Driver::createException($message, $code, $sql);
+				throw SqliteDriver::createException($message, $code, $sql);
 
 			default:
 				throw new Dibi\DriverException($message, $code, $sql);
@@ -138,9 +124,8 @@ class PdoDriver implements Dibi\Driver, Dibi\ResultDriver
 
 	/**
 	 * Gets the number of affected rows by the last INSERT, UPDATE or DELETE query.
-	 * @return int|false  number of rows or false on error
 	 */
-	public function getAffectedRows()
+	public function getAffectedRows(): ?int
 	{
 		return $this->affectedRows;
 	}
@@ -148,21 +133,18 @@ class PdoDriver implements Dibi\Driver, Dibi\ResultDriver
 
 	/**
 	 * Retrieves the ID generated for an AUTO_INCREMENT column by the previous INSERT query.
-	 * @return int|false  int on success or false on failure
 	 */
-	public function getInsertId($sequence)
+	public function getInsertId(?string $sequence): ?int
 	{
-		return $this->connection->lastInsertId($sequence);
+		return Helpers::intVal($this->connection->lastInsertId($sequence));
 	}
 
 
 	/**
 	 * Begins a transaction (if supported).
-	 * @param  string  optional savepoint name
-	 * @return void
 	 * @throws Dibi\DriverException
 	 */
-	public function begin($savepoint = null)
+	public function begin(string $savepoint = null): void
 	{
 		if (!$this->connection->beginTransaction()) {
 			$err = $this->connection->errorInfo();
@@ -173,11 +155,9 @@ class PdoDriver implements Dibi\Driver, Dibi\ResultDriver
 
 	/**
 	 * Commits statements in a transaction.
-	 * @param  string  optional savepoint name
-	 * @return void
 	 * @throws Dibi\DriverException
 	 */
-	public function commit($savepoint = null)
+	public function commit(string $savepoint = null): void
 	{
 		if (!$this->connection->commit()) {
 			$err = $this->connection->errorInfo();
@@ -188,11 +168,9 @@ class PdoDriver implements Dibi\Driver, Dibi\ResultDriver
 
 	/**
 	 * Rollback changes in a transaction.
-	 * @param  string  optional savepoint name
-	 * @return void
 	 * @throws Dibi\DriverException
 	 */
-	public function rollback($savepoint = null)
+	public function rollback(string $savepoint = null): void
 	{
 		if (!$this->connection->rollBack()) {
 			$err = $this->connection->errorInfo();
@@ -203,9 +181,8 @@ class PdoDriver implements Dibi\Driver, Dibi\ResultDriver
 
 	/**
 	 * Returns the connection resource.
-	 * @return PDO|null
 	 */
-	public function getResource()
+	public function getResource(): ?PDO
 	{
 		return $this->connection;
 	}
@@ -213,16 +190,26 @@ class PdoDriver implements Dibi\Driver, Dibi\ResultDriver
 
 	/**
 	 * Returns the connection reflector.
-	 * @return Dibi\Reflector
 	 */
-	public function getReflector()
+	public function getReflector(): Dibi\Reflector
 	{
 		switch ($this->driverName) {
 			case 'mysql':
 				return new MySqlReflector($this);
 
+			case 'oci':
+				return new OracleReflector($this);
+
+			case 'pgsql':
+				return new PostgreReflector($this, $this->connection->getAttribute(PDO::ATTR_SERVER_VERSION));
+
 			case 'sqlite':
 				return new SqliteReflector($this);
+
+			case 'mssql':
+			case 'dblib':
+			case 'sqlsrv':
+				return new SqlsrvReflector($this);
 
 			default:
 				throw new Dibi\NotSupportedException;
@@ -232,14 +219,10 @@ class PdoDriver implements Dibi\Driver, Dibi\ResultDriver
 
 	/**
 	 * Result set driver factory.
-	 * @param  \PDOStatement
-	 * @return Dibi\ResultDriver
 	 */
-	public function createResultDriver(\PDOStatement $resource)
+	public function createResultDriver(\PDOStatement $result): PdoResult
 	{
-		$res = clone $this;
-		$res->resultSet = $resource;
-		return $res;
+		return new PdoResult($result, $this->driverName);
 	}
 
 
@@ -248,38 +231,24 @@ class PdoDriver implements Dibi\Driver, Dibi\ResultDriver
 
 	/**
 	 * Encodes data for use in a SQL statement.
-	 * @param  string    value
-	 * @return string    encoded value
 	 */
-	public function escapeText($value)
+	public function escapeText(string $value): string
 	{
-		if ($this->driverName === 'odbc') {
-			return "'" . str_replace("'", "''", $value) . "'";
-		} else {
-			return $this->connection->quote($value, PDO::PARAM_STR);
-		}
+		return $this->driverName === 'odbc'
+			? "'" . str_replace("'", "''", $value) . "'"
+			: $this->connection->quote($value, PDO::PARAM_STR);
 	}
 
 
-	/**
-	 * @param  string
-	 * @return string
-	 */
-	public function escapeBinary($value)
+	public function escapeBinary(string $value): string
 	{
-		if ($this->driverName === 'odbc') {
-			return "'" . str_replace("'", "''", $value) . "'";
-		} else {
-			return $this->connection->quote($value, PDO::PARAM_LOB);
-		}
+		return $this->driverName === 'odbc'
+			? "'" . str_replace("'", "''", $value) . "'"
+			: $this->connection->quote($value, PDO::PARAM_LOB);
 	}
 
 
-	/**
-	 * @param  string
-	 * @return string
-	 */
-	public function escapeIdentifier($value)
+	public function escapeIdentifier(string $value): string
 	{
 		switch ($this->driverName) {
 			case 'mysql':
@@ -306,11 +275,7 @@ class PdoDriver implements Dibi\Driver, Dibi\ResultDriver
 	}
 
 
-	/**
-	 * @param  bool
-	 * @return string
-	 */
-	public function escapeBool($value)
+	public function escapeBool(bool $value): string
 	{
 		if ($this->driverName === 'pgsql') {
 			return $value ? 'TRUE' : 'FALSE';
@@ -320,32 +285,19 @@ class PdoDriver implements Dibi\Driver, Dibi\ResultDriver
 	}
 
 
-	/**
-	 * @param  \DateTime|\DateTimeInterface|string|int
-	 * @return string
-	 */
-	public function escapeDate($value)
+	public function escapeDate(\DateTimeInterface $value): string
 	{
-		if (!$value instanceof \DateTime && !$value instanceof \DateTimeInterface) {
-			$value = new Dibi\DateTime($value);
-		}
 		return $value->format($this->driverName === 'odbc' ? '#m/d/Y#' : "'Y-m-d'");
 	}
 
 
-	/**
-	 * @param  \DateTime|\DateTimeInterface|string|int
-	 * @return string
-	 */
-	public function escapeDateTime($value)
+	public function escapeDateTime(\DateTimeInterface $value): string
 	{
-		if (!$value instanceof \DateTime && !$value instanceof \DateTimeInterface) {
-			$value = new Dibi\DateTime($value);
-		}
 		switch ($this->driverName) {
 			case 'odbc':
 				return $value->format('#m/d/Y H:i:s.u#');
 			case 'mssql':
+			case 'dblib':
 			case 'sqlsrv':
 				return 'CONVERT(DATETIME2(7), ' . $value->format("'Y-m-d H:i:s.u'") . ')';
 			default:
@@ -354,40 +306,43 @@ class PdoDriver implements Dibi\Driver, Dibi\ResultDriver
 	}
 
 
+	public function escapeDateInterval(\DateInterval $value): string
+	{
+		throw new Dibi\NotImplementedException;
+	}
+
+
 	/**
 	 * Encodes string for use in a LIKE statement.
-	 * @param  string
-	 * @param  int
-	 * @return string
 	 */
-	public function escapeLike($value, $pos)
+	public function escapeLike(string $value, int $pos): string
 	{
 		switch ($this->driverName) {
 			case 'mysql':
 				$value = addcslashes(str_replace('\\', '\\\\', $value), "\x00\n\r\\'%_");
-				return ($pos <= 0 ? "'%" : "'") . $value . ($pos >= 0 ? "%'" : "'");
+				return ($pos & 1 ? "'%" : "'") . $value . ($pos & 2 ? "%'" : "'");
 
 			case 'oci':
 				$value = addcslashes(str_replace('\\', '\\\\', $value), "\x00\\%_");
 				$value = str_replace("'", "''", $value);
-				return ($pos <= 0 ? "'%" : "'") . $value . ($pos >= 0 ? "%'" : "'");
+				return ($pos & 1 ? "'%" : "'") . $value . ($pos & 2 ? "%'" : "'");
 
 			case 'pgsql':
 				$bs = substr($this->connection->quote('\\', PDO::PARAM_STR), 1, -1); // standard_conforming_strings = on/off
 				$value = substr($this->connection->quote($value, PDO::PARAM_STR), 1, -1);
 				$value = strtr($value, ['%' => $bs . '%', '_' => $bs . '_', '\\' => '\\\\']);
-				return ($pos <= 0 ? "'%" : "'") . $value . ($pos >= 0 ? "%'" : "'");
+				return ($pos & 1 ? "'%" : "'") . $value . ($pos & 2 ? "%'" : "'");
 
 			case 'sqlite':
 				$value = addcslashes(substr($this->connection->quote($value, PDO::PARAM_STR), 1, -1), '%_\\');
-				return ($pos <= 0 ? "'%" : "'") . $value . ($pos >= 0 ? "%'" : "'") . " ESCAPE '\\'";
+				return ($pos & 1 ? "'%" : "'") . $value . ($pos & 2 ? "%'" : "'") . " ESCAPE '\\'";
 
 			case 'odbc':
 			case 'mssql':
 			case 'dblib':
 			case 'sqlsrv':
 				$value = strtr($value, ["'" => "''", '%' => '[%]', '_' => '[_]', '[' => '[[]']);
-				return ($pos <= 0 ? "'%" : "'") . $value . ($pos >= 0 ? "%'" : "'");
+				return ($pos & 1 ? "'%" : "'") . $value . ($pos & 2 ? "%'" : "'");
 
 			default:
 				throw new Dibi\NotImplementedException;
@@ -396,32 +351,9 @@ class PdoDriver implements Dibi\Driver, Dibi\ResultDriver
 
 
 	/**
-	 * Decodes data from result set.
-	 * @param  string
-	 * @return string
-	 */
-	public function unescapeBinary($value)
-	{
-		return $value;
-	}
-
-
-	/** @deprecated */
-	public function escape($value, $type)
-	{
-		trigger_error(__METHOD__ . '() is deprecated.', E_USER_DEPRECATED);
-		return Dibi\Helpers::escape($this, $value, $type);
-	}
-
-
-	/**
 	 * Injects LIMIT/OFFSET to the SQL query.
-	 * @param  string
-	 * @param  int|null
-	 * @param  int|null
-	 * @return void
 	 */
-	public function applyLimit(&$sql, $limit, $offset)
+	public function applyLimit(string &$sql, ?int $limit, ?int $offset): void
 	{
 		if ($limit < 0 || $offset < 0) {
 			throw new Dibi\NotSupportedException('Negative offset or limit.');
@@ -431,24 +363,24 @@ class PdoDriver implements Dibi\Driver, Dibi\ResultDriver
 			case 'mysql':
 				if ($limit !== null || $offset) {
 					// see http://dev.mysql.com/doc/refman/5.0/en/select.html
-					$sql .= ' LIMIT ' . ($limit === null ? '18446744073709551615' : Dibi\Helpers::intVal($limit))
-						. ($offset ? ' OFFSET ' . Dibi\Helpers::intVal($offset) : '');
+					$sql .= ' LIMIT ' . ($limit ?? '18446744073709551615')
+						. ($offset ? ' OFFSET ' . $offset : '');
 				}
 				break;
 
 			case 'pgsql':
 				if ($limit !== null) {
-					$sql .= ' LIMIT ' . Dibi\Helpers::intVal($limit);
+					$sql .= ' LIMIT ' . $limit;
 				}
 				if ($offset) {
-					$sql .= ' OFFSET ' . Dibi\Helpers::intVal($offset);
+					$sql .= ' OFFSET ' . $offset;
 				}
 				break;
 
 			case 'sqlite':
 				if ($limit !== null || $offset) {
-					$sql .= ' LIMIT ' . ($limit === null ? '-1' : Dibi\Helpers::intVal($limit))
-						. ($offset ? ' OFFSET ' . Dibi\Helpers::intVal($offset) : '');
+					$sql .= ' LIMIT ' . ($limit ?? '-1')
+						. ($offset ? ' OFFSET ' . $offset : '');
 				}
 				break;
 
@@ -456,11 +388,11 @@ class PdoDriver implements Dibi\Driver, Dibi\ResultDriver
 				if ($offset) {
 					// see http://www.oracle.com/technology/oramag/oracle/06-sep/o56asktom.html
 					$sql = 'SELECT * FROM (SELECT t.*, ROWNUM AS "__rnum" FROM (' . $sql . ') t '
-						. ($limit !== null ? 'WHERE ROWNUM <= ' . ((int) $offset + (int) $limit) : '')
+						. ($limit !== null ? 'WHERE ROWNUM <= ' . ($offset + $limit) : '')
 						. ') WHERE "__rnum" > ' . $offset;
 
 				} elseif ($limit !== null) {
-					$sql = 'SELECT * FROM (' . $sql . ') WHERE ROWNUM <= ' . Dibi\Helpers::intVal($limit);
+					$sql = 'SELECT * FROM (' . $sql . ') WHERE ROWNUM <= ' . $limit;
 				}
 				break;
 
@@ -477,104 +409,19 @@ class PdoDriver implements Dibi\Driver, Dibi\ResultDriver
 					break;
 				}
 				// break omitted
+
 			case 'odbc':
 				if ($offset) {
 					throw new Dibi\NotSupportedException('Offset is not supported by this database.');
 
 				} elseif ($limit !== null) {
-					$sql = 'SELECT TOP ' . Dibi\Helpers::intVal($limit) . ' * FROM (' . $sql . ') t';
+					$sql = 'SELECT TOP ' . $limit . ' * FROM (' . $sql . ') t';
 					break;
 				}
 				// break omitted
+
 			default:
 				throw new Dibi\NotSupportedException('PDO or driver does not support applying limit or offset.');
 		}
-	}
-
-
-	/********************* result set ****************d*g**/
-
-
-	/**
-	 * Returns the number of rows in a result set.
-	 * @return int
-	 */
-	public function getRowCount()
-	{
-		return $this->resultSet->rowCount();
-	}
-
-
-	/**
-	 * Fetches the row at current position and moves the internal cursor to the next position.
-	 * @param  bool     true for associative array, false for numeric
-	 * @return array    array on success, nonarray if no next record
-	 */
-	public function fetch($assoc)
-	{
-		return $this->resultSet->fetch($assoc ? PDO::FETCH_ASSOC : PDO::FETCH_NUM);
-	}
-
-
-	/**
-	 * Moves cursor position without fetching row.
-	 * @param  int   the 0-based cursor pos to seek to
-	 * @return bool  true on success, false if unable to seek to specified record
-	 */
-	public function seek($row)
-	{
-		throw new Dibi\NotSupportedException('Cannot seek an unbuffered result set.');
-	}
-
-
-	/**
-	 * Frees the resources allocated for this result set.
-	 * @return void
-	 */
-	public function free()
-	{
-		$this->resultSet = null;
-	}
-
-
-	/**
-	 * Returns metadata for all columns in a result set.
-	 * @return array
-	 * @throws Dibi\Exception
-	 */
-	public function getResultColumns()
-	{
-		$count = $this->resultSet->columnCount();
-		$columns = [];
-		for ($i = 0; $i < $count; $i++) {
-			$row = @$this->resultSet->getColumnMeta($i); // intentionally @
-			if ($row === false) {
-				throw new Dibi\NotSupportedException('Driver does not support meta data.');
-			}
-			$row = $row + [
-				'table' => null,
-				'native_type' => 'VAR_STRING',
-			];
-
-			$columns[] = [
-				'name' => $row['name'],
-				'table' => $row['table'],
-				'nativetype' => $row['native_type'],
-				'type' => $row['native_type'] === 'TIME' && $this->driverName === 'mysql' ? Dibi\Type::TIME_INTERVAL : null,
-				'fullname' => $row['table'] ? $row['table'] . '.' . $row['name'] : $row['name'],
-				'vendor' => $row,
-			];
-		}
-		return $columns;
-	}
-
-
-	/**
-	 * Returns the result set resource.
-	 * @return \PDOStatement|null
-	 */
-	public function getResultResource()
-	{
-		return $this->resultSet;
 	}
 }

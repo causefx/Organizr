@@ -1,3 +1,6 @@
+<?php
+declare(strict_types=1);
+?>
 <!DOCTYPE html><link rel="stylesheet" href="data/style.css">
 
 <h1>Using DateTime | Dibi</h1>
@@ -13,7 +16,7 @@ date_default_timezone_set('Europe/Prague');
 
 // CHANGE TO REAL PARAMETERS!
 $dibi = new Dibi\Connection([
-	'driver' => 'sqlite3',
+	'driver' => 'sqlite',
 	'database' => 'data/sample.s3db',
 	'formatDate' => "'Y-m-d'",
 	'formatDateTime' => "'Y-m-d H-i-s'",

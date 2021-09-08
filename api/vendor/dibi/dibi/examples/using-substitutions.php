@@ -1,3 +1,6 @@
+<?php
+declare(strict_types=1);
+?>
 <!DOCTYPE html><link rel="stylesheet" href="data/style.css">
 
 <h1>Using Substitutions | Dibi</h1>
@@ -10,7 +13,7 @@ if (@!include __DIR__ . '/../vendor/autoload.php') {
 
 
 $dibi = new Dibi\Connection([
-	'driver' => 'sqlite3',
+	'driver' => 'sqlite',
 	'database' => 'data/sample.s3db',
 ]);
 
