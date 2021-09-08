@@ -1218,7 +1218,7 @@ class Organizr
 					'loggedin' => true,
 					'locked' => $user['locked'] ?? 0,
 					'tokenList' => $allTokens,
-					'authService' => explode('::', $user['auth_service'])[0]
+					'authService' => (isset($user['auth_service'])) ? explode('::', $user['auth_service'])[0] : 'internal'
 				);
 			}
 		} else {
@@ -1256,7 +1256,7 @@ class Organizr
 				'loggedin' => true,
 				'locked' => $user['locked'] ?? 0,
 				'tokenList' => $allTokens,
-				'authService' => explode('::', $user['auth_service'])[0]
+				'authService' => (isset($user['auth_service'])) ? explode('::', $user['auth_service'])[0] : 'internal'
 			);
 		}
 		return false;
