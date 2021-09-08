@@ -19,8 +19,8 @@ trait NetDataHomepageItem
 						break;
 					case 'disk-write':
 						$data = $this->disk('out', $url);
-						$data['value'] = abs($data['value']);
-						$data['percent'] = abs($data['percent']);
+						$data['value'] = (isset($data['value'])) ? abs($data['value']) : 0;
+						$data['percent'] = (isset($data['percent'])) ? abs($data['percent']) : 0;
 						break;
 					case 'cpu':
 						$data = $this->cpu($url);
@@ -30,8 +30,8 @@ trait NetDataHomepageItem
 						break;
 					case 'net-out':
 						$data = $this->net('sent', $url);
-						$data['value'] = abs($data['value']);
-						$data['percent'] = abs($data['percent']);
+						$data['value'] = (isset($data['value'])) ? abs($data['value']) : 0;
+						$data['percent'] = (isset($data['percent'])) ? abs($data['percent']) : 0;
 						break;
 					case 'ram-used':
 						$data = $this->ram($url);
@@ -79,7 +79,7 @@ trait NetDataHomepageItem
 				array_push($api['data'], $data);
 			}
 		}
-		$api = isset($api) ? $api : false;
+		$api = $api ?? false;
 		$this->setAPIResponse('success', null, 200, $api);
 		return $api;
 		
