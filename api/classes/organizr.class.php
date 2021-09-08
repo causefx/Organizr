@@ -2030,7 +2030,7 @@ class Organizr
 				),
 			),
 			'Database' => [
-				$this->settingsOption('notice', '', ['notice' => 'danger', 'title' => 'Warning', 'body' => 'This feature is experimental - You may face unexpected logouts']),
+				$this->settingsOption('notice', '', ['notice' => 'danger', 'title' => 'Warning', 'body' => 'This feature is experimental - You may face unexpected database is locked errors in logs']),
 				$this->settingsOption('html', '', ['label' => 'Journal Mode Status', 'html' => '<script>getJournalMode();</script><h4 class="journal-mode font-bold text-uppercase"><i class="fa fa-spin fa-circle-o-notch"></i></h4>']),
 				$this->settingsOption('blank'),
 				$this->settingsOption('button', '', ['label' => 'Set DELETE Mode (Default)', 'icon' => 'icon-notebook', 'text' => 'Set', 'attr' => 'onclick="setJournalMode(\'DELETE\')"']),
@@ -4248,7 +4248,7 @@ class Organizr
 	{
 		$this->timeExecution = $this->timeExecution($this->timeExecution);
 		$message = $message . ' [Execution Time: ' . $this->formatSeconds($this->timeExecution) . ']';
-		$username = ($username) ? htmlspecialchars($username, ENT_QUOTES) : $this->user['username'];
+		$username = ($username) ? htmlspecialchars($username, ENT_QUOTES) : $this->user['username'] ?? 'SYSTEM';
 		if ($this->checkLog($this->organizrLog)) {
 			$getLog = str_replace("\r\ndate", "date", file_get_contents($this->organizrLog));
 			$gotLog = json_decode($getLog, true);
