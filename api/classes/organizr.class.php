@@ -4076,25 +4076,42 @@ class Organizr
 					'rememberMeDays' => $this->config['rememberMeDays']
 				),
 				'plex' => array(
-					'enabled' => ($this->config['ssoPlex']) ? true : false,
+					'enabled' => (bool)$this->config['ssoPlex'],
 					'cookie' => isset($_COOKIE['mpt']),
 					'machineID' => strlen($this->config['plexID']) == 40,
 					'token' => $this->config['plexToken'] !== '',
 					'plexAdmin' => $this->checkPlexAdminFilled(),
-					'strict' => ($this->config['plexStrictFriends']) ? true : false,
-					'oAuthEnabled' => ($this->config['plexoAuth']) ? true : false,
+					'strict' => (bool)$this->config['plexStrictFriends'],
+					'oAuthEnabled' => (bool)$this->config['plexoAuth'],
 					'backend' => $this->config['authBackend'] == 'plex',
 				),
+				'tautulli' => array(
+					'enabled' => (bool)$this->config['ssoTautulli'],
+					'cookie' => !empty($this->tautulliList()),
+					'url' => ($this->config['tautulliURL'] !== '') ? $this->config['tautulliURL'] : false,
+				),
+				'overseerr' => array(
+					'enabled' => (bool)$this->config['ssoOverseerr'],
+					'cookie' => isset($_COOKIE['connect.sid']),
+					'url' => ($this->config['overseerrURL'] !== '') ? $this->config['overseerrURL'] : false,
+					'api' => $this->config['overseerrToken'] !== '',
+				),
+				'petio' => array(
+					'enabled' => (bool)$this->config['ssoPetio'],
+					'cookie' => isset($_COOKIE['petio_jwt']),
+					'url' => ($this->config['petioURL'] !== '') ? $this->config['petioURL'] : false,
+					'api' => $this->config['petioToken'] !== '',
+				),
 				'ombi' => array(
-					'enabled' => ($this->config['ssoOmbi']) ? true : false,
+					'enabled' => (bool)$this->config['ssoOmbi'],
 					'cookie' => isset($_COOKIE['Auth']),
 					'url' => ($this->config['ombiURL'] !== '') ? $this->config['ombiURL'] : false,
 					'api' => $this->config['ombiToken'] !== '',
 				),
-				'tautulli' => array(
-					'enabled' => ($this->config['ssoTautulli']) ? true : false,
-					'cookie' => !empty($this->tautulliList()),
-					'url' => ($this->config['tautulliURL'] !== '') ? $this->config['tautulliURL'] : false,
+				'jellyfin' => array(
+					'enabled' => (bool)$this->config['ssoJellyfin'],
+					'url' => ($this->config['jellyfinURL'] !== '') ? $this->config['jellyfinURL'] : false,
+					'ssoUrl' => ($this->config['jellyfinSSOURL'] !== '') ? $this->config['jellyfinSSOURL'] : false,
 				),
 			),
 			'ping' => array(
@@ -5558,9 +5575,13 @@ class Organizr
 	{
 		$url = 'https://raw.githubusercontent.com/causefx/Organizr/v2-plugins/plugins.json';
 		$options = ($this->localURL($url)) ? array('verify' => false) : array();
-		$response = Requests::get($url, array(), $options);
-		if ($response->success) {
-			return json_decode($response->body, true);
+		try {
+			$response = Requests::get($url, array(), $options);
+			if ($response->success) {
+				return json_decode($response->body, true);
+			}
+		} catch (Requests_Exception $e) {
+			return false;
 		}
 		return false;
 	}
@@ -5569,14 +5590,19 @@ class Organizr
 	{
 		$url = 'https://opencollective.com/organizr/members/users.json?limit=100&offset=0';
 		$options = ($this->localURL($url)) ? array('verify' => false) : array();
-		$response = Requests::get($url, array(), $options);
-		if ($response->success) {
-			$api = json_decode($response->body, true);
-			foreach ($api as $k => $backer) {
-				$api[$k] = array_merge($api[$k], ['sortName' => strtolower($backer['name'])]);
+		try {
+			$response = Requests::get($url, array(), $options);
+			if ($response->success) {
+				$api = json_decode($response->body, true);
+				foreach ($api as $k => $backer) {
+					$api[$k] = array_merge($api[$k], ['sortName' => strtolower($backer['name'])]);
+				}
+				$this->setAPIResponse('success', '', 200, $api);
+				return $api;
 			}
-			$this->setAPIResponse('success', '', 200, $api);
-			return $api;
+		} catch (Requests_Exception $e) {
+			$this->setAPIResponse('error', $e->getMessage(), 500);
+			return false;
 		}
 		$this->setAPIResponse('error', 'Error connecting to Open Collective', 409);
 		return false;
@@ -5644,9 +5670,14 @@ class Organizr
 	{
 		$url = 'https://api.organizr.app/?cmd=smtp';
 		$options = ($this->localURL($url)) ? array('verify' => false) : array();
-		$response = Requests::get($url, array(), $options);
-		if ($response->success) {
-			return json_decode($response->body, true);
+		try {
+			$response = Requests::get($url, array(), $options);
+			if ($response->success) {
+				return json_decode($response->body, true);
+			}
+		} catch (Requests_Exception $e) {
+			$this->setAPIResponse('error', $e->getMessage(), 500);
+			return false;
 		}
 		return false;
 	}
