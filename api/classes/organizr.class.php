@@ -118,6 +118,7 @@ class Organizr
 		$this->commit = ($this->docker && !$this->dev) ? file_get_contents(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'Github.txt') : null;
 		// Set variable to be used as hash for files
 		$this->fileHash = ($this->commit) ?? $this->version;
+		$this->fileHash = trim($this->fileHash);
 		// Load Config file
 		$this->config = $this->config();
 		// Set organizr Log file location
