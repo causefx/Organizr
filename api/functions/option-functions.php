@@ -901,12 +901,12 @@ trait OptionsFunction
 	{
 		return array(
 			array(
-				'name' => '6p',
-				'value' => 'h(:mm)t'
+				'name' => '6pm',
+				'value' => 'h(:mm)a'
 			),
 			array(
-				'name' => '6:00p',
-				'value' => 'h:mmt'
+				'name' => '6:00pm',
+				'value' => 'h:mma'
 			),
 			array(
 				'name' => '6:00',
