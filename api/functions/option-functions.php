@@ -899,27 +899,35 @@ trait OptionsFunction
 	
 	public function timeFormatOptions()
 	{
-		return array(
-			array(
-				'name' => '6pm',
-				'value' => 'h(:mm)a'
-			),
-			array(
-				'name' => '6:00pm',
-				'value' => 'h:mma'
-			),
-			array(
-				'name' => '6:00',
-				'value' => 'h:mm'
-			),
-			array(
-				'name' => '18',
-				'value' => 'H(:mm)'
-			),
-			array(
-				'name' => '18:00',
-				'value' => 'H:mm'
-			)
+                return array(
+                        array(
+                                'name' => '6p',
+                                'value' => 'h(:mm)t'
+                        ),
+                        array(
+                                'name' => '6:00p',
+                                'value' => 'h:mmt'
+                        ),
+                        array(
+                                'name' => '6pm',
+                                'value' => 'h(:mm)a'
+                        ),
+                        array(
+                                'name' => '6:00pm',
+                                'value' => 'h:mma'
+                        ),
+                        array(
+                                'name' => '6:00',
+                                'value' => 'h:mm'
+                        ),
+                        array(
+                                'name' => '18',
+                                'value' => 'H(:mm)'
+                        ),
+                        array(
+                                'name' => '18:00',
+                                'value' => 'H:mm'
+                        )
 		);
 	}
 	
