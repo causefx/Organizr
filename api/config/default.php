@@ -354,7 +354,7 @@ return [
 	'calendarStart' => '14',
 	'calendarEnd' => '14',
 	'calendarRefresh' => '60000',
-	'calendarTimeFormat' => 'h(:mm)t',
+	'calendarTimeFormat' => 'h(:mm)a',
 	'calendarLimit' => '1000',
 	'calendarLocale' => 'en',
 	'customCss' => '',
