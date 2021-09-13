@@ -302,6 +302,129 @@ class Organizr
 		];
 	}
 	
+	public function errorCodes($error = 000)
+	{
+		$errorCodes = [
+			400 => [
+				'type' => 'Bad Request',
+				'description' => 'The request was incorrect'
+			],
+			401 => [
+				'type' => 'Unauthorized ',
+				'description' => 'You are not authorized to view this page'
+			],
+			402 => [
+				'type' => 'Payment Required',
+				'description' => 'Payment required before you can view this page'
+			],
+			403 => [
+				'type' => 'Forbidden',
+				'description' => 'You are forbidden to view this page'
+			],
+			404 => [
+				'type' => 'Not Found',
+				'description' => 'The requested resource was not found'
+			],
+			405 => [
+				'type' => 'Method Not Allowed',
+				'description' => 'The requested method is not allowed'
+			],
+			406 => [
+				'type' => 'Not Acceptable',
+				'description' => 'There was an issue with the requests Headers'
+			],
+			407 => [
+				'type' => 'Proxy Authentication Required',
+				'description' => 'Authentication is required and was not passed'
+			],
+			408 => [
+				'type' => 'Request Time-out',
+				'description' => 'The request has timed out'
+			],
+			409 => [
+				'type' => 'Conflict',
+				'description' => 'An error has occurred'
+			],
+			410 => [
+				'type' => 'Gone',
+				'description' => 'The requested resource is no longer available and has been permanently removed'
+			],
+			411 => [
+				'type' => 'Length Required',
+				'description' => 'The request can not be processed without a “Content-Length” header field'
+			],
+			412 => [
+				'type' => 'Precondition Failed',
+				'description' => ' A header needed was not found'
+			],
+			413 => [
+				'type' => 'Request Entity Too Large',
+				'description' => 'The query was too large to be processed by the server'
+			],
+			414 => [
+				'type' => 'Request-URI Too Long',
+				'description' => 'The URI of the request was too long'
+			],
+			415 => [
+				'type' => 'Unsupported Media Type',
+				'description' => 'The contents of the request has been submitted with invalid or out of defined media type'
+			],
+			416 => [
+				'type' => 'Requested range not satisfiable',
+				'description' => 'The requested resource was part of an invalid or is not on the server'
+			],
+			417 => [
+				'type' => 'Expectation Failed',
+				'description' => 'Expected Header was not found'
+			],
+			444 => [
+				'type' => 'No Response',
+				'description' => 'Nothing was returned from server'
+			],
+			500 => [
+				'type' => 'Internal Server Error',
+				'description' => 'An unexpected server error'
+			],
+			501 => [
+				'type' => 'Not Implemented',
+				'description' => 'The functionality to process the request is not available from this server'
+			],
+			502 => [
+				'type' => 'Bad Gateway',
+				'description' => 'The server could not fulfill its function as a gateway or proxy'
+			],
+			503 => [
+				'type' => 'Service Unavailable',
+				'description' => 'The server is temporarily unavailable, due to overloading or maintenance'
+			],
+			504 => [
+				'type' => 'Gateway Time-out',
+				'description' => 'The server could not fulfill its function as a gateway or proxy'
+			],
+			505 => [
+				'type' => 'HTTP version not supported',
+				'description' => 'The used version of HTTP is not supported by the server or rejected'
+			],
+			507 => [
+				'type' => 'Insufficient Storage',
+				'description' => 'The request could not be processed because the server disk space it currently is not sufficient'
+			],
+			509 => [
+				'type' => 'Bandwidth Limit Exceeded',
+				'description' => 'The request was rejected, because otherwise the bandwidth would be exceeded'
+			],
+			510 => [
+				'type' => 'Not Extended',
+				'description' => 'The request does not contain all information that is waiting for the requested server extension imperative'
+			],
+			000 => [
+				'type' => 'Unexpected Error',
+				'description' => 'An unexpected error occurred'
+			],
+		];
+		return (isset($errorCodes[$error])) ? $errorCodes[$error] : $errorCodes[000];
+	}
+	
 	public function auth()
 	{
 		if ($this->hasDB()) {
@@ -515,20 +638,23 @@ class Organizr
 		$this->cookieName = $this->config['uuid'] !== '' ? 'organizr_token_' . $this->config['uuid'] : 'organizr_token_temp';
 	}
 	
-	public function favIcons()
+	public function favIcons($rootPath = '')
 	{
 		$favicon = '
-	<link rel="apple-touch-icon" sizes="180x180" href="plugins/images/favicon/apple-touch-icon.png">
-	<link rel="icon" type="image/png" sizes="32x32" href="plugins/images/favicon/favicon-32x32.png">
-	<link rel="icon" type="image/png" sizes="16x16" href="plugins/images/favicon/favicon-16x16.png">
-	<link rel="manifest" href="plugins/images/favicon/site.webmanifest" crossorigin="use-credentials">
-	<link rel="mask-icon" href="plugins/images/favicon/safari-pinned-tab.svg" color="#5bbad5">
-	<link rel="shortcut icon" href="plugins/images/favicon/favicon.ico">
-	<meta name="msapplication-TileColor" content="#da532c">
-	<meta name="msapplication-TileImage" content="plugins/images/favicon/mstile-144x144.png">
-	<meta name="msapplication-config" content="plugins/images/favicon/browserconfig.xml">
-	<meta name="theme-color" content="#ffffff">
-	';
+			<link rel="apple-touch-icon" sizes="180x180" href="' . $rootPath . 'plugins/images/favicon/apple-touch-icon.png">
+			<link rel="icon" type="image/png" sizes="32x32" href="' . $rootPath . 'plugins/images/favicon/favicon-32x32.png">
+			<link rel="icon" type="image/png" sizes="16x16" href="' . $rootPath . 'plugins/images/favicon/favicon-16x16.png">
+			<link rel="manifest" href="' . $rootPath . 'plugins/images/favicon/site.webmanifest" crossorigin="use-credentials">
+			<link rel="mask-icon" href="' . $rootPath . 'plugins/images/favicon/safari-pinned-tab.svg" color="#5bbad5">
+			<link rel="shortcut icon" href="' . $rootPath . 'plugins/images/favicon/favicon.ico">
+			<meta name="msapplication-TileColor" content="#da532c">
+			<meta name="msapplication-TileImage" content="' . $rootPath . 'plugins/images/favicon/mstile-144x144.png">
+			<meta name="msapplication-config" content="' . $rootPath . 'plugins/images/favicon/browserconfig.xml">
+			<meta name="theme-color" content="#ffffff">
+		';
+		if ($this->config['favIcon'] !== '' && $rootPath !== '') {
+			$this->config['favIcon'] = str_replace('plugins/images/faviconCustom', $rootPath . 'plugins/images/faviconCustom', $this->config['favIcon']);
+		}
 		return ($this->config['favIcon'] == '') ? $favicon : $this->config['favIcon'];
 	}
 	
@@ -599,13 +725,21 @@ class Organizr
 		return ($encode) ? json_encode($files) : $files;
 	}
 	
-	public function setTheme($theme = null)
+	public function getRootPath()
 	{
-		$theme = $theme ?? $this->config['theme'];
-		return '<link id="theme" href="css/themes/' . $theme . '.css?v=' . $this->fileHash . '" rel="stylesheet">';
+		$count = (count(explode('/', $_SERVER['REQUEST_URI']))) - 2;
+		$rootPath = '';
+		$rootPath .= str_repeat('../', $count);
+		return $rootPath;
 	}
 	
-	public function pluginFiles($type, $settings = false)
+	public function setTheme($theme = null, $rootPath = '')
+	{
+		$theme = $theme ?? $this->config['theme'];
+		return '<link id="theme" href="' . $rootPath . 'css/themes/' . $theme . '.css?v=' . $this->fileHash . '" rel="stylesheet">';
+	}
+	
+	public function pluginFiles($type, $settings = false, $rootPath = '')
 	{
 		$files = '';
 		$folder = dirname(__DIR__, 1) . DIRECTORY_SEPARATOR . 'plugins';
@@ -645,7 +779,7 @@ class Organizr
 						}
 						if ($pluginEnabled || $settings) {
 							if ($continue) {
-								$files .= '<script src="api/plugins/' . basename(dirname($info->getPathname())) . '/' . basename($info->getFilename()) . '?v=' . $this->fileHash . '" defer="true"></script>';
+								$files .= '<script src="' . $rootPath . 'api/plugins/' . basename(dirname($info->getPathname())) . '/' . basename($info->getFilename()) . '?v=' . $this->fileHash . '" defer="true"></script>';
 							}
 						}
 					}
@@ -654,7 +788,7 @@ class Organizr
 			case 'css':
 				foreach ($iteratorIterator as $info) {
 					if (pathinfo($info->getPathname(), PATHINFO_EXTENSION) == 'css') {
-						$files .= '<link href="api/plugins/' . basename(dirname($info->getPathname())) . '/' . basename($info->getFilename()) . '?v=' . $this->fileHash . '" rel="stylesheet">';
+						$files .= '<link href="' . $rootPath . 'api/plugins/' . basename(dirname($info->getPathname())) . '/' . basename($info->getFilename()) . '?v=' . $this->fileHash . '" rel="stylesheet">';
 					}
 				}
 				break;
@@ -6378,8 +6512,8 @@ class Organizr
 				)
 			),
 		];
-		$this->setAPIResponse(null, 'Tab added');
-		$this->writeLog('success', 'Tab Editor Function -  Added Tab for [' . $array['name'] . ']', $this->user['username']);
+		$this->setAPIResponse(null, 'Group added');
+		$this->writeLog('success', 'Group Editor Function -  Added Group for [' . $array['group'] . ']', $this->user['username']);
 		return $this->processQueries($response);
 	}
 	
