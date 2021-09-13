@@ -7,6 +7,31 @@ trait OrganizrFunctions
 		return 'https://organizr.gitbook.io/organizr/' . $path;
 	}
 	
+	public function loadResources($files = [], $rootPath = '')
+	{
+		$scripts = '';
+		if (count($files) > 0) {
+			foreach ($files as $file) {
+				if (strtolower(pathinfo($file, PATHINFO_EXTENSION)) == 'js') {
+					$scripts .= $this->loadJavaResource($file, $rootPath);
+				} elseif (strtolower(pathinfo($file, PATHINFO_EXTENSION)) == 'css') {
+					$scripts .= $this->loadStyleResource($file, $rootPath);
+				}
+			}
+		}
+		return $scripts;
+	}
+	
+	public function loadJavaResource($file = '', $rootPath = '')
+	{
+		return ($file !== '') ? '<script src="' . $rootPath . $file . '?v=' . trim($this->fileHash) . '"></script>' . "\n" : '';
+	}
+	
+	public function loadStyleResource($file = '', $rootPath = '')
+	{
+		return ($file !== '') ? '<link href="' . $rootPath . $file . '?v=' . trim($this->fileHash) . '" rel="stylesheet">' . "\n" : '';
+	}
+	
 	public function loadDefaultJavascriptFiles()
 	{
 		$javaFiles = [
