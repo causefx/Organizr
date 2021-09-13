@@ -3230,7 +3230,8 @@ function editTabForm(id){
 	organizrAPI2('GET','api/v2/tabs/' + id,true).success(function(data) {
 		try {
 			let response = data.response;
-			console.log(response);
+			$('.tabIconImageList').val(null).trigger('change');
+			$('.tabIconIconList').val(null).trigger('change');
 			$('#edit-tab-form [name=name]').val(response.data.name);
 			$('#originalTabName').html(response.data.name);
 			$('#edit-tab-form [name=url]').val(response.data.url);

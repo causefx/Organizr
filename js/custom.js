@@ -474,6 +474,8 @@ $(document).on("click", ".editGroup", function () {
 	organizrAPI2('PUT','api/v2/groups/' + info.id,info,true).success(function(data) {
 		try {
 			var response = data.response;
+			$('.groupIconImageList').val(null).trigger('change');
+			$('.groupIconIconList').val(null).trigger('change');
 		}catch(e) {
 			organizrCatchError(e,data);
 		}
@@ -550,6 +552,8 @@ $(document).on("click", ".addNewGroup", function () {
 	organizrAPI2('POST','api/v2/groups',info,true).success(function(data) {
 		try {
 			var response = data.response;
+			$('.groupIconImageList').val(null).trigger('change');
+			$('.groupIconIconList').val(null).trigger('change');
 			message(response.message,'',activeInfo.settings.notifications.position,"#FFF","success","5000");
 			if(callbacks){ callbacks.fire(); }
 			clearForm('#new-group-form');
@@ -879,7 +883,6 @@ $(document).on("click", ".editTab", function () {
 	    organizrAPI2('PUT','api/v2/tabs/' + tabInfo.id,tabInfo,true).success(function(data) {
 		    try {
 			    var response = data.response;
-			    console.log(response);
 		    }catch(e) {
 			    organizrCatchError(e,data);
 		    }
