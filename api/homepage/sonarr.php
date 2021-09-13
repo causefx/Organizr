@@ -197,8 +197,8 @@ trait SonarrHomepageItem
 	
 	public function getSonarrCalendar($startDate = null, $endDate = null)
 	{
-		$startDate = ($startDate) ?? $_GET['start'];
-		$endDate = ($endDate) ?? $_GET['end'];
+		$startDate = ($startDate) ?? $_GET['start'] ?? date('Y-m-d', strtotime('-' . $this->config['calendarStart'] . ' days'));
+		$endDate = ($endDate) ?? $_GET['end'] ?? date('Y-m-d', strtotime('+' . $this->config['calendarEnd'] . ' days'));
 		if (!$this->homepageItemPermissions($this->sonarrHomepagePermissions('calendar'), true)) {
 			return false;
 		}
