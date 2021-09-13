@@ -102,9 +102,9 @@ $app->any('/auth-{group}', function ($request, $response, $args) {
 });
 $app->any('/auth/[{group}[/{type}[/{ips}]]]', function ($request, $response, $args) {
 	$Organizr = ($request->getAttribute('Organizr')) ?? new Organizr();
-	$_GET['group'] = $args['group'];
-	$_GET['type'] = $args['type'];
-	$_GET['ips'] = $args['ips'];
+	$_GET['group'] = $args['group'] ?? 0;
+	$_GET['type'] = $args['type'] ?? 'deny';
+	$_GET['ips'] = $args['ips'] ?? '192.0.0.0';
 	$Organizr->auth();
 	$response->getBody()->write(jsonE($GLOBALS['api']));
 	return $response
