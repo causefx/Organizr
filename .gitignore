@@ -183,3 +183,5 @@ api/pages/custom/*.php
 /plugins/images/cache/tautulli-windows.svg
 /plugins/images/cache/tautulli-samsung.svg
 /plugins/images/cache/tautulli-chrome.svg
+/plugins/images/faviconCustom/
+/plugins/images/faviconCustom/*
