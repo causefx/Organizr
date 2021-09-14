@@ -813,4 +813,9 @@ trait OrganizrFunctions
 		$unorderedListMenu = '<ul class="nav customtab2 nav-tabs nav-non-mobile hidden-xs" data-dropdown="' . $menuNameLower . '-menu" role="tablist">' . $unorderedListMenuItems . '</ul>';
 		return $selectMenu . $unorderedListMenu;
 	}
+	
+	public function isJSON($string)
+	{
+		return is_string($string) && is_array(json_decode($string, true)) && (json_last_error() == JSON_ERROR_NONE);
+	}
 }
