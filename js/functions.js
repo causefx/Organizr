@@ -5094,7 +5094,7 @@ function buildRequestAdminMenuItem(value,category,id,type){
 			}else{
 				action = 'approve';
 				text = 'Approve';
-				extra = `<li><a class="mouse" onclick="ombiActions('`+id+`', 'deny', '`+type+`');" lang="en">Deny</a></li>`;
+				extra = `<li><a class="mouse" onclick="requestActions('`+id+`', 'deny', '`+type+`');" lang="en">Deny</a></li>`;
 			}
 			break;
 		case 'available':
@@ -5109,18 +5109,19 @@ function buildRequestAdminMenuItem(value,category,id,type){
 		default:
 
 	}
-	return (action) ? `<li><a class="mouse" onclick="ombiActions('`+id+`', '`+action+`', '`+type+`');" lang="en">`+text+`</a></li>`+extra : '';
+	return (action) ? `<li><a class="mouse" onclick="requestActions('`+id+`', '`+action+`', '`+type+`');" lang="en">`+text+`</a></li>`+extra : '';
 }
 function buildRequestItem(array, extra=null){
 	var items = '';
+	let service = activeInfo.settings.homepage.requests.service;
 	$.each(array, function(i,v) {
 			if(extra == null){
-                var approveID = (v.type == 'tv') ? v.id : v.request_id;
+                var approveID = (v.type == 'tv' && service === 'ombi') ? v.id : v.request_id;
                 var iconType = (v.type == 'tv') ? 'fa-tv ' : 'fa-film';
 				var badge = '';
 				var badge2 = '';
 				var bg = (v.background.includes('.')) ? v.background : 'plugins/images/cache/no-np.png';
-				v.user = (activeInfo.settings.homepage.ombi.alias) ? v.userAlias : v.user;
+				v.user = (activeInfo.settings.homepage.ombi.alias && service === 'ombi') ? v.userAlias : v.user;
 				//Set Status
 				var status = (v.approved) ? '<span class="badge bg-org m-r-10" lang="en">Approved</span>' : '<span class="badge bg-danger m-r-10" lang="en">Unapproved</span>';
 				status += (v.available) ? '<span class="badge bg-org m-r-10" lang="en">Available</span>' : '<span class="badge bg-danger m-r-10" lang="en">Unavailable</span>';
@@ -5141,7 +5142,7 @@ function buildRequestItem(array, extra=null){
 						<li class="divider"></li>
 						`+buildRequestAdminMenuItem(v.approved, 'approved',approveID,v.type)+`
 						`+buildRequestAdminMenuItem(v.available, 'available',approveID,v.type)+`
-						<li><a class="mouse" onclick="ombiActions('`+v.request_id+`', 'delete', '`+v.type+`');" lang="en">Delete</a></li>
+						<li><a class="mouse" onclick="requestActions('`+v.request_id+`', 'delete', '`+v.type+`');" lang="en">Delete</a></li>
                     </ul>
                 </div>`;
 				adminFunctions = (activeInfo.user.groupID <= 1) ? adminFunctions : '';
@@ -5376,48 +5377,48 @@ function buildPlaylist(array, type){
     </div>
 	` : '';
 }
-function buildRequest(array){
-	var requests = (typeof array.content !== 'undefined') ? true : false;
+function buildRequest(service, div, array){
+	var requests = (typeof array.content !== 'undefined');
 	var dropdown = '';
 	var headerAlt = '';
 	var header = '';
-	var ombiButton = (activeInfo.settings.homepage.ombi.enabled == true) ? `<button href="#new-request" id="newRequestButton" class="btn btn-info waves-effect waves-light inline-popups" data-effect="mfp-zoom-out"><i class="fa fa-search m-l-5"></i></button>` : '';
+	var requestButton = (activeInfo['settings']['homepage'][service]['enabled'] === true) ? `<button href="#new-request" id="newRequestButton" class="btn btn-info waves-effect waves-light inline-popups" data-effect="mfp-zoom-out"><i class="fa fa-search m-l-5"></i></button>` : '';
 	if(requests){
 		var builtDropdown = `
-		<button type="button" class="btn btn-info waves-effect hidden-xs" onclick="owlChange('request-items','previous');"><i class="fa fa-chevron-left"></i></button>
-		<button type="button" class="btn btn-info waves-effect hidden-xs" onclick="owlChange('request-items','next');"><i class="fa fa-chevron-right"></i></button>
+		<button type="button" class="btn btn-info waves-effect hidden-xs" onclick="owlChange('request-items-${service}','previous');"><i class="fa fa-chevron-left"></i></button>
+		<button type="button" class="btn btn-info waves-effect hidden-xs" onclick="owlChange('request-items-${service}','next');"><i class="fa fa-chevron-right"></i></button>
 		<button aria-expanded="false" data-toggle="dropdown" class="btn btn-info dropdown-toggle waves-effect waves-light" type="button">
 			<i class="fa fa-filter m-r-5"></i><span class="caret"></span>
 		</button>
-		`+ombiButton+`
+		`+requestButton+`
 		<div role="menu" class="dropdown-menu request-filter">
 			<div class="checkbox checkbox-success m-l-20 checkbox-circle">
-				<input id="request-filter-available" data-filter="request-available" class="filter-request-input" type="checkbox" checked="">
-				<label for="request-filter-available"> <span lang="en">Available</span> </label>
+				<input id="request-filter-available-${service}" data-filter="request-available" class="filter-request-input" type="checkbox" checked="">
+				<label for="request-filter-available-${service}"> <span lang="en">Available</span> </label>
 			</div>
 			<div class="checkbox checkbox-danger m-l-20 checkbox-circle">
-				<input id="request-filter-unavailable" data-filter="request-unavailable"  class="filter-request-input" type="checkbox" checked="">
-				<label for="request-filter-unavailable"> <span lang="en">Unavailable</span> </label>
+				<input id="request-filter-unavailable-${service}" data-filter="request-unavailable"  class="filter-request-input" type="checkbox" checked="">
+				<label for="request-filter-unavailable-${service}"> <span lang="en">Unavailable</span> </label>
 			</div>
 			<div class="checkbox checkbox-info m-l-20 checkbox-circle">
-				<input id="request-filter-approved" data-filter="request-approved" class="filter-request-input" type="checkbox"  checked="">
-				<label for="request-filter-approved"> <span lang="en">Approved</span> </label>
+				<input id="request-filter-approved-${service}" data-filter="request-approved" class="filter-request-input" type="checkbox"  checked="">
+				<label for="request-filter-approved-${service}"> <span lang="en">Approved</span> </label>
 			</div>
 			<div class="checkbox checkbox-warning m-l-20 checkbox-circle">
-				<input id="request-filter-unapproved" data-filter="request-unapproved" class="filter-request-input" type="checkbox" checked="">
-				<label for="request-filter-unapproved"> <span lang="en">Unapproved</span> </label>
+				<input id="request-filter-unapproved-${service}" data-filter="request-unapproved" class="filter-request-input" type="checkbox" checked="">
+				<label for="request-filter-unapproved-${service}"> <span lang="en">Unapproved</span> </label>
 			</div>
 			<div class="checkbox checkbox-purple m-l-20 checkbox-circle">
-				<input id="request-filter-denied" data-filter="request-denied" class="filter-request-input" type="checkbox" checked="">
-				<label for="request-filter-denied"> <span lang="en">Denied</span> </label>
+				<input id="request-filter-denied-${service}" data-filter="request-denied" class="filter-request-input" type="checkbox" checked="">
+				<label for="request-filter-denied-${service}"> <span lang="en">Denied</span> </label>
 			</div>
 			<div class="checkbox checkbox-inverse m-l-20 checkbox-circle">
-				<input id="request-filter-movie" data-filter="request-movie" class="filter-request-input" type="checkbox" checked="">
-				<label for="request-filter-movie"> <span lang="en">Movie</span> </label>
+				<input id="request-filter-movie-${service}" data-filter="request-movie" class="filter-request-input" type="checkbox" checked="">
+				<label for="request-filter-movie-${service}"> <span lang="en">Movie</span> </label>
 			</div>
 			<div class="checkbox checkbox-inverse m-l-20 checkbox-circle">
-				<input id="request-filter-tv" data-filter="request-tv" class="filter-request-input" type="checkbox" checked="">
-				<label for="request-filter-tv"> <span lang="en">TV</span> </label>
+				<input id="request-filter-tv-${service}" data-filter="request-tv" class="filter-request-input" type="checkbox" checked="">
+				<label for="request-filter-tv-${service}"> <span lang="en">TV</span> </label>
 			</div>
 		</div>
 
@@ -5426,7 +5427,7 @@ function buildRequest(array){
 	if(activeInfo.settings.homepage.options.alternateHomepageHeaders){
 		var headerAlt = `
 		<div class="col-md-12">
-			<h4 class="pull-left homepage-element-title"><span class="mouse" onclick="homepageRequests()" lang="en">Requests</span> : </h4><h4 class="pull-left">&nbsp;</h4>
+			<h4 class="pull-left homepage-element-title"><span class="mouse" onclick="homepageRequests('${service}')" lang="en">Requests</span> : </h4><h4 class="pull-left">&nbsp;</h4>
 			<div class="btn-group pull-right">
 				`+builtDropdown+`
 			</div>
@@ -5437,7 +5438,7 @@ function buildRequest(array){
 	}else{
 		var header = `
 		<div class="panel-heading bg-info p-t-10 p-b-10">
-			<span class="pull-left m-t-5 mouse homepage-element-title" onclick="homepageRequests()"><img class="lazyload homepageImageTitle" data-src="plugins/images/tabs/ombi.png"> &nbsp; <span lang="en">Requests</span></span>
+			<span class="pull-left m-t-5 mouse homepage-element-title" onclick="homepageRequests('${service}')"><img class="lazyload homepageImageTitle" data-src="plugins/images/tabs/`+service+`.png"> &nbsp; <span lang="en">Requests</span></span>
 			<div class="btn-group pull-right">
 					`+builtDropdown+`
 			</div>
@@ -5446,13 +5447,13 @@ function buildRequest(array){
 		`;
 	}
 	return (requests) ? `
-	<div id="ombi-requests" class="row">
+	<div id="${service}-requests" class="row">
 		`+headerAlt+`
         <div class="col-lg-12">
             <div class="panel panel-default">
 				`+header+`
                 <div class="panel-wrapper p-b-0 collapse in">
-				<div class="owl-carousel owl-theme request-items">
+				<div class="owl-carousel owl-theme request-items-`+service+`">
 					`+buildRequestItem(array.content)+`
 				</div>
 				`+buildRequestItem(array.content, true)+`
@@ -5625,34 +5626,164 @@ function buildRequestResult(array,media_type=null,list=null,page=null,search=fal
 	`;
 	return buttons+next+results+next;
 }
-function processRequest(id,type){
-	if(type == 'tv'){
-		/*requestNewID(id).success(function(data) {
-			var newID = data.tvdb_id;
-			ombiActions(newID,'add',type);
-		}).fail(function(xhr) {
-			console.error("Organizr Function: TMDB Connection Failed");
-		});*/
-		ombiActions(id,'add',type);
-	}else{
-		ombiActions(id,'add',type);
+function buildRequestOverseerrSeasons(array){
+	var hasSeasons = (typeof array.data.seasons !== 'undefined');
+	if(hasSeasons){
+		let seasons = array.data.seasons;
+		let id = array.data.id;
+		let SeasonItems = '';
+		$.each(seasons, function(i,v) {
+			if(v.seasonNumber !== 0) {
+				SeasonItems += `
+					<tr>
+						<td><input type="checkbox" name="overseerr-season-${v.seasonNumber}" class="js-switch overseerr-season" data-seasonNumber="${v.seasonNumber}" data-color="#6164c1" data-size="small" /></td>
+						<td>${v.name}</td>
+						<td>${v.episodeCount}</td>
+					</tr>
+				`;
+			}
+		});
+		let html = `
+			<div class="panel">
+				<div class="bg-org2">
+					<div class="panel-heading">Choose Seasons</div>
+					<div class="panel-wrapper collapse in text-left">
+						<div class="table-responsive">
+							<table class="table color-bordered-table primary-bordered-table">
+								<thead>
+									<tr>
+										<th width="20"><input type="checkbox" class="js-switch select-all-overseerr-seasons" data-color="#6164c1" data-size="small" /></th>
+										<th lang="en">Season</th>
+										<th lang="en"># Of Episodes</th>
+									</tr>
+								</thead>
+								<tbody>${SeasonItems}</tbody>
+							</table>
+						</div>
+						<div class="pull-right p-b-20">
+							<button class="fcbtn btn btn-info btn-outline btn-1c" lang="en" onclick="swal.close();">Cancel</button>
+							<button class="fcbtn btn btn-success btn-outline btn-1c submit-overseerr-seasons" lang="en" data-seasons="[]" data-id="${id}" disabled onclick="processOverseerrSeasons(this)">Request Seasons</button>
+						</div>
+					</div>
+				</div>
+			</div>
+			`;
+		swal({
+			content: createElementFromHTML(html),
+			button: null,
+			className: 'bg-org',
+			dangerMode: false
+		});
 	}
 }
+
+function processOverseerrSeasons(el){
+	let seasons = $(el).attr('data-seasons');
+	let id = $(el).attr('data-id');
+	overseerrActions(id,'add','tv', seasons);
+}
+function processRequest(id,type){
+	let service = activeInfo.settings.homepage.requests.service;
+	switch (service) {
+		case 'ombi':
+			requestActions(id,'add',type);
+			return false;
+		case 'overseerr':
+			if(type  === 'tv' && activeInfo.settings.homepage.overseerr.userSelectTv === true){
+				organizrAPI2('GET','api/v2/homepage/overseerr/metadata/' + type + '/' + id).success(function(data) {
+					try {
+						let response = data.response;
+						buildRequestOverseerrSeasons(response);
+					}catch(e) {
+						organizrCatchError(e,data);
+					}
+				}).fail(function(xhr) {
+					OrganizrApiError(xhr, 'Overseerr Error');
+				});
+			}else{
+				requestActions(id,'add',type);
+			}
+			return false;
+		default:
+			organizrConsole('Request Function','Service for Processing not setup', 'error');
+			return false;
+	}
+}
+function requestActions(id = null, action = null, type = null, extra = null){
+	let service = activeInfo.settings.homepage.requests.service;
+	switch (service) {
+		case 'ombi':
+			ombiActions(id,action,type,extra);
+			break;
+		case 'overseerr':
+			overseerrActions(id,action,type,extra);
+			break;
+		default:
+			organizrConsole('Request Function','Service for Request not setup', 'error');
+			return false;
+	}
+}
+//Overseerr Actions
+function overseerrActions(id, action, type = null, extra = null){
+	ajaxloader('.request-' + id + '-div', 'in');
+	ajaxloader('.preloader-' + id, 'in');
+	//$.magnificPopup.close();
+	messageSingle(window.lang.translate('Submitting Action to Overseerr'),'',activeInfo.settings.notifications.position,"#FFF",'success',"10000");
+	switch (action){
+		case 'add':
+			let seasons = (extra !== null) ? '/' + extra : '';
+			var method = 'POST';
+			var apiUrl = 'api/v2/homepage/overseerr/requests/'+type+'/' + id + seasons;
+			var data = {};
+			break;
+		case 'available':
+		case 'pending':
+		case 'unavailable':
+		case 'approve':
+			var method = 'POST';
+			var apiUrl = 'api/v2/homepage/overseerr/requests/'+type+'/' + id + '/' + action;
+			var data = {};
+			break;
+		case 'deny':
+			var method = 'PUT';
+			var apiUrl = 'api/v2/homepage/overseerr/requests/'+type+'/' + id + '/' + action;
+			var data = {};
+			break;
+		case 'delete':
+			var method = 'DELETE';
+			var apiUrl = 'api/v2/homepage/overseerr/requests/'+type+'/' + id;
+			var data = {};
+			break;
+		default:
+			return false;
+	}
+	organizrAPI2(method,apiUrl,data).success(function(data) {
+		try {
+			let response = data.response;
+			messageSingle(response.message,'',activeInfo.settings.notifications.position,"#FFF","success","5000");
+			homepageRequests('overseerr');
+			swal.close();
+			ajaxloader();
+		}catch(e) {
+			organizrCatchError(e,data);
+		}
+	}).fail(function(xhr) {
+		ajaxloader();
+		OrganizrApiError(xhr, 'Overseerr Error');
+	});
+}
 //Ombi actions
-function ombiActions(id,action,type){
+function ombiActions(id, action, type, extra = null){
 	var msg = (activeInfo.user.groupID <= 1) ? '<a href="https://github.com/tidusjar/Ombi/issues/2176" target="_blank">Not Org Fault - Ask Ombi</a>' : 'Connection Error to Request Server';
 	ajaxloader('.request-' + id + '-div', 'in');
 	ajaxloader('.preloader-' + id, 'in');
     //$.magnificPopup.close();
     messageSingle(window.lang.translate('Submitting Action to Ombi'),'',activeInfo.settings.notifications.position,"#FFF",'success',"10000");
-	var callbacks = $.Callbacks();
-
     switch (action){
 	    case 'add':
 	    	var method = 'POST';
 	    	var apiUrl = 'api/v2/homepage/ombi/requests/'+type+'/' + id;
 	    	var data = {};
-		    callbacks.add( homepageRequests );
 	    	break;
 	    case 'available':
 	    case 'unavailable':
@@ -5660,29 +5791,25 @@ function ombiActions(id,action,type){
 		    var method = 'POST';
 		    var apiUrl = 'api/v2/homepage/ombi/requests/'+type+'/' + id + '/' + action;
 		    var data = {};
-		    callbacks.add( homepageRequests );
 		    break;
 	    case 'deny':
 		    var method = 'PUT';
 		    var apiUrl = 'api/v2/homepage/ombi/requests/'+type+'/' + id + '/' + action;
 		    var data = {};
-		    callbacks.add( homepageRequests );
 		    break;
 	    case 'delete':
 		    var method = 'DELETE';
 		    var apiUrl = 'api/v2/homepage/ombi/requests/'+type+'/' + id;
 		    var data = {};
-		    callbacks.add( homepageRequests );
 		    break;
 	    default:
-		    console.log(id,action,type);
 	    	return false;
     }
 	organizrAPI2(method,apiUrl,data).success(function(data) {
         try {
             let response = data.response;
 	        messageSingle(response.message,'',activeInfo.settings.notifications.position,"#FFF","success","5000");
-	        if(callbacks){ callbacks.fire(); }
+	        homepageRequests('ombi');
 	        ajaxloader();
         }catch(e) {
 	        organizrCatchError(e,data);
@@ -7204,30 +7331,59 @@ function homepagePlaylist(type, timeout=30000){
 		OrganizrApiError(xhr);
 	});
 }
-function defaultOmbiFilter(){
-    var defaultFilter = {
-        "request-filter-approved" : activeInfo.settings.homepage.ombi.ombiDefaultFilterApproved,
-        "request-filter-unapproved" : activeInfo.settings.homepage.ombi.ombiDefaultFilterUnapproved,
-        "request-filter-available" : activeInfo.settings.homepage.ombi.ombiDefaultFilterAvailable,
-        "request-filter-unavailable" : activeInfo.settings.homepage.ombi.ombiDefaultFilterUnavailable,
-        "request-filter-denied" : activeInfo.settings.homepage.ombi.ombiDefaultFilterDenied
-    };
-    $.each(defaultFilter, function(i,v) {
-        if(v == false){
-            $('#'+i).click();
-        }
-    });
+function defaultRequestFilter(service){
+	switch (service){
+		case 'ombi':
+			var defaultFilter = {
+				"request-filter-approved-ombi" : activeInfo.settings.homepage.ombi.ombiDefaultFilterApproved,
+				"request-filter-unapproved-ombi" : activeInfo.settings.homepage.ombi.ombiDefaultFilterUnapproved,
+				"request-filter-available-ombi" : activeInfo.settings.homepage.ombi.ombiDefaultFilterAvailable,
+				"request-filter-unavailable-ombi" : activeInfo.settings.homepage.ombi.ombiDefaultFilterUnavailable,
+				"request-filter-denied-ombi" : activeInfo.settings.homepage.ombi.ombiDefaultFilterDenied
+			};
+			$.each(defaultFilter, function(i,v) {
+				if(v == false){
+					$('#'+i).click();
+				}
+			});
+		case 'overseerr':
+			var defaultFilter = {
+				"request-filter-approved-overseerr" : activeInfo.settings.homepage.overseerr.overseerrDefaultFilterApproved,
+				"request-filter-unapproved-overseerr" : activeInfo.settings.homepage.overseerr.overseerrDefaultFilterUnapproved,
+				"request-filter-available-overseerr" : activeInfo.settings.homepage.overseerr.overseerrefaultFilterAvailable,
+				"request-filter-unavailable-overseerr" : activeInfo.settings.homepage.overseerr.overseerrDefaultFilterUnavailable,
+				"request-filter-denied-overseerr" : activeInfo.settings.homepage.overseerr.overseerrDefaultFilterDenied
+			};
+			$.each(defaultFilter, function(i,v) {
+				if(v == false){
+					$('#'+i).click();
+				}
+			});
+	}
 }
-function homepageRequests(timeout){
-	var timeout = (typeof timeout !== 'undefined') ? timeout : activeInfo.settings.homepage.refresh.ombiRefresh;
-	organizrAPI2('GET','api/v2/homepage/ombi/requests').success(function(data) {
+function homepageRequests(service, timeout){
+	switch (service){
+		case 'ombi':
+			var apiUrl = 'api/v2/homepage/ombi/requests';
+			var div = 'homepageOrderombi';
+			var timeout = (typeof timeout !== 'undefined') ? timeout : activeInfo.settings.homepage.refresh.ombiRefresh;
+			break;
+		case 'overseerr':
+			var apiUrl = 'api/v2/homepage/overseerr/requests';
+			var div = 'homepageOrderoverseerr'
+			var timeout = (typeof timeout !== 'undefined') ? timeout : activeInfo.settings.homepage.refresh.overseerrRefresh;
+			break;
+		default:
+			return false;
+	}
+	organizrAPI2('GET',apiUrl).success(function(data) {
         try {
             let response = data.response;
-	        document.getElementById('homepageOrderombi').innerHTML = '';
+	        document.getElementById(div).innerHTML = '';
 	        if(response.data.content !== false){
-		        $('#homepageOrderombi').html(buildRequest(response.data));
+		        $('#' + div).html(buildRequest(service,div, response.data));
 	        }
-	        $('.request-items').owlCarousel({
+	        $('.request-items-' + service).owlCarousel({
 		        nav:false,
 		        autoplay:false,
 		        dots:false,
@@ -7235,16 +7391,16 @@ function homepageRequests(timeout){
 		        autoWidth:true,
 		        items:4
 	        })
-	        // Default Ombi Filter
-	        defaultOmbiFilter();
+	        // Default Filter
+	        defaultRequestFilter(service);
         }catch(e) {
 	        organizrCatchError(e,data);
         }
 	}).fail(function(xhr) {
 		OrganizrApiError(xhr);
 	});
-	if(typeof timeouts['ombi-Homepage'] !== 'undefined'){ clearTimeout(timeouts['ombi-Homepage']); }
-	timeouts['ombi-Homepage'] = setTimeout(function(){ homepageRequests(timeout); }, timeout);
+	if(typeof timeouts[service+'-Requests-Homepage'] !== 'undefined'){ clearTimeout(timeouts[service+'-Requests-Homepage']); }
+	timeouts[service+'-Requests-Homepage'] = setTimeout(function(){ homepageRequests(service, timeout); }, timeout);
 	delete timeout;
 }
 function testAPIConnection(service, data = ''){
@@ -10805,7 +10961,7 @@ function OrganizrApiError(xhr, secondaryMessage = null){
 	}
 	organizrConsole('Organizr API Function',msg,'error');
 	if(secondaryMessage){
-		message(secondaryMessage, msg, activeInfo.settings.notifications.position, '#FFF', 'error', '10000');
+		messageSingle(secondaryMessage, msg, activeInfo.settings.notifications.position, '#FFF', 'error', '10000');
 	}
 	return false;
 }

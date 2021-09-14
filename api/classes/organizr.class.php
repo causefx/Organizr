@@ -43,6 +43,7 @@ class Organizr
 	use NZBGetHomepageItem;
 	use OctoPrintHomepageItem;
 	use OmbiHomepageItem;
+	use OverseerrHomepageItem;
 	use PiHoleHomepageItem;
 	use PlexHomepageItem;
 	use QBitTorrentHomepageItem;
@@ -4176,18 +4177,34 @@ class Organizr
 					'enabled' => $this->qualifyRequest($this->config['mediaSearchAuth']) && $this->config['mediaSearch'] == true && $this->config['plexToken'],
 					'type' => $this->config['mediaSearchType'],
 				),
+				'requests' => [
+					'service' => $this->config['defaultRequestService'],
+				],
 				'ombi' => array(
 					'enabled' => $this->qualifyRequest($this->config['homepageOmbiAuth']) && $this->qualifyRequest($this->config['homepageOmbiRequestAuth']) && $this->config['homepageOmbiEnabled'] == true && $this->config['ssoOmbi'] && isset($_COOKIE['Auth']),
 					'authView' => $this->qualifyRequest($this->config['homepageOmbiAuth']),
 					'authRequest' => $this->qualifyRequest($this->config['homepageOmbiRequestAuth']),
-					'sso' => ($this->config['ssoOmbi']) ? true : false,
+					'sso' => (bool)$this->config['ssoOmbi'],
 					'cookie' => isset($_COOKIE['Auth']),
-					'alias' => ($this->config['ombiAlias']) ? true : false,
-					'ombiDefaultFilterAvailable' => $this->config['ombiDefaultFilterAvailable'] ? true : false,
-					'ombiDefaultFilterUnavailable' => $this->config['ombiDefaultFilterUnavailable'] ? true : false,
-					'ombiDefaultFilterApproved' => $this->config['ombiDefaultFilterApproved'] ? true : false,
-					'ombiDefaultFilterUnapproved' => $this->config['ombiDefaultFilterUnapproved'] ? true : false,
-					'ombiDefaultFilterDenied' => $this->config['ombiDefaultFilterDenied'] ? true : false
+					'alias' => (bool)$this->config['ombiAlias'],
+					'ombiDefaultFilterAvailable' => (bool)$this->config['ombiDefaultFilterAvailable'],
+					'ombiDefaultFilterUnavailable' => (bool)$this->config['ombiDefaultFilterUnavailable'],
+					'ombiDefaultFilterApproved' => (bool)$this->config['ombiDefaultFilterApproved'],
+					'ombiDefaultFilterUnapproved' => (bool)$this->config['ombiDefaultFilterUnapproved'],
+					'ombiDefaultFilterDenied' => (bool)$this->config['ombiDefaultFilterDenied']
+				),
+				'overseerr' => array(
+					'enabled' => $this->qualifyRequest($this->config['homepageOverseerrAuth']) && $this->qualifyRequest($this->config['homepageOverseerrRequestAuth']) && $this->config['homepageOverseerrEnabled'] == true && $this->config['ssoOverseerr'] && isset($_COOKIE['connect_sid']),
+					'authView' => $this->qualifyRequest($this->config['homepageOverseerrAuth']),
+					'authRequest' => $this->qualifyRequest($this->config['homepageOverseerrRequestAuth']),
+					'sso' => (bool)$this->config['ssoOverseerr'],
+					'cookie' => isset($_COOKIE['connect_sid']),
+					'userSelectTv' => (bool)$this->config['homepageOverseerrRequestAuth'] == 'user',
+					'overseerrDefaultFilterAvailable' => (bool)$this->config['overseerrDefaultFilterAvailable'],
+					'overseerrDefaultFilterUnavailable' => (bool)$this->config['overseerrDefaultFilterUnavailable'],
+					'overseerrDefaultFilterApproved' => (bool)$this->config['overseerrDefaultFilterApproved'],
+					'overseerrDefaultFilterUnapproved' => (bool)$this->config['overseerrDefaultFilterUnapproved'],
+					'overseerrDefaultFilterDenied' => (bool)$this->config['overseerrDefaultFilterDenied']
 				),
 				'jackett' => array(
 					'homepageJackettBackholeDownload' => $this->config['homepageJackettBackholeDownload'] ? true : false
@@ -4597,6 +4614,13 @@ class Organizr
 					$class = 'bg-inverse';
 					$image = 'plugins/images/tabs/ombi.png';
 					if (!$this->config['homepageOmbiEnabled']) {
+						$class .= ' faded';
+					}
+					break;
+				case 'homepageOrderoverseerr':
+					$class = 'bg-inverse';
+					$image = 'plugins/images/tabs/overseerr.png';
+					if (!$this->config['homepageOverseerrEnabled']) {
 						$class .= ' faded';
 					}
 					break;

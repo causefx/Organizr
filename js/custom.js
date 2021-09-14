@@ -1897,3 +1897,29 @@ $(document).on('click', '.nav-non-mobile li a', function() {
 	$('.' + menu).val('#' + id);
 
 });
+
+// TOGGLE OVERSEERR ALL SEASONS
+$(document).on("change", ".select-all-overseerr-seasons", function () {
+	var enabled = $(this).prop("checked") ? 1 : 0;
+	$.each($('.overseerr-season'), function(i,v) {
+		let seasonEnabled = $(v).prop("checked") ? 1 : 0;
+		if(enabled !== seasonEnabled){
+			$(v).trigger('click');
+		}
+	});
+});
+
+$(document).on("change", ".overseerr-season", function () {
+	let enableButtonDisabled = true;
+	let requestedSeasons = [];
+	$.each($('.overseerr-season'), function(i,v) {
+		let seasonEnabled = $(v).prop("checked") ? 1 : 0;
+		if(seasonEnabled){
+			let seasonNumber = $(v).attr('data-seasonNumber');
+			requestedSeasons.push(seasonNumber);
+			enableButtonDisabled = false;
+		}
+	});
+	$('.submit-overseerr-seasons').attr('disabled', enableButtonDisabled);
+	$('.submit-overseerr-seasons').attr('data-seasons', requestedSeasons);
+});

@@ -32,7 +32,7 @@ trait OmbiHomepageItem
 				],
 				'Misc Options' => [
 					$this->settingsOption('auth', 'homepageOmbiRequestAuth', ['label' => 'Minimum Group to Request']),
-					$this->settingsOption('select', 'ombiTvDefault', ['label' => 'TV Show Default Request', 'options' => $this->ombiTvOptions()]),
+					$this->settingsOption('select', 'ombiTvDefault', ['label' => 'TV Show Default Request', 'options' => $this->requestTvOptions()]),
 					$this->settingsOption('switch', 'ombiLimitUser', ['label' => 'Limit to User']),
 					$this->settingsOption('limit', 'ombiLimit'),
 					$this->settingsOption('refresh', 'ombiRefresh'),
@@ -111,7 +111,7 @@ trait OmbiHomepageItem
 					<div class="white-box homepage-loading-box"><h2 class="text-center" lang="en">Loading Requests...</h2></div>
 					<script>
 						// Ombi Requests
-						homepageRequests("' . $this->config['ombiRefresh'] . '");
+						homepageRequests("ombi", "' . $this->config['ombiRefresh'] . '");
 						// End Ombi Requests
 					</script>
 				</div>
