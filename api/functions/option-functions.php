@@ -622,22 +622,44 @@ trait OptionsFunction
 		);
 	}
 	
-	public function ombiTvOptions()
+	public function requestTvOptions($includeUserOption = false)
 	{
-		return array(
-			array(
+		$options = [
+			[
 				'name' => 'All Seasons',
 				'value' => 'all'
-			),
-			array(
+			],
+			[
 				'name' => 'First Season Only',
 				'value' => 'first'
-			),
-			array(
+			],
+			[
 				'name' => 'Last Season Only',
 				'value' => 'last'
-			),
-		);
+			],
+		];
+		$userOption = [
+			'name' => 'Let User Select',
+			'value' => 'user'
+		];
+		if ($includeUserOption) {
+			array_push($options, $userOption);
+		}
+		return $options;
+	}
+	
+	public function requestServiceOptions()
+	{
+		return [
+			[
+				'name' => 'Ombi',
+				'value' => 'ombi'
+			],
+			[
+				'name' => 'Overseerr',
+				'value' => 'overseerr'
+			]
+		];
 	}
 	
 	public function limitOptions()
@@ -899,35 +921,35 @@ trait OptionsFunction
 	
 	public function timeFormatOptions()
 	{
-                return array(
-                        array(
-                                'name' => '6p',
-                                'value' => 'h(:mm)t'
-                        ),
-                        array(
-                                'name' => '6:00p',
-                                'value' => 'h:mmt'
-                        ),
-                        array(
-                                'name' => '6pm',
-                                'value' => 'h(:mm)a'
-                        ),
-                        array(
-                                'name' => '6:00pm',
-                                'value' => 'h:mma'
-                        ),
-                        array(
-                                'name' => '6:00',
-                                'value' => 'h:mm'
-                        ),
-                        array(
-                                'name' => '18',
-                                'value' => 'H(:mm)'
-                        ),
-                        array(
-                                'name' => '18:00',
-                                'value' => 'H:mm'
-                        )
+		return array(
+			array(
+				'name' => '6p',
+				'value' => 'h(:mm)t'
+			),
+			array(
+				'name' => '6:00p',
+				'value' => 'h:mmt'
+			),
+			array(
+				'name' => '6pm',
+				'value' => 'h(:mm)a'
+			),
+			array(
+				'name' => '6:00pm',
+				'value' => 'h:mma'
+			),
+			array(
+				'name' => '6:00',
+				'value' => 'h:mm'
+			),
+			array(
+				'name' => '18',
+				'value' => 'H(:mm)'
+			),
+			array(
+				'name' => '18:00',
+				'value' => 'H:mm'
+			)
 		);
 	}
 	
