@@ -159,6 +159,14 @@ trait UnifiHomepageItem
 			if ($response->success) {
 				$csrfToken = ($response->headers['x-csrf-token']) ?? false;
 				$data = ($csrfToken) ? $data : json_encode($data);
+				if ($csrfToken) {
+					$headers = [
+						'x-csrf-token' => $csrfToken
+					];
+				} else {
+					$data = json_encode($data);
+					$headers = [];
+				}
 			} else {
 				$this->setAPIResponse('error', 'Unifi response error - Check URL', 409);
 				return false;
@@ -171,7 +179,6 @@ trait UnifiHomepageItem
 				$cookie['csrf_token'] = ($response->cookies['csrf_token']->value) ?? false;
 				$cookie['Token'] = ($response->cookies['Token']->value) ?? false;
 				$options['cookies'] = $response->cookies;
-				
 			} else {
 				$this->setAPIResponse('error', 'Unifi response error - Check Credentials', 409);
 				return false;
