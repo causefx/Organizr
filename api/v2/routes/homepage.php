@@ -209,12 +209,12 @@ $app->get('/homepage/qbittorrent/queue', function ($request, $response, $args) {
 		->withStatus($GLOBALS['responseCode']);
 });
 $app->get('/homepage/utorrent/queue', function ($request, $response, $args) {
-        $Organizr = ($request->getAttribute('Organizr')) ?? new Organizr();
-        $Organizr->getuTorrentHomepageQueue();
-        $response->getBody()->write(jsonE($GLOBALS['api']));
-        return $response
-                ->withHeader('Content-Type', 'application/json;charset=UTF-8')
-                ->withStatus($GLOBALS['responseCode']);
+	$Organizr = ($request->getAttribute('Organizr')) ?? new Organizr();
+	$Organizr->getuTorrentHomepageQueue();
+	$response->getBody()->write(jsonE($GLOBALS['api']));
+	return $response
+		->withHeader('Content-Type', 'application/json;charset=UTF-8')
+		->withStatus($GLOBALS['responseCode']);
 });
 $app->get('/homepage/jdownloader/queue', function ($request, $response, $args) {
 	$Organizr = ($request->getAttribute('Organizr')) ?? new Organizr();
@@ -348,6 +348,81 @@ $app->get('/homepage/healthchecks/{tags}', function ($request, $response, $args)
 		->withHeader('Content-Type', 'application/json;charset=UTF-8')
 		->withStatus($GLOBALS['responseCode']);
 });
+$app->get('/homepage/overseerr/metadata/{type}/{id}', function ($request, $response, $args) {
+	$Organizr = ($request->getAttribute('Organizr')) ?? new Organizr();
+	$Organizr->getOverseerrMetadata($args['id'], $args['type']);
+	$response->getBody()->write(jsonE($GLOBALS['api']));
+	return $response
+		->withHeader('Content-Type', 'application/json;charset=UTF-8')
+		->withStatus($GLOBALS['responseCode']);
+});
+$app->get('/homepage/overseerr/requests[/{type}[/{limit}[/{offset}]]]', function ($request, $response, $args) {
+	$Organizr = ($request->getAttribute('Organizr')) ?? new Organizr();
+	$args['limit'] = $args['limit'] ?? $Organizr->config['ombiLimit'];
+	$args['offset'] = $args['offset'] ?? 0;
+	$Organizr->getOverseerrRequests($args['limit'], $args['offset']);
+	$response->getBody()->write(jsonE($GLOBALS['api']));
+	return $response
+		->withHeader('Content-Type', 'application/json;charset=UTF-8')
+		->withStatus($GLOBALS['responseCode']);
+});
+$app->post('/homepage/overseerr/requests/{type}/{id}[/{seasons}]', function ($request, $response, $args) {
+	$Organizr = ($request->getAttribute('Organizr')) ?? new Organizr();
+	$args['seasons'] = $args['seasons'] ?? null;
+	$Organizr->addOverseerrRequest($args['id'], $args['type'], $args['seasons']);
+	$response->getBody()->write(jsonE($GLOBALS['api']));
+	return $response
+		->withHeader('Content-Type', 'application/json;charset=UTF-8')
+		->withStatus($GLOBALS['responseCode']);
+});
+$app->post('/homepage/overseerr/requests/{type}/{id}/available', function ($request, $response, $args) {
+	$Organizr = ($request->getAttribute('Organizr')) ?? new Organizr();
+	$Organizr->actionOverseerrRequest($args['id'], $args['type'], 'available');
+	$response->getBody()->write(jsonE($GLOBALS['api']));
+	return $response
+		->withHeader('Content-Type', 'application/json;charset=UTF-8')
+		->withStatus($GLOBALS['responseCode']);
+});
+$app->post('/homepage/overseerr/requests/{type}/{id}/unavailable', function ($request, $response, $args) {
+	$Organizr = ($request->getAttribute('Organizr')) ?? new Organizr();
+	$Organizr->actionOverseerrRequest($args['id'], $args['type'], 'unavailable');
+	$response->getBody()->write(jsonE($GLOBALS['api']));
+	return $response
+		->withHeader('Content-Type', 'application/json;charset=UTF-8')
+		->withStatus($GLOBALS['responseCode']);
+});
+$app->post('/homepage/overseerr/requests/{type}/{id}/pending', function ($request, $response, $args) {
+	$Organizr = ($request->getAttribute('Organizr')) ?? new Organizr();
+	$Organizr->actionOverseerrRequest($args['id'], $args['type'], 'pending');
+	$response->getBody()->write(jsonE($GLOBALS['api']));
+	return $response
+		->withHeader('Content-Type', 'application/json;charset=UTF-8')
+		->withStatus($GLOBALS['responseCode']);
+});
+$app->post('/homepage/overseerr/requests/{type}/{id}/approve', function ($request, $response, $args) {
+	$Organizr = ($request->getAttribute('Organizr')) ?? new Organizr();
+	$Organizr->actionOverseerrRequest($args['id'], $args['type'], 'approve');
+	$response->getBody()->write(jsonE($GLOBALS['api']));
+	return $response
+		->withHeader('Content-Type', 'application/json;charset=UTF-8')
+		->withStatus($GLOBALS['responseCode']);
+});
+$app->put('/homepage/overseerr/requests/{type}/{id}/deny', function ($request, $response, $args) {
+	$Organizr = ($request->getAttribute('Organizr')) ?? new Organizr();
+	$Organizr->actionOverseerrRequest($args['id'], $args['type'], 'deny');
+	$response->getBody()->write(jsonE($GLOBALS['api']));
+	return $response
+		->withHeader('Content-Type', 'application/json;charset=UTF-8')
+		->withStatus($GLOBALS['responseCode']);
+});
+$app->delete('/homepage/overseerr/requests/{type}/{id}', function ($request, $response, $args) {
+	$Organizr = ($request->getAttribute('Organizr')) ?? new Organizr();
+	$Organizr->actionOverseerrRequest($args['id'], $args['type'], 'delete');
+	$response->getBody()->write(jsonE($GLOBALS['api']));
+	return $response
+		->withHeader('Content-Type', 'application/json;charset=UTF-8')
+		->withStatus($GLOBALS['responseCode']);
+});
 $app->get('/homepage/ombi/requests[/{type}[/{limit}[/{offset}]]]', function ($request, $response, $args) {
 	$Organizr = ($request->getAttribute('Organizr')) ?? new Organizr();
 	$args['type'] = $args['type'] ?? 'both';
@@ -433,7 +508,7 @@ $app->get('/homepage/jackett/{query}', function ($request, $response, $args) {
 });
 $app->post('/homepage/jackett/download/', function ($request, $response, $args) {
 	$Organizr = ($request->getAttribute('Organizr')) ?? new Organizr();
-	$postData  = $request->getParsedBody();
+	$postData = $request->getParsedBody();
 	$Organizr->performJackettBackHoleDownload($postData['url']);
 	$response->getBody()->write(jsonE($GLOBALS['api']));
 	return $response
