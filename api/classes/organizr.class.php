@@ -2815,28 +2815,27 @@ class Organizr
 	
 	public function getSettingsSSO()
 	{
-		return array(
-			'FYI' => array(
-				array(
+		return [
+			'FYI' => [
+				[
 					'type' => 'html',
 					'label' => '',
 					'override' => 12,
 					'html' => '
 					<div class="row">
 						<div class="col-lg-12">
-							<div class="panel panel-danger">
+							<div class="panel panel-primary">
 								<div class="panel-heading"><span lang="en">Please Read First</span></div>
 								<div class="panel-wrapper collapse in" aria-expanded="true">
 									<div class="panel-body">
 										<span lang="en">Using multiple SSO application will cause your Cookie Header item to increase.  If you haven\'t increased it by now, please follow this guide</span>
-										<span><a href="https://docs.organizr.app/help/faq/organizr-login-error" target="_blank">Cookie Header Guide</a></span>
-									</div>
-								</div>
-							</div>
-							<div class="panel panel-info">
-								<div class="panel-heading"><span lang="en">Notice</span></div>
-								<div class="panel-wrapper collapse in" aria-expanded="true">
-									<div class="panel-body">
+										<br/><br/>
+										<div class="row">
+											<div class="col-lg-2 col-sm-4 col-xs-12">
+												<a href="https://docs.organizr.app/help/faq/organizr-login-error" target="_blank" class="btn btn-block btn-primary text-white" lang="en">Cookie Header Guide</a>
+											</div>
+										</div>
+										<br/>
 										<span lang="en">This is not the same as database authentication - i.e. Plex Authentication | Emby Authentication | FTP Authentication<br/>Click Main on the sub-menu above.</span>
 									</div>
 								</div>
@@ -2844,196 +2843,196 @@ class Organizr
 						</div>
 					</div>
 					'
-				)
-			),
-			'Plex' => array(
-				array(
+				]
+			],
+			'Plex' => [
+				[
 					'type' => 'password-alt',
 					'name' => 'plexToken',
 					'label' => 'Plex Token',
 					'value' => $this->config['plexToken'],
 					'placeholder' => 'Use Get Token Button'
-				),
-				array(
+				],
+				[
 					'type' => 'button',
 					'label' => 'Get Plex Token',
 					'icon' => 'fa fa-ticket',
 					'text' => 'Retrieve',
 					'attr' => 'onclick="showPlexTokenForm(\'#sso-form [name=plexToken]\')"'
-				),
-				array(
+				],
+				[
 					'type' => 'password-alt',
 					'name' => 'plexID',
 					'label' => 'Plex Machine',
 					'value' => $this->config['plexID'],
 					'placeholder' => 'Use Get Plex Machine Button'
-				),
-				array(
+				],
+				[
 					'type' => 'button',
 					'label' => 'Get Plex Machine',
 					'icon' => 'fa fa-id-badge',
 					'text' => 'Retrieve',
 					'attr' => 'onclick="showPlexMachineForm(\'#sso-form [name=plexID]\')"'
-				),
-				array(
+				],
+				[
 					'type' => 'input',
 					'name' => 'plexAdmin',
 					'label' => 'Admin Username',
 					'value' => $this->config['plexAdmin'],
 					'placeholder' => 'Admin username for Plex'
-				),
-				array(
+				],
+				[
 					'type' => 'blank',
 					'label' => ''
-				),
-				array(
+				],
+				[
 					'type' => 'html',
 					'label' => 'Plex Note',
 					'html' => '<span lang="en">Please make sure both Token and Machine are filled in</span>'
-				),
-				array(
+				],
+				[
 					'type' => 'switch',
 					'name' => 'ssoPlex',
 					'label' => 'Enable',
 					'value' => $this->config['ssoPlex']
-				)
-			),
+				]
+			],
 			'Tautulli' => [
 				$this->settingsOption('multiple-url', 'tautulliURL'),
 				$this->settingsOption('enable', 'ssoTautulli'),
 			],
-			'Overseerr' => array(
-				array(
+			'Overseerr' => [
+				[
 					'type' => 'input',
 					'name' => 'overseerrURL',
 					'label' => 'Overseerr URL',
 					'value' => $this->config['overseerrURL'],
 					'help' => 'Please make sure to use local IP address and port - You also may use local dns name too.',
 					'placeholder' => 'http(s)://hostname:port'
-				),
-				array(
+				],
+				[
 					'type' => 'password-alt',
 					'name' => 'overseerrToken',
 					'label' => 'Token',
 					'value' => $this->config['overseerrToken']
-				),
-				array(
+				],
+				[
 					'type' => 'input',
 					'name' => 'overseerrFallbackUser',
 					'label' => 'Overseerr Fallback User',
 					'value' => $this->config['overseerrFallbackUser'],
 					'help' => 'DO NOT SET THIS TO YOUR ADMIN ACCOUNT. We recommend you create a local account as a "catch all" for when Organizr is unable to perform SSO.  Organizr will request a User Token based off of this user credentials',
 					'attr' => 'disabled'
-				),
-				array(
+				],
+				[
 					'type' => 'password-alt',
 					'name' => 'overseerrFallbackPassword',
 					'label' => 'Overseerr Fallback Password',
 					'value' => $this->config['overseerrFallbackPassword'],
 					'attr' => 'disabled'
-				),
-				array(
+				],
+				[
 					'type' => 'switch',
 					'name' => 'ssoOverseerr',
 					'label' => 'Enable',
 					'value' => $this->config['ssoOverseerr']
-				)
-			),
-			'Petio' => array(
-				array(
+				]
+			],
+			'Petio' => [
+				[
 					'type' => 'input',
 					'name' => 'petioURL',
 					'label' => 'Petio URL',
 					'value' => $this->config['petioURL'],
 					'help' => 'Please make sure to use local IP address and port - You also may use local dns name too.',
 					'placeholder' => 'http(s)://hostname:port'
-				),
-				array(
+				],
+				[
 					'type' => 'password-alt',
 					'name' => 'petioToken',
 					'label' => 'Token',
 					'value' => $this->config['petioToken']
-				),
-				array(
+				],
+				[
 					'type' => 'input',
 					'name' => 'petioFallbackUser',
 					'label' => 'Petio Fallback User',
 					'value' => $this->config['petioFallbackUser'],
 					'help' => 'DO NOT SET THIS TO YOUR ADMIN ACCOUNT. We recommend you create a local account as a "catch all" for when Organizr is unable to perform SSO.  Organizr will request a User Token based off of this user credentials',
-				),
-				array(
+				],
+				[
 					'type' => 'password-alt',
 					'name' => 'petioFallbackPassword',
 					'label' => 'Petio Fallback Password',
 					'value' => $this->config['petioFallbackPassword'],
-				),
-				array(
+				],
+				[
 					'type' => 'switch',
 					'name' => 'ssoPetio',
 					'label' => 'Enable',
 					'value' => $this->config['ssoPetio']
-				)
-			),
-			'Ombi' => array(
-				array(
+				]
+			],
+			'Ombi' => [
+				[
 					'type' => 'input',
 					'name' => 'ombiURL',
 					'label' => 'Ombi URL',
 					'value' => $this->config['ombiURL'],
 					'help' => 'Please make sure to use local IP address and port - You also may use local dns name too.',
 					'placeholder' => 'http(s)://hostname:port'
-				),
-				array(
+				],
+				[
 					'type' => 'password-alt',
 					'name' => 'ombiToken',
 					'label' => 'Token',
 					'value' => $this->config['ombiToken']
-				),
-				array(
+				],
+				[
 					'type' => 'input',
 					'name' => 'ombiFallbackUser',
 					'label' => 'Ombi Fallback User',
 					'value' => $this->config['ombiFallbackUser'],
 					'help' => 'DO NOT SET THIS TO YOUR ADMIN ACCOUNT. We recommend you create a local account as a "catch all" for when Organizr is unable to perform SSO.  Organizr will request a User Token based off of this user credentials'
-				),
-				array(
+				],
+				[
 					'type' => 'password-alt',
 					'name' => 'ombiFallbackPassword',
 					'label' => 'Ombi Fallback Password',
 					'value' => $this->config['ombiFallbackPassword']
-				),
-				array(
+				],
+				[
 					'type' => 'switch',
 					'name' => 'ssoOmbi',
 					'label' => 'Enable',
 					'value' => $this->config['ssoOmbi']
-				)
-			),
-			'Jellyfin' => array(
-				array(
+				]
+			],
+			'Jellyfin' => [
+				[
 					'type' => 'input',
 					'name' => 'jellyfinURL',
 					'label' => 'Jellyfin API URL',
 					'value' => $this->config['jellyfinURL'],
 					'help' => 'Please make sure to use the local address to the API',
 					'placeholder' => 'http(s)://hostname:port'
-				),
-				array(
+				],
+				[
 					'type' => 'input',
 					'name' => 'jellyfinSSOURL',
 					'label' => 'Jellyfin SSO URL',
 					'value' => $this->config['jellyfinSSOURL'],
 					'help' => 'Please make sure to use the same (sub)domain to access Jellyfin as Organizr\'s',
 					'placeholder' => 'http(s)://domain.com'
-				),
-				array(
+				],
+				[
 					'type' => 'switch',
 					'name' => 'ssoJellyfin',
 					'label' => 'Enable',
 					'value' => $this->config['ssoJellyfin']
-				)
-			)
-		);
+				]
+			]
+		];
 	}
 	
 	public function systemMenuLists()
