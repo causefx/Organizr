@@ -141,6 +141,7 @@ trait OptionsFunction
 									<div class="panel-wrapper collapse in" aria-expanded="true">
 										<div class="panel-body">
 											<span lang="en">' . ($extras['body'] ?? '') . '</span>
+											<span>' . ($extras['bodyHTML'] ?? '') . '</span>
 										</div>
 									</div>
 								</div>

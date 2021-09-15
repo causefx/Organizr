@@ -1454,8 +1454,8 @@ $(document).on("click", ".testEditTab", function () {
 });
 // new api key
 $(document).on("click", ".newAPIKey", function () {
-    $('#settings-main-form [name=organizrAPI]').val(generateCode());
-    $('#settings-main-form [name=organizrAPI]').change();
+	let newCode = generateCode();
+    $('#settings-main-form [name=organizrAPI]').val(newCode).change().parent().find('.clipboard').attr('data-clipboard-text',newCode);
 });
 // purge log
 $(document).on("click", ".purgeLog", function () {

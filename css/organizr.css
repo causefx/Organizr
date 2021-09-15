@@ -4603,3 +4603,6 @@ td.mouse-grab.sort-tabs-handle {
 .tabEditor.multi-selected:hover {
     background: rgba(0,0,0,.25) !important;
 }
+.input-group-btn:not(:last-child) .btn{
+    border-radius: 0;
+}

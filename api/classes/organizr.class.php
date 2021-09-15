@@ -2209,7 +2209,7 @@ class Organizr
 			),
 			'API' => array(
 				array(
-					'type' => 'password-alt',
+					'type' => 'password-alt-copy',
 					'name' => 'organizrAPI',
 					'label' => 'Organizr API',
 					'value' => $this->config['organizrAPI']
@@ -2220,7 +2220,8 @@ class Organizr
 					'class' => 'newAPIKey',
 					'icon' => 'fa fa-refresh',
 					'text' => 'Generate'
-				)
+				),
+				$this->settingsOption('notice', null, ['title' => 'API Documentation', 'body' => 'The documentation for Organizr\'s API is included with this installation.  To access the docs, use the button below.', 'bodyHTML' => '<br/><br/><div class="row"><div class="col-lg-2 col-sm-4 col-xs-12"><a href="' . $this->getServerPath() . 'docs/" target="_blank" class="btn btn-block btn-primary text-white" lang="en">Organizr Docs</a></div></div>'])
 			),
 			'Authentication' => array(
 				array(
