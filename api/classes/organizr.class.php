@@ -2829,7 +2829,7 @@ class Organizr
 								<div class="panel-wrapper collapse in" aria-expanded="true">
 									<div class="panel-body">
 										<span lang="en">Using multiple SSO application will cause your Cookie Header item to increase.  If you haven\'t increased it by now, please follow this guide</span>
-										<span><a href="https://docs.organizr.app/books/troubleshooting/page/login-error-api-connection-failed" target="_blank">Cookie Header Guide</a></span>
+										<span><a href="https://docs.organizr.app/help/faq/organizr-login-error" target="_blank">Cookie Header Guide</a></span>
 									</div>
 								</div>
 							</div>
