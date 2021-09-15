@@ -181,7 +181,6 @@ function copyDebug(){
 }
 function formatDebug(result){
     var formatted = '';
-    console.log(typeof result);
     switch (typeof result) {
         case 'object':
             formatted = jsonToHTML(result);
@@ -3348,6 +3347,7 @@ function submitSettingsForm(form, homepageItem = false){
 				                        <button class="btn btn-info waves-effect waves-light" type="button" onclick="swal.close();Custombox.modal.close()"><span class="btn-label"><i class="ti-check"></i></span>Yes</button>
 				                        <button class="btn btn-danger waves-effect waves-light" type="button" onclick="swal.close()"><span class="btn-label"><i class="ti-close"></i></span>No</button>                        
 				                    </div>
+				                    <p class="close-homepage-timer">Auto Closing in 5 seconds...</p>
                                 </div>
                             </div>
                         </div>
@@ -3357,8 +3357,10 @@ function submitSettingsForm(form, homepageItem = false){
 				swal({
 					content: createElementFromHTML(html),
 					buttons: false,
-					className: 'bg-org'
+					className: 'bg-org',
+					timer: 5000
 				})
+				textTimer(5,'.close-homepage-timer', 'Seconds remaining: ', 'Closing...');
 			}else{
 				message('Updated Items',response.message,activeInfo.settings.notifications.position,"#FFF","success","5000");
 			}
@@ -3376,6 +3378,17 @@ function submitSettingsForm(form, homepageItem = false){
 			input.closest('.form-group').removeClass('has-success').addClass('has-error');
 		});
 	}
+}
+function textTimer(seconds,el,preText,postText){
+	var seconds_left = seconds;
+	var interval = setInterval(function() {
+		$(el).html(preText + ' ' + --seconds_left)
+		if (seconds_left <= 0)
+		{
+			$(el).html(postText)
+			clearInterval(interval);
+		}
+	}, 1000);
 }
 function submitHomepageOrder(){
 	var list = $( "#homepage-values" ).serializeToJSON();
@@ -10945,7 +10958,8 @@ function organizrConsole(subject,msg,type = 'info'){
 }
 function organizrCatchError(e,data){
 	organizrConsole('Organizr API Function',data,'warning');
-	orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
+	orgErrorAlert('<h4>' + e + '</h4><p><mark lang="en">Trace Log has been outputted to Browser Console</mark></p><h5 lang="en">Output of last API call</h5>' + formatDebug(data));
+	console.trace();
 	return false;
 }
 function OrganizrApiError(xhr, secondaryMessage = null){
