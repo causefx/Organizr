@@ -25,25 +25,25 @@ class Chat extends Organizr
 		return array(
 			'custom' => '
 				<div class="row">
-                    <div class="col-lg-12">
-                        <div class="panel panel-info">
-                            <div class="panel-heading">
+					<div class="col-lg-12">
+						<div class="panel panel-info">
+							<div class="panel-heading">
 								<span lang="en">Notice</span>
-                            </div>
-                            <div class="panel-wrapper collapse in" aria-expanded="true">
-                                <div class="panel-body">
+							</div>
+							<div class="panel-wrapper collapse in" aria-expanded="true">
+								<div class="panel-body">
 									<ul class="list-icons">
-                                        <li><i class="fa fa-chevron-right text-danger"></i> <a href="https://dashboard.pusher.com/accounts/sign_up" target="_blank"><span lang="en">Signup for Pusher [FREE]</span></a></li>
-                                        <li><i class="fa fa-chevron-right text-danger"></i> <span lang="en">Create an App called whatever you like and choose a cluster (Close to you)</span></li>
-                                        <li><i class="fa fa-chevron-right text-danger"></i> <span lang="en">Frontend (JQuery) - Backend (PHP)</span></li>
-                                        <li><i class="fa fa-chevron-right text-danger"></i> <span lang="en">Click the overview tab on top left</span></li>
-                                        <li><i class="fa fa-chevron-right text-danger"></i> <span lang="en">Copy and paste the 4 values into Organizr</span></li>
-                                        <li><i class="fa fa-chevron-right text-danger"></i> <span lang="en">Save and reload!</span></li>
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+										<li><i class="fa fa-chevron-right text-danger"></i> <a href="https://dashboard.pusher.com/accounts/sign_up" target="_blank"><span lang="en">Signup for Pusher [FREE]</span></a></li>
+										<li><i class="fa fa-chevron-right text-danger"></i> <span lang="en">Create an App called whatever you like and choose a cluster (Close to you)</span></li>
+										<li><i class="fa fa-chevron-right text-danger"></i> <span lang="en">Frontend (JQuery) - Backend (PHP)</span></li>
+										<li><i class="fa fa-chevron-right text-danger"></i> <span lang="en">Click the overview tab on top left</span></li>
+										<li><i class="fa fa-chevron-right text-danger"></i> <span lang="en">Copy and paste the 4 values into Organizr</span></li>
+										<li><i class="fa fa-chevron-right text-danger"></i> <span lang="en">Save and reload!</span></li>
+									</ul>
+								</div>
+							</div>
+						</div>
+					</div>
 				</div>
 				',
 			'Options' => array(
