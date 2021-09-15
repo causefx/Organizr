@@ -58,6 +58,16 @@ trait UnifiHomepageItem
 					'unifiUsername',
 					'unifiPassword'
 				]
+			],
+			'test' => [
+				'auth' => [
+					'homepageUnifiAuth'
+				],
+				'not_empty' => [
+					'unifiURL',
+					'unifiUsername',
+					'unifiPassword'
+				]
 			]
 		];
 		return $this->homepageCheckKeyPermissions($key, $permissions);
@@ -81,45 +91,28 @@ trait UnifiHomepageItem
 	
 	public function getUnifiSiteName()
 	{
-		if (empty($this->config['unifiURL'])) {
-			$this->setAPIResponse('error', 'Unifi URL is not defined', 422);
+		if (!$this->homepageItemPermissions($this->unifiHomepagePermissions('test'), true)) {
 			return false;
 		}
-		if (empty($this->config['unifiUsername'])) {
-			$this->setAPIResponse('error', 'Unifi Username is not defined', 422);
-			return false;
-		}
-		if (empty($this->config['unifiPassword'])) {
-			$this->setAPIResponse('error', 'Unifi Password is not defined', 422);
-			return false;
-		}
-		$url = $this->qualifyURL($this->config['unifiURL']);
 		try {
-			$options = $this->requestOptions($url, $this->config['homepageUnifiRefresh'], $this->config['unifiDisableCertCheck'], $this->config['unifiUseCustomCertificate'], ['follow_redirects' => true]);
-			$data = array(
-				'username' => $this->config['unifiUsername'],
-				'password' => $this->decrypt($this->config['unifiPassword']),
-				'remember' => true,
-				'strict' => true
-			);
-			$response = Requests::post($url . '/api/login', array(), json_encode($data), $options);
-			if ($response->success) {
-				$cookie['unifises'] = ($response->cookies['unifises']->value) ?? false;
-				$cookie['csrf_token'] = ($response->cookies['csrf_token']->value) ?? false;
+			$login = $this->unifiLogin();
+			if ($login) {
+				$url = $this->qualifyURL($this->config['unifiURL']);
+				$unifiOS = $login['unifiOS'];
+				if ($unifiOS) {
+					$this->setResponse(500, 'Unifi OS does not support Multi Site');
+					return false;
+				}
+				$response = Requests::get($url . '/api/self/sites', [], $login['options']);
+				if ($response->success) {
+					$body = json_decode($response->body, true);
+					$this->setAPIResponse('success', null, 200, $body);
+					return $body;
+				} else {
+					$this->setAPIResponse('error', 'Unifi response error3', 409);
+					return false;
+				}
 			} else {
-				$this->setAPIResponse('error', 'Unifi response error - Check Credentials', 409);
-				return false;
-			}
-			$headers = array(
-				'cookie' => 'unifises=' . $cookie['unifises'] . ';' . 'csrf_token=' . $cookie['csrf_token'] . ';'
-			);
-			$response = Requests::get($url . '/api/self/sites', $headers, $options);
-			if ($response->success) {
-				$body = json_decode($response->body, true);
-				$this->setAPIResponse('success', null, 200, $body);
-				return $body;
-			} else {
-				$this->setAPIResponse('error', 'Unifi response error - Error Occurred', 409);
 				return false;
 			}
 		} catch (Requests_Exception $e) {
@@ -127,24 +120,31 @@ trait UnifiHomepageItem
 			$this->setAPIResponse('error', $e->getMessage(), 500);
 			return false;
 		}
-		
 	}
 	
-	public function testConnectionUnifi()
+	public function isUnifiOS()
 	{
-		if (empty($this->config['unifiURL'])) {
-			$this->setAPIResponse('error', 'Unifi URL is not defined', 422);
+		try {
+			// Is this UnifiOs or Regular
+			$url = $this->qualifyURL($this->config['unifiURL']);
+			$options = $this->requestOptions($url, $this->config['homepageUnifiRefresh'], $this->config['unifiDisableCertCheck'], $this->config['unifiUseCustomCertificate'], ['follow_redirects' => true]);
+			$response = Requests::get($url, [], $options);
+			if ($response->success) {
+				return ($response->headers['x-csrf-token']) ?? false;
+			} else {
+				$this->setAPIResponse('error', 'Unifi response error - Check URL', 409);
+				return false;
+			}
+		} catch (Requests_Exception $e) {
+			$this->writeLog('error', 'Unifi Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
+			$this->setAPIResponse('error', $e->getMessage(), 500);
 			return false;
 		}
-		if (empty($this->config['unifiUsername'])) {
-			$this->setAPIResponse('error', 'Unifi Username is not defined', 422);
-			return false;
-		}
-		if (empty($this->config['unifiPassword'])) {
-			$this->setAPIResponse('error', 'Unifi Password is not defined', 422);
-			return false;
-		}
-		$api['content']['unifi'] = array();
+	}
+	
+	public function unifiLogin()
+	{
+		$csrfToken = $this->isUnifiOS();
 		$url = $this->qualifyURL($this->config['unifiURL']);
 		$options = $this->requestOptions($url, $this->config['homepageUnifiRefresh'], $this->config['unifiDisableCertCheck'], $this->config['unifiUseCustomCertificate'], ['follow_redirects' => true]);
 		$data = array(
@@ -154,52 +154,55 @@ trait UnifiHomepageItem
 			'strict' => true
 		);
 		try {
-			// Is this UnifiOs or Regular
-			$response = Requests::get($url, [], $options);
-			if ($response->success) {
-				$csrfToken = ($response->headers['x-csrf-token']) ?? false;
-				$data = ($csrfToken) ? $data : json_encode($data);
-				if ($csrfToken) {
-					$headers = [
-						'x-csrf-token' => $csrfToken
-					];
-				} else {
-					$data = json_encode($data);
-					$headers = [];
-				}
-			} else {
-				$this->setAPIResponse('error', 'Unifi response error - Check URL', 409);
-				return false;
-			}
+			$data = ($csrfToken) ? $data : json_encode($data);
+			$headers = ($csrfToken) ? ['x-csrf-token' => $csrfToken] : [];
 			$urlLogin = ($csrfToken) ? $url . '/api/auth/login' : $url . '/api/login';
-			$this->debug('Unifi Login URL: ' . $urlLogin);
-			$urlStat = ($csrfToken) ? $url . '/proxy/network/api/s/default/stat/health' : $url . '/api/s/' . $this->config['unifiSiteName'] . '/stat/health';
-			$response = Requests::post($urlLogin, [], $data, $options);
+			$response = Requests::post($urlLogin, $headers, $data, $options);
 			if ($response->success) {
-				$cookie['unifises'] = ($response->cookies['unifises']->value) ?? false;
-				$cookie['csrf_token'] = ($response->cookies['csrf_token']->value) ?? false;
-				$cookie['Token'] = ($response->cookies['Token']->value) ?? false;
 				$options['cookies'] = $response->cookies;
+				return [
+					'unifiOS' => $csrfToken,
+					'options' => $options
+				];
 			} else {
 				$this->setAPIResponse('error', 'Unifi response error - Check Credentials', 409);
-				return false;
-			}
-			$headers = array(
-				'cookie' => 'unifises=' . $cookie['unifises'] . ';' . 'csrf_token=' . $cookie['csrf_token'] . ';'
-			);
-			$response = Requests::get($urlStat, $headers, $options);
-			if ($response->success) {
-				$api['content']['unifi'] = json_decode($response->body, true);
-			} else {
-				$this->setAPIResponse('error', 'Unifi response error3', 409);
 				return false;
 			}
 		} catch (Requests_Exception $e) {
 			$this->writeLog('error', 'Unifi Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
 			$this->setAPIResponse('error', $e->getMessage(), 500);
 			return false;
-		};
-		$api['content']['unifi'] = isset($api['content']['unifi']) ? $api['content']['unifi'] : false;
+		}
+	}
+	
+	public function testConnectionUnifi()
+	{
+		if (!$this->homepageItemPermissions($this->unifiHomepagePermissions('test'), true)) {
+			return false;
+		}
+		try {
+			// Is this UnifiOs or Regular
+			$api['content']['unifi'] = array();
+			$login = $this->unifiLogin();
+			if ($login) {
+				$url = $this->qualifyURL($this->config['unifiURL']);
+				$unifiOS = $login['unifiOS'];
+				$headers = ($unifiOS) ? ['x-csrf-token' => $unifiOS] : [];
+				$urlStat = ($unifiOS) ? $url . '/proxy/network/api/s/default/stat/health' : $url . '/api/s/' . $this->config['unifiSiteName'] . '/stat/health';
+				$response = Requests::get($urlStat, $headers, $login['options']);
+				if ($response->success) {
+					$api['content']['unifi'] = json_decode($response->body, true);
+				} else {
+					$this->setAPIResponse('error', 'Unifi response error3', 409);
+					return false;
+				}
+			}
+		} catch (Requests_Exception $e) {
+			$this->writeLog('error', 'Unifi Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
+			$this->setAPIResponse('error', $e->getMessage(), 500);
+			return false;
+		}
+		$api['content']['unifi'] = $api['content']['unifi'] ?? false;
 		$this->setAPIResponse('success', 'API Connection succeeded', 200);
 		return true;
 	}
@@ -209,54 +212,28 @@ trait UnifiHomepageItem
 		if (!$this->homepageItemPermissions($this->unifiHomepagePermissions('main'), true)) {
 			return false;
 		}
-		$api['content']['unifi'] = array();
-		$url = $this->qualifyURL($this->config['unifiURL']);
-		$options = $this->requestOptions($url, $this->config['homepageUnifiRefresh'], $this->config['unifiDisableCertCheck'], $this->config['unifiUseCustomCertificate'], ['follow_redirects' => true]);
-		$data = array(
-			'username' => $this->config['unifiUsername'],
-			'password' => $this->decrypt($this->config['unifiPassword']),
-			'remember' => true,
-			'strict' => true
-		);
 		try {
-			// Is this UnifiOs or Regular
-			$response = Requests::get($url, [], $options);
-			if ($response->success) {
-				$csrfToken = ($response->headers['x-csrf-token']) ?? false;
-				$data = ($csrfToken) ? $data : json_encode($data);
-			} else {
-				$this->setAPIResponse('error', 'Unifi response error - Check URL', 409);
-				return false;
-			}
-			$urlLogin = ($csrfToken) ? $url . '/api/auth/login' : $url . '/api/login';
-			$urlStat = ($csrfToken) ? $url . '/proxy/network/api/s/default/stat/health' : $url . '/api/s/' . $this->config['unifiSiteName'] . '/stat/health';
-			$response = Requests::post($urlLogin, [], $data, $options);
-			if ($response->success) {
-				$cookie['unifises'] = ($response->cookies['unifises']->value) ?? false;
-				$cookie['csrf_token'] = ($response->cookies['csrf_token']->value) ?? false;
-				$cookie['Token'] = ($response->cookies['Token']->value) ?? false;
-				$options['cookies'] = $response->cookies;
-				
-			} else {
-				$this->setAPIResponse('error', 'Unifi response error - Check Credentials', 409);
-				return false;
-			}
-			$headers = array(
-				'cookie' => 'unifises=' . $cookie['unifises'] . ';' . 'csrf_token=' . $cookie['csrf_token'] . ';'
-			);
-			$response = Requests::get($urlStat, $headers, $options);
-			if ($response->success) {
-				$api['content']['unifi'] = json_decode($response->body, true);
-			} else {
-				$this->setAPIResponse('error', 'Unifi response error3', 409);
-				return false;
+			$api['content']['unifi'] = array();
+			$login = $this->unifiLogin();
+			if ($login) {
+				$url = $this->qualifyURL($this->config['unifiURL']);
+				$unifiOS = $login['unifiOS'];
+				$headers = ($unifiOS) ? ['x-csrf-token' => $unifiOS] : [];
+				$urlStat = ($unifiOS) ? $url . '/proxy/network/api/s/default/stat/health' : $url . '/api/s/' . $this->config['unifiSiteName'] . '/stat/health';
+				$response = Requests::get($urlStat, $headers, $login['options']);
+				if ($response->success) {
+					$api['content']['unifi'] = json_decode($response->body, true);
+				} else {
+					$this->setAPIResponse('error', 'Unifi response error3', 409);
+					return false;
+				}
 			}
 		} catch (Requests_Exception $e) {
 			$this->writeLog('error', 'Unifi Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
 			$this->setAPIResponse('error', $e->getMessage(), 500);
 			return false;
-		};
-		$api['content']['unifi'] = isset($api['content']['unifi']) ? $api['content']['unifi'] : false;
+		}
+		$api['content']['unifi'] = $api['content']['unifi'] ?? false;
 		$this->setAPIResponse('success', null, 200, $api);
 		return $api;
 	}
