@@ -7473,8 +7473,8 @@ function getUnifiSite(){
     });
 }
 function unifiSiteApply(name){
-    $('#homepage-Unifi-form [name=unifiSiteName]').val(name);
-    $('#homepage-Unifi-form [name=unifiSiteName]').change();
+    $('#homepage-UniFi-form [name=unifiSiteName]').val(name);
+    $('#homepage-UniFi-form [name=unifiSiteName]').change();
     swal.close();
     messageSingle('', ' Grabbed Site - Please Save Now',activeInfo.settings.notifications.position,'#FFF','success','10000');
 }
