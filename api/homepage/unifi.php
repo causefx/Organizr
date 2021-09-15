@@ -172,6 +172,7 @@ trait UnifiHomepageItem
 				return false;
 			}
 			$urlLogin = ($csrfToken) ? $url . '/api/auth/login' : $url . '/api/login';
+			$this->debug('Unifi Login URL: ' . $urlLogin);
 			$urlStat = ($csrfToken) ? $url . '/proxy/network/api/s/default/stat/health' : $url . '/api/s/' . $this->config['unifiSiteName'] . '/stat/health';
 			$response = Requests::post($urlLogin, [], $data, $options);
 			if ($response->success) {
