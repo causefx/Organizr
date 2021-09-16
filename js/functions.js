@@ -6218,7 +6218,6 @@ function buildDownloaderItem(array, source, type='none'){
                 queue = '<tr><td class="max-texts" lang="en">Nothing in queue</td></tr>';
             }
             $.each(array.content.queueItems, function(i,v) {
-                console.log(v);
 		count = count + 1;
                 var upload = v.upSpeed !== '' ? humanFileSize(v.upSpeed,false) : "0 B";
                 var download = v.downSpeed !== '' ? humanFileSize(v.downSpeed,false) : "0 B";
