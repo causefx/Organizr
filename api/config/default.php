@@ -409,6 +409,7 @@ return [
 	'overseerrLimit' => '50',
 	'localIPFrom' => '',
 	'localIPTo' => '',
+	'localIPList' => '',
 	'sandbox' => 'allow-presentation,allow-forms,allow-same-origin,allow-pointer-lock,allow-scripts,allow-popups,allow-modals,allow-top-navigation,allow-downloads,allow-orientation-lock,allow-popups-to-escape-sandbox,allow-top-navigation-by-user-activation',
 	'description' => 'Organizr - Accept no others',
 	'debugErrors' => false,

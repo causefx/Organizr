@@ -2612,22 +2612,7 @@ class Organizr
 					'help' => 'Default status of Remember Me button on login screen',
 					'value' => $this->config['rememberMe'],
 				),
-				array(
-					'type' => 'input',
-					'name' => 'localIPFrom',
-					'label' => 'Override Local IP From',
-					'value' => $this->config['localIPFrom'],
-					'placeholder' => 'i.e. 123.123.123.123',
-					'help' => 'IPv4 only at the moment - This will set your login as local if your IP falls within the From and To'
-				),
-				array(
-					'type' => 'input',
-					'name' => 'localIPTo',
-					'label' => 'Override Local IP To',
-					'value' => $this->config['localIPTo'],
-					'placeholder' => 'i.e. 123.123.123.123',
-					'help' => 'IPv4 only at the moment - This will set your login as local if your IP falls within the From and To'
-				),
+				$this->settingsOption('multiple-url', 'localIPList', ['label' => 'Override Local IP', 'placeholder' => 'i.e. 123.123.123.123', 'help' => 'IPv4 only at the moment - This will set your login as local if your IP falls within the From and To']),
 				array(
 					'type' => 'input',
 					'name' => 'wanDomain',

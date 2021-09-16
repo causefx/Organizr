@@ -488,6 +488,27 @@ trait NormalFunctions
 		}
 	}
 	
+	public function convertIPToRange($ip)
+	{
+		if (strpos($ip, '/') !== false) {
+			$explodeIP = explode('/', $ip);
+			$prefix = $explodeIP[1];
+			$start_ip = $explodeIP[0];
+			$ip_count = 1 << (32 - $prefix);
+			$start_ip_long = long2ip(ip2long($start_ip));
+			$last_ip_long = long2ip(ip2long($start_ip) + $ip_count - 1);
+		} elseif (substr_count($ip, '.') == 3) {
+			$start_ip_long = long2ip(ip2long($ip));
+			$last_ip_long = long2ip(ip2long($ip));
+		} else {
+			return false;
+		}
+		return [
+			'from' => $start_ip_long,
+			'to' => $last_ip_long
+		];
+	}
+	
 	public function localIPRanges()
 	{
 		$mainArray = array(
@@ -508,7 +529,20 @@ trait NormalFunctions
 				'to' => '127.255.255.255'
 			),
 		);
-		$override = false;
+		if (isset($this->config['localIPList'])) {
+			if ($this->config['localIPList'] !== '') {
+				$ipListing = explode(',', $this->config['localIPList']);
+				if (count($ipListing) > 0) {
+					foreach ($ipListing as $ip) {
+						$ipInfo = $this->convertIPToRange($ip);
+						if ($ipInfo) {
+							array_push($mainArray, $ipInfo);
+						}
+					}
+				}
+			}
+		}
+		/*
 		if ($this->config['localIPFrom']) {
 			$from = trim($this->config['localIPFrom']);
 			$override = true;
@@ -516,6 +550,7 @@ trait NormalFunctions
 		if ($this->config['localIPTo']) {
 			$to = trim($this->config['localIPTo']);
 		}
+		
 		if ($override) {
 			$newArray = array(
 				'from' => $from,
@@ -523,6 +558,7 @@ trait NormalFunctions
 			);
 			array_push($mainArray, $newArray);
 		}
+		*/
 		return $mainArray;
 	}
 	

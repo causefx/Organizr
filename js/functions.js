@@ -9626,11 +9626,12 @@ function checkLocalForwardStatus(array){
                 if(activeInfo.settings.user.local && currentSite.indexOf(remoteSite) !== -1 && currentURL.indexOf('override') === -1){
 	                organizrConsole('Organizr Function','Local Login Status: Local | Forwarding Now');
                     window.location = localSite;
+                }else{
+	                organizrConsole('Organizr Function','Local Login Status: Not Local or Override was set - Ignoring Forward Request');
                 }
             } catch(e) {
                 console.error(e);
             }
-	        organizrConsole('Organizr Function','Local Login Status: Not Local');
         }
     }
 }
