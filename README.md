@@ -60,7 +60,7 @@ Do you have quite a bit of services running on your computer or server? Do you h
 
 ![OrganizrFeatReq](https://user-images.githubusercontent.com/16184466/53614286-a9b73480-3b96-11e9-8495-4944b85b1313.png)
 
-[![Feature Requests](http://feathub.com/causefx/Organizr?format=svg)](http://feathub.com/causefx/Organizr)
+[![Feature Requests]](https://vote.organizr.app/)
 
 ![OrganizrDocker](https://user-images.githubusercontent.com/16184466/53667702-fcdcc600-3c2e-11e9-8828-860e531e8096.png)
 
