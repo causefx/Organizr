@@ -6,12 +6,41 @@
  * )
  */
 $app->get('/config[/{item}]', function ($request, $response, $args) {
+	/**
+	 * @OA\Get(
+	 *     tags={"config"},
+	 *     path="/api/v2/config",
+	 *     summary="Get Organizr Coniguration Items",
+	 *     @OA\Response(
+	 *      response="200",
+	 *      description="Success",
+	 *      @OA\JsonContent(ref="#/components/schemas/success-message"),
+	 *     ),
+	 *     @OA\Response(response="401",description="Unauthorized"),
+	 *     security={{ "api_key":{} }}
+	 * )
+	 */
+	/**
+	 * @OA\Get(
+	 *     tags={"config"},
+	 *     path="/api/v2/config/{item}",
+	 *     summary="Get Organizr Coniguration Item",
+	 *     @OA\Parameter(name="item",description="The key of the item you want to grab",@OA\Schema(type="string"),in="path",required=true,example="configVersion"),
+	 *     @OA\Response(
+	 *      response="200",
+	 *      description="Success",
+	 *      @OA\JsonContent(ref="#/components/schemas/success-message"),
+	 *     ),
+	 *     @OA\Response(response="401",description="Unauthorized"),
+	 *     security={{ "api_key":{} }}
+	 * )
+	 */
 	$Organizr = ($request->getAttribute('Organizr')) ?? new Organizr();
 	if ($Organizr->qualifyRequest(1, true)) {
 		if (isset($args['item'])) {
 			$Organizr->getConfigItem($args['item']);
 		} else {
-			$GLOBALS['api']['response']['data'] = $Organizr->config;
+			$GLOBALS['api']['response']['data'] = $Organizr->getConfigItems();
 		}
 		
 	}

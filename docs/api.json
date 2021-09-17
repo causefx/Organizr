@@ -1084,6 +1084,32 @@
             }
         },
         "/api/v2/config": {
+            "get": {
+                "tags": [
+                    "config"
+                ],
+                "summary": "Get Organizr Coniguration Items",
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/success-message"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    }
+                },
+                "security": [
+                    {
+                        "api_key": []
+                    }
+                ]
+            },
             "put": {
                 "tags": [
                     "config"
@@ -1100,6 +1126,46 @@
                         }
                     }
                 },
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/success-message"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    }
+                },
+                "security": [
+                    {
+                        "api_key": []
+                    }
+                ]
+            }
+        },
+        "/api/v2/config/{item}": {
+            "get": {
+                "tags": [
+                    "config"
+                ],
+                "summary": "Get Organizr Coniguration Item",
+                "parameters": [
+                    {
+                        "name": "item",
+                        "in": "path",
+                        "description": "The key of the item you want to grab",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        },
+                        "example": "configVersion"
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "Success",
@@ -1937,6 +2003,61 @@
                 ]
             }
         },
+        "/api/v2/test/overseerr": {
+            "post": {
+                "tags": [
+                    "test connection"
+                ],
+                "summary": "Test connection to Overseerr",
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/success-message"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/unauthorized-message"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/error-message"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/error-message"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "api_key": []
+                    }
+                ]
+            }
+        },
         "/api/v2/test/nzbget": {
             "post": {
                 "tags": [
@@ -1965,6 +2086,61 @@
                         }
                     },
                     "422": {
+                        "description": "Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/error-message"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/error-message"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "api_key": []
+                    }
+                ]
+            }
+        },
+        "/api/v2/test/utorrent": {
+            "post": {
+                "tags": [
+                    "test connection"
+                ],
+                "summary": "Test connection to uTorrent",
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/success-message"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/unauthorized-message"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
                         "description": "Error",
                         "content": {
                             "application/json": {
@@ -2398,6 +2574,45 @@
                         "description": "Unauthorized"
                     }
                 }
+            }
+        },
+        "/api/v2/organizr/{page}": {
+            "get": {
+                "tags": [
+                    "page"
+                ],
+                "summary": "Get HTML for Organizr Pages",
+                "parameters": [
+                    {
+                        "name": "page",
+                        "in": "path",
+                        "description": "Page to get",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/get-html"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    }
+                },
+                "security": [
+                    {
+                        "api_key": []
+                    }
+                ]
             }
         },
         "/api/v2/page/{page}": {
