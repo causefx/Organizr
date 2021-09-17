@@ -28,7 +28,7 @@ trait TautulliHomepageItem
 				],
 				'Connection' => [
 					$this->settingsOption('multiple-url', 'tautulliURL'),
-					$this->settingsOption('api-key', 'tautulliApikey'),
+					$this->settingsOption('multiple-api-key', 'tautulliApikey'),
 					$this->settingsOption('disable-cert-check', 'tautulliDisableCertCheck'),
 					$this->settingsOption('use-custom-certificate', 'tautulliUseCustomCertificate'),
 				],
