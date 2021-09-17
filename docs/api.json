@@ -1188,6 +1188,46 @@
                 ]
             }
         },
+        "/api/v2/config/search/{term}": {
+            "get": {
+                "tags": [
+                    "config"
+                ],
+                "summary": "Search Organizr Coniguration Items",
+                "parameters": [
+                    {
+                        "name": "term",
+                        "in": "path",
+                        "description": "The term of the items you want to grab",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        },
+                        "example": "version"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/success-message"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    }
+                },
+                "security": [
+                    {
+                        "api_key": []
+                    }
+                ]
+            }
+        },
         "/api/v2/test/ldap": {
             "post": {
                 "tags": [
