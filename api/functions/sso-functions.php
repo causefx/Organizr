@@ -5,9 +5,9 @@ trait SSOFunctions
 	public function ssoCookies()
 	{
 		$cookies = array(
-			'myPlexAccessToken' => isset($_COOKIE['mpt']) ? $_COOKIE['mpt'] : false,
-			'id_token' => isset($_COOKIE['Auth']) ? $_COOKIE['Auth'] : false,
-			'jellyfin_credentials' => isset($_COOKIE['jellyfin_credentials']) ? $_COOKIE['jellyfin_credentials'] : false,
+			'myPlexAccessToken' => $_COOKIE['mpt'] ?? false,
+			'id_token' => $_COOKIE['Auth'] ?? false,
+			'jellyfin_credentials' => $_COOKIE['jellyfin_credentials'] ?? false,
 		);
 		// Jellyfin cookie
 		foreach (array_keys($_COOKIE) as $k => $v) {
@@ -164,7 +164,7 @@ trait SSOFunctions
 					$headers = array(
 						"Accept" => "application/json",
 						"Content-Type" => "application/x-www-form-urlencoded",
-						"User-Agent" => isset($_SERVER ['HTTP_USER_AGENT']) ? $_SERVER ['HTTP_USER_AGENT'] : null,
+						"User-Agent" => $_SERVER ['HTTP_USER_AGENT'] ?? null,
 						"X-Forwarded-For" => $this->userIP()
 					);
 					$data = array(

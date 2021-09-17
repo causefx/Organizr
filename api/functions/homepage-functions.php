@@ -2,6 +2,17 @@
 
 trait HomepageFunctions
 {
+	public function homepageCheckKeyPermissions($key, $permissions)
+	{
+		if (array_key_exists($key, $permissions)) {
+			return $permissions[$key];
+		} elseif ($key == 'all') {
+			return $permissions;
+		} else {
+			return [];
+		}
+	}
+	
 	public function getHomepageSettingsList()
 	{
 		$methods = get_class_methods($this);
@@ -74,7 +85,7 @@ trait HomepageFunctions
 					if ($settingsType == 'string') {
 						if (empty($this->config[$setting])) {
 							if ($api) {
-								$this->setAPIResponse('error', $setting . 'was not supplied', 422);
+								$this->setAPIResponse('error', $setting . ' was not supplied', 422);
 							}
 							return false;
 						}
@@ -82,7 +93,7 @@ trait HomepageFunctions
 						foreach ($setting as $item) {
 							if (empty($this->config[$item])) {
 								if ($api) {
-									$this->setAPIResponse('error', $item . 'was not supplied', 422);
+									$this->setAPIResponse('error', $item . ' was not supplied', 422);
 								}
 								return false;
 							}

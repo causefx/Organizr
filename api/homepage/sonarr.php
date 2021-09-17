@@ -15,7 +15,7 @@ trait SonarrHomepageItem
 			return $homepageInformation;
 		}
 		$homepageSettings = [
-			'docs' => 'https://docs.organizr.app/books/setup-features/page/sonarr',
+			'docs' => $this->docs('features/homepage/sonarr-homepage-item'),
 			'debug' => true,
 			'settings' => [
 				'About' => [
@@ -141,13 +141,7 @@ trait SonarrHomepageItem
 				]
 			]
 		];
-		if (array_key_exists($key, $permissions)) {
-			return $permissions[$key];
-		} elseif ($key == 'all') {
-			return $permissions;
-		} else {
-			return [];
-		}
+		return $this->homepageCheckKeyPermissions($key, $permissions);
 	}
 	
 	public function homepageOrderSonarrQueue()
@@ -203,8 +197,8 @@ trait SonarrHomepageItem
 	
 	public function getSonarrCalendar($startDate = null, $endDate = null)
 	{
-		$startDate = ($startDate) ?? $_GET['start'];
-		$endDate = ($endDate) ?? $_GET['end'];
+		$startDate = ($startDate) ?? $_GET['start'] ?? date('Y-m-d', strtotime('-' . $this->config['calendarStart'] . ' days'));
+		$endDate = ($endDate) ?? $_GET['end'] ?? date('Y-m-d', strtotime('+' . $this->config['calendarEnd'] . ' days'));
 		if (!$this->homepageItemPermissions($this->sonarrHomepagePermissions('calendar'), true)) {
 			return false;
 		}

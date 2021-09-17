@@ -9,8 +9,7 @@ $Organizr = new Organizr();
     <meta charset="utf-8">
     <meta content="IE=edge" http-equiv="X-UA-Compatible">
     <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport">
-    <meta content="<?php echo $Organizr->config['description']; ?>"
-          name="description">
+    <meta content="<?php echo $Organizr->config['description']; ?>" name="description">
     <meta content="CauseFX" name="author">
 	<?php echo $Organizr->favIcons(); ?>
     <title><?php echo $Organizr->config['title']; ?></title>
@@ -21,7 +20,6 @@ $Organizr = new Organizr();
     <link href="plugins/bower_components/jquery-wizard-master/libs/formvalidation/formValidation.min.css"
           rel="stylesheet">
     <link href="plugins/bower_components/Magnific-Popup-master/dist/magnific-popup.css" rel="stylesheet">
-    <!--<link href="plugins/bower_components/sweetalert/sweetalert.css" rel="stylesheet" type="text/css">-->
     <link href="plugins/bower_components/switchery/dist/switchery.min.css" rel="stylesheet"/>
     <link href="plugins/bower_components/dropzone-master/dist/dropzone.css" rel="stylesheet" type="text/css"/>
     <link href="plugins/bower_components/css-chart/css-chart.css" rel="stylesheet">
@@ -38,9 +36,9 @@ $Organizr = new Organizr();
     <link href="plugins/bower_components/jsgrid/dist/jsgrid-theme.min.css" rel="stylesheet" type="text/css"/>
     <link href="plugins/bower_components/gallery/css/animated-masonry-gallery.css" rel="stylesheet" type="text/css"/>
     <link href="css/animate.css" rel="stylesheet">
-    <link href='plugins/bower_components/overlayScrollbars/OverlayScrollbars.min.css' rel='stylesheet'>
-    <link href='plugins/bower_components/custombox/dist/custombox.min.css' rel='stylesheet'>
-    <link href='css/plyr.css' rel='stylesheet'>
+    <link href="plugins/bower_components/overlayScrollbars/OverlayScrollbars.min.css" rel="stylesheet">
+    <link href="plugins/bower_components/custombox/dist/custombox.min.css" rel="stylesheet">
+    <link href="css/plyr.css" rel="stylesheet">
     <link id="style" href="css/dark.min.css?v=<?php echo $Organizr->fileHash; ?>" rel="stylesheet">
     <link href="css/organizr.min.css?v=<?php echo $Organizr->fileHash; ?>" rel="stylesheet">
 	<?php echo $Organizr->pluginFiles('css'); ?>
@@ -151,7 +149,6 @@ $Organizr = new Organizr();
         <div class="internal-listing-right p-0 hidden"></div>
         <div class="iFrame-listing-right p-0 hidden"></div>
     </div>
-
     <!-- help modal content -->
     <div class="modal fade help-modal-lg" tabindex="-1" role="dialog" aria-labelledby="help-modal-lg" aria-hidden="true"
          style="display: none;">
@@ -172,6 +169,21 @@ $Organizr = new Organizr();
     <!-- ============================================================== -->
     <a href="#" id="scroll" style="display: none;"><span></span></a>
     <button id="internal-clipboard" class="hidden"></button>
+    <div class="org-rox-trigger">
+        <div class="org-rox">
+            <div class="hair"></div>
+            <div class="head">
+                <div class="ear left"></div>
+                <div class="ear right"></div>
+                <div class="face">
+                    <div class="eye left"></div>
+                    <div class="eye right"></div>
+                    <div class="nose"></div>
+                    <div class="mouth"></div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 <!-- /#wrapper -->
 <!-- jQuery -->

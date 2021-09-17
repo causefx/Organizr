@@ -5,6 +5,8 @@
  * Copyright (c) 2005 David Grudl (https://davidgrudl.com)
  */
 
+declare(strict_types=1);
+
 namespace Dibi;
 
 
@@ -16,7 +18,8 @@ class Event
 	use Strict;
 
 	/** event type */
-	const CONNECT = 1,
+	public const
+		CONNECT = 1,
 		SELECT = 4,
 		INSERT = 8,
 		DELETE = 16,
@@ -50,11 +53,11 @@ class Event
 	public $source;
 
 
-	public function __construct(Connection $connection, $type, $sql = null)
+	public function __construct(Connection $connection, int $type, string $sql = null)
 	{
 		$this->connection = $connection;
 		$this->type = $type;
-		$this->sql = trim($sql);
+		$this->sql = trim((string) $sql);
 		$this->time = -microtime(true);
 
 		if ($type === self::QUERY && preg_match('#\(?\s*(SELECT|UPDATE|INSERT|DELETE)#iA', $this->sql, $matches)) {
@@ -65,9 +68,8 @@ class Event
 			$this->type = $types[strtoupper($matches[1])];
 		}
 
-		$rc = new \ReflectionClass('dibi');
-		$dibiDir = dirname($rc->getFileName()) . DIRECTORY_SEPARATOR;
-		foreach (debug_backtrace(false) as $row) {
+		$dibiDir = dirname((new \ReflectionClass('dibi'))->getFileName()) . DIRECTORY_SEPARATOR;
+		foreach (debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS) as $row) {
 			if (isset($row['file']) && is_file($row['file']) && strpos($row['file'], $dibiDir) !== 0) {
 				$this->source = [$row['file'], (int) $row['line']];
 				break;
@@ -81,9 +83,9 @@ class Event
 
 
 	/**
-	 * @param  Result|DriverException|null
+	 * @param  Result|DriverException|null  $result
 	 */
-	public function done($result = null)
+	public function done($result = null): self
 	{
 		$this->result = $result;
 		try {

@@ -30,7 +30,7 @@ trait TraktHomepageItem
 										<p lang="en">In order for this item to be setup, you need to goto the following URL to create a new API app.</p>
 										<p><a href="https://trakt.tv/oauth/applications/new" target="_blank">New API App</a></p>
 										<p lang="en">Enter anything for Name and Description.  You can leave Javascript and Permissions blank.  The only info you have to enter is for Redirect URI.  Enter the following URL:</p>
-										<code>' . $this->getServerPath() . 'api/v2/oauth/trakt</code>
+										<code class="elip hidden-xs">' . $this->getServerPath() . 'api/v2/oauth/trakt</code>
 									</div>
 								</div>
 							</div>'
@@ -77,13 +77,7 @@ trait TraktHomepageItem
 				]
 			]
 		];
-		if (array_key_exists($key, $permissions)) {
-			return $permissions[$key];
-		} elseif ($key == 'all') {
-			return $permissions;
-		} else {
-			return [];
-		}
+		return $this->homepageCheckKeyPermissions($key, $permissions);
 	}
 	
 	public function getTraktCalendar($startDate = null)

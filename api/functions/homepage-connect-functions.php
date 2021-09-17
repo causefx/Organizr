@@ -59,7 +59,7 @@ trait HomepageConnectFunctions
 				$headers = array(
 					"Accept" => "application/json",
 					"Content-Type" => "application/json",
-					"Apikey" => $GLOBALS['ombiToken']
+					"Apikey" => $this->config['ombiToken']
 				);
 				$options = ($this->localURL($url)) ? array('verify' => false) : array();
 				switch ($type) {

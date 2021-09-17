@@ -1,0 +1,48 @@
+build: off
+cache:
+    - c:\php7 -> appveyor.yml
+    - '%LOCALAPPDATA%\Composer\files -> appveyor.yml'
+
+clone_folder: c:\projects\dibi
+
+services:
+    - mssql2012sp1
+#    - mssql2014
+    - mysql
+
+init:
+    - SET PATH=c:\php7;%PATH%
+    - SET ANSICON=121x90 (121x90)
+
+install:
+    # Install PHP 7.2
+    - IF EXIST c:\php7 (SET PHP=0) ELSE (SET PHP=1)
+    - IF %PHP%==1 mkdir c:\php7
+    - IF %PHP%==1 cd c:\php7
+    - IF %PHP%==1 curl https://windows.php.net/downloads/releases/archives/php-7.2.18-Win32-VC15-x64.zip --output php.zip
+    - IF %PHP%==1 7z x php.zip >nul
+    - IF %PHP%==1 echo extension_dir=ext >> php.ini
+    - IF %PHP%==1 echo extension=php_openssl.dll >> php.ini
+    - IF %PHP%==1 curl https://github.com/microsoft/msphpsql/releases/download/v5.8.0/Windows-7.2.zip -L --output sqlsrv.zip
+    - IF %PHP%==1 7z x sqlsrv.zip >nul
+    - IF %PHP%==1 copy Windows-7.2\x64\php_sqlsrv_72_ts.dll ext\php_sqlsrv_ts.dll
+    - IF %PHP%==1 del /Q *.zip
+
+    # Install Microsoft Access Database Engine x64
+    - IF %PHP%==1 curl https://download.microsoft.com/download/2/4/3/24375141-E08D-4803-AB0E-10F2E3A07AAA/AccessDatabaseEngine_X64.exe --output AccessDatabaseEngine_X64.exe
+    - cmd /c start /wait AccessDatabaseEngine_X64.exe /passive
+
+    # Install Nette Tester
+    - cd c:\projects\dibi
+    - appveyor DownloadFile https://getcomposer.org/composer.phar
+    - php composer.phar install --prefer-dist --no-interaction --no-progress
+
+    # Create databases.ini
+    - copy tests\databases.appveyor.ini tests\databases.ini
+
+test_script:
+    - vendor\bin\tester tests -s -p c:\php7\php -c tests\php-win.ini
+
+on_failure:
+    # Print *.actual content
+    - for /r %%x in (*.actual) do ( type "%%x" )

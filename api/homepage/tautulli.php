@@ -27,7 +27,7 @@ trait TautulliHomepageItem
 					$this->settingsOption('refresh', 'homepageTautulliRefresh'),
 				],
 				'Connection' => [
-					$this->settingsOption('url', 'tautulliURL'),
+					$this->settingsOption('multiple-url', 'tautulliURL'),
 					$this->settingsOption('api-key', 'tautulliApikey'),
 					$this->settingsOption('disable-cert-check', 'tautulliDisableCertCheck'),
 					$this->settingsOption('use-custom-certificate', 'tautulliUseCustomCertificate'),
@@ -110,13 +110,7 @@ trait TautulliHomepageItem
 				]
 			]
 		];
-		if (array_key_exists($key, $permissions)) {
-			return $permissions[$key];
-		} elseif ($key == 'all') {
-			return $permissions;
-		} else {
-			return [];
-		}
+		return $this->homepageCheckKeyPermissions($key, $permissions);
 	}
 	
 	public function homepageOrdertautulli()

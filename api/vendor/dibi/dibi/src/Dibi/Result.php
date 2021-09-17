@@ -5,6 +5,8 @@
  * Copyright (c) 2005 David Grudl (https://davidgrudl.com)
  */
 
+declare(strict_types=1);
+
 namespace Dibi;
 
 
@@ -17,20 +19,20 @@ class Result implements IDataSource
 {
 	use Strict;
 
-	/** @var array  ResultDriver */
+	/** @var ResultDriver|null */
 	private $driver;
 
 	/** @var array  Translate table */
 	private $types = [];
 
-	/** @var Reflection\Result */
+	/** @var Reflection\Result|null */
 	private $meta;
 
 	/** @var bool  Already fetched? Used for allowance for first seek(0) */
 	private $fetched = false;
 
 	/** @var string|null  returned object class */
-	private $rowClass = 'Dibi\Row';
+	private $rowClass = Row::class;
 
 	/** @var callable|null  returned object factory */
 	private $rowFactory;
@@ -39,31 +41,19 @@ class Result implements IDataSource
 	private $formats = [];
 
 
-	/**
-	 * @param  ResultDriver
-	 */
-	public function __construct($driver)
+	public function __construct(ResultDriver $driver, bool $normalize = true)
 	{
 		$this->driver = $driver;
-		$this->detectTypes();
-	}
-
-
-	/**
-	 * @deprecated
-	 */
-	final public function getResource()
-	{
-		trigger_error(__METHOD__ . '() is deprecated, use getResultDriver()->getResultResource().', E_USER_DEPRECATED);
-		return $this->getResultDriver()->getResultResource();
+		if ($normalize) {
+			$this->detectTypes();
+		}
 	}
 
 
 	/**
 	 * Frees the resources allocated for this result set.
-	 * @return void
 	 */
-	final public function free()
+	final public function free(): void
 	{
 		if ($this->driver !== null) {
 			$this->driver->free();
@@ -74,10 +64,9 @@ class Result implements IDataSource
 
 	/**
 	 * Safe access to property $driver.
-	 * @return ResultDriver
 	 * @throws \RuntimeException
 	 */
-	final public function getResultDriver()
+	final public function getResultDriver(): ResultDriver
 	{
 		if ($this->driver === null) {
 			throw new \RuntimeException('Result-set was released from memory.');
@@ -92,23 +81,20 @@ class Result implements IDataSource
 
 	/**
 	 * Moves cursor position without fetching row.
-	 * @param  int      the 0-based cursor pos to seek to
-	 * @return bool     true on success, false if unable to seek to specified record
 	 * @throws Exception
 	 */
-	final public function seek($row)
+	final public function seek(int $row): bool
 	{
-		return ($row != 0 || $this->fetched) // intentionally ==
-			? (bool) $this->getResultDriver()->seek($row)
+		return ($row !== 0 || $this->fetched)
+			? $this->getResultDriver()->seek($row)
 			: true;
 	}
 
 
 	/**
 	 * Required by the Countable interface.
-	 * @return int
 	 */
-	final public function count()
+	final public function count(): int
 	{
 		return $this->getResultDriver()->getRowCount();
 	}
@@ -116,9 +102,8 @@ class Result implements IDataSource
 
 	/**
 	 * Returns the number of rows in a result set.
-	 * @return int
 	 */
-	final public function getRowCount()
+	final public function getRowCount(): int
 	{
 		return $this->getResultDriver()->getRowCount();
 	}
@@ -126,9 +111,8 @@ class Result implements IDataSource
 
 	/**
 	 * Required by the IteratorAggregate interface.
-	 * @return ResultIterator
 	 */
-	final public function getIterator()
+	final public function getIterator(): ResultIterator
 	{
 		return new ResultIterator($this);
 	}
@@ -136,9 +120,8 @@ class Result implements IDataSource
 
 	/**
 	 * Returns the number of columns in a result set.
-	 * @return int
 	 */
-	final public function getColumnCount()
+	final public function getColumnCount(): int
 	{
 		return count($this->types);
 	}
@@ -149,10 +132,8 @@ class Result implements IDataSource
 
 	/**
 	 * Set fetched object class. This class should extend the Row class.
-	 * @param  string
-	 * @return self
 	 */
-	public function setRowClass($class)
+	public function setRowClass(?string $class): self
 	{
 		$this->rowClass = $class;
 		return $this;
@@ -161,9 +142,8 @@ class Result implements IDataSource
 
 	/**
 	 * Returns fetched object class name.
-	 * @return string
 	 */
-	public function getRowClass()
+	public function getRowClass(): ?string
 	{
 		return $this->rowClass;
 	}
@@ -171,9 +151,8 @@ class Result implements IDataSource
 
 	/**
 	 * Set a factory to create fetched object instances. These should extend the Row class.
-	 * @return self
 	 */
-	public function setRowFactory(callable $callback)
+	public function setRowFactory(callable $callback): self
 	{
 		$this->rowFactory = $callback;
 		return $this;
@@ -183,20 +162,20 @@ class Result implements IDataSource
 	/**
 	 * Fetches the row at current position, process optional type conversion.
 	 * and moves the internal cursor to the next position
-	 * @return Row|false
+	 * @return Row|array|null
 	 */
 	final public function fetch()
 	{
 		$row = $this->getResultDriver()->fetch(true);
-		if (!is_array($row)) {
-			return false;
+		if ($row === null) {
+			return null;
 		}
 		$this->fetched = true;
 		$this->normalize($row);
 		if ($this->rowFactory) {
-			return call_user_func($this->rowFactory, $row);
+			return ($this->rowFactory)($row);
 		} elseif ($this->rowClass) {
-			$row = new $this->rowClass($row);
+			return new $this->rowClass($row);
 		}
 		return $row;
 	}
@@ -204,13 +183,13 @@ class Result implements IDataSource
 
 	/**
 	 * Like fetch(), but returns only first field.
-	 * @return mixed value on success, false if no next record
+	 * @return mixed value on success, null if no next record
 	 */
 	final public function fetchSingle()
 	{
 		$row = $this->getResultDriver()->fetch(true);
-		if (!is_array($row)) {
-			return false;
+		if ($row === null) {
+			return null;
 		}
 		$this->fetched = true;
 		$this->normalize($row);
@@ -220,14 +199,12 @@ class Result implements IDataSource
 
 	/**
 	 * Fetches all records from table.
-	 * @param  int  offset
-	 * @param  int  limit
 	 * @return Row[]|array[]
 	 */
-	final public function fetchAll($offset = null, $limit = null)
+	final public function fetchAll(int $offset = null, int $limit = null): array
 	{
-		$limit = $limit === null ? -1 : Helpers::intVal($limit);
-		$this->seek($offset);
+		$limit = $limit ?? -1;
+		$this->seek($offset ?: 0);
 		$row = $this->fetch();
 		if (!$row) {
 			return [];  // empty result set
@@ -253,11 +230,9 @@ class Result implements IDataSource
 	 *   builds a tree:          $tree[$val1][$index][$val2]->col3[$val3] = {record}
 	 * - associative descriptor: col1|col2->col3=col4
 	 *   builds a tree:          $tree[$val1][$val2]->col3[$val3] = val4
-	 * @param  string  associative descriptor
-	 * @return array
 	 * @throws \InvalidArgumentException
 	 */
-	final public function fetchAssoc($assoc)
+	final public function fetchAssoc(string $assoc): array
 	{
 		if (strpos($assoc, ',') !== false) {
 			return $this->oldFetchAssoc($assoc);
@@ -271,6 +246,9 @@ class Result implements IDataSource
 
 		$data = null;
 		$assoc = preg_split('#(\[\]|->|=|\|)#', $assoc, -1, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY);
+		if (!$assoc) {
+			throw new \InvalidArgumentException("Invalid descriptor '$assoc'.");
+		}
 
 		// check columns
 		foreach ($assoc as $as) {
@@ -311,7 +289,7 @@ class Result implements IDataSource
 					}
 
 				} elseif ($as !== '|') { // associative-array node
-					$x = &$x[$row->$as];
+					$x = &$x[(string) $row->$as];
 				}
 			}
 
@@ -321,14 +299,13 @@ class Result implements IDataSource
 		} while ($row = $this->fetch());
 
 		unset($x);
+		/** @var mixed[] $data */
 		return $data;
 	}
 
 
-	/**
-	 * @deprecated
-	 */
-	private function oldFetchAssoc($assoc)
+	/** @deprecated */
+	private function oldFetchAssoc(string $assoc)
 	{
 		$this->seek(0);
 		$row = $this->fetch();
@@ -379,16 +356,14 @@ class Result implements IDataSource
 					}
 
 				} else { // associative-array node
-					$x = &$x[$row->$as];
+					$x = &$x[(string) $row->$as];
 				}
 			}
 
 			if ($x === null) { // build leaf
-				if ($leaf === '=') {
-					$x = $row->toArray();
-				} else {
-					$x = $row;
-				}
+				$x = $leaf === '='
+					? $row->toArray()
+					: $row;
 			}
 		} while ($row = $this->fetch());
 
@@ -399,12 +374,9 @@ class Result implements IDataSource
 
 	/**
 	 * Fetches all records from table like $key => $value pairs.
-	 * @param  string  associative key
-	 * @param  string  value
-	 * @return array
 	 * @throws \InvalidArgumentException
 	 */
-	final public function fetchPairs($key = null, $value = null)
+	final public function fetchPairs(string $key = null, string $value = null): array
 	{
 		$this->seek(0);
 		$row = $this->fetch();
@@ -461,14 +433,13 @@ class Result implements IDataSource
 
 	/**
 	 * Autodetect column types.
-	 * @return void
 	 */
-	private function detectTypes()
+	private function detectTypes(): void
 	{
 		$cache = Helpers::getTypeCache();
 		try {
 			foreach ($this->getResultDriver()->getResultColumns() as $col) {
-				$this->types[$col['name']] = isset($col['type']) ? $col['type'] : $cache->{$col['nativetype']};
+				$this->types[$col['name']] = $col['type'] ?? $cache->{$col['nativetype']};
 			}
 		} catch (NotSupportedException $e) {
 		}
@@ -477,17 +448,20 @@ class Result implements IDataSource
 
 	/**
 	 * Converts values to specified type and format.
-	 * @param  array
-	 * @return void
 	 */
-	private function normalize(array &$row)
+	private function normalize(array &$row): void
 	{
 		foreach ($this->types as $key => $type) {
 			if (!isset($row[$key])) { // null
 				continue;
 			}
 			$value = $row[$key];
-			if ($type === Type::TEXT) {
+			$format = $this->formats[$type] ?? null;
+
+			if ($type === null || $format === 'native') {
+				$row[$key] = $value;
+
+			} elseif ($type === Type::TEXT) {
 				$row[$key] = (string) $value;
 
 			} elseif ($type === Type::INTEGER) {
@@ -517,21 +491,31 @@ class Result implements IDataSource
 			} elseif ($type === Type::DATETIME || $type === Type::DATE || $type === Type::TIME) {
 				if ($value && substr((string) $value, 0, 3) !== '000') { // '', null, false, '0000-00-00', ...
 					$value = new DateTime($value);
-					$row[$key] = empty($this->formats[$type]) ? $value : $value->format($this->formats[$type]);
+					$row[$key] = $format ? $value->format($format) : $value;
 				} else {
 					$row[$key] = null;
 				}
 
 			} elseif ($type === Type::TIME_INTERVAL) {
 				preg_match('#^(-?)(\d+)\D(\d+)\D(\d+)\z#', $value, $m);
-				$row[$key] = new \DateInterval("PT$m[2]H$m[3]M$m[4]S");
-				$row[$key]->invert = (int) (bool) $m[1];
+				$value = new \DateInterval("PT$m[2]H$m[3]M$m[4]S");
+				$value->invert = (int) (bool) $m[1];
+				$row[$key] = $format ? $value->format($format) : $value;
 
 			} elseif ($type === Type::BINARY) {
-				$row[$key] = $this->getResultDriver()->unescapeBinary($value);
+				$row[$key] = is_string($value)
+					? $this->getResultDriver()->unescapeBinary($value)
+					: $value;
+
+			} elseif ($type === Type::JSON) {
+				if ($format === 'string') { // back compatibility with 'native'
+					$row[$key] = $value;
+				} else {
+					$row[$key] = json_decode($value, $format === 'array');
+				}
 
 			} else {
-				$row[$key] = $value;
+				throw new \RuntimeException('Unexpected type ' . $type);
 			}
 		}
 	}
@@ -539,34 +523,37 @@ class Result implements IDataSource
 
 	/**
 	 * Define column type.
-	 * @param  string  column
-	 * @param  string  type (use constant Type::*)
-	 * @return self
+	 * @param  string|null  $type  use constant Type::*
 	 */
-	final public function setType($col, $type)
+	final public function setType(string $column, ?string $type): self
 	{
-		$this->types[$col] = $type;
+		$this->types[$column] = $type;
 		return $this;
 	}
 
 
 	/**
 	 * Returns column type.
-	 * @return string
 	 */
-	final public function getType($col)
+	final public function getType(string $column): ?string
 	{
-		return isset($this->types[$col]) ? $this->types[$col] : null;
+		return $this->types[$column] ?? null;
 	}
 
 
 	/**
-	 * Sets date format.
-	 * @param  string
-	 * @param  string|null  format
-	 * @return self
+	 * Returns columns type.
 	 */
-	final public function setFormat($type, $format)
+	final public function getTypes(): array
+	{
+		return $this->types;
+	}
+
+
+	/**
+	 * Sets type format.
+	 */
+	final public function setFormat(string $type, ?string $format): self
 	{
 		$this->formats[$type] = $format;
 		return $this;
@@ -574,12 +561,21 @@ class Result implements IDataSource
 
 
 	/**
-	 * Returns data format.
-	 * @return string|null
+	 * Sets type formats.
 	 */
-	final public function getFormat($type)
+	final public function setFormats(array $formats): self
 	{
-		return isset($this->formats[$type]) ? $this->formats[$type] : null;
+		$this->formats = $formats;
+		return $this;
+	}
+
+
+	/**
+	 * Returns data format.
+	 */
+	final public function getFormat(string $type): ?string
+	{
+		return $this->formats[$type] ?? null;
 	}
 
 
@@ -588,9 +584,8 @@ class Result implements IDataSource
 
 	/**
 	 * Returns a meta information about the current result set.
-	 * @return Reflection\Result
 	 */
-	public function getInfo()
+	public function getInfo(): Reflection\Result
 	{
 		if ($this->meta === null) {
 			$this->meta = new Reflection\Result($this->getResultDriver());
@@ -599,10 +594,8 @@ class Result implements IDataSource
 	}
 
 
-	/**
-	 * @return Reflection\Column[]
-	 */
-	final public function getColumns()
+	/** @return Reflection\Column[] */
+	final public function getColumns(): array
 	{
 		return $this->getInfo()->getColumns();
 	}
@@ -613,9 +606,8 @@ class Result implements IDataSource
 
 	/**
 	 * Displays complete result set as HTML or text table for debug purposes.
-	 * @return void
 	 */
-	final public function dump()
+	final public function dump(): void
 	{
 		echo Helpers::dump($this);
 	}

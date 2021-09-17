@@ -150,10 +150,10 @@ class Bookmark extends Organizr
 							<div class="panel-wrapper collapse in" aria-expanded="true">
 								<div class="panel-body">
 									<ul class="list-icons">
-										<li><i class="fa fa-chevron-right text-info"></i> Add tab that points to <i>api/v2/plugins/bookmark/page</i> and set it\'s type to <i>Organizr</i>.</li>
-										<li><i class="fa fa-chevron-right text-info"></i> Create Bookmark categories in the new area in <i>Tab Editor</i>.</li>
-										<li><i class="fa fa-chevron-right text-info"></i> Create Bookmark tabs in the new area in <i>Tab Editor</i>.</li>
-										<li><i class="fa fa-chevron-right text-info"></i> Open your custom Bookmark page via menu.</li>
+										<li><i class="fa fa-chevron-right text-info"></i> <span lang="en">Add tab that points to <i>api/v2/plugins/bookmark/page</i> and set it\'s type to <i>Organizr</i>.</span></li>
+										<li><i class="fa fa-chevron-right text-info"></i> <span lang="en">Create Bookmark categories in the new area in <i>Tab Editor</i>.</span></li>
+										<li><i class="fa fa-chevron-right text-info"></i> <span lang="en">Create Bookmark tabs in the new area in <i>Tab Editor</i>.</span></li>
+										<li><i class="fa fa-chevron-right text-info"></i> <span lang="en">Open your custom Bookmark page via menu.</span></li>
 									</ul>
 								</div>
 							</div>
@@ -719,7 +719,7 @@ class Bookmark extends Organizr
 	<div class="panel bg-org panel-info">
 		<div class="panel-heading">
 			<span lang="en">Bookmark Category Editor</span>
-			<button type="button" class="btn btn-success btn-circle pull-right popup-with-form m-r-5" href="#new-bookmark-category-form" data-effect="mfp-3d-unfold"><i class="fa fa-plus"></i> </button>
+			<button type="button" class="btn btn-info btn-circle pull-right popup-with-form m-r-5" href="#new-bookmark-category-form" data-effect="mfp-3d-unfold"><i class="fa fa-plus"></i> </button>
 		</div>
 		<div class="table-responsive">
 			<form id="submit-bookmark-categories-form" onsubmit="return false;">

@@ -1,3 +1,6 @@
+<?php
+declare(strict_types=1);
+?>
 <!DOCTYPE html><link rel="stylesheet" href="data/style.css">
 
 <h1>Query Language Basic Examples | Dibi</h1>
@@ -12,7 +15,7 @@ date_default_timezone_set('Europe/Prague');
 
 
 $dibi = new Dibi\Connection([
-	'driver' => 'sqlite3',
+	'driver' => 'sqlite',
 	'database' => 'data/sample.s3db',
 ]);
 

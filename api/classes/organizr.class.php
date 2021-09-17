@@ -43,6 +43,7 @@ class Organizr
 	use NZBGetHomepageItem;
 	use OctoPrintHomepageItem;
 	use OmbiHomepageItem;
+	use OverseerrHomepageItem;
 	use PiHoleHomepageItem;
 	use PlexHomepageItem;
 	use QBitTorrentHomepageItem;
@@ -57,10 +58,11 @@ class Organizr
 	use TransmissionHomepageItem;
 	use UnifiHomepageItem;
 	use WeatherHomepageItem;
+	use uTorrentHomepageItem;
 	
 	// ===================================
 	// Organizr Version
-	public $version = '2.1.496';
+	public $version = '2.1.655';
 	// ===================================
 	// Quick php Version check
 	public $minimumPHP = '7.3';
@@ -85,11 +87,15 @@ class Organizr
 	public $paths;
 	public $updating;
 	public $groupOptions;
+	public $warnings;
+	public $errors;
 	
 	public function __construct($updating = false)
 	{
 		// First Check PHP Version
 		$this->checkPHP();
+		// Check Disk Space
+		$this->checkDiskSpace();
 		// Constructed from Updater?
 		$this->updating = $updating;
 		// Set Project Root directory
@@ -104,14 +110,16 @@ class Organizr
 		$this->currentTime = gmdate("Y-m-d\TH:i:s\Z");
 		// Set variable if install is for official docker
 		$this->docker = (file_exists(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'Docker.txt'));
-		// Set variable if install is for develop
+		// Set variable if install is for develop and set php Error levels
 		$this->dev = (file_exists(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'Dev.txt'));
+		$this->phpErrors();
 		// Set variable if install is for demo
 		$this->demo = (file_exists(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'Demo.txt'));
 		// Set variable if install has commit hash
 		$this->commit = ($this->docker && !$this->dev) ? file_get_contents(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'Github.txt') : null;
 		// Set variable to be used as hash for files
 		$this->fileHash = ($this->commit) ?? $this->version;
+		$this->fileHash = trim($this->fileHash);
 		// Load Config file
 		$this->config = $this->config();
 		// Set organizr Log file location
@@ -133,7 +141,7 @@ class Organizr
 		// Set cookie name for Organizr Instance
 		$this->cookieName = ($this->hasDB()) ? $this->config['uuid'] !== '' ? 'organizr_token_' . $this->config['uuid'] : 'organizr_token_temp' : 'organizr_token_temp';
 		// Get token form cookie and validate
-		$this->user = $this->hasCookie() ? $this->validateToken($_COOKIE[$this->cookieName]) ?? $this->guestUser() : $this->guestUser();
+		$this->setCurrentUser();
 		// might just run this at index
 		$this->upgradeCheck();
 		// Is Page load Organizr OAuth?
@@ -142,20 +150,34 @@ class Organizr
 		$this->checkIfUserIsBlacklisted();
 	}
 	
+	public function __destruct()
+	{
+		$this->disconnectDB();
+	}
+	
 	protected function connectDB()
 	{
 		if ($this->hasDB()) {
 			try {
-				$this->db = new Connection([
+				$connect = [
 					'driver' => 'sqlite3',
-					'database' => $this->config['dbLocation'] . $this->config['dbName'],
-					//'onConnect' => array('PRAGMA journal_mode=WAL'),
-				]);
+					'database' => $this->config['dbLocation'] . $this->config['dbName']
+				];
+				$this->db = new Connection($connect);
 			} catch (Dibi\Exception $e) {
 				$this->db = null;
 			}
 		} else {
 			$this->db = null;
+		}
+	}
+	
+	public function disconnectDB()
+	{
+		if ($this->hasDB()) {
+			$this->db->disconnect();
+			$this->db = null;
+			unset($this->db);
 		}
 	}
 	
@@ -170,6 +192,35 @@ class Organizr
 		} catch (Dibi\Exception $e) {
 			$this->otherDb = null;
 		}
+	}
+	
+	public function setCurrentUser()
+	{
+		$user = false;
+		if ($this->hasDB()) {
+			if ($this->hasCookie()) {
+				$user = $this->getUserFromToken($_COOKIE[$this->cookieName]);
+			}
+		}
+		$this->user = ($user) ?: $this->guestUser();
+		$this->checkUserTokenForValidation();
+	}
+	
+	public function checkUserTokenForValidation()
+	{
+		if ($this->hasDB()) {
+			if ($this->hasCookie()) {
+				$this->validateToken($_COOKIE[$this->cookieName]);
+			}
+		}
+	}
+	
+	public function phpErrors()
+	{
+		$errorTypes = $this->dev ? E_ERROR | E_WARNING | E_PARSE | E_NOTICE : 0;
+		$displayErrors = $this->dev ? 1 : 0;
+		error_reporting($errorTypes);
+		ini_set('display_errors', $displayErrors);
 	}
 	
 	public function checkForOrganizrOAuth()
@@ -189,10 +240,190 @@ class Organizr
 			if ($this->config['blacklisted'] !== '') {
 				if (in_array($currentIP, $this->arrayIP($this->config['blacklisted']))) {
 					$this->debug('User was sent to blackhole - Blacklisted IPs: ' . $this->config['blacklisted']);
-					die($this->config['blacklistedMessage']);
+					die($this->showHTML('Blacklisted', $this->config['blacklistedMessage']));
 				}
 			}
 		}
+	}
+	
+	public function checkDiskSpace()
+	{
+		$disk = $this->checkDisk('/');
+		$diskLevels = [
+			'warn' => 1000000000,
+			'error' => 100000000
+		];
+		if ($disk['free'] <= $diskLevels['error']) {
+			die($this->showHTML('Low Disk Space', 'You are dangerously low on disk space.<br/>There is only ' . $disk['free']['human_readable'] . ' remaining.<br/><b>Percent Used = ' . $disk['used']['percent_used'] . '%</b>'));
+		} elseif ($disk['free'] <= $diskLevels['warn']) {
+			$this->warnings[] = 'You are low on disk space.  There is only ' . $disk['free']['human_readable'] . ' remaining.';
+		}
+		return true;
+	}
+	
+	public function getFreeSpace($directory = '/')
+	{
+		$disk = disk_free_space($directory);
+		return [
+			'raw' => $disk,
+			'human_readable' => $this->human_filesize($disk, 0)
+		];
+	}
+	
+	public function getDiskSpace($directory = '/')
+	{
+		$disk = disk_total_space($directory);
+		return [
+			'raw' => $disk,
+			'human_readable' => $this->human_filesize($disk, 0)
+		];
+	}
+	
+	public function getUsedSpace($directory = '/')
+	{
+		$diskFree = $this->getFreeSpace($directory);
+		$diskTotal = $this->getDiskSpace($directory);
+		$diskUsed = $diskTotal['raw'] - $diskFree['raw'];
+		$percentUsed = ($diskUsed / $diskTotal['raw']) * 100;
+		$percentFree = 100 - $percentUsed;
+		return [
+			'raw' => $diskUsed,
+			'human_readable' => $this->human_filesize($diskUsed, 0),
+			'percent_used' => round($percentUsed),
+			'percent_free' => round($percentFree)
+		];
+	}
+	
+	public function checkDisk($directory = '/')
+	{
+		return [
+			'free' => $this->getFreeSpace('/'),
+			'used' => $this->getUsedSpace('/'),
+			'total' => $this->getDiskSpace('/'),
+		];
+	}
+	
+	public function errorCodes($error = 000)
+	{
+		$errorCodes = [
+			400 => [
+				'type' => 'Bad Request',
+				'description' => 'The request was incorrect'
+			],
+			401 => [
+				'type' => 'Unauthorized ',
+				'description' => 'You are not authorized to view this page'
+			],
+			402 => [
+				'type' => 'Payment Required',
+				'description' => 'Payment required before you can view this page'
+			],
+			403 => [
+				'type' => 'Forbidden',
+				'description' => 'You are forbidden to view this page'
+			],
+			404 => [
+				'type' => 'Not Found',
+				'description' => 'The requested resource was not found'
+			],
+			405 => [
+				'type' => 'Method Not Allowed',
+				'description' => 'The requested method is not allowed'
+			],
+			406 => [
+				'type' => 'Not Acceptable',
+				'description' => 'There was an issue with the requests Headers'
+			],
+			407 => [
+				'type' => 'Proxy Authentication Required',
+				'description' => 'Authentication is required and was not passed'
+			],
+			408 => [
+				'type' => 'Request Time-out',
+				'description' => 'The request has timed out'
+			],
+			409 => [
+				'type' => 'Conflict',
+				'description' => 'An error has occurred'
+			],
+			410 => [
+				'type' => 'Gone',
+				'description' => 'The requested resource is no longer available and has been permanently removed'
+			],
+			411 => [
+				'type' => 'Length Required',
+				'description' => 'The request can not be processed without a “Content-Length” header field'
+			],
+			412 => [
+				'type' => 'Precondition Failed',
+				'description' => ' A header needed was not found'
+			],
+			413 => [
+				'type' => 'Request Entity Too Large',
+				'description' => 'The query was too large to be processed by the server'
+			],
+			414 => [
+				'type' => 'Request-URI Too Long',
+				'description' => 'The URI of the request was too long'
+			],
+			415 => [
+				'type' => 'Unsupported Media Type',
+				'description' => 'The contents of the request has been submitted with invalid or out of defined media type'
+			],
+			416 => [
+				'type' => 'Requested range not satisfiable',
+				'description' => 'The requested resource was part of an invalid or is not on the server'
+			],
+			417 => [
+				'type' => 'Expectation Failed',
+				'description' => 'Expected Header was not found'
+			],
+			444 => [
+				'type' => 'No Response',
+				'description' => 'Nothing was returned from server'
+			],
+			500 => [
+				'type' => 'Internal Server Error',
+				'description' => 'An unexpected server error'
+			],
+			501 => [
+				'type' => 'Not Implemented',
+				'description' => 'The functionality to process the request is not available from this server'
+			],
+			502 => [
+				'type' => 'Bad Gateway',
+				'description' => 'The server could not fulfill its function as a gateway or proxy'
+			],
+			503 => [
+				'type' => 'Service Unavailable',
+				'description' => 'The server is temporarily unavailable, due to overloading or maintenance'
+			],
+			504 => [
+				'type' => 'Gateway Time-out',
+				'description' => 'The server could not fulfill its function as a gateway or proxy'
+			],
+			505 => [
+				'type' => 'HTTP version not supported',
+				'description' => 'The used version of HTTP is not supported by the server or rejected'
+			],
+			507 => [
+				'type' => 'Insufficient Storage',
+				'description' => 'The request could not be processed because the server disk space it currently is not sufficient'
+			],
+			509 => [
+				'type' => 'Bandwidth Limit Exceeded',
+				'description' => 'The request was rejected, because otherwise the bandwidth would be exceeded'
+			],
+			510 => [
+				'type' => 'Not Extended',
+				'description' => 'The request does not contain all information that is waiting for the requested server extension imperative'
+			],
+			000 => [
+				'type' => 'Unexpected Error',
+				'description' => 'An unexpected error occurred'
+			],
+		];
+		return (isset($errorCodes[$error])) ? $errorCodes[$error] : $errorCodes[000];
 	}
 	
 	public function auth()
@@ -408,20 +639,23 @@ class Organizr
 		$this->cookieName = $this->config['uuid'] !== '' ? 'organizr_token_' . $this->config['uuid'] : 'organizr_token_temp';
 	}
 	
-	public function favIcons()
+	public function favIcons($rootPath = '')
 	{
 		$favicon = '
-	<link rel="apple-touch-icon" sizes="180x180" href="plugins/images/favicon/apple-touch-icon.png">
-	<link rel="icon" type="image/png" sizes="32x32" href="plugins/images/favicon/favicon-32x32.png">
-	<link rel="icon" type="image/png" sizes="16x16" href="plugins/images/favicon/favicon-16x16.png">
-	<link rel="manifest" href="plugins/images/favicon/site.webmanifest" crossorigin="use-credentials">
-	<link rel="mask-icon" href="plugins/images/favicon/safari-pinned-tab.svg" color="#5bbad5">
-	<link rel="shortcut icon" href="plugins/images/favicon/favicon.ico">
-	<meta name="msapplication-TileColor" content="#da532c">
-	<meta name="msapplication-TileImage" content="plugins/images/favicon/mstile-144x144.png">
-	<meta name="msapplication-config" content="plugins/images/favicon/browserconfig.xml">
-	<meta name="theme-color" content="#ffffff">
-	';
+			<link rel="apple-touch-icon" sizes="180x180" href="' . $rootPath . 'plugins/images/favicon/apple-touch-icon.png">
+			<link rel="icon" type="image/png" sizes="32x32" href="' . $rootPath . 'plugins/images/favicon/favicon-32x32.png">
+			<link rel="icon" type="image/png" sizes="16x16" href="' . $rootPath . 'plugins/images/favicon/favicon-16x16.png">
+			<link rel="manifest" href="' . $rootPath . 'plugins/images/favicon/site.webmanifest" crossorigin="use-credentials">
+			<link rel="mask-icon" href="' . $rootPath . 'plugins/images/favicon/safari-pinned-tab.svg" color="#5bbad5">
+			<link rel="shortcut icon" href="' . $rootPath . 'plugins/images/favicon/favicon.ico">
+			<meta name="msapplication-TileColor" content="#da532c">
+			<meta name="msapplication-TileImage" content="' . $rootPath . 'plugins/images/favicon/mstile-144x144.png">
+			<meta name="msapplication-config" content="' . $rootPath . 'plugins/images/favicon/browserconfig.xml">
+			<meta name="theme-color" content="#ffffff">
+		';
+		if ($this->config['favIcon'] !== '' && $rootPath !== '') {
+			$this->config['favIcon'] = str_replace('plugins/images/faviconCustom', $rootPath . 'plugins/images/faviconCustom', $this->config['favIcon']);
+		}
 		return ($this->config['favIcon'] == '') ? $favicon : $this->config['favIcon'];
 	}
 	
@@ -492,13 +726,21 @@ class Organizr
 		return ($encode) ? json_encode($files) : $files;
 	}
 	
-	public function setTheme($theme = null)
+	public function getRootPath()
 	{
-		$theme = $theme ?? $this->config['theme'];
-		return '<link id="theme" href="css/themes/' . $theme . '.css?v=' . $this->fileHash . '" rel="stylesheet">';
+		$count = (count(explode('/', $_SERVER['REQUEST_URI']))) - 2;
+		$rootPath = '';
+		$rootPath .= str_repeat('../', $count);
+		return $rootPath;
 	}
 	
-	public function pluginFiles($type, $settings = false)
+	public function setTheme($theme = null, $rootPath = '')
+	{
+		$theme = $theme ?? $this->config['theme'];
+		return '<link id="theme" href="' . $rootPath . 'css/themes/' . $theme . '.css?v=' . $this->fileHash . '" rel="stylesheet">';
+	}
+	
+	public function pluginFiles($type, $settings = false, $rootPath = '')
 	{
 		$files = '';
 		$folder = dirname(__DIR__, 1) . DIRECTORY_SEPARATOR . 'plugins';
@@ -538,7 +780,7 @@ class Organizr
 						}
 						if ($pluginEnabled || $settings) {
 							if ($continue) {
-								$files .= '<script src="api/plugins/' . basename(dirname($info->getPathname())) . '/' . basename($info->getFilename()) . '?v=' . $this->fileHash . '" defer="true"></script>';
+								$files .= '<script src="' . $rootPath . 'api/plugins/' . basename(dirname($info->getPathname())) . '/' . basename($info->getFilename()) . '?v=' . $this->fileHash . '" defer="true"></script>';
 							}
 						}
 					}
@@ -547,7 +789,7 @@ class Organizr
 			case 'css':
 				foreach ($iteratorIterator as $info) {
 					if (pathinfo($info->getPathname(), PATHINFO_EXTENSION) == 'css') {
-						$files .= '<link href="api/plugins/' . basename(dirname($info->getPathname())) . '/' . basename($info->getFilename()) . '?v=' . $this->fileHash . '" rel="stylesheet">';
+						$files .= '<link href="' . $rootPath . 'api/plugins/' . basename(dirname($info->getPathname())) . '/' . basename($info->getFilename()) . '?v=' . $this->fileHash . '" rel="stylesheet">';
 					}
 				}
 				break;
@@ -570,16 +812,20 @@ class Organizr
 	private function checkPHP()
 	{
 		if (!(version_compare(PHP_VERSION, $this->minimumPHP) >= 0)) {
-			die('Organizr needs PHP Version: ' . $this->minimumPHP . '<br/> You have PHP Version: ' . PHP_VERSION);
+			die($this->showHTML('PHP Version', 'Organizr needs PHP Version: ' . $this->minimumPHP . '<br/> You have PHP Version: ' . PHP_VERSION));
 		}
 	}
 	
 	private function checkWritableDB()
 	{
 		if ($this->hasDB()) {
-			$db = is_writable($this->config['dbLocation'] . $this->config['dbName']);
-			if (!$db) {
-				die('Organizr DB is not writable!!!  Please fix...');
+			if (isset($this->config['dbLocation']) && isset($this->config['dbName'])) {
+				$db = is_writable($this->config['dbLocation'] . $this->config['dbName']);
+				if (!$db) {
+					die($this->showHTML('Organizr DB is not writable!', 'Please check permissions and/or disk space'));
+				}
+			} else {
+				die($this->showHTML('Config File Malformed', 'dbLocation and/or dbName is not listed in config.php'));
 			}
 		}
 	}
@@ -595,7 +841,7 @@ class Organizr
 				@$this->rrmdir($cleanup);
 			}
 			if (file_exists($tempLock)) {
-				die('upgrading');
+				die($this->showHTML('Upgrading', 'Please wait...'));
 			}
 			$updateDB = false;
 			$updateSuccess = true;
@@ -638,6 +884,14 @@ class Organizr
 				$this->upgradeToVersion($versionCheck);
 			}
 			// End Upgrade check start for version above
+			// Upgrade check start for version below
+			$versionCheck = '2.1.525';
+			if ($compare->lessThan($oldVer, $versionCheck)) {
+				$updateDB = false;
+				$oldVer = $versionCheck;
+				$this->upgradeToVersion($versionCheck);
+			}
+			// End Upgrade check start for version above
 			if ($updateDB == true) {
 				//return 'Upgraded Needed - Current Version '.$oldVer.' - New Version: '.$versionCheck;
 				// Upgrade database to latest version
@@ -649,7 +903,7 @@ class Organizr
 				$this->debug('Updated config version to ' . $this->version);
 			}
 			if ($updateSuccess == false) {
-				die('Database update failed - Please manually check logs and fix - Then reload this page');
+				die($this->showHTML('Database update failed', 'Please manually check logs and fix - Then reload this page'));
 			}
 			return true;
 		}
@@ -780,7 +1034,7 @@ class Organizr
 			}
 		}
 		// Build output
-		$output = (!$nest ? "<?php\nreturn " : '') . "array(\n" . implode(",\n", $output) . "\n" . str_repeat("\t", $nest) . ')' . (!$nest ? ';' : '');
+		$output = (!$nest ? "<?php\nreturn " : '') . "[\n" . implode(",\n", $output) . "\n" . str_repeat("\t", $nest) . ']' . (!$nest ? ';' : '');
 		if (!$nest && $path) {
 			$pathDigest = pathinfo($path);
 			@mkdir($pathDigest['dirname'], 0770, true);
@@ -812,6 +1066,28 @@ class Organizr
 		// Inject Parts
 		foreach ($new as $k => $v) {
 			$current[$k] = $v;
+			$this->config[$k] = $v;
+		}
+		// Return Create
+		return $this->createConfig($current);
+	}
+	
+	public function removeConfigItem($new, $current = false)
+	{
+		// Get config if not supplied
+		if ($current === false) {
+			$current = $this->config;
+		} elseif (is_string($current) && is_file($current)) {
+			$current = $this->loadConfig($current);
+		}
+		// Inject Parts
+		foreach ($new as $k) {
+			if (isset($current[$k])) {
+				$current['deletedConfigItems'][$k] = $current[$k];
+				$this->config['deletedConfigItems'][$k] = $current[$k];
+			}
+			unset($current[$k]);
+			unset($this->config[$k]);
 		}
 		// Return Create
 		return $this->createConfig($current);
@@ -1047,44 +1323,91 @@ class Organizr
 		return $this->processQueries($response);
 	}
 	
-	protected function invalidToken()
+	protected function invalidToken($token)
 	{
-		$this->coookie('delete', $this->cookieName);
-		$this->user = null;
+		if (isset($_COOKIE[$this->cookieName])) {
+			if ($token == $_COOKIE[$this->cookieName]) {
+				$this->coookie('delete', $this->cookieName);
+				$this->user = null;
+				$this->debug('Token was invalid - deleting cookie and user session');
+			}
+		}
 	}
 	
-	public function validateToken($token)
+	public function validateToken($token, $api = false)
 	{
 		// Validate script
 		$userInfo = $this->jwtParse($token);
-		$validated = $userInfo ? true : false;
+		$validated = (bool)$userInfo;
 		if ($validated == true) {
 			$allTokens = $this->getAllUserTokens($userInfo['userID']);
 			$user = $this->getUserById($userInfo['userID']);
 			$tokenCheck = ($this->searchArray($allTokens, 'token', $token) !== false);
 			if (!$tokenCheck) {
-				$this->invalidToken();
+				$this->debug('Token failed check Token listing: ' . json_encode($allTokens) . ' User Id: ' . $userInfo['userID']);
+				$this->invalidToken($token);
+				if ($api) {
+					$this->setResponse(403, 'Token was not in approved list');
+				}
 				return false;
 			} else {
+				if ($api) {
+					$this->setResponse(200, 'Token is valid');
+				}
 				return array(
-					"token" => $token,
-					"tokenDate" => $userInfo['tokenDate'],
-					"tokenExpire" => $userInfo['tokenExpire'],
-					"username" => $user['username'],
-					"uid" => $this->guestHash(0, 5),
-					"group" => $user['group'],
-					"groupID" => $user['group_id'],
-					"email" => $user['email'],
-					"image" => $user['image'],
-					"userID" => $user['id'],
-					"loggedin" => true,
-					"locked" => $user['locked'],
-					"tokenList" => $allTokens,
-					"authService" => explode('::', $user['auth_service'])[0]
+					'token' => $token,
+					'tokenDate' => $userInfo['tokenDate'],
+					'tokenExpire' => $userInfo['tokenExpire'],
+					'username' => $user['username'] ?? $userInfo['username'],
+					'uid' => $this->guestHash(0, 5),
+					'group' => $user['group'] ?? $userInfo['group'],
+					'groupID' => $user['group_id'] ?? $userInfo['groupID'],
+					'email' => $user['email'] ?? $userInfo['email'],
+					'image' => $user['image'] ?? $userInfo['image'],
+					'userID' => $user['id'] ?? $userInfo['userID'],
+					'loggedin' => true,
+					'locked' => $user['locked'] ?? 0,
+					'tokenList' => $allTokens,
+					'authService' => (isset($user['auth_service'])) ? explode('::', $user['auth_service'])[0] : 'internal'
 				);
 			}
 		} else {
-			$this->invalidToken();
+			if ($api) {
+				$this->setResponse(403, 'Token was invalid');
+			}
+			$this->debug('Token was invalid');
+			$this->invalidToken($token);
+		}
+		if ($api) {
+			$this->setResponse(403, 'Token was invalid');
+		}
+		return false;
+	}
+	
+	public function getUserFromToken($token)
+	{
+		// Validate script
+		$userInfo = $this->jwtParse($token);
+		$validated = (bool)$userInfo;
+		if ($validated == true) {
+			$user = $this->getUserById($userInfo['userID']);
+			$allTokens = $this->getAllUserTokens($userInfo['userID']);
+			return array(
+				'token' => $token,
+				'tokenDate' => $userInfo['tokenDate'],
+				'tokenExpire' => $userInfo['tokenExpire'],
+				'username' => $user['username'] ?? $userInfo['username'],
+				'uid' => $this->guestHash(0, 5),
+				'group' => $user['group'] ?? $userInfo['group'],
+				'groupID' => $user['group_id'] ?? $userInfo['groupID'],
+				'email' => $user['email'] ?? $userInfo['email'],
+				'image' => $user['image'] ?? $userInfo['image'],
+				'userID' => $user['id'] ?? $userInfo['userID'],
+				'loggedin' => true,
+				'locked' => $user['locked'] ?? 0,
+				'tokenList' => $allTokens,
+				'authService' => (isset($user['auth_service'])) ? explode('::', $user['auth_service'])[0] : 'internal'
+			);
 		}
 		return false;
 	}
@@ -1226,7 +1549,7 @@ class Organizr
 	public function getUserLevel()
 	{
 		// Grab token
-		$requesterToken = isset($this->getallheaders()['Token']) ? $this->getallheaders()['Token'] : (isset($_GET['apikey']) ? $_GET['apikey'] : false);
+		$requesterToken = $this->getallheaders()['Token'] ?? ($_GET['apikey'] ?? false);
 		$apiKey = ($this->config['organizrAPI']) ?? null;
 		// Check token or API key
 		// If API key, return 0 for admin
@@ -1856,6 +2179,13 @@ class Organizr
 					'help' => 'Choose which Settings Tab to be default when opening settings page'
 				),
 			),
+			'Database' => [
+				$this->settingsOption('notice', '', ['notice' => 'danger', 'title' => 'Warning', 'body' => 'This feature is experimental - You may face unexpected database is locked errors in logs']),
+				$this->settingsOption('html', '', ['label' => 'Journal Mode Status', 'html' => '<script>getJournalMode();</script><h4 class="journal-mode font-bold text-uppercase"><i class="fa fa-spin fa-circle-o-notch"></i></h4>']),
+				//$this->settingsOption('blank'),
+				$this->settingsOption('button', '', ['label' => 'Set DELETE Mode (Default)', 'icon' => 'icon-notebook', 'text' => 'Set', 'attr' => 'onclick="setJournalMode(\'DELETE\')"']),
+				$this->settingsOption('button', '', ['label' => 'Set WAL Mode', 'icon' => 'icon-notebook', 'text' => 'Set', 'attr' => 'onclick="setJournalMode(\'WAL\')"']),
+			],
 			'Github' => array(
 				array(
 					'type' => 'select',
@@ -1879,7 +2209,7 @@ class Organizr
 			),
 			'API' => array(
 				array(
-					'type' => 'password-alt',
+					'type' => 'password-alt-copy',
 					'name' => 'organizrAPI',
 					'label' => 'Organizr API',
 					'value' => $this->config['organizrAPI']
@@ -1890,7 +2220,8 @@ class Organizr
 					'class' => 'newAPIKey',
 					'icon' => 'fa fa-refresh',
 					'text' => 'Generate'
-				)
+				),
+				$this->settingsOption('notice', null, ['title' => 'API Documentation', 'body' => 'The documentation for Organizr\'s API is included with this installation.  To access the docs, use the button below.', 'bodyHTML' => '<br/><br/><div class="row"><div class="col-lg-2 col-sm-4 col-xs-12"><a href="' . $this->getServerPath() . 'docs/" target="_blank" class="btn btn-block btn-primary text-white" lang="en">Organizr Docs</a></div></div>'])
 			),
 			'Authentication' => array(
 				array(
@@ -2281,22 +2612,7 @@ class Organizr
 					'help' => 'Default status of Remember Me button on login screen',
 					'value' => $this->config['rememberMe'],
 				),
-				array(
-					'type' => 'input',
-					'name' => 'localIPFrom',
-					'label' => 'Override Local IP From',
-					'value' => $this->config['localIPFrom'],
-					'placeholder' => 'i.e. 123.123.123.123',
-					'help' => 'IPv4 only at the moment - This will set your login as local if your IP falls within the From and To'
-				),
-				array(
-					'type' => 'input',
-					'name' => 'localIPTo',
-					'label' => 'Override Local IP To',
-					'value' => $this->config['localIPTo'],
-					'placeholder' => 'i.e. 123.123.123.123',
-					'help' => 'IPv4 only at the moment - This will set your login as local if your IP falls within the From and To'
-				),
+				$this->settingsOption('multiple-url', 'localIPList', ['label' => 'Override Local IP or Subnet', 'help' => 'IPv4 only at the moment - This will set your login as local if your IP falls within the From and To']),
 				array(
 					'type' => 'input',
 					'name' => 'wanDomain',
@@ -2469,7 +2785,7 @@ class Organizr
 					<div class="row">
 						<div class="col-md-12">
 							<div class="white-box">
-								<h3 class="box-title m-b-0">Custom Certificate Status</h3>
+								<h3 class="box-title m-b-0" lang="en">Custom Certificate Status</h3>
 								<p class="text-muted m-b-30 custom-certificate-status">' . $certificateStatus . '</p>
 								<form action="#" class="dropzone dz-clickable" id="upload-custom-certificate">
 									<div class="dz-default dz-message"><span lang="en">Drop Certificate file here to upload</span></div>
@@ -2485,28 +2801,27 @@ class Organizr
 	
 	public function getSettingsSSO()
 	{
-		return array(
-			'FYI' => array(
-				array(
+		return [
+			'FYI' => [
+				[
 					'type' => 'html',
 					'label' => '',
 					'override' => 12,
 					'html' => '
 					<div class="row">
 						<div class="col-lg-12">
-							<div class="panel panel-danger">
+							<div class="panel panel-primary">
 								<div class="panel-heading"><span lang="en">Please Read First</span></div>
 								<div class="panel-wrapper collapse in" aria-expanded="true">
 									<div class="panel-body">
 										<span lang="en">Using multiple SSO application will cause your Cookie Header item to increase.  If you haven\'t increased it by now, please follow this guide</span>
-										<span><a href="https://docs.organizr.app/books/troubleshooting/page/login-error-api-connection-failed" target="_blank">Cookie Header Guide</a></span>
-									</div>
-								</div>
-							</div>
-							<div class="panel panel-info">
-								<div class="panel-heading"><span lang="en">Notice</span></div>
-								<div class="panel-wrapper collapse in" aria-expanded="true">
-									<div class="panel-body">
+										<br/><br/>
+										<div class="row">
+											<div class="col-lg-2 col-sm-4 col-xs-12">
+												<a href="https://docs.organizr.app/help/faq/organizr-login-error" target="_blank" class="btn btn-block btn-primary text-white" lang="en">Cookie Header Guide</a>
+											</div>
+										</div>
+										<br/>
 										<span lang="en">This is not the same as database authentication - i.e. Plex Authentication | Emby Authentication | FTP Authentication<br/>Click Main on the sub-menu above.</span>
 									</div>
 								</div>
@@ -2514,213 +2829,315 @@ class Organizr
 						</div>
 					</div>
 					'
-				)
-			),
-			'Plex' => array(
-				array(
+				]
+			],
+			'Plex' => [
+				[
 					'type' => 'password-alt',
 					'name' => 'plexToken',
 					'label' => 'Plex Token',
 					'value' => $this->config['plexToken'],
 					'placeholder' => 'Use Get Token Button'
-				),
-				array(
+				],
+				[
 					'type' => 'button',
 					'label' => 'Get Plex Token',
 					'icon' => 'fa fa-ticket',
 					'text' => 'Retrieve',
 					'attr' => 'onclick="showPlexTokenForm(\'#sso-form [name=plexToken]\')"'
-				),
-				array(
+				],
+				[
 					'type' => 'password-alt',
 					'name' => 'plexID',
 					'label' => 'Plex Machine',
 					'value' => $this->config['plexID'],
 					'placeholder' => 'Use Get Plex Machine Button'
-				),
-				array(
+				],
+				[
 					'type' => 'button',
 					'label' => 'Get Plex Machine',
 					'icon' => 'fa fa-id-badge',
 					'text' => 'Retrieve',
 					'attr' => 'onclick="showPlexMachineForm(\'#sso-form [name=plexID]\')"'
-				),
-				array(
+				],
+				[
 					'type' => 'input',
 					'name' => 'plexAdmin',
 					'label' => 'Admin Username',
 					'value' => $this->config['plexAdmin'],
 					'placeholder' => 'Admin username for Plex'
-				),
-				array(
+				],
+				[
 					'type' => 'blank',
 					'label' => ''
-				),
-				array(
+				],
+				[
 					'type' => 'html',
 					'label' => 'Plex Note',
 					'html' => '<span lang="en">Please make sure both Token and Machine are filled in</span>'
-				),
-				array(
+				],
+				[
 					'type' => 'switch',
 					'name' => 'ssoPlex',
 					'label' => 'Enable',
 					'value' => $this->config['ssoPlex']
-				)
-			),
-			'Tautulli' => array(
-				array(
-					'type' => 'input',
-					'name' => 'tautulliURL',
-					'label' => 'Tautulli URL',
-					'value' => $this->config['tautulliURL'],
-					'help' => 'Please make sure to use local IP address and port - You also may use local dns name too.',
-					'placeholder' => 'http(s)://hostname:port'
-				),
-				array(
-					'type' => 'switch',
-					'name' => 'ssoTautulli',
-					'label' => 'Enable',
-					'value' => $this->config['ssoTautulli']
-				)
-			),
-			'Overseerr' => array(
-				array(
+				]
+			],
+			'Tautulli' => [
+				$this->settingsOption('multiple-url', 'tautulliURL'),
+				$this->settingsOption('enable', 'ssoTautulli'),
+			],
+			'Overseerr' => [
+				[
 					'type' => 'input',
 					'name' => 'overseerrURL',
 					'label' => 'Overseerr URL',
 					'value' => $this->config['overseerrURL'],
 					'help' => 'Please make sure to use local IP address and port - You also may use local dns name too.',
 					'placeholder' => 'http(s)://hostname:port'
-				),
-				array(
+				],
+				[
 					'type' => 'password-alt',
 					'name' => 'overseerrToken',
 					'label' => 'Token',
 					'value' => $this->config['overseerrToken']
-				),
-				array(
+				],
+				[
 					'type' => 'input',
 					'name' => 'overseerrFallbackUser',
 					'label' => 'Overseerr Fallback User',
 					'value' => $this->config['overseerrFallbackUser'],
 					'help' => 'DO NOT SET THIS TO YOUR ADMIN ACCOUNT. We recommend you create a local account as a "catch all" for when Organizr is unable to perform SSO.  Organizr will request a User Token based off of this user credentials',
 					'attr' => 'disabled'
-				),
-				array(
+				],
+				[
 					'type' => 'password-alt',
 					'name' => 'overseerrFallbackPassword',
 					'label' => 'Overseerr Fallback Password',
 					'value' => $this->config['overseerrFallbackPassword'],
 					'attr' => 'disabled'
-				),
-				array(
+				],
+				[
 					'type' => 'switch',
 					'name' => 'ssoOverseerr',
 					'label' => 'Enable',
 					'value' => $this->config['ssoOverseerr']
-				)
-			),
-			'Petio' => array(
-				array(
+				]
+			],
+			'Petio' => [
+				[
 					'type' => 'input',
 					'name' => 'petioURL',
 					'label' => 'Petio URL',
 					'value' => $this->config['petioURL'],
 					'help' => 'Please make sure to use local IP address and port - You also may use local dns name too.',
 					'placeholder' => 'http(s)://hostname:port'
-				),
-				array(
+				],
+				[
 					'type' => 'password-alt',
 					'name' => 'petioToken',
 					'label' => 'Token',
 					'value' => $this->config['petioToken']
-				),
-				array(
+				],
+				[
 					'type' => 'input',
 					'name' => 'petioFallbackUser',
 					'label' => 'Petio Fallback User',
 					'value' => $this->config['petioFallbackUser'],
 					'help' => 'DO NOT SET THIS TO YOUR ADMIN ACCOUNT. We recommend you create a local account as a "catch all" for when Organizr is unable to perform SSO.  Organizr will request a User Token based off of this user credentials',
-				),
-				array(
+				],
+				[
 					'type' => 'password-alt',
 					'name' => 'petioFallbackPassword',
 					'label' => 'Petio Fallback Password',
 					'value' => $this->config['petioFallbackPassword'],
-				),
-				array(
+				],
+				[
 					'type' => 'switch',
 					'name' => 'ssoPetio',
 					'label' => 'Enable',
 					'value' => $this->config['ssoPetio']
-				)
-			),
-			'Ombi' => array(
-				array(
+				]
+			],
+			'Ombi' => [
+				[
 					'type' => 'input',
 					'name' => 'ombiURL',
 					'label' => 'Ombi URL',
 					'value' => $this->config['ombiURL'],
 					'help' => 'Please make sure to use local IP address and port - You also may use local dns name too.',
 					'placeholder' => 'http(s)://hostname:port'
-				),
-				array(
+				],
+				[
 					'type' => 'password-alt',
 					'name' => 'ombiToken',
 					'label' => 'Token',
 					'value' => $this->config['ombiToken']
-				),
-				array(
+				],
+				[
 					'type' => 'input',
 					'name' => 'ombiFallbackUser',
 					'label' => 'Ombi Fallback User',
 					'value' => $this->config['ombiFallbackUser'],
 					'help' => 'DO NOT SET THIS TO YOUR ADMIN ACCOUNT. We recommend you create a local account as a "catch all" for when Organizr is unable to perform SSO.  Organizr will request a User Token based off of this user credentials'
-				),
-				array(
+				],
+				[
 					'type' => 'password-alt',
 					'name' => 'ombiFallbackPassword',
 					'label' => 'Ombi Fallback Password',
 					'value' => $this->config['ombiFallbackPassword']
-				),
-				array(
+				],
+				[
 					'type' => 'switch',
 					'name' => 'ssoOmbi',
 					'label' => 'Enable',
 					'value' => $this->config['ssoOmbi']
-				)
-			),
-			'Jellyfin' => array(
-				array(
+				]
+			],
+			'Jellyfin' => [
+				[
 					'type' => 'input',
 					'name' => 'jellyfinURL',
 					'label' => 'Jellyfin API URL',
 					'value' => $this->config['jellyfinURL'],
 					'help' => 'Please make sure to use the local address to the API',
 					'placeholder' => 'http(s)://hostname:port'
-				),
-				array(
+				],
+				[
 					'type' => 'input',
 					'name' => 'jellyfinSSOURL',
 					'label' => 'Jellyfin SSO URL',
 					'value' => $this->config['jellyfinSSOURL'],
 					'help' => 'Please make sure to use the same (sub)domain to access Jellyfin as Organizr\'s',
 					'placeholder' => 'http(s)://domain.com'
-				),
-				array(
+				],
+				[
 					'type' => 'switch',
 					'name' => 'ssoJellyfin',
 					'label' => 'Enable',
 					'value' => $this->config['ssoJellyfin']
-				)
-			)
-		);
+				]
+			]
+		];
+	}
+	
+	public function systemMenuLists()
+	{
+		$userManagementMenu = [
+			[
+				'active' => false,
+				'api' => 'api/v2/page/settings_user_manage_users',
+				'anchor' => 'settings-user-manage-users-anchor',
+				'name' => 'Manage Users'
+			],
+			[
+				'active' => false,
+				'api' => 'api/v2/page/settings_user_manage_groups',
+				'anchor' => 'settings-user-manage-groups-anchor',
+				'name' => 'Manage Groups'
+			],
+			[
+				'active' => false,
+				'api' => false,
+				'anchor' => 'settings-user-import-users-anchor',
+				'name' => 'Import Users'
+			],
+		];
+		$customizeMenu = [
+			[
+				'active' => false,
+				'api' => 'api/v2/page/settings_customize_appearance',
+				'anchor' => 'settings-customize-appearance-anchor',
+				'name' => 'Appearance',
+			],
+			[
+				'active' => false,
+				'api' => false,
+				'anchor' => 'settings-customize-marketplace-anchor',
+				'name' => 'Marketplace',
+				'onclick' => 'loadMarketplace(\'themes\');'
+			],
+		];
+		$tabEditorMenu = [
+			[
+				'active' => false,
+				'api' => 'api/v2/page/settings_tab_editor_tabs',
+				'anchor' => 'settings-tab-editor-tabs-anchor',
+				'name' => 'Tabs'
+			],
+			[
+				'active' => false,
+				'api' => 'api/v2/page/settings_tab_editor_categories',
+				'anchor' => 'settings-tab-editor-categories-anchor',
+				'name' => 'Categories'
+			],
+			[
+				'active' => false,
+				'api' => 'api/v2/page/settings_tab_editor_homepage',
+				'anchor' => 'settings-tab-editor-homepage-anchor',
+				'name' => 'Homepage Items'
+			],
+			[
+				'active' => false,
+				'api' => 'api/v2/page/settings_tab_editor_homepage_order',
+				'anchor' => 'settings-tab-editor-homepage-order-anchor',
+				'name' => 'Homepage Order'
+			],
+		];
+		$systemSettingsMenu = [
+			[
+				'active' => true,
+				'api' => false,
+				'anchor' => 'settings-settings-about-anchor',
+				'name' => 'About'
+			],
+			[
+				'active' => false,
+				'api' => 'api/v2/page/settings_settings_main',
+				'anchor' => 'settings-settings-main-anchor',
+				'name' => 'Main'
+			],
+			[
+				'active' => false,
+				'api' => 'api/v2/page/settings_settings_sso',
+				'anchor' => 'settings-settings-sso-anchor',
+				'name' => 'SSO'
+			],
+			[
+				'active' => false,
+				'api' => 'api/v2/page/settings_settings_logs',
+				'anchor' => 'settings-settings-logs-anchor',
+				'name' => 'Logs'
+			],
+			[
+				'active' => false,
+				'api' => false,
+				'anchor' => 'settings-settings-updates-anchor',
+				'name' => 'Updates'
+			],
+			[
+				'active' => false,
+				'api' => 'api/v2/page/settings_settings_backup',
+				'anchor' => 'settings-settings-backup-anchor',
+				'name' => 'Backup'
+			],
+			[
+				'active' => false,
+				'api' => false,
+				'anchor' => 'settings-settings-donate-anchor',
+				'name' => 'Donate'
+			],
+		];
+		$systemMenus['system_settings'] = $this->buildSettingsMenus($systemSettingsMenu, 'System Settings');
+		$systemMenus['tab_editor'] = $this->buildSettingsMenus($tabEditorMenu, 'Tab Editor');
+		$systemMenus['customize'] = $this->buildSettingsMenus($customizeMenu, 'Customize');
+		$systemMenus['user_management'] = $this->buildSettingsMenus($userManagementMenu, 'User Management');
+		return $systemMenus;
 	}
 	
 	public function updateConfigMultiple($array)
 	{
-		return ($this->updateConfig($array)) ? true : false;
+		return (bool)$this->updateConfig($array);
 	}
 	
 	public function updateConfigItems($array)
@@ -2750,10 +3167,11 @@ class Organizr
 			}
 			if (strtolower($k) !== 'formkey') {
 				$newItem[$k] = $v;
+				$this->config[$k] = $v;
 			}
 		}
 		$this->setAPIResponse('success', 'Config items updated', 200);
-		return ($this->updateConfig($newItem)) ? true : false;
+		return (bool)$this->updateConfig($newItem);
 	}
 	
 	public function updateConfigItem($array)
@@ -2774,7 +3192,8 @@ class Organizr
 		$newItem = array(
 			$array['name'] => $array['value']
 		);
-		return ($this->updateConfig($newItem)) ? true : false;
+		$this->config[$array['name']] = $array['value'];
+		return (bool)$this->updateConfig($newItem);
 	}
 	
 	public function ignoreNewsId($id)
@@ -3204,11 +3623,11 @@ class Organizr
 		->identifiedBy('4f1g23a12aa', true)// Configures the id (jti claim), replicating as a header item
 		->issuedAt(time())// Configures the time that the token was issue (iat claim)
 		->expiresAt(time() + (86400 * $days))// Configures the expiration time of the token (exp claim)
-		//->withClaim('username', $result['username'])// Configures a new claim, called "username"
+		->withClaim('username', $result['username'])// Configures a new claim, called "username"
 		->withClaim('group', $result['group'])// Configures a new claim, called "group"
-		//->withClaim('groupID', $result['group_id'])// Configures a new claim, called "groupID"
-		//->withClaim('email', $result['email'])// Configures a new claim, called "email"
-		//->withClaim('image', $result['image'])// Configures a new claim, called "image"
+		->withClaim('groupID', $result['group_id'])// Configures a new claim, called "groupID"
+		->withClaim('email', $result['email'])// Configures a new claim, called "email"
+		->withClaim('image', $result['image'])// Configures a new claim, called "image"
 		->withClaim('userID', $result['id'])// Configures a new claim, called "image"
 		->sign($signer, $this->config['organizrHash'])// creates a signature using "testing" as key
 		->getToken(); // Retrieves the generated token
@@ -3743,18 +4162,34 @@ class Organizr
 					'enabled' => $this->qualifyRequest($this->config['mediaSearchAuth']) && $this->config['mediaSearch'] == true && $this->config['plexToken'],
 					'type' => $this->config['mediaSearchType'],
 				),
+				'requests' => [
+					'service' => $this->config['defaultRequestService'],
+				],
 				'ombi' => array(
 					'enabled' => $this->qualifyRequest($this->config['homepageOmbiAuth']) && $this->qualifyRequest($this->config['homepageOmbiRequestAuth']) && $this->config['homepageOmbiEnabled'] == true && $this->config['ssoOmbi'] && isset($_COOKIE['Auth']),
 					'authView' => $this->qualifyRequest($this->config['homepageOmbiAuth']),
 					'authRequest' => $this->qualifyRequest($this->config['homepageOmbiRequestAuth']),
-					'sso' => ($this->config['ssoOmbi']) ? true : false,
+					'sso' => (bool)$this->config['ssoOmbi'],
 					'cookie' => isset($_COOKIE['Auth']),
-					'alias' => ($this->config['ombiAlias']) ? true : false,
-					'ombiDefaultFilterAvailable' => $this->config['ombiDefaultFilterAvailable'] ? true : false,
-					'ombiDefaultFilterUnavailable' => $this->config['ombiDefaultFilterUnavailable'] ? true : false,
-					'ombiDefaultFilterApproved' => $this->config['ombiDefaultFilterApproved'] ? true : false,
-					'ombiDefaultFilterUnapproved' => $this->config['ombiDefaultFilterUnapproved'] ? true : false,
-					'ombiDefaultFilterDenied' => $this->config['ombiDefaultFilterDenied'] ? true : false
+					'alias' => (bool)$this->config['ombiAlias'],
+					'ombiDefaultFilterAvailable' => (bool)$this->config['ombiDefaultFilterAvailable'],
+					'ombiDefaultFilterUnavailable' => (bool)$this->config['ombiDefaultFilterUnavailable'],
+					'ombiDefaultFilterApproved' => (bool)$this->config['ombiDefaultFilterApproved'],
+					'ombiDefaultFilterUnapproved' => (bool)$this->config['ombiDefaultFilterUnapproved'],
+					'ombiDefaultFilterDenied' => (bool)$this->config['ombiDefaultFilterDenied']
+				),
+				'overseerr' => array(
+					'enabled' => $this->qualifyRequest($this->config['homepageOverseerrAuth']) && $this->qualifyRequest($this->config['homepageOverseerrRequestAuth']) && $this->config['homepageOverseerrEnabled'] == true && $this->config['ssoOverseerr'] && isset($_COOKIE['connect_sid']),
+					'authView' => $this->qualifyRequest($this->config['homepageOverseerrAuth']),
+					'authRequest' => $this->qualifyRequest($this->config['homepageOverseerrRequestAuth']),
+					'sso' => (bool)$this->config['ssoOverseerr'],
+					'cookie' => isset($_COOKIE['connect_sid']),
+					'userSelectTv' => (bool)$this->config['homepageOverseerrRequestAuth'] == 'user',
+					'overseerrDefaultFilterAvailable' => (bool)$this->config['overseerrDefaultFilterAvailable'],
+					'overseerrDefaultFilterUnavailable' => (bool)$this->config['overseerrDefaultFilterUnavailable'],
+					'overseerrDefaultFilterApproved' => (bool)$this->config['overseerrDefaultFilterApproved'],
+					'overseerrDefaultFilterUnapproved' => (bool)$this->config['overseerrDefaultFilterUnapproved'],
+					'overseerrDefaultFilterDenied' => (bool)$this->config['overseerrDefaultFilterDenied']
 				),
 				'jackett' => array(
 					'homepageJackettBackholeDownload' => $this->config['homepageJackettBackholeDownload'] ? true : false
@@ -3777,25 +4212,42 @@ class Organizr
 					'rememberMeDays' => $this->config['rememberMeDays']
 				),
 				'plex' => array(
-					'enabled' => ($this->config['ssoPlex']) ? true : false,
+					'enabled' => (bool)$this->config['ssoPlex'],
 					'cookie' => isset($_COOKIE['mpt']),
 					'machineID' => strlen($this->config['plexID']) == 40,
 					'token' => $this->config['plexToken'] !== '',
 					'plexAdmin' => $this->checkPlexAdminFilled(),
-					'strict' => ($this->config['plexStrictFriends']) ? true : false,
-					'oAuthEnabled' => ($this->config['plexoAuth']) ? true : false,
+					'strict' => (bool)$this->config['plexStrictFriends'],
+					'oAuthEnabled' => (bool)$this->config['plexoAuth'],
 					'backend' => $this->config['authBackend'] == 'plex',
 				),
+				'tautulli' => array(
+					'enabled' => (bool)$this->config['ssoTautulli'],
+					'cookie' => !empty($this->tautulliList()),
+					'url' => ($this->config['tautulliURL'] !== '') ? $this->config['tautulliURL'] : false,
+				),
+				'overseerr' => array(
+					'enabled' => (bool)$this->config['ssoOverseerr'],
+					'cookie' => isset($_COOKIE['connect.sid']),
+					'url' => ($this->config['overseerrURL'] !== '') ? $this->config['overseerrURL'] : false,
+					'api' => $this->config['overseerrToken'] !== '',
+				),
+				'petio' => array(
+					'enabled' => (bool)$this->config['ssoPetio'],
+					'cookie' => isset($_COOKIE['petio_jwt']),
+					'url' => ($this->config['petioURL'] !== '') ? $this->config['petioURL'] : false,
+					'api' => $this->config['petioToken'] !== '',
+				),
 				'ombi' => array(
-					'enabled' => ($this->config['ssoOmbi']) ? true : false,
+					'enabled' => (bool)$this->config['ssoOmbi'],
 					'cookie' => isset($_COOKIE['Auth']),
 					'url' => ($this->config['ombiURL'] !== '') ? $this->config['ombiURL'] : false,
 					'api' => $this->config['ombiToken'] !== '',
 				),
-				'tautulli' => array(
-					'enabled' => ($this->config['ssoTautulli']) ? true : false,
-					'cookie' => !empty($this->tautulliList()),
-					'url' => ($this->config['tautulliURL'] !== '') ? $this->config['tautulliURL'] : false,
+				'jellyfin' => array(
+					'enabled' => (bool)$this->config['ssoJellyfin'],
+					'url' => ($this->config['jellyfinURL'] !== '') ? $this->config['jellyfinURL'] : false,
+					'ssoUrl' => ($this->config['jellyfinSSOURL'] !== '') ? $this->config['jellyfinSSOURL'] : false,
 				),
 			),
 			'ping' => array(
@@ -3964,7 +4416,7 @@ class Organizr
 	{
 		$this->timeExecution = $this->timeExecution($this->timeExecution);
 		$message = $message . ' [Execution Time: ' . $this->formatSeconds($this->timeExecution) . ']';
-		$username = ($username) ? htmlspecialchars($username, ENT_QUOTES) : $this->user['username'];
+		$username = ($username) ? htmlspecialchars($username, ENT_QUOTES) : $this->user['username'] ?? 'SYSTEM';
 		if ($this->checkLog($this->organizrLog)) {
 			$getLog = str_replace("\r\ndate", "date", file_get_contents($this->organizrLog));
 			$gotLog = json_decode($getLog, true);
@@ -3982,7 +4434,7 @@ class Organizr
 	
 	public function isApprovedRequest($method, $data)
 	{
-		$requesterToken = isset($this->getallheaders()['Token']) ? $this->getallheaders()['Token'] : (isset($_GET['apikey']) ? $_GET['apikey'] : false);
+		$requesterToken = $this->getallheaders()['Token'] ?? ($_GET['apikey'] ?? false);
 		$apiKey = ($this->config['organizrAPI']) ?? null;
 		if (isset($data['formKey'])) {
 			$formKey = $data['formKey'];
@@ -4028,6 +4480,9 @@ class Organizr
 			//new way
 			if (method_exists($this, $key)) {
 				$homepageBuilt .= $this->$key();
+			} elseif (strpos($key, 'homepageOrdercustomhtml') !== false) {
+				$iteration = substr($key, -2);
+				$homepageBuilt .= $this->homepageOrdercustomhtml($iteration);
 			} else {
 				$homepageBuilt .= '<div id="' . $key . '"></div>';
 			}
@@ -4040,21 +4495,22 @@ class Organizr
 	public function buildHomepageSettings()
 	{
 		$homepageOrder = $this->homepageOrderList();
-		$homepageList = '<h4>Drag Homepage Items to Order Them</h4><div id="homepage-items-sort" class="external-events">';
+		$homepageList = '<div class="col-lg-12"><h4 lang="en">Drag Homepage Items to Order Them</h4></div><div id="homepage-items-sort" class="external-events">';
 		$inputList = '<form id="homepage-values" class="row">';
 		foreach ($homepageOrder as $key => $val) {
 			switch ($key) {
-				case 'homepageOrdercustomhtml':
+				case 'homepageOrdercustomhtml01':
+				case 'homepageOrdercustomhtml02':
+				case 'homepageOrdercustomhtml03':
+				case 'homepageOrdercustomhtml04':
+				case 'homepageOrdercustomhtml05':
+				case 'homepageOrdercustomhtml06':
+				case 'homepageOrdercustomhtml07':
+				case 'homepageOrdercustomhtml08':
+					$iteration = substr($key, -2);
 					$class = 'bg-info';
-					$image = 'plugins/images/tabs/custom1.png';
-					if (!$this->config['homepageCustomHTMLoneEnabled']) {
-						$class .= ' faded';
-					}
-					break;
-				case 'homepageOrdercustomhtmlTwo':
-					$class = 'bg-info';
-					$image = 'plugins/images/tabs/custom2.png';
-					if (!$this->config['homepageCustomHTMLtwoEnabled']) {
+					$image = 'plugins/images/tabs/HTML5.png';
+					if (!$this->config['homepageCustomHTML' . $iteration . 'Enabled']) {
 						$class .= ' faded';
 					}
 					break;
@@ -4100,6 +4556,13 @@ class Organizr
 						$class .= ' faded';
 					}
 					break;
+				case 'homepageOrderuTorrent':
+					$class = 'bg-qbit';
+					$image = 'plugins/images/tabs/utorrent.png';
+					if (!$this->config['homepageuTorrentEnabled']) {
+						$class .= ' faded';
+					}
+					break;
 				case 'homepageOrderrTorrent':
 					$class = 'bg-qbit';
 					$image = 'plugins/images/tabs/rTorrent.png';
@@ -4139,6 +4602,13 @@ class Organizr
 						$class .= ' faded';
 					}
 					break;
+				case 'homepageOrderoverseerr':
+					$class = 'bg-inverse';
+					$image = 'plugins/images/tabs/overseerr.png';
+					if (!$this->config['homepageOverseerrEnabled']) {
+						$class .= ' faded';
+					}
+					break;
 				case 'homepageOrdercalendar':
 					$class = 'bg-primary';
 					$image = 'plugins/images/tabs/calendar.png';
@@ -4149,7 +4619,7 @@ class Organizr
 				case 'homepageOrderdownloader':
 					$class = 'bg-inverse';
 					$image = 'plugins/images/tabs/downloader.png';
-					if (!$this->config['jdownloaderCombine'] && !$this->config['sabnzbdCombine'] && !$this->config['nzbgetCombine'] && !$this->config['rTorrentCombine'] && !$this->config['delugeCombine'] && !$this->config['transmissionCombine'] && !$this->config['qBittorrentCombine']) {
+					if (!$this->config['jdownloaderCombine'] && !$this->config['sabnzbdCombine'] && !$this->config['nzbgetCombine'] && !$this->config['rTorrentCombine'] && !$this->config['delugeCombine'] && !$this->config['transmissionCombine'] && !$this->config['qBittorrentCombine'] && !$this->config['uTorrentCombine']) {
 						$class .= ' faded';
 					}
 					break;
@@ -5248,9 +5718,13 @@ class Organizr
 	{
 		$url = 'https://raw.githubusercontent.com/causefx/Organizr/v2-plugins/plugins.json';
 		$options = ($this->localURL($url)) ? array('verify' => false) : array();
-		$response = Requests::get($url, array(), $options);
-		if ($response->success) {
-			return json_decode($response->body, true);
+		try {
+			$response = Requests::get($url, array(), $options);
+			if ($response->success) {
+				return json_decode($response->body, true);
+			}
+		} catch (Requests_Exception $e) {
+			return false;
 		}
 		return false;
 	}
@@ -5259,14 +5733,19 @@ class Organizr
 	{
 		$url = 'https://opencollective.com/organizr/members/users.json?limit=100&offset=0';
 		$options = ($this->localURL($url)) ? array('verify' => false) : array();
-		$response = Requests::get($url, array(), $options);
-		if ($response->success) {
-			$api = json_decode($response->body, true);
-			foreach ($api as $k => $backer) {
-				$api[$k] = array_merge($api[$k], ['sortName' => strtolower($backer['name'])]);
+		try {
+			$response = Requests::get($url, array(), $options);
+			if ($response->success) {
+				$api = json_decode($response->body, true);
+				foreach ($api as $k => $backer) {
+					$api[$k] = array_merge($api[$k], ['sortName' => strtolower($backer['name'])]);
+				}
+				$this->setAPIResponse('success', '', 200, $api);
+				return $api;
 			}
-			$this->setAPIResponse('success', '', 200, $api);
-			return $api;
+		} catch (Requests_Exception $e) {
+			$this->setAPIResponse('error', $e->getMessage(), 500);
+			return false;
 		}
 		$this->setAPIResponse('error', 'Error connecting to Open Collective', 409);
 		return false;
@@ -5334,9 +5813,14 @@ class Organizr
 	{
 		$url = 'https://api.organizr.app/?cmd=smtp';
 		$options = ($this->localURL($url)) ? array('verify' => false) : array();
-		$response = Requests::get($url, array(), $options);
-		if ($response->success) {
-			return json_decode($response->body, true);
+		try {
+			$response = Requests::get($url, array(), $options);
+			if ($response->success) {
+				return json_decode($response->body, true);
+			}
+		} catch (Requests_Exception $e) {
+			$this->setAPIResponse('error', $e->getMessage(), 500);
+			return false;
 		}
 		return false;
 	}
@@ -6037,8 +6521,8 @@ class Organizr
 				)
 			),
 		];
-		$this->setAPIResponse(null, 'Tab added');
-		$this->writeLog('success', 'Tab Editor Function -  Added Tab for [' . $array['name'] . ']', $this->user['username']);
+		$this->setAPIResponse(null, 'Group added');
+		$this->writeLog('success', 'Group Editor Function -  Added Group for [' . $array['group'] . ']', $this->user['username']);
 		return $this->processQueries($response);
 	}
 	
@@ -6455,11 +6939,11 @@ class Organizr
 		return '
 		<h3 lang="en">' . ucwords($app) . ' SOCKS API Connection</h3>
 		<p>Using this feature allows you to access the API without having to reverse proxy it.  Just access it from: </p>
-		<code>' . $this->getServerPath() . 'api/v2/socks/' . $app . '/</code>
+		<code class="elip hidden-xs">' . $this->getServerPath() . 'api/v2/socks/' . $app . '/</code>
 		<p>If you are using multiple URL\'s (using the csv method) you will have to use the url like these: </p>
-		<code>' . $this->getServerPath() . 'api/v2/multiple/socks/' . $app . '/1</code>
+		<code class="elip hidden-xs">' . $this->getServerPath() . 'api/v2/multiple/socks/' . $app . '/1</code>
 		<br/>
-		<code>' . $this->getServerPath() . 'api/v2/multiple/socks/' . $app . '/2</code>
+		<code class="elip hidden-xs">' . $this->getServerPath() . 'api/v2/multiple/socks/' . $app . '/2</code>
 		';
 	}
 	
@@ -6691,6 +7175,56 @@ class Organizr
 		return $goodIcons;
 	}
 	
+	public function getJournalMode()
+	{
+		$response = [
+			array(
+				'function' => 'fetch',
+				'query' => 'PRAGMA journal_mode',
+			),
+		];
+		$query = $this->processQueries($response);
+		if ($query) {
+			if ($query['journal_mode']) {
+				$this->setResponse(200, null, $query);
+			} else {
+				$this->setResponse(500, 'Error getting Journal Mode');
+			}
+		} else {
+			$this->setResponse(404, 'Journal Mode not found');
+		}
+		return $query;
+	}
+	
+	public function setJournalMode($option = 'WAL')
+	{
+		$option = strtoupper($option);
+		switch ($option) {
+			case 'WAL':
+			case 'DELETE':
+				break;
+			default:
+				return false;
+		}
+		$response = [
+			array(
+				'function' => 'fetch',
+				'query' => 'PRAGMA journal_mode = \'' . $option . '\';',
+			),
+		];
+		$query = $this->processQueries($response);
+		if ($query) {
+			if ($query['journal_mode']) {
+				$this->setResponse(200, 'Journal Mode updated to: ' . $option, $query);
+			} else {
+				$this->setResponse(500, 'Error getting Journal Mode');
+			}
+		} else {
+			$this->setResponse(404, 'Journal Mode not found');
+		}
+		return $query;
+	}
+	
 	protected function processQueries(array $request, $migration = false)
 	{
 		$results = array();
@@ -6730,7 +7264,8 @@ class Organizr
 			}
 			
 		} catch (Exception $e) {
-			return $e;
+			$this->debug($e->getMessage());
+			return false;
 		}
 		return count($request) > 1 ? $results : $results[$firstKey];
 	}

@@ -2,6 +2,36 @@
 
 trait OrganizrFunctions
 {
+	public function docs($path): string
+	{
+		return 'https://organizr.gitbook.io/organizr/' . $path;
+	}
+	
+	public function loadResources($files = [], $rootPath = '')
+	{
+		$scripts = '';
+		if (count($files) > 0) {
+			foreach ($files as $file) {
+				if (strtolower(pathinfo($file, PATHINFO_EXTENSION)) == 'js') {
+					$scripts .= $this->loadJavaResource($file, $rootPath);
+				} elseif (strtolower(pathinfo($file, PATHINFO_EXTENSION)) == 'css') {
+					$scripts .= $this->loadStyleResource($file, $rootPath);
+				}
+			}
+		}
+		return $scripts;
+	}
+	
+	public function loadJavaResource($file = '', $rootPath = '')
+	{
+		return ($file !== '') ? '<script src="' . $rootPath . $file . '?v=' . trim($this->fileHash) . '"></script>' . "\n" : '';
+	}
+	
+	public function loadStyleResource($file = '', $rootPath = '')
+	{
+		return ($file !== '') ? '<link href="' . $rootPath . $file . '?v=' . trim($this->fileHash) . '" rel="stylesheet">' . "\n" : '';
+	}
+	
 	public function loadDefaultJavascriptFiles()
 	{
 		$javaFiles = [
@@ -20,14 +50,14 @@ trait OrganizrFunctions
 		];
 		$scripts = '';
 		foreach ($javaFiles as $file) {
-			$scripts .= '<script src="' . $file . '?v=' . $this->fileHash . '"></script>' . "\n";
+			$scripts .= '<script src="' . $file . '?v=' . trim($this->fileHash) . '"></script>' . "\n";
 		}
 		return $scripts;
 	}
 	
 	public function loadJavascriptFile($file)
 	{
-		return '<script>loadJavascript("' . $file . '?v=' . $this->fileHash . '");' . "</script>\n";
+		return '<script>loadJavascript("' . $file . '?v=' . trim($this->fileHash) . '");' . "</script>\n";
 	}
 	
 	public function embyJoinAPI($array)
@@ -489,7 +519,7 @@ trait OrganizrFunctions
 			ob_end_flush(); // Send the output to the browser
 			die();
 		} else {
-			die("Invalid Request");
+			die($this->showHTML('Invalid Request', 'No image returned'));
 		}
 	}
 	
@@ -733,5 +763,59 @@ trait OrganizrFunctions
 			}
 		}
 		return $options;
+	}
+	
+	public function showHTML(string $title = 'Organizr Alert', string $notice = '')
+	{
+		return
+			'<!DOCTYPE html>
+			<html lang="en">
+			<head>
+				<link rel="stylesheet" href="' . $this->getServerPath() . '/css/mvp.css">
+				<meta charset="utf-8">
+				<meta name="description" content="Trakt OAuth">
+				<meta name="viewport" content="width=device-width, initial-scale=1.0">
+				<title>' . $title . '</title>
+			</head>
+
+			<body>
+				<main>
+					<section>
+						<aside>
+							<h3>' . $title . '</h3>
+							<p>' . $notice . '</p>
+						</aside>
+					</section>
+				</main>
+			</body>
+			</html>';
+	}
+	
+	public function buildSettingsMenus($menuItems, $menuName)
+	{
+		$selectMenuItems = '';
+		$unorderedListMenuItems = '';
+		$menuNameLower = strtolower(str_replace(' ', '-', $menuName));
+		foreach ($menuItems as $menuItem) {
+			$anchorShort = str_replace('-anchor', '', $menuItem['anchor']);
+			$active = ($menuItem['active']) ? 'active' : '';
+			$apiPage = ($menuItem['api']) ? 'loadSettingsPage2(\'' . $menuItem['api'] . '\',\'#' . $anchorShort . '\',\'' . $menuItem['name'] . '\');' : '';
+			$onClick = (isset($menuItem['onclick'])) ? $menuItem['onclick'] : '';
+			$selectMenuItems .= '<option value="#' . $menuItem['anchor'] . '" lang="en">' . $menuItem['name'] . '</option>';
+			$unorderedListMenuItems .= '
+				<li onclick="changeSettingsMenu(\'Settings::' . $menuName . '::' . $menuItem['name'] . '\'); ' . $apiPage . $onClick . '" role="presentation" class="' . $active . '">
+					<a id="' . $menuItem['anchor'] . '" href="#' . $anchorShort . '" aria-controls="home" role="tab" data-toggle="tab" aria-expanded="true">
+						<span lang="en">' . $menuItem['name'] . '</span>
+					</a>
+			</li>';
+		}
+		$selectMenu = '<select class="form-control settings-dropdown-box ' . $menuNameLower . '-menu w-100 visible-xs">' . $selectMenuItems . '</select>';
+		$unorderedListMenu = '<ul class="nav customtab2 nav-tabs nav-non-mobile hidden-xs" data-dropdown="' . $menuNameLower . '-menu" role="tablist">' . $unorderedListMenuItems . '</ul>';
+		return $selectMenu . $unorderedListMenu;
+	}
+	
+	public function isJSON($string)
+	{
+		return is_string($string) && is_array(json_decode($string, true)) && (json_last_error() == JSON_ERROR_NONE);
 	}
 }

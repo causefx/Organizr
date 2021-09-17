@@ -20,7 +20,7 @@ trait OptionsFunction
 		$type = strtolower(str_replace('-', '', $type));
 		$setting = [
 			'name' => $name,
-			'value' => $this->config[$name]
+			'value' => $this->config[$name] ?? ''
 		];
 		switch ($type) {
 			case 'enable':
@@ -124,6 +124,30 @@ trait OptionsFunction
 					'label' => 'Multiple API Key/Token\'s',
 					'options' => $this->makeOptionsFromValues($this->config[$name]),
 					'settings' => '{tags: true, theme: "default password-alt", selectOnClose: true, closeOnSelect: true}',
+				];
+				break;
+			case 'notice':
+				$settingMerge = [
+					'type' => 'html',
+					'override' => 12,
+					'label' => '',
+					'html' => '
+						<div class="row">
+							<div class="col-lg-12">
+								<div class="panel panel-' . ($extras['notice'] ?? 'info') . '">
+									<div class="panel-heading">
+										<span lang="en">' . ($extras['title'] ?? 'Attention') . '</span>
+									</div>
+									<div class="panel-wrapper collapse in" aria-expanded="true">
+										<div class="panel-body">
+											<span lang="en">' . ($extras['body'] ?? '') . '</span>
+											<span>' . ($extras['bodyHTML'] ?? '') . '</span>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+						'
 				];
 				break;
 			case 'socks':
@@ -257,7 +281,7 @@ trait OptionsFunction
 					'type' => 'html',
 					'override' => 12,
 					'label' => 'Custom Code',
-					'html' => '<button type="button" class="hidden save' . $name . 'Textarea btn btn-info btn-circle pull-right m-r-5 m-l-10"><i class="fa fa-save"></i> </button><div id="' . $name . 'Editor" style="height:300px">' . htmlentities($this->config[$name]) . '</div>'
+					'html' => '<div id="' . $name . 'Editor" style="height:300px">' . htmlentities($this->config[$name]) . '</div>'
 				];
 				break;
 			// CALENDAR ITEMS
@@ -599,22 +623,44 @@ trait OptionsFunction
 		);
 	}
 	
-	public function ombiTvOptions()
+	public function requestTvOptions($includeUserOption = false)
 	{
-		return array(
-			array(
+		$options = [
+			[
 				'name' => 'All Seasons',
 				'value' => 'all'
-			),
-			array(
+			],
+			[
 				'name' => 'First Season Only',
 				'value' => 'first'
-			),
-			array(
+			],
+			[
 				'name' => 'Last Season Only',
 				'value' => 'last'
-			),
-		);
+			],
+		];
+		$userOption = [
+			'name' => 'Let User Select',
+			'value' => 'user'
+		];
+		if ($includeUserOption) {
+			array_push($options, $userOption);
+		}
+		return $options;
+	}
+	
+	public function requestServiceOptions()
+	{
+		return [
+			[
+				'name' => 'Ombi',
+				'value' => 'ombi'
+			],
+			[
+				'name' => 'Overseerr',
+				'value' => 'overseerr'
+			]
+		];
 	}
 	
 	public function limitOptions()
@@ -884,6 +930,14 @@ trait OptionsFunction
 			array(
 				'name' => '6:00p',
 				'value' => 'h:mmt'
+			),
+			array(
+				'name' => '6pm',
+				'value' => 'h(:mm)a'
+			),
+			array(
+				'name' => '6:00pm',
+				'value' => 'h:mma'
 			),
 			array(
 				'name' => '6:00',

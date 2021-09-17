@@ -1,3 +1,6 @@
+<?php
+declare(strict_types=1);
+?>
 <!DOCTYPE html><link rel="stylesheet" href="data/style.css">
 
 <h1>Connecting to Databases | Dibi</h1>
@@ -13,7 +16,7 @@ if (@!include __DIR__ . '/../vendor/autoload.php') {
 echo '<p>Connecting to Sqlite: ';
 try {
 	dibi::connect([
-		'driver' => 'sqlite3',
+		'driver' => 'sqlite',
 		'database' => 'data/sample.s3db',
 	]);
 	echo 'OK';
@@ -27,7 +30,7 @@ echo "</p>\n";
 echo '<p>Connecting to Sqlite: ';
 try {
 	$connection = new Dibi\Connection([
-		'driver' => 'sqlite3',
+		'driver' => 'sqlite',
 		'database' => 'data/sample.s3db',
 	]);
 	echo 'OK';
@@ -37,18 +40,7 @@ try {
 echo "</p>\n";
 
 
-// connects to MySQL using DSN
-echo '<p>Connecting to MySQL: ';
-try {
-	dibi::connect('driver=mysql&host=localhost&username=root&password=xxx&database=test&charset=cp1250');
-	echo 'OK';
-} catch (Dibi\Exception $e) {
-	echo get_class($e), ': ', $e->getMessage(), "\n";
-}
-echo "</p>\n";
-
-
-// connects to MySQLi using array
+// connects to MySQLi
 echo '<p>Connecting to MySQLi: ';
 try {
 	dibi::connect([
@@ -76,7 +68,7 @@ try {
 		'driver' => 'odbc',
 		'username' => 'root',
 		'password' => '***',
-		'dsn' => 'Driver={Microsoft Access Driver (*.mdb)};Dbq=' . __DIR__ . '/data/sample.mdb',
+		'dsn' => 'Driver={Microsoft Access Driver (*.mdb, *.accdb)};Dbq=' . __DIR__ . '/data/sample.mdb',
 	]);
 	echo 'OK';
 } catch (Dibi\Exception $e) {
@@ -106,22 +98,6 @@ try {
 	dibi::connect([
 		'driver' => 'pdo',
 		'dsn' => 'sqlite::memory:',
-	]);
-	echo 'OK';
-} catch (Dibi\Exception $e) {
-	echo get_class($e), ': ', $e->getMessage(), "\n";
-}
-echo "</p>\n";
-
-
-// connects to MS SQL
-echo '<p>Connecting to MS SQL: ';
-try {
-	dibi::connect([
-		'driver' => 'mssql',
-		'host' => 'localhost',
-		'username' => 'root',
-		'password' => 'xxx',
 	]);
 	echo 'OK';
 } catch (Dibi\Exception $e) {

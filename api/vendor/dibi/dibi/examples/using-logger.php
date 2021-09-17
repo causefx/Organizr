@@ -1,3 +1,6 @@
+<?php
+declare(strict_types=1);
+?>
 <!DOCTYPE html><link rel="stylesheet" href="data/style.css">
 
 <h1>Using Logger | Dibi</h1>
@@ -12,12 +15,12 @@ date_default_timezone_set('Europe/Prague');
 
 
 $dibi = new Dibi\Connection([
-	'driver' => 'sqlite3',
+	'driver' => 'sqlite',
 	'database' => 'data/sample.s3db',
 	// enable query logging to this file
 	'profiler' => [
-		'run' => true,
-		'file' => 'data/log.sql',
+		'file' => 'log/log.sql',
+		'errorsOnly' => false,
 	],
 ]);
 
@@ -34,6 +37,6 @@ try {
 
 
 // outputs a log file
-echo '<h2>File data/log.sql:</h2>';
+echo '<h2>File log/log.sql:</h2>';
 
-echo '<pre>', file_get_contents('data/log.sql'), '</pre>';
+echo '<pre>', file_get_contents('log/log.sql'), '</pre>';

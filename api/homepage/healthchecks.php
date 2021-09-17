@@ -15,6 +15,7 @@ trait HealthChecksHomepageItem
 			return $homepageInformation;
 		}
 		$homepageSettings = [
+			'docs' => $this->docs('features/homepage/healthchecks-homepage-item'),
 			'debug' => true,
 			'settings' => [
 				'Enable' => [
@@ -54,13 +55,7 @@ trait HealthChecksHomepageItem
 				]
 			]
 		];
-		if (array_key_exists($key, $permissions)) {
-			return $permissions[$key];
-		} elseif ($key == 'all') {
-			return $permissions;
-		} else {
-			return [];
-		}
+		return $this->homepageCheckKeyPermissions($key, $permissions);
 	}
 	
 	public function homepageOrderhealthchecks()

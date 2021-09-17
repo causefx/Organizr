@@ -57,7 +57,6 @@ php_errors.log
 # Backup Files
 .pydio_id
 
-.idea/*
 # =========================
 # Organizr files
 # =========================
@@ -96,7 +95,6 @@ logs/
 debug.php
 OrganizrV2/*
 orgv2/*
-test.php
 test/*
 organizrLoginLog.json
 organizrLog.json
@@ -121,6 +119,8 @@ plugins/plugin_files/*
 !plugins/plugin_files/index.html
 plugins/images/userTabs/*
 !plugins/images/userTabs/index.html
+plugins/images/faviconCustom/*
+!plugins/images/faviconCustom/placeFavIconsHere.txt
 api/v2/routes/custom/*
 !api/v2/routes/custom/index.html
 # =========================

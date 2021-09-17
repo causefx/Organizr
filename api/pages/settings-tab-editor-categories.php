@@ -67,22 +67,22 @@ function get_page_settings_tab_editor_categories($Organizr)
 	return '
 <script>
 buildCategoryEditor();
-$( \'#categoryEditorTable\' ).sortable({
-	stop: function () {
-		var inputs = $(\'input.order\');
-		var nbElems = inputs.length;
-		inputs.each(function(idx) {
+
+let el = document.getElementById(\'categoryEditorTable\');
+let sortable = new Sortable(el, {
+	onUpdate: function (evt) {
+		$(\'input.order\').each(function(idx) {
 			$(this).val(idx + 1);
 		});
 		submitCategoryOrder();
-	}
+	},
 });
 ' . $iconSelectors . '
 </script>
 <div class="panel bg-org panel-info">
 	<div class="panel-heading">
 		<span lang="en">Category Editor</span>
-		<button type="button" class="btn btn-success btn-circle pull-right popup-with-form m-r-5" href="#new-category-form" data-effect="mfp-3d-unfold"><i class="fa fa-plus"></i> </button>
+		<button type="button" class="btn btn-info btn-circle pull-right popup-with-form m-r-5" href="#new-category-form" data-effect="mfp-3d-unfold"><i class="fa fa-plus"></i> </button>
 	</div>
 	<div class="table-responsive">
 		<form id="submit-categories-form" onsubmit="return false;">

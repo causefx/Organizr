@@ -474,6 +474,8 @@ $(document).on("click", ".editGroup", function () {
 	organizrAPI2('PUT','api/v2/groups/' + info.id,info,true).success(function(data) {
 		try {
 			var response = data.response;
+			$('.groupIconImageList').val(null).trigger('change');
+			$('.groupIconIconList').val(null).trigger('change');
 		}catch(e) {
 			organizrCatchError(e,data);
 		}
@@ -550,6 +552,8 @@ $(document).on("click", ".addNewGroup", function () {
 	organizrAPI2('POST','api/v2/groups',info,true).success(function(data) {
 		try {
 			var response = data.response;
+			$('.groupIconImageList').val(null).trigger('change');
+			$('.groupIconIconList').val(null).trigger('change');
 			message(response.message,'',activeInfo.settings.notifications.position,"#FFF","success","5000");
 			if(callbacks){ callbacks.fire(); }
 			clearForm('#new-group-form');
@@ -879,7 +883,6 @@ $(document).on("click", ".editTab", function () {
 	    organizrAPI2('PUT','api/v2/tabs/' + tabInfo.id,tabInfo,true).success(function(data) {
 		    try {
 			    var response = data.response;
-			    console.log(response);
 		    }catch(e) {
 			    organizrCatchError(e,data);
 		    }
@@ -1063,12 +1066,6 @@ $(document).on("click", ".saveJava", function () {
 });
 $(document).on("click", ".saveThemeJava", function () {
     $('.javaThemeTextarea').val(javaThemeEditor.getValue()).trigger('change');
-});
-$(document).on("click", ".savecustomHTMLoneTextarea", function () {
-    $('.customHTMLoneTextarea').val(customHTMLoneEditor.getValue()).trigger('change');
-});
-$(document).on("click", ".savecustomHTMLtwoTextarea", function () {
-    $('.customHTMLtwoTextarea').val(customHTMLtwoEditor.getValue()).trigger('change');
 });
 
 $(document).on('focusout', 'input.pick-a-color-custom-options', function(e) {
@@ -1380,7 +1377,8 @@ $(document).on("click", ".metadata-get", function(e) {
 });
 // sab play/resume
 $(document).on("click", ".downloader", function(e) {
-    let action = $(this).attr('data-action');
+	$(this).find('i').attr('class', 'fa fa-spin fa-circle-o-notch');
+	let action = $(this).attr('data-action');
 	let source = $(this).attr('data-source');
 	let target = $(this).attr('data-target');
 	let api = null;
@@ -1456,8 +1454,8 @@ $(document).on("click", ".testEditTab", function () {
 });
 // new api key
 $(document).on("click", ".newAPIKey", function () {
-    $('#settings-main-form [name=organizrAPI]').val(generateCode());
-    $('#settings-main-form [name=organizrAPI]').change();
+	let newCode = generateCode();
+    $('#settings-main-form [name=organizrAPI]').val(newCode).change().parent().find('.clipboard').attr('data-clipboard-text',newCode);
 });
 // purge log
 $(document).on("click", ".purgeLog", function () {
@@ -1796,7 +1794,7 @@ $(document).on('click', ".ipInfo", function(){
 });
 // set active for group list
 $(document).on('click', '.allGroupsList', function() {
-    $(this).toggleClass('active');
+    //$(this).toggleClass('active');
 });
 // Control init of custom netdata JSON editor
 $(document).on('click', 'li a[aria-controls="Custom data"]', function() {
@@ -1887,4 +1885,41 @@ $(document).on('change', '[id*=-form-chooseI]', function (e) {
 	if(newValue !== 'Select or type Icon'){
 		$('#'+pasteId).val(newValue);
 	}
+});
+// SETTINGS DROPDOWN CHANGE
+$(document).on("change", ".settings-dropdown-box", function () {
+	let id = $(this).val();
+	$(id).click();
+});
+$(document).on('click', '.nav-non-mobile li a', function() {
+	let id = $(this).attr('id');
+	let menu = $(this).parent().parent().attr('data-dropdown');
+	$('.' + menu).val('#' + id);
+
+});
+
+// TOGGLE OVERSEERR ALL SEASONS
+$(document).on("change", ".select-all-overseerr-seasons", function () {
+	var enabled = $(this).prop("checked") ? 1 : 0;
+	$.each($('.overseerr-season'), function(i,v) {
+		let seasonEnabled = $(v).prop("checked") ? 1 : 0;
+		if(enabled !== seasonEnabled){
+			$(v).trigger('click');
+		}
+	});
+});
+
+$(document).on("change", ".overseerr-season", function () {
+	let enableButtonDisabled = true;
+	let requestedSeasons = [];
+	$.each($('.overseerr-season'), function(i,v) {
+		let seasonEnabled = $(v).prop("checked") ? 1 : 0;
+		if(seasonEnabled){
+			let seasonNumber = $(v).attr('data-seasonNumber');
+			requestedSeasons.push(seasonNumber);
+			enableButtonDisabled = false;
+		}
+	});
+	$('.submit-overseerr-seasons').attr('disabled', enableButtonDisabled);
+	$('.submit-overseerr-seasons').attr('data-seasons', requestedSeasons);
 });

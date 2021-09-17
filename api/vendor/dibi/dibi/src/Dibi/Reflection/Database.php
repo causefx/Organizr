@@ -5,6 +5,8 @@
  * Copyright (c) 2005 David Grudl (https://davidgrudl.com)
  */
 
+declare(strict_types=1);
+
 namespace Dibi\Reflection;
 
 use Dibi;
@@ -31,36 +33,29 @@ class Database
 	private $tables;
 
 
-	public function __construct(Dibi\Reflector $reflector, $name)
+	public function __construct(Dibi\Reflector $reflector, string $name = null)
 	{
 		$this->reflector = $reflector;
 		$this->name = $name;
 	}
 
 
-	/**
-	 * @return string|null
-	 */
-	public function getName()
+	public function getName(): ?string
 	{
 		return $this->name;
 	}
 
 
-	/**
-	 * @return Table[]
-	 */
-	public function getTables()
+	/** @return Table[] */
+	public function getTables(): array
 	{
 		$this->init();
 		return array_values($this->tables);
 	}
 
 
-	/**
-	 * @return string[]
-	 */
-	public function getTableNames()
+	/** @return string[] */
+	public function getTableNames(): array
 	{
 		$this->init();
 		$res = [];
@@ -71,11 +66,7 @@ class Database
 	}
 
 
-	/**
-	 * @param  string
-	 * @return Table
-	 */
-	public function getTable($name)
+	public function getTable(string $name): Table
 	{
 		$this->init();
 		$l = strtolower($name);
@@ -88,21 +79,14 @@ class Database
 	}
 
 
-	/**
-	 * @param  string
-	 * @return bool
-	 */
-	public function hasTable($name)
+	public function hasTable(string $name): bool
 	{
 		$this->init();
 		return isset($this->tables[strtolower($name)]);
 	}
 
 
-	/**
-	 * @return void
-	 */
-	protected function init()
+	protected function init(): void
 	{
 		if ($this->tables === null) {
 			$this->tables = [];

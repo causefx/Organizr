@@ -23,6 +23,7 @@ var tabInformation = {};
 var tabActionsList = [];
 tabActionsList['refresh'] = [];
 tabActionsList['close'] = [];
+var customHTMLEditorObject = [];
 $.xhrPool = [];
 // Add new jquery serializeObject function
 $.fn.serializeObject = function()
@@ -180,7 +181,6 @@ function copyDebug(){
 }
 function formatDebug(result){
     var formatted = '';
-    console.log(typeof result);
     switch (typeof result) {
         case 'object':
             formatted = jsonToHTML(result);
@@ -286,7 +286,7 @@ function isNumberKey(evt) {
     return true;
 }
 function setTabInfo(tab,action,value){
-    if(tab == 'Organizr-Support' || tab == 'Organizr-Docs'){
+    if(tab == 'Organizr-Support' || tab == 'Organizr-Docs' || tab == 'Feature-Request'){
         return false;
     }
     if(tab !== null && action !== null && value !== null){
@@ -1094,7 +1094,7 @@ function buildFormItem(item){
 	var pwd1 = createRandomString(6);
 	var pwd2 = createRandomString(6);
 	var pwd3 = createRandomString(6);
-	var helpInfo = (item.help) ? '<div class="collapse" id="help-info-'+item.name+'"><blockquote>'+item.help+'</blockquote></div>' : '';
+	var helpInfo = (item.help) ? '<div class="collapse" id="help-info-'+item.name+'"><blockquote lang="en">'+item.help+'</blockquote></div>' : '';
     var smallLabel = (item.smallLabel) ? '<label><span lang="en">'+item.smallLabel+'</span></label>'+helpInfo : ''+helpInfo;
 	var pwgMgr = `
 	<input name="disable-pwd-mgr-`+pwd1+`" type="password" id="disable-pwd-mgr-`+pwd1+`" style="display: none;" value="disable-pwd-mgr-`+pwd1+`" />
@@ -1118,6 +1118,9 @@ function buildFormItem(item){
 			break;
 		case 'password-alt':
 			return smallLabel+'<div class="input-group">'+pwgMgr+'<input data-changed="false" lang="en" type="password" class="password-alt form-control'+extraClass+'"'+placeholder+value+id+name+disabled+type+label+attr+' autocomplete="new-password" /><span class="input-group-btn"> <button class="btn btn-default showPassword" type="button"><i class="fa fa-eye passwordToggle"></i></button></span></div>';
+			break;
+		case 'password-alt-copy':
+			return smallLabel+'<div class="input-group">'+pwgMgr+'<input data-changed="false" lang="en" type="password" class="password-alt form-control'+extraClass+'"'+placeholder+value+id+name+disabled+type+label+attr+' autocomplete="new-password" /><span class="input-group-btn"> <button class="btn btn-primary clipboard" type="button" data-clipboard-text="'+item.value+'"><i class="fa icon-docs"></i></button></span><span class="input-group-btn"> <button class="btn btn-inverse showPassword" type="button"><i class="fa fa-eye passwordToggle"></i></button></span></div>';
 			break;
 		case 'hidden':
 			return '<input data-changed="false" lang="en" type="hidden" class="form-control'+extraClass+'"'+placeholder+value+id+name+disabled+type+label+attr+' />';
@@ -1211,12 +1214,17 @@ function buildPluginsItem(array){
 	activePlugins = (activePlugins.length !== 0) ? activePlugins : '<h2 class="text-center" lang="en">Nothing Active</h2>';
 	inactivePlugins = (inactivePlugins.length !== 0) ? inactivePlugins : '<h2 class="text-center" lang="en">Everything Active</h2>';
 	var panes = `
-	<ul class="nav customtab2 nav-tabs" role="tablist">
-		<li onclick="changeSettingsMenu('Settings::Plugins::Active')" role="presentation" class="active"><a href="#settings-plugins-active" aria-controls="home" role="tab" data-toggle="tab" aria-expanded="false"><span class="visible-xs"><i class="ti-file"></i></span><span class="hidden-xs" lang="en">Active</span></a>
+	<select class="form-control settings-dropdown-box plugin-menu w-100 visible-xs">
+		<option value="#settings-plugins-active-anchor" lang="en">Active</option>
+		<option value="#settings-plugins-inactive-anchor" lang="en">Inactive</option>
+		<option value="#settings-plugins-marketplace-anchor" lang="en">Marketplace</option>
+	</select>
+	<ul class="nav customtab2 nav-tabs nav-non-mobile hidden-xs" data-dropdown="plugin-menu" role="tablist">
+		<li onclick="changeSettingsMenu('Settings::Plugins::Active')" role="presentation" class="active"><a id="settings-plugins-active-anchor" href="#settings-plugins-active" aria-controls="home" role="tab" data-toggle="tab" aria-expanded="false"><span class="visible-xs"><i class="ti-file"></i></span><span class="hidden-xs" lang="en">Active</span></a>
 		</li>
-		<li onclick="changeSettingsMenu('Settings::Plugins::Inactive')" role="presentation" class=""><a href="#settings-plugins-inactive" aria-controls="home" role="tab" data-toggle="tab" aria-expanded="false"><span class="visible-xs"><i class="ti-zip"></i></span><span class="hidden-xs" lang="en">Inactive</span></a>
+		<li onclick="changeSettingsMenu('Settings::Plugins::Inactive')" role="presentation" class=""><a id="settings-plugins-inactive-anchor" href="#settings-plugins-inactive" aria-controls="home" role="tab" data-toggle="tab" aria-expanded="false"><span class="visible-xs"><i class="ti-zip"></i></span><span class="hidden-xs" lang="en">Inactive</span></a>
 		</li>
-		<li onclick="changeSettingsMenu('Settings::Plugins::Marketplace');loadMarketplace('plugins');" role="presentation" class=""><a href="#settings-plugins-marketplace" aria-controls="home" role="tab" data-toggle="tab" aria-expanded="false"><span class="visible-xs"><i class="ti-shopping-cart-full"></i></span><span class="hidden-xs" lang="en">Marketplace</span></a>
+		<li onclick="changeSettingsMenu('Settings::Plugins::Marketplace');loadMarketplace('plugins');" role="presentation" class=""><a id="settings-plugins-marketplace-anchor" href="#settings-plugins-marketplace" aria-controls="home" role="tab" data-toggle="tab" aria-expanded="false"><span class="visible-xs"><i class="ti-shopping-cart-full"></i></span><span class="hidden-xs" lang="en">Marketplace</span></a>
 		</li>
 	</ul>
 	<!-- Tab panes -->
@@ -1319,7 +1327,7 @@ function loadMarketplacePluginsItems(plugins){
                     <br><span class="text-muted">`+v.author+`</span>
                 </td>
                 <td>`+v.category+`</td>
-                <td>`+v.status+`</td>
+                <td lang="en">`+v.status+`</td>
                 <td style="text-align:center"><button type="button" onclick='aboutPlugin(`+JSON.stringify(v)+`);' class="btn btn-success btn-outline btn-circle btn-lg popup-with-form" href="#about-plugin-form" data-effect="mfp-3d-unfold"><i class="fa fa-info"></i></button></td>
                 <td style="text-align:center"><button type="button" onclick='installPlugin("`+cleanClass(i)+`");' class="btn btn-info btn-outline btn-circle btn-lg"><i class="`+installButton+`"></i></button></td>
                 <td style="text-align:center"><button type="button" onclick='removePlugin("`+cleanClass(i)+`");' class="btn btn-danger btn-outline btn-circle btn-lg" `+removeButton+`><i class="fa fa-trash"></i></button></td>
@@ -1351,7 +1359,7 @@ function loadMarketplaceThemesItems(themes){
                     <br><span class="text-muted">${v.author}</span>
                 </td>
                 <td>${v.category}</td>
-                <td>${v.status}</td>
+                <td lang="en">${v.status}</td>
                 <td style="text-align:center"><button type="button" onclick='aboutTheme(${JSON.stringify(v)});' class="btn btn-success btn-outline btn-circle btn-lg popup-with-form" href="#about-theme-form" data-effect="mfp-3d-unfold"><i class="fa fa-info"></i></button></td>
                 <td style="text-align:center"><button type="button" onclick='installTheme("${cleanClass(i)}");themeAnalytics("${v.name}");' class="btn btn-info btn-outline btn-circle btn-lg"><i class="${installButton}"></i></button></td>
                 <td style="text-align:center"><button type="button" onclick='removeTheme("${cleanClass(i)}");' class="btn btn-danger btn-outline btn-circle btn-lg" ${removeButton}><i class="fa fa-trash"></i></button></td>
@@ -1693,7 +1701,7 @@ function copyHomepageJSON(item){
 	});
 }
 function homepageItemFormHTML(v){
-	let docs = (typeof v.docs == 'undefined') ? '' : `<small class="pull-right m-r-5"><a data-toggle="tooltip" title="Goto Support Doc" data-placement="bottom" class="btn btn-circle btn-primary waves-effect waves-light" href="${v.docs}" target="_blank"> <i class="fa-fw fa fa-question-circle"></i></a></small>`;
+	let docs = (typeof v.docs == 'undefined') ? '' : `<small class="pull-right m-r-5"><a data-toggle="tooltip" title="Go to Support Doc" data-placement="bottom" class="btn btn-circle btn-primary waves-effect waves-light" href="${v.docs}" target="_blank"> <i class="fa-fw fa fa-question-circle"></i></a></small>`;
 	let debug = (typeof v.debug == 'undefined') ? false : true;
 	debug = (debug === true) ? (v.debug) : false;
 	debug = (debug === true) ? `<small class="pull-right m-r-5"><a data-toggle="tooltip" title="Copy JSON Settings" data-placement="bottom" href="javascript:copyHomepageJSON('${v.name}')" class="btn btn-circle btn-info waves-effect waves-light copyHomepageJSON"> <i class="fa-fw ti-clipboard"></i></a></small>` : '';
@@ -1722,27 +1730,23 @@ function homepageItemFormHTML(v){
 function clearHomepageOriginal(){
 	$('#editHomepageItem').html('');
 }
-function completeHomepageLoad(item){
-	if(item == 'CustomHTML-1'){
-		customHTMLoneEditor = ace.edit("customHTMLoneEditor");
-		let HTMLMode = ace.require("ace/mode/html").Mode;
-		customHTMLoneEditor.session.setMode(new HTMLMode());
-		customHTMLoneEditor.setTheme("ace/theme/idle_fingers");
-		customHTMLoneEditor.setShowPrintMargin(false);
-		customHTMLoneEditor.session.on('change', function(delta) {
-			$('.customHTMLoneTextarea').val(customHTMLoneEditor.getValue());
-			$('#homepage-CustomHTML-1-form-save').removeClass('hidden');
-		});
-	}
-	if(item == 'CustomHTML-2'){
-		customHTMLtwoEditor = ace.edit("customHTMLtwoEditor");
-		let HTMLMode = ace.require("ace/mode/html").Mode;
-		customHTMLtwoEditor.session.setMode(new HTMLMode());
-		customHTMLtwoEditor.setTheme("ace/theme/idle_fingers");
-		customHTMLtwoEditor.setShowPrintMargin(false);
-		customHTMLtwoEditor.session.on('change', function(delta) {
-			$('.customHTMLtwoTextarea').val(customHTMLtwoEditor.getValue());
-			$('#homepage-CustomHTML-2-form-save').removeClass('hidden');
+function completeHomepageLoad(item, data){
+	if(item == 'CustomHTML'){
+		let iteration = 0;
+		$.each(data.settings, function(i,customItem) {
+			let iterationString = (parseInt(iteration, 10) + 101).toString().substr(1);
+			let customEditor = 'customHTML'+iterationString+'Editor';
+			let customTextarea = 'customHTML'+iterationString+'Textarea';
+			let HTMLMode = ace.require("ace/mode/html").Mode;
+			customHTMLEditorObject[iterationString] = ace.edit(customEditor);
+			customHTMLEditorObject[iterationString].session.setMode(new HTMLMode());
+			customHTMLEditorObject[iterationString].setTheme("ace/theme/idle_fingers");
+			customHTMLEditorObject[iterationString].setShowPrintMargin(false);
+			customHTMLEditorObject[iterationString].session.on('change', function(delta) {
+				$('.' + customTextarea).val(customHTMLEditorObject[iterationString].getValue());
+				$('#homepage-CustomHTML-form-save').removeClass('hidden');
+			});
+			iteration++;
 		});
 	}
 	pageLoad();
@@ -1775,7 +1779,7 @@ function editHomepageItem(item){
 					delay: 0,
 					fullscreen: true,
 					clone: false,
-					onComplete: completeHomepageLoad(item),
+					onComplete: completeHomepageLoad(item, response.data),
 					onClose: clearHomepageOriginal
 				},loader:{active:true}
 			}).open();
@@ -1796,15 +1800,15 @@ function buildHomepageItem(array){
 		$.each(array, function(i,v) {
 			if(v.enabled){
 				listing += `
-				<div class="col-lg-2 col-md-2 col-sm-4 col-xs-4">
+				<div class="col-lg-2 col-md-2 col-sm-6 col-xs-6">
 					<div class="white-box bg-org m-0">
 						<div class="el-card-item p-0 editHomepageItemBox-`+v.name+`">
 							<div class="el-card-avatar el-overlay-1">
 								<a onclick="editHomepageItem('`+v.name+`')"><img class="lazyload tabImages mouse" data-src="`+v.image+`"></a>
 							</div>
 							<div class="el-card-content">
-								<h3 class="box-title">`+v.name+`</h3>
-								<small class="elip text-uppercase">`+v.category+`</small><br>
+								<h3 class="box-title elip">`+v.name+`</h3>
+								<small class="elip text-uppercase elip">`+v.category+`</small><br>
 							</div>
 						</div>
 					</div>
@@ -1936,8 +1940,8 @@ function createImageSwal(attr){
                 <div class="panel-body">
                 	<h5 lang="en">Choose action:</h5>
 					<div class="button-box">
-                        <button class="btn btn-info waves-effect waves-light clipboard" type="button" data-clipboard-text="`+clipboardText+`"><span class="btn-label"><i class="ti-clipboard"></i></span>Copy to Clipboard</button>
-                        <button class="btn btn-danger waves-effect waves-light deleteImage" type="button" data-image-path="`+fullPath+`" data-image-name="`+name+`" data-image-name-ext="`+extension+`"><span class="btn-label"><i class="fa fa-trash"></i></span>Delete</button>                        
+                        <button class="btn btn-info waves-effect waves-light clipboard" type="button" data-clipboard-text="`+clipboardText+`"><span class="btn-label"><i class="ti-clipboard"></i></span><span lang="en">Copy to Clipboard</span></button>
+                        <button class="btn btn-danger waves-effect waves-light deleteImage" type="button" data-image-path="`+fullPath+`" data-image-name="`+name+`" data-image-name-ext="`+extension+`"><span class="btn-label"><i class="fa fa-trash"></i></span><span lang="en">Delete</span></button>                        
                     </div>
                 </div>
             </div>
@@ -2169,6 +2173,8 @@ function checkTabHomepageItem(id, name, url, urlLocal){
         addEditHomepageItem(id,'qBittorrent');
     }else if(name.includes('rtorrent') || url.includes('rtorrent') || urlLocal.includes('rtorrent')){
         addEditHomepageItem(id,'rTorrent');
+    }else if(name.includes('utorrent') || url.includes('utorrent') || urlLocal.includes('utorrent')){
+        addEditHomepageItem(id,'utorrent');
     }else if(name.includes('deluge') || url.includes('deluge') || urlLocal.includes('deluge')){
         addEditHomepageItem(id,'Deluge');
     }else if(name.includes('ombi') || url.includes('ombi') || urlLocal.includes('ombi')){
@@ -3184,15 +3190,24 @@ function buildTabEditorItem(array){
 			<input type="hidden" class="form-control" name="tab[`+v.id+`].id" value="`+v.id+`">
 			<input type="hidden" class="form-control order" name="tab[`+v.id+`].order" value="`+v.order+`">
 			<input type="hidden" class="form-control" name="tab[`+v.id+`].originalOrder" value="`+v.order+`">
+			<td class="mouse-grab sort-tabs-handle">
+				<i class="icon-options-vertical m-r-5"></i> 
+				<!-- May use later on
+				<div class="btn-group dropside visible-xs">
+					<button aria-expanded="false" data-toggle="dropdown" class="btn btn-default btn-outline dropdown-toggle waves-effect waves-light" type="button"> <i class="icon-options-vertical m-r-5"></i> <span class="caret"></span></button>
+					<ul role="menu" class="dropdown-menu">
+						<li><a href="#"><i class="fa fa-angle-double-up"></i></a></li>
+						<li><a href="#"><i class="fa fa-angle-up"></i></a></li>
+						<li><a href="#"><i class="fa fa-angle-double-down"></i></a></li>
+						<li><a href="#"><i class="fa fa-angle-down"></i></a></li>
+					</ul>
+				</div>
+				-->
+			</td>
 			<td style="text-align:center" class="text-center el-element-overlay">
 				<div class="el-card-item p-0">
 					<div class="el-card-avatar el-overlay-1 m-0">
 						<div class="tabEditorIcon">`+iconPrefix(v.image)+`</div>
-						<div class="el-overlay bg-org">
-							<ul class="el-info">
-								<i class="fa fa-bars"></i>
-							</ul>
-						</div>
 					</div>
 				</div>
 			</td>
@@ -3217,7 +3232,8 @@ function editTabForm(id){
 	organizrAPI2('GET','api/v2/tabs/' + id,true).success(function(data) {
 		try {
 			let response = data.response;
-			console.log(response);
+			$('.tabIconImageList').val(null).trigger('change');
+			$('.tabIconIconList').val(null).trigger('change');
 			$('#edit-tab-form [name=name]').val(response.data.name);
 			$('#originalTabName').html(response.data.name);
 			$('#edit-tab-form [name=url]').val(response.data.url);
@@ -3334,6 +3350,7 @@ function submitSettingsForm(form, homepageItem = false){
 				                        <button class="btn btn-info waves-effect waves-light" type="button" onclick="swal.close();Custombox.modal.close()"><span class="btn-label"><i class="ti-check"></i></span>Yes</button>
 				                        <button class="btn btn-danger waves-effect waves-light" type="button" onclick="swal.close()"><span class="btn-label"><i class="ti-close"></i></span>No</button>                        
 				                    </div>
+				                    <p class="close-homepage-timer">Auto Closing in 5 seconds...</p>
                                 </div>
                             </div>
                         </div>
@@ -3343,8 +3360,10 @@ function submitSettingsForm(form, homepageItem = false){
 				swal({
 					content: createElementFromHTML(html),
 					buttons: false,
-					className: 'bg-org'
+					className: 'bg-org',
+					timer: 5000
 				})
+				textTimer(5,'.close-homepage-timer', 'Seconds remaining: ', 'Closing...');
 			}else{
 				message('Updated Items',response.message,activeInfo.settings.notifications.position,"#FFF","success","5000");
 			}
@@ -3362,6 +3381,17 @@ function submitSettingsForm(form, homepageItem = false){
 			input.closest('.form-group').removeClass('has-success').addClass('has-error');
 		});
 	}
+}
+function textTimer(seconds,el,preText,postText){
+	var seconds_left = seconds;
+	var interval = setInterval(function() {
+		$(el).html(preText + ' ' + --seconds_left)
+		if (seconds_left <= 0)
+		{
+			$(el).html(postText)
+			clearInterval(interval);
+		}
+	}, 1000);
 }
 function submitHomepageOrder(){
 	var list = $( "#homepage-values" ).serializeToJSON();
@@ -3711,7 +3741,7 @@ function buildBackers(array){
 			backers += `
 		        <!-- /.usercard -->
 		        <div class="item lazyload recent-sponsor imageSource"  data-src="${v.image}">
-		            <span class="elip recent-title" lang="en">${v.name}</span>
+		            <span class="elip recent-title">${v.name}</span>
 		        </div>
 		        <!-- /.usercard-->
 		    `;
@@ -4088,8 +4118,8 @@ function organizrAPI2(type,path,data=null,asyncValue=true){
 	$.xhrPool.abortAll(path);
 	var timeout = 10000;
 	switch(path){
-		case 'api/v2/windows/update':
-		case 'api/v2/docker/update':
+		case 'api/v2/update/windows':
+		case 'api/v2/update/docker':
 			timeout = 240000;
 			break;
 		default:
@@ -4190,10 +4220,10 @@ function loadInternal(url,tabName, split = null){
 	organizrAPI2('get',url).success(function(data) {
 		try {
 			var html = data.response;
+			$('#internal-'+extra+tabName).html(html.data);
 		}catch(e) {
 			organizrCatchError(e,data);
 		}
-		$('#internal-'+extra+tabName).html(html.data);
 	}).fail(function(xhr) {
 		OrganizrApiError(xhr);
 	});
@@ -4929,7 +4959,7 @@ function buildStreamItem(array,source){
 						<h3 class="box-title pull-right vertical-middle" style="width:10%"><i class="icon-control-`+v.state+` fa-fw text-info" style=""></i></h3>
 						<div class="clearfix"></div>
 						<small class="pull-left p-l-10 w-50 elip"><span class="pull-left"><i class="`+icon+` fa-fw text-info"></i>`+v.nowPlayingBottom+`</span></small>
-						<small class="pull-right p-r-10 w-50 elip"><span class="pull-right">`+v.user+` <i class="icon-user"></i></span></small>
+						<small class="pull-right p-r-10 w-50"><span class="pull-right"><span class="">`+v.user+` <i class="icon-user"></i></span></span></small>
 						<br>
 					</div>
 				</div>
@@ -5080,7 +5110,7 @@ function buildRequestAdminMenuItem(value,category,id,type){
 			}else{
 				action = 'approve';
 				text = 'Approve';
-				extra = `<li><a class="mouse" onclick="ombiActions('`+id+`', 'deny', '`+type+`');" lang="en">Deny</a></li>`;
+				extra = `<li><a class="mouse" onclick="requestActions('`+id+`', 'deny', '`+type+`');" lang="en">Deny</a></li>`;
 			}
 			break;
 		case 'available':
@@ -5095,18 +5125,19 @@ function buildRequestAdminMenuItem(value,category,id,type){
 		default:
 
 	}
-	return (action) ? `<li><a class="mouse" onclick="ombiActions('`+id+`', '`+action+`', '`+type+`');" lang="en">`+text+`</a></li>`+extra : '';
+	return (action) ? `<li><a class="mouse" onclick="requestActions('`+id+`', '`+action+`', '`+type+`');" lang="en">`+text+`</a></li>`+extra : '';
 }
 function buildRequestItem(array, extra=null){
 	var items = '';
+	let service = activeInfo.settings.homepage.requests.service;
 	$.each(array, function(i,v) {
 			if(extra == null){
-                var approveID = (v.type == 'tv') ? v.id : v.request_id;
+                var approveID = (v.type == 'tv' && service === 'ombi') ? v.id : v.request_id;
                 var iconType = (v.type == 'tv') ? 'fa-tv ' : 'fa-film';
 				var badge = '';
 				var badge2 = '';
 				var bg = (v.background.includes('.')) ? v.background : 'plugins/images/cache/no-np.png';
-				v.user = (activeInfo.settings.homepage.ombi.alias) ? v.userAlias : v.user;
+				v.user = (activeInfo.settings.homepage.ombi.alias && service === 'ombi') ? v.userAlias : v.user;
 				//Set Status
 				var status = (v.approved) ? '<span class="badge bg-org m-r-10" lang="en">Approved</span>' : '<span class="badge bg-danger m-r-10" lang="en">Unapproved</span>';
 				status += (v.available) ? '<span class="badge bg-org m-r-10" lang="en">Available</span>' : '<span class="badge bg-danger m-r-10" lang="en">Unavailable</span>';
@@ -5127,7 +5158,7 @@ function buildRequestItem(array, extra=null){
 						<li class="divider"></li>
 						`+buildRequestAdminMenuItem(v.approved, 'approved',approveID,v.type)+`
 						`+buildRequestAdminMenuItem(v.available, 'available',approveID,v.type)+`
-						<li><a class="mouse" onclick="ombiActions('`+v.request_id+`', 'delete', '`+v.type+`');" lang="en">Delete</a></li>
+						<li><a class="mouse" onclick="requestActions('`+v.request_id+`', 'delete', '`+v.type+`');" lang="en">Delete</a></li>
                     </ul>
                 </div>`;
 				adminFunctions = (activeInfo.user.groupID <= 1) ? adminFunctions : '';
@@ -5362,48 +5393,48 @@ function buildPlaylist(array, type){
     </div>
 	` : '';
 }
-function buildRequest(array){
-	var requests = (typeof array.content !== 'undefined') ? true : false;
+function buildRequest(service, div, array){
+	var requests = (typeof array.content !== 'undefined');
 	var dropdown = '';
 	var headerAlt = '';
 	var header = '';
-	var ombiButton = (activeInfo.settings.homepage.ombi.enabled == true) ? `<button href="#new-request" id="newRequestButton" class="btn btn-info waves-effect waves-light inline-popups" data-effect="mfp-zoom-out"><i class="fa fa-search m-l-5"></i></button>` : '';
+	var requestButton = (activeInfo['settings']['homepage'][service]['enabled'] === true) ? `<button href="#new-request" id="newRequestButton" class="btn btn-info waves-effect waves-light inline-popups" data-effect="mfp-zoom-out"><i class="fa fa-search m-l-5"></i></button>` : '';
 	if(requests){
 		var builtDropdown = `
-		<button type="button" class="btn btn-info waves-effect hidden-xs" onclick="owlChange('request-items','previous');"><i class="fa fa-chevron-left"></i></button>
-		<button type="button" class="btn btn-info waves-effect hidden-xs" onclick="owlChange('request-items','next');"><i class="fa fa-chevron-right"></i></button>
+		<button type="button" class="btn btn-info waves-effect hidden-xs" onclick="owlChange('request-items-${service}','previous');"><i class="fa fa-chevron-left"></i></button>
+		<button type="button" class="btn btn-info waves-effect hidden-xs" onclick="owlChange('request-items-${service}','next');"><i class="fa fa-chevron-right"></i></button>
 		<button aria-expanded="false" data-toggle="dropdown" class="btn btn-info dropdown-toggle waves-effect waves-light" type="button">
 			<i class="fa fa-filter m-r-5"></i><span class="caret"></span>
 		</button>
-		`+ombiButton+`
+		`+requestButton+`
 		<div role="menu" class="dropdown-menu request-filter">
 			<div class="checkbox checkbox-success m-l-20 checkbox-circle">
-				<input id="request-filter-available" data-filter="request-available" class="filter-request-input" type="checkbox" checked="">
-				<label for="request-filter-available"> <span lang="en">Available</span> </label>
+				<input id="request-filter-available-${service}" data-filter="request-available" class="filter-request-input" type="checkbox" checked="">
+				<label for="request-filter-available-${service}"> <span lang="en">Available</span> </label>
 			</div>
 			<div class="checkbox checkbox-danger m-l-20 checkbox-circle">
-				<input id="request-filter-unavailable" data-filter="request-unavailable"  class="filter-request-input" type="checkbox" checked="">
-				<label for="request-filter-unavailable"> <span lang="en">Unavailable</span> </label>
+				<input id="request-filter-unavailable-${service}" data-filter="request-unavailable"  class="filter-request-input" type="checkbox" checked="">
+				<label for="request-filter-unavailable-${service}"> <span lang="en">Unavailable</span> </label>
 			</div>
 			<div class="checkbox checkbox-info m-l-20 checkbox-circle">
-				<input id="request-filter-approved" data-filter="request-approved" class="filter-request-input" type="checkbox"  checked="">
-				<label for="request-filter-approved"> <span lang="en">Approved</span> </label>
+				<input id="request-filter-approved-${service}" data-filter="request-approved" class="filter-request-input" type="checkbox"  checked="">
+				<label for="request-filter-approved-${service}"> <span lang="en">Approved</span> </label>
 			</div>
 			<div class="checkbox checkbox-warning m-l-20 checkbox-circle">
-				<input id="request-filter-unapproved" data-filter="request-unapproved" class="filter-request-input" type="checkbox" checked="">
-				<label for="request-filter-unapproved"> <span lang="en">Unapproved</span> </label>
+				<input id="request-filter-unapproved-${service}" data-filter="request-unapproved" class="filter-request-input" type="checkbox" checked="">
+				<label for="request-filter-unapproved-${service}"> <span lang="en">Unapproved</span> </label>
 			</div>
 			<div class="checkbox checkbox-purple m-l-20 checkbox-circle">
-				<input id="request-filter-denied" data-filter="request-denied" class="filter-request-input" type="checkbox" checked="">
-				<label for="request-filter-denied"> <span lang="en">Denied</span> </label>
+				<input id="request-filter-denied-${service}" data-filter="request-denied" class="filter-request-input" type="checkbox" checked="">
+				<label for="request-filter-denied-${service}"> <span lang="en">Denied</span> </label>
 			</div>
 			<div class="checkbox checkbox-inverse m-l-20 checkbox-circle">
-				<input id="request-filter-movie" data-filter="request-movie" class="filter-request-input" type="checkbox" checked="">
-				<label for="request-filter-movie"> <span lang="en">Movie</span> </label>
+				<input id="request-filter-movie-${service}" data-filter="request-movie" class="filter-request-input" type="checkbox" checked="">
+				<label for="request-filter-movie-${service}"> <span lang="en">Movie</span> </label>
 			</div>
 			<div class="checkbox checkbox-inverse m-l-20 checkbox-circle">
-				<input id="request-filter-tv" data-filter="request-tv" class="filter-request-input" type="checkbox" checked="">
-				<label for="request-filter-tv"> <span lang="en">TV</span> </label>
+				<input id="request-filter-tv-${service}" data-filter="request-tv" class="filter-request-input" type="checkbox" checked="">
+				<label for="request-filter-tv-${service}"> <span lang="en">TV</span> </label>
 			</div>
 		</div>
 
@@ -5412,7 +5443,7 @@ function buildRequest(array){
 	if(activeInfo.settings.homepage.options.alternateHomepageHeaders){
 		var headerAlt = `
 		<div class="col-md-12">
-			<h4 class="pull-left homepage-element-title"><span class="mouse" onclick="homepageRequests()" lang="en">Requests</span> : </h4><h4 class="pull-left">&nbsp;</h4>
+			<h4 class="pull-left homepage-element-title"><span class="mouse" onclick="homepageRequests('${service}')" lang="en">Requests</span> : </h4><h4 class="pull-left">&nbsp;</h4>
 			<div class="btn-group pull-right">
 				`+builtDropdown+`
 			</div>
@@ -5423,7 +5454,7 @@ function buildRequest(array){
 	}else{
 		var header = `
 		<div class="panel-heading bg-info p-t-10 p-b-10">
-			<span class="pull-left m-t-5 mouse homepage-element-title" onclick="homepageRequests()"><img class="lazyload homepageImageTitle" data-src="plugins/images/tabs/ombi.png"> &nbsp; <span lang="en">Requests</span></span>
+			<span class="pull-left m-t-5 mouse homepage-element-title" onclick="homepageRequests('${service}')"><img class="lazyload homepageImageTitle" data-src="plugins/images/tabs/`+service+`.png"> &nbsp; <span lang="en">Requests</span></span>
 			<div class="btn-group pull-right">
 					`+builtDropdown+`
 			</div>
@@ -5432,13 +5463,13 @@ function buildRequest(array){
 		`;
 	}
 	return (requests) ? `
-	<div id="ombi-requests" class="row">
+	<div id="${service}-requests" class="row">
 		`+headerAlt+`
         <div class="col-lg-12">
             <div class="panel panel-default">
 				`+header+`
                 <div class="panel-wrapper p-b-0 collapse in">
-				<div class="owl-carousel owl-theme request-items">
+				<div class="owl-carousel owl-theme request-items-`+service+`">
 					`+buildRequestItem(array.content)+`
 				</div>
 				`+buildRequestItem(array.content, true)+`
@@ -5611,34 +5642,164 @@ function buildRequestResult(array,media_type=null,list=null,page=null,search=fal
 	`;
 	return buttons+next+results+next;
 }
-function processRequest(id,type){
-	if(type == 'tv'){
-		/*requestNewID(id).success(function(data) {
-			var newID = data.tvdb_id;
-			ombiActions(newID,'add',type);
-		}).fail(function(xhr) {
-			console.error("Organizr Function: TMDB Connection Failed");
-		});*/
-		ombiActions(id,'add',type);
-	}else{
-		ombiActions(id,'add',type);
+function buildRequestOverseerrSeasons(array){
+	var hasSeasons = (typeof array.data.seasons !== 'undefined');
+	if(hasSeasons){
+		let seasons = array.data.seasons;
+		let id = array.data.id;
+		let SeasonItems = '';
+		$.each(seasons, function(i,v) {
+			if(v.seasonNumber !== 0) {
+				SeasonItems += `
+					<tr>
+						<td><input type="checkbox" name="overseerr-season-${v.seasonNumber}" class="js-switch overseerr-season" data-seasonNumber="${v.seasonNumber}" data-color="#6164c1" data-size="small" /></td>
+						<td>${v.name}</td>
+						<td>${v.episodeCount}</td>
+					</tr>
+				`;
+			}
+		});
+		let html = `
+			<div class="panel">
+				<div class="bg-org2">
+					<div class="panel-heading">Choose Seasons</div>
+					<div class="panel-wrapper collapse in text-left">
+						<div class="table-responsive">
+							<table class="table color-bordered-table primary-bordered-table">
+								<thead>
+									<tr>
+										<th width="20"><input type="checkbox" class="js-switch select-all-overseerr-seasons" data-color="#6164c1" data-size="small" /></th>
+										<th lang="en">Season</th>
+										<th lang="en"># Of Episodes</th>
+									</tr>
+								</thead>
+								<tbody>${SeasonItems}</tbody>
+							</table>
+						</div>
+						<div class="pull-right p-b-20">
+							<button class="fcbtn btn btn-info btn-outline btn-1c" lang="en" onclick="swal.close();">Cancel</button>
+							<button class="fcbtn btn btn-success btn-outline btn-1c submit-overseerr-seasons" lang="en" data-seasons="[]" data-id="${id}" disabled onclick="processOverseerrSeasons(this)">Request Seasons</button>
+						</div>
+					</div>
+				</div>
+			</div>
+			`;
+		swal({
+			content: createElementFromHTML(html),
+			button: null,
+			className: 'bg-org',
+			dangerMode: false
+		});
 	}
 }
+
+function processOverseerrSeasons(el){
+	let seasons = $(el).attr('data-seasons');
+	let id = $(el).attr('data-id');
+	overseerrActions(id,'add','tv', seasons);
+}
+function processRequest(id,type){
+	let service = activeInfo.settings.homepage.requests.service;
+	switch (service) {
+		case 'ombi':
+			requestActions(id,'add',type);
+			return false;
+		case 'overseerr':
+			if(type  === 'tv' && activeInfo.settings.homepage.overseerr.userSelectTv === true){
+				organizrAPI2('GET','api/v2/homepage/overseerr/metadata/' + type + '/' + id).success(function(data) {
+					try {
+						let response = data.response;
+						buildRequestOverseerrSeasons(response);
+					}catch(e) {
+						organizrCatchError(e,data);
+					}
+				}).fail(function(xhr) {
+					OrganizrApiError(xhr, 'Overseerr Error');
+				});
+			}else{
+				requestActions(id,'add',type);
+			}
+			return false;
+		default:
+			organizrConsole('Request Function','Service for Processing not setup', 'error');
+			return false;
+	}
+}
+function requestActions(id = null, action = null, type = null, extra = null){
+	let service = activeInfo.settings.homepage.requests.service;
+	switch (service) {
+		case 'ombi':
+			ombiActions(id,action,type,extra);
+			break;
+		case 'overseerr':
+			overseerrActions(id,action,type,extra);
+			break;
+		default:
+			organizrConsole('Request Function','Service for Request not setup', 'error');
+			return false;
+	}
+}
+//Overseerr Actions
+function overseerrActions(id, action, type = null, extra = null){
+	ajaxloader('.request-' + id + '-div', 'in');
+	ajaxloader('.preloader-' + id, 'in');
+	//$.magnificPopup.close();
+	messageSingle(window.lang.translate('Submitting Action to Overseerr'),'',activeInfo.settings.notifications.position,"#FFF",'success',"10000");
+	switch (action){
+		case 'add':
+			let seasons = (extra !== null) ? '/' + extra : '';
+			var method = 'POST';
+			var apiUrl = 'api/v2/homepage/overseerr/requests/'+type+'/' + id + seasons;
+			var data = {};
+			break;
+		case 'available':
+		case 'pending':
+		case 'unavailable':
+		case 'approve':
+			var method = 'POST';
+			var apiUrl = 'api/v2/homepage/overseerr/requests/'+type+'/' + id + '/' + action;
+			var data = {};
+			break;
+		case 'deny':
+			var method = 'PUT';
+			var apiUrl = 'api/v2/homepage/overseerr/requests/'+type+'/' + id + '/' + action;
+			var data = {};
+			break;
+		case 'delete':
+			var method = 'DELETE';
+			var apiUrl = 'api/v2/homepage/overseerr/requests/'+type+'/' + id;
+			var data = {};
+			break;
+		default:
+			return false;
+	}
+	organizrAPI2(method,apiUrl,data).success(function(data) {
+		try {
+			let response = data.response;
+			messageSingle(response.message,'',activeInfo.settings.notifications.position,"#FFF","success","5000");
+			homepageRequests('overseerr');
+			swal.close();
+			ajaxloader();
+		}catch(e) {
+			organizrCatchError(e,data);
+		}
+	}).fail(function(xhr) {
+		ajaxloader();
+		OrganizrApiError(xhr, 'Overseerr Error');
+	});
+}
 //Ombi actions
-function ombiActions(id,action,type){
+function ombiActions(id, action, type, extra = null){
 	var msg = (activeInfo.user.groupID <= 1) ? '<a href="https://github.com/tidusjar/Ombi/issues/2176" target="_blank">Not Org Fault - Ask Ombi</a>' : 'Connection Error to Request Server';
 	ajaxloader('.request-' + id + '-div', 'in');
 	ajaxloader('.preloader-' + id, 'in');
     //$.magnificPopup.close();
     messageSingle(window.lang.translate('Submitting Action to Ombi'),'',activeInfo.settings.notifications.position,"#FFF",'success',"10000");
-	var callbacks = $.Callbacks();
-
     switch (action){
 	    case 'add':
 	    	var method = 'POST';
 	    	var apiUrl = 'api/v2/homepage/ombi/requests/'+type+'/' + id;
 	    	var data = {};
-		    callbacks.add( homepageRequests );
 	    	break;
 	    case 'available':
 	    case 'unavailable':
@@ -5646,29 +5807,25 @@ function ombiActions(id,action,type){
 		    var method = 'POST';
 		    var apiUrl = 'api/v2/homepage/ombi/requests/'+type+'/' + id + '/' + action;
 		    var data = {};
-		    callbacks.add( homepageRequests );
 		    break;
 	    case 'deny':
 		    var method = 'PUT';
 		    var apiUrl = 'api/v2/homepage/ombi/requests/'+type+'/' + id + '/' + action;
 		    var data = {};
-		    callbacks.add( homepageRequests );
 		    break;
 	    case 'delete':
 		    var method = 'DELETE';
 		    var apiUrl = 'api/v2/homepage/ombi/requests/'+type+'/' + id;
 		    var data = {};
-		    callbacks.add( homepageRequests );
 		    break;
 	    default:
-		    console.log(id,action,type);
 	    	return false;
     }
 	organizrAPI2(method,apiUrl,data).success(function(data) {
         try {
             let response = data.response;
 	        messageSingle(response.message,'',activeInfo.settings.notifications.position,"#FFF","success","5000");
-	        if(callbacks){ callbacks.fire(); }
+	        homepageRequests('ombi');
 	        ajaxloader();
         }catch(e) {
 	        organizrCatchError(e,data);
@@ -6052,6 +6209,36 @@ function buildDownloaderItem(array, source, type='none'){
                 `;
             });
             break;
+        case 'utorrent':
+            if(array.content === false){
+                queue = '<tr><td class="max-texts" lang="en">Connection Error to ' + source + '</td></tr>';
+                break;
+            }
+            if(array.content.queueItems == 0){
+                queue = '<tr><td class="max-texts" lang="en">Nothing in queue</td></tr>';
+            }
+            $.each(array.content.queueItems, function(i,v) {
+		count = count + 1;
+                var upload = v.upSpeed !== '' ? humanFileSize(v.upSpeed,false) : "0 B";
+                var download = v.downSpeed !== '' ? humanFileSize(v.downSpeed,false) : "0 B";
+		var size = v.Size !== '' ? humanFileSize(v.Size,false) : "0 B";
+                queue += `
+                <tr>
+                    <td class="max-texts"><span class="tooltip-info" data-toggle="tooltip" data-placement="right" title="">`+v.Name+`</span></td>
+		    <td class="hidden-xs utorrent-`+cleanClass(v.Status)+`">`+v.Status+`</td>
+                    <td class="hidden-xs"><span class="label label-info">`+v.Labels+`</span></td>
+		    <td class="hidden-xs"><span class="tooltip-info" data-toggle="tooltip" data-placement="right" title="" data-original-title="`+download+`"><i class="fa fa-download"></i>&nbsp;`+download+`</span></td>
+                    <td class="hidden-xs"><span class="tooltip-info" data-toggle="tooltip" data-placement="right" title="" data-original-title="`+upload+`"><i class="fa fa-upload"></i>&nbsp;`+upload+`</span></td>
+		    <td class="hidden-xs">`+size+`</td>
+                    <td class="text-right">
+                        <div class="progress progress-lg m-b-0">
+                            <div class="progress-bar progress-bar-info" style="width: `+v.Percent+`;" role="progressbar">`+v.Percent+`</div>
+                        </div>
+                    </td>
+                </tr>
+                `;
+            });
+            break;
 		case 'sonarr':
 			if(array.content === false){
 				queue = '<tr><td class="max-texts" lang="en">Connection Error to ' + source + '</td></tr>';
@@ -6246,6 +6433,9 @@ function buildDownloader(source){
         case 'transmission':
         case 'qBittorrent':
         case 'deluge':
+	case 'utorrent':
+            var queue = true;
+            break;
         case 'rTorrent':
 	    case 'sonarr':
 	    case 'radarr':
@@ -6344,6 +6534,9 @@ function buildDownloaderCombined(source){
         case 'nzbget':
             var queue = true;
             var history = true;
+            break;
+        case 'utorrent':
+            var queue = true;
             break;
         case 'transmission':
         case 'qBittorrent':
@@ -7049,9 +7242,12 @@ function homepageDownloader(type, timeout){
 		case 'deluge':
 			var action = 'getDeluge';
 			break;
-        case 'rTorrent':
-            var action = 'getrTorrent';
-            break;
+	        case 'rTorrent':
+			var action = 'getrTorrent';
+			break;
+                case 'utorrent':
+                        var action = 'getutorrent';
+                        break;
 		default:
 
 	}
@@ -7150,30 +7346,59 @@ function homepagePlaylist(type, timeout=30000){
 		OrganizrApiError(xhr);
 	});
 }
-function defaultOmbiFilter(){
-    var defaultFilter = {
-        "request-filter-approved" : activeInfo.settings.homepage.ombi.ombiDefaultFilterApproved,
-        "request-filter-unapproved" : activeInfo.settings.homepage.ombi.ombiDefaultFilterUnapproved,
-        "request-filter-available" : activeInfo.settings.homepage.ombi.ombiDefaultFilterAvailable,
-        "request-filter-unavailable" : activeInfo.settings.homepage.ombi.ombiDefaultFilterUnavailable,
-        "request-filter-denied" : activeInfo.settings.homepage.ombi.ombiDefaultFilterDenied
-    };
-    $.each(defaultFilter, function(i,v) {
-        if(v == false){
-            $('#'+i).click();
-        }
-    });
+function defaultRequestFilter(service){
+	switch (service){
+		case 'ombi':
+			var defaultFilter = {
+				"request-filter-approved-ombi" : activeInfo.settings.homepage.ombi.ombiDefaultFilterApproved,
+				"request-filter-unapproved-ombi" : activeInfo.settings.homepage.ombi.ombiDefaultFilterUnapproved,
+				"request-filter-available-ombi" : activeInfo.settings.homepage.ombi.ombiDefaultFilterAvailable,
+				"request-filter-unavailable-ombi" : activeInfo.settings.homepage.ombi.ombiDefaultFilterUnavailable,
+				"request-filter-denied-ombi" : activeInfo.settings.homepage.ombi.ombiDefaultFilterDenied
+			};
+			$.each(defaultFilter, function(i,v) {
+				if(v == false){
+					$('#'+i).click();
+				}
+			});
+		case 'overseerr':
+			var defaultFilter = {
+				"request-filter-approved-overseerr" : activeInfo.settings.homepage.overseerr.overseerrDefaultFilterApproved,
+				"request-filter-unapproved-overseerr" : activeInfo.settings.homepage.overseerr.overseerrDefaultFilterUnapproved,
+				"request-filter-available-overseerr" : activeInfo.settings.homepage.overseerr.overseerrefaultFilterAvailable,
+				"request-filter-unavailable-overseerr" : activeInfo.settings.homepage.overseerr.overseerrDefaultFilterUnavailable,
+				"request-filter-denied-overseerr" : activeInfo.settings.homepage.overseerr.overseerrDefaultFilterDenied
+			};
+			$.each(defaultFilter, function(i,v) {
+				if(v == false){
+					$('#'+i).click();
+				}
+			});
+	}
 }
-function homepageRequests(timeout){
-	var timeout = (typeof timeout !== 'undefined') ? timeout : activeInfo.settings.homepage.refresh.ombiRefresh;
-	organizrAPI2('GET','api/v2/homepage/ombi/requests').success(function(data) {
+function homepageRequests(service, timeout){
+	switch (service){
+		case 'ombi':
+			var apiUrl = 'api/v2/homepage/ombi/requests';
+			var div = 'homepageOrderombi';
+			var timeout = (typeof timeout !== 'undefined') ? timeout : activeInfo.settings.homepage.refresh.ombiRefresh;
+			break;
+		case 'overseerr':
+			var apiUrl = 'api/v2/homepage/overseerr/requests';
+			var div = 'homepageOrderoverseerr'
+			var timeout = (typeof timeout !== 'undefined') ? timeout : activeInfo.settings.homepage.refresh.overseerrRefresh;
+			break;
+		default:
+			return false;
+	}
+	organizrAPI2('GET',apiUrl).success(function(data) {
         try {
             let response = data.response;
-	        document.getElementById('homepageOrderombi').innerHTML = '';
+	        document.getElementById(div).innerHTML = '';
 	        if(response.data.content !== false){
-		        $('#homepageOrderombi').html(buildRequest(response.data));
+		        $('#' + div).html(buildRequest(service,div, response.data));
 	        }
-	        $('.request-items').owlCarousel({
+	        $('.request-items-' + service).owlCarousel({
 		        nav:false,
 		        autoplay:false,
 		        dots:false,
@@ -7181,16 +7406,16 @@ function homepageRequests(timeout){
 		        autoWidth:true,
 		        items:4
 	        })
-	        // Default Ombi Filter
-	        defaultOmbiFilter();
+	        // Default Filter
+	        defaultRequestFilter(service);
         }catch(e) {
 	        organizrCatchError(e,data);
         }
 	}).fail(function(xhr) {
 		OrganizrApiError(xhr);
 	});
-	if(typeof timeouts['ombi-Homepage'] !== 'undefined'){ clearTimeout(timeouts['ombi-Homepage']); }
-	timeouts['ombi-Homepage'] = setTimeout(function(){ homepageRequests(timeout); }, timeout);
+	if(typeof timeouts[service+'-Requests-Homepage'] !== 'undefined'){ clearTimeout(timeouts[service+'-Requests-Homepage']); }
+	timeouts[service+'-Requests-Homepage'] = setTimeout(function(){ homepageRequests(service, timeout); }, timeout);
 	delete timeout;
 }
 function testAPIConnection(service, data = ''){
@@ -7250,8 +7475,8 @@ function getUnifiSite(){
     });
 }
 function unifiSiteApply(name){
-    $('#homepage-Unifi-form [name=unifiSiteName]').val(name);
-    $('#homepage-Unifi-form [name=unifiSiteName]').change();
+    $('#homepage-UniFi-form [name=unifiSiteName]').val(name);
+    $('#homepage-UniFi-form [name=unifiSiteName]').change();
     swal.close();
     messageSingle('', ' Grabbed Site - Please Save Now',activeInfo.settings.notifications.position,'#FFF','success','10000');
 }
@@ -9400,11 +9625,12 @@ function checkLocalForwardStatus(array){
                 if(activeInfo.settings.user.local && currentSite.indexOf(remoteSite) !== -1 && currentURL.indexOf('override') === -1){
 	                organizrConsole('Organizr Function','Local Login Status: Local | Forwarding Now');
                     window.location = localSite;
+                }else{
+	                organizrConsole('Organizr Function','Local Login Status: Not Local or Override was set - Ignoring Forward Request');
                 }
             } catch(e) {
                 console.error(e);
             }
-	        organizrConsole('Organizr Function','Local Login Status: Not Local');
         }
     }
 }
@@ -10016,7 +10242,7 @@ function clickPath(type,path=null){
             break;
         case 'update':
             $('#settings-main-system-settings-anchor').trigger('click');
-            $('#update-button').trigger('click');
+            $('#settings-settings-updates-anchor').trigger('click');
             break;
         case 'sso':
             $('#settings-main-system-settings-anchor').trigger('click');
@@ -10176,15 +10402,24 @@ function toggleDebug(){
 	                                <li><a onclick="orgDebugList('activeInfo.settings.sso');"
 	                                       href="javascript:void(0)"
 	                                       lang="en">SSO</a></li>
-	                                <li><a onclick="orgDebugList('activeInfo.settings.sso.ombi');"
-	                                       href="javascript:void(0)"
-	                                       lang="en">Ombi SSO</a></li>
 	                                <li><a onclick="orgDebugList('activeInfo.settings.sso.plex');"
 	                                       href="javascript:void(0)"
 	                                       lang="en">Plex SSO</a></li>
 	                                <li><a onclick="orgDebugList('activeInfo.settings.sso.tautulli');"
 	                                       href="javascript:void(0)"
 	                                       lang="en">Tautulli SSO</a></li>
+	                                <li><a onclick="orgDebugList('activeInfo.settings.sso.overseerr');"
+	                                       href="javascript:void(0)"
+	                                       lang="en">Overseerr SSO</a></li>
+	                                <li><a onclick="orgDebugList('activeInfo.settings.sso.petio');"
+	                                       href="javascript:void(0)"
+	                                       lang="en">Petio SSO</a></li>
+	                                <li><a onclick="orgDebugList('activeInfo.settings.sso.ombi');"
+	                                       href="javascript:void(0)"
+	                                       lang="en">Ombi SSO</a></li>
+	                                <li><a onclick="orgDebugList('activeInfo.settings.sso.jellyfin');"
+	                                       href="javascript:void(0)"
+	                                       lang="en">Jellyfin SSO</a></li>
 	                                <li><a onclick="orgDebugList('activeInfo.settings.sso.misc');"
 	                                       href="javascript:void(0)"
 	                                       lang="en">Misc SSO</a></li>
@@ -10726,7 +10961,8 @@ function organizrConsole(subject,msg,type = 'info'){
 }
 function organizrCatchError(e,data){
 	organizrConsole('Organizr API Function',data,'warning');
-	orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
+	orgErrorAlert('<h4>' + e + '</h4><p><mark lang="en">Trace Log has been outputted to Browser Console</mark></p><h5 lang="en">Output of last API call</h5>' + formatDebug(data));
+	console.trace();
 	return false;
 }
 function OrganizrApiError(xhr, secondaryMessage = null){
@@ -10742,7 +10978,7 @@ function OrganizrApiError(xhr, secondaryMessage = null){
 	}
 	organizrConsole('Organizr API Function',msg,'error');
 	if(secondaryMessage){
-		message(secondaryMessage, msg, activeInfo.settings.notifications.position, '#FFF', 'error', '10000');
+		messageSingle(secondaryMessage, msg, activeInfo.settings.notifications.position, '#FFF', 'error', '10000');
 	}
 	return false;
 }
@@ -10755,18 +10991,19 @@ function checkForUpdates(){
 
 function loadJavascript(script = null, defer = false){
 	if(script){
-		console.log(script);
-		console.log('checking if script is loaded...');
+		organizrConsole('JS Loader',script);
+		organizrConsole('JS Loader','Checking if script is loaded...');
 		let loaded = $('script[src="'+script+'"]').length;
-		///let loaded2 = document.querySelector('script[src="' + script + '"]');
 		if(!loaded){
-			console.log('script is NOT loaded... Loading now...');
+			organizrConsole('JS Loader','Script is NOT loaded... Loading now...');
 			let head = document.getElementsByTagName('head')[0];
 			let scriptEl = document.createElement('script');
 			scriptEl.type = 'text/javascript';
 			scriptEl.src = script;
 			scriptEl.defer = false;
 			head.appendChild(scriptEl);
+		}else{
+			organizrConsole('JS Loader','Script already loaded');
 		}
 	}
 }
@@ -10818,9 +11055,34 @@ function shortcut(selectors = ''){
 		}, timeout);
 	});
 }
-
+function getJournalMode(){
+	organizrAPI2('GET','api/v2/database/journal').success(function(data) {
+		try {
+			let response = data.response;
+			$('.journal-mode').html(response.data.journal_mode);
+		}catch(e) {
+			organizrCatchError(e,data);
+		}
+	}).fail(function(xhr) {
+		OrganizrApiError(xhr);
+	});
+}
+function setJournalMode(mode){
+	messageSingle('Setting New Journal Mode','',activeInfo.settings.notifications.position,"#FFF","info","1500");
+	organizrAPI2('PUT','api/v2/database/journal/' + mode, {}).success(function(data) {
+		try {
+			getJournalMode();
+			let response = data.response;
+			message('Set New Journal Mode',response.data.journal_mode,activeInfo.settings.notifications.position,"#FFF","success","5000");
+		}catch(e) {
+			organizrCatchError(e,data);
+		}
+	}).fail(function(xhr) {
+		OrganizrApiError(xhr);
+	});
+}
 function launch(){
-	console.info('https://docs.organizr.app/books/setup-features/page/organizr-20--%3E-21-migration-guide');
+	console.info('https://docs.organizr.app/help/faq/migration-guide#version-2-0-greater-than-version-2-1');
 	organizrConsole('API V2 API','If you see a 404 Error for api/v2/launch below this line, you have not setup the new location block... See URL above this line', 'error');
 	organizrConnect('api/v2/launch').success(function (data) {
         try {
@@ -10917,7 +11179,7 @@ function launch(){
 	}).fail(function(xhr) {
 		defineNotification();
 		if(xhr.status == 404){
-			orgErrorAlert('<h2>Webserver not setup for Organizr v2.1</h2><h4>Please goto <a href="https://docs.organizr.app/books/setup-features/page/organizr-20--%3E-21-migration-guide">Migration guide to complete the changes...</a></h4><h3>Webserver Error:</h3>' + xhr.responseText);
+			orgErrorAlert('<h2>Webserver not setup for Organizr v2.1</h2><h4>Please goto <a href="https://docs.organizr.app/help/faq/migration-guide#version-2-0-greater-than-version-2-1">Migration guide to complete the changes...</a></h4><h3>Webserver Error:</h3>' + xhr.responseText);
 			message('FATAL ERROR','You need to update webserver location block... check browser console for migration URL','br','#FFF','error','60000');
 		}else{
 			orgErrorAlert('<h3>Webserver Error:</h3>' + xhr.responseText);

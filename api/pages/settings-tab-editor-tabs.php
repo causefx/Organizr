@@ -67,34 +67,37 @@ function get_page_settings_tab_editor_tabs($Organizr)
 	return '
 	<script>
 	buildTabEditor();
-	!function(a){function f(a,b){if(!(a.originalEvent.touches.length>1)){a.preventDefault();var c=a.originalEvent.changedTouches[0],d=document.createEvent("MouseEvents");d.initMouseEvent(b,!0,!0,window,1,c.screenX,c.screenY,c.clientX,c.clientY,!1,!1,!1,!1,0,null),a.target.dispatchEvent(d)}}if(a.support.touch="ontouchend"in document,a.support.touch){var e,b=a.ui.mouse.prototype,c=b._mouseInit,d=b._mouseDestroy;b._touchStart=function(a){var b=this;!e&&b._mouseCapture(a.originalEvent.changedTouches[0])&&(e=!0,b._touchMoved=!1,f(a,"mouseover"),f(a,"mousemove"),f(a,"mousedown"))},b._touchMove=function(a){e&&(this._touchMoved=!0,f(a,"mousemove"))},b._touchEnd=function(a){e&&(f(a,"mouseup"),f(a,"mouseout"),this._touchMoved||f(a,"click"),e=!1)},b._mouseInit=function(){var b=this;b.element.bind({touchstart:a.proxy(b,"_touchStart"),touchmove:a.proxy(b,"_touchMove"),touchend:a.proxy(b,"_touchEnd")}),c.call(b)},b._mouseDestroy=function(){var b=this;b.element.unbind({touchstart:a.proxy(b,"_touchStart"),touchmove:a.proxy(b,"_touchMove"),touchend:a.proxy(b,"_touchEnd")}),d.call(b)}}}(jQuery);
-	$( \'#tabEditorTable\' ).sortable({
-		stop: function () {
+	let el = document.getElementById(\'tabEditorTable\');
+	let tabSorter = new Sortable(el, {
+		handle: ".sort-tabs-handle",
+		ghostClass: "sortable-ghost",
+		multiDrag: true,
+		selectedClass: "multi-selected",
+		onUpdate: function (evt) {
 			$(\'input.order\').each(function(idx) {
 				$(this).val(idx + 1);
 			});
 			var newTabs = $( "#submit-tabs-form" ).serializeToJSON();
 			newTabsGlobal = newTabs;
 			$(\'.saveTabOrderButton\').removeClass(\'hidden\');
-			//submitTabOrder(newTabs);
-		}
+		},
 	});
-	$( \'#tabEditorTable\' ).disableSelection();
 	' . $iconSelectors . '
 	</script>
 	<div class="panel bg-org panel-info">
 		<div class="panel-heading">
 			<span lang="en">Tab Editor</span>
-			<button type="button" class="btn btn-info btn-circle pull-right popup-with-form m-r-5" href="#new-tab-form" data-effect="mfp-3d-unfold"><i class="fa fa-plus"></i> </button>
-			<button type="button" class="btn btn-info btn-circle pull-right m-r-5 help-modal" data-modal="tabs"><i class="fa fa-question-circle"></i> </button>
-			<button onclick="submitTabOrder(newTabsGlobal)" class="btn btn-sm btn-info btn-rounded waves-effect waves-light pull-right animated loop-animation rubberBand m-r-20 saveTabOrderButton hidden" type="button"><span class="btn-label"><i class="fa fa-save"></i></span><span lang="en">Save Tab Order</span></button>
+			<button type="button" data-toggle="tooltip" title="Add New Tab" data-placement="bottom" class="btn btn-info btn-circle pull-right popup-with-form m-r-5" href="#new-tab-form" data-effect="mfp-3d-unfold"><i class="fa fa-plus"></i> </button>
+			<button type="button" data-toggle="tooltip" title="Help" data-placement="bottom" class="btn btn-info btn-circle pull-right m-r-5 help-modal" data-modal="tabs"><i class="fa fa-question-circle"></i> </button>
+			<button onclick="submitTabOrder(newTabsGlobal)" data-toggle="tooltip" title="Save tab Order" data-placement="bottom" class="btn btn-info btn-circle waves-effect waves-light pull-right animated loop-animation rubberBand m-r-5 saveTabOrderButton hidden" type="button"><i class="fa fa-save"></i></button>
 		</div>
 		<div class="table-responsive">
 			<form id="submit-tabs-form" onsubmit="return false;">
 				<table class="table table-hover manage-u-table">
 					<thead>
 						<tr>
-							<th width="70" class="text-center">#</th>
+							<th width="20" class="text-center"></th>
+							<th width="70" class="text-center"></th>
 							<th lang="en">NAME</th>
 							<th lang="en">CATEGORY</th>
 							<th lang="en">GROUP</th>
