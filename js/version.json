@@ -421,9 +421,16 @@
   },
   "2.1.525": {
     "date": "2021-08-29 21:40",
-    "title": "Added more Custom HTML homepage items",
+    "title": "Added more Custom HTML homepage items (DEV BRANCH)",
     "new": "",
     "fixed": "",
     "notes": ""
+  },
+  "2.1.655": {
+    "date": "2021-09-17 17:20",
+    "title": "Has it been that long?",
+    "new": "overseerr homepage item (FR#150891)|Added More custom homepage items (FR#202285)|uTorrent Homepage Item|new move framework for sorting tabs - handle bar on left side|multi select on tab sort|eps number to plex recent added (FR#150883)|check diskspace to org|journal mode options to org|show html instead of plain text on Die commands|backup before update|token/me endpoint|dropdown in settings page for mobile only|docs to plex and healthchecks|notice to settings options|update debug area for sso modules|image selector to group editor|/organizr/page api endpoint|new error page located at api/v2/organizr/error|timer to close homepage item after save|covert local IP Range to IP Listing with multiple values|sonarr docs|get config items from api",
+    "fixed": "unifi homepage item (#1592)|emby not being lowercase on login check|remove toggle class for side nav|api error for deluge|api error for emby|Clarify if config.php not setup or db permission error|netdata errors|timeout on updating|rework invalid token|rtorrent typo|option value if not set|tautulli use new url input box|readd username to token (#1577)|old issue with ombi import|start date and end date if not set",
+    "notes": "Updated translation files|New Translation Strings|updated dibi to v4"
   }
 }
