@@ -338,7 +338,7 @@ trait OverseerrHomepageItem
 						'mediaId' => (int)$id,
 						'tvdbId' => $seriesInfo['externalIds']['tvdbId'],
 						'mediaType' => 'tv',
-						'is4k' => $serviceInfo['is4k'],
+						'is4k' => (bool)$serviceInfo['is4k'],
 						'seasons' => $seasons,
 						'serverId' => (int)$serviceInfo['id'],
 						'profileId' => (int)$serviceInfo['activeProfileId'],
@@ -359,7 +359,7 @@ trait OverseerrHomepageItem
 					$add = [
 						'mediaId' => (int)$id,
 						'mediaType' => 'movie',
-						'is4k' => $serviceInfo['is4k'],
+						'is4k' => (bool)$serviceInfo['is4k'],
 						'serverId' => (int)$serviceInfo['id'],
 						'profileId' => (int)$serviceInfo['activeProfileId'],
 						'userId' => (int)$userInfo['id'],
