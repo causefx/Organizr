@@ -163,7 +163,7 @@ trait OverseerrHomepageItem
 				foreach ($requestsData['results'] as $key => $value) {
 					$requester = ($value['requestedBy']['username'] !== '') ? $value['requestedBy']['username'] : $value['requestedBy']['plexUsername'];
 					$requesterEmail = $value['requestedBy']['email'];
-					$proceed = (($this->config['overseerrLimitUser']) && strtolower($this->user['username']) == strtolower($requester)) || (strtolower($requester) == strtolower($this->config['ombiFallbackUser'])) || (!$this->config['ombiLimitUser']) || $this->qualifyRequest(1);
+					$proceed = (($this->config['overseerrLimitUser']) && strtolower($this->user['username']) == strtolower($requester)) || (strtolower($requester) == strtolower($this->config['overseerrFallbackUser'])) || (!$this->config['overseerrLimitUser']) || $this->qualifyRequest(1);
 					if ($proceed) {
 						$requestItem = Requests::get($url . '/api/v1/' . $value['type'] . '/' . $value['media']['tmdbId'], $headers, $options);
 						$requestsItemData = json_decode($requestItem->body, true);
@@ -344,7 +344,7 @@ trait OverseerrHomepageItem
 						'profileId' => (int)$serviceInfo['activeProfileId'],
 						'rootFolder' => $serviceInfo['activeDirectory'],
 						'languageProfileId' => (int)$serviceInfo['activeLanguageProfileId'],
-						'userId' => (int)$userInfo['id'],
+						//'userId' => (int)$userInfo['id'],
 						'tags' => []
 					];
 					break;
@@ -362,7 +362,7 @@ trait OverseerrHomepageItem
 						'is4k' => (bool)$serviceInfo['is4k'],
 						'serverId' => (int)$serviceInfo['id'],
 						'profileId' => (int)$serviceInfo['activeProfileId'],
-						'userId' => (int)$userInfo['id'],
+						//'userId' => (int)$userInfo['id'],
 						'tags' => []
 					];
 					break;
