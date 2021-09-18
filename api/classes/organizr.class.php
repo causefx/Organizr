@@ -10,6 +10,7 @@ class Organizr
 	use AuthFunctions;
 	use BackupFunctions;
 	use ConfigFunctions;
+	use DemoFunctions;
 	use HomepageConnectFunctions;
 	use HomepageFunctions;
 	use LogFunctions;
@@ -2905,17 +2906,15 @@ class Organizr
 				[
 					'type' => 'input',
 					'name' => 'overseerrFallbackUser',
-					'label' => 'Overseerr Fallback User',
+					'label' => 'Overseerr Fallback Email',
 					'value' => $this->config['overseerrFallbackUser'],
 					'help' => 'DO NOT SET THIS TO YOUR ADMIN ACCOUNT. We recommend you create a local account as a "catch all" for when Organizr is unable to perform SSO.  Organizr will request a User Token based off of this user credentials',
-					'attr' => 'disabled'
 				],
 				[
 					'type' => 'password-alt',
 					'name' => 'overseerrFallbackPassword',
 					'label' => 'Overseerr Fallback Password',
 					'value' => $this->config['overseerrFallbackPassword'],
-					'attr' => 'disabled'
 				],
 				[
 					'type' => 'switch',
