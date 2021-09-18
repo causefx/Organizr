@@ -214,7 +214,7 @@ trait SSOFunctions
 			if ($response->success) {
 				$user = json_decode($response->body, true); // not really needed yet
 				$token = $response->cookies['connect.sid']->value;
-				$this->writeLog('success', 'Overseerr Token Function - Grabbed token', $user['plexUsername']);
+				$this->writeLog('success', 'Overseerr Token Function - Grabbed token', $user['plexUsername'] ?? $email);
 			} else {
 				if ($fallback) {
 					$this->writeLog('error', 'Overseerr Token Function - Overseerr did not return Token - Will retry using fallback credentials', $email);
