@@ -143,11 +143,13 @@ trait OverseerrHomepageItem
 		if (!$this->homepageItemPermissions($this->overseerrHomepagePermissions('main'), true)) {
 			return false;
 		}
+		$limit = is_numeric($limit) ? (int)$limit : 50;
+		$offset = is_numeric($offset) ? (int)$offset : 0;
 		$api['count'] = [
 			'movie' => 0,
 			'tv' => 0,
-			'limit' => (integer)$limit,
-			'offset' => (integer)$offset
+			'limit' => $limit,
+			'offset' => $offset
 		];
 		$headers = [
 			"Accept" => "application/json",
