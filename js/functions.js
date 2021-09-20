@@ -9322,7 +9322,7 @@ getPlexOAuthPin = function () {
     return deferred;
 };
 var polling = null;
-function PlexOAuth(success, error, pre) {
+function PlexOAuth(success, error, pre, id = null) {
     if (typeof pre === "function") {
         pre()
     }
@@ -9357,7 +9357,7 @@ function PlexOAuth(success, error, pre) {
                     if (data.authToken){
                         closePlexOAuthWindow();
                         if (typeof success === "function") {
-                            success('plex',data.authToken)
+                            success('plex',data.authToken, id)
                         }
                     }
                 },
@@ -9396,15 +9396,21 @@ function encodeData(data) {
         return [key, data[key]].map(encodeURIComponent).join("=");
     }).join("&");
 }
-function oAuthSuccess(type,token){
+function oAuthSuccess(type,token, id = null){
     switch(type) {
         case 'plex':
-            $('#oAuth-Input').val(token);
-            $('#oAuthType-Input').val(type);
-            $('#login-username-Input').addClass('hidden');
-            $('#login-password-Input').addClass('hidden');
-            $('#oAuth-div').removeClass('hidden');
-            $('.login-button').first().trigger('click');
+        	if(id){
+		        $(id).val(token);
+		        $(id).change();
+		        messageSingle('',window.lang.translate('Grabbed Token - Please Save'),activeInfo.settings.notifications.position,'#FFF','success','5000');
+	        }else{
+		        $('#oAuth-Input').val(token);
+		        $('#oAuthType-Input').val(type);
+		        $('#login-username-Input').addClass('hidden');
+		        $('#login-password-Input').addClass('hidden');
+		        $('#oAuth-div').removeClass('hidden');
+		        $('.login-button').first().trigger('click');
+	        }
             break;
         default:
             break;

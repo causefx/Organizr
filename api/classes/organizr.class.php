@@ -2269,7 +2269,7 @@ class Organizr
 					'class' => 'getPlexTokenAuth plexAuth switchAuth',
 					'icon' => 'fa fa-ticket',
 					'text' => 'Retrieve',
-					'attr' => 'onclick="showPlexTokenForm(\'#settings-main-form [name=plexToken]\')"'
+					'attr' => 'onclick="PlexOAuth(oAuthSuccess,oAuthError, null, \'#settings-main-form [name=plexToken]\')"'
 				),
 				array(
 					'type' => 'password-alt',
@@ -2858,7 +2858,7 @@ class Organizr
 					'label' => 'Get Plex Token',
 					'icon' => 'fa fa-ticket',
 					'text' => 'Retrieve',
-					'attr' => 'onclick="showPlexTokenForm(\'#sso-form [name=plexToken]\')"'
+					'attr' => 'onclick="PlexOAuth(oAuthSuccess,oAuthError, null, \'#sso-form [name=plexToken]\')"'
 				],
 				[
 					'type' => 'password-alt',
