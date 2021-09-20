@@ -247,22 +247,25 @@ class Organizr
 		}
 	}
 	
-	public function checkDiskSpace()
+	public function checkDiskSpace($directory = './')
 	{
-		$disk = $this->checkDisk('/');
-		$diskLevels = [
-			'warn' => 1000000000,
-			'error' => 100000000
-		];
-		if ($disk['free'] <= $diskLevels['error']) {
-			die($this->showHTML('Low Disk Space', 'You are dangerously low on disk space.<br/>There is only ' . $disk['free']['human_readable'] . ' remaining.<br/><b>Percent Used = ' . $disk['used']['percent_used'] . '%</b>'));
-		} elseif ($disk['free'] <= $diskLevels['warn']) {
-			$this->warnings[] = 'You are low on disk space.  There is only ' . $disk['free']['human_readable'] . ' remaining.';
+		$readable = @is_readable($directory);
+		if ($readable) {
+			$disk = $this->checkDisk($directory);
+			$diskLevels = [
+				'warn' => 1000000000,
+				'error' => 100000000
+			];
+			if ($disk['free'] <= $diskLevels['error']) {
+				die($this->showHTML('Low Disk Space', 'You are dangerously low on disk space.<br/>There is only ' . $disk['free']['human_readable'] . ' remaining.<br/><b>Percent Used = ' . $disk['used']['percent_used'] . '%</b>'));
+			} elseif ($disk['free'] <= $diskLevels['warn']) {
+				$this->warnings[] = 'You are low on disk space.  There is only ' . $disk['free']['human_readable'] . ' remaining.';
+			}
 		}
 		return true;
 	}
 	
-	public function getFreeSpace($directory = '/')
+	public function getFreeSpace($directory = './')
 	{
 		$disk = disk_free_space($directory);
 		return [
@@ -271,7 +274,7 @@ class Organizr
 		];
 	}
 	
-	public function getDiskSpace($directory = '/')
+	public function getDiskSpace($directory = './')
 	{
 		$disk = disk_total_space($directory);
 		return [
@@ -280,7 +283,7 @@ class Organizr
 		];
 	}
 	
-	public function getUsedSpace($directory = '/')
+	public function getUsedSpace($directory = './')
 	{
 		$diskFree = $this->getFreeSpace($directory);
 		$diskTotal = $this->getDiskSpace($directory);
@@ -295,13 +298,23 @@ class Organizr
 		];
 	}
 	
-	public function checkDisk($directory = '/')
+	public function checkDisk($directory = './')
 	{
-		return [
-			'free' => $this->getFreeSpace('/'),
-			'used' => $this->getUsedSpace('/'),
-			'total' => $this->getDiskSpace('/'),
-		];
+		$readable = @is_readable($directory);
+		if ($readable) {
+			return [
+				'free' => $this->getFreeSpace($directory),
+				'used' => $this->getUsedSpace($directory),
+				'total' => $this->getDiskSpace($directory),
+			];
+		} else {
+			return [
+				'free' => 'error accessing path',
+				'used' => 'error accessing path',
+				'total' => 'error accessing path',
+			];
+		}
+		
 	}
 	
 	public function errorCodes($error = 000)
