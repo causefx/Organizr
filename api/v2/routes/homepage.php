@@ -366,15 +366,6 @@ $app->get('/homepage/overseerr/requests[/{type}[/{limit}[/{offset}]]]', function
 		->withHeader('Content-Type', 'application/json;charset=UTF-8')
 		->withStatus($GLOBALS['responseCode']);
 });
-$app->post('/homepage/overseerr/requests/{type}/{id}[/{seasons}]', function ($request, $response, $args) {
-	$Organizr = ($request->getAttribute('Organizr')) ?? new Organizr();
-	$args['seasons'] = $args['seasons'] ?? null;
-	$Organizr->addOverseerrRequest($args['id'], $args['type'], $args['seasons']);
-	$response->getBody()->write(jsonE($GLOBALS['api']));
-	return $response
-		->withHeader('Content-Type', 'application/json;charset=UTF-8')
-		->withStatus($GLOBALS['responseCode']);
-});
 $app->post('/homepage/overseerr/requests/{type}/{id}/available', function ($request, $response, $args) {
 	$Organizr = ($request->getAttribute('Organizr')) ?? new Organizr();
 	$Organizr->actionOverseerrRequest($args['id'], $args['type'], 'available');
@@ -418,6 +409,15 @@ $app->put('/homepage/overseerr/requests/{type}/{id}/deny', function ($request, $
 $app->delete('/homepage/overseerr/requests/{type}/{id}', function ($request, $response, $args) {
 	$Organizr = ($request->getAttribute('Organizr')) ?? new Organizr();
 	$Organizr->actionOverseerrRequest($args['id'], $args['type'], 'delete');
+	$response->getBody()->write(jsonE($GLOBALS['api']));
+	return $response
+		->withHeader('Content-Type', 'application/json;charset=UTF-8')
+		->withStatus($GLOBALS['responseCode']);
+});
+$app->post('/homepage/overseerr/requests/{type}/{id}[/{seasons}]', function ($request, $response, $args) {
+	$Organizr = ($request->getAttribute('Organizr')) ?? new Organizr();
+	$args['seasons'] = $args['seasons'] ?? null;
+	$Organizr->addOverseerrRequest($args['id'], $args['type'], $args['seasons']);
 	$response->getBody()->write(jsonE($GLOBALS['api']));
 	return $response
 		->withHeader('Content-Type', 'application/json;charset=UTF-8')

@@ -5778,11 +5778,14 @@ function overseerrActions(id, action, type = null, extra = null){
 			let response = data.response;
 			if(action == 'add'){
 				addTempRequest();
+				setTimeout(function(){
+						ajaxloader();
+					}, 2000
+				);
 			}
 			messageSingle(response.message,'',activeInfo.settings.notifications.position,"#FFF","success","5000");
 			homepageRequests('overseerr');
 			cleanCloseSwal();
-			ajaxloader();
 		}catch(e) {
 			organizrCatchError(e,data);
 		}
