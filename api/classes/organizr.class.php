@@ -3623,7 +3623,7 @@ class Organizr
 		->identifiedBy('4f1g23a12aa', true)// Configures the id (jti claim), replicating as a header item
 		->issuedAt(time())// Configures the time that the token was issue (iat claim)
 		->expiresAt(time() + (86400 * $days))// Configures the expiration time of the token (exp claim)
-		->withClaim('username', $result['username'])// Configures a new claim, called "username"
+		->withClaim('name', $result['username'])// Configures a new claim, called "name"
 		->withClaim('group', $result['group'])// Configures a new claim, called "group"
 		->withClaim('groupID', $result['group_id'])// Configures a new claim, called "groupID"
 		->withClaim('email', $result['email'])// Configures a new claim, called "email"
