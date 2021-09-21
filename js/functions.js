@@ -5776,10 +5776,16 @@ function overseerrActions(id, action, type = null, extra = null){
 	organizrAPI2(method,apiUrl,data).success(function(data) {
 		try {
 			let response = data.response;
+			if(action == 'add'){
+				addTempRequest();
+				setTimeout(function(){
+						ajaxloader();
+					}, 2000
+				);
+			}
 			messageSingle(response.message,'',activeInfo.settings.notifications.position,"#FFF","success","5000");
 			homepageRequests('overseerr');
-			swal.close();
-			ajaxloader();
+			cleanCloseSwal();
 		}catch(e) {
 			organizrCatchError(e,data);
 		}
@@ -5824,6 +5830,9 @@ function ombiActions(id, action, type, extra = null){
 	organizrAPI2(method,apiUrl,data).success(function(data) {
         try {
             let response = data.response;
+	        if(action == 'add'){
+		        addTempRequest();
+	        }
 	        messageSingle(response.message,'',activeInfo.settings.notifications.position,"#FFF","success","5000");
 	        homepageRequests('ombi');
 	        ajaxloader();
@@ -5834,6 +5843,32 @@ function ombiActions(id, action, type, extra = null){
 		ajaxloader();
 		OrganizrApiError(xhr, 'Ombi Error');
 	});
+}
+
+function addTempRequest(){
+	let service = activeInfo.settings.homepage.requests.service;
+	let html = `
+	<div class="item lazyload recent-poster request-item request-adding  mouse" data-src="">
+		<div class="outside-request-div">
+			<div class="inside-over-request-div bg-danger"></div>
+			<div class="inside-request-div bg-info"></div>
+		</div>
+		<div class="hover-homepage-item"></div>
+		<span class="elip request-title-tv"><i class="fa fa-tv"></i></span>
+		<span class="elip recent-title">Adding Request</span>
+	</div>
+	`;
+	$('.request-items-' + service).trigger('add.owl', [html, 0]).trigger('refresh.owl');
+	setTimeout(function(){
+		ajaxloader('.request-adding', 'in');
+		}, 100
+	);
+}
+function cleanCloseSwal(){
+	let state = swal.getState().isOpen;
+	if(state === true){
+		swal.close();
+	}
 }
 function doneTyping () {
 	let title = $('#request-input').val();
@@ -9290,7 +9325,7 @@ getPlexOAuthPin = function () {
     return deferred;
 };
 var polling = null;
-function PlexOAuth(success, error, pre) {
+function PlexOAuth(success, error, pre, id = null) {
     if (typeof pre === "function") {
         pre()
     }
@@ -9325,7 +9360,7 @@ function PlexOAuth(success, error, pre) {
                     if (data.authToken){
                         closePlexOAuthWindow();
                         if (typeof success === "function") {
-                            success('plex',data.authToken)
+                            success('plex',data.authToken, id)
                         }
                     }
                 },
@@ -9364,15 +9399,21 @@ function encodeData(data) {
         return [key, data[key]].map(encodeURIComponent).join("=");
     }).join("&");
 }
-function oAuthSuccess(type,token){
+function oAuthSuccess(type,token, id = null){
     switch(type) {
         case 'plex':
-            $('#oAuth-Input').val(token);
-            $('#oAuthType-Input').val(type);
-            $('#login-username-Input').addClass('hidden');
-            $('#login-password-Input').addClass('hidden');
-            $('#oAuth-div').removeClass('hidden');
-            $('.login-button').first().trigger('click');
+        	if(id){
+		        $(id).val(token);
+		        $(id).change();
+		        messageSingle('',window.lang.translate('Grabbed Token - Please Save'),activeInfo.settings.notifications.position,'#FFF','success','5000');
+	        }else{
+		        $('#oAuth-Input').val(token);
+		        $('#oAuthType-Input').val(type);
+		        $('#login-username-Input').addClass('hidden');
+		        $('#login-password-Input').addClass('hidden');
+		        $('#oAuth-div').removeClass('hidden');
+		        $('.login-button').first().trigger('click');
+	        }
             break;
         default:
             break;

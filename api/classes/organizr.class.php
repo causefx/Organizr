@@ -10,6 +10,7 @@ class Organizr
 	use AuthFunctions;
 	use BackupFunctions;
 	use ConfigFunctions;
+	use DemoFunctions;
 	use HomepageConnectFunctions;
 	use HomepageFunctions;
 	use LogFunctions;
@@ -246,22 +247,25 @@ class Organizr
 		}
 	}
 	
-	public function checkDiskSpace()
+	public function checkDiskSpace($directory = './')
 	{
-		$disk = $this->checkDisk('/');
-		$diskLevels = [
-			'warn' => 1000000000,
-			'error' => 100000000
-		];
-		if ($disk['free'] <= $diskLevels['error']) {
-			die($this->showHTML('Low Disk Space', 'You are dangerously low on disk space.<br/>There is only ' . $disk['free']['human_readable'] . ' remaining.<br/><b>Percent Used = ' . $disk['used']['percent_used'] . '%</b>'));
-		} elseif ($disk['free'] <= $diskLevels['warn']) {
-			$this->warnings[] = 'You are low on disk space.  There is only ' . $disk['free']['human_readable'] . ' remaining.';
+		$readable = @is_readable($directory);
+		if ($readable) {
+			$disk = $this->checkDisk($directory);
+			$diskLevels = [
+				'warn' => 1000000000,
+				'error' => 100000000
+			];
+			if ($disk['free'] <= $diskLevels['error']) {
+				die($this->showHTML('Low Disk Space', 'You are dangerously low on disk space.<br/>There is only ' . $disk['free']['human_readable'] . ' remaining.<br/><b>Percent Used = ' . $disk['used']['percent_used'] . '%</b>'));
+			} elseif ($disk['free'] <= $diskLevels['warn']) {
+				$this->warnings[] = 'You are low on disk space.  There is only ' . $disk['free']['human_readable'] . ' remaining.';
+			}
 		}
 		return true;
 	}
 	
-	public function getFreeSpace($directory = '/')
+	public function getFreeSpace($directory = './')
 	{
 		$disk = disk_free_space($directory);
 		return [
@@ -270,7 +274,7 @@ class Organizr
 		];
 	}
 	
-	public function getDiskSpace($directory = '/')
+	public function getDiskSpace($directory = './')
 	{
 		$disk = disk_total_space($directory);
 		return [
@@ -279,7 +283,7 @@ class Organizr
 		];
 	}
 	
-	public function getUsedSpace($directory = '/')
+	public function getUsedSpace($directory = './')
 	{
 		$diskFree = $this->getFreeSpace($directory);
 		$diskTotal = $this->getDiskSpace($directory);
@@ -294,13 +298,23 @@ class Organizr
 		];
 	}
 	
-	public function checkDisk($directory = '/')
+	public function checkDisk($directory = './')
 	{
-		return [
-			'free' => $this->getFreeSpace('/'),
-			'used' => $this->getUsedSpace('/'),
-			'total' => $this->getDiskSpace('/'),
-		];
+		$readable = @is_readable($directory);
+		if ($readable) {
+			return [
+				'free' => $this->getFreeSpace($directory),
+				'used' => $this->getUsedSpace($directory),
+				'total' => $this->getDiskSpace($directory),
+			];
+		} else {
+			return [
+				'free' => 'error accessing path',
+				'used' => 'error accessing path',
+				'total' => 'error accessing path',
+			];
+		}
+		
 	}
 	
 	public function errorCodes($error = 000)
@@ -2255,7 +2269,7 @@ class Organizr
 					'class' => 'getPlexTokenAuth plexAuth switchAuth',
 					'icon' => 'fa fa-ticket',
 					'text' => 'Retrieve',
-					'attr' => 'onclick="showPlexTokenForm(\'#settings-main-form [name=plexToken]\')"'
+					'attr' => 'onclick="PlexOAuth(oAuthSuccess,oAuthError, null, \'#settings-main-form [name=plexToken]\')"'
 				),
 				array(
 					'type' => 'password-alt',
@@ -2844,7 +2858,7 @@ class Organizr
 					'label' => 'Get Plex Token',
 					'icon' => 'fa fa-ticket',
 					'text' => 'Retrieve',
-					'attr' => 'onclick="showPlexTokenForm(\'#sso-form [name=plexToken]\')"'
+					'attr' => 'onclick="PlexOAuth(oAuthSuccess,oAuthError, null, \'#sso-form [name=plexToken]\')"'
 				],
 				[
 					'type' => 'password-alt',
@@ -2905,17 +2919,15 @@ class Organizr
 				[
 					'type' => 'input',
 					'name' => 'overseerrFallbackUser',
-					'label' => 'Overseerr Fallback User',
+					'label' => 'Overseerr Fallback Email',
 					'value' => $this->config['overseerrFallbackUser'],
 					'help' => 'DO NOT SET THIS TO YOUR ADMIN ACCOUNT. We recommend you create a local account as a "catch all" for when Organizr is unable to perform SSO.  Organizr will request a User Token based off of this user credentials',
-					'attr' => 'disabled'
 				],
 				[
 					'type' => 'password-alt',
 					'name' => 'overseerrFallbackPassword',
 					'label' => 'Overseerr Fallback Password',
 					'value' => $this->config['overseerrFallbackPassword'],
-					'attr' => 'disabled'
 				],
 				[
 					'type' => 'switch',
