@@ -272,6 +272,7 @@ return [
 	'overseerrLimitUser' => false,
 	'overseerrRefresh' => '600000',
 	'overseerrTvDefault' => 'all',
+	'overseerrPrefer4K' => false,
 	'homepageWeatherAndAirEnabled' => false,
 	'homepageWeatherAndAirAuth' => '1',
 	'homepageWeatherAndAirRefresh' => '3600000',

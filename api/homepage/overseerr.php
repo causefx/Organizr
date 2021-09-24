@@ -37,6 +37,7 @@ trait OverseerrHomepageItem
 					$this->settingsOption('select', 'overseerrTvDefault', ['label' => 'TV Show Default Request', 'options' => $this->requestTvOptions(true)]),
 					$this->settingsOption('switch', 'overseerrLimitUser', ['label' => 'Limit to User']),
 					$this->settingsOption('limit', 'overseerrLimit'),
+					$this->settingsOption('switch', 'overseerrPrefer4K', ['label' => 'Prefer 4K Server']),
 					$this->settingsOption('refresh', 'overseerrRefresh'),
 				],
 				'Default Filter' => [
@@ -219,14 +220,18 @@ trait OverseerrHomepageItem
 			$default = false;
 			foreach ($services as $service) {
 				if ($service['isDefault']) {
-					$default = (int)$service['id'];
+					if ($service['is4k']) {
+						if ($this->config['overseerrPrefer4K']) {
+							$default = (int)$service['id'];
+						}
+					} else {
+						if (!$this->config['overseerrPrefer4K']) {
+							$default = (int)$service['id'];
+						}
+					}
 				}
 			}
-			if ($default) {
-				return $services[$default];
-			} else {
-				return $services[0];
-			}
+			return ($default) ? $services[$default] : $services[0];
 		}
 	}
 	
@@ -332,6 +337,10 @@ trait OverseerrHomepageItem
 					$response = Requests::get($url . '/api/v1/service/sonarr', $headers, $optionsAPI);
 					if ($response->success) {
 						$serviceInfo = $this->getDefaultService(json_decode($response->body, true));
+						if (!$serviceInfo) {
+							$this->setResponse(404, 'No Sonarr service was found in Overseerr');
+							return false;
+						}
 					} else {
 						$this->setResponse(500, 'Error getting service information');
 						return false;
@@ -354,6 +363,10 @@ trait OverseerrHomepageItem
 					$response = Requests::get($url . '/api/v1/service/radarr', $headers, $optionsAPI);
 					if ($response->success) {
 						$serviceInfo = $this->getDefaultService(json_decode($response->body, true));
+						if (!$serviceInfo) {
+							$this->setResponse(404, 'No Radarr service was found in Overseerr');
+							return false;
+						}
 					} else {
 						$this->setResponse(500, 'Error getting service information');
 						return false;
