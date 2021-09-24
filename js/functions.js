@@ -5137,7 +5137,7 @@ function buildRequestItem(array, extra=null){
 				var badge = '';
 				var badge2 = '';
 				var bg = (v.background.includes('.')) ? v.background : 'plugins/images/cache/no-np.png';
-				v.user = (activeInfo.settings.homepage.ombi.alias && service === 'ombi') ? v.userAlias : v.user;
+				v.user = (activeInfo.settings.homepage.ombi.alias && service === 'ombi') || (activeInfo.settings.homepage.overseerr.enabled && service === 'overseerr') ? v.userAlias : v.user;
 				//Set Status
 				var status = (v.approved) ? '<span class="badge bg-org m-r-10" lang="en">Approved</span>' : '<span class="badge bg-danger m-r-10" lang="en">Unapproved</span>';
 				status += (v.available) ? '<span class="badge bg-org m-r-10" lang="en">Available</span>' : '<span class="badge bg-danger m-r-10" lang="en">Unavailable</span>';
