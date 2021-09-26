@@ -366,7 +366,7 @@ class Organizr
 			],
 			411 => [
 				'type' => 'Length Required',
-				'description' => 'The request can not be processed without a “Content-Length” header field'
+				'description' => 'The request can not be processed without a "Content-Length" header field'
 			],
 			412 => [
 				'type' => 'Precondition Failed',
@@ -5777,7 +5777,7 @@ class Organizr
 				foreach ($contents as $content) {
 					$html = $content->innerHtml;
 					preg_match('/(@[a-zA-Z])\w+/', $html, $username);
-					preg_match('/(?i)\b((?:https?:\/\/|www\d{0,3}[.]|[a-z0-9.\-]+[.][a-z]{2,4}\/)(?:[^\s()<>]+|\(([^\s()<>]+|(\([^\s()<>]+\)))*\))+(?:\(([^\s()<>]+|(\([^\s()<>]+\)))*\)|[^\s`!()\[\]{};:\'\".,<>?«»“”‘’]))/', $html, $image);
+					preg_match('/(?i)\b((?:https?:\/\/|www\d{0,3}[.]|[a-z0-9.\-]+[.][a-z]{2,4}\/)(?:[^\s()<>]+|\(([^\s()<>]+|(\([^\s()<>]+\)))*\))+(?:\(([^\s()<>]+|(\([^\s()<>]+\)))*\)|[^\s`!()\[\]{};:\'\".,<>?«»""\'\']))/', $html, $image);
 					if (isset($image[0]) && isset($username[0])) {
 						$sponsors[] = [
 							'name' => str_replace('@', '', $username[0]),
