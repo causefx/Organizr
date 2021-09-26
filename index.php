@@ -8,11 +8,15 @@ $Organizr = new Organizr();
 <head>
     <meta charset="utf-8">
     <meta content="IE=edge" http-equiv="X-UA-Compatible">
-    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport">
+    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport">
     <meta content="<?php echo $Organizr->config['description']; ?>" name="description">
     <meta content="CauseFX" name="author">
-	<?php echo $Organizr->favIcons(); ?>
+    <?php echo $Organizr->favIcons(); ?>
     <title><?php echo $Organizr->config['title']; ?></title>
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="application-name" content="<?php echo $Organizr->config['title']; ?>">
+    <meta name="apple-mobile-web-app-title" content="<?php echo $Organizr->config['title']; ?>">
     <link href="bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="plugins/bower_components/sidebar-nav/dist/sidebar-nav.min.css" rel="stylesheet">
     <link href="plugins/bower_components/jquery-wizard-master/css/wizard.css" rel="stylesheet">
