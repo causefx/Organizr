@@ -81,6 +81,11 @@ span.jsgrid-pager-page.jsgrid-pager-current-page.btn.btn-primary{
     display: block;
 }
 @media screen and (max-width: 767px) {
+    body {
+        height: 100vh;
+    }
+}
+@media screen and (max-width: 767px) {
     .orgErrorAlert {
         min-width: 200px;
         width: calc(100% - 40px);
