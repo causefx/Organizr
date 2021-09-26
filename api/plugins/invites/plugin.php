@@ -115,9 +115,11 @@ class Invites extends Organizr
 	{
 		$response = [
 			array(
-				'function' => 'fetchAll',
-				'query' => 'SELECT * FROM invites WHERE code = ? COLLATE NOCASE',
-				$code
+				'function' => 'fetch',
+				'query' => array(
+					'SELECT * FROM invites WHERE code = ? COLLATE NOCASE',
+					$code
+				)
 			)
 		];
 		$info = $this->processQueries($response);
