@@ -174,21 +174,7 @@ $Organizr = new Organizr();
     <!-- ============================================================== -->
     <a href="#" id="scroll" style="display: none;"><span></span></a>
     <button id="internal-clipboard" class="hidden"></button>
-    <div class="org-rox-trigger">
-        <div class="org-rox">
-            <div class="hair"></div>
-            <div class="head">
-                <div class="ear left"></div>
-                <div class="ear right"></div>
-                <div class="face">
-                    <div class="eye left"></div>
-                    <div class="eye right"></div>
-                    <div class="nose"></div>
-                    <div class="mouth"></div>
-                </div>
-            </div>
-        </div>
-    </div>
+	<?php echo $Organizr->inconspicuous(); ?>
 </div>
 <!-- /#wrapper -->
 <!-- jQuery -->

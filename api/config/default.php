@@ -600,5 +600,6 @@ return [
 	'defaultSettingsTab' => '5',
 	'blacklisted' => '',
 	'blacklistedMessage' => 'You have been blacklisted from this site.',
-	'defaultRequestService' => 'ombi'
+	'defaultRequestService' => 'ombi',
+	'easterEggs' => true
 ];

@@ -1849,6 +1849,12 @@ class Organizr
 				),
 				array(
 					'type' => 'switch',
+					'name' => 'easterEggs',
+					'label' => 'Show Easter Eggs',
+					'value' => $this->config['easterEggs']
+				),
+				array(
+					'type' => 'switch',
 					'name' => 'expandCategoriesByDefault',
 					'label' => 'Expand All Categories',
 					'value' => $this->config['expandCategoriesByDefault']
@@ -5426,6 +5432,31 @@ class Organizr
 			$this->setAPIResponse('error', 'id not found', 404);
 			return false;
 		}
+	}
+	
+	public function inconspicuous(): string
+	{
+		if ($this->hasDB()) {
+			if ($this->config['easterEggs']) {
+				return '
+				<div class="org-rox-trigger">
+					<div class="org-rox">
+						<div class="hair"></div>
+						<div class="head">
+							<div class="ear left"></div>
+							<div class="ear right"></div>
+							<div class="face">
+								<div class="eye left"></div>
+								<div class="eye right"></div>
+								<div class="nose"></div>
+								<div class="mouth"></div>
+							</div>
+						</div>
+					</div>
+				</div>';
+			}
+		}
+		return '';
 	}
 	
 	public function marketplaceFileListFormat($files, $folder, $type)
