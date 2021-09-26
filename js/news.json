@@ -1,5 +1,14 @@
 [
   {
+    "title": "Feature Request Site Migration",
+    "subTitle": "Bye-bye Feature Upvote",
+    "date": "2021-09-25 18:40",
+    "body": "We have migrated away from Feature Upvote in favor for Fider.  Nothing is needed on your end.  We didn't want to use your email without your permission from Feature Upvote so we ended up creating all of the previous requests under an Organizr API email.  You may search for your old feature request and subscribe to it.  The URL is still the same - the button is also located in Organizr Tab menu at the bottom.",
+    "author": "CauseFX",
+    "important": false,
+    "id": 13
+  },
+  {
     "title": "Minimum PHP Version change",
     "subTitle": "Users that use containers are fine",
     "date": "2021-05-03 04:25",
