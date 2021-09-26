@@ -14560,8 +14560,29 @@ var ListViewGrid = Grid.extend({
 		}
 		titleHtml =
 			'<span class="fc-title">' +
-				(htmlEscape(event.title || '') || '&nbsp;') + // we always want one line of height
+			(htmlEscape(event.title || '') || '&nbsp;') + // we always want one line of height
 			'</span>';
+		switch(event.imagetypeFilter){
+			case 'tv':
+				titleHtml = titleHtml + '<br/><small class="fc-title m-l-5 hidden-xs">' +
+					(htmlEscape(event.details.bottomTitle || '') || '&nbsp;') + // we always want one line of height
+					'</small>';
+				break;
+			case 'music':
+				titleHtml = titleHtml + '<br/><small class="fc-title m-l-5 hidden-xs">' +
+					(htmlEscape(event.details.topTitle || '') || '&nbsp;') + // we always want one line of height
+					'</small>';
+				break;
+			case 'film':
+				titleHtml = titleHtml + '<br/><small class="fc-title m-l-5 hidden-xs">' +
+					(htmlEscape(event.details.studio || '') || '&nbsp;') + // we always want one line of height
+					'</small>';
+				break;
+			default:
+				titleHtml = titleHtml + '<br/><small class="fc-title m-l-5 hidden-xs">' +
+					(htmlEscape('' || '') || '&nbsp;') + // we always want one line of height
+					'</small>';
+		}
         imageHtml =
 			'<span class="fc-status '+ event.bgColor +'"></span><span class="fc-image"><i class="fa fa-' +
 				(htmlEscape(event.imagetype || '') || '&nbsp;') + // we always want one line of height
