@@ -18,12 +18,12 @@ trait ConfigFunctions
 			$this->setAPIResponse('success', 'Search results for term: ' . $term, 200, $results);
 			return $results;
 		}
-		if ($this->config[$item]) {
+		if (isset($this->config[$item])) {
 			$configItem = $this->config[$item];
 			if ($item == 'organizrHash') {
 				$configItem = '***Secure***';
 			}
-			$this->setAPIResponse('success', null, 200, $configItem);
+			$this->setAPIResponse('success', 'The value for ' . $item, 200, $configItem);
 			return $this->config[$item];
 		} else {
 			$this->setAPIResponse('error', $item . ' is not defined or is blank', 404);
