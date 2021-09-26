@@ -3633,7 +3633,7 @@ function newsLoad(){
 			        $.each(response, function(i,v) {
 				        count++;
 				        let ignore = ignoredIds.includes(v.id);
-				        let alertDefined = (typeof v.important !== 'undefined' || v.important === false);
+				        let alertDefined = (typeof v.important !== 'undefined' && v.important !== false);
 				        let alert = (alertDefined && ignore == false) ? `<span class="animated loop-animation flash text-danger mouse newsItem-${v.id}" onclick="ignoreNewsId('${v.id}')">&nbsp; <i class="ti-alert"></i>&nbsp; Important Message - Click me to Ignore</span>` : '';
 				        let heartBeat = (alertDefined && ignore == false) ? `<div class="notify pull-left newsHeart-${v.id}"><span class="heartbit"></span><span class="point"></span></div>` : '';
 				        let newBody = `
