@@ -651,11 +651,13 @@ trait OrganizrFunctions
 	
 	public function logoOrText()
 	{
+		$showLogo = $this->config['minimalLoginScreen'] ? '' : 'visible-xs';
 		if ($this->config['useLogoLogin'] == false) {
-			return '<h1>' . $this->config['title'] . '</h1>';
+			$html = '<h1>' . $this->config['title'] . '</h1>';
 		} else {
-			return '<img class="loginLogo" src="' . $this->config['loginLogo'] . '" alt="Home" />';
+			$html = '<img class="loginLogo" src="' . $this->config['loginLogo'] . '" alt="Home" />';
 		}
+		return '<a href="javascript:void(0)" class="text-center db ' . $showLogo . '" id="login-logo">' . $html . '</a>';
 	}
 	
 	public function settingsDocker()
