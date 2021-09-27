@@ -4120,6 +4120,7 @@ function organizrAPI2(type,path,data=null,asyncValue=true){
 	switch(path){
 		case 'api/v2/update/windows':
 		case 'api/v2/update/docker':
+		case 'api/v2/login':
 			timeout = 240000;
 			break;
 		default:
@@ -4626,7 +4627,11 @@ function loadAppearance(appearance){
 			.panel-blue .panel-heading, .panel-info .panel-heading {
 			    border-color: `+appearance.accentColor+`;
 			}
-
+			.customvtab .tabs-vertical li.active a,
+			.customvtab .tabs-vertical li.active a:focus,
+			.customvtab .tabs-vertical li.active a:hover {
+				border-right: 2px solid `+appearance.accentColor+`;
+			}
 			.text-info,
 			.btn-link, a {
 			    color: `+appearance.accentColor+`;
@@ -4635,6 +4640,7 @@ function loadAppearance(appearance){
 	}
 	if(appearance.accentTextColor !== ''){
 		cssSettings += `
+			.bg-info,
 			.progress-bar,
 			.panel-default .panel-heading,
 			.mailbox-widget .customtab li.active a, .mailbox-widget .customtab li.active, .mailbox-widget .customtab li.active a:focus,
@@ -4645,7 +4651,8 @@ function loadAppearance(appearance){
 	}
 	if(appearance.buttonColor !== ''){
 		cssSettings += `
-			.btn-info, .btn-info.disabled {
+			.btn-info, .btn-info.disabled,
+			.btn {
 				background: `+appearance.buttonColor+` !important;
 				border: 1px solid `+appearance.buttonColor+` !important;
 			}
@@ -4653,7 +4660,8 @@ function loadAppearance(appearance){
 	}
 	if(appearance.buttonTextColor !== ''){
 		cssSettings += `
-			.btn-info, .btn-info.disabled {
+			.btn-info, .btn-info.disabled,
+			.btn {
 				color: `+appearance.buttonTextColor+` !important;
 			}
 		`;
