@@ -182,18 +182,39 @@ trait uTorrentHomepageItem
 					} else if ($this->config['uTorrentHideCompleted'] && $Status == "Finished") {
 						// Do Nothing
 					} else {
-						$value = array(
-							'Name' => $keyArr[2],
-							'Labels' => $keyArr[11],
-							'Percent' => str_replace(' ', '', $matches['Percentage']),
-							'Status' => $Status,
-							'Availability' => $keyArr[4],
-							'Done' => $keyArr[5],
-							'Size' => $keyArr[3],
-							'upSpeed' => $keyArr[8],
-							'downSpeed' => $keyArr[9],
-							'Message' => $keyArr[21],
-						);
+                                                $value = array(
+                                                        'Hash' => $keyArr[0],
+                                                        'TorrentStatus' => $keyArr[1],
+                                                        'Name' => $keyArr[2],
+                                                        'Size' => $keyArr[3],
+                                                        'Progress' => $keyArr[4],
+                                                        'Downloaded' => $keyArr[5],
+                                                        'Uploaded' => $keyArr[6],
+                                                        'Ratio' => $keyArr[7],
+                                                        'upSpeed' => $keyArr[8],
+                                                        'downSpeed' => $keyArr[9],
+                                                        'eta' => $keyArr[10],
+                                                        'Labels' => $keyArr[11],
+                                                        'PeersConnected' => $keyArr[12],
+                                                        'PeersInSwarm' => $keyArr[13],
+                                                        'SeedsConnected' => $keyArr[14],
+                                                        'SeedsInSwarm' => $keyArr[15],
+                                                        'Availability' => $keyArr[16],
+                                                        'TorrentQueueOrder' => $keyArr[17],
+                                                        'Remaining' => $keyArr[18],
+                                                        'DownloadUrl' => $keyArr[19],
+                                                        'RssFeedUrl' => $keyArr[20],
+                                                        'Message' => $keyArr[21],
+                                                        'StreamId' => $keyArr[22],
+                                                        'DateAdded' => $keyArr[23],
+                                                        'DateCompleted' => $keyArr[24],
+                                                        'AppUpdateUrl' => $keyArr[25],
+                                                        'RootDownloadPath' => $keyArr[26],
+                                                        'Unknown27' => $keyArr[27],
+                                                        'Unknown28' => $keyArr[28],
+                                                        'Status' => $Status,
+                                                        'Percent' => str_replace(' ', '', $matches['Percentage']),
+                                                );
 						array_push($valueArray, $value);
 					}
 				}
