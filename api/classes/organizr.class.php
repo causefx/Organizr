@@ -1899,7 +1899,7 @@ class Organizr
 				array(
 					'type' => 'html',
 					'override' => 12,
-					'label' => 'Custom CSS [Can replace colors from above]',
+					'label' => '',
 					'html' => '
 					<div class="row">
 						<div class="col-lg-12">
@@ -1922,6 +1922,8 @@ class Organizr
 					'type' => 'blank',
 					'label' => ''
 				),
+				$this->settingsOption('button', '', ['label' => 'Reset Colors', 'icon' => 'fa fa-ticket', 'text' => 'Reset', 'attr' => 'onclick="resetCustomColors()"']),
+				$this->settingsOption('blank'),
 				array(
 					'type' => 'input',
 					'name' => 'headerColor',

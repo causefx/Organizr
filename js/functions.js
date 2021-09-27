@@ -4719,6 +4719,13 @@ function loadAppearance(appearance){
         $('#custom-css').html(appearance.customCss);
     }
 }
+function resetCustomColors(){
+	let colors = ['headerColor','headerTextColor','sidebarColor','sidebarTextColor','accentColor','accentTextColor','buttonColor','buttonTextColor'];
+	$.each(colors, function(i,v) {
+		$('#customize-appearance-form [name='+v+']').val('').trigger('change');
+	});
+	messageSingle(window.lang.translate('Colors Reverted'),window.lang.translate('Please Save'),activeInfo.settings.notifications.position,'#FFF','success','10000');
+}
 function randomCSV(values){
     if(typeof values == 'string'){
         if(values.includes(',')){
