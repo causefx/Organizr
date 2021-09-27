@@ -7400,7 +7400,7 @@ function defaultRequestFilter(service){
 			var defaultFilter = {
 				"request-filter-approved-overseerr" : activeInfo.settings.homepage.overseerr.overseerrDefaultFilterApproved,
 				"request-filter-unapproved-overseerr" : activeInfo.settings.homepage.overseerr.overseerrDefaultFilterUnapproved,
-				"request-filter-available-overseerr" : activeInfo.settings.homepage.overseerr.overseerrefaultFilterAvailable,
+				"request-filter-available-overseerr" : activeInfo.settings.homepage.overseerr.overseerrDefaultFilterAvailable,
 				"request-filter-unavailable-overseerr" : activeInfo.settings.homepage.overseerr.overseerrDefaultFilterUnavailable,
 				"request-filter-denied-overseerr" : activeInfo.settings.homepage.overseerr.overseerrDefaultFilterDenied
 			};
