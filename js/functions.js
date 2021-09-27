@@ -4621,11 +4621,15 @@ function loadAppearance(appearance){
 			.bg-info,
 			.fc-toolbar,
 			.progress-bar-info,
-			.label-info {
+			.label-info,
+			.tabs-style-iconbox nav ul li.tab-current a {
 			    background-color: `+appearance.accentColor+` !important;
 			}
 			.panel-blue .panel-heading, .panel-info .panel-heading {
 			    border-color: `+appearance.accentColor+`;
+			}
+			.tabs-style-iconbox nav ul li.tab-current a::after {
+				border-top-color: `+appearance.accentColor+`;
 			}
 			.customvtab .tabs-vertical li.active a,
 			.customvtab .tabs-vertical li.active a:focus,
@@ -4644,7 +4648,8 @@ function loadAppearance(appearance){
 			.progress-bar,
 			.panel-default .panel-heading,
 			.mailbox-widget .customtab li.active a, .mailbox-widget .customtab li.active, .mailbox-widget .customtab li.active a:focus,
-			.mailbox-widget .customtab li a {
+			.mailbox-widget .customtab li a,
+			.tabs-style-iconbox nav ul li.tab-current a {
 				color: `+appearance.accentTextColor+`;
 			}
 		`;
