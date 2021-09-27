@@ -117,11 +117,11 @@ trait uTorrentHomepageItem
 				$options = array_merge($options, $credentials);
 			}
 			$response = Requests::post($url, [], $data, $options);
-			$doc = new DOMDocument();
-			$doc->loadHTML($response->body);
-			$id = $doc->getElementById('token');
+			$dom = new PHPHtmlParser\Dom;
+			$dom->loadStr($response->body);
+			$id = $dom->getElementById('token')->text;
 			$uTorrentConfig = new stdClass();
-			$uTorrentConfig->uTorrentToken = $id->textContent;
+			$uTorrentConfig->uTorrentToken = $id;
 			$reflection = new ReflectionClass($response->cookies);
 			$cookie = $reflection->getProperty("cookies");
 			$cookie->setAccessible(true);
