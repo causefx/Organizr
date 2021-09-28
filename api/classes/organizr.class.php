@@ -2348,6 +2348,14 @@ class Organizr
 				),
 				array(
 					'type' => 'switch',
+					'name' => 'ignoreTFAIfPlexOAuth',
+					'label' => 'Ignore 2FA if Plex OAuth ',
+					'class' => 'plexAuth switchAuth',
+					'value' => $this->config['ignoreTFAIfPlexOAuth'],
+					'help' => 'Enabling this will disable Organizr 2FA (If applicable) if User uses Plex OAuth to login'
+				),
+				array(
+					'type' => 'switch',
 					'name' => 'plexStrictFriends',
 					'label' => 'Strict Plex Friends ',
 					'class' => 'plexAuth switchAuth',
@@ -3792,7 +3800,8 @@ class Organizr
 								'username' => $tokenInfo['user']['username'],
 								'email' => $tokenInfo['user']['email'],
 								'image' => $tokenInfo['user']['thumb'],
-								'token' => $tokenInfo['user']['authToken']
+								'token' => $tokenInfo['user']['authToken'],
+								'oauth' => 'plex'
 							);
 							$this->coookie('set', 'oAuth', 'true', $this->config['rememberMeDays']);
 							$authSuccess = ((!empty($this->config['plexAdmin']) && strtolower($this->config['plexAdmin']) == strtolower($tokenInfo['user']['username'])) || (!empty($this->config['plexAdmin']) && strtolower($this->config['plexAdmin']) == strtolower($tokenInfo['user']['email'])) || $this->checkPlexUser($tokenInfo['user']['username'])) ? $authSuccess : false;
@@ -3836,7 +3845,15 @@ class Organizr
 					$tfaProceed = true;
 					// Add check for local or not
 					if ($this->config['ignoreTFALocal'] !== false) {
-						$tfaProceed = ($this->isLocal()) ? false : true;
+						$tfaProceed = !$this->isLocal();
+					}
+					// Is Plex Oauth?
+					if ($this->config['ignoreTFAIfPlexOAuth'] !== false) {
+						if (isset($authSuccess['oauth'])) {
+							if ($authSuccess['oauth'] == 'plex') {
+								$tfaProceed = false;
+							}
+						}
 					}
 					if ($tfaProceed) {
 						$TFA = explode('::', $result['auth_service']);
@@ -4814,7 +4831,7 @@ class Organizr
 						if ($item['type'] !== 'html' && $item['type'] !== 'blank' && $item['type'] !== 'button') {
 							if ((stripos($item['name'], 'token') !== false) || (stripos($item['name'], 'key') !== false) || (stripos($item['name'], 'password'))) {
 								if ($item['value'] !== '') {
-									$item['value'] = '**********';
+									$item['value'] = '***redacted***';
 								}
 							}
 							$debug[$category][$item['name']] = $item['value'];

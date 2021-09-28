@@ -404,6 +404,7 @@ return [
 	'rememberMeDays' => '7',
 	'rememberMe' => true,
 	'plexStrictFriends' => true,
+	'ignoreTFAIfPlexOAuth' => false,
 	'debugAreaAuth' => '1',
 	'commit' => 'n/a',
 	'ombiLimit' => '50',
