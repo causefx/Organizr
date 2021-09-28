@@ -14564,22 +14564,22 @@ var ListViewGrid = Grid.extend({
 			'</span>';
 		switch(event.imagetypeFilter){
 			case 'tv':
-				titleHtml = titleHtml + '<br/><small class="fc-title m-l-5 hidden-xs">' +
+				titleHtml = titleHtml + '<br/><small class="fc-title m-l-5">' +
 					(htmlEscape(event.details.bottomTitle || '') || '&nbsp;') + // we always want one line of height
 					'</small>';
 				break;
 			case 'music':
-				titleHtml = titleHtml + '<br/><small class="fc-title m-l-5 hidden-xs">' +
+				titleHtml = titleHtml + '<br/><small class="fc-title m-l-5">' +
 					(htmlEscape(event.details.topTitle || '') || '&nbsp;') + // we always want one line of height
 					'</small>';
 				break;
 			case 'film':
-				titleHtml = titleHtml + '<br/><small class="fc-title m-l-5 hidden-xs">' +
+				titleHtml = titleHtml + '<br/><small class="fc-title m-l-5">' +
 					(htmlEscape(event.details.studio || '') || '&nbsp;') + // we always want one line of height
 					'</small>';
 				break;
 			default:
-				titleHtml = titleHtml + '<br/><small class="fc-title m-l-5 hidden-xs">' +
+				titleHtml = titleHtml + '<br/><small class="fc-title m-l-5">' +
 					(htmlEscape('' || '') || '&nbsp;') + // we always want one line of height
 					'</small>';
 		}
