@@ -440,6 +440,38 @@ class Organizr
 		return (isset($errorCodes[$error])) ? $errorCodes[$error] : $errorCodes[000];
 	}
 	
+	public function showTopBarHamburger()
+	{
+		if ($this->config['allowCollapsableSideMenu']) {
+			if ($this->config['sideMenuCollapsed']) {
+				return '<a class="toggle-side-menu" href="javascript:void(0)"><i class="ti-menu fa-fw"></i></a>';
+			} else {
+				return '<a class="toggle-side-menu hidden" href="javascript:void(0)"><i class="ti-menu fa-fw"></i></a>';
+			}
+		}
+		return '';
+	}
+	
+	public function showSideBarHamburger()
+	{
+		if ($this->config['allowCollapsableSideMenu']) {
+			if (!$this->config['sideMenuCollapsed']) {
+				return '<i class="hidden-xs ti-shift-left mouse"></i>';
+			}
+		}
+		return '<i class="ti-menu hidden-xs"></i>';
+	}
+	
+	public function showSideBarText()
+	{
+		if ($this->config['allowCollapsableSideMenu']) {
+			if (!$this->config['sideMenuCollapsed']) {
+				return '<span class="hide-menu hidden-xs" lang="en">Hide Menu</span>';
+			}
+		}
+		return '<span class="hide-menu hidden-xs" lang="en">Navigation</span>';
+	}
+	
 	public function auth()
 	{
 		if ($this->hasDB()) {
@@ -1777,6 +1809,74 @@ class Organizr
 					'help' => 'Used to set the description for SEO meta tags'
 				),
 			),
+			'Side Menu' => array(
+				$this->settingsOption('switch', 'allowCollapsableSideMenu', ['label' => 'Allow Side Menu to be Collapsable']),
+				$this->settingsOption('switch', 'sideMenuCollapsed', ['label' => 'Side Menu Collapsed at Launch']),
+				array(
+					'type' => 'switch',
+					'name' => 'githubMenuLink',
+					'label' => 'Show GitHub Repo Link',
+					'value' => $this->config['githubMenuLink']
+				),
+				array(
+					'type' => 'switch',
+					'name' => 'organizrFeatureRequestLink',
+					'label' => 'Show Organizr Feature Request Link',
+					'value' => $this->config['organizrFeatureRequestLink']
+				),
+				array(
+					'type' => 'switch',
+					'name' => 'organizrSupportMenuLink',
+					'label' => 'Show Organizr Support Link',
+					'value' => $this->config['organizrSupportMenuLink']
+				),
+				array(
+					'type' => 'switch',
+					'name' => 'organizrDocsMenuLink',
+					'label' => 'Show Organizr Docs Link',
+					'value' => $this->config['organizrDocsMenuLink']
+				),
+				array(
+					'type' => 'switch',
+					'name' => 'organizrSignoutMenuLink',
+					'label' => 'Show Organizr Sign out & in Button on Sidebar',
+					'value' => $this->config['organizrSignoutMenuLink']
+				),
+				array(
+					'type' => 'switch',
+					'name' => 'expandCategoriesByDefault',
+					'label' => 'Expand All Categories',
+					'value' => $this->config['expandCategoriesByDefault']
+				),
+				array(
+					'type' => 'switch',
+					'name' => 'autoCollapseCategories',
+					'label' => 'Auto-Collapse Categories',
+					'value' => $this->config['autoCollapseCategories']
+				),
+				array(
+					'type' => 'switch',
+					'name' => 'autoExpandNavBar',
+					'label' => 'Auto-Expand Nav Bar',
+					'value' => $this->config['autoExpandNavBar']
+				),
+				array(
+					'type' => 'select',
+					'name' => 'unsortedTabs',
+					'label' => 'Unsorted Tab Placement',
+					'value' => $this->config['unsortedTabs'],
+					'options' => array(
+						array(
+							'name' => 'Top',
+							'value' => 'top'
+						),
+						array(
+							'name' => 'Bottom',
+							'value' => 'bottom'
+						)
+					)
+				),
+			),
 			'Login Page' => array(
 				array(
 					'type' => 'input',
@@ -1819,73 +1919,9 @@ class Organizr
 				),
 				array(
 					'type' => 'switch',
-					'name' => 'githubMenuLink',
-					'label' => 'Show GitHub Repo Link',
-					'value' => $this->config['githubMenuLink']
-				),
-				array(
-					'type' => 'switch',
-					'name' => 'organizrFeatureRequestLink',
-					'label' => 'Show Organizr Feature Request Link',
-					'value' => $this->config['organizrFeatureRequestLink']
-				),
-				array(
-					'type' => 'switch',
-					'name' => 'organizrSupportMenuLink',
-					'label' => 'Show Organizr Support Link',
-					'value' => $this->config['organizrSupportMenuLink']
-				),
-				array(
-					'type' => 'switch',
-					'name' => 'organizrDocsMenuLink',
-					'label' => 'Show Organizr Docs Link',
-					'value' => $this->config['organizrDocsMenuLink']
-				),
-				array(
-					'type' => 'switch',
-					'name' => 'organizrSignoutMenuLink',
-					'label' => 'Show Organizr Sign out & in Button on Sidebar',
-					'value' => $this->config['organizrSignoutMenuLink']
-				),
-				array(
-					'type' => 'switch',
 					'name' => 'easterEggs',
 					'label' => 'Show Easter Eggs',
 					'value' => $this->config['easterEggs']
-				),
-				array(
-					'type' => 'switch',
-					'name' => 'expandCategoriesByDefault',
-					'label' => 'Expand All Categories',
-					'value' => $this->config['expandCategoriesByDefault']
-				),
-				array(
-					'type' => 'switch',
-					'name' => 'autoCollapseCategories',
-					'label' => 'Auto-Collapse Categories',
-					'value' => $this->config['autoCollapseCategories']
-				),
-				array(
-					'type' => 'switch',
-					'name' => 'autoExpandNavBar',
-					'label' => 'Auto-Expand Nav Bar',
-					'value' => $this->config['autoExpandNavBar']
-				),
-				array(
-					'type' => 'select',
-					'name' => 'unsortedTabs',
-					'label' => 'Unsorted Tab Placement',
-					'value' => $this->config['unsortedTabs'],
-					'options' => array(
-						array(
-							'name' => 'Top',
-							'value' => 'top'
-						),
-						array(
-							'name' => 'Bottom',
-							'value' => 'bottom'
-						)
-					)
 				),
 				array(
 					'type' => 'input',
@@ -4323,7 +4359,8 @@ class Organizr
 				'sandbox' => $this->config['sandbox'],
 				'expandCategoriesByDefault' => $this->config['expandCategoriesByDefault'],
 				'autoCollapseCategories' => $this->config['autoCollapseCategories'],
-				'autoExpandNavBar' => $this->config['autoExpandNavBar']
+				'autoExpandNavBar' => $this->config['autoExpandNavBar'],
+				'sideMenuCollapsed' => $this->config['allowCollapsableSideMenu'] && $this->config['sideMenuCollapsed']
 			),
 			'menuLink' => array(
 				'githubMenuLink' => $this->config['githubMenuLink'],

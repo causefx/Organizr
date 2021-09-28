@@ -1923,3 +1923,20 @@ $(document).on("change", ".overseerr-season", function () {
 	$('.submit-overseerr-seasons').attr('disabled', enableButtonDisabled);
 	$('.submit-overseerr-seasons').attr('data-seasons', requestedSeasons);
 });
+
+// Toggle Side Menu
+$(document).on('click', '.toggle-side-menu', function() {
+	toggleSideMenuClasses();
+	//$('.toggle-side-menu i').toggleClass('ti-shift-right ti-shift-left');
+	console.log($('.sidebar-head .hide-menu.hidden-xs'));
+	$('.sidebar-head .hide-menu.hidden-xs').text('Hide Menu');
+	$('.sidebar-head .open-close i').first().toggleClass('ti-menu ti-shift-left mouse');
+	$('.toggle-side-menu').toggleClass('hidden');
+});
+// Toggle Side Menu Other
+$(document).on('click', '.ti-shift-left.mouse', function() {
+	toggleSideMenuClasses();
+	//$('.toggle-side-menu i').toggleClass('ti-shift-right ti-shift-left');
+	$('.sidebar-head .open-close i').first().toggleClass('ti-menu ti-shift-left mouse');
+	$('.toggle-side-menu').toggleClass('hidden');
+});

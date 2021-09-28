@@ -11142,6 +11142,16 @@ function setJournalMode(mode){
 		OrganizrApiError(xhr);
 	});
 }
+function toggleSideMenuClasses(){
+	$('#page-wrapper').toggleClass('sidebar-hidden');
+	$('.sidebar').toggleClass('sidebar-hidden');
+	$('.navbar').toggleClass('sidebar-hidden');
+}
+function sideMenuCollapsed(){
+	if(activeInfo.settings.misc.sideMenuCollapsed){
+		toggleSideMenuClasses();
+	}
+}
 function launch(){
 	console.info('https://docs.organizr.app/help/faq/migration-guide#version-2-0-greater-than-version-2-1');
 	organizrConsole('API V2 API','If you see a 404 Error for api/v2/launch below this line, you have not setup the new location block... See URL above this line', 'error');
@@ -11197,6 +11207,7 @@ function launch(){
 			        break;
 		        case "ok":
 			        loadAppearance(json.data.appearance);
+			        sideMenuCollapsed();
 			        if(activeInfo.user.locked == 1){
 				        buildLockscreen();
 			        }else{

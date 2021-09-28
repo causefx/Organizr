@@ -80,6 +80,7 @@ $Organizr = new Organizr();
     <nav class="navbar navbar-default navbar-static-top m-b-0 animated slideInDown">
         <div class="navbar-header">
             <div class="top-left-part hidden-xs p-r-10">
+				<?php echo $Organizr->showTopBarHamburger(); ?>
                 <!-- Logo -->
                 <a class="logo" href="javascript:void(0)">
                     <!-- Logo text image you can use text also -->
@@ -126,8 +127,12 @@ $Organizr = new Organizr();
     <div class="navbar-default sidebar nav-bar-rtl" role="navigation">
         <div class="sidebar-nav">
             <div class="sidebar-head">
-                <h3><span class="open-close m-r-5"><i class="ti-menu hidden-xs"></i><i class="ti-close visible-xs"></i></span>
-                    <span class="hide-menu hidden-xs" lang="en">Navigation</span>
+                <h3>
+                    <span class="open-close m-r-5">
+                        <?php echo $Organizr->showSideBarHamburger(); ?>
+                        <i class="ti-close visible-xs"></i>
+                    </span>
+					<?php echo $Organizr->showSideBarText(); ?>
                     <span class="hide-menu hidden-sm hidden-md hidden-lg" id="side-logo"></span>
                 </h3>
             </div>

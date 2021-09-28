@@ -601,5 +601,7 @@ return [
 	'blacklisted' => '',
 	'blacklistedMessage' => 'You have been blacklisted from this site.',
 	'defaultRequestService' => 'ombi',
-	'easterEggs' => true
+	'easterEggs' => true,
+	'allowCollapsableSideMenu' => false,
+	'sideMenuCollapsed' => false
 ];
