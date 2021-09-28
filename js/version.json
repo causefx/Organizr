@@ -380,7 +380,7 @@
   "2.1.400": {
     "date": "2021-06-25 21:40",
     "title": "Code changes to plugins",
-    "new": "Updated UI on update page|Refactored the way plugins are stored so it is cleaner|Updated healthChecks plugin|option to Auto-collapse categories (FR#150933)|option to disable auto expand of navbar FR#150876|language-box css class|add extras to unifi homepage call|warning to sso functions|healthchecks import to plugin|toggle for 401 and 403 bypass for healthchecks plugin",
+    "new": "Updated UI on update page|Refactored the way plugins are stored so it is cleaner|Updated healthChecks plugin|option to Auto-collapse categories (FR#41)|option to disable auto expand of navbar FR#97|language-box css class|add extras to unifi homepage call|warning to sso functions|healthchecks import to plugin|toggle for 401 and 403 bypass for healthchecks plugin",
     "fixed": "SSO failing due to timeout error white getting tokens (#1665)|force Radarr to use v3 endpoint now (#1663)|plex error not catching|update downloader refresh times to be independent|update requestOptions function|updated scrollbars again|change to edit homepage modal|set correct tab type after re-adding the homepage (#1671)",
     "notes": ""
   },
@@ -401,7 +401,7 @@
   "2.1.472": {
     "date": "2021-08-20 19:10",
     "title": "Weekly Update",
-    "new": "Pass variables through with URLs (FR#203150)|qbittorent socks (FR#196698)|framework for copy json button to homepage items|debug json to all homepage items|updated ui - change settings ui from horizontal to vertical|ui for Save homepage settings modal|make tautulli custom names dynamic|only update tautulli custom names config item if it doesn't match|prevent organizrHash from being displayed via API",
+    "new": "Pass variables through with URLs (FR#18)|qbittorent socks (FR#22)|framework for copy json button to homepage items|debug json to all homepage items|updated ui - change settings ui from horizontal to vertical|ui for Save homepage settings modal|make tautulli custom names dynamic|only update tautulli custom names config item if it doesn't match|prevent organizrHash from being displayed via API",
     "fixed": "splashscreen scroll (#1692)|jellyin open tab (#1633)|test iframe|sonarr input box|plex invite with deleted library|catch error from socks api|clear ajax on reload|loop load config on load",
     "notes": "update Adldap2/Adldap2"
   },
@@ -429,7 +429,7 @@
   "2.1.655": {
     "date": "2021-09-17 17:20",
     "title": "Has it been that long?",
-    "new": "overseerr homepage item (FR#150891)|Added More custom homepage items (FR#202285)|uTorrent Homepage Item|new move framework for sorting tabs - handle bar on left side|multi select on tab sort|eps number to plex recent added (FR#150883)|check diskspace to org|journal mode options to org|show html instead of plain text on Die commands|backup before update|token/me endpoint|dropdown in settings page for mobile only|docs to plex and healthchecks|notice to settings options|update debug area for sso modules|image selector to group editor|/organizr/page api endpoint|new error page located at api/v2/organizr/error|timer to close homepage item after save|covert local IP Range to IP Listing with multiple values|sonarr docs|get config items from api",
+    "new": "overseerr homepage item (FR#84)|Added More custom homepage items (FR#21)|uTorrent Homepage Item|new move framework for sorting tabs - handle bar on left side|multi select on tab sort|eps number to plex recent added (FR#90)|check diskspace to org|journal mode options to org|show html instead of plain text on Die commands|backup before update|token/me endpoint|dropdown in settings page for mobile only|docs to plex and healthchecks|notice to settings options|update debug area for sso modules|image selector to group editor|/organizr/page api endpoint|new error page located at api/v2/organizr/error|timer to close homepage item after save|covert local IP Range to IP Listing with multiple values|sonarr docs|get config items from api",
     "fixed": "unifi homepage item (#1592)|emby not being lowercase on login check|remove toggle class for side nav|api error for deluge|api error for emby|Clarify if config.php not setup or db permission error|netdata errors|timeout on updating|rework invalid token|rtorrent typo|option value if not set|tautulli use new url input box|readd username to token (#1577)|old issue with ombi import|start date and end date if not set",
     "notes": "Updated translation files|New Translation Strings|updated dibi to v4"
   }
