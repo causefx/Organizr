@@ -3633,7 +3633,7 @@ function newsLoad(){
 			        $.each(response, function(i,v) {
 				        count++;
 				        let ignore = ignoredIds.includes(v.id);
-				        let alertDefined = (typeof v.important !== 'undefined' || v.important === false);
+				        let alertDefined = (typeof v.important !== 'undefined' && v.important !== false);
 				        let alert = (alertDefined && ignore == false) ? `<span class="animated loop-animation flash text-danger mouse newsItem-${v.id}" onclick="ignoreNewsId('${v.id}')">&nbsp; <i class="ti-alert"></i>&nbsp; Important Message - Click me to Ignore</span>` : '';
 				        let heartBeat = (alertDefined && ignore == false) ? `<div class="notify pull-left newsHeart-${v.id}"><span class="heartbit"></span><span class="point"></span></div>` : '';
 				        let newBody = `
@@ -4120,6 +4120,7 @@ function organizrAPI2(type,path,data=null,asyncValue=true){
 	switch(path){
 		case 'api/v2/update/windows':
 		case 'api/v2/update/docker':
+		case 'api/v2/login':
 			timeout = 240000;
 			break;
 		default:
@@ -4620,13 +4621,21 @@ function loadAppearance(appearance){
 			.bg-info,
 			.fc-toolbar,
 			.progress-bar-info,
-			.label-info {
+			.label-info,
+			.tabs-style-iconbox nav ul li.tab-current a {
 			    background-color: `+appearance.accentColor+` !important;
 			}
 			.panel-blue .panel-heading, .panel-info .panel-heading {
 			    border-color: `+appearance.accentColor+`;
 			}
-
+			.tabs-style-iconbox nav ul li.tab-current a::after {
+				border-top-color: `+appearance.accentColor+`;
+			}
+			.customvtab .tabs-vertical li.active a,
+			.customvtab .tabs-vertical li.active a:focus,
+			.customvtab .tabs-vertical li.active a:hover {
+				border-right: 2px solid `+appearance.accentColor+`;
+			}
 			.text-info,
 			.btn-link, a {
 			    color: `+appearance.accentColor+`;
@@ -4635,17 +4644,20 @@ function loadAppearance(appearance){
 	}
 	if(appearance.accentTextColor !== ''){
 		cssSettings += `
+			.bg-info,
 			.progress-bar,
 			.panel-default .panel-heading,
 			.mailbox-widget .customtab li.active a, .mailbox-widget .customtab li.active, .mailbox-widget .customtab li.active a:focus,
-			.mailbox-widget .customtab li a {
+			.mailbox-widget .customtab li a,
+			.tabs-style-iconbox nav ul li.tab-current a {
 				color: `+appearance.accentTextColor+`;
 			}
 		`;
 	}
 	if(appearance.buttonColor !== ''){
 		cssSettings += `
-			.btn-info, .btn-info.disabled {
+			.btn-info, .btn-info.disabled,
+			.btn {
 				background: `+appearance.buttonColor+` !important;
 				border: 1px solid `+appearance.buttonColor+` !important;
 			}
@@ -4653,7 +4665,8 @@ function loadAppearance(appearance){
 	}
 	if(appearance.buttonTextColor !== ''){
 		cssSettings += `
-			.btn-info, .btn-info.disabled {
+			.btn-info, .btn-info.disabled,
+			.btn {
 				color: `+appearance.buttonTextColor+` !important;
 			}
 		`;
@@ -4705,6 +4718,13 @@ function loadAppearance(appearance){
     if(appearance.customCss !== ''){
         $('#custom-css').html(appearance.customCss);
     }
+}
+function resetCustomColors(){
+	let colors = ['headerColor','headerTextColor','sidebarColor','sidebarTextColor','accentColor','accentTextColor','buttonColor','buttonTextColor'];
+	$.each(colors, function(i,v) {
+		$('#customize-appearance-form [name='+v+']').val('').trigger('change');
+	});
+	messageSingle(window.lang.translate('Colors Reverted'),window.lang.translate('Please Save'),activeInfo.settings.notifications.position,'#FFF','success','10000');
 }
 function randomCSV(values){
     if(typeof values == 'string'){
@@ -5137,7 +5157,7 @@ function buildRequestItem(array, extra=null){
 				var badge = '';
 				var badge2 = '';
 				var bg = (v.background.includes('.')) ? v.background : 'plugins/images/cache/no-np.png';
-				v.user = (activeInfo.settings.homepage.ombi.alias && service === 'ombi') ? v.userAlias : v.user;
+				v.user = (activeInfo.settings.homepage.ombi.alias && service === 'ombi') || (activeInfo.settings.homepage.overseerr.enabled && service === 'overseerr') ? v.userAlias : v.user;
 				//Set Status
 				var status = (v.approved) ? '<span class="badge bg-org m-r-10" lang="en">Approved</span>' : '<span class="badge bg-danger m-r-10" lang="en">Unapproved</span>';
 				status += (v.available) ? '<span class="badge bg-org m-r-10" lang="en">Available</span>' : '<span class="badge bg-danger m-r-10" lang="en">Unavailable</span>';
@@ -5776,10 +5796,16 @@ function overseerrActions(id, action, type = null, extra = null){
 	organizrAPI2(method,apiUrl,data).success(function(data) {
 		try {
 			let response = data.response;
+			if(action == 'add'){
+				addTempRequest();
+				setTimeout(function(){
+						ajaxloader();
+					}, 2000
+				);
+			}
 			messageSingle(response.message,'',activeInfo.settings.notifications.position,"#FFF","success","5000");
 			homepageRequests('overseerr');
-			swal.close();
-			ajaxloader();
+			cleanCloseSwal();
 		}catch(e) {
 			organizrCatchError(e,data);
 		}
@@ -5824,6 +5850,9 @@ function ombiActions(id, action, type, extra = null){
 	organizrAPI2(method,apiUrl,data).success(function(data) {
         try {
             let response = data.response;
+	        if(action == 'add'){
+		        addTempRequest();
+	        }
 	        messageSingle(response.message,'',activeInfo.settings.notifications.position,"#FFF","success","5000");
 	        homepageRequests('ombi');
 	        ajaxloader();
@@ -5834,6 +5863,32 @@ function ombiActions(id, action, type, extra = null){
 		ajaxloader();
 		OrganizrApiError(xhr, 'Ombi Error');
 	});
+}
+
+function addTempRequest(){
+	let service = activeInfo.settings.homepage.requests.service;
+	let html = `
+	<div class="item lazyload recent-poster request-item request-adding  mouse" data-src="">
+		<div class="outside-request-div">
+			<div class="inside-over-request-div bg-danger"></div>
+			<div class="inside-request-div bg-info"></div>
+		</div>
+		<div class="hover-homepage-item"></div>
+		<span class="elip request-title-tv"><i class="fa fa-tv"></i></span>
+		<span class="elip recent-title">Adding Request</span>
+	</div>
+	`;
+	$('.request-items-' + service).trigger('add.owl', [html, 0]).trigger('refresh.owl');
+	setTimeout(function(){
+		ajaxloader('.request-adding', 'in');
+		}, 100
+	);
+}
+function cleanCloseSwal(){
+	let state = swal.getState().isOpen;
+	if(state === true){
+		swal.close();
+	}
 }
 function doneTyping () {
 	let title = $('#request-input').val();
@@ -7365,7 +7420,7 @@ function defaultRequestFilter(service){
 			var defaultFilter = {
 				"request-filter-approved-overseerr" : activeInfo.settings.homepage.overseerr.overseerrDefaultFilterApproved,
 				"request-filter-unapproved-overseerr" : activeInfo.settings.homepage.overseerr.overseerrDefaultFilterUnapproved,
-				"request-filter-available-overseerr" : activeInfo.settings.homepage.overseerr.overseerrefaultFilterAvailable,
+				"request-filter-available-overseerr" : activeInfo.settings.homepage.overseerr.overseerrDefaultFilterAvailable,
 				"request-filter-unavailable-overseerr" : activeInfo.settings.homepage.overseerr.overseerrDefaultFilterUnavailable,
 				"request-filter-denied-overseerr" : activeInfo.settings.homepage.overseerr.overseerrDefaultFilterDenied
 			};
@@ -9290,7 +9345,7 @@ getPlexOAuthPin = function () {
     return deferred;
 };
 var polling = null;
-function PlexOAuth(success, error, pre) {
+function PlexOAuth(success, error, pre, id = null) {
     if (typeof pre === "function") {
         pre()
     }
@@ -9325,7 +9380,7 @@ function PlexOAuth(success, error, pre) {
                     if (data.authToken){
                         closePlexOAuthWindow();
                         if (typeof success === "function") {
-                            success('plex',data.authToken)
+                            success('plex',data.authToken, id)
                         }
                     }
                 },
@@ -9364,15 +9419,21 @@ function encodeData(data) {
         return [key, data[key]].map(encodeURIComponent).join("=");
     }).join("&");
 }
-function oAuthSuccess(type,token){
+function oAuthSuccess(type,token, id = null){
     switch(type) {
         case 'plex':
-            $('#oAuth-Input').val(token);
-            $('#oAuthType-Input').val(type);
-            $('#login-username-Input').addClass('hidden');
-            $('#login-password-Input').addClass('hidden');
-            $('#oAuth-div').removeClass('hidden');
-            $('.login-button').first().trigger('click');
+        	if(id){
+		        $(id).val(token);
+		        $(id).change();
+		        messageSingle('',window.lang.translate('Grabbed Token - Please Save'),activeInfo.settings.notifications.position,'#FFF','success','5000');
+	        }else{
+		        $('#oAuth-Input').val(token);
+		        $('#oAuthType-Input').val(type);
+		        $('#login-username-Input').addClass('hidden');
+		        $('#login-password-Input').addClass('hidden');
+		        $('#oAuth-div').removeClass('hidden');
+		        $('.login-button').first().trigger('click');
+	        }
             break;
         default:
             break;
@@ -11081,6 +11142,16 @@ function setJournalMode(mode){
 		OrganizrApiError(xhr);
 	});
 }
+function toggleSideMenuClasses(){
+	$('#page-wrapper').toggleClass('sidebar-hidden');
+	$('.sidebar').toggleClass('sidebar-hidden');
+	$('.navbar').toggleClass('sidebar-hidden');
+}
+function sideMenuCollapsed(){
+	if(activeInfo.settings.misc.sideMenuCollapsed){
+		toggleSideMenuClasses();
+	}
+}
 function launch(){
 	console.info('https://docs.organizr.app/help/faq/migration-guide#version-2-0-greater-than-version-2-1');
 	organizrConsole('API V2 API','If you see a 404 Error for api/v2/launch below this line, you have not setup the new location block... See URL above this line', 'error');
@@ -11136,6 +11207,7 @@ function launch(){
 			        break;
 		        case "ok":
 			        loadAppearance(json.data.appearance);
+			        sideMenuCollapsed();
 			        if(activeInfo.user.locked == 1){
 				        buildLockscreen();
 			        }else{

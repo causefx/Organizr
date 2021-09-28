@@ -2,14 +2,28 @@
 
 trait ConfigFunctions
 {
-	public function getConfigItem($item)
+	public function getConfigItem($item, $term = null)
 	{
-		if ($this->config[$item]) {
+		if (strtolower($item) == 'search') {
+			$configItems = $this->config;
+			$results = [];
+			foreach ($configItems as $configItem => $configItemValue) {
+				if (stripos($configItem, $term) !== false) {
+					$results[$configItem] = $configItemValue;
+					if ($configItem == 'organizrHash') {
+						$results[$configItem] = '***Secure***';
+					}
+				}
+			}
+			$this->setAPIResponse('success', 'Search results for term: ' . $term, 200, $results);
+			return $results;
+		}
+		if (isset($this->config[$item])) {
 			$configItem = $this->config[$item];
 			if ($item == 'organizrHash') {
 				$configItem = '***Secure***';
 			}
-			$this->setAPIResponse('success', null, 200, $configItem);
+			$this->setAPIResponse('success', 'The value for ' . $item, 200, $configItem);
 			return $this->config[$item];
 		} else {
 			$this->setAPIResponse('error', $item . ' is not defined or is blank', 404);

@@ -26,7 +26,7 @@ trait SSOFunctions
 		$map = array(
 			'jellyfin' => 'username',
 			'ombi' => 'username',
-			'overseerr' => 'username',
+			'overseerr' => 'email',
 			'tautulli' => 'username',
 			'petio' => 'username'
 		);
@@ -62,7 +62,8 @@ trait SSOFunctions
 			}
 		}
 		if ($this->config['ssoOverseerr']) {
-			$overseerrToken = $this->getOverseerrToken($this->getSSOUserFor('overseerr', $userobj), $password, $token);
+			$fallback = ($this->config['overseerrFallbackUser'] !== '' && $this->config['overseerrFallbackPassword'] !== '');
+			$overseerrToken = $this->getOverseerrToken($this->getSSOUserFor('overseerr', $userobj), $password, $token, $fallback);
 			if ($overseerrToken) {
 				$this->coookie('set', 'connect.sid', $overseerrToken, $this->config['rememberMeDays'], false);
 			}
@@ -193,7 +194,7 @@ trait SSOFunctions
 		return ($token) ? $token : false;
 	}
 	
-	public function getOverseerrToken($username, $password, $oAuthToken = null, $fallback = false)
+	public function getOverseerrToken($email, $password, $oAuthToken = null, $fallback = false)
 	{
 		$token = null;
 		try {
@@ -203,26 +204,26 @@ trait SSOFunctions
 				"X-Forwarded-For" => $this->userIP()
 			);
 			$data = array(
-				//"username" => ($oAuthToken ? "" : $username), // not needed yet
-				//"password" => ($oAuthToken ? "" : $password), // not needed yet
+				"email" => ($oAuthToken ? "" : $email), // not needed yet
+				"password" => ($oAuthToken ? "" : $password), // not needed yet
 				"authToken" => $oAuthToken
 			);
-			$endpoint = '/api/v1/auth/plex';
+			$endpoint = ($oAuthToken ? '/api/v1/auth/plex' : '/api/v1/auth/local');
 			$options = $this->requestOptions($url, 60000);
 			$response = Requests::post($url . $endpoint, $headers, json_encode($data), $options);
 			if ($response->success) {
 				$user = json_decode($response->body, true); // not really needed yet
 				$token = $response->cookies['connect.sid']->value;
-				$this->writeLog('success', 'Overseerr Token Function - Grabbed token', $user['plexUsername']);
+				$this->writeLog('success', 'Overseerr Token Function - Grabbed token', $user['plexUsername'] ?? $email);
 			} else {
 				if ($fallback) {
-					$this->writeLog('error', 'Overseerr Token Function - Overseerr did not return Token - Will retry using fallback credentials', $username);
+					$this->writeLog('error', 'Overseerr Token Function - Overseerr did not return Token - Will retry using fallback credentials', $email);
 				} else {
-					$this->writeLog('error', 'Overseerr Token Function - Overseerr did not return Token', $username);
+					$this->writeLog('error', 'Overseerr Token Function - Overseerr did not return Token', $email);
 				}
 			}
 		} catch (Requests_Exception $e) {
-			$this->writeLog('error', 'Overseerr Token Function - Error: ' . $e->getMessage(), $username);
+			$this->writeLog('error', 'Overseerr Token Function - Error: ' . $e->getMessage(), $email);
 		}
 		if ($token) {
 			return urldecode($token);

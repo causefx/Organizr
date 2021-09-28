@@ -115,9 +115,11 @@ class Invites extends Organizr
 	{
 		$response = [
 			array(
-				'function' => 'fetchAll',
-				'query' => 'SELECT * FROM invites WHERE code = ? COLLATE NOCASE',
-				$code
+				'function' => 'fetch',
+				'query' => array(
+					'SELECT * FROM invites WHERE code = ? COLLATE NOCASE',
+					$code
+				)
 			)
 		];
 		$info = $this->processQueries($response);
@@ -271,7 +273,7 @@ class Invites extends Organizr
 					'label' => 'Get Plex Token',
 					'icon' => 'fa fa-ticket',
 					'text' => 'Retrieve',
-					'attr' => 'onclick="showPlexTokenForm(\'#INVITES-settings-items [name=plexToken]\')"'
+					'attr' => 'onclick="PlexOAuth(oAuthSuccess,oAuthError, null, \'#INVITES-settings-items [name=plexToken]\')"'
 				),
 				array(
 					'type' => 'password-alt',

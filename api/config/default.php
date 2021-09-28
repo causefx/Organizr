@@ -272,6 +272,7 @@ return [
 	'overseerrLimitUser' => false,
 	'overseerrRefresh' => '600000',
 	'overseerrTvDefault' => 'all',
+	'overseerrPrefer4K' => false,
 	'homepageWeatherAndAirEnabled' => false,
 	'homepageWeatherAndAirAuth' => '1',
 	'homepageWeatherAndAirRefresh' => '3600000',
@@ -403,6 +404,7 @@ return [
 	'rememberMeDays' => '7',
 	'rememberMe' => true,
 	'plexStrictFriends' => true,
+	'ignoreTFAIfPlexOAuth' => false,
 	'debugAreaAuth' => '1',
 	'commit' => 'n/a',
 	'ombiLimit' => '50',
@@ -599,5 +601,8 @@ return [
 	'defaultSettingsTab' => '5',
 	'blacklisted' => '',
 	'blacklistedMessage' => 'You have been blacklisted from this site.',
-	'defaultRequestService' => 'ombi'
+	'defaultRequestService' => 'ombi',
+	'easterEggs' => true,
+	'allowCollapsableSideMenu' => false,
+	'sideMenuCollapsed' => false
 ];

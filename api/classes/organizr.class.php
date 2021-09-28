@@ -10,6 +10,7 @@ class Organizr
 	use AuthFunctions;
 	use BackupFunctions;
 	use ConfigFunctions;
+	use DemoFunctions;
 	use HomepageConnectFunctions;
 	use HomepageFunctions;
 	use LogFunctions;
@@ -62,7 +63,7 @@ class Organizr
 	
 	// ===================================
 	// Organizr Version
-	public $version = '2.1.655';
+	public $version = '2.1.705';
 	// ===================================
 	// Quick php Version check
 	public $minimumPHP = '7.3';
@@ -246,22 +247,25 @@ class Organizr
 		}
 	}
 	
-	public function checkDiskSpace()
+	public function checkDiskSpace($directory = './')
 	{
-		$disk = $this->checkDisk('/');
-		$diskLevels = [
-			'warn' => 1000000000,
-			'error' => 100000000
-		];
-		if ($disk['free'] <= $diskLevels['error']) {
-			die($this->showHTML('Low Disk Space', 'You are dangerously low on disk space.<br/>There is only ' . $disk['free']['human_readable'] . ' remaining.<br/><b>Percent Used = ' . $disk['used']['percent_used'] . '%</b>'));
-		} elseif ($disk['free'] <= $diskLevels['warn']) {
-			$this->warnings[] = 'You are low on disk space.  There is only ' . $disk['free']['human_readable'] . ' remaining.';
+		$readable = @is_readable($directory);
+		if ($readable) {
+			$disk = $this->checkDisk($directory);
+			$diskLevels = [
+				'warn' => 1000000000,
+				'error' => 100000000
+			];
+			if ($disk['free'] <= $diskLevels['error']) {
+				die($this->showHTML('Low Disk Space', 'You are dangerously low on disk space.<br/>There is only ' . $disk['free']['human_readable'] . ' remaining.<br/><b>Percent Used = ' . $disk['used']['percent_used'] . '%</b>'));
+			} elseif ($disk['free'] <= $diskLevels['warn']) {
+				$this->warnings[] = 'You are low on disk space.  There is only ' . $disk['free']['human_readable'] . ' remaining.';
+			}
 		}
 		return true;
 	}
 	
-	public function getFreeSpace($directory = '/')
+	public function getFreeSpace($directory = './')
 	{
 		$disk = disk_free_space($directory);
 		return [
@@ -270,7 +274,7 @@ class Organizr
 		];
 	}
 	
-	public function getDiskSpace($directory = '/')
+	public function getDiskSpace($directory = './')
 	{
 		$disk = disk_total_space($directory);
 		return [
@@ -279,7 +283,7 @@ class Organizr
 		];
 	}
 	
-	public function getUsedSpace($directory = '/')
+	public function getUsedSpace($directory = './')
 	{
 		$diskFree = $this->getFreeSpace($directory);
 		$diskTotal = $this->getDiskSpace($directory);
@@ -294,13 +298,23 @@ class Organizr
 		];
 	}
 	
-	public function checkDisk($directory = '/')
+	public function checkDisk($directory = './')
 	{
-		return [
-			'free' => $this->getFreeSpace('/'),
-			'used' => $this->getUsedSpace('/'),
-			'total' => $this->getDiskSpace('/'),
-		];
+		$readable = @is_readable($directory);
+		if ($readable) {
+			return [
+				'free' => $this->getFreeSpace($directory),
+				'used' => $this->getUsedSpace($directory),
+				'total' => $this->getDiskSpace($directory),
+			];
+		} else {
+			return [
+				'free' => 'error accessing path',
+				'used' => 'error accessing path',
+				'total' => 'error accessing path',
+			];
+		}
+		
 	}
 	
 	public function errorCodes($error = 000)
@@ -352,7 +366,7 @@ class Organizr
 			],
 			411 => [
 				'type' => 'Length Required',
-				'description' => 'The request can not be processed without a “Content-Length” header field'
+				'description' => 'The request can not be processed without a "Content-Length" header field'
 			],
 			412 => [
 				'type' => 'Precondition Failed',
@@ -424,6 +438,38 @@ class Organizr
 			],
 		];
 		return (isset($errorCodes[$error])) ? $errorCodes[$error] : $errorCodes[000];
+	}
+	
+	public function showTopBarHamburger()
+	{
+		if ($this->config['allowCollapsableSideMenu']) {
+			if ($this->config['sideMenuCollapsed']) {
+				return '<a class="toggle-side-menu" href="javascript:void(0)"><i class="ti-menu fa-fw"></i></a>';
+			} else {
+				return '<a class="toggle-side-menu hidden" href="javascript:void(0)"><i class="ti-menu fa-fw"></i></a>';
+			}
+		}
+		return '';
+	}
+	
+	public function showSideBarHamburger()
+	{
+		if ($this->config['allowCollapsableSideMenu']) {
+			if (!$this->config['sideMenuCollapsed']) {
+				return '<i class="hidden-xs ti-shift-left mouse"></i>';
+			}
+		}
+		return '<i class="ti-menu hidden-xs"></i>';
+	}
+	
+	public function showSideBarText()
+	{
+		if ($this->config['allowCollapsableSideMenu']) {
+			if (!$this->config['sideMenuCollapsed']) {
+				return '<span class="hide-menu hidden-xs" lang="en">Hide Menu</span>';
+			}
+		}
+		return '<span class="hide-menu hidden-xs" lang="en">Navigation</span>';
 	}
 	
 	public function auth()
@@ -1763,46 +1809,9 @@ class Organizr
 					'help' => 'Used to set the description for SEO meta tags'
 				),
 			),
-			'Login Page' => array(
-				array(
-					'type' => 'input',
-					'name' => 'loginLogo',
-					'label' => 'Login Logo',
-					'value' => $this->config['loginLogo'],
-				),
-				array(
-					'type' => 'input',
-					'name' => 'loginWallpaper',
-					'label' => 'Login Wallpaper',
-					'value' => $this->config['loginWallpaper'],
-					'help' => 'You may enter multiple URL\'s using the CSV format.  i.e. link#1,link#2,link#3'
-				),
-				array(
-					'type' => 'switch',
-					'name' => 'useLogoLogin',
-					'label' => 'Use Logo instead of Title on Login Page',
-					'value' => $this->config['useLogoLogin']
-				),
-				array(
-					'type' => 'switch',
-					'name' => 'minimalLoginScreen',
-					'label' => 'Minimal Login Screen',
-					'value' => $this->config['minimalLoginScreen']
-				)
-			),
-			'Options' => array(
-				array(
-					'type' => 'switch',
-					'name' => 'alternateHomepageHeaders',
-					'label' => 'Alternate Homepage Titles',
-					'value' => $this->config['alternateHomepageHeaders']
-				),
-				array(
-					'type' => 'switch',
-					'name' => 'debugErrors',
-					'label' => 'Show Debug Errors',
-					'value' => $this->config['debugErrors']
-				),
+			'Side Menu' => array(
+				$this->settingsOption('switch', 'allowCollapsableSideMenu', ['label' => 'Allow Side Menu to be Collapsable']),
+				$this->settingsOption('switch', 'sideMenuCollapsed', ['label' => 'Side Menu Collapsed at Launch']),
 				array(
 					'type' => 'switch',
 					'name' => 'githubMenuLink',
@@ -1867,6 +1876,53 @@ class Organizr
 						)
 					)
 				),
+			),
+			'Login Page' => array(
+				array(
+					'type' => 'input',
+					'name' => 'loginLogo',
+					'label' => 'Login Logo',
+					'value' => $this->config['loginLogo'],
+				),
+				array(
+					'type' => 'input',
+					'name' => 'loginWallpaper',
+					'label' => 'Login Wallpaper',
+					'value' => $this->config['loginWallpaper'],
+					'help' => 'You may enter multiple URL\'s using the CSV format.  i.e. link#1,link#2,link#3'
+				),
+				array(
+					'type' => 'switch',
+					'name' => 'useLogoLogin',
+					'label' => 'Use Logo instead of Title on Login Page',
+					'value' => $this->config['useLogoLogin']
+				),
+				array(
+					'type' => 'switch',
+					'name' => 'minimalLoginScreen',
+					'label' => 'Minimal Login Screen',
+					'value' => $this->config['minimalLoginScreen']
+				)
+			),
+			'Options' => array(
+				array(
+					'type' => 'switch',
+					'name' => 'alternateHomepageHeaders',
+					'label' => 'Alternate Homepage Titles',
+					'value' => $this->config['alternateHomepageHeaders']
+				),
+				array(
+					'type' => 'switch',
+					'name' => 'debugErrors',
+					'label' => 'Show Debug Errors',
+					'value' => $this->config['debugErrors']
+				),
+				array(
+					'type' => 'switch',
+					'name' => 'easterEggs',
+					'label' => 'Show Easter Eggs',
+					'value' => $this->config['easterEggs']
+				),
 				array(
 					'type' => 'input',
 					'name' => 'gaTrackingID',
@@ -1879,7 +1935,7 @@ class Organizr
 				array(
 					'type' => 'html',
 					'override' => 12,
-					'label' => 'Custom CSS [Can replace colors from above]',
+					'label' => '',
 					'html' => '
 					<div class="row">
 						<div class="col-lg-12">
@@ -1902,6 +1958,8 @@ class Organizr
 					'type' => 'blank',
 					'label' => ''
 				),
+				$this->settingsOption('button', '', ['label' => 'Reset Colors', 'icon' => 'fa fa-ticket', 'text' => 'Reset', 'attr' => 'onclick="resetCustomColors()"']),
+				$this->settingsOption('blank'),
 				array(
 					'type' => 'input',
 					'name' => 'headerColor',
@@ -2255,7 +2313,7 @@ class Organizr
 					'class' => 'getPlexTokenAuth plexAuth switchAuth',
 					'icon' => 'fa fa-ticket',
 					'text' => 'Retrieve',
-					'attr' => 'onclick="showPlexTokenForm(\'#settings-main-form [name=plexToken]\')"'
+					'attr' => 'onclick="PlexOAuth(oAuthSuccess,oAuthError, null, \'#settings-main-form [name=plexToken]\')"'
 				),
 				array(
 					'type' => 'password-alt',
@@ -2287,6 +2345,14 @@ class Organizr
 					'label' => 'Enable Plex oAuth',
 					'class' => 'plexAuth switchAuth',
 					'value' => $this->config['plexoAuth']
+				),
+				array(
+					'type' => 'switch',
+					'name' => 'ignoreTFAIfPlexOAuth',
+					'label' => 'Ignore 2FA if Plex OAuth ',
+					'class' => 'plexAuth switchAuth',
+					'value' => $this->config['ignoreTFAIfPlexOAuth'],
+					'help' => 'Enabling this will disable Organizr 2FA (If applicable) if User uses Plex OAuth to login'
 				),
 				array(
 					'type' => 'switch',
@@ -2844,7 +2910,7 @@ class Organizr
 					'label' => 'Get Plex Token',
 					'icon' => 'fa fa-ticket',
 					'text' => 'Retrieve',
-					'attr' => 'onclick="showPlexTokenForm(\'#sso-form [name=plexToken]\')"'
+					'attr' => 'onclick="PlexOAuth(oAuthSuccess,oAuthError, null, \'#sso-form [name=plexToken]\')"'
 				],
 				[
 					'type' => 'password-alt',
@@ -2905,17 +2971,15 @@ class Organizr
 				[
 					'type' => 'input',
 					'name' => 'overseerrFallbackUser',
-					'label' => 'Overseerr Fallback User',
+					'label' => 'Overseerr Fallback Email',
 					'value' => $this->config['overseerrFallbackUser'],
 					'help' => 'DO NOT SET THIS TO YOUR ADMIN ACCOUNT. We recommend you create a local account as a "catch all" for when Organizr is unable to perform SSO.  Organizr will request a User Token based off of this user credentials',
-					'attr' => 'disabled'
 				],
 				[
 					'type' => 'password-alt',
 					'name' => 'overseerrFallbackPassword',
 					'label' => 'Overseerr Fallback Password',
 					'value' => $this->config['overseerrFallbackPassword'],
-					'attr' => 'disabled'
 				],
 				[
 					'type' => 'switch',
@@ -3623,7 +3687,7 @@ class Organizr
 		->identifiedBy('4f1g23a12aa', true)// Configures the id (jti claim), replicating as a header item
 		->issuedAt(time())// Configures the time that the token was issue (iat claim)
 		->expiresAt(time() + (86400 * $days))// Configures the expiration time of the token (exp claim)
-		->withClaim('username', $result['username'])// Configures a new claim, called "username"
+		->withClaim('name', $result['username'])// Configures a new claim, called "name"
 		->withClaim('group', $result['group'])// Configures a new claim, called "group"
 		->withClaim('groupID', $result['group_id'])// Configures a new claim, called "groupID"
 		->withClaim('email', $result['email'])// Configures a new claim, called "email"
@@ -3736,7 +3800,8 @@ class Organizr
 								'username' => $tokenInfo['user']['username'],
 								'email' => $tokenInfo['user']['email'],
 								'image' => $tokenInfo['user']['thumb'],
-								'token' => $tokenInfo['user']['authToken']
+								'token' => $tokenInfo['user']['authToken'],
+								'oauth' => 'plex'
 							);
 							$this->coookie('set', 'oAuth', 'true', $this->config['rememberMeDays']);
 							$authSuccess = ((!empty($this->config['plexAdmin']) && strtolower($this->config['plexAdmin']) == strtolower($tokenInfo['user']['username'])) || (!empty($this->config['plexAdmin']) && strtolower($this->config['plexAdmin']) == strtolower($tokenInfo['user']['email'])) || $this->checkPlexUser($tokenInfo['user']['username'])) ? $authSuccess : false;
@@ -3780,7 +3845,15 @@ class Organizr
 					$tfaProceed = true;
 					// Add check for local or not
 					if ($this->config['ignoreTFALocal'] !== false) {
-						$tfaProceed = ($this->isLocal()) ? false : true;
+						$tfaProceed = !$this->isLocal();
+					}
+					// Is Plex Oauth?
+					if ($this->config['ignoreTFAIfPlexOAuth'] !== false) {
+						if (isset($authSuccess['oauth'])) {
+							if ($authSuccess['oauth'] == 'plex') {
+								$tfaProceed = false;
+							}
+						}
 					}
 					if ($tfaProceed) {
 						$TFA = explode('::', $result['auth_service']);
@@ -4303,7 +4376,8 @@ class Organizr
 				'sandbox' => $this->config['sandbox'],
 				'expandCategoriesByDefault' => $this->config['expandCategoriesByDefault'],
 				'autoCollapseCategories' => $this->config['autoCollapseCategories'],
-				'autoExpandNavBar' => $this->config['autoExpandNavBar']
+				'autoExpandNavBar' => $this->config['autoExpandNavBar'],
+				'sideMenuCollapsed' => $this->config['allowCollapsableSideMenu'] && $this->config['sideMenuCollapsed']
 			),
 			'menuLink' => array(
 				'githubMenuLink' => $this->config['githubMenuLink'],
@@ -4757,7 +4831,7 @@ class Organizr
 						if ($item['type'] !== 'html' && $item['type'] !== 'blank' && $item['type'] !== 'button') {
 							if ((stripos($item['name'], 'token') !== false) || (stripos($item['name'], 'key') !== false) || (stripos($item['name'], 'password'))) {
 								if ($item['value'] !== '') {
-									$item['value'] = '**********';
+									$item['value'] = '***redacted***';
 								}
 							}
 							$debug[$category][$item['name']] = $item['value'];
@@ -5416,6 +5490,31 @@ class Organizr
 		}
 	}
 	
+	public function inconspicuous(): string
+	{
+		if ($this->hasDB()) {
+			if ($this->config['easterEggs']) {
+				return '
+				<div class="org-rox-trigger">
+					<div class="org-rox">
+						<div class="hair"></div>
+						<div class="head">
+							<div class="ear left"></div>
+							<div class="ear right"></div>
+							<div class="face">
+								<div class="eye left"></div>
+								<div class="eye right"></div>
+								<div class="nose"></div>
+								<div class="mouth"></div>
+							</div>
+						</div>
+					</div>
+				</div>';
+			}
+		}
+		return '';
+	}
+	
 	public function marketplaceFileListFormat($files, $folder, $type)
 	{
 		foreach ($files as $k => $v) {
@@ -5765,7 +5864,7 @@ class Organizr
 				foreach ($contents as $content) {
 					$html = $content->innerHtml;
 					preg_match('/(@[a-zA-Z])\w+/', $html, $username);
-					preg_match('/(?i)\b((?:https?:\/\/|www\d{0,3}[.]|[a-z0-9.\-]+[.][a-z]{2,4}\/)(?:[^\s()<>]+|\(([^\s()<>]+|(\([^\s()<>]+\)))*\))+(?:\(([^\s()<>]+|(\([^\s()<>]+\)))*\)|[^\s`!()\[\]{};:\'\".,<>?«»“”‘’]))/', $html, $image);
+					preg_match('/(?i)\b((?:https?:\/\/|www\d{0,3}[.]|[a-z0-9.\-]+[.][a-z]{2,4}\/)(?:[^\s()<>]+|\(([^\s()<>]+|(\([^\s()<>]+\)))*\))+(?:\(([^\s()<>]+|(\([^\s()<>]+\)))*\)|[^\s`!()\[\]{};:\'\".,<>?«»""\'\']))/', $html, $image);
 					if (isset($image[0]) && isset($username[0])) {
 						$sponsors[] = [
 							'name' => str_replace('@', '', $username[0]),

@@ -8,11 +8,16 @@ $Organizr = new Organizr();
 <head>
     <meta charset="utf-8">
     <meta content="IE=edge" http-equiv="X-UA-Compatible">
-    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport">
+    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"
+          name="viewport">
     <meta content="<?php echo $Organizr->config['description']; ?>" name="description">
     <meta content="CauseFX" name="author">
 	<?php echo $Organizr->favIcons(); ?>
     <title><?php echo $Organizr->config['title']; ?></title>
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="application-name" content="<?php echo $Organizr->config['title']; ?>">
+    <meta name="apple-mobile-web-app-title" content="<?php echo $Organizr->config['title']; ?>">
     <link href="bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="plugins/bower_components/sidebar-nav/dist/sidebar-nav.min.css" rel="stylesheet">
     <link href="plugins/bower_components/jquery-wizard-master/css/wizard.css" rel="stylesheet">
@@ -75,6 +80,7 @@ $Organizr = new Organizr();
     <nav class="navbar navbar-default navbar-static-top m-b-0 animated slideInDown">
         <div class="navbar-header">
             <div class="top-left-part hidden-xs p-r-10">
+				<?php echo $Organizr->showTopBarHamburger(); ?>
                 <!-- Logo -->
                 <a class="logo" href="javascript:void(0)">
                     <!-- Logo text image you can use text also -->
@@ -121,8 +127,12 @@ $Organizr = new Organizr();
     <div class="navbar-default sidebar nav-bar-rtl" role="navigation">
         <div class="sidebar-nav">
             <div class="sidebar-head">
-                <h3><span class="open-close m-r-5"><i class="ti-menu hidden-xs"></i><i class="ti-close visible-xs"></i></span>
-                    <span class="hide-menu hidden-xs" lang="en">Navigation</span>
+                <h3>
+                    <span class="open-close m-r-5">
+                        <?php echo $Organizr->showSideBarHamburger(); ?>
+                        <i class="ti-close visible-xs"></i>
+                    </span>
+					<?php echo $Organizr->showSideBarText(); ?>
                     <span class="hide-menu hidden-sm hidden-md hidden-lg" id="side-logo"></span>
                 </h3>
             </div>
@@ -169,21 +179,7 @@ $Organizr = new Organizr();
     <!-- ============================================================== -->
     <a href="#" id="scroll" style="display: none;"><span></span></a>
     <button id="internal-clipboard" class="hidden"></button>
-    <div class="org-rox-trigger">
-        <div class="org-rox">
-            <div class="hair"></div>
-            <div class="head">
-                <div class="ear left"></div>
-                <div class="ear right"></div>
-                <div class="face">
-                    <div class="eye left"></div>
-                    <div class="eye right"></div>
-                    <div class="nose"></div>
-                    <div class="mouth"></div>
-                </div>
-            </div>
-        </div>
-    </div>
+	<?php echo $Organizr->inconspicuous(); ?>
 </div>
 <!-- /#wrapper -->
 <!-- jQuery -->

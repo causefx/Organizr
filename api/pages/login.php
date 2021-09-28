@@ -25,7 +25,7 @@ if(activeInfo.settings.login.rememberMe){
 		<div class="white-box">
 			<form class="form-horizontal" id="loginform" onsubmit="return false;">
 				<input id="login-attempts" class="form-control" name="loginAttempts" type="hidden">
-				<a href="javascript:void(0)" class="text-center db visible-xs" id="login-logo">' . $Organizr->logoOrText() . '</a>
+				' . $Organizr->logoOrText() . '
 				<div id="oAuth-div" class="form-group hidden">
 					<div class="col-xs-12">
 						<div class="panel panel-success animated tada">
@@ -34,22 +34,22 @@ if(activeInfo.settings.login.rememberMe){
 					</div>
 				</div>
 				<div id="tfa-div" class="form-group hidden">
-				  <div class="col-xs-12">
-					<div class="panel panel-warning animated tada">
-						<div class="panel-heading"> 2FA
-							<div class="pull-right"><a href="#" data-perform="panel-collapse"><i class="ti-minus"></i></a> <a href="#" data-perform="panel-dismiss"><i class="ti-close"></i></a> </div>
-						</div>
-						<div class="panel-wrapper collapse in" aria-expanded="true">
-							<div class="panel-body">
-								<div class="input-group" style="width: 100%;">
-									<div class="input-group-addon hidden-xs"><i class="ti-lock"></i></div>
-									<input type="text" class="form-control tfa-input" name="tfaCode" placeholder="Code" data-lpignore="true" autocomplete="off" autocorrect="off" autocapitalize="off" maxlength="6" spellcheck="false" autofocus="">
+					<div class="col-xs-12">
+						<div class="panel panel-warning animated tada">
+							<div class="panel-heading"> 2FA
+								<div class="pull-right"><a href="#" data-perform="panel-collapse"><i class="ti-minus"></i></a> <a href="#" data-perform="panel-dismiss"><i class="ti-close"></i></a> </div>
+							</div>
+							<div class="panel-wrapper collapse in" aria-expanded="true">
+								<div class="panel-body">
+									<div class="input-group" style="width: 100%;">
+										<div class="input-group-addon hidden-xs"><i class="ti-lock"></i></div>
+										<input type="text" class="form-control tfa-input" name="tfaCode" placeholder="Code" data-lpignore="true" autocomplete="off" autocorrect="off" autocapitalize="off" maxlength="6" spellcheck="false" autofocus="">
+									</div>
+									<button class="btn btn-warning btn-lg btn-block text-uppercase waves-effect waves-light login-button m-t-10" type="submit" lang="en">Login</button>
 								</div>
-								<button class="btn btn-warning btn-lg btn-block text-uppercase waves-effect waves-light login-button m-t-10" type="submit" lang="en">Login</button>
 							</div>
 						</div>
 					</div>
-				  </div>
 				</div>
 				<div class="panel-group" id="login-panels" data-type="accordion" aria-multiselectable="true" role="tablist">
 					<!-- ORGANIZR LOGIN -->

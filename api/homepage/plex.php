@@ -36,7 +36,7 @@ trait PlexHomepageItem
 					$this->settingsOption('disable-cert-check', 'plexDisableCertCheck'),
 					$this->settingsOption('use-custom-certificate', 'plexUseCustomCertificate'),
 					$this->settingsOption('token', 'plexToken'),
-					$this->settingsOption('button', '', ['label' => 'Get Plex Token', 'icon' => 'fa fa-ticket', 'text' => 'Retrieve', 'attr' => 'onclick="showPlexTokenForm(\'#homepage-Plex-form [name=plexToken]\')"']),
+					$this->settingsOption('button', '', ['label' => 'Get Plex Token', 'icon' => 'fa fa-ticket', 'text' => 'Retrieve', 'attr' => 'onclick="PlexOAuth(oAuthSuccess,oAuthError, null, \'#homepage-Plex-form [name=plexToken]\')"']),
 					$this->settingsOption('password-alt', 'plexID', ['label' => 'Plex Machine']),
 					$this->settingsOption('button', '', ['label' => 'Get Plex Machine', 'icon' => 'fa fa-id-badge', 'text' => 'Retrieve', 'attr' => 'onclick="showPlexMachineForm(\'#homepage-Plex-form [name=plexID]\')"']),
 				],
