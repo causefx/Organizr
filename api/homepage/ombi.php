@@ -75,13 +75,15 @@ trait OmbiHomepageItem
 			if ($test->success) {
 				$this->setAPIResponse('success', 'API Connection succeeded', 200);
 				return true;
+			} else {
+				$this->setResponse(401, $test->body);
+				return false;
 			}
-			
 		} catch (Requests_Exception $e) {
 			$this->writeLog('error', 'OMBI Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
 			$this->setAPIResponse('error', $e->getMessage(), 500);
 			return false;
-		};
+		}
 	}
 	
 	public function ombiHomepagePermissions($key = null)
