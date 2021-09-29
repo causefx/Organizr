@@ -434,7 +434,7 @@
     "notes": "Updated translation files|New Translation Strings|updated dibi to v4"
   },
   "2.1.705": {
-    "date": "2021-09-08 21:10",
+    "date": "2021-09-28 21:10",
     "title": "More goodies",
     "new": "Option to completely hide left navbar (FR#92)|Radarr-Sonarr Season and Episode information on Mobile (FR#100)|Option to disable Org 2FA for Plex Auth login (FR#103)|added reset color button to custom colors|add more elements to custom colors|change tautulli token field to multiple field|add search to config item endpoint|enable fallback for overseerr|add option to turn off easter eggs|add transition for requested item|make logo on login screen a function|Support for homescreen icon|check if org has permissions to check disk space|add check to overseerr limit and offset|@causefx\nupdate plex token grabber to oauth|add toggle for 4k for overseerr",
     "fixed": "Overseerr Default Filter Issue (#1717)|other overseerr issues|overseerr placement of api calls|ombi test button (#1436)|alertDefined for news|update message on config api|invites plugin",
