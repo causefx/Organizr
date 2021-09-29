@@ -63,7 +63,7 @@ class Organizr
 	
 	// ===================================
 	// Organizr Version
-	public $version = '2.1.705';
+	public $version = '2.1.710';
 	// ===================================
 	// Quick php Version check
 	public $minimumPHP = '7.3';
@@ -1812,6 +1812,7 @@ class Organizr
 			'Side Menu' => array(
 				$this->settingsOption('switch', 'allowCollapsableSideMenu', ['label' => 'Allow Side Menu to be Collapsable']),
 				$this->settingsOption('switch', 'sideMenuCollapsed', ['label' => 'Side Menu Collapsed at Launch']),
+				$this->settingsOption('switch', 'collapseSideMenuOnClick', ['label' => 'Collapse Side Menu after clicking Tab']),
 				array(
 					'type' => 'switch',
 					'name' => 'githubMenuLink',
@@ -4377,7 +4378,8 @@ class Organizr
 				'expandCategoriesByDefault' => $this->config['expandCategoriesByDefault'],
 				'autoCollapseCategories' => $this->config['autoCollapseCategories'],
 				'autoExpandNavBar' => $this->config['autoExpandNavBar'],
-				'sideMenuCollapsed' => $this->config['allowCollapsableSideMenu'] && $this->config['sideMenuCollapsed']
+				'sideMenuCollapsed' => $this->config['allowCollapsableSideMenu'] && $this->config['sideMenuCollapsed'],
+				'collapseSideMenuOnClick' => $this->config['allowCollapsableSideMenu'] && $this->config['collapseSideMenuOnClick']
 			),
 			'menuLink' => array(
 				'githubMenuLink' => $this->config['githubMenuLink'],

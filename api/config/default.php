@@ -604,5 +604,6 @@ return [
 	'defaultRequestService' => 'ombi',
 	'easterEggs' => true,
 	'allowCollapsableSideMenu' => false,
-	'sideMenuCollapsed' => false
+	'sideMenuCollapsed' => false,
+	'collapseSideMenuOnClick' => false
 ];

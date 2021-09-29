@@ -650,6 +650,11 @@ function editPageTitle(title){
     document.title =  title + ' - ' + activeInfo.appearance.title;
 }
 function switchTab(tab, type, split = null){
+	if(activeInfo.settings.misc.collapseSideMenuOnClick){
+		if(!$('.navbar ').hasClass('sidebar-hidden')){
+			toggleSideMenu();
+		}
+	}
 	let extra = split ? 'right-' : '';
 	// need to rework for split
     if(type !== 2){
@@ -4622,7 +4627,8 @@ function loadAppearance(appearance){
 			.fc-toolbar,
 			.progress-bar-info,
 			.label-info,
-			.tabs-style-iconbox nav ul li.tab-current a {
+			.tabs-style-iconbox nav ul li.tab-current a
+			.swapLog.active {
 			    background-color: `+appearance.accentColor+` !important;
 			}
 			.panel-blue .panel-heading, .panel-info .panel-heading {
@@ -4649,7 +4655,8 @@ function loadAppearance(appearance){
 			.panel-default .panel-heading,
 			.mailbox-widget .customtab li.active a, .mailbox-widget .customtab li.active, .mailbox-widget .customtab li.active a:focus,
 			.mailbox-widget .customtab li a,
-			.tabs-style-iconbox nav ul li.tab-current a {
+			.tabs-style-iconbox nav ul li.tab-current a
+			.swapLog.active {
 				color: `+appearance.accentTextColor+`;
 			}
 		`;
@@ -4657,7 +4664,9 @@ function loadAppearance(appearance){
 	if(appearance.buttonColor !== ''){
 		cssSettings += `
 			.btn-info, .btn-info.disabled,
-			.btn {
+			.btn,
+			.paginate_button.current,
+			.paginate_button:hover {
 				background: `+appearance.buttonColor+` !important;
 				border: 1px solid `+appearance.buttonColor+` !important;
 			}
@@ -4666,7 +4675,9 @@ function loadAppearance(appearance){
 	if(appearance.buttonTextColor !== ''){
 		cssSettings += `
 			.btn-info, .btn-info.disabled,
-			.btn {
+			.btn
+			.paginate_button.current
+			.paginate_button:hover {
 				color: `+appearance.buttonTextColor+` !important;
 			}
 		`;
@@ -10317,10 +10328,10 @@ function toggleWritableFolders(){
     $('.folders-writable').toggleClass('hidden');
 }
 function getAllTabNames(){
-    var allTabs = $('.allTabsList');
+    var allTabs = $('.tabEditor');
     var tabList = [];
     $.each(allTabs, function(i,v) {
-        tabList[i] = v.getAttribute('data-tab-name').toLowerCase();
+        tabList[i] = v.getAttribute('data-name').toLowerCase();
     });
     return tabList;
 }
@@ -11151,6 +11162,18 @@ function sideMenuCollapsed(){
 	if(activeInfo.settings.misc.sideMenuCollapsed){
 		toggleSideMenuClasses();
 	}
+}
+function toggleSideMenu(){
+	toggleSideMenuClasses();
+	$('.sidebar-head .open-close i').first().toggleClass('ti-menu ti-shift-left mouse');
+	$('.toggle-side-menu').toggleClass('hidden');
+}
+
+function toggleTopBarHamburger(){
+	toggleSideMenuClasses();
+	$('.sidebar-head .hide-menu.hidden-xs').text('Hide Menu');
+	$('.sidebar-head .open-close i').first().toggleClass('ti-menu ti-shift-left mouse');
+	$('.toggle-side-menu').toggleClass('hidden');
 }
 function launch(){
 	console.info('https://docs.organizr.app/help/faq/migration-guide#version-2-0-greater-than-version-2-1');
