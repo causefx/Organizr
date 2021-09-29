@@ -4627,7 +4627,8 @@ function loadAppearance(appearance){
 			.fc-toolbar,
 			.progress-bar-info,
 			.label-info,
-			.tabs-style-iconbox nav ul li.tab-current a {
+			.tabs-style-iconbox nav ul li.tab-current a
+			.swapLog.active {
 			    background-color: `+appearance.accentColor+` !important;
 			}
 			.panel-blue .panel-heading, .panel-info .panel-heading {
@@ -4654,7 +4655,8 @@ function loadAppearance(appearance){
 			.panel-default .panel-heading,
 			.mailbox-widget .customtab li.active a, .mailbox-widget .customtab li.active, .mailbox-widget .customtab li.active a:focus,
 			.mailbox-widget .customtab li a,
-			.tabs-style-iconbox nav ul li.tab-current a {
+			.tabs-style-iconbox nav ul li.tab-current a
+			.swapLog.active {
 				color: `+appearance.accentTextColor+`;
 			}
 		`;
@@ -4662,7 +4664,9 @@ function loadAppearance(appearance){
 	if(appearance.buttonColor !== ''){
 		cssSettings += `
 			.btn-info, .btn-info.disabled,
-			.btn {
+			.btn,
+			.paginate_button.current,
+			.paginate_button:hover {
 				background: `+appearance.buttonColor+` !important;
 				border: 1px solid `+appearance.buttonColor+` !important;
 			}
@@ -4671,7 +4675,9 @@ function loadAppearance(appearance){
 	if(appearance.buttonTextColor !== ''){
 		cssSettings += `
 			.btn-info, .btn-info.disabled,
-			.btn {
+			.btn
+			.paginate_button.current
+			.paginate_button:hover {
 				color: `+appearance.buttonTextColor+` !important;
 			}
 		`;
