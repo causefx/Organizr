@@ -2107,9 +2107,26 @@ function buildTabEditor(){
         }
 		$('#tabEditorTable').html(buildTabEditorItem(response.data));
         checkTabHomepageItems();
+		addTabSortable();
 	}).fail(function(xhr) {
 		OrganizrApiError(xhr);
 	});
+}
+function addTabSortable(){
+	let el = document.getElementById('tabEditorTable');
+	let tabSorter = new Sortable(el, {
+		handle: ".sort-tabs-handle",
+		ghostClass: "sortable-ghost",
+		multiDrag: true,
+		selectedClass: "multi-selected",
+		onUpdate: function (evt) {
+			$('input.order').each(function(idx) {
+			$(this).val(idx + 1);
+		});
+	newTabsGlobal = $("#submit-tabs-form").serializeToJSON();
+	$('.saveTabOrderButton').removeClass('hidden');
+},
+});
 }
 function checkTabHomepageItems(){
     var tabList = $('.checkTabHomepageItem');

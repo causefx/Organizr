@@ -67,21 +67,7 @@ function get_page_settings_tab_editor_tabs($Organizr)
 	return '
 	<script>
 	buildTabEditor();
-	let el = document.getElementById(\'tabEditorTable\');
-	let tabSorter = new Sortable(el, {
-		handle: ".sort-tabs-handle",
-		ghostClass: "sortable-ghost",
-		multiDrag: true,
-		selectedClass: "multi-selected",
-		onUpdate: function (evt) {
-			$(\'input.order\').each(function(idx) {
-				$(this).val(idx + 1);
-			});
-			var newTabs = $( "#submit-tabs-form" ).serializeToJSON();
-			newTabsGlobal = newTabs;
-			$(\'.saveTabOrderButton\').removeClass(\'hidden\');
-		},
-	});
+	
 	' . $iconSelectors . '
 	</script>
 	<div class="panel bg-org panel-info">
