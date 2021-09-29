@@ -10322,10 +10322,10 @@ function toggleWritableFolders(){
     $('.folders-writable').toggleClass('hidden');
 }
 function getAllTabNames(){
-    var allTabs = $('.allTabsList');
+    var allTabs = $('.tabEditor');
     var tabList = [];
     $.each(allTabs, function(i,v) {
-        tabList[i] = v.getAttribute('data-tab-name').toLowerCase();
+        tabList[i] = v.getAttribute('data-name').toLowerCase();
     });
     return tabList;
 }
