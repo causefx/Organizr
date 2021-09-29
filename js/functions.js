@@ -650,6 +650,11 @@ function editPageTitle(title){
     document.title =  title + ' - ' + activeInfo.appearance.title;
 }
 function switchTab(tab, type, split = null){
+	if(activeInfo.settings.misc.collapseSideMenuOnClick){
+		if(!$('.navbar ').hasClass('sidebar-hidden')){
+			toggleSideMenu();
+		}
+	}
 	let extra = split ? 'right-' : '';
 	// need to rework for split
     if(type !== 2){
@@ -11151,6 +11156,18 @@ function sideMenuCollapsed(){
 	if(activeInfo.settings.misc.sideMenuCollapsed){
 		toggleSideMenuClasses();
 	}
+}
+function toggleSideMenu(){
+	toggleSideMenuClasses();
+	$('.sidebar-head .open-close i').first().toggleClass('ti-menu ti-shift-left mouse');
+	$('.toggle-side-menu').toggleClass('hidden');
+}
+
+function toggleTopBarHamburger(){
+	toggleSideMenuClasses();
+	$('.sidebar-head .hide-menu.hidden-xs').text('Hide Menu');
+	$('.sidebar-head .open-close i').first().toggleClass('ti-menu ti-shift-left mouse');
+	$('.toggle-side-menu').toggleClass('hidden');
 }
 function launch(){
 	console.info('https://docs.organizr.app/help/faq/migration-guide#version-2-0-greater-than-version-2-1');
