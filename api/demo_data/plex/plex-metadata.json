@@ -1,0 +1,126 @@
+{
+  "response": {
+    "result": "success",
+    "message": null,
+    "data": {
+      "content": [
+        {
+          "type": "tv",
+          "title": "Ted Lasso",
+          "secondaryTitle": "2020",
+          "summary": "Ted Lasso, an American football coach, moves to England when he\u2019s hired to manage a soccer team\u2014despite having no experience. With cynical players and a doubtful town, will he get them to see the Ted Lasso Way?",
+          "ratingKey": "718958",
+          "thumb": "/library/metadata/718958/thumb/1630643017",
+          "key": "718958-list",
+          "nowPlayingThumb": "/library/metadata/718958/art/1630643017",
+          "nowPlayingKey": "718958-np",
+          "nowPlayingTitle": "Ted Lasso",
+          "nowPlayingBottom": "2020",
+          "metadataKey": "718958",
+          "originalType": {
+            "0": "show"
+          },
+          "uid": "718958",
+          "elapsed": null,
+          "duration": 1800000,
+          "addedAt": 1597470170,
+          "watched": 0,
+          "transcoded": "",
+          "stream": "",
+          "id": "",
+          "session": "",
+          "bandwidth": "",
+          "bandwidthType": "",
+          "sessionType": "Direct Playing",
+          "state": "play",
+          "user": "",
+          "userThumb": "",
+          "userAddress": "",
+          "address": "https://demo.organizr.app/plex/web/index.html#!/server/fake/details?key=/library/metadata/718958",
+          "nowPlayingOriginalImage": "api/v2/homepage/image?source=plex&img=/library/metadata/718958/art/1630643017&height=675&width=1200&key=718958-np$R1TLZH1BYF",
+          "originalImage": "api/v2/homepage/image?source=plex&img=/library/metadata/718958/thumb/1630643017&height=300&width=200&key=718958-list$9T6812YERV",
+          "openTab": true,
+          "tabName": "Plex (Watch me)",
+          "userStream": {
+            "platform": "",
+            "product": "",
+            "device": "",
+            "stream": "",
+            "videoResolution": "",
+            "throttled": false,
+            "sourceVideoCodec": "",
+            "videoCodec": "",
+            "audioCodec": "",
+            "sourceAudioCodec": "",
+            "videoDecision": "Direct Play",
+            "audioDecision": "Direct Play",
+            "container": "",
+            "audioChannels": ""
+          },
+          "metadata": {
+            "guid": "plex://show/5e204251072b9e003ca5c140",
+            "summary": "Ted Lasso, an American football coach, moves to England when he\u2019s hired to manage a soccer team\u2014despite having no experience. With cynical players and a doubtful town, will he get them to see the Ted Lasso Way?",
+            "rating": "",
+            "duration": "1800000",
+            "originallyAvailableAt": "2020-08-14",
+            "year": "2020",
+            "studio": "Doozer",
+            "tagline": "Out of His League",
+            "genres": [
+              "Comedy",
+              "Sport",
+              "Drama"
+            ],
+            "actors": [
+              {
+                "name": "Jason Sudeikis",
+                "role": "Ted Lasso",
+                "thumb": "https://metadata-static.plex.tv/b/people/be1b09bec843d46ad76743326ab0fbd1.jpg"
+              },
+              {
+                "name": "Hannah Waddingham",
+                "role": "Rebecca Welton",
+                "thumb": "https://metadata-static.plex.tv/0/people/0a2f43fc49d213f651c0d897d15ebb4e.jpg"
+              },
+              {
+                "name": "Juno Temple",
+                "role": "Keeley Jones",
+                "thumb": "https://metadata-static.plex.tv/4/people/486961ff94e5cb952cf3addb2f8aaf4a.jpg"
+              },
+              {
+                "name": "Jeremy Swift",
+                "role": "Leslie Higgins",
+                "thumb": "https://metadata-static.plex.tv/people/5d7768253c3c2a001fbca9d2.jpg"
+              },
+              {
+                "name": "Phil Dunster",
+                "role": "Jamie Tartt",
+                "thumb": "https://metadata-static.plex.tv/2/people/2dad53cf273295fd29d7d089bb0373ef.jpg"
+              },
+              {
+                "name": "Brett Goldstein",
+                "role": "Roy Kent",
+                "thumb": "https://metadata-static.plex.tv/people/5d77682bf54112001f5bc4d3.jpg"
+              },
+              {
+                "name": "Brendan Hunt",
+                "role": "Coach Beard",
+                "thumb": "https://metadata-static.plex.tv/people/5d77695e9ab54400214f0e66.jpg"
+              },
+              {
+                "name": "Nick Mohammed",
+                "role": "Nathan Shelley",
+                "thumb": "https://metadata-static.plex.tv/c/people/c9b9b5f951dfa5cff88e98e3c8837df4.jpg"
+              }
+            ]
+          },
+          "nowPlayingImageURL": "plugins/images/cache/718958-np.jpg",
+          "imageURL": "plugins/images/cache/718958-list.jpg"
+        }
+      ],
+      "plexID": "fake",
+      "showNames": true,
+      "group": "1"
+    }
+  }
+}
