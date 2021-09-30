@@ -269,6 +269,7 @@ trait OptionsFunction
 				];
 				break;
 			// HTML ITEMS
+			// precodeeditor possibly not needed anymore
 			case 'precodeeditor':
 				$settingMerge = [
 					'type' => 'textbox',
@@ -281,7 +282,7 @@ trait OptionsFunction
 					'type' => 'html',
 					'override' => 12,
 					'label' => 'Custom Code',
-					'html' => '<div id="' . $name . 'Editor" style="height:300px">' . htmlentities($this->config[$name]) . '</div>'
+					'html' => '<textarea data-changed="false" class="form-control hidden ' . $name . 'Textarea" name="' . $name . '" data-type="textbox" autocomplete="new-password"></textarea><div id="' . $name . 'Editor" style="height:300px">' . htmlentities($this->config[$name]) . '</div>'
 				];
 				break;
 			// CALENDAR ITEMS
