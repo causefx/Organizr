@@ -1736,6 +1736,7 @@ function clearHomepageOriginal(){
 	$('#editHomepageItem').html('');
 }
 function completeHomepageLoad(item, data){
+	/*
 	if(item == 'CustomHTML'){
 		let iteration = 0;
 		$.each(data.settings, function(i,customItem) {
@@ -1749,11 +1750,12 @@ function completeHomepageLoad(item, data){
 			customHTMLEditorObject[iterationString].setShowPrintMargin(false);
 			customHTMLEditorObject[iterationString].session.on('change', function(delta) {
 				$('.' + customTextarea).val(customHTMLEditorObject[iterationString].getValue());
-				$('#homepage-CustomHTML-form-save').removeClass('hidden');
+				//$('#homepage-CustomHTML-form-save').removeClass('hidden');
 			});
 			iteration++;
 		});
 	}
+	*/
 	pageLoad();
 }
 function editHomepageItem(item){

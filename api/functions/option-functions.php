@@ -278,11 +278,35 @@ trait OptionsFunction
 				];
 				break;
 			case 'codeeditor':
+				$mode = strtolower($extras['mode'] ?? 'css');
+				switch ($mode) {
+					case 'html':
+					case 'javascript':
+						$mode = 'ace/mode/' . $mode;
+						break;
+					case 'js':
+						$mode = 'ace/mode/javascript';
+						break;
+					default:
+						$mode = 'ace/mode/css';
+						break;
+				}
 				$settingMerge = [
 					'type' => 'html',
 					'override' => 12,
 					'label' => 'Custom Code',
-					'html' => '<textarea data-changed="false" class="form-control hidden ' . $name . 'Textarea" name="' . $name . '" data-type="textbox" autocomplete="new-password"></textarea><div id="' . $name . 'Editor" style="height:300px">' . htmlentities($this->config[$name]) . '</div>'
+					'html' => '
+					<textarea data-changed="false" class="form-control hidden ' . $name . 'Textarea" name="' . $name . '" data-type="textbox" autocomplete="new-password"></textarea>
+					<div id="' . $name . 'Editor" style="height:300px">' . htmlentities($this->config[$name]) . '</div>
+					<script>
+						let mode = ace.require("' . $mode . '").Mode;
+						' . $name . ' = ace.edit("' . $name . 'Editor");
+						' . $name . '.session.setMode(new mode());
+						' . $name . '.setTheme("ace/theme/idle_fingers");
+						' . $name . '.setShowPrintMargin(false);
+						' . $name . '.session.on("change", function(delta) { $(".' . $name . 'Textarea").val(' . $name . '.getValue()) });
+					</script>
+					'
 				];
 				break;
 			// CALENDAR ITEMS
