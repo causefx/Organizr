@@ -16,7 +16,7 @@ trait DemoFunctions
 			$data = $this->userDefinedIdReplacementLink($data, ['plugins/images/cache/' => 'api/demo_data/' . $path . 'images/']);
 			$data = json_decode($data, true);
 			$this->setResponse(200, 'Demo data for file: ' . $file, $data['response']['data']);
-			return $data;
+			return $data['response']['data'];
 		} else {
 			$this->setResponse(404, 'Demo data was not found for file: ' . $file);
 			return false;
