@@ -296,7 +296,7 @@ trait OptionsFunction
 					'override' => 12,
 					'label' => 'Custom Code',
 					'html' => '
-					<textarea data-changed="false" class="form-control hidden ' . $name . 'Textarea" name="' . $name . '" data-type="textbox" autocomplete="new-password"></textarea>
+					<textarea data-changed="false" class="form-control hidden ' . $name . 'Textarea" name="' . $name . '" data-type="textbox" autocomplete="new-password">' . $this->config[$name] . '</textarea>
 					<div id="' . $name . 'Editor" style="height:300px">' . htmlentities($this->config[$name]) . '</div>
 					<script>
 						let mode = ace.require("' . $mode . '").Mode;
