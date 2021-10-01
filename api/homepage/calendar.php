@@ -87,10 +87,6 @@ trait CalendarHomepageItem
 	
 	public function getCalendar()
 	{
-		if ($this->demo) {
-			// for now, we will return all data - soon we will break out between all services
-			return $this->demoData('calendar/calendar.json');
-		}
 		$startDate = date('Y-m-d', strtotime("-" . $this->config['calendarStart'] . " days"));
 		$endDate = date('Y-m-d', strtotime("+" . $this->config['calendarEnd'] . " days"));
 		$icalCalendarSources = array();

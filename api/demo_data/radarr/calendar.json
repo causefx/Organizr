@@ -1,0 +1,3664 @@
+{
+  "response": {
+    "result": "success",
+    "message": null,
+    "data": [
+      {
+        "id": "Radarr-0-1",
+        "title": "Nightbooks",
+        "start": "2021-09-15",
+        "className": "inline-popups bg-calendar movieID--739990",
+        "imagetype": "film text-success",
+        "imagetypeFilter": "film",
+        "downloadFilter": "text-success",
+        "releaseType": [
+          "digital"
+        ],
+        "bgColor": "bg-success",
+        "details": {
+          "topTitle": "Nightbooks",
+          "bottomTitle": "Cuentos al caer la noche, \u0e44\u0e19\u0e15\u0e4c\u0e1a\u0e38\u0e4a\u0e04\u0e2a\u0e4c, Nightbooks - Racconti di paura, Straszne historie, \u591c\u8b80\u9a5a\u9b42, Les Pages de l'Angoisse, \u039d\u03c5\u03c7\u03c4\u03b5\u03c1\u03b9\u03bd\u03ad\u03c2 \u0399\u03c3\u03c4\u03bf\u03c1\u03af\u03b5\u03c2, Nattens b\u00f8ger, No\u0107ni dnevnici, Y\u00f6n tarinoita, \u00c9jszakai mes\u00e9k, \u0928\u093e\u0907\u091f\u092c\u0941\u0915\u094d\u0938, \u30ca\u30a4\u30c8\u30d6\u30c3\u30af, Boeken van de nacht, Nattb\u00f8kene, Contos do Medo, Stra\u0161ideln\u00e9 p\u0159\u00edb\u011bhy na dobrou noc, En Korkun\u00e7 Masal, Nattsagor, \u041d\u0456\u0447\u043d\u0456 \u0449\u043e\u0434\u0435\u043d\u043d\u0438\u043a\u0438, Nightbooks: Chuy\u1ec7n kinh d\u1ecb \u0111\u00eam nay, \u041d\u043e\u0447\u043d\u044b\u0435 \u0442\u0435\u0442\u0440\u0430\u0434\u0438, Nightbooks: Captiv \u00een poveste, Noit\u00e1rios de Arrepiar",
+          "status": "released",
+          "overview": "Alex, a boy obsessed with scary stories, is trapped by a witch in her modern, magical New York City apartment. His original hair-raising tales are the only thing keeping him safe as he desperately tries to find a way out of this twisted place.",
+          "runtime": 103,
+          "image": "plugins/images/cache/739990.jpg",
+          "ratings": 6.7,
+          "videoQuality": "WEBDL-1080p",
+          "audioChannels": 5.1,
+          "audioCodec": null,
+          "videoCodec": "HEVC",
+          "size": 4380272817,
+          "genres": [
+            "Fantasy",
+            "Family",
+            "Horror"
+          ],
+          "year": 2021,
+          "studio": "Ghost House Pictures"
+        }
+      },
+      {
+        "id": "Radarr-0-2",
+        "title": "Afterlife of the Party",
+        "start": "2021-09-02",
+        "className": "inline-popups bg-calendar movieID--785457",
+        "imagetype": "film text-success",
+        "imagetypeFilter": "film",
+        "downloadFilter": "text-success",
+        "releaseType": [
+          "digital"
+        ],
+        "bgColor": "bg-success",
+        "details": {
+          "topTitle": "Afterlife of the Party",
+          "bottomTitle": "\u6d3e\u5bf9\u5973\u5b69\u5347\u5929\u8bb0, \u793e\u4ea4\u5973\u738b\u7684\u5347\u5929\u4e4b\u65c5, \u6b7b\u90fd\u8981\u958b P, \u017divot po ve\u0159\u00edrku, M\u00e1s all\u00e1 de la fiesta, \u0e2d\u0e32\u0e1f\u0e40\u0e15\u0e2d\u0e23\u0e4c\u0e44\u0e25\u0e1f\u0e4c \u0e2d\u0e2d\u0e1f \u0e40\u0e14\u0e2d\u0e30 \u0e1b\u0e32\u0e23\u0e4c\u0e15\u0e35\u0e49",
+          "status": "released",
+          "overview": "A social butterfly who dies during her birthday week is given a second chance to right her wrongs on Earth.",
+          "runtime": 109,
+          "image": "plugins/images/cache/785457.jpg",
+          "ratings": 7.1,
+          "videoQuality": "WEBRip-1080p",
+          "audioChannels": 5.1,
+          "audioCodec": null,
+          "videoCodec": "x264",
+          "size": 1510408009,
+          "genres": [
+            "Fantasy",
+            "Comedy",
+            "Drama"
+          ],
+          "year": 2021,
+          "studio": "Advantage Entertainment"
+        }
+      },
+      {
+        "id": "Radarr-0-3",
+        "title": "Cinderella",
+        "start": "2021-09-03",
+        "className": "inline-popups bg-calendar movieID--593910",
+        "imagetype": "film text-success",
+        "imagetypeFilter": "film",
+        "downloadFilter": "text-success",
+        "releaseType": [
+          "digital"
+        ],
+        "bgColor": "bg-success",
+        "details": {
+          "topTitle": "Cinderella",
+          "bottomTitle": "",
+          "status": "released",
+          "overview": "Cinderella, an orphaned girl with an evil stepmother, has big dreams and with the help of her Fabulous Godmother, she perseveres to make them come true.",
+          "runtime": 113,
+          "image": "plugins/images/cache/593910.jpg",
+          "ratings": 6.8,
+          "videoQuality": "WEBRip-1080p",
+          "audioChannels": 5.1,
+          "audioCodec": null,
+          "videoCodec": "h264",
+          "size": 7878295302,
+          "genres": [
+            "Fantasy",
+            "Romance",
+            "Comedy"
+          ],
+          "year": 2021,
+          "studio": "Fulwell 73"
+        }
+      },
+      {
+        "id": "Radarr-0-4",
+        "title": "Prey",
+        "start": "2021-09-10",
+        "className": "inline-popups bg-calendar movieID--853588",
+        "imagetype": "film text-success",
+        "imagetypeFilter": "film",
+        "downloadFilter": "text-success",
+        "releaseType": [
+          "digital"
+        ],
+        "bgColor": "bg-success",
+        "details": {
+          "topTitle": "Prey",
+          "bottomTitle": "Presas de caza, Ca\u00e7a Invis\u00edvel, \u730e\u7269",
+          "status": "released",
+          "overview": "A hiking trip into the wild turns into a desperate bid for survival for five friends on the run from a mysterious shooter.",
+          "runtime": 86,
+          "image": "plugins/images/cache/853588.jpg",
+          "ratings": 4.5,
+          "videoQuality": "WEBDL-1080p",
+          "audioChannels": 5.1,
+          "audioCodec": null,
+          "videoCodec": "x264",
+          "size": 3767473137,
+          "genres": [
+            "Thriller"
+          ],
+          "year": 2021,
+          "studio": "Senator Film"
+        }
+      },
+      {
+        "id": "Radarr-0-5",
+        "title": "Injustice",
+        "start": "2021-10-19",
+        "className": "inline-popups bg-calendar movieID--831405",
+        "imagetype": "film text-info",
+        "imagetypeFilter": "film",
+        "downloadFilter": "text-info",
+        "releaseType": [
+          "physical"
+        ],
+        "bgColor": "bg-info",
+        "details": {
+          "topTitle": "Injustice",
+          "bottomTitle": "",
+          "status": "announced",
+          "overview": "When Lois Lane is killed, an unhinged Superman decides to take control of the Earth. Determined to stop him, Batman creates a team of freedom-fighting heroes. But when superheroes go to war, can the world survive?",
+          "runtime": 78,
+          "image": "plugins/images/cache/831405.jpg",
+          "ratings": 0,
+          "videoQuality": "unknown",
+          "audioChannels": "unknown",
+          "audioCodec": "unknown",
+          "videoCodec": "unknown",
+          "size": "unknown",
+          "genres": [
+            "Animation",
+            "Science Fiction",
+            "Fantasy"
+          ],
+          "year": 2021,
+          "studio": "Warner Bros. Animation"
+        }
+      },
+      {
+        "id": "Radarr-0-6",
+        "title": "Injustice",
+        "start": "2021-10-18",
+        "className": "inline-popups bg-calendar movieID--831405",
+        "imagetype": "film text-info",
+        "imagetypeFilter": "film",
+        "downloadFilter": "text-info",
+        "releaseType": [
+          "digital"
+        ],
+        "bgColor": "bg-info",
+        "details": {
+          "topTitle": "Injustice",
+          "bottomTitle": "",
+          "status": "announced",
+          "overview": "When Lois Lane is killed, an unhinged Superman decides to take control of the Earth. Determined to stop him, Batman creates a team of freedom-fighting heroes. But when superheroes go to war, can the world survive?",
+          "runtime": 78,
+          "image": "plugins/images/cache/831405.jpg",
+          "ratings": 0,
+          "videoQuality": "unknown",
+          "audioChannels": "unknown",
+          "audioCodec": "unknown",
+          "videoCodec": "unknown",
+          "size": "unknown",
+          "genres": [
+            "Animation",
+            "Science Fiction",
+            "Fantasy"
+          ],
+          "year": 2021,
+          "studio": "Warner Bros. Animation"
+        }
+      },
+      {
+        "id": "Radarr-0-7",
+        "title": "The Witches",
+        "start": "2021-10-18",
+        "className": "inline-popups bg-calendar movieID--10166",
+        "imagetype": "film text-success",
+        "imagetypeFilter": "film",
+        "downloadFilter": "text-success",
+        "releaseType": [
+          "physical"
+        ],
+        "bgColor": "bg-success",
+        "details": {
+          "topTitle": "The Witches",
+          "bottomTitle": "La maldici\u00f3n de las brujas, Bosorky, Roald Dahl's, The Witches",
+          "status": "inCinemas",
+          "overview": "A young boy named Luke and his grandmother go on vacation only to discover their hotel is hosting an international witch convention, where the Grand High Witch is unveiling her master plan to turn all children into mice. Will Luke fall victim to the witches' plot before he can stop them?",
+          "runtime": 91,
+          "image": "plugins/images/cache/10166.jpg",
+          "ratings": 6.9,
+          "videoQuality": "Bluray-1080p",
+          "audioChannels": 2,
+          "audioCodec": null,
+          "videoCodec": "x264",
+          "size": 9972708420,
+          "genres": [
+            "Adventure",
+            "Fantasy",
+            "Horror"
+          ],
+          "year": 1990,
+          "studio": "Lorimar Film Entertainment"
+        }
+      },
+      {
+        "id": "Radarr-0-8",
+        "title": "The Witches",
+        "start": "1990-05-25",
+        "className": "inline-popups bg-calendar movieID--10166",
+        "imagetype": "film text-success",
+        "imagetypeFilter": "film",
+        "downloadFilter": "text-success",
+        "releaseType": [
+          "cinema"
+        ],
+        "bgColor": "bg-success",
+        "details": {
+          "topTitle": "The Witches",
+          "bottomTitle": "La maldici\u00f3n de las brujas, Bosorky, Roald Dahl's, The Witches",
+          "status": "inCinemas",
+          "overview": "A young boy named Luke and his grandmother go on vacation only to discover their hotel is hosting an international witch convention, where the Grand High Witch is unveiling her master plan to turn all children into mice. Will Luke fall victim to the witches' plot before he can stop them?",
+          "runtime": 91,
+          "image": "plugins/images/cache/10166.jpg",
+          "ratings": 6.9,
+          "videoQuality": "Bluray-1080p",
+          "audioChannels": 2,
+          "audioCodec": null,
+          "videoCodec": "x264",
+          "size": 9972708420,
+          "genres": [
+            "Adventure",
+            "Fantasy",
+            "Horror"
+          ],
+          "year": 1990,
+          "studio": "Lorimar Film Entertainment"
+        }
+      },
+      {
+        "id": "Radarr-0-9",
+        "title": "Jerry Maguire",
+        "start": "1996-06-25",
+        "className": "inline-popups bg-calendar movieID--9390",
+        "imagetype": "film text-success",
+        "imagetypeFilter": "film",
+        "downloadFilter": "text-success",
+        "releaseType": [
+          "physical"
+        ],
+        "bgColor": "bg-success",
+        "details": {
+          "topTitle": "Jerry Maguire",
+          "bottomTitle": "Jerry Maguire - el\u00e4m\u00e4 on peli\u00e4, \uc81c\ub9ac \ub9e5\uacfc\uc774\uc5b4, Yeni bir baslangi\u00e7, \u5f81\u670d\u60c5\u6d77",
+          "status": "released",
+          "overview": "Jerry Maguire used to be a typical sports agent\u2014willing to do just about anything he could to get the biggest possible contracts for his clients, plus a nice commission for himself. Then, one day, he suddenly has second thoughts about what he's really doing. When he voices these doubts, he ends up losing his job and all of his clients\u2014an egomaniacal football player.",
+          "runtime": 138,
+          "image": "plugins/images/cache/9390.jpg",
+          "ratings": 6.9,
+          "videoQuality": "Bluray-1080p",
+          "audioChannels": 5.1,
+          "audioCodec": null,
+          "videoCodec": "x264",
+          "size": 16882054908,
+          "genres": [
+            "Comedy",
+            "Drama",
+            "Romance"
+          ],
+          "year": 1996,
+          "studio": "Gracie Films"
+        }
+      },
+      {
+        "id": "Radarr-0-10",
+        "title": "Jerry Maguire",
+        "start": "2021-09-01",
+        "className": "inline-popups bg-calendar movieID--9390",
+        "imagetype": "film text-success",
+        "imagetypeFilter": "film",
+        "downloadFilter": "text-success",
+        "releaseType": [
+          "digital"
+        ],
+        "bgColor": "bg-success",
+        "details": {
+          "topTitle": "Jerry Maguire",
+          "bottomTitle": "Jerry Maguire - el\u00e4m\u00e4 on peli\u00e4, \uc81c\ub9ac \ub9e5\uacfc\uc774\uc5b4, Yeni bir baslangi\u00e7, \u5f81\u670d\u60c5\u6d77",
+          "status": "released",
+          "overview": "Jerry Maguire used to be a typical sports agent\u2014willing to do just about anything he could to get the biggest possible contracts for his clients, plus a nice commission for himself. Then, one day, he suddenly has second thoughts about what he's really doing. When he voices these doubts, he ends up losing his job and all of his clients\u2014an egomaniacal football player.",
+          "runtime": 138,
+          "image": "plugins/images/cache/9390.jpg",
+          "ratings": 6.9,
+          "videoQuality": "Bluray-1080p",
+          "audioChannels": 5.1,
+          "audioCodec": null,
+          "videoCodec": "x264",
+          "size": 16882054908,
+          "genres": [
+            "Comedy",
+            "Drama",
+            "Romance"
+          ],
+          "year": 1996,
+          "studio": "Gracie Films"
+        }
+      },
+      {
+        "id": "Radarr-0-11",
+        "title": "Jerry Maguire",
+        "start": "1996-12-13",
+        "className": "inline-popups bg-calendar movieID--9390",
+        "imagetype": "film text-success",
+        "imagetypeFilter": "film",
+        "downloadFilter": "text-success",
+        "releaseType": [
+          "cinema"
+        ],
+        "bgColor": "bg-success",
+        "details": {
+          "topTitle": "Jerry Maguire",
+          "bottomTitle": "Jerry Maguire - el\u00e4m\u00e4 on peli\u00e4, \uc81c\ub9ac \ub9e5\uacfc\uc774\uc5b4, Yeni bir baslangi\u00e7, \u5f81\u670d\u60c5\u6d77",
+          "status": "released",
+          "overview": "Jerry Maguire used to be a typical sports agent\u2014willing to do just about anything he could to get the biggest possible contracts for his clients, plus a nice commission for himself. Then, one day, he suddenly has second thoughts about what he's really doing. When he voices these doubts, he ends up losing his job and all of his clients\u2014an egomaniacal football player.",
+          "runtime": 138,
+          "image": "plugins/images/cache/9390.jpg",
+          "ratings": 6.9,
+          "videoQuality": "Bluray-1080p",
+          "audioChannels": 5.1,
+          "audioCodec": null,
+          "videoCodec": "x264",
+          "size": 16882054908,
+          "genres": [
+            "Comedy",
+            "Drama",
+            "Romance"
+          ],
+          "year": 1996,
+          "studio": "Gracie Films"
+        }
+      },
+      {
+        "id": "Radarr-0-12",
+        "title": "A Perfect Day",
+        "start": "2021-09-02",
+        "className": "inline-popups bg-calendar movieID--321751",
+        "imagetype": "film text-success",
+        "imagetypeFilter": "film",
+        "downloadFilter": "text-success",
+        "releaseType": [
+          "digital"
+        ],
+        "bgColor": "bg-success",
+        "details": {
+          "topTitle": "A Perfect Day",
+          "bottomTitle": "Perfect Day. A",
+          "status": "released",
+          "overview": "Somewhere in the Balkans, 1995. A team of aid workers must solve an apparently simple problem in an almost completely pacified territory that has been devastated by a cruel war, but some of the local inhabitants, the retreating combatants, the UN forces, many cows and an absurd bureaucracy will not cease to put obstacles in their way.",
+          "runtime": 106,
+          "image": "plugins/images/cache/321751.jpg",
+          "ratings": 6.6,
+          "videoQuality": "Bluray-1080p",
+          "audioChannels": 5.1,
+          "audioCodec": null,
+          "videoCodec": "h264",
+          "size": 3852355624,
+          "genres": [
+            "Comedy",
+            "Drama",
+            "War"
+          ],
+          "year": 2015,
+          "studio": "Mediapro"
+        }
+      },
+      {
+        "id": "Radarr-0-13",
+        "title": "A Perfect Day",
+        "start": "2015-08-28",
+        "className": "inline-popups bg-calendar movieID--321751",
+        "imagetype": "film text-success",
+        "imagetypeFilter": "film",
+        "downloadFilter": "text-success",
+        "releaseType": [
+          "cinema"
+        ],
+        "bgColor": "bg-success",
+        "details": {
+          "topTitle": "A Perfect Day",
+          "bottomTitle": "Perfect Day. A",
+          "status": "released",
+          "overview": "Somewhere in the Balkans, 1995. A team of aid workers must solve an apparently simple problem in an almost completely pacified territory that has been devastated by a cruel war, but some of the local inhabitants, the retreating combatants, the UN forces, many cows and an absurd bureaucracy will not cease to put obstacles in their way.",
+          "runtime": 106,
+          "image": "plugins/images/cache/321751.jpg",
+          "ratings": 6.6,
+          "videoQuality": "Bluray-1080p",
+          "audioChannels": 5.1,
+          "audioCodec": null,
+          "videoCodec": "h264",
+          "size": 3852355624,
+          "genres": [
+            "Comedy",
+            "Drama",
+            "War"
+          ],
+          "year": 2015,
+          "studio": "Mediapro"
+        }
+      },
+      {
+        "id": "Radarr-0-14",
+        "title": "Little",
+        "start": "2019-08-19",
+        "className": "inline-popups bg-calendar movieID--526050",
+        "imagetype": "film text-success",
+        "imagetypeFilter": "film",
+        "downloadFilter": "text-success",
+        "releaseType": [
+          "physical"
+        ],
+        "bgColor": "bg-success",
+        "details": {
+          "topTitle": "Little",
+          "bottomTitle": "Little 2019, Little Jordan Sanders, Petite, Peque\u00f1o Gran Problema",
+          "status": "released",
+          "overview": "Jordan Sanders, a take-no-prisoners tech mogul, wakes up one morning in the body of her 13-year-old self right before a do-or-die presentation. Her beleaguered assistant April is the only one in on the secret that her daily tormentor is now trapped in an awkward tween body, just as everything is on the line.",
+          "runtime": 108,
+          "image": "plugins/images/cache/526050.jpg",
+          "ratings": 6.8,
+          "videoQuality": "Bluray-1080p",
+          "audioChannels": 5.1,
+          "audioCodec": null,
+          "videoCodec": "x264",
+          "size": 7897294131,
+          "genres": [
+            "Comedy",
+            "Fantasy",
+            "Romance"
+          ],
+          "year": 2019,
+          "studio": "Will Packer Productions"
+        }
+      },
+      {
+        "id": "Radarr-0-15",
+        "title": "Little",
+        "start": "2021-10-14",
+        "className": "inline-popups bg-calendar movieID--526050",
+        "imagetype": "film text-success",
+        "imagetypeFilter": "film",
+        "downloadFilter": "text-success",
+        "releaseType": [
+          "digital"
+        ],
+        "bgColor": "bg-success",
+        "details": {
+          "topTitle": "Little",
+          "bottomTitle": "Little 2019, Little Jordan Sanders, Petite, Peque\u00f1o Gran Problema",
+          "status": "released",
+          "overview": "Jordan Sanders, a take-no-prisoners tech mogul, wakes up one morning in the body of her 13-year-old self right before a do-or-die presentation. Her beleaguered assistant April is the only one in on the secret that her daily tormentor is now trapped in an awkward tween body, just as everything is on the line.",
+          "runtime": 108,
+          "image": "plugins/images/cache/526050.jpg",
+          "ratings": 6.8,
+          "videoQuality": "Bluray-1080p",
+          "audioChannels": 5.1,
+          "audioCodec": null,
+          "videoCodec": "x264",
+          "size": 7897294131,
+          "genres": [
+            "Comedy",
+            "Fantasy",
+            "Romance"
+          ],
+          "year": 2019,
+          "studio": "Will Packer Productions"
+        }
+      },
+      {
+        "id": "Radarr-0-16",
+        "title": "Little",
+        "start": "2019-04-04",
+        "className": "inline-popups bg-calendar movieID--526050",
+        "imagetype": "film text-success",
+        "imagetypeFilter": "film",
+        "downloadFilter": "text-success",
+        "releaseType": [
+          "cinema"
+        ],
+        "bgColor": "bg-success",
+        "details": {
+          "topTitle": "Little",
+          "bottomTitle": "Little 2019, Little Jordan Sanders, Petite, Peque\u00f1o Gran Problema",
+          "status": "released",
+          "overview": "Jordan Sanders, a take-no-prisoners tech mogul, wakes up one morning in the body of her 13-year-old self right before a do-or-die presentation. Her beleaguered assistant April is the only one in on the secret that her daily tormentor is now trapped in an awkward tween body, just as everything is on the line.",
+          "runtime": 108,
+          "image": "plugins/images/cache/526050.jpg",
+          "ratings": 6.8,
+          "videoQuality": "Bluray-1080p",
+          "audioChannels": 5.1,
+          "audioCodec": null,
+          "videoCodec": "x264",
+          "size": 7897294131,
+          "genres": [
+            "Comedy",
+            "Fantasy",
+            "Romance"
+          ],
+          "year": 2019,
+          "studio": "Will Packer Productions"
+        }
+      },
+      {
+        "id": "Radarr-0-17",
+        "title": "Nine Days",
+        "start": "2021-10-18",
+        "className": "inline-popups bg-calendar movieID--607430",
+        "imagetype": "film text-info",
+        "imagetypeFilter": "film",
+        "downloadFilter": "text-info",
+        "releaseType": [
+          "physical"
+        ],
+        "bgColor": "bg-info",
+        "details": {
+          "topTitle": "Nine Days",
+          "bottomTitle": "9 Days, \u9748\u9b42\u5019\u9078\u4eba, \u0414\u0435\u0432\u044f\u0442\u044c \u0434\u043d\u0435\u0439, \u0395\u03bd\u03bd\u03b9\u03ac \u03b7\u03bc\u03ad\u03c1\u03b5\u03c2",
+          "status": "inCinemas",
+          "overview": "A reclusive man conducts a series of interviews with human souls for a chance to be born.",
+          "runtime": 124,
+          "image": "plugins/images/cache/607430.jpg",
+          "ratings": 8.2,
+          "videoQuality": "unknown",
+          "audioChannels": "unknown",
+          "audioCodec": "unknown",
+          "videoCodec": "unknown",
+          "size": "unknown",
+          "genres": [
+            "Drama",
+            "Fantasy"
+          ],
+          "year": 2020,
+          "studio": "30WEST"
+        }
+      },
+      {
+        "id": "Radarr-0-18",
+        "title": "Nine Days",
+        "start": "2020-10-18",
+        "className": "inline-popups bg-calendar movieID--607430",
+        "imagetype": "film text-danger",
+        "imagetypeFilter": "film",
+        "downloadFilter": "text-danger",
+        "releaseType": [
+          "cinema"
+        ],
+        "bgColor": "bg-danger",
+        "details": {
+          "topTitle": "Nine Days",
+          "bottomTitle": "9 Days, \u9748\u9b42\u5019\u9078\u4eba, \u0414\u0435\u0432\u044f\u0442\u044c \u0434\u043d\u0435\u0439, \u0395\u03bd\u03bd\u03b9\u03ac \u03b7\u03bc\u03ad\u03c1\u03b5\u03c2",
+          "status": "inCinemas",
+          "overview": "A reclusive man conducts a series of interviews with human souls for a chance to be born.",
+          "runtime": 124,
+          "image": "plugins/images/cache/607430.jpg",
+          "ratings": 8.2,
+          "videoQuality": "unknown",
+          "audioChannels": "unknown",
+          "audioCodec": "unknown",
+          "videoCodec": "unknown",
+          "size": "unknown",
+          "genres": [
+            "Drama",
+            "Fantasy"
+          ],
+          "year": 2020,
+          "studio": "30WEST"
+        }
+      },
+      {
+        "id": "Radarr-0-19",
+        "title": "The Comeback Trail",
+        "start": "2021-10-04",
+        "className": "inline-popups bg-calendar movieID--650783",
+        "imagetype": "film text-success",
+        "imagetypeFilter": "film",
+        "downloadFilter": "text-success",
+        "releaseType": [
+          "physical"
+        ],
+        "bgColor": "bg-success",
+        "details": {
+          "topTitle": "The Comeback Trail",
+          "bottomTitle": "C'era una truffa ad Hollywood",
+          "status": "released",
+          "overview": "Two movie producers who owe money to the mob, have to set up their aging movie star to kill themselves accidentally so they don't have to owe them back but they wind up getting more than they ever imagined.",
+          "runtime": 105,
+          "image": "plugins/images/cache/650783.jpg",
+          "ratings": 6.2,
+          "videoQuality": "WEBRip-1080p",
+          "audioChannels": 5.1,
+          "audioCodec": null,
+          "videoCodec": "x264",
+          "size": 5294527302,
+          "genres": [
+            "Action",
+            "Comedy",
+            "Crime"
+          ],
+          "year": 2020,
+          "studio": "Cloudburst Entertainment"
+        }
+      },
+      {
+        "id": "Radarr-0-20",
+        "title": "The Comeback Trail",
+        "start": "2021-06-19",
+        "className": "inline-popups bg-calendar movieID--650783",
+        "imagetype": "film text-success",
+        "imagetypeFilter": "film",
+        "downloadFilter": "text-success",
+        "releaseType": [
+          "digital"
+        ],
+        "bgColor": "bg-success",
+        "details": {
+          "topTitle": "The Comeback Trail",
+          "bottomTitle": "C'era una truffa ad Hollywood",
+          "status": "released",
+          "overview": "Two movie producers who owe money to the mob, have to set up their aging movie star to kill themselves accidentally so they don't have to owe them back but they wind up getting more than they ever imagined.",
+          "runtime": 105,
+          "image": "plugins/images/cache/650783.jpg",
+          "ratings": 6.2,
+          "videoQuality": "WEBRip-1080p",
+          "audioChannels": 5.1,
+          "audioCodec": null,
+          "videoCodec": "x264",
+          "size": 5294527302,
+          "genres": [
+            "Action",
+            "Comedy",
+            "Crime"
+          ],
+          "year": 2020,
+          "studio": "Cloudburst Entertainment"
+        }
+      },
+      {
+        "id": "Radarr-0-21",
+        "title": "The Comeback Trail",
+        "start": "2020-11-12",
+        "className": "inline-popups bg-calendar movieID--650783",
+        "imagetype": "film text-success",
+        "imagetypeFilter": "film",
+        "downloadFilter": "text-success",
+        "releaseType": [
+          "cinema"
+        ],
+        "bgColor": "bg-success",
+        "details": {
+          "topTitle": "The Comeback Trail",
+          "bottomTitle": "C'era una truffa ad Hollywood",
+          "status": "released",
+          "overview": "Two movie producers who owe money to the mob, have to set up their aging movie star to kill themselves accidentally so they don't have to owe them back but they wind up getting more than they ever imagined.",
+          "runtime": 105,
+          "image": "plugins/images/cache/650783.jpg",
+          "ratings": 6.2,
+          "videoQuality": "WEBRip-1080p",
+          "audioChannels": 5.1,
+          "audioCodec": null,
+          "videoCodec": "x264",
+          "size": 5294527302,
+          "genres": [
+            "Action",
+            "Comedy",
+            "Crime"
+          ],
+          "year": 2020,
+          "studio": "Cloudburst Entertainment"
+        }
+      },
+      {
+        "id": "Radarr-0-22",
+        "title": "Land",
+        "start": "2021-07-05",
+        "className": "inline-popups bg-calendar movieID--598896",
+        "imagetype": "film text-success",
+        "imagetypeFilter": "film",
+        "downloadFilter": "text-success",
+        "releaseType": [
+          "physical"
+        ],
+        "bgColor": "bg-success",
+        "details": {
+          "topTitle": "Land",
+          "bottomTitle": "",
+          "status": "released",
+          "overview": "Edee, in the aftermath of an unfathomable event, finds herself unable to stay connected to the world she once knew and in the face of that uncertainty, retreats to the magnificent, but unforgiving, wilds of the Rockies. After a local hunter brings her back from the brink of death, she must find a way to live again.",
+          "runtime": 89,
+          "image": "plugins/images/cache/598896.jpg",
+          "ratings": 7.3,
+          "videoQuality": "Bluray-1080p",
+          "audioChannels": 5.1,
+          "audioCodec": null,
+          "videoCodec": "x264",
+          "size": 12866791834,
+          "genres": [
+            "Drama"
+          ],
+          "year": 2021,
+          "studio": "Focus Features"
+        }
+      },
+      {
+        "id": "Radarr-0-23",
+        "title": "Land",
+        "start": "2021-10-01",
+        "className": "inline-popups bg-calendar movieID--598896",
+        "imagetype": "film text-success",
+        "imagetypeFilter": "film",
+        "downloadFilter": "text-success",
+        "releaseType": [
+          "digital"
+        ],
+        "bgColor": "bg-success",
+        "details": {
+          "topTitle": "Land",
+          "bottomTitle": "",
+          "status": "released",
+          "overview": "Edee, in the aftermath of an unfathomable event, finds herself unable to stay connected to the world she once knew and in the face of that uncertainty, retreats to the magnificent, but unforgiving, wilds of the Rockies. After a local hunter brings her back from the brink of death, she must find a way to live again.",
+          "runtime": 89,
+          "image": "plugins/images/cache/598896.jpg",
+          "ratings": 7.3,
+          "videoQuality": "Bluray-1080p",
+          "audioChannels": 5.1,
+          "audioCodec": null,
+          "videoCodec": "x264",
+          "size": 12866791834,
+          "genres": [
+            "Drama"
+          ],
+          "year": 2021,
+          "studio": "Focus Features"
+        }
+      },
+      {
+        "id": "Radarr-0-24",
+        "title": "Land",
+        "start": "2021-02-12",
+        "className": "inline-popups bg-calendar movieID--598896",
+        "imagetype": "film text-success",
+        "imagetypeFilter": "film",
+        "downloadFilter": "text-success",
+        "releaseType": [
+          "cinema"
+        ],
+        "bgColor": "bg-success",
+        "details": {
+          "topTitle": "Land",
+          "bottomTitle": "",
+          "status": "released",
+          "overview": "Edee, in the aftermath of an unfathomable event, finds herself unable to stay connected to the world she once knew and in the face of that uncertainty, retreats to the magnificent, but unforgiving, wilds of the Rockies. After a local hunter brings her back from the brink of death, she must find a way to live again.",
+          "runtime": 89,
+          "image": "plugins/images/cache/598896.jpg",
+          "ratings": 7.3,
+          "videoQuality": "Bluray-1080p",
+          "audioChannels": 5.1,
+          "audioCodec": null,
+          "videoCodec": "x264",
+          "size": 12866791834,
+          "genres": [
+            "Drama"
+          ],
+          "year": 2021,
+          "studio": "Focus Features"
+        }
+      },
+      {
+        "id": "Radarr-0-25",
+        "title": "The Forever Purge",
+        "start": "2021-09-20",
+        "className": "inline-popups bg-calendar movieID--602223",
+        "imagetype": "film text-success",
+        "imagetypeFilter": "film",
+        "downloadFilter": "text-success",
+        "releaseType": [
+          "physical"
+        ],
+        "bgColor": "bg-success",
+        "details": {
+          "topTitle": "The Forever Purge",
+          "bottomTitle": "\u0427\u0438\u0441\u0442\u043a\u0430 5, \u570b\u5b9a\u6bba\u622e\u65e5\uff1a\u7121\u9650\u72c2\u5c60, The Purge 5 - The Forever Purge",
+          "status": "released",
+          "overview": "All the rules are broken as a sect of lawless marauders decides that the annual Purge does not stop at daybreak and instead should never end as they chase a group of immigrants who they want to punish because of their harsh historical past.",
+          "runtime": 103,
+          "image": "plugins/images/cache/602223.jpg",
+          "ratings": 7.5,
+          "videoQuality": "Bluray-1080p",
+          "audioChannels": 5.1,
+          "audioCodec": null,
+          "videoCodec": "x264",
+          "size": 14249856979,
+          "genres": [
+            "Horror",
+            "Action",
+            "Thriller"
+          ],
+          "year": 2021,
+          "studio": "Blumhouse Productions"
+        }
+      },
+      {
+        "id": "Radarr-0-26",
+        "title": "The Forever Purge",
+        "start": "2021-07-23",
+        "className": "inline-popups bg-calendar movieID--602223",
+        "imagetype": "film text-success",
+        "imagetypeFilter": "film",
+        "downloadFilter": "text-success",
+        "releaseType": [
+          "digital"
+        ],
+        "bgColor": "bg-success",
+        "details": {
+          "topTitle": "The Forever Purge",
+          "bottomTitle": "\u0427\u0438\u0441\u0442\u043a\u0430 5, \u570b\u5b9a\u6bba\u622e\u65e5\uff1a\u7121\u9650\u72c2\u5c60, The Purge 5 - The Forever Purge",
+          "status": "released",
+          "overview": "All the rules are broken as a sect of lawless marauders decides that the annual Purge does not stop at daybreak and instead should never end as they chase a group of immigrants who they want to punish because of their harsh historical past.",
+          "runtime": 103,
+          "image": "plugins/images/cache/602223.jpg",
+          "ratings": 7.5,
+          "videoQuality": "Bluray-1080p",
+          "audioChannels": 5.1,
+          "audioCodec": null,
+          "videoCodec": "x264",
+          "size": 14249856979,
+          "genres": [
+            "Horror",
+            "Action",
+            "Thriller"
+          ],
+          "year": 2021,
+          "studio": "Blumhouse Productions"
+        }
+      },
+      {
+        "id": "Radarr-0-27",
+        "title": "The Forever Purge",
+        "start": "2021-06-30",
+        "className": "inline-popups bg-calendar movieID--602223",
+        "imagetype": "film text-success",
+        "imagetypeFilter": "film",
+        "downloadFilter": "text-success",
+        "releaseType": [
+          "cinema"
+        ],
+        "bgColor": "bg-success",
+        "details": {
+          "topTitle": "The Forever Purge",
+          "bottomTitle": "\u0427\u0438\u0441\u0442\u043a\u0430 5, \u570b\u5b9a\u6bba\u622e\u65e5\uff1a\u7121\u9650\u72c2\u5c60, The Purge 5 - The Forever Purge",
+          "status": "released",
+          "overview": "All the rules are broken as a sect of lawless marauders decides that the annual Purge does not stop at daybreak and instead should never end as they chase a group of immigrants who they want to punish because of their harsh historical past.",
+          "runtime": 103,
+          "image": "plugins/images/cache/602223.jpg",
+          "ratings": 7.5,
+          "videoQuality": "Bluray-1080p",
+          "audioChannels": 5.1,
+          "audioCodec": null,
+          "videoCodec": "x264",
+          "size": 14249856979,
+          "genres": [
+            "Horror",
+            "Action",
+            "Thriller"
+          ],
+          "year": 2021,
+          "studio": "Blumhouse Productions"
+        }
+      },
+      {
+        "id": "Radarr-0-28",
+        "title": "Escape Room: Tournament of Champions",
+        "start": "2021-09-20",
+        "className": "inline-popups bg-calendar movieID--585216",
+        "imagetype": "film text-success",
+        "imagetypeFilter": "film",
+        "downloadFilter": "text-success",
+        "releaseType": [
+          "physical"
+        ],
+        "bgColor": "bg-success",
+        "details": {
+          "topTitle": "Escape Room: Tournament of Champions",
+          "bottomTitle": "\u00danikov\u00e1 hra 2, \u0421\u043c\u0435\u0440\u0442\u0435\u043b\u044c\u043d\u0438\u0439 \u043b\u0430\u0431\u0456\u0440\u0438\u043d\u0442 2, Escape Room 2: Tens\u00e3o M\u00e1xima, Escape Room 2: Torneio Dos Campe\u00f5es, \u5bc6\u5ba4\u9003\u6bba: \u5016\u5b58\u8005\u904a\u6232, Escape Room 2: No Way Out, Escape Room 2, Escape Room 2: Mueres por salir",
+          "status": "released",
+          "overview": "Six people unwittingly find themselves locked in another series of escape rooms, slowly uncovering what they have in common to survive as they discover all the games that they've played before.",
+          "runtime": 88,
+          "image": "plugins/images/cache/585216.jpg",
+          "ratings": 7,
+          "videoQuality": "Bluray-1080p",
+          "audioChannels": 5.1,
+          "audioCodec": null,
+          "videoCodec": "x264",
+          "size": 11162679780,
+          "genres": [
+            "Horror",
+            "Thriller",
+            "Mystery"
+          ],
+          "year": 2021,
+          "studio": "Original Film"
+        }
+      },
+      {
+        "id": "Radarr-0-29",
+        "title": "Escape Room: Tournament of Champions",
+        "start": "2021-09-08",
+        "className": "inline-popups bg-calendar movieID--585216",
+        "imagetype": "film text-success",
+        "imagetypeFilter": "film",
+        "downloadFilter": "text-success",
+        "releaseType": [
+          "digital"
+        ],
+        "bgColor": "bg-success",
+        "details": {
+          "topTitle": "Escape Room: Tournament of Champions",
+          "bottomTitle": "\u00danikov\u00e1 hra 2, \u0421\u043c\u0435\u0440\u0442\u0435\u043b\u044c\u043d\u0438\u0439 \u043b\u0430\u0431\u0456\u0440\u0438\u043d\u0442 2, Escape Room 2: Tens\u00e3o M\u00e1xima, Escape Room 2: Torneio Dos Campe\u00f5es, \u5bc6\u5ba4\u9003\u6bba: \u5016\u5b58\u8005\u904a\u6232, Escape Room 2: No Way Out, Escape Room 2, Escape Room 2: Mueres por salir",
+          "status": "released",
+          "overview": "Six people unwittingly find themselves locked in another series of escape rooms, slowly uncovering what they have in common to survive as they discover all the games that they've played before.",
+          "runtime": 88,
+          "image": "plugins/images/cache/585216.jpg",
+          "ratings": 7,
+          "videoQuality": "Bluray-1080p",
+          "audioChannels": 5.1,
+          "audioCodec": null,
+          "videoCodec": "x264",
+          "size": 11162679780,
+          "genres": [
+            "Horror",
+            "Thriller",
+            "Mystery"
+          ],
+          "year": 2021,
+          "studio": "Original Film"
+        }
+      },
+      {
+        "id": "Radarr-0-30",
+        "title": "Escape Room: Tournament of Champions",
+        "start": "2021-07-01",
+        "className": "inline-popups bg-calendar movieID--585216",
+        "imagetype": "film text-success",
+        "imagetypeFilter": "film",
+        "downloadFilter": "text-success",
+        "releaseType": [
+          "cinema"
+        ],
+        "bgColor": "bg-success",
+        "details": {
+          "topTitle": "Escape Room: Tournament of Champions",
+          "bottomTitle": "\u00danikov\u00e1 hra 2, \u0421\u043c\u0435\u0440\u0442\u0435\u043b\u044c\u043d\u0438\u0439 \u043b\u0430\u0431\u0456\u0440\u0438\u043d\u0442 2, Escape Room 2: Tens\u00e3o M\u00e1xima, Escape Room 2: Torneio Dos Campe\u00f5es, \u5bc6\u5ba4\u9003\u6bba: \u5016\u5b58\u8005\u904a\u6232, Escape Room 2: No Way Out, Escape Room 2, Escape Room 2: Mueres por salir",
+          "status": "released",
+          "overview": "Six people unwittingly find themselves locked in another series of escape rooms, slowly uncovering what they have in common to survive as they discover all the games that they've played before.",
+          "runtime": 88,
+          "image": "plugins/images/cache/585216.jpg",
+          "ratings": 7,
+          "videoQuality": "Bluray-1080p",
+          "audioChannels": 5.1,
+          "audioCodec": null,
+          "videoCodec": "x264",
+          "size": 11162679780,
+          "genres": [
+            "Horror",
+            "Thriller",
+            "Mystery"
+          ],
+          "year": 2021,
+          "studio": "Original Film"
+        }
+      },
+      {
+        "id": "Radarr-0-31",
+        "title": "Black Widow",
+        "start": "2021-09-14",
+        "className": "inline-popups bg-calendar movieID--497698",
+        "imagetype": "film text-success",
+        "imagetypeFilter": "film",
+        "downloadFilter": "text-success",
+        "releaseType": [
+          "physical"
+        ],
+        "bgColor": "bg-success",
+        "details": {
+          "topTitle": "Black Widow",
+          "bottomTitle": "Blue Bayou, \u0427\u0435\u0440\u043d\u0430\u044f \u0432\u0434\u043e\u0432\u0430, Viuda Negra, \u9ed1\u5be1\u5987, \u9ed1\u5be1\u5a66, \u0e41\u0e1a\u0e25\u0e47\u0e04 \u0e27\u0e34\u0e42\u0e14\u0e27\u0e4c, \u0627\u0644\u0627\u0631\u0645\u0644\u0629 \u0627\u0644\u0633\u0648\u062f\u0627\u0621, Must Lesk",
+          "status": "released",
+          "overview": "Natasha Romanoff, also known as Black Widow, confronts the darker parts of her ledger when a dangerous conspiracy with ties to her past arises. Pursued by a force that will stop at nothing to bring her down, Natasha must deal with her history as a spy and the broken relationships left in her wake long before she became an Avenger.",
+          "runtime": 134,
+          "image": "plugins/images/cache/497698.jpg",
+          "ratings": 7.7,
+          "videoQuality": "Bluray-1080p",
+          "audioChannels": 7.1,
+          "audioCodec": null,
+          "videoCodec": "x264",
+          "size": 15674720838,
+          "genres": [
+            "Action",
+            "Adventure",
+            "Thriller"
+          ],
+          "year": 2021,
+          "studio": "Marvel Studios"
+        }
+      },
+      {
+        "id": "Radarr-0-32",
+        "title": "Black Widow",
+        "start": "2021-07-09",
+        "className": "inline-popups bg-calendar movieID--497698",
+        "imagetype": "film text-success",
+        "imagetypeFilter": "film",
+        "downloadFilter": "text-success",
+        "releaseType": [
+          "digital"
+        ],
+        "bgColor": "bg-success",
+        "details": {
+          "topTitle": "Black Widow",
+          "bottomTitle": "Blue Bayou, \u0427\u0435\u0440\u043d\u0430\u044f \u0432\u0434\u043e\u0432\u0430, Viuda Negra, \u9ed1\u5be1\u5987, \u9ed1\u5be1\u5a66, \u0e41\u0e1a\u0e25\u0e47\u0e04 \u0e27\u0e34\u0e42\u0e14\u0e27\u0e4c, \u0627\u0644\u0627\u0631\u0645\u0644\u0629 \u0627\u0644\u0633\u0648\u062f\u0627\u0621, Must Lesk",
+          "status": "released",
+          "overview": "Natasha Romanoff, also known as Black Widow, confronts the darker parts of her ledger when a dangerous conspiracy with ties to her past arises. Pursued by a force that will stop at nothing to bring her down, Natasha must deal with her history as a spy and the broken relationships left in her wake long before she became an Avenger.",
+          "runtime": 134,
+          "image": "plugins/images/cache/497698.jpg",
+          "ratings": 7.7,
+          "videoQuality": "Bluray-1080p",
+          "audioChannels": 7.1,
+          "audioCodec": null,
+          "videoCodec": "x264",
+          "size": 15674720838,
+          "genres": [
+            "Action",
+            "Adventure",
+            "Thriller"
+          ],
+          "year": 2021,
+          "studio": "Marvel Studios"
+        }
+      },
+      {
+        "id": "Radarr-0-33",
+        "title": "Black Widow",
+        "start": "2021-07-07",
+        "className": "inline-popups bg-calendar movieID--497698",
+        "imagetype": "film text-success",
+        "imagetypeFilter": "film",
+        "downloadFilter": "text-success",
+        "releaseType": [
+          "cinema"
+        ],
+        "bgColor": "bg-success",
+        "details": {
+          "topTitle": "Black Widow",
+          "bottomTitle": "Blue Bayou, \u0427\u0435\u0440\u043d\u0430\u044f \u0432\u0434\u043e\u0432\u0430, Viuda Negra, \u9ed1\u5be1\u5987, \u9ed1\u5be1\u5a66, \u0e41\u0e1a\u0e25\u0e47\u0e04 \u0e27\u0e34\u0e42\u0e14\u0e27\u0e4c, \u0627\u0644\u0627\u0631\u0645\u0644\u0629 \u0627\u0644\u0633\u0648\u062f\u0627\u0621, Must Lesk",
+          "status": "released",
+          "overview": "Natasha Romanoff, also known as Black Widow, confronts the darker parts of her ledger when a dangerous conspiracy with ties to her past arises. Pursued by a force that will stop at nothing to bring her down, Natasha must deal with her history as a spy and the broken relationships left in her wake long before she became an Avenger.",
+          "runtime": 134,
+          "image": "plugins/images/cache/497698.jpg",
+          "ratings": 7.7,
+          "videoQuality": "Bluray-1080p",
+          "audioChannels": 7.1,
+          "audioCodec": null,
+          "videoCodec": "x264",
+          "size": 15674720838,
+          "genres": [
+            "Action",
+            "Adventure",
+            "Thriller"
+          ],
+          "year": 2021,
+          "studio": "Marvel Studios"
+        }
+      },
+      {
+        "id": "Radarr-0-34",
+        "title": "The Night House",
+        "start": "2021-10-19",
+        "className": "inline-popups bg-calendar movieID--547565",
+        "imagetype": "film text-info",
+        "imagetypeFilter": "film",
+        "downloadFilter": "text-info",
+        "releaseType": [
+          "physical"
+        ],
+        "bgColor": "bg-info",
+        "details": {
+          "topTitle": "The Night House",
+          "bottomTitle": "A Casa Sombria",
+          "status": "inCinemas",
+          "overview": "Reeling from the unexpected death of her husband, Beth is left alone in the lakeside home he built for her. Soon she begins to uncover her recently deceased husband's disturbing secrets.",
+          "runtime": 107,
+          "image": "plugins/images/cache/547565.jpg",
+          "ratings": 6.5,
+          "videoQuality": "unknown",
+          "audioChannels": "unknown",
+          "audioCodec": "unknown",
+          "videoCodec": "unknown",
+          "size": "unknown",
+          "genres": [
+            "Horror",
+            "Thriller"
+          ],
+          "year": 2021,
+          "studio": "Phantom Four"
+        }
+      },
+      {
+        "id": "Radarr-0-35",
+        "title": "The Night House",
+        "start": "2021-10-05",
+        "className": "inline-popups bg-calendar movieID--547565",
+        "imagetype": "film text-info",
+        "imagetypeFilter": "film",
+        "downloadFilter": "text-info",
+        "releaseType": [
+          "digital"
+        ],
+        "bgColor": "bg-info",
+        "details": {
+          "topTitle": "The Night House",
+          "bottomTitle": "A Casa Sombria",
+          "status": "inCinemas",
+          "overview": "Reeling from the unexpected death of her husband, Beth is left alone in the lakeside home he built for her. Soon she begins to uncover her recently deceased husband's disturbing secrets.",
+          "runtime": 107,
+          "image": "plugins/images/cache/547565.jpg",
+          "ratings": 6.5,
+          "videoQuality": "unknown",
+          "audioChannels": "unknown",
+          "audioCodec": "unknown",
+          "videoCodec": "unknown",
+          "size": "unknown",
+          "genres": [
+            "Horror",
+            "Thriller"
+          ],
+          "year": 2021,
+          "studio": "Phantom Four"
+        }
+      },
+      {
+        "id": "Radarr-0-36",
+        "title": "The Night House",
+        "start": "2021-07-15",
+        "className": "inline-popups bg-calendar movieID--547565",
+        "imagetype": "film text-danger",
+        "imagetypeFilter": "film",
+        "downloadFilter": "text-danger",
+        "releaseType": [
+          "cinema"
+        ],
+        "bgColor": "bg-danger",
+        "details": {
+          "topTitle": "The Night House",
+          "bottomTitle": "A Casa Sombria",
+          "status": "inCinemas",
+          "overview": "Reeling from the unexpected death of her husband, Beth is left alone in the lakeside home he built for her. Soon she begins to uncover her recently deceased husband's disturbing secrets.",
+          "runtime": 107,
+          "image": "plugins/images/cache/547565.jpg",
+          "ratings": 6.5,
+          "videoQuality": "unknown",
+          "audioChannels": "unknown",
+          "audioCodec": "unknown",
+          "videoCodec": "unknown",
+          "size": "unknown",
+          "genres": [
+            "Horror",
+            "Thriller"
+          ],
+          "year": 2021,
+          "studio": "Phantom Four"
+        }
+      },
+      {
+        "id": "Radarr-0-37",
+        "title": "Gunpowder Milkshake",
+        "start": "2021-10-25",
+        "className": "inline-popups bg-calendar movieID--574060",
+        "imagetype": "film text-success",
+        "imagetypeFilter": "film",
+        "downloadFilter": "text-success",
+        "releaseType": [
+          "physical"
+        ],
+        "bgColor": "bg-success",
+        "details": {
+          "topTitle": "Gunpowder Milkshake",
+          "bottomTitle": "\uac74\ud30c\uc6b0\ub354 \ubc00\ud06c\uc250\uc774\ud06c, Bloody Milkshake",
+          "status": "released",
+          "overview": "In her turbulent life as a professional assassin, Sam has no choice but to go rogue to save the life of an innocent 8-year-old girl in the middle of the gang war she has unleashed.",
+          "runtime": 114,
+          "image": "plugins/images/cache/574060.jpg",
+          "ratings": 6.5,
+          "videoQuality": "WEBRip-1080p",
+          "audioChannels": 5.1,
+          "audioCodec": null,
+          "videoCodec": "x264",
+          "size": 2348019209,
+          "genres": [
+            "Action",
+            "Thriller",
+            "Crime"
+          ],
+          "year": 2021,
+          "studio": "StudioCanal"
+        }
+      },
+      {
+        "id": "Radarr-0-38",
+        "title": "Gunpowder Milkshake",
+        "start": "2021-07-14",
+        "className": "inline-popups bg-calendar movieID--574060",
+        "imagetype": "film text-success",
+        "imagetypeFilter": "film",
+        "downloadFilter": "text-success",
+        "releaseType": [
+          "digital"
+        ],
+        "bgColor": "bg-success",
+        "details": {
+          "topTitle": "Gunpowder Milkshake",
+          "bottomTitle": "\uac74\ud30c\uc6b0\ub354 \ubc00\ud06c\uc250\uc774\ud06c, Bloody Milkshake",
+          "status": "released",
+          "overview": "In her turbulent life as a professional assassin, Sam has no choice but to go rogue to save the life of an innocent 8-year-old girl in the middle of the gang war she has unleashed.",
+          "runtime": 114,
+          "image": "plugins/images/cache/574060.jpg",
+          "ratings": 6.5,
+          "videoQuality": "WEBRip-1080p",
+          "audioChannels": 5.1,
+          "audioCodec": null,
+          "videoCodec": "x264",
+          "size": 2348019209,
+          "genres": [
+            "Action",
+            "Thriller",
+            "Crime"
+          ],
+          "year": 2021,
+          "studio": "StudioCanal"
+        }
+      },
+      {
+        "id": "Radarr-0-39",
+        "title": "Gunpowder Milkshake",
+        "start": "2021-07-15",
+        "className": "inline-popups bg-calendar movieID--574060",
+        "imagetype": "film text-success",
+        "imagetypeFilter": "film",
+        "downloadFilter": "text-success",
+        "releaseType": [
+          "cinema"
+        ],
+        "bgColor": "bg-success",
+        "details": {
+          "topTitle": "Gunpowder Milkshake",
+          "bottomTitle": "\uac74\ud30c\uc6b0\ub354 \ubc00\ud06c\uc250\uc774\ud06c, Bloody Milkshake",
+          "status": "released",
+          "overview": "In her turbulent life as a professional assassin, Sam has no choice but to go rogue to save the life of an innocent 8-year-old girl in the middle of the gang war she has unleashed.",
+          "runtime": 114,
+          "image": "plugins/images/cache/574060.jpg",
+          "ratings": 6.5,
+          "videoQuality": "WEBRip-1080p",
+          "audioChannels": 5.1,
+          "audioCodec": null,
+          "videoCodec": "x264",
+          "size": 2348019209,
+          "genres": [
+            "Action",
+            "Thriller",
+            "Crime"
+          ],
+          "year": 2021,
+          "studio": "StudioCanal"
+        }
+      },
+      {
+        "id": "Radarr-0-40",
+        "title": "Worth",
+        "start": "2021-09-03",
+        "className": "inline-popups bg-calendar movieID--649394",
+        "imagetype": "film text-success",
+        "imagetypeFilter": "film",
+        "downloadFilter": "text-success",
+        "releaseType": [
+          "digital"
+        ],
+        "bgColor": "bg-success",
+        "details": {
+          "topTitle": "Worth",
+          "bottomTitle": "What Is Life Worth, 911\u7b97\u547d\u5f8b\u5e2b",
+          "status": "released",
+          "overview": "Kenneth Feinberg, a powerful D.C. lawyer appointed Special Master of the 9/11 Fund, fights off the cynicism, bureaucracy, and politics associated with administering government funds and, in doing so, discovers what life is worth.",
+          "runtime": 118,
+          "image": "plugins/images/cache/649394.jpg",
+          "ratings": 7,
+          "videoQuality": "WEBRip-1080p",
+          "audioChannels": 5.1,
+          "audioCodec": null,
+          "videoCodec": "x264",
+          "size": 1505740050,
+          "genres": [
+            "Drama",
+            "History"
+          ],
+          "year": 2021,
+          "studio": "MadRiver Pictures"
+        }
+      },
+      {
+        "id": "Radarr-0-41",
+        "title": "Worth",
+        "start": "2021-07-21",
+        "className": "inline-popups bg-calendar movieID--649394",
+        "imagetype": "film text-success",
+        "imagetypeFilter": "film",
+        "downloadFilter": "text-success",
+        "releaseType": [
+          "cinema"
+        ],
+        "bgColor": "bg-success",
+        "details": {
+          "topTitle": "Worth",
+          "bottomTitle": "What Is Life Worth, 911\u7b97\u547d\u5f8b\u5e2b",
+          "status": "released",
+          "overview": "Kenneth Feinberg, a powerful D.C. lawyer appointed Special Master of the 9/11 Fund, fights off the cynicism, bureaucracy, and politics associated with administering government funds and, in doing so, discovers what life is worth.",
+          "runtime": 118,
+          "image": "plugins/images/cache/649394.jpg",
+          "ratings": 7,
+          "videoQuality": "WEBRip-1080p",
+          "audioChannels": 5.1,
+          "audioCodec": null,
+          "videoCodec": "x264",
+          "size": 1505740050,
+          "genres": [
+            "Drama",
+            "History"
+          ],
+          "year": 2021,
+          "studio": "MadRiver Pictures"
+        }
+      },
+      {
+        "id": "Radarr-0-42",
+        "title": "Snake Eyes: G.I. Joe Origins",
+        "start": "2021-10-18",
+        "className": "inline-popups bg-calendar movieID--568620",
+        "imagetype": "film text-success",
+        "imagetypeFilter": "film",
+        "downloadFilter": "text-success",
+        "releaseType": [
+          "physical"
+        ],
+        "bgColor": "bg-success",
+        "details": {
+          "topTitle": "Snake Eyes: G.I. Joe Origins",
+          "bottomTitle": "G.I. Joe Origins: Olhos de cobra, \uc2a4\ub124\uc774\ud06c \uc544\uc774 \uc9c0 \uc544\uc774 \uc870, \u0417\u043c\u0435\u0438\u043d\u044b\u0435 \u0413\u043b\u0430\u0437\u0430, \u0421\u043d\u0435\u0439\u043a \u0410\u0439\u0437, Snake Eyes, Snake Eyes: A Origem dos G.I. Joe, \u041e\u0447\u0456 \u0437\u043c\u0456\u0457: \u041f\u043e\u0447\u0430\u0442\u043e\u043a G.I. Joe, \u7fa9\u52c7\u7fa4\u82f1\uff1a\u86c7\u773c\u5fa9\u4ec7\u6230, \u0e2a\u0e40\u0e19\u0e04\u0e2d\u0e32\u0e22\u0e2a\u0e4c, G.I. Joe Origins: Snake Eyes (2021) G.I. Joe Collection, G.I. Joe Origens - Olhos de Cobra",
+          "status": "released",
+          "overview": "After saving the life of their heir apparent, tenacious loner Snake Eyes is welcomed into an ancient Japanese clan called the Arashikage where he is taught the ways of the ninja warrior. But, when secrets from his past are revealed, Snake Eyes' honor and allegiance will be tested \u2013 even if that means losing the trust of those closest to him.",
+          "runtime": 121,
+          "image": "plugins/images/cache/568620.jpg",
+          "ratings": 7,
+          "videoQuality": "WEBDL-1080p",
+          "audioChannels": 5.1,
+          "audioCodec": null,
+          "videoCodec": "h264",
+          "size": 6523812531,
+          "genres": [
+            "Action",
+            "Adventure"
+          ],
+          "year": 2021,
+          "studio": "Paramount"
+        }
+      },
+      {
+        "id": "Radarr-0-43",
+        "title": "Snake Eyes: G.I. Joe Origins",
+        "start": "2021-08-17",
+        "className": "inline-popups bg-calendar movieID--568620",
+        "imagetype": "film text-success",
+        "imagetypeFilter": "film",
+        "downloadFilter": "text-success",
+        "releaseType": [
+          "digital"
+        ],
+        "bgColor": "bg-success",
+        "details": {
+          "topTitle": "Snake Eyes: G.I. Joe Origins",
+          "bottomTitle": "G.I. Joe Origins: Olhos de cobra, \uc2a4\ub124\uc774\ud06c \uc544\uc774 \uc9c0 \uc544\uc774 \uc870, \u0417\u043c\u0435\u0438\u043d\u044b\u0435 \u0413\u043b\u0430\u0437\u0430, \u0421\u043d\u0435\u0439\u043a \u0410\u0439\u0437, Snake Eyes, Snake Eyes: A Origem dos G.I. Joe, \u041e\u0447\u0456 \u0437\u043c\u0456\u0457: \u041f\u043e\u0447\u0430\u0442\u043e\u043a G.I. Joe, \u7fa9\u52c7\u7fa4\u82f1\uff1a\u86c7\u773c\u5fa9\u4ec7\u6230, \u0e2a\u0e40\u0e19\u0e04\u0e2d\u0e32\u0e22\u0e2a\u0e4c, G.I. Joe Origins: Snake Eyes (2021) G.I. Joe Collection, G.I. Joe Origens - Olhos de Cobra",
+          "status": "released",
+          "overview": "After saving the life of their heir apparent, tenacious loner Snake Eyes is welcomed into an ancient Japanese clan called the Arashikage where he is taught the ways of the ninja warrior. But, when secrets from his past are revealed, Snake Eyes' honor and allegiance will be tested \u2013 even if that means losing the trust of those closest to him.",
+          "runtime": 121,
+          "image": "plugins/images/cache/568620.jpg",
+          "ratings": 7,
+          "videoQuality": "WEBDL-1080p",
+          "audioChannels": 5.1,
+          "audioCodec": null,
+          "videoCodec": "h264",
+          "size": 6523812531,
+          "genres": [
+            "Action",
+            "Adventure"
+          ],
+          "year": 2021,
+          "studio": "Paramount"
+        }
+      },
+      {
+        "id": "Radarr-0-44",
+        "title": "Snake Eyes: G.I. Joe Origins",
+        "start": "2021-07-22",
+        "className": "inline-popups bg-calendar movieID--568620",
+        "imagetype": "film text-success",
+        "imagetypeFilter": "film",
+        "downloadFilter": "text-success",
+        "releaseType": [
+          "cinema"
+        ],
+        "bgColor": "bg-success",
+        "details": {
+          "topTitle": "Snake Eyes: G.I. Joe Origins",
+          "bottomTitle": "G.I. Joe Origins: Olhos de cobra, \uc2a4\ub124\uc774\ud06c \uc544\uc774 \uc9c0 \uc544\uc774 \uc870, \u0417\u043c\u0435\u0438\u043d\u044b\u0435 \u0413\u043b\u0430\u0437\u0430, \u0421\u043d\u0435\u0439\u043a \u0410\u0439\u0437, Snake Eyes, Snake Eyes: A Origem dos G.I. Joe, \u041e\u0447\u0456 \u0437\u043c\u0456\u0457: \u041f\u043e\u0447\u0430\u0442\u043e\u043a G.I. Joe, \u7fa9\u52c7\u7fa4\u82f1\uff1a\u86c7\u773c\u5fa9\u4ec7\u6230, \u0e2a\u0e40\u0e19\u0e04\u0e2d\u0e32\u0e22\u0e2a\u0e4c, G.I. Joe Origins: Snake Eyes (2021) G.I. Joe Collection, G.I. Joe Origens - Olhos de Cobra",
+          "status": "released",
+          "overview": "After saving the life of their heir apparent, tenacious loner Snake Eyes is welcomed into an ancient Japanese clan called the Arashikage where he is taught the ways of the ninja warrior. But, when secrets from his past are revealed, Snake Eyes' honor and allegiance will be tested \u2013 even if that means losing the trust of those closest to him.",
+          "runtime": 121,
+          "image": "plugins/images/cache/568620.jpg",
+          "ratings": 7,
+          "videoQuality": "WEBDL-1080p",
+          "audioChannels": 5.1,
+          "audioCodec": null,
+          "videoCodec": "h264",
+          "size": 6523812531,
+          "genres": [
+            "Action",
+            "Adventure"
+          ],
+          "year": 2021,
+          "studio": "Paramount"
+        }
+      },
+      {
+        "id": "Radarr-0-45",
+        "title": "Jungle Cruise",
+        "start": "2021-10-21",
+        "className": "inline-popups bg-calendar movieID--451048",
+        "imagetype": "film text-success",
+        "imagetypeFilter": "film",
+        "downloadFilter": "text-success",
+        "releaseType": [
+          "physical"
+        ],
+        "bgColor": "bg-success",
+        "details": {
+          "topTitle": "Jungle Cruise",
+          "bottomTitle": "\u5e7b\u96aa\u68ee\u6797\u5947\u822a, \u0e1c\u0e08\u0e0d\u0e20\u0e31\u0e22\u0e25\u0e48\u0e2d\u0e07\u0e1b\u0e48\u0e32\u0e21\u0e2b\u0e31\u0e28\u0e08\u0e23\u0e23\u0e22\u0e4c, Croisi\u00e8re dans la jungle, D\u017eung\u013cu kru\u012bzs",
+          "status": "released",
+          "overview": "Dr. Lily Houghton enlists the aid of wisecracking skipper Frank Wolff to take her down the Amazon in his dilapidated boat. Together, they search for an ancient tree that holds the power to heal \u2013 a discovery that will change the future of medicine.",
+          "runtime": 127,
+          "image": "plugins/images/cache/451048.jpg",
+          "ratings": 7.8,
+          "videoQuality": "Bluray-1080p",
+          "audioChannels": 7.1,
+          "audioCodec": null,
+          "videoCodec": "x264",
+          "size": 15813756796,
+          "genres": [
+            "Adventure",
+            "Fantasy",
+            "Comedy"
+          ],
+          "year": 2021,
+          "studio": "Walt Disney Pictures"
+        }
+      },
+      {
+        "id": "Radarr-0-46",
+        "title": "Jungle Cruise",
+        "start": "2021-07-30",
+        "className": "inline-popups bg-calendar movieID--451048",
+        "imagetype": "film text-success",
+        "imagetypeFilter": "film",
+        "downloadFilter": "text-success",
+        "releaseType": [
+          "digital"
+        ],
+        "bgColor": "bg-success",
+        "details": {
+          "topTitle": "Jungle Cruise",
+          "bottomTitle": "\u5e7b\u96aa\u68ee\u6797\u5947\u822a, \u0e1c\u0e08\u0e0d\u0e20\u0e31\u0e22\u0e25\u0e48\u0e2d\u0e07\u0e1b\u0e48\u0e32\u0e21\u0e2b\u0e31\u0e28\u0e08\u0e23\u0e23\u0e22\u0e4c, Croisi\u00e8re dans la jungle, D\u017eung\u013cu kru\u012bzs",
+          "status": "released",
+          "overview": "Dr. Lily Houghton enlists the aid of wisecracking skipper Frank Wolff to take her down the Amazon in his dilapidated boat. Together, they search for an ancient tree that holds the power to heal \u2013 a discovery that will change the future of medicine.",
+          "runtime": 127,
+          "image": "plugins/images/cache/451048.jpg",
+          "ratings": 7.8,
+          "videoQuality": "Bluray-1080p",
+          "audioChannels": 7.1,
+          "audioCodec": null,
+          "videoCodec": "x264",
+          "size": 15813756796,
+          "genres": [
+            "Adventure",
+            "Fantasy",
+            "Comedy"
+          ],
+          "year": 2021,
+          "studio": "Walt Disney Pictures"
+        }
+      },
+      {
+        "id": "Radarr-0-47",
+        "title": "Jungle Cruise",
+        "start": "2021-07-28",
+        "className": "inline-popups bg-calendar movieID--451048",
+        "imagetype": "film text-success",
+        "imagetypeFilter": "film",
+        "downloadFilter": "text-success",
+        "releaseType": [
+          "cinema"
+        ],
+        "bgColor": "bg-success",
+        "details": {
+          "topTitle": "Jungle Cruise",
+          "bottomTitle": "\u5e7b\u96aa\u68ee\u6797\u5947\u822a, \u0e1c\u0e08\u0e0d\u0e20\u0e31\u0e22\u0e25\u0e48\u0e2d\u0e07\u0e1b\u0e48\u0e32\u0e21\u0e2b\u0e31\u0e28\u0e08\u0e23\u0e23\u0e22\u0e4c, Croisi\u00e8re dans la jungle, D\u017eung\u013cu kru\u012bzs",
+          "status": "released",
+          "overview": "Dr. Lily Houghton enlists the aid of wisecracking skipper Frank Wolff to take her down the Amazon in his dilapidated boat. Together, they search for an ancient tree that holds the power to heal \u2013 a discovery that will change the future of medicine.",
+          "runtime": 127,
+          "image": "plugins/images/cache/451048.jpg",
+          "ratings": 7.8,
+          "videoQuality": "Bluray-1080p",
+          "audioChannels": 7.1,
+          "audioCodec": null,
+          "videoCodec": "x264",
+          "size": 15813756796,
+          "genres": [
+            "Adventure",
+            "Fantasy",
+            "Comedy"
+          ],
+          "year": 2021,
+          "studio": "Walt Disney Pictures"
+        }
+      },
+      {
+        "id": "Radarr-0-48",
+        "title": "Free Guy",
+        "start": "2021-10-07",
+        "className": "inline-popups bg-calendar movieID--550988",
+        "imagetype": "film text-success",
+        "imagetypeFilter": "film",
+        "downloadFilter": "text-success",
+        "releaseType": [
+          "physical"
+        ],
+        "bgColor": "bg-success",
+        "details": {
+          "topTitle": "Free Guy",
+          "bottomTitle": "\u0421\u0432\u043e\u0431\u043e\u0434\u043d\u044b\u0439, Free Player, Lib\u00e9rer Guy, \u7206\u6a5f\u81ea\u7531\u4ec1, Free Guy : Tomando el control, \u0e02\u0e2d\u0e2a\u0e31\u0e01\u0e17\u0e35\u0e1e\u0e35\u0e48\u0e08\u0e30\u0e40\u0e1b\u0e47\u0e19\u0e2e\u0e35\u0e42\u0e23\u0e48, Free Guy: Her\u00f3i Improv\u00e1vel (2021), L'Homme libre, Br\u012bvais, \u5931\u63a7\u73a9\u5bb6",
+          "status": "released",
+          "overview": "A bank teller called Guy realizes he is a background character in an open world video game called Free City that will soon go offline.",
+          "runtime": 115,
+          "image": "plugins/images/cache/550988.jpg",
+          "ratings": 8,
+          "videoQuality": "Bluray-1080p",
+          "audioChannels": 7.1,
+          "audioCodec": null,
+          "videoCodec": "x264",
+          "size": 18148226618,
+          "genres": [
+            "Comedy",
+            "Action",
+            "Adventure"
+          ],
+          "year": 2021,
+          "studio": "Berlanti Productions"
+        }
+      },
+      {
+        "id": "Radarr-0-49",
+        "title": "Free Guy",
+        "start": "2021-09-28",
+        "className": "inline-popups bg-calendar movieID--550988",
+        "imagetype": "film text-success",
+        "imagetypeFilter": "film",
+        "downloadFilter": "text-success",
+        "releaseType": [
+          "digital"
+        ],
+        "bgColor": "bg-success",
+        "details": {
+          "topTitle": "Free Guy",
+          "bottomTitle": "\u0421\u0432\u043e\u0431\u043e\u0434\u043d\u044b\u0439, Free Player, Lib\u00e9rer Guy, \u7206\u6a5f\u81ea\u7531\u4ec1, Free Guy : Tomando el control, \u0e02\u0e2d\u0e2a\u0e31\u0e01\u0e17\u0e35\u0e1e\u0e35\u0e48\u0e08\u0e30\u0e40\u0e1b\u0e47\u0e19\u0e2e\u0e35\u0e42\u0e23\u0e48, Free Guy: Her\u00f3i Improv\u00e1vel (2021), L'Homme libre, Br\u012bvais, \u5931\u63a7\u73a9\u5bb6",
+          "status": "released",
+          "overview": "A bank teller called Guy realizes he is a background character in an open world video game called Free City that will soon go offline.",
+          "runtime": 115,
+          "image": "plugins/images/cache/550988.jpg",
+          "ratings": 8,
+          "videoQuality": "Bluray-1080p",
+          "audioChannels": 7.1,
+          "audioCodec": null,
+          "videoCodec": "x264",
+          "size": 18148226618,
+          "genres": [
+            "Comedy",
+            "Action",
+            "Adventure"
+          ],
+          "year": 2021,
+          "studio": "Berlanti Productions"
+        }
+      },
+      {
+        "id": "Radarr-0-50",
+        "title": "Free Guy",
+        "start": "2021-08-11",
+        "className": "inline-popups bg-calendar movieID--550988",
+        "imagetype": "film text-success",
+        "imagetypeFilter": "film",
+        "downloadFilter": "text-success",
+        "releaseType": [
+          "cinema"
+        ],
+        "bgColor": "bg-success",
+        "details": {
+          "topTitle": "Free Guy",
+          "bottomTitle": "\u0421\u0432\u043e\u0431\u043e\u0434\u043d\u044b\u0439, Free Player, Lib\u00e9rer Guy, \u7206\u6a5f\u81ea\u7531\u4ec1, Free Guy : Tomando el control, \u0e02\u0e2d\u0e2a\u0e31\u0e01\u0e17\u0e35\u0e1e\u0e35\u0e48\u0e08\u0e30\u0e40\u0e1b\u0e47\u0e19\u0e2e\u0e35\u0e42\u0e23\u0e48, Free Guy: Her\u00f3i Improv\u00e1vel (2021), L'Homme libre, Br\u012bvais, \u5931\u63a7\u73a9\u5bb6",
+          "status": "released",
+          "overview": "A bank teller called Guy realizes he is a background character in an open world video game called Free City that will soon go offline.",
+          "runtime": 115,
+          "image": "plugins/images/cache/550988.jpg",
+          "ratings": 8,
+          "videoQuality": "Bluray-1080p",
+          "audioChannels": 7.1,
+          "audioCodec": null,
+          "videoCodec": "x264",
+          "size": 18148226618,
+          "genres": [
+            "Comedy",
+            "Action",
+            "Adventure"
+          ],
+          "year": 2021,
+          "studio": "Berlanti Productions"
+        }
+      },
+      {
+        "id": "Radarr-0-51",
+        "title": "Don't Breathe 2",
+        "start": "2021-09-03",
+        "className": "inline-popups bg-calendar movieID--482373",
+        "imagetype": "film text-success",
+        "imagetypeFilter": "film",
+        "downloadFilter": "text-success",
+        "releaseType": [
+          "digital"
+        ],
+        "bgColor": "bg-success",
+        "details": {
+          "topTitle": "Don't Breathe 2",
+          "bottomTitle": "Don't Breathe Again, Mu\u017e v temnote 2, Nie oddychaj 2, \u0e25\u0e21\u0e2b\u0e32\u0e22\u0e43\u0e08\u0e2a\u0e31\u0e48\u0e07\u0e15\u0e32\u0e22 2, \u00c4ra hinga 2, \u7981\u5ba4\u6bba\u622e2, O Homem nas Trevas 2, No respires 2, Cilv\u0113ks tums\u0101 2",
+          "status": "released",
+          "overview": "The Blind Man has been hiding out for several years in an isolated cabin and has taken in and raised a young girl orphaned from a devastating house fire. Their quiet life together is shattered when a group of criminals kidnap the girl, forcing the Blind Man to leave his safe haven to save her.",
+          "runtime": 98,
+          "image": "plugins/images/cache/482373.jpg",
+          "ratings": 7.7,
+          "videoQuality": "WEBDL-1080p",
+          "audioChannels": 5.1,
+          "audioCodec": null,
+          "videoCodec": "x264",
+          "size": 6005321123,
+          "genres": [
+            "Thriller",
+            "Horror"
+          ],
+          "year": 2021,
+          "studio": "Ghost House Pictures"
+        }
+      },
+      {
+        "id": "Radarr-0-52",
+        "title": "Don't Breathe 2",
+        "start": "2021-08-12",
+        "className": "inline-popups bg-calendar movieID--482373",
+        "imagetype": "film text-success",
+        "imagetypeFilter": "film",
+        "downloadFilter": "text-success",
+        "releaseType": [
+          "cinema"
+        ],
+        "bgColor": "bg-success",
+        "details": {
+          "topTitle": "Don't Breathe 2",
+          "bottomTitle": "Don't Breathe Again, Mu\u017e v temnote 2, Nie oddychaj 2, \u0e25\u0e21\u0e2b\u0e32\u0e22\u0e43\u0e08\u0e2a\u0e31\u0e48\u0e07\u0e15\u0e32\u0e22 2, \u00c4ra hinga 2, \u7981\u5ba4\u6bba\u622e2, O Homem nas Trevas 2, No respires 2, Cilv\u0113ks tums\u0101 2",
+          "status": "released",
+          "overview": "The Blind Man has been hiding out for several years in an isolated cabin and has taken in and raised a young girl orphaned from a devastating house fire. Their quiet life together is shattered when a group of criminals kidnap the girl, forcing the Blind Man to leave his safe haven to save her.",
+          "runtime": 98,
+          "image": "plugins/images/cache/482373.jpg",
+          "ratings": 7.7,
+          "videoQuality": "WEBDL-1080p",
+          "audioChannels": 5.1,
+          "audioCodec": null,
+          "videoCodec": "x264",
+          "size": 6005321123,
+          "genres": [
+            "Thriller",
+            "Horror"
+          ],
+          "year": 2021,
+          "studio": "Ghost House Pictures"
+        }
+      },
+      {
+        "id": "Radarr-0-53",
+        "title": "No Man of God",
+        "start": "2021-10-25",
+        "className": "inline-popups bg-calendar movieID--716594",
+        "imagetype": "film text-success",
+        "imagetypeFilter": "film",
+        "downloadFilter": "text-success",
+        "releaseType": [
+          "physical"
+        ],
+        "bgColor": "bg-success",
+        "details": {
+          "topTitle": "No Man of God",
+          "bottomTitle": "",
+          "status": "released",
+          "overview": "Based on real life transcripts culled from conversations between FBI analyst Bill Hagmaier and serial killer Ted Bundy that took place between 1984 and 1989, No Man of God details the complicated relationship that formed between the two men during Bundy\u2019s final years on death row.",
+          "runtime": 100,
+          "image": "plugins/images/cache/716594.jpg",
+          "ratings": 7,
+          "videoQuality": "WEBRip-1080p",
+          "audioChannels": 5.1,
+          "audioCodec": null,
+          "videoCodec": "x265",
+          "size": 2551360214,
+          "genres": [
+            "Crime",
+            "Drama",
+            "History"
+          ],
+          "year": 2021,
+          "studio": "XYZ Films"
+        }
+      },
+      {
+        "id": "Radarr-0-54",
+        "title": "No Man of God",
+        "start": "2021-08-27",
+        "className": "inline-popups bg-calendar movieID--716594",
+        "imagetype": "film text-success",
+        "imagetypeFilter": "film",
+        "downloadFilter": "text-success",
+        "releaseType": [
+          "digital"
+        ],
+        "bgColor": "bg-success",
+        "details": {
+          "topTitle": "No Man of God",
+          "bottomTitle": "",
+          "status": "released",
+          "overview": "Based on real life transcripts culled from conversations between FBI analyst Bill Hagmaier and serial killer Ted Bundy that took place between 1984 and 1989, No Man of God details the complicated relationship that formed between the two men during Bundy\u2019s final years on death row.",
+          "runtime": 100,
+          "image": "plugins/images/cache/716594.jpg",
+          "ratings": 7,
+          "videoQuality": "WEBRip-1080p",
+          "audioChannels": 5.1,
+          "audioCodec": null,
+          "videoCodec": "x265",
+          "size": 2551360214,
+          "genres": [
+            "Crime",
+            "Drama",
+            "History"
+          ],
+          "year": 2021,
+          "studio": "XYZ Films"
+        }
+      },
+      {
+        "id": "Radarr-0-55",
+        "title": "No Man of God",
+        "start": "2021-08-19",
+        "className": "inline-popups bg-calendar movieID--716594",
+        "imagetype": "film text-success",
+        "imagetypeFilter": "film",
+        "downloadFilter": "text-success",
+        "releaseType": [
+          "cinema"
+        ],
+        "bgColor": "bg-success",
+        "details": {
+          "topTitle": "No Man of God",
+          "bottomTitle": "",
+          "status": "released",
+          "overview": "Based on real life transcripts culled from conversations between FBI analyst Bill Hagmaier and serial killer Ted Bundy that took place between 1984 and 1989, No Man of God details the complicated relationship that formed between the two men during Bundy\u2019s final years on death row.",
+          "runtime": 100,
+          "image": "plugins/images/cache/716594.jpg",
+          "ratings": 7,
+          "videoQuality": "WEBRip-1080p",
+          "audioChannels": 5.1,
+          "audioCodec": null,
+          "videoCodec": "x265",
+          "size": 2551360214,
+          "genres": [
+            "Crime",
+            "Drama",
+            "History"
+          ],
+          "year": 2021,
+          "studio": "XYZ Films"
+        }
+      },
+      {
+        "id": "Radarr-0-56",
+        "title": "Candyman",
+        "start": "2021-09-17",
+        "className": "inline-popups bg-calendar movieID--565028",
+        "imagetype": "film text-success",
+        "imagetypeFilter": "film",
+        "downloadFilter": "text-success",
+        "releaseType": [
+          "digital"
+        ],
+        "bgColor": "bg-success",
+        "details": {
+          "topTitle": "Candyman",
+          "bottomTitle": "Candyman 4, \u041a\u0435\u043d\u0434\u0456\u043c\u0435\u043d 4, \u015eeker Adam, A Lenda de Candyman, \u7cd6\u9b54\u602a\u5ba2",
+          "status": "released",
+          "overview": "Anthony and his partner move into a loft in the now gentrified Cabrini-Green, and after a chance encounter with an old-timer exposes Anthony to the true story behind Candyman, he unknowingly opens a door to a complex past that unravels his own sanity and unleashes a terrifying wave of violence.",
+          "runtime": 91,
+          "image": "plugins/images/cache/565028.jpg",
+          "ratings": 6.6,
+          "videoQuality": "WEBRip-1080p",
+          "audioChannels": 5.1,
+          "audioCodec": null,
+          "videoCodec": "h264",
+          "size": 2936068001,
+          "genres": [
+            "Horror",
+            "Thriller"
+          ],
+          "year": 2021,
+          "studio": "Metro-Goldwyn-Mayer"
+        }
+      },
+      {
+        "id": "Radarr-0-57",
+        "title": "Candyman",
+        "start": "2021-08-25",
+        "className": "inline-popups bg-calendar movieID--565028",
+        "imagetype": "film text-success",
+        "imagetypeFilter": "film",
+        "downloadFilter": "text-success",
+        "releaseType": [
+          "cinema"
+        ],
+        "bgColor": "bg-success",
+        "details": {
+          "topTitle": "Candyman",
+          "bottomTitle": "Candyman 4, \u041a\u0435\u043d\u0434\u0456\u043c\u0435\u043d 4, \u015eeker Adam, A Lenda de Candyman, \u7cd6\u9b54\u602a\u5ba2",
+          "status": "released",
+          "overview": "Anthony and his partner move into a loft in the now gentrified Cabrini-Green, and after a chance encounter with an old-timer exposes Anthony to the true story behind Candyman, he unknowingly opens a door to a complex past that unravels his own sanity and unleashes a terrifying wave of violence.",
+          "runtime": 91,
+          "image": "plugins/images/cache/565028.jpg",
+          "ratings": 6.6,
+          "videoQuality": "WEBRip-1080p",
+          "audioChannels": 5.1,
+          "audioCodec": null,
+          "videoCodec": "h264",
+          "size": 2936068001,
+          "genres": [
+            "Horror",
+            "Thriller"
+          ],
+          "year": 2021,
+          "studio": "Metro-Goldwyn-Mayer"
+        }
+      },
+      {
+        "id": "Radarr-0-58",
+        "title": "The Show",
+        "start": "2021-10-18",
+        "className": "inline-popups bg-calendar movieID--567910",
+        "imagetype": "film text-info",
+        "imagetypeFilter": "film",
+        "downloadFilter": "text-info",
+        "releaseType": [
+          "digital"
+        ],
+        "bgColor": "bg-info",
+        "details": {
+          "topTitle": "The Show",
+          "bottomTitle": "",
+          "status": "inCinemas",
+          "overview": "A man goes on a mission to locate a stolen artifact for a client, which leads him to a haunted town full of vampires, sleeping beauties, and Voodoo gangsters.",
+          "runtime": 115,
+          "image": "plugins/images/cache/567910.jpg",
+          "ratings": 6.2,
+          "videoQuality": "unknown",
+          "audioChannels": "unknown",
+          "audioCodec": "unknown",
+          "videoCodec": "unknown",
+          "size": "unknown",
+          "genres": [
+            "Drama",
+            "Fantasy",
+            "Mystery"
+          ],
+          "year": 2021,
+          "studio": "EMU Films"
+        }
+      },
+      {
+        "id": "Radarr-0-59",
+        "title": "The Show",
+        "start": "2021-08-26",
+        "className": "inline-popups bg-calendar movieID--567910",
+        "imagetype": "film text-danger",
+        "imagetypeFilter": "film",
+        "downloadFilter": "text-danger",
+        "releaseType": [
+          "cinema"
+        ],
+        "bgColor": "bg-danger",
+        "details": {
+          "topTitle": "The Show",
+          "bottomTitle": "",
+          "status": "inCinemas",
+          "overview": "A man goes on a mission to locate a stolen artifact for a client, which leads him to a haunted town full of vampires, sleeping beauties, and Voodoo gangsters.",
+          "runtime": 115,
+          "image": "plugins/images/cache/567910.jpg",
+          "ratings": 6.2,
+          "videoQuality": "unknown",
+          "audioChannels": "unknown",
+          "audioCodec": "unknown",
+          "videoCodec": "unknown",
+          "size": "unknown",
+          "genres": [
+            "Drama",
+            "Fantasy",
+            "Mystery"
+          ],
+          "year": 2021,
+          "studio": "EMU Films"
+        }
+      },
+      {
+        "id": "Radarr-0-60",
+        "title": "Yakuza Princess",
+        "start": "2021-09-03",
+        "className": "inline-popups bg-calendar movieID--661595",
+        "imagetype": "film text-danger",
+        "imagetypeFilter": "film",
+        "downloadFilter": "text-danger",
+        "releaseType": [
+          "digital"
+        ],
+        "bgColor": "bg-danger",
+        "details": {
+          "topTitle": "Yakuza Princess",
+          "bottomTitle": "",
+          "status": "released",
+          "overview": "In Brazil, Akemi finds out that she's the heiress to the Yakuza empire. Just after that, her destiny enters a spiral of violence and mystery, where a gaijin (foreigner) who's been protecting her all this time, Shir\u00f4, may have been actually sent to kill her.",
+          "runtime": 112,
+          "image": "plugins/images/cache/661595.jpg",
+          "ratings": 6.6,
+          "videoQuality": "unknown",
+          "audioChannels": "unknown",
+          "audioCodec": "unknown",
+          "videoCodec": "unknown",
+          "size": "unknown",
+          "genres": [
+            "Action",
+            "Crime",
+            "Thriller"
+          ],
+          "year": 2021,
+          "studio": "Warner Bros. Pictures"
+        }
+      },
+      {
+        "id": "Radarr-0-61",
+        "title": "Yakuza Princess",
+        "start": "2021-08-26",
+        "className": "inline-popups bg-calendar movieID--661595",
+        "imagetype": "film text-danger",
+        "imagetypeFilter": "film",
+        "downloadFilter": "text-danger",
+        "releaseType": [
+          "cinema"
+        ],
+        "bgColor": "bg-danger",
+        "details": {
+          "topTitle": "Yakuza Princess",
+          "bottomTitle": "",
+          "status": "released",
+          "overview": "In Brazil, Akemi finds out that she's the heiress to the Yakuza empire. Just after that, her destiny enters a spiral of violence and mystery, where a gaijin (foreigner) who's been protecting her all this time, Shir\u00f4, may have been actually sent to kill her.",
+          "runtime": 112,
+          "image": "plugins/images/cache/661595.jpg",
+          "ratings": 6.6,
+          "videoQuality": "unknown",
+          "audioChannels": "unknown",
+          "audioCodec": "unknown",
+          "videoCodec": "unknown",
+          "size": "unknown",
+          "genres": [
+            "Action",
+            "Crime",
+            "Thriller"
+          ],
+          "year": 2021,
+          "studio": "Warner Bros. Pictures"
+        }
+      },
+      {
+        "id": "Radarr-0-62",
+        "title": "The Colony",
+        "start": "2021-09-20",
+        "className": "inline-popups bg-calendar movieID--760873",
+        "imagetype": "film text-success",
+        "imagetypeFilter": "film",
+        "downloadFilter": "text-success",
+        "releaseType": [
+          "physical"
+        ],
+        "bgColor": "bg-success",
+        "details": {
+          "topTitle": "The Colony",
+          "bottomTitle": "Haven: Above Sky, \u041a\u043e\u043b\u043e\u043d\u0456\u044f, Tides",
+          "status": "released",
+          "overview": "In the not-too-distant future: after a global catastrophe has wiped out nearly all of humanity on Earth, an elite astronaut from Space Colony Kepler must make a decision that will seal the fate of the people on both planets.",
+          "runtime": 104,
+          "image": "plugins/images/cache/760873.jpg",
+          "ratings": 5.7,
+          "videoQuality": "Bluray-1080p",
+          "audioChannels": 5.1,
+          "audioCodec": null,
+          "videoCodec": "x264",
+          "size": 12408823706,
+          "genres": [
+            "Science Fiction"
+          ],
+          "year": 2021,
+          "studio": "BerghausW\u00f6bke Filmproduktion"
+        }
+      },
+      {
+        "id": "Radarr-0-63",
+        "title": "The Colony",
+        "start": "2021-08-16",
+        "className": "inline-popups bg-calendar movieID--760873",
+        "imagetype": "film text-success",
+        "imagetypeFilter": "film",
+        "downloadFilter": "text-success",
+        "releaseType": [
+          "digital"
+        ],
+        "bgColor": "bg-success",
+        "details": {
+          "topTitle": "The Colony",
+          "bottomTitle": "Haven: Above Sky, \u041a\u043e\u043b\u043e\u043d\u0456\u044f, Tides",
+          "status": "released",
+          "overview": "In the not-too-distant future: after a global catastrophe has wiped out nearly all of humanity on Earth, an elite astronaut from Space Colony Kepler must make a decision that will seal the fate of the people on both planets.",
+          "runtime": 104,
+          "image": "plugins/images/cache/760873.jpg",
+          "ratings": 5.7,
+          "videoQuality": "Bluray-1080p",
+          "audioChannels": 5.1,
+          "audioCodec": null,
+          "videoCodec": "x264",
+          "size": 12408823706,
+          "genres": [
+            "Science Fiction"
+          ],
+          "year": 2021,
+          "studio": "BerghausW\u00f6bke Filmproduktion"
+        }
+      },
+      {
+        "id": "Radarr-0-64",
+        "title": "The Colony",
+        "start": "2021-08-26",
+        "className": "inline-popups bg-calendar movieID--760873",
+        "imagetype": "film text-success",
+        "imagetypeFilter": "film",
+        "downloadFilter": "text-success",
+        "releaseType": [
+          "cinema"
+        ],
+        "bgColor": "bg-success",
+        "details": {
+          "topTitle": "The Colony",
+          "bottomTitle": "Haven: Above Sky, \u041a\u043e\u043b\u043e\u043d\u0456\u044f, Tides",
+          "status": "released",
+          "overview": "In the not-too-distant future: after a global catastrophe has wiped out nearly all of humanity on Earth, an elite astronaut from Space Colony Kepler must make a decision that will seal the fate of the people on both planets.",
+          "runtime": 104,
+          "image": "plugins/images/cache/760873.jpg",
+          "ratings": 5.7,
+          "videoQuality": "Bluray-1080p",
+          "audioChannels": 5.1,
+          "audioCodec": null,
+          "videoCodec": "x264",
+          "size": 12408823706,
+          "genres": [
+            "Science Fiction"
+          ],
+          "year": 2021,
+          "studio": "BerghausW\u00f6bke Filmproduktion"
+        }
+      },
+      {
+        "id": "Radarr-0-65",
+        "title": "Prisoners of the Ghostland",
+        "start": "2021-11-01",
+        "className": "inline-popups bg-calendar movieID--523638",
+        "imagetype": "film text-success",
+        "imagetypeFilter": "film",
+        "downloadFilter": "text-success",
+        "releaseType": [
+          "physical"
+        ],
+        "bgColor": "bg-success",
+        "details": {
+          "topTitle": "Prisoners of the Ghostland",
+          "bottomTitle": "Prisioneros de la tierra fantasmal",
+          "status": "released",
+          "overview": "In the treacherous frontier city of Samurai Town, a ruthless bank robber is sprung from jail by wealthy warlord The Governor, whose adopted granddaughter Bernice has gone missing. The Governor offers the prisoner his freedom in exchange for retrieving the runaway. Strapped into a leather suit that will self-destruct within five days, the bandit sets off on a journey to find the young woman\u2014and his own path to redemption.",
+          "runtime": 103,
+          "image": "plugins/images/cache/523638.jpg",
+          "ratings": 5.7,
+          "videoQuality": "WEBDL-1080p",
+          "audioChannels": 5.1,
+          "audioCodec": null,
+          "videoCodec": "h264",
+          "size": 5392562916,
+          "genres": [
+            "Action",
+            "Horror",
+            "Science Fiction"
+          ],
+          "year": 2021,
+          "studio": "ELEVEN ARTS Studios"
+        }
+      },
+      {
+        "id": "Radarr-0-66",
+        "title": "Prisoners of the Ghostland",
+        "start": "2021-09-17",
+        "className": "inline-popups bg-calendar movieID--523638",
+        "imagetype": "film text-success",
+        "imagetypeFilter": "film",
+        "downloadFilter": "text-success",
+        "releaseType": [
+          "digital"
+        ],
+        "bgColor": "bg-success",
+        "details": {
+          "topTitle": "Prisoners of the Ghostland",
+          "bottomTitle": "Prisioneros de la tierra fantasmal",
+          "status": "released",
+          "overview": "In the treacherous frontier city of Samurai Town, a ruthless bank robber is sprung from jail by wealthy warlord The Governor, whose adopted granddaughter Bernice has gone missing. The Governor offers the prisoner his freedom in exchange for retrieving the runaway. Strapped into a leather suit that will self-destruct within five days, the bandit sets off on a journey to find the young woman\u2014and his own path to redemption.",
+          "runtime": 103,
+          "image": "plugins/images/cache/523638.jpg",
+          "ratings": 5.7,
+          "videoQuality": "WEBDL-1080p",
+          "audioChannels": 5.1,
+          "audioCodec": null,
+          "videoCodec": "h264",
+          "size": 5392562916,
+          "genres": [
+            "Action",
+            "Horror",
+            "Science Fiction"
+          ],
+          "year": 2021,
+          "studio": "ELEVEN ARTS Studios"
+        }
+      },
+      {
+        "id": "Radarr-0-67",
+        "title": "Prisoners of the Ghostland",
+        "start": "2021-08-31",
+        "className": "inline-popups bg-calendar movieID--523638",
+        "imagetype": "film text-success",
+        "imagetypeFilter": "film",
+        "downloadFilter": "text-success",
+        "releaseType": [
+          "cinema"
+        ],
+        "bgColor": "bg-success",
+        "details": {
+          "topTitle": "Prisoners of the Ghostland",
+          "bottomTitle": "Prisioneros de la tierra fantasmal",
+          "status": "released",
+          "overview": "In the treacherous frontier city of Samurai Town, a ruthless bank robber is sprung from jail by wealthy warlord The Governor, whose adopted granddaughter Bernice has gone missing. The Governor offers the prisoner his freedom in exchange for retrieving the runaway. Strapped into a leather suit that will self-destruct within five days, the bandit sets off on a journey to find the young woman\u2014and his own path to redemption.",
+          "runtime": 103,
+          "image": "plugins/images/cache/523638.jpg",
+          "ratings": 5.7,
+          "videoQuality": "WEBDL-1080p",
+          "audioChannels": 5.1,
+          "audioCodec": null,
+          "videoCodec": "h264",
+          "size": 5392562916,
+          "genres": [
+            "Action",
+            "Horror",
+            "Science Fiction"
+          ],
+          "year": 2021,
+          "studio": "ELEVEN ARTS Studios"
+        }
+      },
+      {
+        "id": "Radarr-0-68",
+        "title": "Shang-Chi and the Legend of the Ten Rings",
+        "start": "2021-11-12",
+        "className": "inline-popups bg-calendar movieID--566525",
+        "imagetype": "film text-info",
+        "imagetypeFilter": "film",
+        "downloadFilter": "text-info",
+        "releaseType": [
+          "digital"
+        ],
+        "bgColor": "bg-info",
+        "details": {
+          "topTitle": "Shang-Chi and the Legend of the Ten Rings",
+          "bottomTitle": "\u0428\u0430\u043d\u0491 \u0427\u0456 \u0442\u0430 \u041b\u0435\u0433\u0435\u043d\u0434\u0430 \u0414\u0435\u0441\u044f\u0442\u0438 \u041a\u0456\u043b\u0435\u0446\u044c, Shang-Chi ve On Y\u00fcz\u00fck Efsanesi, Shang Chi y la leyenda de los diez anillos, \u5c1a\u6c23\u8207\u5341\u74b0\u5e6b\u50b3\u5947, Shang-Chi e a Lenda dos Dez An\u00e9is, \u0634\u0627\u0646\u063a-\u0686\u064a \u0648\u0623\u0633\u0637\u0648\u0631\u0629 \u0627\u0644\u062d\u0644\u0642\u0627\u062a \u0627\u0644\u0639\u0634\u0631, \u5c1a\u6c14\u4e0e\u5341\u6212\u4f20\u5947, Shang-Chi at ang Alamat ng Sampung Singsing, \u0428\u0430\u043d-\u0427\u0438 \u0438 \u043b\u0435\u0433\u0435\u043d\u0434\u0430\u0442\u0430 \u0437\u0430 \u0434\u0435\u0441\u0435\u0442\u0442\u0435 \u043f\u0440\u044a\u0441\u0442\u0435\u043d\u0430, Shang-Chi et la l\u00e9gende des dix anneaux, Shang-Chi i legenda o Deset Prstenova, Shang-Chi a legenda o deseti prstenech, \u0634\u0627\u0646\u062c \u0634\u064a \u0648\u0623\u0633\u0637\u0648\u0631\u0629 \u0627\u0644\u062e\u0648\u0627\u062a\u0645 \u0627\u0644\u0639\u0634\u0631\u0629, Shang-Chi ja K\u00fcmne R\u00f5nga legend, O Shang-Chi \u03ba\u03b1\u03b9 \u03bf \u0398\u03c1\u03cd\u03bb\u03bf\u03c2 \u03c4\u03c9\u03bd \u0394\u03ad\u03ba\u03b1 \u0394\u03b1\u03c7\u03c4\u03c5\u03bb\u03b9\u03b4\u03b9\u03ce\u03bd, Shang-Chi \u00e9s a T\u00edz Gy\u0171r\u0171 legend\u00e1ja, \u0936\u093e\u0902\u0917-\u091a\u0940 \u090f\u0902\u0921 \u0926 \u0932\u0940\u091c\u0947\u0902\u0921 \u0911\u092b \u0926 \u091f\u0947\u0928 \u0930\u093f\u0902\u0917\u094d\u0938, Shang-Chi e la leggenda dei Dieci Anelli, \u30b7\u30e3\u30f3\u30fb\u30c1\u30fc\uff0f\u30c6\u30f3\u30fb\u30ea\u30f3\u30b0\u30b9\u306e\u4f1d\u8aac, \u0160an\u010di un le\u0123enda par desmit gredzeniem, \u0160ang-\u010ci ir de\u0161imties \u017eied\u0173 legenda, Shang-Chi i legenda dziesi\u0119ciu pier\u015bcieni, Shang-Chi \u0219i legenda celor zece inele, \u0428\u0430\u043d-\u0427\u0438 \u0438 \u043b\u0435\u0433\u0435\u043d\u0434\u0430 \u0434\u0435\u0441\u044f\u0442\u0438 \u043a\u043e\u043b\u0435\u0446, \u0634\u0627\u0646\u063a-\u0634\u064a: \u0630\u0627 \u0644\u064a\u062c\u064a\u0646\u062f \u0627\u0648\u0641 \u0630\u0627 10 \u0631\u064a\u0646\u0642\u0632, \u0160eng-\u010ci i legenda o deset prstenova, Shang-Chi: Legenda o desiatich prste\u0148och, \uc0f9\uce58\uc640 \ud150 \ub9c1\uc988\uc758 \uc804\uc124, Shan-Chi va o'n uzuk afsonasi, Shang-Chi V\u00e0 Huy\u1ec1n Tho\u1ea1i Th\u1eadp Lu\u00e2n, Steamboat",
+          "status": "inCinemas",
+          "overview": "Shang-Chi must confront the past he thought he left behind when he is drawn into the web of the mysterious Ten Rings organization.",
+          "runtime": 132,
+          "image": "plugins/images/cache/566525.jpg",
+          "ratings": 7.8,
+          "videoQuality": "unknown",
+          "audioChannels": "unknown",
+          "audioCodec": "unknown",
+          "videoCodec": "unknown",
+          "size": "unknown",
+          "genres": [
+            "Action",
+            "Adventure",
+            "Fantasy"
+          ],
+          "year": 2021,
+          "studio": "Marvel Studios"
+        }
+      },
+      {
+        "id": "Radarr-0-69",
+        "title": "Shang-Chi and the Legend of the Ten Rings",
+        "start": "2021-09-01",
+        "className": "inline-popups bg-calendar movieID--566525",
+        "imagetype": "film text-danger",
+        "imagetypeFilter": "film",
+        "downloadFilter": "text-danger",
+        "releaseType": [
+          "cinema"
+        ],
+        "bgColor": "bg-danger",
+        "details": {
+          "topTitle": "Shang-Chi and the Legend of the Ten Rings",
+          "bottomTitle": "\u0428\u0430\u043d\u0491 \u0427\u0456 \u0442\u0430 \u041b\u0435\u0433\u0435\u043d\u0434\u0430 \u0414\u0435\u0441\u044f\u0442\u0438 \u041a\u0456\u043b\u0435\u0446\u044c, Shang-Chi ve On Y\u00fcz\u00fck Efsanesi, Shang Chi y la leyenda de los diez anillos, \u5c1a\u6c23\u8207\u5341\u74b0\u5e6b\u50b3\u5947, Shang-Chi e a Lenda dos Dez An\u00e9is, \u0634\u0627\u0646\u063a-\u0686\u064a \u0648\u0623\u0633\u0637\u0648\u0631\u0629 \u0627\u0644\u062d\u0644\u0642\u0627\u062a \u0627\u0644\u0639\u0634\u0631, \u5c1a\u6c14\u4e0e\u5341\u6212\u4f20\u5947, Shang-Chi at ang Alamat ng Sampung Singsing, \u0428\u0430\u043d-\u0427\u0438 \u0438 \u043b\u0435\u0433\u0435\u043d\u0434\u0430\u0442\u0430 \u0437\u0430 \u0434\u0435\u0441\u0435\u0442\u0442\u0435 \u043f\u0440\u044a\u0441\u0442\u0435\u043d\u0430, Shang-Chi et la l\u00e9gende des dix anneaux, Shang-Chi i legenda o Deset Prstenova, Shang-Chi a legenda o deseti prstenech, \u0634\u0627\u0646\u062c \u0634\u064a \u0648\u0623\u0633\u0637\u0648\u0631\u0629 \u0627\u0644\u062e\u0648\u0627\u062a\u0645 \u0627\u0644\u0639\u0634\u0631\u0629, Shang-Chi ja K\u00fcmne R\u00f5nga legend, O Shang-Chi \u03ba\u03b1\u03b9 \u03bf \u0398\u03c1\u03cd\u03bb\u03bf\u03c2 \u03c4\u03c9\u03bd \u0394\u03ad\u03ba\u03b1 \u0394\u03b1\u03c7\u03c4\u03c5\u03bb\u03b9\u03b4\u03b9\u03ce\u03bd, Shang-Chi \u00e9s a T\u00edz Gy\u0171r\u0171 legend\u00e1ja, \u0936\u093e\u0902\u0917-\u091a\u0940 \u090f\u0902\u0921 \u0926 \u0932\u0940\u091c\u0947\u0902\u0921 \u0911\u092b \u0926 \u091f\u0947\u0928 \u0930\u093f\u0902\u0917\u094d\u0938, Shang-Chi e la leggenda dei Dieci Anelli, \u30b7\u30e3\u30f3\u30fb\u30c1\u30fc\uff0f\u30c6\u30f3\u30fb\u30ea\u30f3\u30b0\u30b9\u306e\u4f1d\u8aac, \u0160an\u010di un le\u0123enda par desmit gredzeniem, \u0160ang-\u010ci ir de\u0161imties \u017eied\u0173 legenda, Shang-Chi i legenda dziesi\u0119ciu pier\u015bcieni, Shang-Chi \u0219i legenda celor zece inele, \u0428\u0430\u043d-\u0427\u0438 \u0438 \u043b\u0435\u0433\u0435\u043d\u0434\u0430 \u0434\u0435\u0441\u044f\u0442\u0438 \u043a\u043e\u043b\u0435\u0446, \u0634\u0627\u0646\u063a-\u0634\u064a: \u0630\u0627 \u0644\u064a\u062c\u064a\u0646\u062f \u0627\u0648\u0641 \u0630\u0627 10 \u0631\u064a\u0646\u0642\u0632, \u0160eng-\u010ci i legenda o deset prstenova, Shang-Chi: Legenda o desiatich prste\u0148och, \uc0f9\uce58\uc640 \ud150 \ub9c1\uc988\uc758 \uc804\uc124, Shan-Chi va o'n uzuk afsonasi, Shang-Chi V\u00e0 Huy\u1ec1n Tho\u1ea1i Th\u1eadp Lu\u00e2n, Steamboat",
+          "status": "inCinemas",
+          "overview": "Shang-Chi must confront the past he thought he left behind when he is drawn into the web of the mysterious Ten Rings organization.",
+          "runtime": 132,
+          "image": "plugins/images/cache/566525.jpg",
+          "ratings": 7.8,
+          "videoQuality": "unknown",
+          "audioChannels": "unknown",
+          "audioCodec": "unknown",
+          "videoCodec": "unknown",
+          "size": "unknown",
+          "genres": [
+            "Action",
+            "Adventure",
+            "Fantasy"
+          ],
+          "year": 2021,
+          "studio": "Marvel Studios"
+        }
+      },
+      {
+        "id": "Radarr-0-70",
+        "title": "Malignant",
+        "start": "2021-09-10",
+        "className": "inline-popups bg-calendar movieID--619778",
+        "imagetype": "film text-success",
+        "imagetypeFilter": "film",
+        "downloadFilter": "text-success",
+        "releaseType": [
+          "digital"
+        ],
+        "bgColor": "bg-success",
+        "details": {
+          "topTitle": "Malignant",
+          "bottomTitle": "Silvercup, \u80bf\u7624\u4fa0, \u81f4\u547d\u611f\u5e94, \u60e1\u715e, Maligno, \u0417\u043b\u043e\u043a\u043e\u0431\u0435\u043d, \u0397 \u0395\u03bd\u03c3\u03ac\u03c1\u03ba\u03c9\u03c3\u03b7 \u03c4\u03bf\u03c5 \u039a\u03b1\u03ba\u03bf\u03cd, Eleven k\u00f3r, \u30de\u30ea\u30b0\u30ca\u30f3\u30c8 \u72c2\u66b4\u306a\u60aa\u5922, \u0e21\u0e32\u0e25\u0e34\u0e01\u0e41\u0e19\u0e19\u0e17\u0e4c \u0e0a\u0e31\u0e48\u0e27\u0e42\u0e04\u0e15\u0e23\u0e23\u0e49\u0e32\u0e22, Malfaisant, \u013baundab\u012bgais",
+          "status": "released",
+          "overview": "Madison is paralyzed by shocking visions of grisly murders, and her torment worsens as she discovers that these waking dreams are in fact terrifying realities with a mysterious tie to her past.",
+          "runtime": 111,
+          "image": "plugins/images/cache/619778.jpg",
+          "ratings": 7.1,
+          "videoQuality": "WEBRip-1080p",
+          "audioChannels": 5.1,
+          "audioCodec": null,
+          "videoCodec": "x264",
+          "size": 2155556440,
+          "genres": [
+            "Horror",
+            "Thriller",
+            "Mystery"
+          ],
+          "year": 2021,
+          "studio": "Warner Bros. Pictures"
+        }
+      },
+      {
+        "id": "Radarr-0-71",
+        "title": "Malignant",
+        "start": "2021-09-01",
+        "className": "inline-popups bg-calendar movieID--619778",
+        "imagetype": "film text-success",
+        "imagetypeFilter": "film",
+        "downloadFilter": "text-success",
+        "releaseType": [
+          "cinema"
+        ],
+        "bgColor": "bg-success",
+        "details": {
+          "topTitle": "Malignant",
+          "bottomTitle": "Silvercup, \u80bf\u7624\u4fa0, \u81f4\u547d\u611f\u5e94, \u60e1\u715e, Maligno, \u0417\u043b\u043e\u043a\u043e\u0431\u0435\u043d, \u0397 \u0395\u03bd\u03c3\u03ac\u03c1\u03ba\u03c9\u03c3\u03b7 \u03c4\u03bf\u03c5 \u039a\u03b1\u03ba\u03bf\u03cd, Eleven k\u00f3r, \u30de\u30ea\u30b0\u30ca\u30f3\u30c8 \u72c2\u66b4\u306a\u60aa\u5922, \u0e21\u0e32\u0e25\u0e34\u0e01\u0e41\u0e19\u0e19\u0e17\u0e4c \u0e0a\u0e31\u0e48\u0e27\u0e42\u0e04\u0e15\u0e23\u0e23\u0e49\u0e32\u0e22, Malfaisant, \u013baundab\u012bgais",
+          "status": "released",
+          "overview": "Madison is paralyzed by shocking visions of grisly murders, and her torment worsens as she discovers that these waking dreams are in fact terrifying realities with a mysterious tie to her past.",
+          "runtime": 111,
+          "image": "plugins/images/cache/619778.jpg",
+          "ratings": 7.1,
+          "videoQuality": "WEBRip-1080p",
+          "audioChannels": 5.1,
+          "audioCodec": null,
+          "videoCodec": "x264",
+          "size": 2155556440,
+          "genres": [
+            "Horror",
+            "Thriller",
+            "Mystery"
+          ],
+          "year": 2021,
+          "studio": "Warner Bros. Pictures"
+        }
+      },
+      {
+        "id": "Radarr-0-72",
+        "title": "Jurassic Hunt",
+        "start": "2021-08-24",
+        "className": "inline-popups bg-calendar movieID--848278",
+        "imagetype": "film text-success",
+        "imagetypeFilter": "film",
+        "downloadFilter": "text-success",
+        "releaseType": [
+          "physical"
+        ],
+        "bgColor": "bg-success",
+        "details": {
+          "topTitle": "Jurassic Hunt",
+          "bottomTitle": "",
+          "status": "released",
+          "overview": "Female adventurer Parker joins a crew of male trophy hunters in a remote wilderness park. Their goal: slaughter genetically recreated dinosaurs for sport using rifles, arrows, and grenades. After their guide is killed by raptors, the team tries to escape the park \u2013 but the hunters quickly become the hunted. Even worse, the park\u2019s manager suspects Parker of being a spy and sends a hit squad after her. This battle\u2019s about to become primitive!",
+          "runtime": 83,
+          "image": "plugins/images/cache/848278.jpg",
+          "ratings": 5,
+          "videoQuality": "WEBRip-1080p",
+          "audioChannels": 5.1,
+          "audioCodec": null,
+          "videoCodec": "x264",
+          "size": 4386167913,
+          "genres": [
+            "Action",
+            "Science Fiction",
+            "Thriller"
+          ],
+          "year": 2021,
+          "studio": "Lionsgate"
+        }
+      },
+      {
+        "id": "Radarr-0-73",
+        "title": "Jurassic Hunt",
+        "start": "2021-08-23",
+        "className": "inline-popups bg-calendar movieID--848278",
+        "imagetype": "film text-success",
+        "imagetypeFilter": "film",
+        "downloadFilter": "text-success",
+        "releaseType": [
+          "digital"
+        ],
+        "bgColor": "bg-success",
+        "details": {
+          "topTitle": "Jurassic Hunt",
+          "bottomTitle": "",
+          "status": "released",
+          "overview": "Female adventurer Parker joins a crew of male trophy hunters in a remote wilderness park. Their goal: slaughter genetically recreated dinosaurs for sport using rifles, arrows, and grenades. After their guide is killed by raptors, the team tries to escape the park \u2013 but the hunters quickly become the hunted. Even worse, the park\u2019s manager suspects Parker of being a spy and sends a hit squad after her. This battle\u2019s about to become primitive!",
+          "runtime": 83,
+          "image": "plugins/images/cache/848278.jpg",
+          "ratings": 5,
+          "videoQuality": "WEBRip-1080p",
+          "audioChannels": 5.1,
+          "audioCodec": null,
+          "videoCodec": "x264",
+          "size": 4386167913,
+          "genres": [
+            "Action",
+            "Science Fiction",
+            "Thriller"
+          ],
+          "year": 2021,
+          "studio": "Lionsgate"
+        }
+      },
+      {
+        "id": "Radarr-0-74",
+        "title": "Jurassic Hunt",
+        "start": "2021-09-01",
+        "className": "inline-popups bg-calendar movieID--848278",
+        "imagetype": "film text-success",
+        "imagetypeFilter": "film",
+        "downloadFilter": "text-success",
+        "releaseType": [
+          "cinema"
+        ],
+        "bgColor": "bg-success",
+        "details": {
+          "topTitle": "Jurassic Hunt",
+          "bottomTitle": "",
+          "status": "released",
+          "overview": "Female adventurer Parker joins a crew of male trophy hunters in a remote wilderness park. Their goal: slaughter genetically recreated dinosaurs for sport using rifles, arrows, and grenades. After their guide is killed by raptors, the team tries to escape the park \u2013 but the hunters quickly become the hunted. Even worse, the park\u2019s manager suspects Parker of being a spy and sends a hit squad after her. This battle\u2019s about to become primitive!",
+          "runtime": 83,
+          "image": "plugins/images/cache/848278.jpg",
+          "ratings": 5,
+          "videoQuality": "WEBRip-1080p",
+          "audioChannels": 5.1,
+          "audioCodec": null,
+          "videoCodec": "x264",
+          "size": 4386167913,
+          "genres": [
+            "Action",
+            "Science Fiction",
+            "Thriller"
+          ],
+          "year": 2021,
+          "studio": "Lionsgate"
+        }
+      },
+      {
+        "id": "Radarr-0-75",
+        "title": "The Card Counter",
+        "start": "2021-09-03",
+        "className": "inline-popups bg-calendar movieID--643532",
+        "imagetype": "film text-success",
+        "imagetypeFilter": "film",
+        "downloadFilter": "text-success",
+        "releaseType": [
+          "cinema"
+        ],
+        "bgColor": "bg-success",
+        "details": {
+          "topTitle": "The Card Counter",
+          "bottomTitle": "",
+          "status": "inCinemas",
+          "overview": "William Tell just wants to play cards. His spartan existence on the casino trail is shattered when he is approached by Cirk, a vulnerable and angry young man seeking help to execute his plan for revenge on a military colonel. Tell sees a chance at redemption through his relationship with Cirk. But keeping Cirk on the straight-and-narrow proves impossible, dragging Tell back into the darkness of his past.",
+          "runtime": 111,
+          "image": "plugins/images/cache/643532.jpg",
+          "ratings": 6.6,
+          "videoQuality": "WEBDL-1080p",
+          "audioChannels": 2,
+          "audioCodec": null,
+          "videoCodec": "x264",
+          "size": 4041586833,
+          "genres": [
+            "Drama",
+            "Thriller",
+            "Crime"
+          ],
+          "year": 2021,
+          "studio": "Saturn Streaming"
+        }
+      },
+      {
+        "id": "Radarr-0-76",
+        "title": "Zone 414",
+        "start": "2021-11-26",
+        "className": "inline-popups bg-calendar movieID--675319",
+        "imagetype": "film text-success",
+        "imagetypeFilter": "film",
+        "downloadFilter": "text-success",
+        "releaseType": [
+          "physical"
+        ],
+        "bgColor": "bg-success",
+        "details": {
+          "topTitle": "Zone 414",
+          "bottomTitle": "",
+          "status": "released",
+          "overview": "In the near future on a colony of state-of-the-art robots, a private investigator is hired by the colony's creator to bring his missing daughter home.",
+          "runtime": 98,
+          "image": "plugins/images/cache/675319.jpg",
+          "ratings": 6.2,
+          "videoQuality": "WEBRip-1080p",
+          "audioChannels": 5.1,
+          "audioCodec": null,
+          "videoCodec": "h264",
+          "size": 1909716670,
+          "genres": [
+            "Science Fiction",
+            "Thriller",
+            "Mystery"
+          ],
+          "year": 2021,
+          "studio": "Highland Film Group"
+        }
+      },
+      {
+        "id": "Radarr-0-77",
+        "title": "Zone 414",
+        "start": "2021-09-03",
+        "className": "inline-popups bg-calendar movieID--675319",
+        "imagetype": "film text-success",
+        "imagetypeFilter": "film",
+        "downloadFilter": "text-success",
+        "releaseType": [
+          "digital",
+          "cinema"
+        ],
+        "bgColor": "bg-success",
+        "details": {
+          "topTitle": "Zone 414",
+          "bottomTitle": "",
+          "status": "released",
+          "overview": "In the near future on a colony of state-of-the-art robots, a private investigator is hired by the colony's creator to bring his missing daughter home.",
+          "runtime": 98,
+          "image": "plugins/images/cache/675319.jpg",
+          "ratings": 6.2,
+          "videoQuality": "WEBRip-1080p",
+          "audioChannels": 5.1,
+          "audioCodec": null,
+          "videoCodec": "h264",
+          "size": 1909716670,
+          "genres": [
+            "Science Fiction",
+            "Thriller",
+            "Mystery"
+          ],
+          "year": 2021,
+          "studio": "Highland Film Group"
+        }
+      },
+      {
+        "id": "Radarr-0-78",
+        "title": "All the Streets Are Silent: The Convergence of Hip Hop and Skateboarding (1987-1997)",
+        "start": "2021-09-07",
+        "className": "inline-popups bg-calendar movieID--821406",
+        "imagetype": "film text-success",
+        "imagetypeFilter": "film",
+        "downloadFilter": "text-success",
+        "releaseType": [
+          "cinema"
+        ],
+        "bgColor": "bg-success",
+        "details": {
+          "topTitle": "All the Streets Are Silent: The Convergence of Hip Hop and Skateboarding (1987-1997)",
+          "bottomTitle": "All the Streets Are Silent",
+          "status": "inCinemas",
+          "overview": "In the late 1980s and early 1990s, skateboarding and hip-hop culture collide in downtown Manhattan. Archival footage from the era showcases the fusion of these two forms of expression.",
+          "runtime": 89,
+          "image": "plugins/images/cache/821406.jpg",
+          "ratings": 7,
+          "videoQuality": "WEBRip-1080p",
+          "audioChannels": 2,
+          "audioCodec": null,
+          "videoCodec": "x264",
+          "size": 1741984345,
+          "genres": [
+            "Documentary"
+          ],
+          "year": 2021,
+          "studio": ""
+        }
+      },
+      {
+        "id": "Radarr-0-79",
+        "title": "Copshop",
+        "start": "2021-09-09",
+        "className": "inline-popups bg-calendar movieID--738652",
+        "imagetype": "film text-danger",
+        "imagetypeFilter": "film",
+        "downloadFilter": "text-danger",
+        "releaseType": [
+          "cinema"
+        ],
+        "bgColor": "bg-danger",
+        "details": {
+          "topTitle": "Copshop",
+          "bottomTitle": "Bez lieciniekiem, Joki\u0173 Liudinink\u0173, \u0425\u043e\u0440\u043e\u0448\u0438\u0439, \u043f\u043b\u043e\u0445\u043e\u0439, \u043a\u043e\u043f, Belal\u0131 Karakol",
+          "status": "inCinemas",
+          "overview": "On the run from a lethal assassin, a wily con artist devises a scheme to hide out inside a small-town police station. However, when the hit man turns up at the precinct, an unsuspecting rookie cop finds herself caught in the crosshairs.",
+          "runtime": 107,
+          "image": "plugins/images/cache/738652.jpg",
+          "ratings": 5.6,
+          "videoQuality": "unknown",
+          "audioChannels": "unknown",
+          "audioCodec": "unknown",
+          "videoCodec": "unknown",
+          "size": "unknown",
+          "genres": [
+            "Action",
+            "Thriller",
+            "Crime"
+          ],
+          "year": 2021,
+          "studio": "WarParty Films"
+        }
+      },
+      {
+        "id": "Radarr-0-80",
+        "title": "Kate",
+        "start": "2021-09-10",
+        "className": "inline-popups bg-calendar movieID--597891",
+        "imagetype": "film text-success",
+        "imagetypeFilter": "film",
+        "downloadFilter": "text-success",
+        "releaseType": [
+          "digital",
+          "cinema"
+        ],
+        "bgColor": "bg-success",
+        "details": {
+          "topTitle": "Kate",
+          "bottomTitle": "\u0e40\u0e04\u0e17",
+          "status": "released",
+          "overview": "After she's irreversibly poisoned, a ruthless criminal operative has less than 24 hours to exact revenge on her enemies and in the process forms an unexpected bond with the daughter of one of her past victims.",
+          "runtime": 106,
+          "image": "plugins/images/cache/597891.jpg",
+          "ratings": 6.8,
+          "videoQuality": "WEBDL-1080p",
+          "audioChannels": 5.1,
+          "audioCodec": null,
+          "videoCodec": "HEVC",
+          "size": 3583615122,
+          "genres": [
+            "Action",
+            "Thriller"
+          ],
+          "year": 2021,
+          "studio": "Clubhouse Pictures"
+        }
+      },
+      {
+        "id": "Radarr-0-81",
+        "title": "Blue Bayou",
+        "start": "2021-09-10",
+        "className": "inline-popups bg-calendar movieID--644089",
+        "imagetype": "film text-danger",
+        "imagetypeFilter": "film",
+        "downloadFilter": "text-danger",
+        "releaseType": [
+          "cinema"
+        ],
+        "bgColor": "bg-danger",
+        "details": {
+          "topTitle": "Blue Bayou",
+          "bottomTitle": "",
+          "status": "inCinemas",
+          "overview": "As a Korean-American man raised in the Louisiana bayou works hard to make a life for his family, he must confront the ghosts of his past as he discovers that he could be deported from the only country he has ever called home.",
+          "runtime": 119,
+          "image": "plugins/images/cache/644089.jpg",
+          "ratings": 7.1,
+          "videoQuality": "unknown",
+          "audioChannels": "unknown",
+          "audioCodec": "unknown",
+          "videoCodec": "unknown",
+          "size": "unknown",
+          "genres": [
+            "Drama"
+          ],
+          "year": 2021,
+          "studio": "Entertainment One"
+        }
+      },
+      {
+        "id": "Radarr-0-82",
+        "title": "Catch the Bullet",
+        "start": "2021-09-14",
+        "className": "inline-popups bg-calendar movieID--859860",
+        "imagetype": "film text-success",
+        "imagetypeFilter": "film",
+        "downloadFilter": "text-success",
+        "releaseType": [
+          "physical"
+        ],
+        "bgColor": "bg-success",
+        "details": {
+          "topTitle": "Catch the Bullet",
+          "bottomTitle": "",
+          "status": "released",
+          "overview": "U.S. marshal Britt MacMasters returns from a mission to find his father wounded and his son kidnapped by the outlaw Jed Blake. Hot on their trail, Britt forms a posse with a gunslinging deputy and a stoic Pawnee tracker. But Jed and Britt tread dangerously close to the Red Desert\u2019s Sioux territory.",
+          "runtime": 89,
+          "image": "plugins/images/cache/859860.jpg",
+          "ratings": 5.5,
+          "videoQuality": "Bluray-1080p",
+          "audioChannels": 5.1,
+          "audioCodec": null,
+          "videoCodec": "x264",
+          "size": 12412050247,
+          "genres": [
+            "Western",
+            "Action"
+          ],
+          "year": 2021,
+          "studio": "Lionsgate"
+        }
+      },
+      {
+        "id": "Radarr-0-83",
+        "title": "Catch the Bullet",
+        "start": "2021-09-10",
+        "className": "inline-popups bg-calendar movieID--859860",
+        "imagetype": "film text-success",
+        "imagetypeFilter": "film",
+        "downloadFilter": "text-success",
+        "releaseType": [
+          "digital",
+          "cinema"
+        ],
+        "bgColor": "bg-success",
+        "details": {
+          "topTitle": "Catch the Bullet",
+          "bottomTitle": "",
+          "status": "released",
+          "overview": "U.S. marshal Britt MacMasters returns from a mission to find his father wounded and his son kidnapped by the outlaw Jed Blake. Hot on their trail, Britt forms a posse with a gunslinging deputy and a stoic Pawnee tracker. But Jed and Britt tread dangerously close to the Red Desert\u2019s Sioux territory.",
+          "runtime": 89,
+          "image": "plugins/images/cache/859860.jpg",
+          "ratings": 5.5,
+          "videoQuality": "Bluray-1080p",
+          "audioChannels": 5.1,
+          "audioCodec": null,
+          "videoCodec": "x264",
+          "size": 12412050247,
+          "genres": [
+            "Western",
+            "Action"
+          ],
+          "year": 2021,
+          "studio": "Lionsgate"
+        }
+      },
+      {
+        "id": "Radarr-0-84",
+        "title": "Dune",
+        "start": "2021-10-22",
+        "className": "inline-popups bg-calendar movieID--438631",
+        "imagetype": "film text-info",
+        "imagetypeFilter": "film",
+        "downloadFilter": "text-info",
+        "releaseType": [
+          "digital"
+        ],
+        "bgColor": "bg-info",
+        "details": {
+          "topTitle": "Dune",
+          "bottomTitle": "Dune \u2013 Part One, \u6c99\u4e18\u701a\u6230, \u0414\u044e\u043d, Dina, Dyyni, \u0921\u094d\u092f\u0942\u0928, \u30c7\u30e5\u30fc\u30f3, DUNE/\u30c7\u30e5\u30fc\u30f3 \u7802\u306e\u60d1\u661f, K\u0101pa, Kopa, \u0414\u044e\u043d\u0430, Dune: pe\u0161\u010deni planet, \u6c99\u4e18, Dune: \u00c7\u00f6l Gezegeni, H\u00e0nh Tinh C\u00e1t, Duna, Diuna",
+          "status": "inCinemas",
+          "overview": "Paul Atreides, a brilliant and gifted young man born into a great destiny beyond his understanding, must travel to the most dangerous planet in the universe to ensure the future of his family and his people. As malevolent forces explode into conflict over the planet's exclusive supply of the most precious resource in existence-a commodity capable of unlocking humanity's greatest potential-only those who can conquer their fear will survive.",
+          "runtime": 155,
+          "image": "plugins/images/cache/438631.jpg",
+          "ratings": 8.2,
+          "videoQuality": "unknown",
+          "audioChannels": "unknown",
+          "audioCodec": "unknown",
+          "videoCodec": "unknown",
+          "size": "unknown",
+          "genres": [
+            "Action",
+            "Adventure",
+            "Science Fiction"
+          ],
+          "year": 2021,
+          "studio": "Warner Bros. Pictures"
+        }
+      },
+      {
+        "id": "Radarr-0-85",
+        "title": "Dune",
+        "start": "2021-09-15",
+        "className": "inline-popups bg-calendar movieID--438631",
+        "imagetype": "film text-danger",
+        "imagetypeFilter": "film",
+        "downloadFilter": "text-danger",
+        "releaseType": [
+          "cinema"
+        ],
+        "bgColor": "bg-danger",
+        "details": {
+          "topTitle": "Dune",
+          "bottomTitle": "Dune \u2013 Part One, \u6c99\u4e18\u701a\u6230, \u0414\u044e\u043d, Dina, Dyyni, \u0921\u094d\u092f\u0942\u0928, \u30c7\u30e5\u30fc\u30f3, DUNE/\u30c7\u30e5\u30fc\u30f3 \u7802\u306e\u60d1\u661f, K\u0101pa, Kopa, \u0414\u044e\u043d\u0430, Dune: pe\u0161\u010deni planet, \u6c99\u4e18, Dune: \u00c7\u00f6l Gezegeni, H\u00e0nh Tinh C\u00e1t, Duna, Diuna",
+          "status": "inCinemas",
+          "overview": "Paul Atreides, a brilliant and gifted young man born into a great destiny beyond his understanding, must travel to the most dangerous planet in the universe to ensure the future of his family and his people. As malevolent forces explode into conflict over the planet's exclusive supply of the most precious resource in existence-a commodity capable of unlocking humanity's greatest potential-only those who can conquer their fear will survive.",
+          "runtime": 155,
+          "image": "plugins/images/cache/438631.jpg",
+          "ratings": 8.2,
+          "videoQuality": "unknown",
+          "audioChannels": "unknown",
+          "audioCodec": "unknown",
+          "videoCodec": "unknown",
+          "size": "unknown",
+          "genres": [
+            "Action",
+            "Adventure",
+            "Science Fiction"
+          ],
+          "year": 2021,
+          "studio": "Warner Bros. Pictures"
+        }
+      },
+      {
+        "id": "Radarr-0-86",
+        "title": "Cry Macho",
+        "start": "2021-09-17",
+        "className": "inline-popups bg-calendar movieID--749274",
+        "imagetype": "film text-success",
+        "imagetypeFilter": "film",
+        "downloadFilter": "text-success",
+        "releaseType": [
+          "digital"
+        ],
+        "bgColor": "bg-success",
+        "details": {
+          "topTitle": "Cry Macho",
+          "bottomTitle": "",
+          "status": "released",
+          "overview": "Mike Milo, a one-time rodeo star and washed-up horse breeder, takes a job from an ex-boss to bring the man's young son home from Mexico.",
+          "runtime": 104,
+          "image": "plugins/images/cache/749274.jpg",
+          "ratings": 6.8,
+          "videoQuality": "WEBRip-1080p",
+          "audioChannels": 5.1,
+          "audioCodec": null,
+          "videoCodec": "h264",
+          "size": 2013830843,
+          "genres": [
+            "Western",
+            "Drama"
+          ],
+          "year": 2021,
+          "studio": "Malpaso Productions"
+        }
+      },
+      {
+        "id": "Radarr-0-87",
+        "title": "Cry Macho",
+        "start": "2021-09-16",
+        "className": "inline-popups bg-calendar movieID--749274",
+        "imagetype": "film text-success",
+        "imagetypeFilter": "film",
+        "downloadFilter": "text-success",
+        "releaseType": [
+          "cinema"
+        ],
+        "bgColor": "bg-success",
+        "details": {
+          "topTitle": "Cry Macho",
+          "bottomTitle": "",
+          "status": "released",
+          "overview": "Mike Milo, a one-time rodeo star and washed-up horse breeder, takes a job from an ex-boss to bring the man's young son home from Mexico.",
+          "runtime": 104,
+          "image": "plugins/images/cache/749274.jpg",
+          "ratings": 6.8,
+          "videoQuality": "WEBRip-1080p",
+          "audioChannels": 5.1,
+          "audioCodec": null,
+          "videoCodec": "h264",
+          "size": 2013830843,
+          "genres": [
+            "Western",
+            "Drama"
+          ],
+          "year": 2021,
+          "studio": "Malpaso Productions"
+        }
+      },
+      {
+        "id": "Radarr-0-88",
+        "title": "Eating Our Way to Extinction",
+        "start": "2021-09-16",
+        "className": "inline-popups bg-calendar movieID--858381",
+        "imagetype": "film text-danger",
+        "imagetypeFilter": "film",
+        "downloadFilter": "text-danger",
+        "releaseType": [
+          "cinema"
+        ],
+        "bgColor": "bg-danger",
+        "details": {
+          "topTitle": "Eating Our Way to Extinction",
+          "bottomTitle": "",
+          "status": "inCinemas",
+          "overview": "With searing insight that shines light in dark corners, EATING OUR WAY TO EXTINCTION is a compelling feature documentary that opens the lid on the elephant in the room that no one wants to talk about. Confronting and entertaining, this feature documentary will make you never look at the food industry in the same way again.",
+          "runtime": 105,
+          "image": "/plugins/images/cache/no-np.png",
+          "ratings": 0,
+          "videoQuality": "unknown",
+          "audioChannels": "unknown",
+          "audioCodec": "unknown",
+          "videoCodec": "unknown",
+          "size": "unknown",
+          "genres": [
+            "Documentary"
+          ],
+          "year": 2021,
+          "studio": ""
+        }
+      },
+      {
+        "id": "Radarr-0-89",
+        "title": "The Many Saints of Newark",
+        "start": "2021-10-01",
+        "className": "inline-popups bg-calendar movieID--524369",
+        "imagetype": "film text-success",
+        "imagetypeFilter": "film",
+        "downloadFilter": "text-success",
+        "releaseType": [
+          "digital"
+        ],
+        "bgColor": "bg-success",
+        "details": {
+          "topTitle": "The Many Saints of Newark",
+          "bottomTitle": "Newark, \u041c\u043d\u043e\u0436\u0438\u043d\u043d\u0456 \u0441\u0432\u044f\u0442\u0456 \u041d\u044c\u044e\u0430\u0440\u043a\u0430, \u0411\u0430\u0433\u0430\u0442\u043e \u0441\u0432\u044f\u0442\u0438\u0445 \u041d\u044c\u044e\u0430\u0440\u043a\u0430",
+          "status": "inCinemas",
+          "overview": "Young Anthony Soprano is growing up in one of the most tumultuous eras in Newark, N.J., history, becoming a man just as rival gangsters start to rise up and challenge the all-powerful DiMeo crime family. Caught up in the changing times is the uncle he idolizes, Dickie Moltisanti, whose influence over his nephew will help shape the impressionable teenager into the all-powerful mob boss, Tony Soprano.",
+          "runtime": 120,
+          "image": "plugins/images/cache/524369.jpg",
+          "ratings": 6.6,
+          "videoQuality": "WEBDL-1080p",
+          "audioChannels": 5.1,
+          "audioCodec": null,
+          "videoCodec": "x264",
+          "size": 8125626589,
+          "genres": [
+            "Drama",
+            "Crime"
+          ],
+          "year": 2021,
+          "studio": "Warner Bros. Pictures"
+        }
+      },
+      {
+        "id": "Radarr-0-90",
+        "title": "The Many Saints of Newark",
+        "start": "2021-09-22",
+        "className": "inline-popups bg-calendar movieID--524369",
+        "imagetype": "film text-success",
+        "imagetypeFilter": "film",
+        "downloadFilter": "text-success",
+        "releaseType": [
+          "cinema"
+        ],
+        "bgColor": "bg-success",
+        "details": {
+          "topTitle": "The Many Saints of Newark",
+          "bottomTitle": "Newark, \u041c\u043d\u043e\u0436\u0438\u043d\u043d\u0456 \u0441\u0432\u044f\u0442\u0456 \u041d\u044c\u044e\u0430\u0440\u043a\u0430, \u0411\u0430\u0433\u0430\u0442\u043e \u0441\u0432\u044f\u0442\u0438\u0445 \u041d\u044c\u044e\u0430\u0440\u043a\u0430",
+          "status": "inCinemas",
+          "overview": "Young Anthony Soprano is growing up in one of the most tumultuous eras in Newark, N.J., history, becoming a man just as rival gangsters start to rise up and challenge the all-powerful DiMeo crime family. Caught up in the changing times is the uncle he idolizes, Dickie Moltisanti, whose influence over his nephew will help shape the impressionable teenager into the all-powerful mob boss, Tony Soprano.",
+          "runtime": 120,
+          "image": "plugins/images/cache/524369.jpg",
+          "ratings": 6.6,
+          "videoQuality": "WEBDL-1080p",
+          "audioChannels": 5.1,
+          "audioCodec": null,
+          "videoCodec": "x264",
+          "size": 8125626589,
+          "genres": [
+            "Drama",
+            "Crime"
+          ],
+          "year": 2021,
+          "studio": "Warner Bros. Pictures"
+        }
+      },
+      {
+        "id": "Radarr-0-91",
+        "title": "The Guilty",
+        "start": "2021-10-01",
+        "className": "inline-popups bg-calendar movieID--567748",
+        "imagetype": "film text-success",
+        "imagetypeFilter": "film",
+        "downloadFilter": "text-success",
+        "releaseType": [
+          "digital"
+        ],
+        "bgColor": "bg-success",
+        "details": {
+          "topTitle": "The Guilty",
+          "bottomTitle": "The Guilty U.S., Culpable",
+          "status": "inCinemas",
+          "overview": "A demoted police officer assigned to a call dispatch desk is conflicted when he receives an emergency phone call from a kidnapped woman.",
+          "runtime": 90,
+          "image": "plugins/images/cache/567748.jpg",
+          "ratings": 7.2,
+          "videoQuality": "WEBDL-1080p",
+          "audioChannels": 5.1,
+          "audioCodec": null,
+          "videoCodec": "x264",
+          "size": 5102934489,
+          "genres": [
+            "Drama",
+            "Crime",
+            "Thriller"
+          ],
+          "year": 2021,
+          "studio": "Nine Stories Productions"
+        }
+      },
+      {
+        "id": "Radarr-0-92",
+        "title": "The Guilty",
+        "start": "2021-09-24",
+        "className": "inline-popups bg-calendar movieID--567748",
+        "imagetype": "film text-success",
+        "imagetypeFilter": "film",
+        "downloadFilter": "text-success",
+        "releaseType": [
+          "cinema"
+        ],
+        "bgColor": "bg-success",
+        "details": {
+          "topTitle": "The Guilty",
+          "bottomTitle": "The Guilty U.S., Culpable",
+          "status": "inCinemas",
+          "overview": "A demoted police officer assigned to a call dispatch desk is conflicted when he receives an emergency phone call from a kidnapped woman.",
+          "runtime": 90,
+          "image": "plugins/images/cache/567748.jpg",
+          "ratings": 7.2,
+          "videoQuality": "WEBDL-1080p",
+          "audioChannels": 5.1,
+          "audioCodec": null,
+          "videoCodec": "x264",
+          "size": 5102934489,
+          "genres": [
+            "Drama",
+            "Crime",
+            "Thriller"
+          ],
+          "year": 2021,
+          "studio": "Nine Stories Productions"
+        }
+      },
+      {
+        "id": "Radarr-0-93",
+        "title": "Dear Evan Hansen",
+        "start": "2021-09-24",
+        "className": "inline-popups bg-calendar movieID--567690",
+        "imagetype": "film text-danger",
+        "imagetypeFilter": "film",
+        "downloadFilter": "text-danger",
+        "releaseType": [
+          "cinema"
+        ],
+        "bgColor": "bg-danger",
+        "details": {
+          "topTitle": "Dear Evan Hansen",
+          "bottomTitle": "\u0414\u043e\u0440\u043e\u0433\u043e\u0439 \u042d\u0432\u0430\u043d \u0425\u044d\u043d\u0441\u0435\u043d",
+          "status": "inCinemas",
+          "overview": "Evan Hansen, a high schooler with social anxiety, unintentionally gets caught up in a lie after the family of a classmate who committed suicide mistakes one of Hansen\u2019s letters for their son\u2019s suicide note.",
+          "runtime": 137,
+          "image": "plugins/images/cache/567690.jpg",
+          "ratings": 6.7,
+          "videoQuality": "unknown",
+          "audioChannels": "unknown",
+          "audioCodec": "unknown",
+          "videoCodec": "unknown",
+          "size": "unknown",
+          "genres": [
+            "Drama"
+          ],
+          "year": 2021,
+          "studio": "Universal Pictures"
+        }
+      },
+      {
+        "id": "Radarr-0-94",
+        "title": "No Time to Die",
+        "start": "2021-09-29",
+        "className": "inline-popups bg-calendar movieID--370172",
+        "imagetype": "film text-danger",
+        "imagetypeFilter": "film",
+        "downloadFilter": "text-danger",
+        "releaseType": [
+          "cinema"
+        ],
+        "bgColor": "bg-danger",
+        "details": {
+          "topTitle": "No Time to Die",
+          "bottomTitle": "B25, Bond 25, James Bond: No Time to DIe, NTTD, Mourir Peut Attendre, Nie czas umiera\u0107, 007: \u041d\u0435 \u0447\u0430\u0441 \u043f\u043e\u043c\u0438\u0440\u0430\u0442\u0438, 007: \u041d\u0435 \u0432\u0440\u0435\u043c\u044f \u0443\u043c\u0438\u0440\u0430\u0442\u044c, James Bond: \u00d6lmek \u0130\u00e7in Zaman Yok, 007\uff1a\u751f\u6b7b\u6709\u6642, Nav laiks mirt",
+          "status": "inCinemas",
+          "overview": "Bond has left active service and is enjoying a tranquil life in Jamaica. His peace is short-lived when his old friend Felix Leiter from the CIA turns up asking for help. The mission to rescue a kidnapped scientist turns out to be far more treacherous than expected, leading Bond onto the trail of a mysterious villain armed with dangerous new technology.",
+          "runtime": 163,
+          "image": "plugins/images/cache/370172.jpg",
+          "ratings": 7.1,
+          "videoQuality": "unknown",
+          "audioChannels": "unknown",
+          "audioCodec": "unknown",
+          "videoCodec": "unknown",
+          "size": "unknown",
+          "genres": [
+            "Adventure",
+            "Action",
+            "Thriller"
+          ],
+          "year": 2021,
+          "studio": "Danjaq"
+        }
+      },
+      {
+        "id": "Radarr-0-95",
+        "title": "Venom: Let There Be Carnage",
+        "start": "2021-09-30",
+        "className": "inline-popups bg-calendar movieID--580489",
+        "imagetype": "film text-danger",
+        "imagetypeFilter": "film",
+        "downloadFilter": "text-danger",
+        "releaseType": [
+          "cinema"
+        ],
+        "bgColor": "bg-danger",
+        "details": {
+          "topTitle": "Venom: Let There Be Carnage",
+          "bottomTitle": "\u8bf7\u4ee5\u4f60\u7684\u820c\u5934\u4eb2\u543b\u6211, \u10d5\u10d4\u10dc\u10dd\u10db\u10d8 2, Venom 2, \ubca0\ub188 2, \ubca0\ub188: \ub81b \ub370\uc5b4 \ube44 \uce74\ub2c8\uc9c0, Venom: Zehirli O\u0308fke 2, Venom: Carnage liberado, Otrov: Neka Bude Pokolj, Venom: Tempo de Carnificina, \u0412\u0435\u043d\u044a\u043c 2: \u0412\u0440\u0435\u043c\u0435 \u0435 \u0437\u0430 \u041a\u0430\u0440\u043d\u0438\u0434\u0436, Venom 2: Carnage p\u0159ich\u00e1z\u00ed, \u6bd2\u9b54\uff1a\u8840\u6230\u5927\u5c60\u6bba, Venom 2. - V\u00e9ront\u00f3, Venoms: B\u016bs slakti\u0146\u0161, Venomas 2, Venom: Carnage Leberado, Venom 2: Carnage, \u0412\u0435\u043d\u043e\u043c 2, \u041e\u0442\u0440\u043e\u0432: \u041d\u0435\u043a\u0430 \u0411\u0443\u0434\u0435 \u041f\u043e\u043a\u043e\u0459, Venom 2: Carnage prich\u00e1dza, Venom: Habr\u00e1 matanza, \u731b\u6bd22\uff1a\u8840\u8718\u86db, Venom: Zehirli \u00d6fke 2, \u0412\u0435\u043d\u043e\u043c 2: \u041a\u0430\u0440\u043d\u0430\u0436, Venom: \u0110\u1ed1i M\u1eb7t T\u1eed Th\u00f9",
+          "status": "inCinemas",
+          "overview": "Sequel to the box-office hit film \u0022Venom.\u0022",
+          "runtime": 97,
+          "image": "plugins/images/cache/580489.jpg",
+          "ratings": 7.6,
+          "videoQuality": "unknown",
+          "audioChannels": "unknown",
+          "audioCodec": "unknown",
+          "videoCodec": "unknown",
+          "size": "unknown",
+          "genres": [
+            "Science Fiction",
+            "Action"
+          ],
+          "year": 2021,
+          "studio": "Marvel Entertainment"
+        }
+      },
+      {
+        "id": "Radarr-0-96",
+        "title": "The Addams Family 2",
+        "start": "2021-10-01",
+        "className": "inline-popups bg-calendar movieID--639721",
+        "imagetype": "film text-success",
+        "imagetypeFilter": "film",
+        "downloadFilter": "text-success",
+        "releaseType": [
+          "digital",
+          "cinema"
+        ],
+        "bgColor": "bg-success",
+        "details": {
+          "topTitle": "The Addams Family 2",
+          "bottomTitle": "\u0421\u0435\u043c\u0435\u0439\u043a\u0430 \u0410\u0434\u0434\u0430\u043c\u0441 2, Untitled Addams Family Sequel, Familia Addams 2, Familien Addams 2, Die Addams Family 2, \u7231\u767b\u58eb\u5bb6\u5ead2, La Familia Addams 2",
+          "status": "announced",
+          "overview": "The Addams get tangled up in more wacky adventures and find themselves involved in hilarious run-ins with all sorts of unsuspecting characters.",
+          "runtime": 93,
+          "image": "plugins/images/cache/639721.jpg",
+          "ratings": 6,
+          "videoQuality": "WEBDL-1080p",
+          "audioChannels": 5.1,
+          "audioCodec": null,
+          "videoCodec": "h264",
+          "size": 5303097823,
+          "genres": [
+            "Animation",
+            "Comedy",
+            "Family"
+          ],
+          "year": 2021,
+          "studio": "Metro-Goldwyn-Mayer"
+        }
+      },
+      {
+        "id": "Radarr-0-97",
+        "title": "Old Henry",
+        "start": "2021-11-08",
+        "className": "inline-popups bg-calendar movieID--785663",
+        "imagetype": "film text-info",
+        "imagetypeFilter": "film",
+        "downloadFilter": "text-info",
+        "releaseType": [
+          "digital"
+        ],
+        "bgColor": "bg-info",
+        "details": {
+          "topTitle": "Old Henry",
+          "bottomTitle": "",
+          "status": "announced",
+          "overview": "A widowed farmer and his son warily take in a mysterious, injured man with a satchel of cash. When a posse of men claiming to be the law come for the money, the farmer must decide who to trust. Defending a siege of his homestead, the farmer reveals a talent for gun-slinging that surprises everyone calling his true identity into question.",
+          "runtime": 99,
+          "image": "plugins/images/cache/785663.jpg",
+          "ratings": 0,
+          "videoQuality": "unknown",
+          "audioChannels": "unknown",
+          "audioCodec": "unknown",
+          "videoCodec": "unknown",
+          "size": "unknown",
+          "genres": [
+            "Western",
+            "Thriller"
+          ],
+          "year": 2021,
+          "studio": "Shout! Studios"
+        }
+      },
+      {
+        "id": "Radarr-0-98",
+        "title": "Old Henry",
+        "start": "2021-10-01",
+        "className": "inline-popups bg-calendar movieID--785663",
+        "imagetype": "film text-danger",
+        "imagetypeFilter": "film",
+        "downloadFilter": "text-danger",
+        "releaseType": [
+          "cinema"
+        ],
+        "bgColor": "bg-danger",
+        "details": {
+          "topTitle": "Old Henry",
+          "bottomTitle": "",
+          "status": "announced",
+          "overview": "A widowed farmer and his son warily take in a mysterious, injured man with a satchel of cash. When a posse of men claiming to be the law come for the money, the farmer must decide who to trust. Defending a siege of his homestead, the farmer reveals a talent for gun-slinging that surprises everyone calling his true identity into question.",
+          "runtime": 99,
+          "image": "plugins/images/cache/785663.jpg",
+          "ratings": 0,
+          "videoQuality": "unknown",
+          "audioChannels": "unknown",
+          "audioCodec": "unknown",
+          "videoCodec": "unknown",
+          "size": "unknown",
+          "genres": [
+            "Western",
+            "Thriller"
+          ],
+          "year": 2021,
+          "studio": "Shout! Studios"
+        }
+      },
+      {
+        "id": "Radarr-0-99",
+        "title": "The Last Duel",
+        "start": "2021-10-13",
+        "className": "inline-popups bg-calendar movieID--617653",
+        "imagetype": "film text-info",
+        "imagetypeFilter": "film",
+        "downloadFilter": "text-info",
+        "releaseType": [
+          "cinema"
+        ],
+        "bgColor": "bg-info",
+        "details": {
+          "topTitle": "The Last Duel",
+          "bottomTitle": "",
+          "status": "announced",
+          "overview": "King Charles VI declares that Knight Jean de Carrouges settle his dispute with his squire by challenging him to a duel.",
+          "runtime": 152,
+          "image": "plugins/images/cache/617653.jpg",
+          "ratings": 0,
+          "videoQuality": "unknown",
+          "audioChannels": "unknown",
+          "audioCodec": "unknown",
+          "videoCodec": "unknown",
+          "size": "unknown",
+          "genres": [
+            "Drama",
+            "History"
+          ],
+          "year": 2021,
+          "studio": "Pearl Street Films"
+        }
+      },
+      {
+        "id": "Radarr-0-100",
+        "title": "Halloween Kills",
+        "start": "2021-10-15",
+        "className": "inline-popups bg-calendar movieID--610253",
+        "imagetype": "film text-info",
+        "imagetypeFilter": "film",
+        "downloadFilter": "text-info",
+        "releaseType": [
+          "digital"
+        ],
+        "bgColor": "bg-info",
+        "details": {
+          "topTitle": "Halloween Kills",
+          "bottomTitle": "\u0413\u0435\u043b\u043b\u043e\u0432\u0456\u043d \u0443\u0431\u0438\u0432\u0430\u0454, Gyilkos Halloween, Halloween zabija, Halloween: O Terror Continua, Halloween Mata, Halloween 12",
+          "status": "announced",
+          "overview": "Minutes after Laurie Strode, her daughter Karen and granddaughter Allyson leave the masked monster Michael Myers caged and burning in Laurie's basement, Laurie is rushed to the hospital with fatal injuries, believing she has finally killed her algorithm.  But when Michael manages to free himself from Laurie's trap, his bloodbath ritual begins again. As Laurie fights her pain and prepares to defend against it, she inspires everyone in Haddonfield to rise up against her unstoppable monster. But when a group of other survivors of Michael's first wave of violence decide to take matters into their own hands, a mob of vigilantes gathers to hunt Michael down.",
+          "runtime": 106,
+          "image": "plugins/images/cache/610253.jpg",
+          "ratings": 0,
+          "videoQuality": "unknown",
+          "audioChannels": "unknown",
+          "audioCodec": "unknown",
+          "videoCodec": "unknown",
+          "size": "unknown",
+          "genres": [
+            "Horror",
+            "Thriller",
+            "Crime"
+          ],
+          "year": 2021,
+          "studio": "Universal Pictures"
+        }
+      },
+      {
+        "id": "Radarr-0-101",
+        "title": "Halloween Kills",
+        "start": "2021-10-14",
+        "className": "inline-popups bg-calendar movieID--610253",
+        "imagetype": "film text-info",
+        "imagetypeFilter": "film",
+        "downloadFilter": "text-info",
+        "releaseType": [
+          "cinema"
+        ],
+        "bgColor": "bg-info",
+        "details": {
+          "topTitle": "Halloween Kills",
+          "bottomTitle": "\u0413\u0435\u043b\u043b\u043e\u0432\u0456\u043d \u0443\u0431\u0438\u0432\u0430\u0454, Gyilkos Halloween, Halloween zabija, Halloween: O Terror Continua, Halloween Mata, Halloween 12",
+          "status": "announced",
+          "overview": "Minutes after Laurie Strode, her daughter Karen and granddaughter Allyson leave the masked monster Michael Myers caged and burning in Laurie's basement, Laurie is rushed to the hospital with fatal injuries, believing she has finally killed her algorithm.  But when Michael manages to free himself from Laurie's trap, his bloodbath ritual begins again. As Laurie fights her pain and prepares to defend against it, she inspires everyone in Haddonfield to rise up against her unstoppable monster. But when a group of other survivors of Michael's first wave of violence decide to take matters into their own hands, a mob of vigilantes gathers to hunt Michael down.",
+          "runtime": 106,
+          "image": "plugins/images/cache/610253.jpg",
+          "ratings": 0,
+          "videoQuality": "unknown",
+          "audioChannels": "unknown",
+          "audioCodec": "unknown",
+          "videoCodec": "unknown",
+          "size": "unknown",
+          "genres": [
+            "Horror",
+            "Thriller",
+            "Crime"
+          ],
+          "year": 2021,
+          "studio": "Universal Pictures"
+        }
+      },
+      {
+        "id": "Radarr-0-102",
+        "title": "The Harder They Fall",
+        "start": "2021-10-06",
+        "className": "inline-popups bg-calendar movieID--618162",
+        "imagetype": "film text-info",
+        "imagetypeFilter": "film",
+        "downloadFilter": "text-info",
+        "releaseType": [
+          "digital"
+        ],
+        "bgColor": "bg-info",
+        "details": {
+          "topTitle": "The Harder They Fall",
+          "bottomTitle": "",
+          "status": "announced",
+          "overview": "Gunning for revenge, outlaw Nat Love saddles up with his gang to take down enemy Rufus Buck, a ruthless crime boss who just got sprung from prison.",
+          "runtime": 137,
+          "image": "plugins/images/cache/618162.jpg",
+          "ratings": 0,
+          "videoQuality": "unknown",
+          "audioChannels": "unknown",
+          "audioCodec": "unknown",
+          "videoCodec": "unknown",
+          "size": "unknown",
+          "genres": [
+            "Western"
+          ],
+          "year": 2021,
+          "studio": "Overbrook Entertainment"
+        }
+      },
+      {
+        "id": "Radarr-0-103",
+        "title": "The Harder They Fall",
+        "start": "2021-10-22",
+        "className": "inline-popups bg-calendar movieID--618162",
+        "imagetype": "film text-info",
+        "imagetypeFilter": "film",
+        "downloadFilter": "text-info",
+        "releaseType": [
+          "cinema"
+        ],
+        "bgColor": "bg-info",
+        "details": {
+          "topTitle": "The Harder They Fall",
+          "bottomTitle": "",
+          "status": "announced",
+          "overview": "Gunning for revenge, outlaw Nat Love saddles up with his gang to take down enemy Rufus Buck, a ruthless crime boss who just got sprung from prison.",
+          "runtime": 137,
+          "image": "plugins/images/cache/618162.jpg",
+          "ratings": 0,
+          "videoQuality": "unknown",
+          "audioChannels": "unknown",
+          "audioCodec": "unknown",
+          "videoCodec": "unknown",
+          "size": "unknown",
+          "genres": [
+            "Western"
+          ],
+          "year": 2021,
+          "studio": "Overbrook Entertainment"
+        }
+      },
+      {
+        "id": "Radarr-0-104",
+        "title": "American Night",
+        "start": "2021-10-01",
+        "className": "inline-popups bg-calendar movieID--695080",
+        "imagetype": "film text-success",
+        "imagetypeFilter": "film",
+        "downloadFilter": "text-success",
+        "releaseType": [
+          "digital"
+        ],
+        "bgColor": "bg-success",
+        "details": {
+          "topTitle": "American Night",
+          "bottomTitle": "",
+          "status": "announced",
+          "overview": "A neo-noir set in the New York City's corrupt contemporary art world where the art dealer John Kaplan and the ruthless head of New York's mafia, Michael Rubino, fight for money, art, power and love.",
+          "runtime": 123,
+          "image": "plugins/images/cache/695080.jpg",
+          "ratings": 0,
+          "videoQuality": "WEBDL-1080p",
+          "audioChannels": 5.1,
+          "audioCodec": null,
+          "videoCodec": "h264",
+          "size": 6627146463,
+          "genres": [
+            "Action",
+            "Thriller"
+          ],
+          "year": 2021,
+          "studio": "Martha Production"
+        }
+      },
+      {
+        "id": "Radarr-0-105",
+        "title": "American Night",
+        "start": "2021-10-22",
+        "className": "inline-popups bg-calendar movieID--695080",
+        "imagetype": "film text-success",
+        "imagetypeFilter": "film",
+        "downloadFilter": "text-success",
+        "releaseType": [
+          "cinema"
+        ],
+        "bgColor": "bg-success",
+        "details": {
+          "topTitle": "American Night",
+          "bottomTitle": "",
+          "status": "announced",
+          "overview": "A neo-noir set in the New York City's corrupt contemporary art world where the art dealer John Kaplan and the ruthless head of New York's mafia, Michael Rubino, fight for money, art, power and love.",
+          "runtime": 123,
+          "image": "plugins/images/cache/695080.jpg",
+          "ratings": 0,
+          "videoQuality": "WEBDL-1080p",
+          "audioChannels": 5.1,
+          "audioCodec": null,
+          "videoCodec": "h264",
+          "size": 6627146463,
+          "genres": [
+            "Action",
+            "Thriller"
+          ],
+          "year": 2021,
+          "studio": "Martha Production"
+        }
+      },
+      {
+        "id": "Radarr-0-106",
+        "title": "Antlers",
+        "start": "2021-10-28",
+        "className": "inline-popups bg-calendar movieID--516329",
+        "imagetype": "film text-info",
+        "imagetypeFilter": "film",
+        "downloadFilter": "text-info",
+        "releaseType": [
+          "cinema"
+        ],
+        "bgColor": "bg-info",
+        "details": {
+          "topTitle": "Antlers",
+          "bottomTitle": "Esp\u00edritos Obscuros",
+          "status": "announced",
+          "overview": "A young teacher discovers that her troubled student's father and younger brother harbor a deadly supernatural secret. Taking the boy into her care, the teacher must fight for their survival against horrors beyond imagination.",
+          "runtime": 99,
+          "image": "plugins/images/cache/516329.jpg",
+          "ratings": 0,
+          "videoQuality": "unknown",
+          "audioChannels": "unknown",
+          "audioCodec": "unknown",
+          "videoCodec": "unknown",
+          "size": "unknown",
+          "genres": [
+            "Horror",
+            "Mystery"
+          ],
+          "year": 2021,
+          "studio": "Searchlight Pictures"
+        }
+      },
+      {
+        "id": "Radarr-1-1",
+        "title": "Shang-Chi and the Legend of the Ten Rings",
+        "start": "2021-11-12",
+        "className": "inline-popups bg-calendar movieID--566525",
+        "imagetype": "film text-info",
+        "imagetypeFilter": "film",
+        "downloadFilter": "text-info",
+        "releaseType": [
+          "digital"
+        ],
+        "bgColor": "bg-info",
+        "details": {
+          "topTitle": "Shang-Chi and the Legend of the Ten Rings",
+          "bottomTitle": "\u0428\u0430\u043d\u0491 \u0427\u0456 \u0442\u0430 \u041b\u0435\u0433\u0435\u043d\u0434\u0430 \u0414\u0435\u0441\u044f\u0442\u0438 \u041a\u0456\u043b\u0435\u0446\u044c, Shang-Chi ve On Y\u00fcz\u00fck Efsanesi, Shang Chi y la leyenda de los diez anillos, \u5c1a\u6c23\u8207\u5341\u74b0\u5e6b\u50b3\u5947, Shang-Chi e a Lenda dos Dez An\u00e9is, \u0634\u0627\u0646\u063a-\u0686\u064a \u0648\u0623\u0633\u0637\u0648\u0631\u0629 \u0627\u0644\u062d\u0644\u0642\u0627\u062a \u0627\u0644\u0639\u0634\u0631, Shang-Chi at ang Alamat ng Sampung Singsing, \u5c1a\u6c14\u4e0e\u5341\u6212\u4f20\u5947, \u0428\u0430\u043d-\u0427\u0438 \u0438 \u043b\u0435\u0433\u0435\u043d\u0434\u0430\u0442\u0430 \u0437\u0430 \u0434\u0435\u0441\u0435\u0442\u0442\u0435 \u043f\u0440\u044a\u0441\u0442\u0435\u043d\u0430, Shang-Chi et la l\u00e9gende des dix anneaux, Shang-Chi i legenda o Deset Prstenova, Shang-Chi a legenda o deseti prstenech, \u0634\u0627\u0646\u062c \u0634\u064a \u0648\u0623\u0633\u0637\u0648\u0631\u0629 \u0627\u0644\u062e\u0648\u0627\u062a\u0645 \u0627\u0644\u0639\u0634\u0631\u0629, Shang-Chi ja K\u00fcmne R\u00f5nga legend, O Shang-Chi \u03ba\u03b1\u03b9 \u03bf \u0398\u03c1\u03cd\u03bb\u03bf\u03c2 \u03c4\u03c9\u03bd \u0394\u03ad\u03ba\u03b1 \u0394\u03b1\u03c7\u03c4\u03c5\u03bb\u03b9\u03b4\u03b9\u03ce\u03bd, Shang-Chi \u00e9s a T\u00edz Gy\u0171r\u0171 legend\u00e1ja, \u0936\u093e\u0902\u0917-\u091a\u0940 \u090f\u0902\u0921 \u0926 \u0932\u0940\u091c\u0947\u0902\u0921 \u0911\u092b \u0926 \u091f\u0947\u0928 \u0930\u093f\u0902\u0917\u094d\u0938, Shang-Chi e la leggenda dei Dieci Anelli, \u30b7\u30e3\u30f3\u30fb\u30c1\u30fc\uff0f\u30c6\u30f3\u30fb\u30ea\u30f3\u30b0\u30b9\u306e\u4f1d\u8aac, \u0160an\u010di un le\u0123enda par desmit gredzeniem, \u0160ang-\u010ci ir de\u0161imties \u017eied\u0173 legenda, Shang-Chi i legenda dziesi\u0119ciu pier\u015bcieni, Shang-Chi \u0219i legenda celor zece inele, \u0428\u0430\u043d-\u0427\u0438 \u0438 \u043b\u0435\u0433\u0435\u043d\u0434\u0430 \u0434\u0435\u0441\u044f\u0442\u0438 \u043a\u043e\u043b\u0435\u0446, \u0634\u0627\u0646\u063a-\u0634\u064a: \u0630\u0627 \u0644\u064a\u062c\u064a\u0646\u062f \u0627\u0648\u0641 \u0630\u0627 10 \u0631\u064a\u0646\u0642\u0632, \u0160eng-\u010ci i legenda o deset prstenova, Shang-Chi: Legenda o desiatich prste\u0148och, \uc0f9\uce58\uc640 \ud150 \ub9c1\uc988\uc758 \uc804\uc124, Shan-Chi va o'n uzuk afsonasi, Shang-Chi V\u00e0 Huy\u1ec1n Tho\u1ea1i Th\u1eadp Lu\u00e2n, Steamboat",
+          "status": "inCinemas",
+          "overview": "Shang-Chi must confront the past he thought he left behind when he is drawn into the web of the mysterious Ten Rings organization.",
+          "runtime": 132,
+          "image": "plugins/images/cache/566525.jpg",
+          "ratings": 7.8,
+          "videoQuality": "unknown",
+          "audioChannels": "unknown",
+          "audioCodec": "unknown",
+          "videoCodec": "unknown",
+          "size": "unknown",
+          "genres": [
+            "Action",
+            "Adventure",
+            "Fantasy"
+          ],
+          "year": 2021,
+          "studio": "Marvel Studios"
+        }
+      },
+      {
+        "id": "Radarr-1-2",
+        "title": "Shang-Chi and the Legend of the Ten Rings",
+        "start": "2021-09-01",
+        "className": "inline-popups bg-calendar movieID--566525",
+        "imagetype": "film text-danger",
+        "imagetypeFilter": "film",
+        "downloadFilter": "text-danger",
+        "releaseType": [
+          "cinema"
+        ],
+        "bgColor": "bg-danger",
+        "details": {
+          "topTitle": "Shang-Chi and the Legend of the Ten Rings",
+          "bottomTitle": "\u0428\u0430\u043d\u0491 \u0427\u0456 \u0442\u0430 \u041b\u0435\u0433\u0435\u043d\u0434\u0430 \u0414\u0435\u0441\u044f\u0442\u0438 \u041a\u0456\u043b\u0435\u0446\u044c, Shang-Chi ve On Y\u00fcz\u00fck Efsanesi, Shang Chi y la leyenda de los diez anillos, \u5c1a\u6c23\u8207\u5341\u74b0\u5e6b\u50b3\u5947, Shang-Chi e a Lenda dos Dez An\u00e9is, \u0634\u0627\u0646\u063a-\u0686\u064a \u0648\u0623\u0633\u0637\u0648\u0631\u0629 \u0627\u0644\u062d\u0644\u0642\u0627\u062a \u0627\u0644\u0639\u0634\u0631, Shang-Chi at ang Alamat ng Sampung Singsing, \u5c1a\u6c14\u4e0e\u5341\u6212\u4f20\u5947, \u0428\u0430\u043d-\u0427\u0438 \u0438 \u043b\u0435\u0433\u0435\u043d\u0434\u0430\u0442\u0430 \u0437\u0430 \u0434\u0435\u0441\u0435\u0442\u0442\u0435 \u043f\u0440\u044a\u0441\u0442\u0435\u043d\u0430, Shang-Chi et la l\u00e9gende des dix anneaux, Shang-Chi i legenda o Deset Prstenova, Shang-Chi a legenda o deseti prstenech, \u0634\u0627\u0646\u062c \u0634\u064a \u0648\u0623\u0633\u0637\u0648\u0631\u0629 \u0627\u0644\u062e\u0648\u0627\u062a\u0645 \u0627\u0644\u0639\u0634\u0631\u0629, Shang-Chi ja K\u00fcmne R\u00f5nga legend, O Shang-Chi \u03ba\u03b1\u03b9 \u03bf \u0398\u03c1\u03cd\u03bb\u03bf\u03c2 \u03c4\u03c9\u03bd \u0394\u03ad\u03ba\u03b1 \u0394\u03b1\u03c7\u03c4\u03c5\u03bb\u03b9\u03b4\u03b9\u03ce\u03bd, Shang-Chi \u00e9s a T\u00edz Gy\u0171r\u0171 legend\u00e1ja, \u0936\u093e\u0902\u0917-\u091a\u0940 \u090f\u0902\u0921 \u0926 \u0932\u0940\u091c\u0947\u0902\u0921 \u0911\u092b \u0926 \u091f\u0947\u0928 \u0930\u093f\u0902\u0917\u094d\u0938, Shang-Chi e la leggenda dei Dieci Anelli, \u30b7\u30e3\u30f3\u30fb\u30c1\u30fc\uff0f\u30c6\u30f3\u30fb\u30ea\u30f3\u30b0\u30b9\u306e\u4f1d\u8aac, \u0160an\u010di un le\u0123enda par desmit gredzeniem, \u0160ang-\u010ci ir de\u0161imties \u017eied\u0173 legenda, Shang-Chi i legenda dziesi\u0119ciu pier\u015bcieni, Shang-Chi \u0219i legenda celor zece inele, \u0428\u0430\u043d-\u0427\u0438 \u0438 \u043b\u0435\u0433\u0435\u043d\u0434\u0430 \u0434\u0435\u0441\u044f\u0442\u0438 \u043a\u043e\u043b\u0435\u0446, \u0634\u0627\u0646\u063a-\u0634\u064a: \u0630\u0627 \u0644\u064a\u062c\u064a\u0646\u062f \u0627\u0648\u0641 \u0630\u0627 10 \u0631\u064a\u0646\u0642\u0632, \u0160eng-\u010ci i legenda o deset prstenova, Shang-Chi: Legenda o desiatich prste\u0148och, \uc0f9\uce58\uc640 \ud150 \ub9c1\uc988\uc758 \uc804\uc124, Shan-Chi va o'n uzuk afsonasi, Shang-Chi V\u00e0 Huy\u1ec1n Tho\u1ea1i Th\u1eadp Lu\u00e2n, Steamboat",
+          "status": "inCinemas",
+          "overview": "Shang-Chi must confront the past he thought he left behind when he is drawn into the web of the mysterious Ten Rings organization.",
+          "runtime": 132,
+          "image": "plugins/images/cache/566525.jpg",
+          "ratings": 7.8,
+          "videoQuality": "unknown",
+          "audioChannels": "unknown",
+          "audioCodec": "unknown",
+          "videoCodec": "unknown",
+          "size": "unknown",
+          "genres": [
+            "Action",
+            "Adventure",
+            "Fantasy"
+          ],
+          "year": 2021,
+          "studio": "Marvel Studios"
+        }
+      },
+      {
+        "id": "Radarr-1-3",
+        "title": "Kate",
+        "start": "2021-09-10",
+        "className": "inline-popups bg-calendar movieID--597891",
+        "imagetype": "film text-success",
+        "imagetypeFilter": "film",
+        "downloadFilter": "text-success",
+        "releaseType": [
+          "digital",
+          "cinema"
+        ],
+        "bgColor": "bg-success",
+        "details": {
+          "topTitle": "Kate",
+          "bottomTitle": "\u0e40\u0e04\u0e17",
+          "status": "released",
+          "overview": "After she's irreversibly poisoned, a ruthless criminal operative has less than 24 hours to exact revenge on her enemies and in the process forms an unexpected bond with the daughter of one of her past victims.",
+          "runtime": 106,
+          "image": "plugins/images/cache/597891.jpg",
+          "ratings": 6.8,
+          "videoQuality": "WEBRip-2160p",
+          "audioChannels": 5.1,
+          "audioCodec": null,
+          "videoCodec": "x265",
+          "size": 13594898681,
+          "genres": [
+            "Action",
+            "Thriller"
+          ],
+          "year": 2021,
+          "studio": "Clubhouse Pictures"
+        }
+      }
+    ]
+  }
+}

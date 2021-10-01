@@ -202,6 +202,9 @@ trait SonarrHomepageItem
 		if (!$this->homepageItemPermissions($this->sonarrHomepagePermissions('calendar'), true)) {
 			return false;
 		}
+		if ($this->demo) {
+			return $this->demoData('sonarr/calendar.json');
+		}
 		$calendarItems = array();
 		$list = $this->csvHomepageUrlToken($this->config['sonarrURL'], $this->config['sonarrToken']);
 		foreach ($list as $key => $value) {

@@ -172,6 +172,9 @@ trait LidarrHomepageItem
 		if (!$this->homepageItemPermissions($this->lidarrHomepagePermissions('calendar'), true)) {
 			return false;
 		}
+		if ($this->demo) {
+			return $this->demoData('lidarr/calendar.json');
+		}
 		$calendarItems = array();
 		$list = $this->csvHomepageUrlToken($this->config['lidarrURL'], $this->config['lidarrToken']);
 		foreach ($list as $key => $value) {

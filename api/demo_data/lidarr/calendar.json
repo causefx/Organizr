@@ -1,0 +1,2891 @@
+{
+  "response": {
+    "result": "success",
+    "message": null,
+    "data": [
+      {
+        "id": "Lidarr-0-1",
+        "title": "Imagine Dragons",
+        "start": "2021-09-03T00:00:00Z",
+        "className": "inline-popups bg-calendar calendar-item musicID--",
+        "imagetype": "music text-danger",
+        "imagetypeFilter": "music",
+        "downloadFilter": "text-danger",
+        "bgColor": "bg-danger",
+        "details": {
+          "seasonCount": "",
+          "status": "",
+          "topTitle": "Mercury, Act 1",
+          "bottomTitle": "Imagine Dragons",
+          "overview": "Imagine Dragons is an American pop rock band from Las Vegas, Nevada, consisting of lead singer Dan Reynolds, lead guitarist Wayne Sermon, bassist Ben McKee, and drummer Daniel Platzman. The band first gained exposure with the release of their single \u0022It's Time\u0022, followed by their award-winning debut studio album Night Visions (2012), which resulted in the chart-topping singles \u0022Radioactive\u0022 and \u0022Demons\u0022. Rolling Stone named \u0022Radioactive\u0022, which held the record for most weeks charted on the Billboard Hot 100, the \u0022biggest rock hit of the year\u0022. MTV called them \u0022the year's biggest breakout band\u0022, and Billboard named them their \u0022Breakthrough Band of 2013\u0022 and \u0022Biggest Band of 2017\u0022. and placed them at the top of their \u0022Year in Rock\u0022 rankings for 2013, 2017, and 2018.  Imagine Dragons topped the Billboard Year-End \u0022Top Artists \u2013 Duo/Group\u0022 category in 2018.The band's second studio album Smoke + Mirrors (2015) reached number one in the US, Canada and the UK.  The album was preceded by the top 40 single \u0022I Bet My Life\u0022, and second and third singles, \u0022Gold\u0022 and \u0022Shots\u0022. The band then embarked on a ten month long world tour, which led to a brief hiatus in 2016, with occasional performances and soundtrack contributions throughout the remainder of the year. The band released their third studio album, Evolve (2017) which resulted in three chart-topping singles, \u0022Believer\u0022, \u0022Thunder\u0022, and \u0022Whatever It Takes\u0022, also making them the artist with the most weeks at number-one on the Billboard Hot Rock Songs chart. The album reached the top five in many countries. After the Evolve World Tour was completed, Imagine Dragons released their fourth studio album Origins, on November 9, 2018. \u0022Natural\u0022 and \u0022Zero\u0022 were released as the first singles off the album. Afterwards, \u0022Machine\u0022 and \u0022Bad Liar\u0022 were also released. A previously released single titled \u0022Born to Be Yours\u0022 was included on a deluxe version of the album. While all four albums were commercially successful, critical reception was mixed.Imagine Dragons has won three American Music Awards, nine Billboard Music Awards, one Grammy Award, one MTV Video Music Award and one World Music Award. In May 2014, the band was nominated for fourteen Billboard Music Awards, including Top Artist of the Year and a Milestone Award, which recognizes innovation and creativity of artists across different genres. In April 2018, the band was nominated eleven more times for Billboard Music Awards.Imagine Dragons have sold 35 million RIAA certified singles in the US and 20 million albums worldwide. They were the most streamed group of 2018 on Spotify and are the first rock act to have two songs, \u0022Believer\u0022 and \u0022Thunder\u0022 to surpass one billion streams each. Imagine Dragons have the top three rock songs of the 2010s on the Billboard charts, \u0022Believer\u0022, \u0022Thunder\u0022, and \u0022Radioactive\u0022.",
+          "runtime": "",
+          "image": "https://assets.fanart.tv/fanart/music/012151a8-0f9a-44c9-997f-ebd68b5389f9/artistbackground/imagine-dragons-4fe4c62e40616.jpg",
+          "ratings": 8.3,
+          "videoQuality": "unknown",
+          "audioChannels": "unknown",
+          "audioCodec": "unknown",
+          "videoCodec": "unknown",
+          "size": "unknown",
+          "genres": []
+        },
+        "data": {
+          "title": "Mercury, Act 1",
+          "disambiguation": "",
+          "overview": "",
+          "artistId": 953,
+          "foreignAlbumId": "9ce73eb5-8929-4934-9cb9-6d386c92762e",
+          "monitored": true,
+          "anyReleaseOk": true,
+          "profileId": 1,
+          "duration": 589390,
+          "albumType": "Album",
+          "secondaryTypes": [],
+          "mediumCount": 1,
+          "ratings": {
+            "votes": 0,
+            "value": 0
+          },
+          "releaseDate": "2021-09-03T00:00:00Z",
+          "releases": [
+            {
+              "id": 38373,
+              "albumId": 8556,
+              "foreignReleaseId": "b9d98d3f-4821-47ec-977d-2058ef5be4dc",
+              "title": "Mercury, Act 1",
+              "status": "Official",
+              "duration": 589390,
+              "trackCount": 13,
+              "media": [
+                {
+                  "mediumNumber": 1,
+                  "mediumName": "",
+                  "mediumFormat": "Digital Media"
+                }
+              ],
+              "mediumCount": 1,
+              "disambiguation": "",
+              "country": [
+                "[Worldwide]"
+              ],
+              "label": [
+                "Interscope Records",
+                "KIDinaKORNER"
+              ],
+              "format": "Digital Media",
+              "monitored": true
+            }
+          ],
+          "genres": [],
+          "media": [
+            {
+              "mediumNumber": 1,
+              "mediumName": "",
+              "mediumFormat": "Digital Media"
+            }
+          ],
+          "artist": {
+            "status": "continuing",
+            "ended": false,
+            "artistName": "Imagine Dragons",
+            "foreignArtistId": "012151a8-0f9a-44c9-997f-ebd68b5389f9",
+            "tadbId": 0,
+            "discogsId": 0,
+            "overview": "Imagine Dragons is an American pop rock band from Las Vegas, Nevada, consisting of lead singer Dan Reynolds, lead guitarist Wayne Sermon, bassist Ben McKee, and drummer Daniel Platzman. The band first gained exposure with the release of their single \u0022It's Time\u0022, followed by their award-winning debut studio album Night Visions (2012), which resulted in the chart-topping singles \u0022Radioactive\u0022 and \u0022Demons\u0022. Rolling Stone named \u0022Radioactive\u0022, which held the record for most weeks charted on the Billboard Hot 100, the \u0022biggest rock hit of the year\u0022. MTV called them \u0022the year's biggest breakout band\u0022, and Billboard named them their \u0022Breakthrough Band of 2013\u0022 and \u0022Biggest Band of 2017\u0022. and placed them at the top of their \u0022Year in Rock\u0022 rankings for 2013, 2017, and 2018.  Imagine Dragons topped the Billboard Year-End \u0022Top Artists \u2013 Duo/Group\u0022 category in 2018.The band's second studio album Smoke + Mirrors (2015) reached number one in the US, Canada and the UK.  The album was preceded by the top 40 single \u0022I Bet My Life\u0022, and second and third singles, \u0022Gold\u0022 and \u0022Shots\u0022. The band then embarked on a ten month long world tour, which led to a brief hiatus in 2016, with occasional performances and soundtrack contributions throughout the remainder of the year. The band released their third studio album, Evolve (2017) which resulted in three chart-topping singles, \u0022Believer\u0022, \u0022Thunder\u0022, and \u0022Whatever It Takes\u0022, also making them the artist with the most weeks at number-one on the Billboard Hot Rock Songs chart. The album reached the top five in many countries. After the Evolve World Tour was completed, Imagine Dragons released their fourth studio album Origins, on November 9, 2018. \u0022Natural\u0022 and \u0022Zero\u0022 were released as the first singles off the album. Afterwards, \u0022Machine\u0022 and \u0022Bad Liar\u0022 were also released. A previously released single titled \u0022Born to Be Yours\u0022 was included on a deluxe version of the album. While all four albums were commercially successful, critical reception was mixed.Imagine Dragons has won three American Music Awards, nine Billboard Music Awards, one Grammy Award, one MTV Video Music Award and one World Music Award. In May 2014, the band was nominated for fourteen Billboard Music Awards, including Top Artist of the Year and a Milestone Award, which recognizes innovation and creativity of artists across different genres. In April 2018, the band was nominated eleven more times for Billboard Music Awards.Imagine Dragons have sold 35 million RIAA certified singles in the US and 20 million albums worldwide. They were the most streamed group of 2018 on Spotify and are the first rock act to have two songs, \u0022Believer\u0022 and \u0022Thunder\u0022 to surpass one billion streams each. Imagine Dragons have the top three rock songs of the 2010s on the Billboard charts, \u0022Believer\u0022, \u0022Thunder\u0022, and \u0022Radioactive\u0022.",
+            "artistType": "Group",
+            "disambiguation": "",
+            "links": [
+              {
+                "url": "https://twitter.com/Imaginedragons",
+                "name": "twitter"
+              },
+              {
+                "url": "https://www.youtube.com/user/ImagineDragonsVEVO",
+                "name": "youtube"
+              },
+              {
+                "url": "https://www.facebook.com/ImagineDragons",
+                "name": "facebook"
+              },
+              {
+                "url": "https://myspace.com/imaginedragons",
+                "name": "myspace"
+              },
+              {
+                "url": "https://www.last.fm/music/Imagine+Dragons",
+                "name": "last"
+              },
+              {
+                "url": "http://www.imaginedragonsmusic.com/",
+                "name": "imaginedragonsmusic"
+              },
+              {
+                "url": "https://www.discogs.com/artist/2727700",
+                "name": "discogs"
+              },
+              {
+                "url": "https://rateyourmusic.com/artist/imagine_dragons",
+                "name": "rateyourmusic"
+              },
+              {
+                "url": "https://www.allmusic.com/artist/mn0002040645",
+                "name": "allmusic"
+              },
+              {
+                "url": "https://www.wikidata.org/wiki/Q391348",
+                "name": "wikidata"
+              },
+              {
+                "url": "https://www.bbc.co.uk/music/artists/012151a8-0f9a-44c9-997f-ebd68b5389f9",
+                "name": "bbc"
+              },
+              {
+                "url": "https://www.imdb.com/name/nm4995251/",
+                "name": "imdb"
+              },
+              {
+                "url": "http://www.purevolume.com/imaginedragons",
+                "name": "purevolume"
+              },
+              {
+                "url": "https://secondhandsongs.com/artist/73000",
+                "name": "secondhandsongs"
+              },
+              {
+                "url": "https://soundcloud.com/imaginedragons",
+                "name": "soundcloud"
+              },
+              {
+                "url": "http://viaf.org/viaf/249570171",
+                "name": "viaf"
+              },
+              {
+                "url": "https://commons.wikimedia.org/wiki/File:Imagine_Dragons,_2012.jpg",
+                "name": "wikimedia"
+              },
+              {
+                "url": "http://www.musik-sammler.de/artist/364588",
+                "name": "musik-sammler"
+              },
+              {
+                "url": "https://open.spotify.com/artist/53XhwfbYqKCa1cC15pYq2q",
+                "name": "spotify"
+              },
+              {
+                "url": "http://img2-ak.lst.fm/i/u/770x0/2c2ffdfa64ad4db8d6b5e8c47474fbe8.jpg",
+                "name": "lst"
+              },
+              {
+                "url": "https://genius.com/artists/Imagine-dragons",
+                "name": "genius"
+              },
+              {
+                "url": "https://www.bandsintown.com/a/330488",
+                "name": "bandsintown"
+              },
+              {
+                "url": "https://itunes.apple.com/artist/id358714030",
+                "name": "apple"
+              },
+              {
+                "url": "https://www.deezer.com/artist/416239",
+                "name": "deezer"
+              },
+              {
+                "url": "https://www.whosampled.com/Imagine-Dragons/",
+                "name": "whosampled"
+              },
+              {
+                "url": "https://play.google.com/store/music/artist?id=Ah74rbxbewgnr23b3iymy6mm2ay",
+                "name": "google"
+              },
+              {
+                "url": "https://imvdb.com/n/imagine-dragons",
+                "name": "imvdb"
+              },
+              {
+                "url": "https://www.songkick.com/artists/2506696-imagine-dragons",
+                "name": "songkick"
+              },
+              {
+                "url": "https://www.setlist.fm/setlists/imagine-dragons-5bd1b7fc.html",
+                "name": "setlist"
+              },
+              {
+                "url": "https://imaginedragonsmusic.bandcamp.com/",
+                "name": "bandcamp"
+              },
+              {
+                "url": "https://www.7digital.com/artist/imagine-dragons",
+                "name": "7digital"
+              },
+              {
+                "url": "https://www.junodownload.com/artists/Imagine+Dragons/releases/",
+                "name": "junodownload"
+              },
+              {
+                "url": "https://www.onkyomusic.com/artist/imagine-dragons",
+                "name": "onkyomusic"
+              },
+              {
+                "url": "https://d-nb.info/gnd/1033727563",
+                "name": "d-nb"
+              },
+              {
+                "url": "http://id.loc.gov/authorities/names/no2012071834",
+                "name": "loc"
+              },
+              {
+                "url": "https://www.worldcat.org/identities/lccn-no2012071834",
+                "name": "worldcat"
+              },
+              {
+                "url": "https://catalogue.bnf.fr/ark:/12148/cb167239929",
+                "name": "bnf"
+              },
+              {
+                "url": "https://www.instagram.com/imaginedragons/",
+                "name": "instagram"
+              },
+              {
+                "url": "https://listen.tidal.com/artist/4394210",
+                "name": "tidal"
+              },
+              {
+                "url": "https://www.youtube.com/channel/UCT9zcQNlyht7fRlcjmflRSA",
+                "name": "youtube"
+              },
+              {
+                "url": "https://vk.com/imaginedragons",
+                "name": "vk"
+              }
+            ],
+            "images": [
+              {
+                "url": "http://assets.fanart.tv/fanart/music/012151a8-0f9a-44c9-997f-ebd68b5389f9/musicbanner/imagine-dragons-54c8d693524c8.jpg",
+                "coverType": "banner",
+                "extension": ".jpg"
+              },
+              {
+                "url": "http://assets.fanart.tv/fanart/music/012151a8-0f9a-44c9-997f-ebd68b5389f9/artistbackground/imagine-dragons-4fe4c62e40616.jpg",
+                "coverType": "fanart",
+                "extension": ".jpg"
+              },
+              {
+                "url": "http://assets.fanart.tv/fanart/music/012151a8-0f9a-44c9-997f-ebd68b5389f9/hdmusiclogo/imagine-dragons-508ad5d9139b8.png",
+                "coverType": "logo",
+                "extension": ".png"
+              },
+              {
+                "url": "http://assets.fanart.tv/fanart/music/012151a8-0f9a-44c9-997f-ebd68b5389f9/artistthumb/imagine-dragons-525cf251c2972.jpg",
+                "coverType": "poster",
+                "extension": ".jpg"
+              }
+            ],
+            "path": "/music/Imagine Dragons",
+            "qualityProfileId": 1,
+            "metadataProfileId": 1,
+            "albumFolder": true,
+            "monitored": true,
+            "genres": [
+              "Alternative Rock",
+              "Indie Pop",
+              "Indietronica",
+              "Pop",
+              "Pop Rock"
+            ],
+            "cleanName": "imaginedragons",
+            "sortName": "imagine dragons",
+            "tags": [],
+            "added": "2020-03-09T05:16:16.4535838Z",
+            "ratings": {
+              "votes": 6,
+              "value": 8.3
+            },
+            "statistics": {
+              "albumCount": 0,
+              "trackFileCount": 0,
+              "trackCount": 0,
+              "totalTrackCount": 0,
+              "sizeOnDisk": 0,
+              "percentOfTracks": 0
+            },
+            "id": 953
+          },
+          "images": [
+            {
+              "url": "/MediaCover/Albums/8556/cover.jpg?lastWrite=637607797470000000",
+              "coverType": "cover",
+              "extension": ".jpg"
+            }
+          ],
+          "links": [],
+          "statistics": {
+            "trackFileCount": 0,
+            "trackCount": 13,
+            "totalTrackCount": 13,
+            "sizeOnDisk": 0,
+            "percentOfTracks": 0
+          },
+          "id": 8556
+        }
+      },
+      {
+        "id": "Lidarr-0-2",
+        "title": "Little Simz",
+        "start": "2021-09-03T00:00:00Z",
+        "className": "inline-popups bg-calendar calendar-item musicID--",
+        "imagetype": "music text-success",
+        "imagetypeFilter": "music",
+        "downloadFilter": "text-success",
+        "bgColor": "bg-success",
+        "details": {
+          "seasonCount": "",
+          "status": "",
+          "topTitle": "Sometimes I Might Be Introvert",
+          "bottomTitle": "Little Simz",
+          "overview": "Simbiatu \u0022Simbi\u0022 Abisola Abiola Ajikawo (born 23 February 1994), better known by her stage name Little Simz, is a British rapper, singer and actress of Nigerian heritage. Following the release of four mixtapes and five EPs, she released her debut album A Curious Tale of Trials + Persons on 18 September 2015 through her independent label, AGE: 101 Music. The album entered the UK R&B Albums Chart at number 20 and the UK Independent Albums Chart at number 43. She released her second studio album Stillness in Wonderland in 2016. Her third studio album Grey Area (2019) won Best Album at both the Ivor Novello Awards and the NME Awards as well as being nominated for the Mercury Prize.",
+          "runtime": "",
+          "image": "https://www.theaudiodb.com/images/media/artist/fanart/tsruxs1484257451.jpg",
+          "ratings": 10,
+          "videoQuality": "unknown",
+          "audioChannels": "unknown",
+          "audioCodec": "unknown",
+          "videoCodec": "unknown",
+          "size": "unknown",
+          "genres": [
+            "Hip Hop"
+          ]
+        },
+        "data": {
+          "title": "Sometimes I Might Be Introvert",
+          "disambiguation": "",
+          "overview": "Sometimes I Might Be Introvert is the fourth studio album by British rapper Little Simz, released on 3 September 2021 by Age 101 Music and AWAL. The album succeeds the Mercury Prize-nominated album Grey Area, released in 2019, and the five-track EP, Drop 6 (2020). It is supported by four singles: \u0022Introvert\u0022, \u0022Woman\u0022 featuring Cleo Sol, \u0022Rollin Stone\u0022 and \u0022I Love You, I Hate You\u0022. The album is produced by frequent collaborator Inflo, and includes guest appearances from Cleo Sol and Obongjayar.",
+          "artistId": 1039,
+          "foreignAlbumId": "e95de3f4-84db-4d24-8d06-fd970576a6ef",
+          "monitored": true,
+          "anyReleaseOk": true,
+          "profileId": 0,
+          "duration": 3914100,
+          "albumType": "Album",
+          "secondaryTypes": [],
+          "mediumCount": 1,
+          "ratings": {
+            "votes": 0,
+            "value": 0
+          },
+          "releaseDate": "2021-09-03T00:00:00Z",
+          "releases": [
+            {
+              "id": 38864,
+              "albumId": 8697,
+              "foreignReleaseId": "27ee7d2d-4ea8-4849-8a4e-8e4b05d611e1",
+              "title": "Sometimes I Might Be Introvert",
+              "status": "Official",
+              "duration": 3913106,
+              "trackCount": 19,
+              "media": [
+                {
+                  "mediumNumber": 1,
+                  "mediumName": "",
+                  "mediumFormat": "Digital Media"
+                }
+              ],
+              "mediumCount": 1,
+              "disambiguation": "",
+              "country": [
+                "United States"
+              ],
+              "label": [
+                "AGE 101 MUSIC"
+              ],
+              "format": "Digital Media",
+              "monitored": false
+            },
+            {
+              "id": 38865,
+              "albumId": 8697,
+              "foreignReleaseId": "987285e6-7cbe-4b90-9496-e62c3c3e9eda",
+              "title": "Sometimes I Might Be Introvert",
+              "status": "Official",
+              "duration": 3914100,
+              "trackCount": 19,
+              "media": [
+                {
+                  "mediumNumber": 1,
+                  "mediumName": "",
+                  "mediumFormat": "CD"
+                }
+              ],
+              "mediumCount": 1,
+              "disambiguation": "",
+              "country": [
+                "United Kingdom"
+              ],
+              "label": [
+                "AGE 101 MUSIC"
+              ],
+              "format": "CD",
+              "monitored": true
+            }
+          ],
+          "genres": [
+            "Hip Hop"
+          ],
+          "media": [
+            {
+              "mediumNumber": 1,
+              "mediumName": "",
+              "mediumFormat": "CD"
+            }
+          ],
+          "artist": {
+            "status": "continuing",
+            "ended": false,
+            "artistName": "Little Simz",
+            "foreignArtistId": "3cdb40fe-a63e-4bb9-b40d-17cda5f50979",
+            "tadbId": 0,
+            "discogsId": 0,
+            "overview": "Simbiatu \u0022Simbi\u0022 Abisola Abiola Ajikawo (born 23 February 1994), better known by her stage name Little Simz, is a British rapper, singer and actress of Nigerian heritage. Following the release of four mixtapes and five EPs, she released her debut album A Curious Tale of Trials + Persons on 18 September 2015 through her independent label, AGE: 101 Music. The album entered the UK R&B Albums Chart at number 20 and the UK Independent Albums Chart at number 43. She released her second studio album Stillness in Wonderland in 2016. Her third studio album Grey Area (2019) won Best Album at both the Ivor Novello Awards and the NME Awards as well as being nominated for the Mercury Prize.",
+            "artistType": "Person",
+            "disambiguation": "",
+            "links": [
+              {
+                "url": "https://myspace.com/simzartistx",
+                "name": "myspace"
+              },
+              {
+                "url": "https://twitter.com/littlesimz",
+                "name": "twitter"
+              },
+              {
+                "url": "https://soundcloud.com/littlesimz",
+                "name": "soundcloud"
+              },
+              {
+                "url": "https://www.youtube.com/user/LittleSimzOfficial",
+                "name": "youtube"
+              },
+              {
+                "url": "https://www.wikidata.org/wiki/Q6547427",
+                "name": "wikidata"
+              },
+              {
+                "url": "https://www.discogs.com/artist/3887166",
+                "name": "discogs"
+              },
+              {
+                "url": "https://www.facebook.com/LittleSimz",
+                "name": "facebook"
+              },
+              {
+                "url": "http://littlesimz.co/",
+                "name": "littlesimz"
+              },
+              {
+                "url": "https://littlesimz.bandcamp.com/",
+                "name": "bandcamp"
+              },
+              {
+                "url": "https://www.youtube.com/user/LittleSimzVEVO",
+                "name": "youtube"
+              },
+              {
+                "url": "https://www.imdb.com/name/nm3787576/",
+                "name": "imdb"
+              },
+              {
+                "url": "https://www.instagram.com/littlesimz/",
+                "name": "instagram"
+              },
+              {
+                "url": "https://www.songkick.com/artists/6418354",
+                "name": "songkick"
+              },
+              {
+                "url": "http://viaf.org/viaf/32153893626202291080",
+                "name": "viaf"
+              },
+              {
+                "url": "http://id.loc.gov/authorities/names/no2018132431",
+                "name": "loc"
+              },
+              {
+                "url": "https://www.worldcat.org/identities/lccn-no2018132431",
+                "name": "worldcat"
+              },
+              {
+                "url": "https://open.spotify.com/artist/6eXZu6O7nAUA5z6vLV8NKI",
+                "name": "spotify"
+              },
+              {
+                "url": "https://www.allmusic.com/artist/mn0003267919",
+                "name": "allmusic"
+              },
+              {
+                "url": "https://rateyourmusic.com/artist/little-simz",
+                "name": "rateyourmusic"
+              },
+              {
+                "url": "https://itunes.apple.com/us/artist/id627674564",
+                "name": "apple"
+              }
+            ],
+            "images": [
+              {
+                "url": "https://www.theaudiodb.com/images/media/artist/banner/wtvqxx1484257489.jpg",
+                "coverType": "banner",
+                "extension": ".jpg"
+              },
+              {
+                "url": "https://www.theaudiodb.com/images/media/artist/fanart/tsruxs1484257451.jpg",
+                "coverType": "fanart",
+                "extension": ".jpg"
+              },
+              {
+                "url": "https://www.theaudiodb.com/images/media/artist/logo/xuvrqv1484257413.png",
+                "coverType": "logo",
+                "extension": ".png"
+              },
+              {
+                "url": "https://www.theaudiodb.com/images/media/artist/thumb/trpwws1484257433.jpg",
+                "coverType": "poster",
+                "extension": ".jpg"
+              }
+            ],
+            "path": "/music/Little Simz",
+            "qualityProfileId": 1,
+            "metadataProfileId": 1,
+            "albumFolder": true,
+            "monitored": true,
+            "genres": [
+              "Hip Hop",
+              "Pop Rap"
+            ],
+            "cleanName": "littlesimz",
+            "sortName": "little simz",
+            "tags": [],
+            "added": "2021-09-10T19:28:49.2739065Z",
+            "ratings": {
+              "votes": 1,
+              "value": 10
+            },
+            "statistics": {
+              "albumCount": 0,
+              "trackFileCount": 0,
+              "trackCount": 0,
+              "totalTrackCount": 0,
+              "sizeOnDisk": 0,
+              "percentOfTracks": 0
+            },
+            "id": 1039
+          },
+          "images": [
+            {
+              "url": "/MediaCover/Albums/8697/cover.jpg?lastWrite=637571100180000000",
+              "coverType": "cover",
+              "extension": ".jpg"
+            }
+          ],
+          "links": [
+            {
+              "url": "https://www.discogs.com/master/2278882",
+              "name": "discogs"
+            },
+            {
+              "url": "https://www.wikidata.org/wiki/Q108395006",
+              "name": "wikidata"
+            }
+          ],
+          "statistics": {
+            "trackFileCount": 19,
+            "trackCount": 19,
+            "totalTrackCount": 19,
+            "sizeOnDisk": 63752878,
+            "percentOfTracks": 100
+          },
+          "id": 8697
+        }
+      },
+      {
+        "id": "Lidarr-0-3",
+        "title": "face to face",
+        "start": "2021-09-10T00:00:00Z",
+        "className": "inline-popups bg-calendar calendar-item musicID--",
+        "imagetype": "music text-danger",
+        "imagetypeFilter": "music",
+        "downloadFilter": "text-danger",
+        "bgColor": "bg-danger",
+        "details": {
+          "seasonCount": "",
+          "status": "",
+          "topTitle": "No Way Out but Through",
+          "bottomTitle": "face to face",
+          "overview": "Face to Face is a punk rock band from Southern California, formed in 1991 by frontman Trever Keith, bassist Matt Riddle and drummer Rob Kurth. The band rose to fame with their 1995 album Big Choice, featuring the radio hit \u0022Disconnected\u0022 which received heavy rotation on KROQ radio in Los Angeles and appeared in the movies Tank Girl and National Lampoon's Senior Trip.Face to Face officially split up in September 2004, allowing the band members time to focus on other projects.  During that time all the band members played in a number of post-Face to Face projects including Legion of Doom, Me First and the Gimme Gimmes, The Offspring and Saves the Day. In April 2008, after a four-year hiatus, Face to Face performed together for the first time at The Glasshouse in Pomona, California. Since then, the band has continued to perform and has released four more studio albums.",
+          "runtime": "",
+          "image": "https://assets.fanart.tv/fanart/music/8a3be197-2afd-4e80-b795-17f9df3aefac/artistbackground/face-to-face-56b67bdac003f.jpg",
+          "ratings": 0,
+          "videoQuality": "unknown",
+          "audioChannels": "unknown",
+          "audioCodec": "unknown",
+          "videoCodec": "unknown",
+          "size": "unknown",
+          "genres": []
+        },
+        "data": {
+          "title": "No Way Out but Through",
+          "disambiguation": "",
+          "overview": "",
+          "artistId": 289,
+          "foreignAlbumId": "bbd801fc-721e-4c95-8018-8550e64c7f92",
+          "monitored": true,
+          "anyReleaseOk": true,
+          "profileId": 2,
+          "duration": 0,
+          "albumType": "Album",
+          "secondaryTypes": [],
+          "mediumCount": 1,
+          "ratings": {
+            "votes": 0,
+            "value": 0
+          },
+          "releaseDate": "2021-09-10T00:00:00Z",
+          "releases": [
+            {
+              "id": 38473,
+              "albumId": 8573,
+              "foreignReleaseId": "e92282fd-2b17-423f-b9a9-003cc8b090ef",
+              "title": "No Way Out but Through",
+              "status": "Official",
+              "duration": 0,
+              "trackCount": 12,
+              "media": [
+                {
+                  "mediumNumber": 1,
+                  "mediumName": "",
+                  "mediumFormat": "Digital Media"
+                }
+              ],
+              "mediumCount": 1,
+              "disambiguation": "",
+              "country": [
+                "[Worldwide]"
+              ],
+              "label": [
+                "Fat Wreck Chords"
+              ],
+              "format": "Digital Media",
+              "monitored": true
+            }
+          ],
+          "genres": [],
+          "media": [
+            {
+              "mediumNumber": 1,
+              "mediumName": "",
+              "mediumFormat": "Digital Media"
+            }
+          ],
+          "artist": {
+            "status": "continuing",
+            "ended": false,
+            "artistName": "face to face",
+            "foreignArtistId": "8a3be197-2afd-4e80-b795-17f9df3aefac",
+            "tadbId": 0,
+            "discogsId": 0,
+            "overview": "Face to Face is a punk rock band from Southern California, formed in 1991 by frontman Trever Keith, bassist Matt Riddle and drummer Rob Kurth. The band rose to fame with their 1995 album Big Choice, featuring the radio hit \u0022Disconnected\u0022 which received heavy rotation on KROQ radio in Los Angeles and appeared in the movies Tank Girl and National Lampoon's Senior Trip.Face to Face officially split up in September 2004, allowing the band members time to focus on other projects.  During that time all the band members played in a number of post-Face to Face projects including Legion of Doom, Me First and the Gimme Gimmes, The Offspring and Saves the Day. In April 2008, after a four-year hiatus, Face to Face performed together for the first time at The Glasshouse in Pomona, California. Since then, the band has continued to perform and has released four more studio albums.",
+            "artistType": "Group",
+            "disambiguation": "90s California punk band",
+            "links": [
+              {
+                "url": "http://www.facetofacemusic.com/",
+                "name": "facetofacemusic"
+              },
+              {
+                "url": "http://musicmoz.org/Bands_and_Artists/F/Face_to_Face/",
+                "name": "musicmoz"
+              },
+              {
+                "url": "https://www.discogs.com/artist/11774",
+                "name": "discogs"
+              },
+              {
+                "url": "https://www.imdb.com/name/nm1967630/",
+                "name": "imdb"
+              },
+              {
+                "url": "https://myspace.com/facetoface",
+                "name": "myspace"
+              },
+              {
+                "url": "https://www.wikidata.org/wiki/Q1390974",
+                "name": "wikidata"
+              },
+              {
+                "url": "https://www.allmusic.com/artist/mn0000130764",
+                "name": "allmusic"
+              },
+              {
+                "url": "https://www.last.fm/music/Face+to+Face",
+                "name": "last"
+              },
+              {
+                "url": "https://rateyourmusic.com/artist/face_to_face",
+                "name": "rateyourmusic"
+              },
+              {
+                "url": "https://secondhandsongs.com/artist/10289",
+                "name": "secondhandsongs"
+              },
+              {
+                "url": "http://www.musik-sammler.de/artist/10303",
+                "name": "musik-sammler"
+              },
+              {
+                "url": "http://viaf.org/viaf/138698834",
+                "name": "viaf"
+              },
+              {
+                "url": "https://soundcloud.com/facetoface",
+                "name": "soundcloud"
+              },
+              {
+                "url": "https://commons.wikimedia.org/wiki/File:Face_to_Face_at_Warped_Tour_2010-08-10_10.jpg",
+                "name": "wikimedia"
+              },
+              {
+                "url": "https://facetofaceband.bandcamp.com/",
+                "name": "bandcamp"
+              },
+              {
+                "url": "https://twitter.com/facetofacemusic",
+                "name": "twitter"
+              },
+              {
+                "url": "https://www.instagram.com/facetofacemusic/",
+                "name": "instagram"
+              },
+              {
+                "url": "https://www.facebook.com/facetoface",
+                "name": "facebook"
+              },
+              {
+                "url": "https://www.youtube.com/user/officialfacetoface",
+                "name": "youtube"
+              },
+              {
+                "url": "https://itunes.apple.com/us/artist/id2821755",
+                "name": "apple"
+              },
+              {
+                "url": "https://open.spotify.com/artist/4l9ufn9GC6LLYXvIanDlLd",
+                "name": "spotify"
+              }
+            ],
+            "images": [
+              {
+                "url": "http://assets.fanart.tv/fanart/music/8a3be197-2afd-4e80-b795-17f9df3aefac/artistbackground/face-to-face-56b67bdac003f.jpg",
+                "coverType": "fanart",
+                "extension": ".jpg"
+              },
+              {
+                "url": "http://assets.fanart.tv/fanart/music/8a3be197-2afd-4e80-b795-17f9df3aefac/hdmusiclogo/face-to-face-5141d48a98d17.png",
+                "coverType": "logo",
+                "extension": ".png"
+              },
+              {
+                "url": "https://www.theaudiodb.com/images/media/artist/banner/qyvtpu1363728398.jpg",
+                "coverType": "banner",
+                "extension": ".jpg"
+              },
+              {
+                "url": "https://www.theaudiodb.com/images/media/artist/thumb/ryvprs1556710752.jpg",
+                "coverType": "poster",
+                "extension": ".jpg"
+              }
+            ],
+            "path": "/music/Face To Face",
+            "qualityProfileId": 2,
+            "metadataProfileId": 1,
+            "albumFolder": true,
+            "monitored": true,
+            "genres": [
+              "Pop Punk",
+              "Punk"
+            ],
+            "cleanName": "facetoface",
+            "sortName": "face to face",
+            "tags": [],
+            "added": "2018-09-15T20:51:59.087878Z",
+            "ratings": {
+              "votes": 0,
+              "value": 0
+            },
+            "statistics": {
+              "albumCount": 0,
+              "trackFileCount": 0,
+              "trackCount": 0,
+              "totalTrackCount": 0,
+              "sizeOnDisk": 0,
+              "percentOfTracks": 0
+            },
+            "id": 289
+          },
+          "images": [
+            {
+              "url": "/MediaCover/Albums/8573/cover.jpg?lastWrite=637613781580000000",
+              "coverType": "cover",
+              "extension": ".jpg"
+            }
+          ],
+          "links": [
+            {
+              "url": "https://fatwreck.com/products/no-way-out-but-through",
+              "name": "fatwreck"
+            }
+          ],
+          "statistics": {
+            "trackFileCount": 0,
+            "trackCount": 12,
+            "totalTrackCount": 12,
+            "sizeOnDisk": 0,
+            "percentOfTracks": 0
+          },
+          "id": 8573
+        }
+      },
+      {
+        "id": "Lidarr-0-4",
+        "title": "James Blake",
+        "start": "2021-09-10T00:00:00Z",
+        "className": "inline-popups bg-calendar calendar-item musicID--",
+        "imagetype": "music text-danger",
+        "imagetypeFilter": "music",
+        "downloadFilter": "text-danger",
+        "bgColor": "bg-danger",
+        "details": {
+          "seasonCount": "",
+          "status": "",
+          "topTitle": "Friends That Break Your Heart",
+          "bottomTitle": "James Blake",
+          "overview": "James Blake Litherland (born 26 September 1988) is an English singer, songwriter, multi-instrumentalist, and record producer from London. He first received recognition for a series of 2010 EPs including CMYK and Klavierwerke, and he released his self-titled debut album in 2011 to critical praise. His second album Overgrown was released in 2013, bringing him to international attention, and later was awarded the Mercury Prize. In 2016, he released his third album The Colour in Anything and his fourth album Assume Form in 2019, both receiving positive reviews and the latter becoming his highest-peaking album in the US Billboard 200, at number 21.\nDuring his career, he has collaborated with artists including Mount Kimbie and Bon Iver and has contributed production work to artists including Kendrick Lamar, Beyonc\u00e9, Vince Staples, Frank Ocean, and Travis Scott. He has won a Mercury Prize from two nominations, a Grammy Award from five nominations, including for Best New Artist in 2014; and three Brit Award nominations.",
+          "runtime": "",
+          "image": "https://assets.fanart.tv/fanart/music/8dc08b1f-e393-4f85-a5dd-300f7693a8b8/artistbackground/blake-james-4fe85389771c5.jpg",
+          "ratings": 10,
+          "videoQuality": "unknown",
+          "audioChannels": "unknown",
+          "audioCodec": "unknown",
+          "videoCodec": "unknown",
+          "size": "unknown",
+          "genres": []
+        },
+        "data": {
+          "title": "Friends That Break Your Heart",
+          "disambiguation": "",
+          "overview": "",
+          "artistId": 386,
+          "foreignAlbumId": "dddf4559-2271-4fb7-90ba-8ae7b4a61af3",
+          "monitored": true,
+          "anyReleaseOk": true,
+          "profileId": 2,
+          "duration": 280000,
+          "albumType": "Album",
+          "secondaryTypes": [],
+          "mediumCount": 1,
+          "ratings": {
+            "votes": 0,
+            "value": 0
+          },
+          "releaseDate": "2021-09-10T00:00:00Z",
+          "releases": [
+            {
+              "id": 38529,
+              "albumId": 8593,
+              "foreignReleaseId": "2e999a18-f74d-49f4-8e01-d4f354ad5a32",
+              "title": "Friends That Break Your Heart",
+              "status": "Official",
+              "duration": 280000,
+              "trackCount": 12,
+              "media": [
+                {
+                  "mediumNumber": 1,
+                  "mediumName": "",
+                  "mediumFormat": "Digital Media"
+                }
+              ],
+              "mediumCount": 1,
+              "disambiguation": "",
+              "country": [
+                "United States"
+              ],
+              "label": [
+                "Republic Records"
+              ],
+              "format": "Digital Media",
+              "monitored": true
+            }
+          ],
+          "genres": [],
+          "media": [
+            {
+              "mediumNumber": 1,
+              "mediumName": "",
+              "mediumFormat": "Digital Media"
+            }
+          ],
+          "artist": {
+            "status": "continuing",
+            "ended": false,
+            "artistName": "James Blake",
+            "foreignArtistId": "8dc08b1f-e393-4f85-a5dd-300f7693a8b8",
+            "tadbId": 0,
+            "discogsId": 0,
+            "overview": "James Blake Litherland (born 26 September 1988) is an English singer, songwriter, multi-instrumentalist, and record producer from London. He first received recognition for a series of 2010 EPs including CMYK and Klavierwerke, and he released his self-titled debut album in 2011 to critical praise. His second album Overgrown was released in 2013, bringing him to international attention, and later was awarded the Mercury Prize. In 2016, he released his third album The Colour in Anything and his fourth album Assume Form in 2019, both receiving positive reviews and the latter becoming his highest-peaking album in the US Billboard 200, at number 21.\nDuring his career, he has collaborated with artists including Mount Kimbie and Bon Iver and has contributed production work to artists including Kendrick Lamar, Beyonc\u00e9, Vince Staples, Frank Ocean, and Travis Scott. He has won a Mercury Prize from two nominations, a Grammy Award from five nominations, including for Best New Artist in 2014; and three Brit Award nominations.",
+            "artistType": "Person",
+            "disambiguation": "",
+            "links": [
+              {
+                "url": "https://www.discogs.com/artist/1500084",
+                "name": "discogs"
+              },
+              {
+                "url": "https://myspace.com/jamesblakeproduction",
+                "name": "myspace"
+              },
+              {
+                "url": "http://www.jamesblakemusic.com/",
+                "name": "jamesblakemusic"
+              },
+              {
+                "url": "https://www.bbc.co.uk/music/artists/8dc08b1f-e393-4f85-a5dd-300f7693a8b8",
+                "name": "bbc"
+              },
+              {
+                "url": "https://www.facebook.com/jamesblakemusic",
+                "name": "facebook"
+              },
+              {
+                "url": "https://twitter.com/jamesblake",
+                "name": "twitter"
+              },
+              {
+                "url": "https://www.last.fm/music/James+Blake",
+                "name": "last"
+              },
+              {
+                "url": "https://www.youtube.com/user/jamesblakeproduction",
+                "name": "youtube"
+              },
+              {
+                "url": "https://www.allmusic.com/artist/mn0002435745",
+                "name": "allmusic"
+              },
+              {
+                "url": "https://ra.co/dj/jamesblake",
+                "name": "ra"
+              },
+              {
+                "url": "https://soundcloud.com/jamesblakeofficial",
+                "name": "soundcloud"
+              },
+              {
+                "url": "https://www.instagram.com/jamesblake/",
+                "name": "instagram"
+              },
+              {
+                "url": "https://www.wikidata.org/wiki/Q350362",
+                "name": "wikidata"
+              },
+              {
+                "url": "https://rateyourmusic.com/artist/james_blake",
+                "name": "rateyourmusic"
+              },
+              {
+                "url": "https://secondhandsongs.com/artist/47336",
+                "name": "secondhandsongs"
+              },
+              {
+                "url": "http://muzikum.eu/en/122-9545/james-blake/lyrics.html",
+                "name": "muzikum"
+              },
+              {
+                "url": "https://open.spotify.com/artist/53KwLdlmrlCelAZMaLVZqU",
+                "name": "spotify"
+              },
+              {
+                "url": "https://genius.com/artists/James-blake",
+                "name": "genius"
+              },
+              {
+                "url": "https://itunes.apple.com/artist/id59504818",
+                "name": "apple"
+              },
+              {
+                "url": "https://www.deezer.com/artist/812409",
+                "name": "deezer"
+              },
+              {
+                "url": "http://viaf.org/viaf/169625994",
+                "name": "viaf"
+              },
+              {
+                "url": "https://d-nb.info/gnd/1013079930",
+                "name": "d-nb"
+              },
+              {
+                "url": "http://id.loc.gov/authorities/names/no2011042897",
+                "name": "loc"
+              },
+              {
+                "url": "https://www.worldcat.org/identities/lccn-no2011042897",
+                "name": "worldcat"
+              },
+              {
+                "url": "https://catalogue.bnf.fr/ark:/12148/cb165028147",
+                "name": "bnf"
+              },
+              {
+                "url": "https://www.songkick.com/artists/591219",
+                "name": "songkick"
+              }
+            ],
+            "images": [
+              {
+                "url": "http://assets.fanart.tv/fanart/music/8dc08b1f-e393-4f85-a5dd-300f7693a8b8/musicbanner/blake-james-504670fedb19e.jpg",
+                "coverType": "banner",
+                "extension": ".jpg"
+              },
+              {
+                "url": "http://assets.fanart.tv/fanart/music/8dc08b1f-e393-4f85-a5dd-300f7693a8b8/artistbackground/blake-james-4fe85389771c5.jpg",
+                "coverType": "fanart",
+                "extension": ".jpg"
+              },
+              {
+                "url": "http://assets.fanart.tv/fanart/music/8dc08b1f-e393-4f85-a5dd-300f7693a8b8/hdmusiclogo/blake-james-50466ecb9d9e9.png",
+                "coverType": "logo",
+                "extension": ".png"
+              },
+              {
+                "url": "http://assets.fanart.tv/fanart/music/8dc08b1f-e393-4f85-a5dd-300f7693a8b8/artistthumb/-4fac42c78d7d3.jpg",
+                "coverType": "poster",
+                "extension": ".jpg"
+              }
+            ],
+            "path": "/music/James Blake",
+            "qualityProfileId": 2,
+            "metadataProfileId": 1,
+            "albumFolder": true,
+            "monitored": true,
+            "genres": [
+              "Electronic",
+              "Experimental",
+              "Minimal",
+              "Singer-Songwriter",
+              "Soul"
+            ],
+            "cleanName": "jamesblake",
+            "sortName": "james blake",
+            "tags": [],
+            "added": "2018-09-15T20:51:59.087878Z",
+            "ratings": {
+              "votes": 3,
+              "value": 10
+            },
+            "statistics": {
+              "albumCount": 0,
+              "trackFileCount": 0,
+              "trackCount": 0,
+              "totalTrackCount": 0,
+              "sizeOnDisk": 0,
+              "percentOfTracks": 0
+            },
+            "id": 386
+          },
+          "images": [
+            {
+              "url": "/MediaCover/Albums/8593/cover.jpg?lastWrite=637657367080000000",
+              "coverType": "cover",
+              "extension": ".jpg"
+            }
+          ],
+          "links": [],
+          "statistics": {
+            "trackFileCount": 0,
+            "trackCount": 12,
+            "totalTrackCount": 12,
+            "sizeOnDisk": 0,
+            "percentOfTracks": 0
+          },
+          "id": 8593
+        }
+      },
+      {
+        "id": "Lidarr-0-5",
+        "title": "The Vaccines",
+        "start": "2021-09-10T00:00:00Z",
+        "className": "inline-popups bg-calendar calendar-item musicID--",
+        "imagetype": "music text-success",
+        "imagetypeFilter": "music",
+        "downloadFilter": "text-success",
+        "bgColor": "bg-success",
+        "details": {
+          "seasonCount": "",
+          "status": "",
+          "topTitle": "Back In Love City",
+          "bottomTitle": "The Vaccines",
+          "overview": "The Vaccines are an English indie rock band, formed in West London in 2010 by Justin Hayward-Young (lead vocals, guitar), Freddie Cowan (lead guitar, vocals), \u00c1rni \u00c1rnason (bass, vocals) and Pete Robertson (drums, vocals).\nAfter Robertson's departure in 2016, keyboardist Timothy Lanham and drummer Yoann Intonti were promoted from touring musicians to official band members.\nThe band have released four studio albums: What Did You Expect from The Vaccines? (2011), Come of Age (2012), English Graffiti (2015) and Combat Sports (2018). They have sold two million records worldwide.The Vaccines have toured extensively, playing with and opening up for acts such as The Rolling Stones, Arcade Fire, Arctic Monkeys, The Stone Roses, Red Hot Chili Peppers, Imagine Dragons and Muse.The band's debut album was the best-selling debut album of 2011 in the United Kingdom, drawing comparisons to The Ramones, The Strokes and The Jesus and Mary Chain.",
+          "runtime": "",
+          "image": "https://assets.fanart.tv/fanart/music/aa76ec08-45ab-4724-9411-d80b0e59ac59/artistbackground/vaccines-the-4fba36f8f3a66.jpg",
+          "ratings": 9,
+          "videoQuality": "unknown",
+          "audioChannels": "unknown",
+          "audioCodec": "unknown",
+          "videoCodec": "unknown",
+          "size": "unknown",
+          "genres": []
+        },
+        "data": {
+          "title": "Back In Love City",
+          "disambiguation": "",
+          "overview": "",
+          "artistId": 826,
+          "foreignAlbumId": "55f83dc7-b4db-4305-8728-1c7be0235c03",
+          "monitored": true,
+          "anyReleaseOk": true,
+          "profileId": 2,
+          "duration": 2750880,
+          "albumType": "Album",
+          "secondaryTypes": [],
+          "mediumCount": 1,
+          "ratings": {
+            "votes": 0,
+            "value": 0
+          },
+          "releaseDate": "2021-09-10T00:00:00Z",
+          "releases": [
+            {
+              "id": 38309,
+              "albumId": 8541,
+              "foreignReleaseId": "89a1a462-feb7-410d-9b73-24924db3d980",
+              "title": "Back In Love City",
+              "status": "Official",
+              "duration": 2750880,
+              "trackCount": 13,
+              "media": [
+                {
+                  "mediumNumber": 1,
+                  "mediumName": "",
+                  "mediumFormat": "Digital Media"
+                }
+              ],
+              "mediumCount": 1,
+              "disambiguation": "",
+              "country": [
+                "United States"
+              ],
+              "label": [
+                "AWAL Recordings Ltd"
+              ],
+              "format": "Digital Media",
+              "monitored": true
+            }
+          ],
+          "genres": [],
+          "media": [
+            {
+              "mediumNumber": 1,
+              "mediumName": "",
+              "mediumFormat": "Digital Media"
+            }
+          ],
+          "artist": {
+            "status": "continuing",
+            "ended": false,
+            "artistName": "The Vaccines",
+            "foreignArtistId": "aa76ec08-45ab-4724-9411-d80b0e59ac59",
+            "tadbId": 0,
+            "discogsId": 0,
+            "overview": "The Vaccines are an English indie rock band, formed in West London in 2010 by Justin Hayward-Young (lead vocals, guitar), Freddie Cowan (lead guitar, vocals), \u00c1rni \u00c1rnason (bass, vocals) and Pete Robertson (drums, vocals).\nAfter Robertson's departure in 2016, keyboardist Timothy Lanham and drummer Yoann Intonti were promoted from touring musicians to official band members.\nThe band have released four studio albums: What Did You Expect from The Vaccines? (2011), Come of Age (2012), English Graffiti (2015) and Combat Sports (2018). They have sold two million records worldwide.The Vaccines have toured extensively, playing with and opening up for acts such as The Rolling Stones, Arcade Fire, Arctic Monkeys, The Stone Roses, Red Hot Chili Peppers, Imagine Dragons and Muse.The band's debut album was the best-selling debut album of 2011 in the United Kingdom, drawing comparisons to The Ramones, The Strokes and The Jesus and Mary Chain.",
+            "artistType": "Group",
+            "disambiguation": "British indie rock band",
+            "links": [
+              {
+                "url": "https://myspace.com/thevaccines",
+                "name": "myspace"
+              },
+              {
+                "url": "http://www.thevaccines.co.uk/",
+                "name": "thevaccines"
+              },
+              {
+                "url": "https://www.discogs.com/artist/2029033",
+                "name": "discogs"
+              },
+              {
+                "url": "https://open.spotify.com/artist/0Ak6DLKHtpR6TEEnmcorKA",
+                "name": "spotify"
+              },
+              {
+                "url": "https://www.last.fm/music/The+Vaccines",
+                "name": "last"
+              },
+              {
+                "url": "https://www.facebook.com/thevaccines",
+                "name": "facebook"
+              },
+              {
+                "url": "https://www.youtube.com/user/thevaccinesUK",
+                "name": "youtube"
+              },
+              {
+                "url": "https://twitter.com/TheRealVaccines",
+                "name": "twitter"
+              },
+              {
+                "url": "https://www.wikidata.org/wiki/Q1458872",
+                "name": "wikidata"
+              },
+              {
+                "url": "http://muzikum.eu/en/122-9669/the-vaccines/lyrics.html",
+                "name": "muzikum"
+              },
+              {
+                "url": "https://soundcloud.com/the-vaccines",
+                "name": "soundcloud"
+              },
+              {
+                "url": "https://www.allmusic.com/artist/mn0002610299",
+                "name": "allmusic"
+              },
+              {
+                "url": "https://rateyourmusic.com/artist/the_vaccines",
+                "name": "rateyourmusic"
+              },
+              {
+                "url": "http://viaf.org/viaf/4863155105824176320003",
+                "name": "viaf"
+              },
+              {
+                "url": "https://www.instagram.com/thevaccines/",
+                "name": "instagram"
+              },
+              {
+                "url": "https://www.songkick.com/artists/1050976",
+                "name": "songkick"
+              },
+              {
+                "url": "https://www.deezer.com/artist/811481",
+                "name": "deezer"
+              },
+              {
+                "url": "https://itunes.apple.com/gb/artist/id5184234",
+                "name": "apple"
+              },
+              {
+                "url": "https://twitter.com/thevaccines",
+                "name": "twitter"
+              },
+              {
+                "url": "https://www.youtube.com/user/TheVaccinesVEVO",
+                "name": "youtube"
+              },
+              {
+                "url": "https://www.imdb.com/name/nm4478876/",
+                "name": "imdb"
+              },
+              {
+                "url": "https://imvdb.com/n/the-vaccines",
+                "name": "imvdb"
+              }
+            ],
+            "images": [
+              {
+                "url": "http://assets.fanart.tv/fanart/music/aa76ec08-45ab-4724-9411-d80b0e59ac59/musicbanner/vaccines-the-585db9f715890.jpg",
+                "coverType": "banner",
+                "extension": ".jpg"
+              },
+              {
+                "url": "http://assets.fanart.tv/fanart/music/aa76ec08-45ab-4724-9411-d80b0e59ac59/artistbackground/vaccines-the-4fba36f8f3a66.jpg",
+                "coverType": "fanart",
+                "extension": ".jpg"
+              },
+              {
+                "url": "http://assets.fanart.tv/fanart/music/aa76ec08-45ab-4724-9411-d80b0e59ac59/hdmusiclogo/vaccines-the-5a88f57e841ad.png",
+                "coverType": "logo",
+                "extension": ".png"
+              },
+              {
+                "url": "http://assets.fanart.tv/fanart/music/aa76ec08-45ab-4724-9411-d80b0e59ac59/artistthumb/vaccines-the-509bdaf829c4c.jpg",
+                "coverType": "poster",
+                "extension": ".jpg"
+              }
+            ],
+            "path": "/music/The Vaccines",
+            "qualityProfileId": 2,
+            "metadataProfileId": 1,
+            "albumFolder": true,
+            "monitored": true,
+            "genres": [
+              "Indie Rock",
+              "Pop Rock",
+              "Power Pop"
+            ],
+            "cleanName": "thevaccines",
+            "sortName": "vaccines",
+            "tags": [],
+            "added": "2018-09-15T20:51:59.087878Z",
+            "ratings": {
+              "votes": 2,
+              "value": 9
+            },
+            "statistics": {
+              "albumCount": 0,
+              "trackFileCount": 0,
+              "trackCount": 0,
+              "totalTrackCount": 0,
+              "sizeOnDisk": 0,
+              "percentOfTracks": 0
+            },
+            "id": 826
+          },
+          "images": [
+            {
+              "url": "/MediaCover/Albums/8541/cover.jpg?lastWrite=637602322200000000",
+              "coverType": "cover",
+              "extension": ".jpg"
+            }
+          ],
+          "links": [],
+          "statistics": {
+            "trackFileCount": 13,
+            "trackCount": 13,
+            "totalTrackCount": 13,
+            "sizeOnDisk": 355039057,
+            "percentOfTracks": 100
+          },
+          "id": 8541
+        }
+      },
+      {
+        "id": "Lidarr-0-6",
+        "title": "Natalie Imbruglia",
+        "start": "2021-09-24T00:00:00Z",
+        "className": "inline-popups bg-calendar calendar-item musicID--",
+        "imagetype": "music text-success",
+        "imagetypeFilter": "music",
+        "downloadFilter": "text-success",
+        "bgColor": "bg-success",
+        "details": {
+          "seasonCount": "",
+          "status": "",
+          "topTitle": "Firebird",
+          "bottomTitle": "Natalie Imbruglia",
+          "overview": "Natalie Jane Imbruglia ( im-BROO-lee-\u0259, Italian: [im\u02c8bru\u028e\u028ea]; born 4 February 1975) is an Australian singer-songwriter and actress. In the early 1990s, she played Beth Brennan in the Australian soap opera Neighbours. Three years after leaving the programme, she began a singing career with her chart-topping cover of Ednaswap's song  \u0022Torn\u0022. Her subsequent album, Left of the Middle (1997), sold 7 million copies worldwide. Imbruglia's five subsequent albums have combined sales of 3 million copies worldwide, and her accolades include eight ARIA Awards, two Brit Awards, one Billboard Music Award, and three Grammy nominations.\nImbruglia has appeared in several films, including the 2003 release Johnny English and the 2009 Australian indie film Closed for Winter. She has modelled for several brands, such as L'Oreal, Gap, and Kailis.\nAmongst other philanthropic work, Imbruglia served as a longtime spokesperson for Virgin Unite and campaigns to raise awareness of obstetric fistula.\nOn 16 June 2021, Imbruglia announced on her official Twitter page that her new single \u0022Build It Better\u0022 would be released on 18 June 2021. It serves as the first single from her forthcoming sixth studio album Firebird, which is scheduled to be released on 24 September 2021.",
+          "runtime": "",
+          "image": "https://assets.fanart.tv/fanart/music/60530915-9371-4b16-bc31-5c4456317ae0/artistbackground/imbruglia-natalie-5117f487ece83.jpg",
+          "ratings": 8.7,
+          "videoQuality": "unknown",
+          "audioChannels": "unknown",
+          "audioCodec": "unknown",
+          "videoCodec": "unknown",
+          "size": "unknown",
+          "genres": []
+        },
+        "data": {
+          "title": "Firebird",
+          "disambiguation": "",
+          "overview": "",
+          "artistId": 555,
+          "foreignAlbumId": "cb5db7d0-6544-4e05-9d2b-ed89e9c438f3",
+          "monitored": true,
+          "anyReleaseOk": true,
+          "profileId": 2,
+          "duration": 203000,
+          "albumType": "Album",
+          "secondaryTypes": [],
+          "mediumCount": 1,
+          "ratings": {
+            "votes": 0,
+            "value": 0
+          },
+          "releaseDate": "2021-09-24T00:00:00Z",
+          "releases": [
+            {
+              "id": 38240,
+              "albumId": 8528,
+              "foreignReleaseId": "4cd9c881-9b9c-424b-83da-7ae772ff1915",
+              "title": "Firebird",
+              "status": "Official",
+              "duration": 203000,
+              "trackCount": 14,
+              "media": [
+                {
+                  "mediumNumber": 1,
+                  "mediumName": "",
+                  "mediumFormat": "Digital Media"
+                }
+              ],
+              "mediumCount": 1,
+              "disambiguation": "",
+              "country": [
+                "[Worldwide]"
+              ],
+              "label": [
+                "BMG Rights Management"
+              ],
+              "format": "Digital Media",
+              "monitored": true
+            }
+          ],
+          "genres": [],
+          "media": [
+            {
+              "mediumNumber": 1,
+              "mediumName": "",
+              "mediumFormat": "Digital Media"
+            }
+          ],
+          "artist": {
+            "status": "continuing",
+            "ended": false,
+            "artistName": "Natalie Imbruglia",
+            "foreignArtistId": "60530915-9371-4b16-bc31-5c4456317ae0",
+            "tadbId": 0,
+            "discogsId": 0,
+            "overview": "Natalie Jane Imbruglia ( im-BROO-lee-\u0259, Italian: [im\u02c8bru\u028e\u028ea]; born 4 February 1975) is an Australian singer-songwriter and actress. In the early 1990s, she played Beth Brennan in the Australian soap opera Neighbours. Three years after leaving the programme, she began a singing career with her chart-topping cover of Ednaswap's song  \u0022Torn\u0022. Her subsequent album, Left of the Middle (1997), sold 7 million copies worldwide. Imbruglia's five subsequent albums have combined sales of 3 million copies worldwide, and her accolades include eight ARIA Awards, two Brit Awards, one Billboard Music Award, and three Grammy nominations.\nImbruglia has appeared in several films, including the 2003 release Johnny English and the 2009 Australian indie film Closed for Winter. She has modelled for several brands, such as L'Oreal, Gap, and Kailis.\nAmongst other philanthropic work, Imbruglia served as a longtime spokesperson for Virgin Unite and campaigns to raise awareness of obstetric fistula.\nOn 16 June 2021, Imbruglia announced on her official Twitter page that her new single \u0022Build It Better\u0022 would be released on 18 June 2021. It serves as the first single from her forthcoming sixth studio album Firebird, which is scheduled to be released on 24 September 2021.",
+            "artistType": "Person",
+            "disambiguation": "",
+            "links": [
+              {
+                "url": "http://musicmoz.org/Bands_and_Artists/I/Imbruglia,_Natalie/",
+                "name": "musicmoz"
+              },
+              {
+                "url": "http://www.natalieimbruglia.com/",
+                "name": "natalieimbruglia"
+              },
+              {
+                "url": "https://www.discogs.com/artist/53349",
+                "name": "discogs"
+              },
+              {
+                "url": "https://www.imdb.com/name/nm0001386/",
+                "name": "imdb"
+              },
+              {
+                "url": "http://www.portalimbruglia.com/",
+                "name": "portalimbruglia"
+              },
+              {
+                "url": "http://www.planetnatalie.de/",
+                "name": "planetnatalie"
+              },
+              {
+                "url": "http://www.imbruglia-inside.com/",
+                "name": "imbruglia-inside"
+              },
+              {
+                "url": "http://iw.fateback.com/",
+                "name": "fateback"
+              },
+              {
+                "url": "https://www.bbc.co.uk/music/artists/60530915-9371-4b16-bc31-5c4456317ae0",
+                "name": "bbc"
+              },
+              {
+                "url": "https://www.allmusic.com/artist/mn0000374126",
+                "name": "allmusic"
+              },
+              {
+                "url": "https://www.youtube.com/user/ImNatalieImbruglia",
+                "name": "youtube"
+              },
+              {
+                "url": "https://www.facebook.com/natalieimbruglia",
+                "name": "facebook"
+              },
+              {
+                "url": "http://viaf.org/viaf/85432817",
+                "name": "viaf"
+              },
+              {
+                "url": "https://www.wikidata.org/wiki/Q488353",
+                "name": "wikidata"
+              },
+              {
+                "url": "https://rateyourmusic.com/artist/natalie_imbruglia",
+                "name": "rateyourmusic"
+              },
+              {
+                "url": "http://muzikum.eu/en/122-5338/natalie-imbruglia/lyrics.html",
+                "name": "muzikum"
+              },
+              {
+                "url": "https://open.spotify.com/artist/0dlOr0VIysztGWvU1dpjmP",
+                "name": "spotify"
+              },
+              {
+                "url": "https://commons.wikimedia.org/wiki/File:Natalie_Imbruglia_Cannes.jpg",
+                "name": "wikimedia"
+              },
+              {
+                "url": "https://www.last.fm/music/Natalie+Imbruglia",
+                "name": "last"
+              },
+              {
+                "url": "https://genius.com/artists/Natalie-imbruglia",
+                "name": "genius"
+              },
+              {
+                "url": "https://imvdb.com/n/natalie-imbruglia",
+                "name": "imvdb"
+              },
+              {
+                "url": "https://itunes.apple.com/us/artist/id397997",
+                "name": "apple"
+              },
+              {
+                "url": "https://www.amazon.com/-/e/B000APBGTO",
+                "name": "amazon"
+              },
+              {
+                "url": "https://play.google.com/store/music/artist?id=Alktxgtftaliia235up2aoqdpha",
+                "name": "google"
+              },
+              {
+                "url": "https://www.worldcat.org/identities/containsVIAFID/85432817",
+                "name": "worldcat"
+              },
+              {
+                "url": "https://www.whosampled.com/Natalie-Imbruglia/",
+                "name": "whosampled"
+              },
+              {
+                "url": "https://secondhandsongs.com/artist/758",
+                "name": "secondhandsongs"
+              },
+              {
+                "url": "https://www.setlist.fm/setlists/natalie-imbruglia-6bd6be4e.html",
+                "name": "setlist"
+              },
+              {
+                "url": "https://www.songkick.com/artists/66427-natalie-imbruglia",
+                "name": "songkick"
+              },
+              {
+                "url": "https://nla.gov.au/nla.party-508446",
+                "name": "gov"
+              },
+              {
+                "url": "http://www.45cat.com/artist/natalie-imbruglia",
+                "name": "45cat"
+              },
+              {
+                "url": "https://d-nb.info/gnd/135084059",
+                "name": "d-nb"
+              },
+              {
+                "url": "http://id.loc.gov/authorities/names/no98076351",
+                "name": "loc"
+              },
+              {
+                "url": "https://catalogue.bnf.fr/ark:/12148/cb14010333q",
+                "name": "bnf"
+              },
+              {
+                "url": "https://twitter.com/natimbruglia",
+                "name": "twitter"
+              },
+              {
+                "url": "https://www.instagram.com/natalie_imbruglia/",
+                "name": "instagram"
+              },
+              {
+                "url": "https://myspace.com/natalieimbruglia",
+                "name": "myspace"
+              },
+              {
+                "url": "https://www.deezer.com/artist/625",
+                "name": "deezer"
+              },
+              {
+                "url": "https://listen.tidal.com/artist/1882",
+                "name": "tidal"
+              }
+            ],
+            "images": [
+              {
+                "url": "http://assets.fanart.tv/fanart/music/60530915-9371-4b16-bc31-5c4456317ae0/musicbanner/imbruglia-natalie-5059f59746ee4.jpg",
+                "coverType": "banner",
+                "extension": ".jpg"
+              },
+              {
+                "url": "http://assets.fanart.tv/fanart/music/60530915-9371-4b16-bc31-5c4456317ae0/artistbackground/imbruglia-natalie-5117f487ece83.jpg",
+                "coverType": "fanart",
+                "extension": ".jpg"
+              },
+              {
+                "url": "http://assets.fanart.tv/fanart/music/60530915-9371-4b16-bc31-5c4456317ae0/hdmusiclogo/imbruglia-natalie-5409ee43da188.png",
+                "coverType": "logo",
+                "extension": ".png"
+              },
+              {
+                "url": "http://assets.fanart.tv/fanart/music/60530915-9371-4b16-bc31-5c4456317ae0/artistthumb/imbruglia-natalie-537a094a3795d.jpg",
+                "coverType": "poster",
+                "extension": ".jpg"
+              }
+            ],
+            "path": "/music/Natalie Imbruglia",
+            "qualityProfileId": 2,
+            "metadataProfileId": 1,
+            "albumFolder": true,
+            "monitored": true,
+            "genres": [
+              "Downtempo",
+              "Electropop",
+              "Pop",
+              "Pop Rock"
+            ],
+            "cleanName": "natalieimbruglia",
+            "sortName": "natalie imbruglia",
+            "tags": [],
+            "added": "2018-09-15T20:51:59.087878Z",
+            "ratings": {
+              "votes": 3,
+              "value": 8.7
+            },
+            "statistics": {
+              "albumCount": 0,
+              "trackFileCount": 0,
+              "trackCount": 0,
+              "totalTrackCount": 0,
+              "sizeOnDisk": 0,
+              "percentOfTracks": 0
+            },
+            "id": 555
+          },
+          "images": [
+            {
+              "url": "/MediaCover/Albums/8528/cover.jpg?lastWrite=637596070760000000",
+              "coverType": "cover",
+              "extension": ".jpg"
+            }
+          ],
+          "links": [],
+          "statistics": {
+            "trackFileCount": 14,
+            "trackCount": 14,
+            "totalTrackCount": 14,
+            "sizeOnDisk": 358168153,
+            "percentOfTracks": 100
+          },
+          "id": 8528
+        }
+      },
+      {
+        "id": "Lidarr-0-7",
+        "title": "Atmosphere",
+        "start": "2021-10-08T00:00:00Z",
+        "className": "inline-popups bg-calendar calendar-item musicID--",
+        "imagetype": "music text-info",
+        "imagetypeFilter": "music",
+        "downloadFilter": "text-info",
+        "bgColor": "bg-info",
+        "details": {
+          "seasonCount": "",
+          "status": "",
+          "topTitle": "WORD?",
+          "bottomTitle": "Atmosphere",
+          "overview": "Atmosphere is an American hip hop duo from Minneapolis, Minnesota, consisting of rapper Slug (Sean Daley) and DJ/producer Ant (Anthony Davis).  Since its formation in 1996, the group has released twelve studio albums and ten extended plays.\n\n",
+          "runtime": "",
+          "image": "https://assets.fanart.tv/fanart/music/ef954679-5ee7-4016-acef-7ac71f2fa3d8/artistbackground/atmosphere-4e54cf14aed3b.jpg",
+          "ratings": 8,
+          "videoQuality": "unknown",
+          "audioChannels": "unknown",
+          "audioCodec": "unknown",
+          "videoCodec": "unknown",
+          "size": "unknown",
+          "genres": []
+        },
+        "data": {
+          "title": "WORD?",
+          "disambiguation": "",
+          "overview": "",
+          "artistId": 69,
+          "foreignAlbumId": "b517f5ce-1b86-4b95-bb9e-a4a7d539dd4c",
+          "monitored": true,
+          "anyReleaseOk": true,
+          "profileId": 2,
+          "duration": 2893000,
+          "albumType": "Album",
+          "secondaryTypes": [],
+          "mediumCount": 1,
+          "ratings": {
+            "votes": 0,
+            "value": 0
+          },
+          "releaseDate": "2021-10-08T00:00:00Z",
+          "releases": [
+            {
+              "id": 38516,
+              "albumId": 8586,
+              "foreignReleaseId": "604adab8-a59e-4700-95f6-c75e905f5308",
+              "title": "WORD?",
+              "status": "Official",
+              "duration": 2893000,
+              "trackCount": 14,
+              "media": [
+                {
+                  "mediumNumber": 1,
+                  "mediumName": "",
+                  "mediumFormat": "Digital Media"
+                }
+              ],
+              "mediumCount": 1,
+              "disambiguation": "",
+              "country": [
+                "United States"
+              ],
+              "label": [
+                "Rhymesayers Entertainment"
+              ],
+              "format": "Digital Media",
+              "monitored": true
+            }
+          ],
+          "genres": [],
+          "media": [
+            {
+              "mediumNumber": 1,
+              "mediumName": "",
+              "mediumFormat": "Digital Media"
+            }
+          ],
+          "artist": {
+            "status": "continuing",
+            "ended": false,
+            "artistName": "Atmosphere",
+            "foreignArtistId": "ef954679-5ee7-4016-acef-7ac71f2fa3d8",
+            "tadbId": 0,
+            "discogsId": 0,
+            "overview": "Atmosphere is an American hip hop duo from Minneapolis, Minnesota, consisting of rapper Slug (Sean Daley) and DJ/producer Ant (Anthony Davis).  Since its formation in 1996, the group has released twelve studio albums and ten extended plays.\n\n",
+            "artistType": "Group",
+            "disambiguation": "Minneapolis hip\u2010hop duo Slug & Ant",
+            "links": [
+              {
+                "url": "https://www.discogs.com/artist/57765",
+                "name": "discogs"
+              },
+              {
+                "url": "https://myspace.com/atmosphere",
+                "name": "myspace"
+              },
+              {
+                "url": "https://www.facebook.com/Atmosphere",
+                "name": "facebook"
+              },
+              {
+                "url": "https://twitter.com/atmosphere",
+                "name": "twitter"
+              },
+              {
+                "url": "http://www.purevolume.com/atmosphere",
+                "name": "purevolume"
+              },
+              {
+                "url": "https://www.bbc.co.uk/music/artists/ef954679-5ee7-4016-acef-7ac71f2fa3d8",
+                "name": "bbc"
+              },
+              {
+                "url": "https://www.imdb.com/name/nm2282786/",
+                "name": "imdb"
+              },
+              {
+                "url": "https://www.last.fm/music/Atmosphere",
+                "name": "last"
+              },
+              {
+                "url": "https://rateyourmusic.com/artist/atmosphere",
+                "name": "rateyourmusic"
+              },
+              {
+                "url": "https://www.allmusic.com/artist/mn0000932045",
+                "name": "allmusic"
+              },
+              {
+                "url": "https://www.wikidata.org/wiki/Q757508",
+                "name": "wikidata"
+              },
+              {
+                "url": "https://genius.com/artists/Atmosphere",
+                "name": "genius"
+              },
+              {
+                "url": "http://www.worldcat.org/identities/lccn-no2002091122/",
+                "name": "worldcat"
+              },
+              {
+                "url": "https://www.instagram.com/atmosphere/",
+                "name": "instagram"
+              },
+              {
+                "url": "http://viaf.org/viaf/148086452",
+                "name": "viaf"
+              },
+              {
+                "url": "https://open.spotify.com/artist/1GAS0rb4L8VTPvizAx2O9J",
+                "name": "spotify"
+              },
+              {
+                "url": "https://atmosphere.bandcamp.com/",
+                "name": "bandcamp"
+              },
+              {
+                "url": "https://music.apple.com/us/artist/2556490",
+                "name": "apple"
+              }
+            ],
+            "images": [
+              {
+                "url": "http://assets.fanart.tv/fanart/music/ef954679-5ee7-4016-acef-7ac71f2fa3d8/musicbanner/atmosphere-560555ac3e662.jpg",
+                "coverType": "banner",
+                "extension": ".jpg"
+              },
+              {
+                "url": "http://assets.fanart.tv/fanart/music/ef954679-5ee7-4016-acef-7ac71f2fa3d8/artistbackground/atmosphere-4e54cf14aed3b.jpg",
+                "coverType": "fanart",
+                "extension": ".jpg"
+              },
+              {
+                "url": "http://assets.fanart.tv/fanart/music/ef954679-5ee7-4016-acef-7ac71f2fa3d8/hdmusiclogo/atmosphere-5536aeaf8cde5.png",
+                "coverType": "logo",
+                "extension": ".png"
+              },
+              {
+                "url": "http://assets.fanart.tv/fanart/music/ef954679-5ee7-4016-acef-7ac71f2fa3d8/artistthumb/atmosphere-5152527cd63eb.jpg",
+                "coverType": "poster",
+                "extension": ".jpg"
+              }
+            ],
+            "path": "/music/Atmosphere",
+            "qualityProfileId": 2,
+            "metadataProfileId": 1,
+            "albumFolder": true,
+            "monitored": true,
+            "genres": [
+              "Hip Hop"
+            ],
+            "cleanName": "atmosphere",
+            "sortName": "atmosphere",
+            "tags": [],
+            "added": "2018-09-15T20:51:59.087878Z",
+            "ratings": {
+              "votes": 3,
+              "value": 8
+            },
+            "statistics": {
+              "albumCount": 0,
+              "trackFileCount": 0,
+              "trackCount": 0,
+              "totalTrackCount": 0,
+              "sizeOnDisk": 0,
+              "percentOfTracks": 0
+            },
+            "id": 69
+          },
+          "images": [
+            {
+              "url": "/MediaCover/Albums/8586/cover.jpg?lastWrite=637634110250000000",
+              "coverType": "cover",
+              "extension": ".jpg"
+            }
+          ],
+          "links": [],
+          "id": 8586
+        }
+      },
+      {
+        "id": "Lidarr-0-8",
+        "title": "Efterklang",
+        "start": "2021-10-08T00:00:00Z",
+        "className": "inline-popups bg-calendar calendar-item musicID--",
+        "imagetype": "music text-info",
+        "imagetypeFilter": "music",
+        "downloadFilter": "text-info",
+        "bgColor": "bg-info",
+        "details": {
+          "seasonCount": "",
+          "status": "",
+          "topTitle": "Windflowers",
+          "bottomTitle": "Efterklang",
+          "overview": "Efterklang (Danish pronunciation: [\u02c8eft\u0250\u02cck\u02b0l\u0251\u014b\u02c0]) is a Danish indie rock group from Copenhagen, formed in December 2000. The band has recorded five studio albums and are currently signed to the 4AD label, as well as their own record label Rumraket.\nIn 2012, they released their fourth album Piramida to good reviews.\n\n",
+          "runtime": "",
+          "image": "https://assets.fanart.tv/fanart/music/8a7bed97-f080-4984-8db5-2ea5c82d8b33/artistbackground/efterklang-4fe0f12893261.jpg",
+          "ratings": 0,
+          "videoQuality": "unknown",
+          "audioChannels": "unknown",
+          "audioCodec": "unknown",
+          "videoCodec": "unknown",
+          "size": "unknown",
+          "genres": []
+        },
+        "data": {
+          "title": "Windflowers",
+          "disambiguation": "",
+          "overview": "",
+          "artistId": 268,
+          "foreignAlbumId": "e221171a-9360-40ed-a798-a507d748d1cd",
+          "monitored": true,
+          "anyReleaseOk": true,
+          "profileId": 2,
+          "duration": 338000,
+          "albumType": "Album",
+          "secondaryTypes": [],
+          "mediumCount": 1,
+          "ratings": {
+            "votes": 0,
+            "value": 0
+          },
+          "releaseDate": "2021-10-08T00:00:00Z",
+          "releases": [
+            {
+              "id": 38232,
+              "albumId": 8522,
+              "foreignReleaseId": "52cc7ce2-ce7e-4330-aab6-526b9c0fc29b",
+              "title": "Windflowers",
+              "status": "Official",
+              "duration": 338000,
+              "trackCount": 9,
+              "media": [
+                {
+                  "mediumNumber": 1,
+                  "mediumName": "",
+                  "mediumFormat": "Digital Media"
+                }
+              ],
+              "mediumCount": 1,
+              "disambiguation": "",
+              "country": [
+                "United States"
+              ],
+              "label": [
+                "City Slang"
+              ],
+              "format": "Digital Media",
+              "monitored": true
+            }
+          ],
+          "genres": [],
+          "media": [
+            {
+              "mediumNumber": 1,
+              "mediumName": "",
+              "mediumFormat": "Digital Media"
+            }
+          ],
+          "artist": {
+            "status": "continuing",
+            "ended": false,
+            "artistName": "Efterklang",
+            "foreignArtistId": "8a7bed97-f080-4984-8db5-2ea5c82d8b33",
+            "tadbId": 0,
+            "discogsId": 0,
+            "overview": "Efterklang (Danish pronunciation: [\u02c8eft\u0250\u02cck\u02b0l\u0251\u014b\u02c0]) is a Danish indie rock group from Copenhagen, formed in December 2000. The band has recorded five studio albums and are currently signed to the 4AD label, as well as their own record label Rumraket.\nIn 2012, they released their fourth album Piramida to good reviews.\n\n",
+            "artistType": "Group",
+            "disambiguation": "",
+            "links": [
+              {
+                "url": "http://www.efterklang.net/",
+                "name": "efterklang"
+              },
+              {
+                "url": "https://en.wikipedia.org/wiki/Efterklang",
+                "name": "wikipedia"
+              },
+              {
+                "url": "https://myspace.com/efterklang",
+                "name": "myspace"
+              },
+              {
+                "url": "https://www.bbc.co.uk/music/artists/8a7bed97-f080-4984-8db5-2ea5c82d8b33",
+                "name": "bbc"
+              },
+              {
+                "url": "https://twitter.com/efterklang",
+                "name": "twitter"
+              },
+              {
+                "url": "https://www.discogs.com/artist/234846",
+                "name": "discogs"
+              },
+              {
+                "url": "https://www.facebook.com/pages/Efterklang/36831868666",
+                "name": "facebook"
+              },
+              {
+                "url": "https://open.spotify.com/artist/3DL71JYSG6VREkmLSzfWhU",
+                "name": "spotify"
+              },
+              {
+                "url": "https://www.allmusic.com/artist/mn0000103103",
+                "name": "allmusic"
+              },
+              {
+                "url": "https://soundcloud.com/efterklang",
+                "name": "soundcloud"
+              },
+              {
+                "url": "https://www.wikidata.org/wiki/Q2075085",
+                "name": "wikidata"
+              },
+              {
+                "url": "https://www.last.fm/music/Efterklang",
+                "name": "last"
+              },
+              {
+                "url": "https://efterklang.bandcamp.com/",
+                "name": "bandcamp"
+              },
+              {
+                "url": "https://rateyourmusic.com/artist/efterklang",
+                "name": "rateyourmusic"
+              },
+              {
+                "url": "http://viaf.org/viaf/139113494",
+                "name": "viaf"
+              },
+              {
+                "url": "https://d-nb.info/gnd/16057623-4",
+                "name": "d-nb"
+              },
+              {
+                "url": "https://www.songkick.com/artists/31045",
+                "name": "songkick"
+              }
+            ],
+            "images": [
+              {
+                "url": "http://assets.fanart.tv/fanart/music/8a7bed97-f080-4984-8db5-2ea5c82d8b33/artistbackground/efterklang-4fe0f12893261.jpg",
+                "coverType": "fanart",
+                "extension": ".jpg"
+              },
+              {
+                "url": "http://assets.fanart.tv/fanart/music/8a7bed97-f080-4984-8db5-2ea5c82d8b33/artistthumb/efterklang-4fe0ef183310b.jpg",
+                "coverType": "poster",
+                "extension": ".jpg"
+              }
+            ],
+            "path": "/music/Efterklang",
+            "qualityProfileId": 2,
+            "metadataProfileId": 1,
+            "albumFolder": true,
+            "monitored": true,
+            "genres": [
+              "Alternative Rock",
+              "Post-Rock",
+              "Rock"
+            ],
+            "cleanName": "efterklang",
+            "sortName": "efterklang",
+            "tags": [],
+            "added": "2018-09-15T20:51:59.087878Z",
+            "ratings": {
+              "votes": 0,
+              "value": 0
+            },
+            "statistics": {
+              "albumCount": 0,
+              "trackFileCount": 0,
+              "trackCount": 0,
+              "totalTrackCount": 0,
+              "sizeOnDisk": 0,
+              "percentOfTracks": 0
+            },
+            "id": 268
+          },
+          "images": [
+            {
+              "url": "/MediaCover/Albums/8522/cover.jpg?lastWrite=637595194270000000",
+              "coverType": "cover",
+              "extension": ".jpg"
+            }
+          ],
+          "links": [],
+          "id": 8522
+        }
+      },
+      {
+        "id": "Lidarr-0-9",
+        "title": "BADBADNOTGOOD",
+        "start": "2021-10-08T00:00:00Z",
+        "className": "inline-popups bg-calendar calendar-item musicID--",
+        "imagetype": "music text-info",
+        "imagetypeFilter": "music",
+        "downloadFilter": "text-info",
+        "bgColor": "bg-info",
+        "details": {
+          "seasonCount": "",
+          "status": "",
+          "topTitle": "Talk Memory",
+          "bottomTitle": "BADBADNOTGOOD",
+          "overview": "BadBadNotGood (stylized in all caps) is a Canadian instrumental music group and production team from Toronto, Ontario. The group was founded in 2010 by bassist Chester Hansen, keyboardist Matthew Tavares, and drummer Alexander Sowinski. In 2016, they were joined by frequent collaborator Leland Whitty. Among other projects, the group has released four solo studio albums, with a forthcoming album Talk Memory to be released in October 2021. They have had critical and crossover success, finding audiences in the hip-hop, jazz, and alternative music communities.\nThe group combines jazz musicianship with a hip-hop production perspective and are well known for their collaborations with artists like Tyler, The Creator, Daniel Caesar, Mick Jenkins, Kendrick Lamar, and Ghostface Killah. For their songwriting and production work, they have been nominated for four Grammy Awards, winning two.\n\n",
+          "runtime": "",
+          "image": "https://www.theaudiodb.com/images/media/artist/fanart/wvrrpp1474170605.jpg",
+          "ratings": 0,
+          "videoQuality": "unknown",
+          "audioChannels": "unknown",
+          "audioCodec": "unknown",
+          "videoCodec": "unknown",
+          "size": "unknown",
+          "genres": []
+        },
+        "data": {
+          "title": "Talk Memory",
+          "disambiguation": "",
+          "overview": "",
+          "artistId": 1026,
+          "foreignAlbumId": "441eca34-2e70-4ecb-8b07-da009aa1680f",
+          "monitored": true,
+          "anyReleaseOk": true,
+          "profileId": 1,
+          "duration": 542000,
+          "albumType": "Album",
+          "secondaryTypes": [],
+          "mediumCount": 1,
+          "ratings": {
+            "votes": 0,
+            "value": 0
+          },
+          "releaseDate": "2021-10-08T00:00:00Z",
+          "releases": [
+            {
+              "id": 38509,
+              "albumId": 8584,
+              "foreignReleaseId": "545d7155-e9f2-46c8-9eb4-caa37cf8e8cc",
+              "title": "Talk Memory",
+              "status": "Official",
+              "duration": 542000,
+              "trackCount": 9,
+              "media": [
+                {
+                  "mediumNumber": 1,
+                  "mediumName": "",
+                  "mediumFormat": "Digital Media"
+                }
+              ],
+              "mediumCount": 1,
+              "disambiguation": "",
+              "country": [
+                "United States"
+              ],
+              "label": [
+                "Innovative Leisure Records"
+              ],
+              "format": "Digital Media",
+              "monitored": true
+            }
+          ],
+          "genres": [],
+          "media": [
+            {
+              "mediumNumber": 1,
+              "mediumName": "",
+              "mediumFormat": "Digital Media"
+            }
+          ],
+          "artist": {
+            "status": "continuing",
+            "ended": false,
+            "artistName": "BADBADNOTGOOD",
+            "foreignArtistId": "754294d5-d7d2-4ea2-8184-1dcaaf55a56f",
+            "tadbId": 0,
+            "discogsId": 0,
+            "overview": "BadBadNotGood (stylized in all caps) is a Canadian instrumental music group and production team from Toronto, Ontario. The group was founded in 2010 by bassist Chester Hansen, keyboardist Matthew Tavares, and drummer Alexander Sowinski. In 2016, they were joined by frequent collaborator Leland Whitty. Among other projects, the group has released four solo studio albums, with a forthcoming album Talk Memory to be released in October 2021. They have had critical and crossover success, finding audiences in the hip-hop, jazz, and alternative music communities.\nThe group combines jazz musicianship with a hip-hop production perspective and are well known for their collaborations with artists like Tyler, The Creator, Daniel Caesar, Mick Jenkins, Kendrick Lamar, and Ghostface Killah. For their songwriting and production work, they have been nominated for four Grammy Awards, winning two.\n\n",
+            "artistType": "Group",
+            "disambiguation": "",
+            "links": [
+              {
+                "url": "https://soundcloud.com/badbadnotgood",
+                "name": "soundcloud"
+              },
+              {
+                "url": "https://badbadnotgood.com/",
+                "name": "badbadnotgood"
+              },
+              {
+                "url": "https://www.discogs.com/artist/2468526",
+                "name": "discogs"
+              },
+              {
+                "url": "https://www.wikidata.org/wiki/Q4840142",
+                "name": "wikidata"
+              },
+              {
+                "url": "https://twitter.com/badbadnotgood",
+                "name": "twitter"
+              },
+              {
+                "url": "https://badbadnotgood.bandcamp.com/",
+                "name": "bandcamp"
+              },
+              {
+                "url": "https://www.allmusic.com/artist/mn0003014251",
+                "name": "allmusic"
+              },
+              {
+                "url": "https://rateyourmusic.com/artist/badbadnotgood",
+                "name": "rateyourmusic"
+              },
+              {
+                "url": "https://www.youtube.com/user/BADBADNOTGOOD",
+                "name": "youtube"
+              },
+              {
+                "url": "https://www.facebook.com/BADBADNOTGOOD-215708555125814",
+                "name": "facebook"
+              },
+              {
+                "url": "http://badbadnotgood.tumblr.com/",
+                "name": "tumblr"
+              },
+              {
+                "url": "https://badbadnotgoodil.bandcamp.com/",
+                "name": "bandcamp"
+              },
+              {
+                "url": "https://open.spotify.com/artist/65dGLGjkw3UbddUg2GKQoZ",
+                "name": "spotify"
+              },
+              {
+                "url": "https://www.musik-sammler.de/artist/badbadnotgood/",
+                "name": "musik-sammler"
+              },
+              {
+                "url": "https://www.deezer.com/artist/1635715",
+                "name": "deezer"
+              },
+              {
+                "url": "https://listen.tidal.com/artist/4512972",
+                "name": "tidal"
+              },
+              {
+                "url": "https://www.last.fm/music/BADBADNOTGOOD",
+                "name": "last"
+              },
+              {
+                "url": "https://itunes.apple.com/us/artist/id505464105",
+                "name": "apple"
+              }
+            ],
+            "images": [
+              {
+                "url": "http://assets.fanart.tv/fanart/music/754294d5-d7d2-4ea2-8184-1dcaaf55a56f/hdmusiclogo/badbadnotgood-5e1beea4ae706.png",
+                "coverType": "logo",
+                "extension": ".png"
+              },
+              {
+                "url": "http://assets.fanart.tv/fanart/music/754294d5-d7d2-4ea2-8184-1dcaaf55a56f/artistthumb/badbadnotgood-56197575a2e66.jpg",
+                "coverType": "poster",
+                "extension": ".jpg"
+              },
+              {
+                "url": "https://www.theaudiodb.com/images/media/artist/fanart/wvrrpp1474170605.jpg",
+                "coverType": "fanart",
+                "extension": ".jpg"
+              }
+            ],
+            "path": "/music/BADBADNOTGOOD",
+            "qualityProfileId": 1,
+            "metadataProfileId": 1,
+            "albumFolder": true,
+            "monitored": true,
+            "genres": [
+              "Hip Hop"
+            ],
+            "cleanName": "badbadnotgood",
+            "sortName": "badbadnotgood",
+            "tags": [],
+            "added": "2020-10-02T15:58:53.8572533Z",
+            "ratings": {
+              "votes": 0,
+              "value": 0
+            },
+            "statistics": {
+              "albumCount": 0,
+              "trackFileCount": 0,
+              "trackCount": 0,
+              "totalTrackCount": 0,
+              "sizeOnDisk": 0,
+              "percentOfTracks": 0
+            },
+            "id": 1026
+          },
+          "images": [
+            {
+              "url": "/MediaCover/Albums/8584/cover.jpg?lastWrite=637657364220000000",
+              "coverType": "cover",
+              "extension": ".jpg"
+            }
+          ],
+          "links": [],
+          "id": 8584
+        }
+      },
+      {
+        "id": "Lidarr-0-10",
+        "title": "Coldplay",
+        "start": "2021-10-15T00:00:00Z",
+        "className": "inline-popups bg-calendar calendar-item musicID--",
+        "imagetype": "music text-info",
+        "imagetypeFilter": "music",
+        "downloadFilter": "text-info",
+        "bgColor": "bg-info",
+        "details": {
+          "seasonCount": "",
+          "status": "",
+          "topTitle": "Music of the Spheres",
+          "bottomTitle": "Coldplay",
+          "overview": "Coldplay are a British rock band formed in London in 1996. The performing members comprise vocalist, rhythm guitarist and pianist Chris Martin, lead guitarist Jonny Buckland, bassist Guy Berryman, and drummer Will Champion. They met at University College London and began playing music together from 1996 to 1998, first calling themselves Pectoralz and then Starfish before finally changing their name to Coldplay. Their creative director and former manager Phil Harvey is considered the fifth member of the band.After changing their name to Coldplay, the band recorded and released two EPs, Safety in 1998 and The Blue Room in 1999. The latter was their first release under a major record label, Parlophone. Coldplay achieved worldwide fame with the release of the song \u0022Yellow\u0022 in 2000, followed in the same year by their debut album Parachutes, which was nominated for the Mercury Prize. The band's second album, A Rush of Blood to the Head (2002), was released to critical acclaim. Their next record, X&Y, was the best-selling album worldwide of 2005; the Brian Eno-produced fourth studio album, Viva la Vida or Death and All His Friends (2008), was the best-selling album of that year and earned the band three Grammy Awards. In 2011, Coldplay released their fifth studio album, Mylo Xyloto, which topped the charts in over 34 countries and was the UK's best-selling rock album of 2011. The band have since released Ghost Stories (2014), A Head Full of Dreams (2015) and Everyday Life (2019). In 2021, they announced their ninth studio album Music of the Spheres.\nColdplay have sold more than 100 million albums worldwide, making them one of the world's best-selling music artists. They have won numerous awards throughout their career, including nine Brit Awards, seven MTV Video Music Awards, eight MTV Europe Music Awards and seven Grammy Awards from 35 nominations. The band's first three albums \u2014 Parachutes (2000), A Rush of Blood to the Head (2002), and X&Y (2005) \u2014 are among the best-selling albums in UK chart history.In December 2009, Rolling Stone readers voted the group the fourth-best artist of the 2000s and Q magazine included the group in their Artists of the Century list. Coldplay have supported various social and political causes, such as Oxfam's Make Trade Fair campaign and Amnesty International. They have also performed at charity projects, including Band Aid 20, Live 8, Global Citizen Festival, Sound Relief, Hope for Haiti Now: A Global Benefit for Earthquake Relief, One Love Manchester, The Secret Policeman's Ball, Sport Relief and the UK Teenage Cancer Trust.",
+          "runtime": "",
+          "image": "https://assets.fanart.tv/fanart/music/cc197bad-dc9c-440d-a5b5-d52ba2e14234/artistbackground/coldplay-4fc0c681d6f25.jpg",
+          "ratings": 8.3,
+          "videoQuality": "unknown",
+          "audioChannels": "unknown",
+          "audioCodec": "unknown",
+          "videoCodec": "unknown",
+          "size": "unknown",
+          "genres": []
+        },
+        "data": {
+          "title": "Music of the Spheres",
+          "disambiguation": "",
+          "overview": "Music of the Spheres is the upcoming ninth studio album by British rock band Coldplay, scheduled to be released on 15 October 2021 by Parlophone in the United Kingdom and Atlantic Records in the United States. The album was produced by Max Martin, who is a new collaborator to the band's discography.",
+          "artistId": 187,
+          "foreignAlbumId": "c169f440-90bf-4a0b-aa6a-c83072bd7eed",
+          "monitored": true,
+          "anyReleaseOk": true,
+          "profileId": 2,
+          "duration": 0,
+          "albumType": "Album",
+          "secondaryTypes": [],
+          "mediumCount": 1,
+          "ratings": {
+            "votes": 0,
+            "value": 0
+          },
+          "releaseDate": "2021-10-15T00:00:00Z",
+          "releases": [
+            {
+              "id": 38521,
+              "albumId": 8590,
+              "foreignReleaseId": "b2de889c-6940-49ac-84be-3c0ea8733621",
+              "title": "Music of the Spheres",
+              "status": "Official",
+              "duration": 0,
+              "trackCount": 12,
+              "media": [
+                {
+                  "mediumNumber": 1,
+                  "mediumName": "",
+                  "mediumFormat": "Digital Media"
+                }
+              ],
+              "mediumCount": 1,
+              "disambiguation": "",
+              "country": [
+                "[Worldwide]"
+              ],
+              "label": [
+                "Parlophone"
+              ],
+              "format": "Digital Media",
+              "monitored": true
+            }
+          ],
+          "genres": [],
+          "media": [
+            {
+              "mediumNumber": 1,
+              "mediumName": "",
+              "mediumFormat": "Digital Media"
+            }
+          ],
+          "artist": {
+            "status": "continuing",
+            "ended": false,
+            "artistName": "Coldplay",
+            "foreignArtistId": "cc197bad-dc9c-440d-a5b5-d52ba2e14234",
+            "tadbId": 0,
+            "discogsId": 0,
+            "overview": "Coldplay are a British rock band formed in London in 1996. The performing members comprise vocalist, rhythm guitarist and pianist Chris Martin, lead guitarist Jonny Buckland, bassist Guy Berryman, and drummer Will Champion. They met at University College London and began playing music together from 1996 to 1998, first calling themselves Pectoralz and then Starfish before finally changing their name to Coldplay. Their creative director and former manager Phil Harvey is considered the fifth member of the band.After changing their name to Coldplay, the band recorded and released two EPs, Safety in 1998 and The Blue Room in 1999. The latter was their first release under a major record label, Parlophone. Coldplay achieved worldwide fame with the release of the song \u0022Yellow\u0022 in 2000, followed in the same year by their debut album Parachutes, which was nominated for the Mercury Prize. The band's second album, A Rush of Blood to the Head (2002), was released to critical acclaim. Their next record, X&Y, was the best-selling album worldwide of 2005; the Brian Eno-produced fourth studio album, Viva la Vida or Death and All His Friends (2008), was the best-selling album of that year and earned the band three Grammy Awards. In 2011, Coldplay released their fifth studio album, Mylo Xyloto, which topped the charts in over 34 countries and was the UK's best-selling rock album of 2011. The band have since released Ghost Stories (2014), A Head Full of Dreams (2015) and Everyday Life (2019). In 2021, they announced their ninth studio album Music of the Spheres.\nColdplay have sold more than 100 million albums worldwide, making them one of the world's best-selling music artists. They have won numerous awards throughout their career, including nine Brit Awards, seven MTV Video Music Awards, eight MTV Europe Music Awards and seven Grammy Awards from 35 nominations. The band's first three albums \u2014 Parachutes (2000), A Rush of Blood to the Head (2002), and X&Y (2005) \u2014 are among the best-selling albums in UK chart history.In December 2009, Rolling Stone readers voted the group the fourth-best artist of the 2000s and Q magazine included the group in their Artists of the Century list. Coldplay have supported various social and political causes, such as Oxfam's Make Trade Fair campaign and Amnesty International. They have also performed at charity projects, including Band Aid 20, Live 8, Global Citizen Festival, Sound Relief, Hope for Haiti Now: A Global Benefit for Earthquake Relief, One Love Manchester, The Secret Policeman's Ball, Sport Relief and the UK Teenage Cancer Trust.",
+            "artistType": "Group",
+            "disambiguation": "",
+            "links": [
+              {
+                "url": "http://www.coldplay.com/",
+                "name": "coldplay"
+              },
+              {
+                "url": "https://musicmoz.org/Bands_and_Artists/C/Coldplay/",
+                "name": "musicmoz"
+              },
+              {
+                "url": "http://www.pleasureunit.com/coldplay/index.php",
+                "name": "pleasureunit"
+              },
+              {
+                "url": "https://www.discogs.com/artist/29735",
+                "name": "discogs"
+              },
+              {
+                "url": "https://myspace.com/coldplay",
+                "name": "myspace"
+              },
+              {
+                "url": "https://www.imdb.com/name/nm1095892/",
+                "name": "imdb"
+              },
+              {
+                "url": "https://twitter.com/coldplay",
+                "name": "twitter"
+              },
+              {
+                "url": "https://www.youtube.com/user/ColdplayTV",
+                "name": "youtube"
+              },
+              {
+                "url": "https://www.bbc.co.uk/music/artists/cc197bad-dc9c-440d-a5b5-d52ba2e14234",
+                "name": "bbc"
+              },
+              {
+                "url": "https://www.facebook.com/coldplay",
+                "name": "facebook"
+              },
+              {
+                "url": "https://www.youtube.com/user/ColdplayVEVO",
+                "name": "youtube"
+              },
+              {
+                "url": "https://www.allmusic.com/artist/mn0000775877",
+                "name": "allmusic"
+              },
+              {
+                "url": "https://plus.google.com/+Coldplay",
+                "name": "google"
+              },
+              {
+                "url": "https://open.spotify.com/artist/4gzpq5DPGxSnKTe4SA8HAU",
+                "name": "spotify"
+              },
+              {
+                "url": "http://coldplay.tumblr.com/",
+                "name": "tumblr"
+              },
+              {
+                "url": "https://www.last.fm/music/Coldplay",
+                "name": "last"
+              },
+              {
+                "url": "https://www.wikidata.org/wiki/Q45188",
+                "name": "wikidata"
+              },
+              {
+                "url": "https://secondhandsongs.com/artist/10590",
+                "name": "secondhandsongs"
+              },
+              {
+                "url": "http://viaf.org/viaf/157712849",
+                "name": "viaf"
+              },
+              {
+                "url": "https://rateyourmusic.com/artist/coldplay",
+                "name": "rateyourmusic"
+              },
+              {
+                "url": "http://www.purevolume.com/coldplay",
+                "name": "purevolume"
+              },
+              {
+                "url": "https://www.musik-sammler.de/artist/3209/",
+                "name": "musik-sammler"
+              },
+              {
+                "url": "https://itunes.apple.com/artist/id471744",
+                "name": "apple"
+              },
+              {
+                "url": "http://muzikum.eu/en/122-3547/coldplay/lyrics.html",
+                "name": "muzikum"
+              },
+              {
+                "url": "https://genius.com/artists/Coldplay",
+                "name": "genius"
+              },
+              {
+                "url": "https://imvdb.com/n/coldplay",
+                "name": "imvdb"
+              },
+              {
+                "url": "https://www.bandsintown.com/a/99",
+                "name": "bandsintown"
+              },
+              {
+                "url": "https://openlibrary.org/authors/OL2741867A/",
+                "name": "openlibrary"
+              },
+              {
+                "url": "https://www.whosampled.com/Coldplay/",
+                "name": "whosampled"
+              },
+              {
+                "url": "https://www.worldcat.org/identities/lccn-no99089189/",
+                "name": "worldcat"
+              },
+              {
+                "url": "https://play.google.com/store/music/artist?id=Aroavh4k5ypej6qdhyoo52q7bpm",
+                "name": "google"
+              },
+              {
+                "url": "https://www.setlist.fm/setlists/coldplay-3d6bde3.html",
+                "name": "setlist"
+              },
+              {
+                "url": "https://www.instagram.com/coldplay/",
+                "name": "instagram"
+              },
+              {
+                "url": "https://soundcloud.com/coldplay",
+                "name": "soundcloud"
+              },
+              {
+                "url": "https://d-nb.info/gnd/6501726-2",
+                "name": "d-nb"
+              },
+              {
+                "url": "http://id.loc.gov/authorities/names/no99089189",
+                "name": "loc"
+              },
+              {
+                "url": "https://catalogue.bnf.fr/ark:/12148/cb140349761",
+                "name": "bnf"
+              },
+              {
+                "url": "https://www.deezer.com/artist/892",
+                "name": "deezer"
+              },
+              {
+                "url": "https://www.songkick.com/artists/197928",
+                "name": "songkick"
+              },
+              {
+                "url": "http://coldplay.livejournal.com/",
+                "name": "livejournal"
+              },
+              {
+                "url": "https://vk.com/coldplay",
+                "name": "vk"
+              },
+              {
+                "url": "https://itunes.apple.com/cn/artist/id471744",
+                "name": "apple"
+              },
+              {
+                "url": "https://itunes.apple.com/jp/artist/id471744",
+                "name": "apple"
+              },
+              {
+                "url": "https://itunes.apple.com/de/artist/id471744",
+                "name": "apple"
+              },
+              {
+                "url": "https://listen.tidal.com/artist/8812",
+                "name": "tidal"
+              },
+              {
+                "url": "https://en.wikipedia.org/wiki/Coldplay",
+                "name": "wikipedia"
+              },
+              {
+                "url": "https://music.amazon.com/artists/B000QKGN8W",
+                "name": "amazon"
+              },
+              {
+                "url": "https://us.napster.com/artist/coldplay",
+                "name": "napster"
+              },
+              {
+                "url": "https://uk.7digital.com/artist/coldplay",
+                "name": "7digital"
+              },
+              {
+                "url": "https://us.7digital.com/artist/coldplay",
+                "name": "7digital"
+              },
+              {
+                "url": "https://www.junodownload.com/artists/Coldplay/releases/",
+                "name": "junodownload"
+              },
+              {
+                "url": "https://www.beatport.com/artist/coldplay/162668",
+                "name": "beatport"
+              },
+              {
+                "url": "https://www.livefans.jp/artists/2236",
+                "name": "livefans"
+              },
+              {
+                "url": "https://www.musixmatch.com/artist/Coldplay",
+                "name": "musixmatch"
+              }
+            ],
+            "images": [
+              {
+                "url": "http://assets.fanart.tv/fanart/music/cc197bad-dc9c-440d-a5b5-d52ba2e14234/musicbanner/coldplay-59156d0d047c0.jpg",
+                "coverType": "banner",
+                "extension": ".jpg"
+              },
+              {
+                "url": "http://assets.fanart.tv/fanart/music/cc197bad-dc9c-440d-a5b5-d52ba2e14234/artistbackground/coldplay-4fc0c681d6f25.jpg",
+                "coverType": "fanart",
+                "extension": ".jpg"
+              },
+              {
+                "url": "http://assets.fanart.tv/fanart/music/cc197bad-dc9c-440d-a5b5-d52ba2e14234/hdmusiclogo/coldplay-55a52c7a5c95d.png",
+                "coverType": "logo",
+                "extension": ".png"
+              },
+              {
+                "url": "http://assets.fanart.tv/fanart/music/cc197bad-dc9c-440d-a5b5-d52ba2e14234/artistthumb/coldplay-4fbba04929c5c.jpg",
+                "coverType": "poster",
+                "extension": ".jpg"
+              }
+            ],
+            "path": "/music/Coldplay",
+            "qualityProfileId": 2,
+            "metadataProfileId": 1,
+            "albumFolder": true,
+            "monitored": true,
+            "genres": [
+              "Alternative Rock",
+              "Pop",
+              "Pop Rock",
+              "Rock"
+            ],
+            "cleanName": "coldplay",
+            "sortName": "coldplay",
+            "tags": [],
+            "added": "2018-09-15T20:51:59.087878Z",
+            "ratings": {
+              "votes": 35,
+              "value": 8.3
+            },
+            "statistics": {
+              "albumCount": 0,
+              "trackFileCount": 0,
+              "trackCount": 0,
+              "totalTrackCount": 0,
+              "sizeOnDisk": 0,
+              "percentOfTracks": 0
+            },
+            "id": 187
+          },
+          "images": [
+            {
+              "url": "/MediaCover/Albums/8590/cover.jpg?lastWrite=637624194250000000",
+              "coverType": "cover",
+              "extension": ".jpg"
+            }
+          ],
+          "links": [
+            {
+              "url": "https://www.wikidata.org/wiki/Q107597380",
+              "name": "wikidata"
+            },
+            {
+              "url": "https://www.allmusic.com/album/mw0003559619",
+              "name": "allmusic"
+            }
+          ],
+          "id": 8590
+        }
+      },
+      {
+        "id": "Lidarr-0-11",
+        "title": "Parquet Courts",
+        "start": "2021-10-22T00:00:00Z",
+        "className": "inline-popups bg-calendar calendar-item musicID--",
+        "imagetype": "music text-info",
+        "imagetypeFilter": "music",
+        "downloadFilter": "text-info",
+        "bgColor": "bg-info",
+        "details": {
+          "seasonCount": "",
+          "status": "",
+          "topTitle": "Sympathy for Life",
+          "bottomTitle": "Parquet Courts",
+          "overview": "Parquet Courts, also known as Parkay Quarts, is an American rock band from New York City. The band consists of Andrew Savage (vocals, guitar), Austin Brown (vocals, guitar, keyboard), Sean Yeaton (bass), and Max Savage (drums).\n\n",
+          "runtime": "",
+          "image": "https://assets.fanart.tv/fanart/music/e01755e3-58ab-4a5b-a9e9-a0a3bd3dff4c/artistbackground/parquet-courts-5543855fe1832.jpg",
+          "ratings": 0,
+          "videoQuality": "unknown",
+          "audioChannels": "unknown",
+          "audioCodec": "unknown",
+          "videoCodec": "unknown",
+          "size": "unknown",
+          "genres": []
+        },
+        "data": {
+          "title": "Sympathy for Life",
+          "disambiguation": "",
+          "overview": "",
+          "artistId": 590,
+          "foreignAlbumId": "288c6409-6e97-4e9c-baa9-abcf3346a678",
+          "monitored": true,
+          "anyReleaseOk": true,
+          "profileId": 2,
+          "duration": 286000,
+          "albumType": "Album",
+          "secondaryTypes": [],
+          "mediumCount": 1,
+          "ratings": {
+            "votes": 0,
+            "value": 0
+          },
+          "releaseDate": "2021-10-22T00:00:00Z",
+          "releases": [
+            {
+              "id": 38726,
+              "albumId": 8648,
+              "foreignReleaseId": "2322927f-4aef-404f-851e-bc6dcb079961",
+              "title": "Sympathy for Life",
+              "status": "Official",
+              "duration": 286000,
+              "trackCount": 11,
+              "media": [
+                {
+                  "mediumNumber": 1,
+                  "mediumName": "",
+                  "mediumFormat": "Digital Media"
+                }
+              ],
+              "mediumCount": 1,
+              "disambiguation": "",
+              "country": [
+                "United States"
+              ],
+              "label": [
+                "Rough Trade"
+              ],
+              "format": "Digital Media",
+              "monitored": true
+            }
+          ],
+          "genres": [],
+          "media": [
+            {
+              "mediumNumber": 1,
+              "mediumName": "",
+              "mediumFormat": "Digital Media"
+            }
+          ],
+          "artist": {
+            "status": "continuing",
+            "ended": false,
+            "artistName": "Parquet Courts",
+            "foreignArtistId": "e01755e3-58ab-4a5b-a9e9-a0a3bd3dff4c",
+            "tadbId": 0,
+            "discogsId": 0,
+            "overview": "Parquet Courts, also known as Parkay Quarts, is an American rock band from New York City. The band consists of Andrew Savage (vocals, guitar), Austin Brown (vocals, guitar, keyboard), Sean Yeaton (bass), and Max Savage (drums).\n\n",
+            "artistType": "Group",
+            "disambiguation": "",
+            "links": [
+              {
+                "url": "https://parquetcourts.wordpress.com/",
+                "name": "wordpress"
+              },
+              {
+                "url": "http://muzikum.eu/en/122-13207/parquet-courts/lyrics.html",
+                "name": "muzikum"
+              },
+              {
+                "url": "https://www.allmusic.com/artist/mn0003031551",
+                "name": "allmusic"
+              },
+              {
+                "url": "https://www.discogs.com/artist/2544241",
+                "name": "discogs"
+              },
+              {
+                "url": "https://rateyourmusic.com/artist/parquet_courts",
+                "name": "rateyourmusic"
+              },
+              {
+                "url": "https://www.facebook.com/pages/Parquet-Courts/131054550418575",
+                "name": "facebook"
+              },
+              {
+                "url": "https://www.wikidata.org/wiki/Q16740568",
+                "name": "wikidata"
+              },
+              {
+                "url": "https://www.youtube.com/channel/UC6WohUYtpq5oYqX4MDxuOrA",
+                "name": "youtube"
+              },
+              {
+                "url": "https://www.songkick.com/artists/3824306-parquet-courts",
+                "name": "songkick"
+              }
+            ],
+            "images": [
+              {
+                "url": "http://assets.fanart.tv/fanart/music/e01755e3-58ab-4a5b-a9e9-a0a3bd3dff4c/artistbackground/parquet-courts-5543855fe1832.jpg",
+                "coverType": "fanart",
+                "extension": ".jpg"
+              },
+              {
+                "url": "http://assets.fanart.tv/fanart/music/e01755e3-58ab-4a5b-a9e9-a0a3bd3dff4c/hdmusiclogo/parquet-courts-6057fb4b9db1f.png",
+                "coverType": "logo",
+                "extension": ".png"
+              },
+              {
+                "url": "https://www.theaudiodb.com/images/media/artist/thumb/utprrr1466264518.jpg",
+                "coverType": "poster",
+                "extension": ".jpg"
+              }
+            ],
+            "path": "/music/Parquet Courts",
+            "qualityProfileId": 2,
+            "metadataProfileId": 1,
+            "albumFolder": true,
+            "monitored": true,
+            "genres": [
+              "Garage Rock",
+              "Indie Rock",
+              "Punk",
+              "Rock"
+            ],
+            "cleanName": "parquetcourts",
+            "sortName": "parquet courts",
+            "tags": [],
+            "added": "2018-09-15T20:51:59.087878Z",
+            "ratings": {
+              "votes": 0,
+              "value": 0
+            },
+            "statistics": {
+              "albumCount": 0,
+              "trackFileCount": 0,
+              "trackCount": 0,
+              "totalTrackCount": 0,
+              "sizeOnDisk": 0,
+              "percentOfTracks": 0
+            },
+            "id": 590
+          },
+          "images": [],
+          "links": [],
+          "id": 8648
+        }
+      }
+    ]
+  }
+}
