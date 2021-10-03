@@ -102,6 +102,23 @@ span.jsgrid-pager-page.jsgrid-pager-current-page.btn.btn-primary{
     }
 }
 
+@media screen and (max-width: 767px) {
+    .orgAlertTransparent {
+        min-width: 200px;
+        width: calc(100% - 40px);
+        max-width: 727px;
+        background-color: transparent !important;
+    }
+}
+@media screen and (min-width: 768px) {
+    .orgAlertTransparent {
+        min-width: 478px;
+        width: calc(100% - 40px);
+        max-width: 1200px;
+        background-color: transparent!important;
+    }
+}
+
 @media screen and (min-width: 768px) {
     #page-wrapper.sidebar-hidden {
         margin-left: 0;
