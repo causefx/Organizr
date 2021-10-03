@@ -29,10 +29,10 @@
     "github_folder": "plexLibraries",
     "license": "personal,business",
     "images": {
-	  "Plex Admin": "https://i.imgur.com/ebAwRp1.png",
-	  "Plex Admin Dropdown": "https://i.imgur.com/tWwkGcZ.png",
-	  "Plex User": "https://i.imgur.com/GFqr31t.png",
-	  "Settings": "https://i.imgur.com/8E84afa.png",
+      "Plex Admin": "https://i.imgur.com/ebAwRp1.png",
+      "Plex Admin Dropdown": "https://i.imgur.com/tWwkGcZ.png",
+      "Plex User": "https://i.imgur.com/GFqr31t.png",
+      "Settings": "https://i.imgur.com/8E84afa.png",
       "Menu Item": "https://i.imgur.com/zRrAEhO.png"
     }
   }
