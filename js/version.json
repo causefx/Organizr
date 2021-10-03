@@ -446,5 +446,12 @@
     "new": "add collapseSideMenuOnClick to org",
     "fixed": "header on non org page|check if tab name is taken|more custom element fixes|date on version",
     "notes": ""
+  },
+  "2.1.730": {
+    "date": "2021-10-03 23:30",
+    "title": "",
+    "new": "new plex library plugin in marketplace|add check for minimum version needed for plugins|combine pre-code-editor and code-editor settings options|edit code-editor to include everything for settingsOption|add shareid to plex users|add orgAlertTransparent class|switch custom HTML to new code-editor method|add calendar demo data|add sonarr radarr and lidarr demo data|add plex demo data for plex streams and metadata",
+    "fixed": "fix default service for overseerr",
+    "notes": "plex-library-include to options|swal css edits"
   }
 }
