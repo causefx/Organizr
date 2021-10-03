@@ -5751,6 +5751,12 @@ class Organizr
 			$plugin = array_keys($array)[$key];
 		}
 		$array = $array[$plugin];
+		// Check Version of Organizr against minimum version needed
+		$compare = new Composer\Semver\Comparator;
+		if (!$compare->lessThan($array['minimum_organizr_version'], $this->version)) {
+			$this->setResponse(500, 'Minimum Organizr version needed: ' . $array['minimum_organizr_version']);
+			return true;
+		}
 		$files = $this->getPluginFilesFromGithub($array['github_folder']);
 		if ($files) {
 			$downloadList = $this->pluginFileListFormat($files, $array['github_folder']);
