@@ -53,6 +53,10 @@ span.jsgrid-pager-page.jsgrid-pager-current-page.btn.btn-primary{
 .bg-org .swal-title {
     color: white;
 }
+.swal-content {
+    padding: 0;
+    margin: 0 !important;
+}
 /*Preloader*/
 
 .preloader {
@@ -105,7 +109,7 @@ span.jsgrid-pager-page.jsgrid-pager-current-page.btn.btn-primary{
 @media screen and (max-width: 767px) {
     .orgAlertTransparent {
         min-width: 200px;
-        width: calc(100% - 40px);
+        width: 100%;
         max-width: 727px;
         background-color: transparent !important;
     }
