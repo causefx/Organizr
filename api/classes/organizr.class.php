@@ -63,7 +63,7 @@ class Organizr
 	
 	// ===================================
 	// Organizr Version
-	public $version = '2.1.710';
+	public $version = '2.1.730';
 	// ===================================
 	// Quick php Version check
 	public $minimumPHP = '7.3';
@@ -5751,6 +5751,12 @@ class Organizr
 			$plugin = array_keys($array)[$key];
 		}
 		$array = $array[$plugin];
+		// Check Version of Organizr against minimum version needed
+		$compare = new Composer\Semver\Comparator;
+		if (!$compare->lessThan($array['minimum_organizr_version'], $this->version)) {
+			$this->setResponse(500, 'Minimum Organizr version needed: ' . $array['minimum_organizr_version']);
+			return true;
+		}
 		$files = $this->getPluginFilesFromGithub($array['github_folder']);
 		if ($files) {
 			$downloadList = $this->pluginFileListFormat($files, $array['github_folder']);
@@ -6198,6 +6204,7 @@ class Organizr
 									foreach ($child->Server as $server) {
 										if ((string)$server['machineIdentifier'] == $this->config['plexID']) {
 											$machineMatches = true;
+											$shareId = $server['id'];
 										}
 									}
 									if ($machineMatches) {
@@ -6205,6 +6212,7 @@ class Organizr
 											'username' => (string)$child['username'],
 											'email' => (string)$child['email'],
 											'id' => (string)$child['id'],
+											'shareId' => (string)$shareId
 										);
 									}
 								} else {

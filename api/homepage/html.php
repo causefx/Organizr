@@ -28,8 +28,8 @@ trait HTMLHomepageItem
 			$homepageSettings['settings']['Custom HTML ' . $i] = array(
 				$this->settingsOption('enable', 'homepageCustomHTML' . $i . 'Enabled'),
 				$this->settingsOption('auth', 'homepageCustomHTML' . $i . 'Auth'),
-				$this->settingsOption('pre-code-editor', 'customHTML' . $i),
-				$this->settingsOption('code-editor', 'customHTML' . $i, ['label' => 'Custom HTML Code']),
+				//$this->settingsOption('pre-code-editor', 'customHTML' . $i), // possibly can remove this as we consolidated the type into one
+				$this->settingsOption('code-editor', 'customHTML' . $i, ['label' => 'Custom HTML Code', 'mode' => 'html']),
 			);
 		}
 		return array_merge($homepageInformation, $homepageSettings);

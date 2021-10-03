@@ -201,6 +201,9 @@ trait RadarrHomepageItem
 		if (!$this->homepageItemPermissions($this->radarrHomepagePermissions('calendar'), true)) {
 			return false;
 		}
+		if ($this->demo) {
+			return $this->demoData('radarr/calendar.json');
+		}
 		$calendarItems = array();
 		$list = $this->csvHomepageUrlToken($this->config['radarrURL'], $this->config['radarrToken']);
 		foreach ($list as $key => $value) {

@@ -239,6 +239,9 @@ trait PlexHomepageItem
 		if (!$this->homepageItemPermissions($this->plexHomepagePermissions('streams'), true)) {
 			return false;
 		}
+		if ($this->demo) {
+			return $this->demoData('plex/plex-streams.json');
+		}
 		$this->setTautulliFriendlyNames();
 		$ignore = array();
 		$exclude = explode(',', $this->config['homepagePlexStreamsExclude']);
@@ -368,6 +371,9 @@ trait PlexHomepageItem
 	{
 		if (!$this->homepageItemPermissions($this->plexHomepagePermissions('metadata'), true)) {
 			return false;
+		}
+		if ($this->demo) {
+			return $this->demoData('plex/plex-metadata.json');
 		}
 		$key = $array['key'] ?? null;
 		if (!$key) {

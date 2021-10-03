@@ -218,15 +218,15 @@ trait OverseerrHomepageItem
 			return null;
 		} else {
 			$default = false;
-			foreach ($services as $service) {
+			foreach ($services as $key => $service) {
 				if ($service['isDefault']) {
 					if ($service['is4k']) {
 						if ($this->config['overseerrPrefer4K']) {
-							$default = (int)$service['id'];
+							$default = (int)$key;
 						}
 					} else {
 						if (!$this->config['overseerrPrefer4K']) {
-							$default = (int)$service['id'];
+							$default = (int)$key;
 						}
 					}
 				}

@@ -1,0 +1,218 @@
+{
+  "response": {
+    "result": "success",
+    "message": null,
+    "data": {
+      "content": [
+        {
+          "type": "tv",
+          "title": "Ted Lasso",
+          "secondaryTitle": "Season 2 - Episode 9",
+          "summary": "Beard After Hours",
+          "ratingKey": "738933",
+          "thumb": "/library/metadata/738933/thumb/1631895318",
+          "key": "743046-list",
+          "nowPlayingThumb": "/library/metadata/718958/art/1630643017",
+          "nowPlayingKey": "718958-np",
+          "nowPlayingTitle": "Ted Lasso - Beard After Hours",
+          "nowPlayingBottom": "S2 \u00b7 E9",
+          "metadataKey": "718958",
+          "originalType": {
+            "0": "episode"
+          },
+          "uid": "743046",
+          "elapsed": 1735000,
+          "duration": 2583584,
+          "addedAt": 1631852183,
+          "watched": 67,
+          "transcoded": 12,
+          "stream": "transcode",
+          "id": "1abe5dd5b977bf954ccd9ccc9f91aebb",
+          "session": "1abe5dd5b977bf954ccd9ccc9f91aebb",
+          "bandwidth": "3980",
+          "bandwidthType": "wan",
+          "sessionType": "Transcoding",
+          "state": "play",
+          "user": "Method Man",
+          "userThumb": "https://th.bing.com/th/id/R.31a64d5f67dced802bb06e5f4a067b13?rik=imGnVnLBY2iTxg",
+          "userAddress": "10.0.0.114",
+          "address": "https://demo.organizr.app/plex/web/index.html#!/server/something/details?key=/library/metadata/743046",
+          "nowPlayingOriginalImage": "api/v2/homepage/image?source=plex&img=/library/metadata/718958/art/1630643017&height=675&width=1200&key=718958-np$5LNUILHVMC",
+          "originalImage": "api/v2/homepage/image?source=plex&img=/library/metadata/738933/thumb/1631895318&height=300&width=200&key=743046-list$NE8FV3EVES",
+          "openTab": true,
+          "tabName": "Plex (Watch me)",
+          "userStream": {
+            "platform": "Roku",
+            "product": "Plex for Roku",
+            "device": "100005842",
+            "stream": "transcode (Throttled)",
+            "videoResolution": "720p",
+            "throttled": true,
+            "sourceVideoCodec": "h264",
+            "videoCodec": "h264",
+            "audioCodec": "ac3",
+            "sourceAudioCodec": "eac3",
+            "videoDecision": "Transcode",
+            "audioDecision": "Transcode",
+            "container": "mpegts",
+            "audioChannels": "6"
+          },
+          "metadata": {
+            "guid": "plex://episode/613cc0031fe69c7d644b94d0",
+            "summary": "After the semifinal, Beard sets out on an all-night odyssey through London in an effort to collect his thoughts.",
+            "rating": "",
+            "duration": "2583584",
+            "originallyAvailableAt": "2021-09-17",
+            "year": "",
+            "studio": "",
+            "tagline": "",
+            "genres": "",
+            "actors": ""
+          },
+          "nowPlayingImageURL": "plugins/images/cache/718958-np.jpg",
+          "imageURL": "api/v2/homepage/image?source=plex&img=/library/metadata/738933/thumb/1631895318&height=300&width=200&key=743046-list"
+        },
+        {
+          "type": "movie",
+          "title": "Moana",
+          "secondaryTitle": "2016",
+          "summary": "In Ancient Polynesia, when a terrible curse incurred by Maui reaches an impetuous Chieftain's daughter's island, she answers the Ocean's call to seek out the demigod to set things right.",
+          "ratingKey": "629519",
+          "thumb": "/library/metadata/629519/thumb/1598244654",
+          "key": "629519-list",
+          "nowPlayingThumb": "/library/metadata/629519/art/1598244654",
+          "nowPlayingKey": "629519-np",
+          "nowPlayingTitle": "Moana",
+          "nowPlayingBottom": "2016",
+          "metadataKey": "629519",
+          "originalType": {
+            "0": "movie"
+          },
+          "uid": "629519",
+          "elapsed": 2666000,
+          "duration": 6432811,
+          "addedAt": 1487623948,
+          "watched": 41,
+          "transcoded": 2,
+          "stream": "transcode",
+          "id": "6ejx7gkos73ipivzocta2a61",
+          "session": "nw0bu3kysxyx6pujqxmsjddm",
+          "bandwidth": "3978",
+          "bandwidthType": "wan",
+          "sessionType": "Transcoding",
+          "state": "play",
+          "user": "RZA",
+          "userThumb": "https://th.bing.com/th/id/R.f8d56c8ff8920ab7bc85cc0ed42d66b0?rik=d%2bZbeC%2bPUcIH0g",
+          "userAddress": "10.0.0.105",
+          "address": "https://demo.organizr.app/plex/web/index.html#!/server/asdsadsadsaddas/details?key=/library/metadata/629519",
+          "nowPlayingOriginalImage": "api/v2/homepage/image?source=plex&img=/library/metadata/629519/art/1598244654&height=675&width=1200&key=629519-np$FKTWEPXEDU",
+          "originalImage": "api/v2/homepage/image?source=plex&img=/library/metadata/629519/thumb/1598244654&height=300&width=200&key=629519-list$8JSXWW3JLM",
+          "openTab": true,
+          "tabName": "Plex (Watch me)",
+          "userStream": {
+            "platform": "webOS",
+            "product": "Plex for LG",
+            "device": "",
+            "stream": "transcode",
+            "videoResolution": "720p",
+            "throttled": false,
+            "sourceVideoCodec": "h264",
+            "videoCodec": "h264",
+            "audioCodec": "aac",
+            "sourceAudioCodec": "dca",
+            "videoDecision": "Transcode",
+            "audioDecision": "Transcode",
+            "container": "mpegts",
+            "audioChannels": "6"
+          },
+          "metadata": {
+            "guid": "plex://movie/5d776af2ad5437001f78dad6",
+            "summary": "In Ancient Polynesia, when a terrible curse incurred by Maui reaches an impetuous Chieftain's daughter's island, she answers the Ocean's call to seek out the demigod to set things right.",
+            "rating": "",
+            "duration": "6432811",
+            "originallyAvailableAt": "2016-11-07",
+            "year": "2016",
+            "studio": "Walt Disney Pictures",
+            "tagline": "The ocean is calling.",
+            "genres": [
+              "Animation",
+              "Action/Adventure",
+              "Comedy",
+              "Family",
+              "Fantasy",
+              "Musical",
+              "Thriller"
+            ],
+            "actors": [
+              {
+                "name": "Auli'i Cravalho",
+                "role": "Moana (voice)",
+                "thumb": "https://metadata-static.plex.tv/people/5d776af2ad5437001f78db11.jpg"
+              },
+              {
+                "name": "Dwayne Johnson",
+                "role": "Maui (voice)",
+                "thumb": "https://metadata-static.plex.tv/0/people/0740957f34be813b907cc513a4cffe6d.jpg"
+              },
+              {
+                "name": "Rachel House",
+                "role": "Gramma Tala (voice)",
+                "thumb": "https://metadata-static.plex.tv/f/people/f7f7556172c45f10222690a5faa74c11.jpg"
+              },
+              {
+                "name": "Temuera Morrison",
+                "role": "Chief Tui (voice)",
+                "thumb": "https://metadata-static.plex.tv/4/people/461e9278f779c9589b50075f20d32178.jpg"
+              },
+              {
+                "name": "Jemaine Clement",
+                "role": "Tamatoa (voice)",
+                "thumb": "https://metadata-static.plex.tv/people/5d7768322ec6b5001f6bb740.jpg"
+              },
+              {
+                "name": "Nicole Scherzinger",
+                "role": "Sina (voice)",
+                "thumb": "https://artworks.thetvdb.com/banners/actors/495988.jpg"
+              },
+              {
+                "name": "Alan Tudyk",
+                "role": "Heihei / Villager #3 (voice)",
+                "thumb": "https://metadata-static.plex.tv/e/people/e4f3693273868092da3e44d7c8f4243e.jpg"
+              },
+              {
+                "name": "Christopher Jackson",
+                "role": "Chief Tui (singing voice)",
+                "thumb": "https://metadata-static.plex.tv/6/people/6fa8635916eff2a19968707d67e3eb57.jpg"
+              },
+              {
+                "name": "Oscar Kightley",
+                "role": "Fisherman (voice)",
+                "thumb": "https://metadata-static.plex.tv/people/5d77683b961905001eb95197.jpg"
+              },
+              {
+                "name": "Troy Polamalu",
+                "role": "Villager #1 (voice)",
+                "thumb": "https://metadata-static.plex.tv/people/5d7768883ab0e7001f503de4.jpg"
+              },
+              {
+                "name": "Puanani Cravalho",
+                "role": "Villager #2 (voice)",
+                "thumb": "https://metadata-static.plex.tv/people/5d776af2ad5437001f78db13.jpg"
+              },
+              {
+                "name": "Phillipa Soo",
+                "role": "Unspecified Villager/Sina",
+                "thumb": "https://metadata-static.plex.tv/f/people/fb5f0ecc0838c82d1c052f41c61725e0.jpg"
+              }
+            ]
+          },
+          "nowPlayingImageURL": "plugins/images/cache/629519-np.jpg",
+          "imageURL": "api/v2/homepage/image?source=plex&img=/library/metadata/629519/thumb/1598244654&height=300&width=200&key=629519-list"
+        }
+      ],
+      "plexID": "sadsadsadsad",
+      "showNames": true,
+      "group": "1"
+    }
+  }
+}
