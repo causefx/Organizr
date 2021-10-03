@@ -15,5 +15,25 @@
       "Main": "https://assets.hongkiat.com/uploads/automated-php-test/tdd-example.jpg",
       "Alternative": "https://i.stack.imgur.com/mCYvN.png"
     }
+  },
+  "Plex Libraries": {
+    "author": "TehMuffinMoo",
+    "category": "Library Management",
+    "description": "This is plugin to allow both Administrators and users to manage plex libraries from within Organizr.",
+    "icon": "https://raw.githubusercontent.com/causefx/Organizr/v2-plugins/plexLibraries/logo.png",
+    "contact": "https://discordapp.com/users/293873371379400705",
+    "website": "https://github.com/TehMuffinMoo/PlexLibraries",
+    "version": "1.0.0",
+    "release_date": "2021-10-03",
+    "last_updated": "2021-10-03",
+    "github_folder": "plexLibraries",
+    "license": "personal,business",
+    "images": {
+      "Plex Admin": "https://i.imgur.com/ebAwRp1.png",
+      "Plex Admin Dropdown": "https://i.imgur.com/tWwkGcZ.png",
+      "Plex User": "https://i.imgur.com/GFqr31t.png",
+      "Settings": "https://i.imgur.com/8E84afa.png",
+      "Menu Item": "https://i.imgur.com/zRrAEhO.png"
+    }
   }
 }
