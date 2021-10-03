@@ -6198,6 +6198,7 @@ class Organizr
 									foreach ($child->Server as $server) {
 										if ((string)$server['machineIdentifier'] == $this->config['plexID']) {
 											$machineMatches = true;
+											$shareId = $server['id'];
 										}
 									}
 									if ($machineMatches) {
@@ -6205,6 +6206,7 @@ class Organizr
 											'username' => (string)$child['username'],
 											'email' => (string)$child['email'],
 											'id' => (string)$child['id'],
+											'shareId' => (string)$shareId
 										);
 									}
 								} else {

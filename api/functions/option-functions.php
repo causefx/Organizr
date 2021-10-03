@@ -268,6 +268,15 @@ trait OptionsFunction
 					'options' => $extras['options']
 				];
 				break;
+			case 'plexlibraryinclude':
+				$settingMerge = [
+					'type' => 'select2',
+					'class' => 'select2-multiple',
+					'id' => $name . '-include-select',
+					'label' => 'Libraries to Include',
+					'options' => $extras['options']
+				];
+				break;
 			// HTML ITEMS
 			// precodeeditor possibly not needed anymore
 			case 'precodeeditor':
