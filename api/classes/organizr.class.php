@@ -6954,6 +6954,35 @@ class Organizr
 		}
 	}
 	
+	public function chooseInstance($url = null, $token = null, $instance = 0, $type = null)
+	{
+		if (!$url || !$token || !is_numeric($instance)) {
+			return false;
+		}
+		$list = $this->csvHomepageUrlToken($url, $token);
+		if ($type) {
+			$type = strtolower($type);
+			switch ($type) {
+				case 'url':
+				case 'token':
+					break;
+				default:
+					$type = 'url';
+					break;
+			}
+			if (is_numeric($instance)) {
+				return $list[$instance][$type];
+			} else {
+				return $list;
+			}
+		}
+		if (is_numeric($instance)) {
+			return $list[$instance];
+		} else {
+			return $list;
+		}
+	}
+	
 	public function CBPFWTabs()
 	{
 		return '
