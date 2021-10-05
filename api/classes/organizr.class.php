@@ -6956,7 +6956,7 @@ class Organizr
 	
 	public function chooseInstance($url = null, $token = null, $instance = 0, $type = null)
 	{
-		if (!$url || !$token || !is_numeric($instance)) {
+		if (!$url || !$token) {
 			return false;
 		}
 		$list = $this->csvHomepageUrlToken($url, $token);
