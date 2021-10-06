@@ -30,6 +30,7 @@ trait OptionsFunction
 				];
 				break;
 			case 'auth':
+				$this->setGroupOptionsVariable();
 				$settingMerge = [
 					'type' => 'select',
 					'label' => 'Minimum Authentication',
