@@ -2575,7 +2575,7 @@ class Organizr
 				array(
 					'type' => 'select2',
 					'class' => 'select2-multiple',
-					'id' => 'sandbox-select',
+					'id' => 'sandbox-select-' . $this->random_ascii_string(6),
 					'name' => 'sandbox',
 					'label' => 'iFrame Sandbox',
 					'value' => $this->config['sandbox'],
@@ -2634,7 +2634,7 @@ class Organizr
 				array(
 					'type' => 'select2',
 					'class' => 'select2-multiple',
-					'id' => 'blacklisted-select',
+					'id' => 'blacklisted-select-' . $this->random_ascii_string(6),
 					'name' => 'blacklisted',
 					'label' => 'Blacklisted IP\'s',
 					'value' => $this->config['blacklisted'],

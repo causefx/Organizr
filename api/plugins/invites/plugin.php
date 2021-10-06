@@ -292,7 +292,7 @@ class Invites extends Organizr
 				array(
 					'type' => 'select2',
 					'class' => 'select2-multiple',
-					'id' => 'invite-select',
+					'id' => 'invite-select-' . $this->random_ascii_string(6),
 					'name' => 'INVITES-plexLibraries',
 					'label' => 'Libraries',
 					'value' => $this->config['INVITES-plexLibraries'],
