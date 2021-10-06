@@ -77,6 +77,8 @@ return [
 	'ssoJellyfin' => false,
 	'ssoOverseerr' => false,
 	'ssoPetio' => false,
+	'ssoKomga' => false,
+	'komgaURL' => '',
 	'sonarrURL' => '',
 	'sonarrUnmonitored' => false,
 	'sonarrToken' => '',
