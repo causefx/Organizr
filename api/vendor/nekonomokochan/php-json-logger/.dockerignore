@@ -1,0 +1,4 @@
+.gitignore
+.github
+.idea
+php-json-logger.iml

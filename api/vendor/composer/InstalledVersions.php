@@ -29,7 +29,7 @@ private static $installed = array (
     'aliases' => 
     array (
     ),
-    'reference' => 'f571aa755d372fc8205704b3cda8e1585aab0e3a',
+    'reference' => '55cb258deb19ead70294b137d89f4b9752e4e962',
     'name' => '__root__',
   ),
   'versions' => 
@@ -41,7 +41,7 @@ private static $installed = array (
       'aliases' => 
       array (
       ),
-      'reference' => 'f571aa755d372fc8205704b3cda8e1585aab0e3a',
+      'reference' => '55cb258deb19ead70294b137d89f4b9752e4e962',
     ),
     'adldap2/adldap2' => 
     array (
@@ -194,6 +194,15 @@ private static $installed = array (
       ),
       'reference' => 'badb01e62383430706433191b82506b6df24ad98',
     ),
+    'monolog/monolog' => 
+    array (
+      'pretty_version' => '1.26.1',
+      'version' => '1.26.1.0',
+      'aliases' => 
+      array (
+      ),
+      'reference' => 'c6b00f05152ae2c9b04a448f99c7590beb6042f5',
+    ),
     'myclabs/php-enum' => 
     array (
       'pretty_version' => '1.8.0',
@@ -202,6 +211,15 @@ private static $installed = array (
       array (
       ),
       'reference' => '46cf3d8498b095bd33727b13fd5707263af99421',
+    ),
+    'nekonomokochan/php-json-logger' => 
+    array (
+      'pretty_version' => 'v1.3.1',
+      'version' => '1.3.1.0',
+      'aliases' => 
+      array (
+      ),
+      'reference' => '6df126a82940a00d8ea2da6e0b7c58e3e57eb132',
     ),
     'nikic/fast-route' => 
     array (
@@ -377,6 +395,13 @@ private static $installed = array (
       ),
       'reference' => 'd49695b909c3b7628b6289db5479a1c204601f11',
     ),
+    'psr/log-implementation' => 
+    array (
+      'provided' => 
+      array (
+        0 => '1.0.0',
+      ),
+    ),
     'psr/simple-cache' => 
     array (
       'pretty_version' => '1.0.1',
@@ -403,6 +428,22 @@ private static $installed = array (
       array (
       ),
       'reference' => '120b605dfeb996808c31b6477290a714d356e822',
+    ),
+    'ramsey/uuid' => 
+    array (
+      'pretty_version' => '3.9.6',
+      'version' => '3.9.6.0',
+      'aliases' => 
+      array (
+      ),
+      'reference' => 'ffa80ab953edd85d5b6c004f96181a538aad35a3',
+    ),
+    'rhumsaa/uuid' => 
+    array (
+      'replaced' => 
+      array (
+        0 => '3.9.6',
+      ),
     ),
     'rmccue/requests' => 
     array (
