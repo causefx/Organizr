@@ -78,7 +78,7 @@ trait OptionsFunction
 					'help' => 'Please make sure to use local IP address and port - You also may use local dns name too.',
 					'placeholder' => 'http(s)://hostname:port',
 					'options' => $this->makeOptionsFromValues($this->config[$name]),
-					'settings' => '{tags: true, selectOnClose: true, closeOnSelect: true}',
+					'settings' => '{tags: true, selectOnClose: true, closeOnSelect: true, allowClear: true}',
 				];
 				break;
 			case 'multiple':
@@ -88,7 +88,7 @@ trait OptionsFunction
 					'id' => $name . '-select',
 					'label' => 'Multiple Values\'s',
 					'options' => $this->makeOptionsFromValues($this->config[$name]),
-					'settings' => '{tags: true, selectOnClose: true, closeOnSelect: true}',
+					'settings' => '{tags: true, selectOnClose: true, closeOnSelect: true, allowClear: true}',
 				];
 				break;
 			case 'username':
@@ -124,7 +124,7 @@ trait OptionsFunction
 					'id' => $name . '-select',
 					'label' => 'Multiple API Key/Token\'s',
 					'options' => $this->makeOptionsFromValues($this->config[$name]),
-					'settings' => '{tags: true, theme: "default password-alt", selectOnClose: true, closeOnSelect: true}',
+					'settings' => '{tags: true, theme: "default", selectionCssClass: "password-alt", selectOnClose: true, closeOnSelect: true, allowClear: true}',
 				];
 				break;
 			case 'notice':
