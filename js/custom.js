@@ -252,17 +252,6 @@ function pageLoad(){
       },
       midClick: true // allow opening popup on middle mouse click. Always set it to true if you don't provide alternative source.
     });
-    // select2 clear fix
-	var isClearClicked = false;
-	// trap these events
-	$('.select2-multiple').on('select2:opening', function(e) {
-		if (window['isClearClicked']) {
-			e.preventDefault();
-			window['isClearClicked'] = false;
-		}
-	}).on('select2:unselect', function(e) {
-		window['isClearClicked'] = true;
-	});
 
 }
 /* ===== Sidebar ===== */
