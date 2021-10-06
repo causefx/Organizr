@@ -8,6 +8,7 @@ trait SSOFunctions
 			'myPlexAccessToken' => $_COOKIE['mpt'] ?? false,
 			'id_token' => $_COOKIE['Auth'] ?? false,
 			'jellyfin_credentials' => $_COOKIE['jellyfin_credentials'] ?? false,
+			'komga_token' => $_COOKIE['komga_token'] ?? false
 		);
 		// Jellyfin cookie
 		foreach (array_keys($_COOKIE) as $k => $v) {
@@ -28,7 +29,8 @@ trait SSOFunctions
 			'ombi' => 'username',
 			'overseerr' => 'email',
 			'tautulli' => 'username',
-			'petio' => 'username'
+			'petio' => 'username',
+			'komga' => 'email'
 		);
 		return (gettype($userobj) == 'string') ? $userobj : $userobj[$map[$app]];
 	}
@@ -75,7 +77,36 @@ trait SSOFunctions
 				$this->coookie('set', 'petio_jwt', $petioToken, $this->config['rememberMeDays'], false);
 			}
 		}
+		if ($this->config['ssoKomga']) {
+			$komga = $this->getKomgaToken($this->getSSOUserFor('komga', $userobj), $password);
+			if ($komga) {
+				$this->coookie('set', 'komga_token', $komga, $this->config['rememberMeDays'], false);
+			}
+		}
 		return true;
+	}
+	
+	public function getKomgaToken($email, $password)
+	{
+		try {
+			$credentials = array('auth' => new Requests_Auth_Digest(array($email, $password)));
+			$url = $this->qualifyURL($this->config['komgaURL']);
+			$options = $this->requestOptions($url, 60000, true, false, $credentials);
+			$response = Requests::get($url . '/api/v1/users/me', ['X-Auth-Token' => 'organizrSSO'], $options);
+			if ($response->success) {
+				if ($response->headers['x-auth-token']) {
+					$this->writeLog('success', 'Komga Token Function - Grabbed token.', $email);
+					return $response->headers['x-auth-token'];
+				} else {
+					$this->writeLog('error', 'Komga Token Function - Komga did not return Token', $email);
+				}
+			} else {
+				$this->writeLog('error', 'Komga Token Function - Komga did not return Token', $email);
+			}
+		} catch (Requests_Exception $e) {
+			$this->writeLog('error', 'Komga Token Function - Error: ' . $e->getMessage(), $email);
+		}
+		return false;
 	}
 	
 	public function getJellyfinToken($username, $password)

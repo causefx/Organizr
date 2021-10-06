@@ -1502,6 +1502,7 @@ class Organizr
 			'{email}' => $this->user['email'],
 			'{group}' => $this->user['group'],
 			'{group_id}' => $this->user['groupID'],
+			'{komga}' => $_COOKIE['komga_token'] ?? ''
 		];
 		if (empty($tabs)) {
 			return $tabs;
@@ -3082,7 +3083,11 @@ class Organizr
 					'label' => 'Enable',
 					'value' => $this->config['ssoJellyfin']
 				]
-			]
+			],
+			'Komga' => [
+				$this->settingsOption('url', 'komgaURL'),
+				$this->settingsOption('enable', 'ssoKomga'),
+			],
 		];
 	}
 	
@@ -3914,6 +3919,7 @@ class Organizr
 		$this->clearTautulliTokens();
 		$this->clearJellyfinTokens();
 		$this->revokeTokenCurrentUser($this->user['token']);
+		$this->clearKomgaToken();
 		$this->user = null;
 		return true;
 	}
