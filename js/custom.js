@@ -1082,7 +1082,8 @@ $(document).on('change keydown', '.addFormTick :input', function(e) {
     $(this).attr('data-changed', true);
     $(this).closest('.form-group').addClass('has-success');
     var formID = $(this).closest('form').attr('id');
-    $('#'+formID+'-save').removeClass('hidden');
+	$('#'+formID+'-save').removeClass('hidden');
+	$('#'+formID+'-reset').removeClass('hidden');
     switch ($(this).attr('type')) {
         case 'switch':
         case 'checkbox':

@@ -1719,6 +1719,7 @@ function homepageItemFormHTML(v){
                     <span class="" lang="en">`+v.name+`</span>
                     <button data-toggle="tooltip" title="Close" data-placement="bottom"  type="button" class="btn btn-default btn-circle close-popup pull-right close-editHomepageItemDiv"><i class="fa fa-times"></i> </button>
                     ${docs}${debug}
+                    <button data-toggle="tooltip" title="Reset" data-placement="bottom" id="homepage-`+v.name+`-form-reset" onclick="editHomepageItem('`+v.name+`', true)" class="btn btn-inverse btn-circle waves-effect waves-light pull-right hidden m-r-5" type="button"><span class=""><i class="fa fa-undo"></i></span></button>
                     <button data-toggle="tooltip" title="Save" data-placement="bottom" id="homepage-`+v.name+`-form-save" onclick="submitSettingsForm('homepage-`+v.name+`-form', true)" class="btn btn-success btn-circle waves-effect waves-light pull-right hidden animated loop-animation rubberBand m-r-5" type="button"><span class=""><i class="fa fa-save"></i></span></button>
                 </div>
                 <div class="panel-wrapper collapse in" aria-expanded="true">
@@ -1758,13 +1759,17 @@ function completeHomepageLoad(item, data){
 	*/
 	pageLoad();
 }
-function editHomepageItem(item){
+function editHomepageItem(item, reload = false){
 	ajaxloader('.editHomepageItemBox-' + item, 'in');
 	organizrAPI2('GET','api/v2/settings/homepage/'+item).success(function(data) {
 		try {
 			let response = data.response;
 			let html = homepageItemFormHTML(response.data);
 			$('#editHomepageItem').html(html);
+			if(reload){
+				ajaxloader('.editHomepageItemBox-' + item);
+				return false;
+			}
 			/*$("#editHomepageItemCall").animatedModal({
 				top: '40px',
 				left: '0px',
