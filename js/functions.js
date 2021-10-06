@@ -1136,7 +1136,7 @@ function buildFormItem(item){
 		case 'select2':
             var select2ID = (item.id) ? '#'+item.id : '.'+item.name;
             let settings = (item.settings) ? item.settings : '{}';
-            return smallLabel+'<select class="m-b-10 '+extraClass+'"'+placeholder+value+id+name+disabled+type+label+attr+' multiple="multiple" data-placeholder="Choose">'+selectOptions(item.options, item.value)+'</select><script>$("'+select2ID+'").select2('+settings+');</script>';
+            return smallLabel+'<select class="m-b-10 '+extraClass+'"'+placeholder+value+id+name+disabled+type+label+attr+' multiple="multiple" data-placeholder="">'+selectOptions(item.options, item.value)+'</select><script>$("'+select2ID+'").select2('+settings+');</script>';
 			break;
 		case 'switch':
 		case 'checkbox':

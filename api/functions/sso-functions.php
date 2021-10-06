@@ -37,6 +37,7 @@ trait SSOFunctions
 	
 	public function ssoCheck($userobj, $password, $token = null)
 	{
+		$this->setCurrentUser(false);
 		if ($this->config['ssoPlex'] && $token) {
 			$this->coookie('set', 'mpt', $token, $this->config['rememberMeDays'], false);
 		}
@@ -47,7 +48,7 @@ trait SSOFunctions
 				$this->coookie('set', 'Auth', $ombiToken, $this->config['rememberMeDays'], false);
 			}
 		}
-		if ($this->config['ssoTautulli']) {
+		if ($this->config['ssoTautulli'] && $this->qualifyRequest($this->config['ssoTautulliAuth'])) {
 			$tautulliToken = $this->getTautulliToken($this->getSSOUserFor('tautulli', $userobj), $password, $token);
 			if ($tautulliToken) {
 				foreach ($tautulliToken as $key => $value) {
@@ -77,7 +78,7 @@ trait SSOFunctions
 				$this->coookie('set', 'petio_jwt', $petioToken, $this->config['rememberMeDays'], false);
 			}
 		}
-		if ($this->config['ssoKomga']) {
+		if ($this->config['ssoKomga'] && $this->qualifyRequest($this->config['ssoKomgaAuth'])) {
 			$komga = $this->getKomgaToken($this->getSSOUserFor('komga', $userobj), $password);
 			if ($komga) {
 				$this->coookie('set', 'komga_token', $komga, $this->config['rememberMeDays'], false);

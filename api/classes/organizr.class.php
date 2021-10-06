@@ -195,7 +195,7 @@ class Organizr
 		}
 	}
 	
-	public function setCurrentUser()
+	public function setCurrentUser($validate = true)
 	{
 		$user = false;
 		if ($this->hasDB()) {
@@ -204,7 +204,9 @@ class Organizr
 			}
 		}
 		$this->user = ($user) ?: $this->guestUser();
-		$this->checkUserTokenForValidation();
+		if ($validate) {
+			$this->checkUserTokenForValidation();
+		}
 	}
 	
 	public function checkUserTokenForValidation()
@@ -2953,6 +2955,7 @@ class Organizr
 			],
 			'Tautulli' => [
 				$this->settingsOption('multiple-url', 'tautulliURL'),
+				$this->settingsOption('auth', 'ssoTautulliAuth'),
 				$this->settingsOption('enable', 'ssoTautulli'),
 			],
 			'Overseerr' => [
@@ -3086,6 +3089,7 @@ class Organizr
 			],
 			'Komga' => [
 				$this->settingsOption('url', 'komgaURL'),
+				$this->settingsOption('auth', 'ssoKomgaAuth'),
 				$this->settingsOption('enable', 'ssoKomga'),
 			],
 		];
