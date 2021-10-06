@@ -4818,10 +4818,10 @@ html {
 .language-box {
     position: absolute !important;
 }
-.password-alt li.select2-selection__choice {
+.password-alt li .select2-selection__choice__display {
     -webkit-text-security: disc;
 }
-.password-alt li.select2-selection__choice:hover {
+.password-alt li .select2-selection__choice__display:hover {
     -webkit-text-security: unset;
 }
 span.select2-selection__choice__remove {
