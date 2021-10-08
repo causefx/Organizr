@@ -4699,7 +4699,7 @@ function loadAppearance(appearance){
 			.fc-toolbar,
 			.progress-bar-info,
 			.label-info,
-			.tabs-style-iconbox nav ul li.tab-current a
+			.tabs-style-iconbox nav ul li.tab-current a,
 			.swapLog.active {
 			    background-color: `+appearance.accentColor+` !important;
 			}
