@@ -298,16 +298,18 @@ trait LogFunctions
 	{
 		$logs = $this->getLogFiles();
 		//<select class='form-control settings-dropdown-box system-settings-menu'><option value=''>About</option></select>
-		if (count($logs) > 0) {
-			$options = '';
-			$i = 0;
-			foreach ($logs as $k => $log) {
-				$selected = $i == 0 ? 'selected' : '';
-				preg_match('/[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])/', $log, $name);
-				$options .= '<option data-id="' . $k . '" value="api/v2/log/' . $k . '" ' . $selected . '>' . $name[0] . '</option>';
-				$i++;
+		if ($logs) {
+			if (count($logs) > 0) {
+				$options = '';
+				$i = 0;
+				foreach ($logs as $k => $log) {
+					$selected = $i == 0 ? 'selected' : '';
+					preg_match('/[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])/', $log, $name);
+					$options .= '<option data-id="' . $k . '" value="api/v2/log/' . $k . '" ' . $selected . '>' . $name[0] . '</option>';
+					$i++;
+				}
+				return '<select class="form-control choose-organizr-log">' . $options . '</select>';
 			}
-			return '<select class="form-control choose-organizr-log">' . $options . '</select>';
 		}
 		return false;
 	}
