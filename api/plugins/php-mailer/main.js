@@ -230,7 +230,7 @@ $(document).on('click', '.phpmSendTestEmail', function() {
 	organizrAPI2('GET','api/v2/plugins/php-mailer/email/test').success(function(data) {
 		var response = data.response;
 		if(response.message !== null && response.message.indexOf('|||DEBUG|||') == 0){
-			messageSingle('',window.lang.translate('Press F11 to check Console for output'),activeInfo.settings.notifications.position,'#FFF','warning','5000');
+			messageSingle('',window.lang.translate('Press F12 to check Console for output'),activeInfo.settings.notifications.position,'#FFF','warning','5000');
 			console.warn(response.message);
 		}else if(response.result == 'success') {
 			messageSingle('',window.lang.translate('Email Test Successful'),activeInfo.settings.notifications.position,'#FFF','success','20000');
