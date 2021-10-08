@@ -4580,26 +4580,74 @@ function language(language){
 	var language = language.split("-");
 	return language[0];
 }
-function logIcon(type){
+function logIcon(type, label = false){
+	type = type.toLowerCase();
+	let info = {"color" : "info", "icon": "fa fa-check"};
 	switch (type) {
 		case "success":
-			return '<i class="fa fa-check text-success"></i><span class="hidden">Success</span>';
+			info.color = 'info';
+			info.icon = 'fa fa-check';
 			break;
 		case "info":
-			return '<i class="fa fa-info text-info"></i><span class="hidden">Info</span>';
+			info.color = 'info';
+			info.icon = 'mdi mdi-information';
+			break;
+		case "notice":
+			info.color = 'inverse';
+			info.icon = 'mdi mdi-information-variant';
 			break;
 		case "debug":
-			return '<i class="fa fa-code text-primary"></i><span class="hidden">Debug</span>';
+			info.color = 'primary';
+			info.icon = 'mdi mdi-code-tags-check';
 			break;
 		case "warning":
-			return '<i class="fa fa-exclamation-triangle text-warning"></i><span class="hidden">Warning</span>';
+			info.color = 'warning';
+			info.icon = 'mdi mdi-alert-box';
 			break;
 		case "error":
-			return '<i class="fa fa-close text-danger"></i><span class="hidden">Error</span>';
+			info.color = 'danger';
+			info.icon = 'mdi mdi-alert-outline';
+			break;
+		case "critical":
+			info.color = 'danger';
+			info.icon = 'mdi mdi-alert';
+			break;
+		case "alert":
+			info.color = 'danger';
+			info.icon = 'mdi mdi-alert-octagon';
+			break;
+		case "emergency":
+			info.color = 'danger';
+			info.icon = 'mdi mdi-alert-octagram';
 			break;
 		default:
-			return '<i class="fa fa-exclamation-triangle text-warning"></i><span class="hidden">Warning</span>';
+			info = {"color" : "info", "icon": "fa fa-check"};
+			break;
 	}
+	if(label){
+		return '<span class="label label-'+info.color+' log-label"> <i class="fa '+info.icon+' m-l-5 fa-fw"></i>&nbsp; <span lang="en" class="text-uppercase">'+type+'</span></span>';
+	}else{
+		return '<button class="btn btn-xs btn-'+info.color+' waves-effect waves-light log-label no-mouse" type="button"><span class="btn-label pull-left"><i class="'+info.icon+' fa-fw"></i></span><span class="text-uppercase" lang="en">'+type+'</span></button>';
+	}
+}
+function toggleKillOrganizrLiveUpdate(interval = 5000){
+	if($('.organizr-log-live-update').hasClass('kill-organizr-log')){
+		clearTimeout(timeouts['organizr-log']);
+		$('.organizr-log-live-update').toggleClass('kill-organizr-log');
+	}else{
+		$('.organizr-log-live-update').toggleClass('kill-organizr-log');
+		organizrLogLiveUpdate(interval);
+	}
+}
+function organizrLogLiveUpdate(interval = 5000){
+	var timeout = interval;
+	let timeoutTitle = 'organizr-log';
+	$('.organizr-log-live-update i').toggleClass('fa-clock-o fa-circle-o-notch fa-spin');
+	organizrLogTable.ajax.reload(null, false);
+	setTimeout(function(){ $('.organizr-log-live-update i').toggleClass('fa-clock-o fa-circle-o-notch fa-spin'); }, 500);
+	if(typeof timeouts[timeoutTitle] !== 'undefined'){ clearTimeout(timeouts[timeoutTitle]); }
+	timeouts[timeoutTitle] = setTimeout(function(){ organizrLogLiveUpdate(timeout); }, timeout);
+	delete timeout;
 }
 function radioLoop(element){
 	$('[type=radio][id!="'+element.id+'"]').each(function() { this.checked=false });
@@ -10901,6 +10949,53 @@ function oAuthLoginNeededCheck() {
 }
 function ipInfoSpan(ip){
     return '<span class="ipInfo mouse">'+ip+'</span>';
+}
+function logContext(row){
+	let buttons = '';
+	buttons += (Object.keys(row).length > 0) ? '<button data-toggle="tooltip" title="" data-original-title="View Details" class="btn btn-xs btn-primary waves-effect waves-light log-details m-r-5" data-details=\''+JSON.stringify(row)+'\'><i class="mdi mdi-file-find"></i></button>' : '';
+	buttons += (Object.keys(row).length > 0) ? '<button data-toggle="tooltip" title="" data-original-title="Copy Log" class="btn btn-xs btn-info waves-effect waves-light clipboard m-r-5" data-clipboard-text=\''+JSON.stringify(row)+'\'><i class="mdi mdi-content-copy"></i></button>' : '';
+	return buttons;
+}
+function formatLogDetails(details){
+	if(!details){
+		return false;
+	}
+	details = JSON.parse(details);
+	let m = moment.tz(details.datetime + 'Z', activeInfo.timezone);
+	details.datetime = moment(m).format('LLL');
+	let items = '';
+	items += `<li><div class="bg-inverse"><i class="mdi mdi-calendar-text text-white"></i></div> ${details.datetime}<span class="text-muted" lang="en">Date</span></li>`;
+	items += `<li><div class="bg-inverse"><i class="mdi mdi-account-box-outline text-white"></i></div> ${details.trace_id}<span class="text-muted" lang="en">User</span></li>`;
+	items += `<li><div class="bg-info"><i class="mdi mdi-function text-white"></i></div> ${details.channel}<span class="text-muted" lang="en">Function</span></li>`;
+	items += `<li><div class="bg-plex"><i class="mdi mdi-language-php text-white"></i></div> ${details.file}<code>#L${details.line}</code><span class="text-muted" lang="en">File</span></li>`;
+	let items2 = '';
+	items2 += (Object.keys(details.context).length > 0) ? `<div class="sl-item"><div class="sl-left bg-inverse"> <i class="mdi mdi-json"></i></div><div class="sl-right"><div class="p-t-10 desc" lang="en">Context</div></div><pre class="m-5 fc-scroller">${JSON.stringify(details.context,null, 5)}</pre></div>` : '';
+	items2 += (typeof details.errors !== 'undefined') ? `<div class="sl-item"><div class="sl-left bg-danger"> <i class="mdi mdi-code-braces"></i></div><div class="sl-right"><div class="p-t-10 desc" lang="en">Errors</div></div><pre class="m-5 fc-scroller">${JSON.stringify(details.errors,null, 5)}</pre></div>` : '';
+	var div = `
+		<div class="col-lg-12">
+			<div class="panel panel-default text-left">
+				<div class="panel-heading"><i class="mdi mdi-file-find fa-lg fa-2x"></i> <span lang="en">Log Details</span> <span class="pull-right">${logIcon(details.log_level, true)}</span></div>
+				<div class="panel-wrapper collapse in">
+					<div class="panel-body bg-org">
+						<h3>${details.message}</h3>
+						<div class="white-box">
+							<ul class="feeds">
+								${items}
+							</ul>
+						</div>
+						<div class="steamline">
+							${items2}
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>`;
+	swal({
+		content: createElementFromHTML(div),
+		buttons: false,
+		className: 'orgAlertTransparent'
+	});
+	pageLoad();
 }
 function checkToken(activate = false){
     if(typeof activeInfo !== 'undefined'){

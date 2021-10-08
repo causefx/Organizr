@@ -11,165 +11,100 @@ function get_page_settings_settings_logs($Organizr)
 	if (!$Organizr->qualifyRequest(1, true)) {
 		return false;
 	}
+	$logsDropdown = $Organizr->buildLogDropdown();
 	return '
-    <script>
-    $(document).on("click", ".swapLog", function(e) {
-    	switch ($(this).attr(\'data-name\')){
-    	case \'loginLog\':
-    		loginLogTable.ajax.reload(null, false);
-    	break;
-    	case \'orgLog\':
-    		organizrLogTable.ajax.reload(null, false);
-    	break;
-    	default:
-    		//nada
-    		//loginLogTable
-    	}
-        var log = $(this).attr(\'data-name\')+\'Div\';
-        $(\'.logTable\').addClass(\'hidden\');
-        $(\'.\'+log).addClass(\'show\').removeClass(\'hidden\');
-    	$(\'.swapLog\').removeClass(\'active\');
-    	$(this).addClass(\'active\');
-    });
-    </script>
-    <div class="btn-group m-b-20 pull-left">
-        <button type="button" class="btn btn-default btn-outline waves-effect bg-org swapLog active" data-name="loginLog" data-path="' . $Organizr->organizrLoginLog . '" lang="en">Login Log</button>
-        <button type="button" class="btn btn-default btn-outline waves-effect bg-org swapLog" data-name="orgLog" data-path="' . $Organizr->organizrLog . '" lang="en">Organizr Log</button>
-    </div>
-    <button class="btn btn-danger btn-sm waves-effect waves-light pull-right purgeLog" type="button"><span class="btn-label"><i class="fa fa-trash"></i></span><span lang="en">Purge Log</span></button>
-    <div class="clearfix"></div>
-    <div class="white-box bg-org logTable loginLogDiv">
-        <h3 class="box-title m-b-0" lang="en">Login Logs</h3>
-        <div class="table-responsive">
-            <table id="loginLogTable" class="table table-striped">
-                <thead>
-                    <tr>
-                        <th lang="en">Date</th>
-                        <th lang="en">Username</th>
-                        <th lang="en">IP Address</th>
-                        <th lang="en">Type</th>
-                    </tr>
-                </thead>
-    			<tfoot>
-                    <tr>
-                        <th lang="en">Date</th>
-                        <th lang="en">Username</th>
-                        <th lang="en">IP Address</th>
-                        <th lang="en">Type</th>
-                    </tr>
-                </tfoot>
-                <tbody></tbody>
-            </table>
-        </div>
-    </div>
-    <div class="white-box bg-org logTable orgLogDiv hidden">
-        <h3 class="box-title m-b-0" lang="en">Organizr Logs</h3>
-        <div class="table-responsive">
-            <table id="organizrLogTable" class="table table-striped">
-                <thead>
-                    <tr>
-                        <th lang="en">Date</th>
-                        <th lang="en">Username</th>
-                        <th lang="en">IP Address</th>
-                        <th lang="en">Message</th>
-                        <th lang="en">Type</th>
-                    </tr>
-                </thead>
-                <tfoot>
-                    <tr>
-                        <th lang="en">Date</th>
-                        <th lang="en">Username</th>
-                        <th lang="en">IP Address</th>
-                        <th lang="en">Message</th>
-                        <th lang="en">Type</th>
-                    </tr>
-                </tfoot>
-                <tbody></tbody>
-            </table>
-        </div>
-    </div>
-    <!-- /.container-fluid -->
-    <script>
-    //$.fn.dataTable.moment(\'DD-MMM-Y HH:mm:ss\');
-    $.fn.dataTable.ext.errMode = \'none\';
-    var loginLogTable = $("#loginLogTable")
-    .on( \'error.dt\', function ( e, settings, techNote, message ) {
-        console.log( \'An error has been reported by DataTables: \', message );
-        loginLogTable.draw();
-    } )
-    .DataTable( {
-    		"ajax": {
-				"url": "api/v2/log/login",
-				"dataSrc": function ( json ) {
-					return json.response.data;
+	<div class="btn-group m-b-20 pull-left">' . $logsDropdown . '</div>
+	<button class="btn btn-danger waves-effect waves-light pull-right purgeLog" type="button" data-toggle="tooltip" data-placement="bottom" title="" data-original-title="Purge Log"><i class="fa fa-trash"></i></span></button>
+	<button onclick="organizrLogTable.clear().draw().ajax.reload(null, false)" class="btn btn-info waves-effect waves-light pull-right reloadLog m-r-5" type="button" data-toggle="tooltip" data-placement="bottom" title="" data-original-title="Reload Log"><i class="fa fa-refresh"></i></span></button>
+	<button onclick="toggleKillOrganizrLiveUpdate(' . $Organizr->config['logLiveUpdateRefresh'] . ');" class="btn btn-primary waves-effect waves-light pull-right organizr-log-live-update m-r-5" type="button" data-toggle="tooltip" data-placement="bottom" title="" data-original-title="Live Update"><i class="fa fa-clock-o"></i></span></button>
+	<div class="clearfix"></div>
+	<div class="white-box bg-org logTable orgLogDiv">
+		<h3 class="box-title m-b-0" lang="en">Organizr Logs</h3>
+		<div class="table-responsive">
+			<table id="organizrLogTable" class="table table-striped compact nowrap">
+				<thead>
+					<tr>
+						<th lang="en">Date</th>
+						<th lang="en">Severity</th>
+						<th lang="en">Function</th>
+						<th lang="en">Message</th>
+						<th lang="en">IP Address</th>
+						<th lang="en">User</th>
+						<th></th>
+					</tr>
+				</thead>
+				<tfoot>
+					<tr>
+						<th lang="en">Date</th>
+						<th lang="en">Severity</th>
+						<th lang="en">Function</th>
+						<th lang="en">Message</th>
+						<th lang="en">IP Address</th>
+						<th lang="en">User</th>
+						<th></th>
+					</tr>
+				</tfoot>
+				<tbody></tbody>
+			</table>
+		</div>
+	</div>
+	<!-- /.container-fluid -->
+	<script>
+	$.fn.dataTable.ext.errMode = "none";
+	var organizrLogTable = $("#organizrLogTable")
+	.on("error.dt", function(e, settings, techNote, message) {
+		console.log("An error has been reported by DataTables: ", message);
+		organizrLogTable.draw();
+	})
+	.DataTable({
+		"ajax": {
+			"url": "api/v2/log/0",
+			"dataSrc": function(json) {
+				return json.response.data.results;
+			}
+		},
+		"deferRender": true,
+		"pageLength": ' . (int)$Organizr->config['logPageSize'] . ',
+		"columns": [{
+			data: "datetime",
+			render: function(data, type, row) {
+				if (type === "display" || type === "filter") {
+					var m = moment.tz(data + "Z", activeInfo.timezone);
+					return moment(m).format("LLL");
 				}
-			},
-            "columns": [
-                { data: \'utc_date\',
-                    render: function ( data, type, row ) {
-                        if ( type === \'display\' || type === \'filter\' ) {
-                            var m = moment.tz(data, activeInfo.timezone);
-                            return moment(m).format(\'LLL\');
-                        }
-                        return data;
-                    }
-                },
-                { "data": "username" },
-                { data: \'ip\',
-                    render: function ( data, type, row ) {
-                        return ipInfoSpan(data);
-                    }
-                },
-                { data: \'auth_type\',
-                    render: function ( data, type, row ) {
-                        if ( type === \'display\' || type === \'filter\' ) {
-                            return logIcon(data);
-                        }
-                        return logIcon(data);
-                    }
-                }
-            ],
-            "order": [[ 0, \'desc\' ]],
-    } );
-    var organizrLogTable = $("#organizrLogTable")
-    .on( \'error.dt\', function ( e, settings, techNote, message ) {
-        console.log( \'An error has been reported by DataTables: \', message );
-        organizrLogTable.draw();
-    } )
-    .DataTable( {
-            "ajax": {
-				"url": "api/v2/log/organizr",
-				"dataSrc": function ( json ) {
-					return json.response.data;
+				return data;
+			}
+		}, {
+			data: "log_level",
+			render: function(data, type, row) {
+				if (type === "display" || type === "filter") {
+					return logIcon(data);
 				}
+				return logIcon(data);
+			}
+		}, {
+			data: "channel"
+		}, {
+			data: "message"
+		}, {
+			data: "remote_ip_address",
+			"width": "5%",
+			render: function(data, type, row) {
+				return ipInfoSpan(data);
+			}
+		}, {
+			"data": "trace_id"
+		}, {
+			data: "context",
+			render: function(data, type, row) {
+				return logContext(row);
 			},
-                "columns": [
-                { data: \'utc_date\',
-                    render: function ( data, type, row ) {
-                        if ( type === \'display\' || type === \'filter\' ) {
-                            var m = moment.tz(data, activeInfo.timezone);
-                            return moment(m).format(\'LLL\');
-                        }
-                    return data;}
-                    },
-                { "data": "username" },
-                { data: \'ip\',
-                    render: function ( data, type, row ) {
-                        return ipInfoSpan(data);
-                    }
-                },
-                { "data": "message" },
-                { data: \'type\',
-                    render: function ( data, type, row ) {
-                        if ( type === \'display\' || type === \'filter\' ) {
-                            return logIcon(data);
-                        }
-                        return logIcon(data);
-                    }
-                }
-            ],
-            "order": [[ 0, \'desc\' ]],
-    } );
-    </script>
-    ';
+			orderable: false
+		}, ],
+		"order": [
+			[0, "desc"]
+		],
+	})
+	</script>
+	';
 }

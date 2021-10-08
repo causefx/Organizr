@@ -1460,38 +1460,28 @@ $(document).on("click", ".newAPIKey", function () {
 });
 // purge log
 $(document).on("click", ".purgeLog", function () {
-    var name = $('.swapLog.active').attr('data-name');
-    if(name !== ''){
-	    var post = {
-		    api:'api/v2/log/' + name,
+    let logId = $('.choose-organizr-log option:selected').attr('data-id');
+    if(logId){
+	    let post = {
+		    api:'api/v2/log/' + logId,
 		    messageTitle:'',
-		    messageBody:window.lang.translate('Deleted Log')+': '+name,
+		    messageBody:window.lang.translate('Deleted Log'),
 		    error:'Organizr Function: User API Connection Failed'
 	    };
 	    organizrAPI2('DELETE',post.api,'',true).success(function(data) {
 		    loadSettingsPage2('api/v2/page/settings_settings_logs','#settings-settings-logs','Log Viewer');
 		    try {
-			    var response = data.response;
+			    let response = data.response;
+			    message(post.messageTitle,post.messageBody,activeInfo.settings.notifications.position,"#FFF","success","5000");
 		    }catch(e) {
 			    organizrCatchError(e,data);
 		    }
-		    message(post.messageTitle,post.messageBody,activeInfo.settings.notifications.position,"#FFF","success","5000");
-		    var callbacks = $.Callbacks();
-		    switch ($(this).attr('data-name')){
-			    case 'loginLog':
-				    loginLogTable.ajax.reload(null, false);
-				    break;
-			    case 'orgLog':
-				    organizrLogTable.ajax.reload(null, false);
-				    break;
-			    default:
-		    }
-		    if(callbacks){ callbacks.fire(); }
 	    }).fail(function(xhr) {
 		    OrganizrApiError(xhr, 'API Error');
 	    });
+    }else{
+	    message('','Could not get Log Id',activeInfo.settings.notifications.position,'#FFF','warning','5000');
     }
-
 });
 $(document).on("click", ".delete-backup", function () {
 	$('#settings-settings-backup').block({
@@ -1932,4 +1922,15 @@ $(document).on('click', '.toggle-side-menu', function() {
 // Toggle Side Menu Other
 $(document).on('click', '.ti-shift-left.mouse', function() {
 	toggleSideMenu();
+});
+
+// Log Details
+$(document).on('click', '.log-details', function() {
+	let details = $(this).attr('data-details');
+	formatLogDetails(details);
+});
+
+// Choose Log choose-organizr-log
+$(document).on("change", ".choose-organizr-log", function () {
+	organizrLogTable.ajax.url($(this).val()).load();
 });

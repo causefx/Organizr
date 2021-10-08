@@ -1,9 +1,10 @@
 <?php
-$app->get('/log/{log}', function ($request, $response, $args) {
+$app->get('/log[/{number}]', function ($request, $response, $args) {
 	$Organizr = ($request->getAttribute('Organizr')) ?? new Organizr();
 	if ($Organizr->checkRoute($request)) {
 		if ($Organizr->qualifyRequest(1, true)) {
-			$GLOBALS['api']['response']['data'] = $Organizr->getLog($args['log']);
+			$args['number'] = $args['number'] ?? 0;
+			$Organizr->getLog(1000, 0, 'NONE', $args['number']);
 		}
 	}
 	$response->getBody()->write(jsonE($GLOBALS['api']));
@@ -11,11 +12,12 @@ $app->get('/log/{log}', function ($request, $response, $args) {
 		->withHeader('Content-Type', 'application/json;charset=UTF-8')
 		->withStatus($GLOBALS['responseCode']);
 });
-$app->delete('/log/{log}', function ($request, $response, $args) {
+$app->delete('/log[/{number}]', function ($request, $response, $args) {
 	$Organizr = ($request->getAttribute('Organizr')) ?? new Organizr();
 	if ($Organizr->checkRoute($request)) {
 		if ($Organizr->qualifyRequest(1, true)) {
-			$Organizr->purgeLog($args['log']);
+			$args['number'] = $args['number'] ?? 0;
+			$Organizr->purgeLog($args['number']);
 		}
 	}
 	$response->getBody()->write(jsonE($GLOBALS['api']));
