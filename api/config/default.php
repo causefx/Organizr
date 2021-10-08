@@ -610,7 +610,7 @@ return [
 	'allowCollapsableSideMenu' => false,
 	'sideMenuCollapsed' => false,
 	'collapseSideMenuOnClick' => false,
-	'logLevel' => 'WARNING',
+	'logLevel' => 'INFO',
 	'maxLogFiles' => '7',
 	'logLiveUpdateRefresh' => '5000',
 	'logPageSize' => '50'
