@@ -60,6 +60,7 @@ php_errors.log
 # =========================
 # Organizr files
 # =========================
+organizr-*.log
 databaseLocation.ini.php
 homepageSettings.ini.php
 loginLog.json
