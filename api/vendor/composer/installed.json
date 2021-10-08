@@ -69,6 +69,53 @@
             "install-path": "../adldap2/adldap2"
         },
         {
+            "name": "bcremer/line-reader",
+            "version": "1.1.0",
+            "version_normalized": "1.1.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/bcremer/LineReader.git",
+                "reference": "3ec3e200577630f1e58d30b4c1c468b877d8d0a7"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/bcremer/LineReader/zipball/3ec3e200577630f1e58d30b4c1c468b877d8d0a7",
+                "reference": "3ec3e200577630f1e58d30b4c1c468b877d8d0a7",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^7.3|^7.4|^8.0"
+            },
+            "require-dev": {
+                "infection/infection": "^0.18",
+                "phpunit/phpunit": "^9.4"
+            },
+            "time": "2020-12-08T13:58:53+00:00",
+            "type": "library",
+            "installation-source": "dist",
+            "autoload": {
+                "psr-4": {
+                    "Bcremer\\LineReader\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Benjamin Cremer",
+                    "email": "bc@benjamin-cremer.de"
+                }
+            ],
+            "description": "Read large files line by line in a memory efficient (constant) way.",
+            "support": {
+                "issues": "https://github.com/bcremer/LineReader/issues",
+                "source": "https://github.com/bcremer/LineReader/tree/1.1.0"
+            },
+            "install-path": "../bcremer/line-reader"
+        },
+        {
             "name": "bogstag/oauth2-trakt",
             "version": "v1.0.1",
             "version_normalized": "1.0.1.0",

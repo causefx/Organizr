@@ -52,5 +52,6 @@ return array(
     'Doctrine\\Common\\Annotations\\' => array($vendorDir . '/doctrine/annotations/lib/Doctrine/Common/Annotations'),
     'Composer\\Semver\\' => array($vendorDir . '/composer/semver/src'),
     'Bogstag\\OAuth2\\Client\\' => array($vendorDir . '/bogstag/oauth2-trakt/src'),
+    'Bcremer\\LineReader\\' => array($vendorDir . '/bcremer/line-reader/src'),
     'Adldap\\' => array($vendorDir . '/adldap2/adldap2/src'),
 );

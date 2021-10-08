@@ -6,7 +6,7 @@
     'aliases' => 
     array (
     ),
-    'reference' => '55cb258deb19ead70294b137d89f4b9752e4e962',
+    'reference' => '19b7b1e70d3dc94a63451008db2737eaaddf8cbf',
     'name' => '__root__',
   ),
   'versions' => 
@@ -18,7 +18,7 @@
       'aliases' => 
       array (
       ),
-      'reference' => '55cb258deb19ead70294b137d89f4b9752e4e962',
+      'reference' => '19b7b1e70d3dc94a63451008db2737eaaddf8cbf',
     ),
     'adldap2/adldap2' => 
     array (
@@ -28,6 +28,15 @@
       array (
       ),
       'reference' => 'c2a8f72455d3438377d955fc0f4b9ed836b47463',
+    ),
+    'bcremer/line-reader' => 
+    array (
+      'pretty_version' => '1.1.0',
+      'version' => '1.1.0.0',
+      'aliases' => 
+      array (
+      ),
+      'reference' => '3ec3e200577630f1e58d30b4c1c468b877d8d0a7',
     ),
     'bogstag/oauth2-trakt' => 
     array (
