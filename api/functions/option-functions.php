@@ -407,6 +407,44 @@ trait OptionsFunction
 		return $formattedValues;
 	}
 	
+	public function logLevels()
+	{
+		return [
+			[
+				'name' => 'Debug',
+				'value' => 'DEBUG'
+			],
+			[
+				'name' => 'Info',
+				'value' => 'INFO'
+			],
+			[
+				'name' => 'Notice',
+				'value' => 'NOTICE'
+			],
+			[
+				'name' => 'Warning',
+				'value' => 'WARNING'
+			],
+			[
+				'name' => 'Error',
+				'value' => 'ERROR'
+			],
+			[
+				'name' => 'Critical',
+				'value' => 'CRITICAL'
+			],
+			[
+				'name' => 'Alert',
+				'value' => 'ALERT'
+			],
+			[
+				'name' => 'Emergency',
+				'value' => 'EMERGENCY'
+			]
+		];
+	}
+	
 	public function calendarLocaleOptions()
 	{
 		return [
