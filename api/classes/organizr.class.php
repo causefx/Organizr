@@ -209,7 +209,7 @@ class Organizr
 			}
 		}
 		$this->user = ($user) ?: $this->guestUser();
-		$this->setLoggerChannel();
+		$this->setLoggerChannel(null, $this->user['username']);
 		if ($validate) {
 			$this->checkUserTokenForValidation();
 		}

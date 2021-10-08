@@ -142,8 +142,10 @@ trait LogFunctions
 	{
 		$setLogger = false;
 		if ($this->logger) {
-			if (strtolower($this->logger->getChannel()) !== strtolower($channel)) {
-				$setLogger = true;
+			if ($channel) {
+				if (strtolower($this->logger->getChannel()) !== strtolower($channel)) {
+					$setLogger = true;
+				}
 			}
 			if ($username) {
 				if (strtolower($this->logger->getTraceId()) !== strtolower($channel)) {
@@ -154,6 +156,7 @@ trait LogFunctions
 			$setLogger = true;
 		}
 		if ($setLogger) {
+			$channel = $channel ?: 'Organizr';
 			$this->setupLogger($channel, $username);
 		}
 		return $this->logger;
@@ -163,7 +166,7 @@ trait LogFunctions
 	{
 		if ($this->log) {
 			if (!$username) {
-				$username = (isset($this->user['username'])) ? $this->user['username'] : 'System';
+				$username = $this->user['username'] ?? 'System';
 			}
 			$loggerBuilder = new Nekonomokochan\PhpJsonLogger\LoggerBuilder();
 			$loggerBuilder->setMaxFiles($this->config['maxLogFiles']);
