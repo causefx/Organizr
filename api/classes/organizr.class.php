@@ -7375,7 +7375,6 @@ class Organizr
 	
 	protected function processQueries(array $request, $migration = false)
 	{
-		$this->setLoggerChannel('Database')->debug('Submitting query to database', $request);
 		$results = array();
 		$firstKey = '';
 		try {
@@ -7411,10 +7410,9 @@ class Organizr
 				}
 			}
 		} catch (Exception $e) {
-			$this->logger->critical($e, $request);
+			$this->setLoggerChannel('Database')->logger->critical($e, $request);
 			return false;
 		}
-		$this->logger->debug('Results from database', $results);
 		return count($request) > 1 ? $results : $results[$firstKey];
 	}
 	
