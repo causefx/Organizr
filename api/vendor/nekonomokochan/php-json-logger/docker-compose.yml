@@ -1,0 +1,12 @@
+version: '3.5'
+services:
+  app:
+    container_name: php_json_logger_app
+    build:
+      context: .
+      dockerfile: ./docker/Dockerfile
+    environment:
+      PHP_JSON_LOGGER_SLACK_TOKEN: ${PHP_JSON_LOGGER_SLACK_TOKEN}
+      PHP_JSON_LOGGER_SLACK_CHANNEL: ${PHP_JSON_LOGGER_SLACK_CHANNEL}
+    volumes:
+      - .:/app/php-json-logger

@@ -1,0 +1,19 @@
+language: php
+
+php:
+  - '7.1'
+  - '7.2'
+  - '7.3'
+
+before_script:
+  - composer install
+
+script:
+  - vendor/bin/phpunit
+
+after_success:
+  - travis_retry php vendor/bin/php-coveralls -v
+
+env:
+  global:
+    secure: "i44lDLUcbe719n7Gya3y1iwC+RJbCGarV9OFxY/dSoufDEzd9X0YzqHXg5myvpeDJbp7E1X2rR7Hq5tfB655v6fBDF/gc8KY2zsuswPGRPGAXoT/eRBwUrt0MB9JyC5gxuMvcKBTChWOWGb9QsT7+FQwWthJ+PtrznOQvmAzx73kijXGO9+/PRgpiV6lSpVobmFpDJP9LAuAscrBRpDA/w99d38cNrKgP8E0HX30v8ooMhdumcSmaG2HSD66LE6m1vSPywPlzddb4rAnNczKgx3Bj/buQOGzWjWANROqAleImcGqSIqkdolY0ugQFQlxTkG4Ti8BD+Mka+dQeEjVQGeSBAo8lYjk1ZpFi0n360yhuJDkPPKCSJQsF2rJ+OuYqH3ht7GCtlpX2Tm3Bxgy6opJbSJ7NQVSgcaRPhzYI+eXNCPpYotdRLeCq+1YJ0OmT2VAH5ydA0Qgo7qORLp3KxZqro1A1fcNK7Z1exer1fud9j3UQ8Rqy9RzMyNQbJ8X4sgQqSocjMPt0oBC3mTmfdFywJcFGVGcRvMZrP+lZ2hCz4/n5DxV1QwDcuuOemsdQfvK4iOiHraDHpsHcL5HMIe8Q6hsIBsDneIG1kjL1g62L4dMv8KWb5HvrB1oa88boTd988pUoj2bL3gZh4kp+LKmuaLacOC2FzJhAO7zWP0="

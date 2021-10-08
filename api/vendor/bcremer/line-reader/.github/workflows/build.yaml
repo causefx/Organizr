@@ -1,0 +1,90 @@
+
+# https://docs.github.com/en/actions
+
+name: Build
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+jobs:
+  unit-tests:
+    name: Tests
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        php-version:
+          - 7.3
+          - 7.4
+          - 8.0
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Install PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          coverage: none
+          php-version: ${{ matrix.php-version }}
+
+      - name: Determine composer cache directory
+        id: determine-composer-cache-directory
+        run: echo "::set-output name=directory::$(composer config cache-dir)"
+
+      - name: Cache dependencies installed with composer
+        uses: actions/cache@v2
+        with:
+          path: ${{ steps.determine-composer-cache-directory.outputs.directory }}
+          key: php-${{ matrix.php-version }}-composer-${{ hashFiles('composer.json') }}
+          restore-keys: php-${{ matrix.php-version }}-composer-
+
+      - name: Install dependencies
+        run: composer install --no-interaction --no-progress
+
+      - name: Run phpunit/phpunit
+        run: vendor/bin/phpunit
+
+  tests-with-coverage:
+    name: "Tests with coverage and PR Comments"
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        php-version:
+          - 7.4
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Install PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          coverage: pcov
+          php-version: ${{ matrix.php-version }}
+
+      - name: Setup problem matchers for PHP
+        run: echo "::add-matcher::${{ runner.tool_cache }}/php.json"
+
+      - name: Setup problem matchers for PHPUnit
+        run: echo "::add-matcher::${{ runner.tool_cache }}/phpunit.json"
+
+      - name: Determine composer cache directory
+        id: determine-composer-cache-directory
+        run: echo "::set-output name=directory::$(composer config cache-dir)"
+
+      - name: Cache dependencies installed with composer
+        uses: actions/cache@v2
+        with:
+          path: ${{ steps.determine-composer-cache-directory.outputs.directory }}
+          key: php-${{ matrix.php-version }}-composer-${{ hashFiles('composer.json') }}
+          restore-keys: php-${{ matrix.php-version }}-composer-
+
+      - name: Install dependencies
+        run: composer install --no-interaction --no-progress
+
+      - name: Run phpunit/phpunit with code coverage
+        run: vendor/bin/phpunit --coverage-text --coverage-clover=clover.xml --coverage-xml=coverage/coverage.xml --log-junit=coverage/junit.xml
+
+      - name: Run infection
+        run: vendor/bin/infection --threads=4 --min-msi=81 --min-covered-msi=81 --coverage=coverage

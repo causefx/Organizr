@@ -182,7 +182,6 @@ trait AuthFunctions
 			} else {
 				return false;
 			}
-			
 		} catch (Requests_Exception $e) {
 			$this->writeLog('success', 'Plex Token Check Function - Error: ' . $e->getMessage(), 'SYSTEM');
 		}

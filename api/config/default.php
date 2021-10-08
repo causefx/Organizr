@@ -574,7 +574,7 @@ return [
 	'netdataCustom' => '{}',
 	'homepageOctoprintEnabled' => false,
 	'homepageOctoprintAuth' => '1',
-	'homepageOctoprintRefresh' => 10000,
+	'homepageOctoprintRefresh' => '10000',
 	'octoprintURL' => '',
 	'octoprintToken' => '',
 	'octoprintHeaderToggle' => true,
@@ -609,5 +609,9 @@ return [
 	'easterEggs' => true,
 	'allowCollapsableSideMenu' => false,
 	'sideMenuCollapsed' => false,
-	'collapseSideMenuOnClick' => false
+	'collapseSideMenuOnClick' => false,
+	'logLevel' => 'WARNING',
+	'maxLogFiles' => '7',
+	'logLiveUpdateRefresh' => '5000',
+	'logPageSize' => '50'
 ];

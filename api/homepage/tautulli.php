@@ -66,6 +66,7 @@ trait TautulliHomepageItem
 	
 	public function testConnectionTautulli()
 	{
+		$this->setLoggerChannel('Tautulli Homepage');
 		if (empty($this->config['tautulliURL'])) {
 			$this->setAPIResponse('error', 'Tautulli URL is not defined', 422);
 			return false;
@@ -88,7 +89,7 @@ trait TautulliHomepageItem
 				return false;
 			}
 		} catch (Requests_Exception $e) {
-			$this->writeLog('error', 'Tautulli Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
+			$this->logger->critical($e, [$url]);
 			$this->setAPIResponse('error', $e->getMessage(), 500);
 			return false;
 		}
@@ -131,6 +132,7 @@ trait TautulliHomepageItem
 	
 	public function getTautulliHomepageData()
 	{
+		$this->setLoggerChannel('Tautulli Homepage');
 		if (!$this->homepageItemPermissions($this->tautulliHomepagePermissions('main'), true)) {
 			return false;
 		}
@@ -215,7 +217,7 @@ trait TautulliHomepageItem
 				}
 			}
 		} catch (Requests_Exception $e) {
-			$this->writeLog('error', 'Tautulli Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
+			$this->logger->critical($e, [$url]);
 			$this->setAPIResponse('error', $e->getMessage(), 500);
 			return false;
 		};

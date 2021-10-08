@@ -73,7 +73,7 @@ trait OptionsFunction
 				$settingMerge = [
 					'type' => 'select2',
 					'class' => 'select2-multiple',
-					'id' => $name . '-select',
+					'id' => $name . '-select-' . $this->random_ascii_string(6),
 					'label' => 'Multiple URL\'s',
 					'help' => 'Please make sure to use local IP address and port - You also may use local dns name too.',
 					'placeholder' => 'http(s)://hostname:port',
@@ -85,7 +85,7 @@ trait OptionsFunction
 				$settingMerge = [
 					'type' => 'select2',
 					'class' => 'select2-multiple',
-					'id' => $name . '-select',
+					'id' => $name . '-select-' . $this->random_ascii_string(6),
 					'label' => 'Multiple Values\'s',
 					'options' => $this->makeOptionsFromValues($this->config[$name]),
 					'settings' => '{tags: true, selectOnClose: true, closeOnSelect: true, allowClear: true}',
@@ -121,7 +121,7 @@ trait OptionsFunction
 				$settingMerge = [
 					'type' => 'select2',
 					'class' => 'select2-multiple',
-					'id' => $name . '-select',
+					'id' => $name . '-select-' . $this->random_ascii_string(6),
 					'label' => 'Multiple API Key/Token\'s',
 					'options' => $this->makeOptionsFromValues($this->config[$name]),
 					'settings' => '{tags: true, theme: "default", selectionCssClass: "password-alt", selectOnClose: true, closeOnSelect: true, allowClear: true}',
@@ -264,7 +264,7 @@ trait OptionsFunction
 				$settingMerge = [
 					'type' => 'select2',
 					'class' => 'select2-multiple',
-					'id' => $name . '-exclude-select',
+					'id' => $name . '-exclude-select-' . $this->random_ascii_string(6),
 					'label' => 'Libraries to Exclude',
 					'options' => $extras['options']
 				];
@@ -273,7 +273,7 @@ trait OptionsFunction
 				$settingMerge = [
 					'type' => 'select2',
 					'class' => 'select2-multiple',
-					'id' => $name . '-include-select',
+					'id' => $name . '-include-select-' . $this->random_ascii_string(6),
 					'label' => 'Libraries to Include',
 					'options' => $extras['options']
 				];
@@ -405,6 +405,44 @@ trait OptionsFunction
 			];
 		}
 		return $formattedValues;
+	}
+	
+	public function logLevels()
+	{
+		return [
+			[
+				'name' => 'Debug',
+				'value' => 'DEBUG'
+			],
+			[
+				'name' => 'Info',
+				'value' => 'INFO'
+			],
+			[
+				'name' => 'Notice',
+				'value' => 'NOTICE'
+			],
+			[
+				'name' => 'Warning',
+				'value' => 'WARNING'
+			],
+			[
+				'name' => 'Error',
+				'value' => 'ERROR'
+			],
+			[
+				'name' => 'Critical',
+				'value' => 'CRITICAL'
+			],
+			[
+				'name' => 'Alert',
+				'value' => 'ALERT'
+			],
+			[
+				'name' => 'Emergency',
+				'value' => 'EMERGENCY'
+			]
+		];
 	}
 	
 	public function calendarLocaleOptions()

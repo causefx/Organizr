@@ -1,0 +1,32 @@
+{
+    "name": "bcremer/line-reader",
+    "description": "Read large files line by line in a memory efficient (constant) way.",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Benjamin Cremer",
+            "email": "bc@benjamin-cremer.de"
+        }
+    ],
+    "require": {
+        "php": "^7.3|^7.4|^8.0"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^9.4",
+        "infection/infection": "^0.18"
+    },
+    "autoload": {
+        "psr-4": {
+            "Bcremer\\LineReader\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Bcremer\\LineReaderTests\\": "tests/"
+        }
+    },
+    "scripts": {
+        "test": "phpunit"
+    }
+}

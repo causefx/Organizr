@@ -629,6 +629,13 @@ h2.m-b-0.font-medium.pull-right {
 .mouse {
     cursor: pointer;
 }
+.no-mouse {
+    cursor: unset;
+}
+.no-mouse:hover {
+    opacity: 1 !important;
+    border: inherit !important;
+}
 .mouse-grab {
     cursor: grab;
 }
@@ -4823,6 +4830,23 @@ html {
 }
 .password-alt li .select2-selection__choice__display:hover {
     -webkit-text-security: unset;
+}
+.logTable .nowrap .log-label {
+    /*min-width: 100px !important;
+    max-width: 100px !important;
+    display: inline-block !important;
+     */
+    margin: 0 0 0 -4px;
+    padding: 0 5px;
+    min-width: 120px;
+    display: inline-block !important;
+}
+.logTable .nowrap .log-label .btn-label {
+    padding: 7px 7px 7px 15px;
+}
+.logTable .nowrap .log-label .text-uppercase {
+    margin-left: -7px;
+    vertical-align: -webkit-baseline-middle;
 }
 span.select2-selection__choice__remove {
     -webkit-text-security: initial;
