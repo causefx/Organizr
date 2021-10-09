@@ -634,12 +634,23 @@ h2.m-b-0.font-medium.pull-right {
 }
 .no-mouse:hover {
     opacity: 1 !important;
-    border: inherit !important;
 }
 .mouse-grab {
     cursor: grab;
 }
-
+table.dataTable {
+    border-radius: 10px;
+}
+table.dataTable thead tr th {
+    padding: 10px 0 10px 5px !important;
+    background: #00000061 !important;
+}
+table.dataTable thead tr th:last-child {
+    border-radius: 0 10px 0 0;
+}
+table.dataTable thead tr th:first-child {
+    border-radius: 10px 0 0 0;
+}
 .el-element-overlay .el-card-item .el-overlay-1 img.imageSourceLeft {
     width: 56%;
     display: block;
