@@ -11,7 +11,8 @@ function get_page_settings($Organizr)
 	if (!$Organizr->qualifyRequest(1, true)) {
 		return false;
 	}
-	$Organizr->setLoggerChannel('Organizr')->info('Accessed admin settings page');
+	$Organizr->setLoggerChannel('Organizr');
+	$Organizr->info('Accessed admin settings page');
 	$systemMenus = $Organizr->systemMenuLists();
 	return $Organizr->pluginFiles('js', true) . $Organizr->loadJavascriptFile('js/Sortable.min.js') . '
 <script>
