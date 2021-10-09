@@ -33,23 +33,13 @@ function get_page_settings_settings_logs($Organizr)
 						<th></th>
 					</tr>
 				</thead>
-				<tfoot>
-					<tr>
-						<th lang="en">Date</th>
-						<th lang="en">Severity</th>
-						<th lang="en">Function</th>
-						<th lang="en">Message</th>
-						<th lang="en">IP Address</th>
-						<th lang="en">User</th>
-						<th></th>
-					</tr>
-				</tfoot>
 				<tbody></tbody>
 			</table>
 		</div>
 	</div>
 	<!-- /.container-fluid -->
 	<script>
+	clearTimeout(timeouts[\'organizr-log\']);
 	$.fn.dataTable.ext.errMode = "none";
 	var organizrLogTable = $("#organizrLogTable")
 	.on("error.dt", function(e, settings, techNote, message) {
