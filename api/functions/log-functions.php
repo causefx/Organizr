@@ -69,7 +69,11 @@ trait LogFunctions
 	
 	public function readLog($file, $pageSize = 10, $offset = 0, $filter = 'NONE')
 	{
-		if (file_exists($file)) {
+		$combinedLogs = false;
+		if ($file == 'combined-logs') {
+			$combinedLogs = true;
+		}
+		if (file_exists($file) || $combinedLogs) {
 			$filter = strtoupper($filter);
 			switch ($filter) {
 				case 'DEBUG':
@@ -88,8 +92,21 @@ trait LogFunctions
 					$filter = 'DEBUG';
 					break;
 			}
-			$lineGenerator = Bcremer\LineReader\LineReader::readLinesBackwards($file);
-			$lines = iterator_to_array($lineGenerator);
+			if ($combinedLogs) {
+				$logs = $this->getLogFiles();
+				$lines = [];
+				if ($logs) {
+					foreach ($logs as $log) {
+						if (file_exists($log)) {
+							$lineGenerator = Bcremer\LineReader\LineReader::readLinesBackwards($log);
+							$lines = array_merge(iterator_to_array($lineGenerator), $lines);
+						}
+					}
+				}
+			} else {
+				$lineGenerator = Bcremer\LineReader\LineReader::readLinesBackwards($file);
+				$lines = iterator_to_array($lineGenerator);
+			}
 			if ($filter) {
 				$results = [];
 				foreach ($lines as $line) {
@@ -262,8 +279,12 @@ trait LogFunctions
 		if ($this->log) {
 			if (isset($this->log)) {
 				if ($number !== 0) {
-					$logs = $this->getLogFiles();
-					$log = $logs[$number] ?? $this->getLatestLogFile();
+					if ($number == 'all' || $number == 'combined-logs') {
+						$log = 'combined-logs';
+					} else {
+						$logs = $this->getLogFiles();
+						$log = $logs[$number] ?? $this->getLatestLogFile();
+					}
 				} else {
 					$log = $this->getLatestLogFile();
 				}
@@ -287,6 +308,11 @@ trait LogFunctions
 		if ($this->log) {
 			$this->debug('Checking if log id exists');
 			if ($number !== 0) {
+				if ($number == 'all' || $number == 'combined-logs') {
+					$this->debug('Cannot delete log [all] as it is not a real log');
+					$this->setResponse(409, 'Cannot delete log [all] as it is not a real log');
+					return false;
+				}
 				$logs = $this->getLogFiles();
 				$file = $logs[$number] ?? false;
 				if (!$file) {
@@ -304,16 +330,16 @@ trait LogFunctions
 				$this->debug('Attempting to purge log: ' . $log);
 				if (unlink($file)) {
 					$this->info('Log: ' . $log . ' has been purged/deleted');
-					$this->setAPIResponse(null, 'Log purged');
+					$this->setResponse(200, 'Log purged');
 					return true;
 				} else {
 					$this->warning('Log: ' . $log . ' could not be purged/deleted');
-					$this->setAPIResponse('error', 'Log could not be purged', 500);
+					$this->setResponse(500, 'Log could not be purged');
 					return false;
 				}
 			} else {
 				$this->debug('Log does not exist');
-				$this->setAPIResponse('error', 'Log does not exist', 404);
+				$this->setResponse(404, 'Log does not exist');
 				return false;
 			}
 		} else {
@@ -350,7 +376,7 @@ trait LogFunctions
 					$options .= '<option data-id="' . $k . '" value="api/v2/log/' . $k . '" ' . $selected . '>' . $name[0] . '</option>';
 					$i++;
 				}
-				return '<select class="form-control choose-organizr-log">' . $options . '</select>';
+				return '<select class="form-control choose-organizr-log"><option data-id="all" value="api/v2/log/all">All</option>' . $options . '</select>';
 			}
 		}
 		return false;
