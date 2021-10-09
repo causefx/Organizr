@@ -4627,12 +4627,13 @@ function logIcon(type, label = false){
 	if(label){
 		return '<span class="label label-'+info.color+' log-label"> <i class="fa '+info.icon+' m-l-5 fa-fw"></i>&nbsp; <span lang="en" class="text-uppercase">'+type+'</span></span>';
 	}else{
-		return '<button class="btn btn-xs btn-'+info.color+' waves-effect waves-light log-label no-mouse" type="button"><span class="btn-label pull-left"><i class="'+info.icon+' fa-fw"></i></span><span class="text-uppercase" lang="en">'+type+'</span></button>';
+		return '<button class="btn btn-xs btn-'+info.color+' log-label no-mouse" type="button"><span class="btn-label pull-left"><i class="'+info.icon+' fa-fw"></i></span><span class="text-uppercase" lang="en">'+type+'</span></button>';
 	}
 }
 function toggleKillOrganizrLiveUpdate(interval = 5000){
 	if($('.organizr-log-live-update').hasClass('kill-organizr-log')){
 		clearTimeout(timeouts['organizr-log']);
+		$('.organizr-log-live-update i').toggleClass('fa-dot-circle-o animated loop-animation swing');
 		$('.organizr-log-live-update').toggleClass('kill-organizr-log');
 	}else{
 		$('.organizr-log-live-update').toggleClass('kill-organizr-log');
@@ -4642,9 +4643,9 @@ function toggleKillOrganizrLiveUpdate(interval = 5000){
 function organizrLogLiveUpdate(interval = 5000){
 	var timeout = interval;
 	let timeoutTitle = 'organizr-log';
-	$('.organizr-log-live-update i').toggleClass('fa-clock-o fa-circle-o-notch fa-spin');
+	$('.organizr-log-live-update i').toggleClass('fa-dot-circle-o animated loop-animation swing');
 	organizrLogTable.ajax.reload(null, false);
-	setTimeout(function(){ $('.organizr-log-live-update i').toggleClass('fa-clock-o fa-circle-o-notch fa-spin'); }, 500);
+	setTimeout(function(){ if($('.organizr-log-live-update').hasClass('kill-organizr-log')){ $('.organizr-log-live-update i').toggleClass('fa-dot-circle-o animated loop-animation swing'); } }, interval - 500);
 	if(typeof timeouts[timeoutTitle] !== 'undefined'){ clearTimeout(timeouts[timeoutTitle]); }
 	timeouts[timeoutTitle] = setTimeout(function(){ organizrLogLiveUpdate(timeout); }, timeout);
 	delete timeout;
@@ -11168,8 +11169,12 @@ function OrganizrApiError(xhr, secondaryMessage = null){
 		msg = 'Connection Error';
 	}
 	organizrConsole('Organizr API Function',msg,'error');
-	if(secondaryMessage){
-		messageSingle(secondaryMessage, msg, activeInfo.settings.notifications.position, '#FFF', 'error', '10000');
+
+	if(msg !== 'abort') {
+		if(secondaryMessage){
+			messageSingle(secondaryMessage, msg, activeInfo.settings.notifications.position, '#FFF', 'error', '10000');
+		}
+		console.trace();
 	}
 	return false;
 }
