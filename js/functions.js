@@ -10565,6 +10565,9 @@ function toggleDebug(){
 	                                <li><a onclick="orgDebugList('activeInfo.settings.sso.jellyfin');"
 	                                       href="javascript:void(0)"
 	                                       lang="en">Jellyfin SSO</a></li>
+	                                <li><a onclick="orgDebugList('activeInfo.settings.sso.komga');"
+	                                       href="javascript:void(0)"
+	                                       lang="en">Komga SSO</a></li>
 	                                <li><a onclick="orgDebugList('activeInfo.settings.sso.misc');"
 	                                       href="javascript:void(0)"
 	                                       lang="en">Misc SSO</a></li>
