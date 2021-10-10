@@ -2671,6 +2671,13 @@ class Organizr
 					'options' => $this->logLevels()
 				),
 				array(
+					'type' => 'switch',
+					'name' => 'includeDatabaseQueriesInDebug',
+					'label' => 'Include Database Queries',
+					'help' => 'Include Database queries in debug logs',
+					'value' => $this->config['includeDatabaseQueriesInDebug'],
+				),
+				array(
 					'type' => 'number',
 					'name' => 'maxLogFiles',
 					'label' => 'Maximum Log Files',
@@ -7395,6 +7402,10 @@ class Organizr
 	{
 		$results = array();
 		$firstKey = '';
+		if ($this->config['includeDatabaseQueriesInDebug']) {
+			$this->setLoggerChannel('Database');
+			$this->debug('Query to database', $request);
+		}
 		try {
 			foreach ($request as $k => $v) {
 				$query = ($migration) ? $this->otherDb->query($v['query']) : $this->db->query($v['query']);
@@ -7431,6 +7442,9 @@ class Organizr
 			$this->setLoggerChannel('Database');
 			$this->critical($e, $request);
 			return false;
+		}
+		if ($this->config['includeDatabaseQueriesInDebug']) {
+			$this->debug('Results from database', $results);
 		}
 		return count($request) > 1 ? $results : $results[$firstKey];
 	}
