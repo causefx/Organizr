@@ -196,7 +196,7 @@ class Invites extends Organizr
 								$noLongerId = 0;
 								$libraries = explode(',', $this->config['INVITES-plexLibraries']);
 								foreach ($libraries as $child) {
-									if ($this->search_for_value($child, $libraryList)) {
+									if (!$this->search_for_value($child, $libraryList)) {
 										$libraryList['libraries']['No Longer Exists - ' . $noLongerId] = $child;
 										$noLongerId++;
 									}

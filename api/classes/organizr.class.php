@@ -4409,6 +4409,11 @@ class Organizr
 					'url' => ($this->config['jellyfinURL'] !== '') ? $this->config['jellyfinURL'] : false,
 					'ssoUrl' => ($this->config['jellyfinSSOURL'] !== '') ? $this->config['jellyfinSSOURL'] : false,
 				),
+				'komga' => [
+					'enabled' => (bool)$this->config['ssoKomga'],
+					'cookie' => isset($_COOKIE['komga_token']),
+					'url' => ($this->config['komgaURL'] !== '') ? $this->config['komgaURL'] : false,
+				]
 			),
 			'ping' => array(
 				'onlineSound' => $this->config['pingOnlineSound'],
