@@ -3551,7 +3551,8 @@ class Organizr
 					`usedby`	TEXT,
 					`ip`	TEXT,
 					`valid`	TEXT,
-					`type` TEXT
+					`type` TEXT,
+					`invitedby` TEXT
 				);'
 			),
 		];

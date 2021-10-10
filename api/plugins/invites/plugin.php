@@ -20,17 +20,32 @@ class Invites extends Organizr
 {
 	public function _invitesPluginGetCodes()
 	{
-		$response = [
-			array(
-				'function' => 'fetchAll',
-				'query' => 'SELECT * FROM invites'
-			)
-		];
+		if ($this->qualifyRequest(1, false)) {
+			$response = [
+				array(
+					'function' => 'fetchAll',
+					'query' => 'SELECT * FROM invites'
+				)
+			];
+		} else {
+			$query = 'SELECT * FROM invites WHERE invitedby="'.$this->user['username'].'";';
+			$response = [
+				array(
+					'function' => 'fetchAll',
+					'query' => $query
+				)
+			];
+		}
+
 		return $this->processQueries($response);
 	}
 	
 	public function _invitesPluginCreateCode($array)
 	{
+		if (!$this->_invitesPluginUpgradeDB()) {
+			$this->setAPIResponse('error', 'Invites Plugin - Error Upgrading Database', 409);
+			return $false;
+		}
 		$code = ($array['code']) ?? null;
 		$username = ($array['username']) ?? null;
 		$email = ($array['email']) ?? null;
@@ -52,6 +67,7 @@ class Invites extends Organizr
 			'username' => $username,
 			'valid' => 'Yes',
 			'type' => $this->config['INVITES-type-include'],
+			'invitedby' => $this->user['username'],
 		];
 		$response = [
 			array(
@@ -258,7 +274,14 @@ class Invites extends Organizr
 							'value' => 'emby'
 						)
 					)
-				)
+				),
+				array(
+					'type' => 'select',
+					'name' => 'INVITES-Auth-include',
+					'label' => 'Minimum Authentication',
+					'value' => $this->config['INVITES-Auth-include'],
+					'options' => $this->groupSelect()
+				),
 			),
 			'Plex Settings' => array(
 				array(
@@ -482,6 +505,55 @@ class Invites extends Organizr
 				$plexUser = false;
 		}
 		return (!empty($plexUser) ? $plexUser : null);
+	}
+
+	public function _invitesPluginUpgradeDB()
+	{
+		$DBVersion = "1.1";
+		if ($this->config['INVITES-db-version'] < $DBVersion) {
+			$response = [
+				array(
+					'function' => 'fetchAll',
+					'query' => 'PRAGMA table_info("invites")'
+				)
+			];
+			$sqlquery = $this->processQueries($response);
+			$key = array_search("invitedby", array_column($sqlquery, 'name'));
+			if (!$key) {
+				$sqlalterquery = [
+					array(
+						'function' => 'fetchAll',
+						'query' => 'ALTER TABLE invites ADD invitedby text;'
+					)
+				];
+				$sqlalter = $this->processQueries($sqlalterquery);
+				$sqlquery = $this->processQueries($response);
+				$key = array_search("invitedby", array_column($sqlquery, 'name'));
+				if ($key) {
+					$dbVersion = array (
+						"INVITES-db-version" => $DBVersion,
+					);
+					$this->updateConfigItems($dbVersion);
+					$this->setAPIResponse('success', 'Database upgraded successfully.', 200);
+					$this->writeLog('info', 'Invites Plugin - Database upgraded successfully.', 'SYSTEM');
+					return true;
+				} else {
+					$this->writeLog('error', 'Invites Plugin - Error Upgrading Database', 'SYSTEM');
+					$this->setAPIResponse('error', 'Invites Plugin - Error Upgrading Database', 409);
+					return false;
+				}
+			} else {
+				$dbVersion = array (
+					"INVITES-db-version" => $DBVersion,
+				);
+				$this->updateConfigItems($dbVersion);
+				$this->setAPIResponse('success', 'Database upgraded successfully.', 200);
+				return true;
+			}
+		} else {
+			$this->setAPIResponse('success', 'Database up to date.', 200);
+			return true;
+		}
 	}
 	
 }
