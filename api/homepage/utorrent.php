@@ -120,16 +120,18 @@ trait uTorrentHomepageItem
 			$dom = new PHPHtmlParser\Dom;
 			$dom->loadStr($response->body);
 			$id = $dom->getElementById('token')->text;
-			$uTorrentConfig = new stdClass();
-			$uTorrentConfig->uTorrentToken = $id;
+			$uTorrentConfig = array (
+				"uTorrentToken" => $id,
+				"uTorrentCookie" => "",
+			);
 			$reflection = new ReflectionClass($response->cookies);
 			$cookie = $reflection->getProperty("cookies");
 			$cookie->setAccessible(true);
 			$cookie = $cookie->getValue($response->cookies);
 			if ($cookie['GUID']) {
-				$uTorrentConfig->uTorrentCookie = $cookie['GUID']->value;
+				$uTorrentConfig['uTorrentCookie'] = $cookie['GUID']->value;
 			}
-			if ($uTorrentConfig->uTorrentToken || $uTorrentConfig->uTorrentCookie) {
+			if ($uTorrentConfig['uTorrentToken'] || $uTorrentConfig['uTorrentCookie']) {
 				$this->updateConfigItems($uTorrentConfig);
 			}
 			
@@ -174,54 +176,58 @@ trait uTorrentHomepageItem
 				$keyArray = (array)$responseData->torrents;
 				//Populate values
 				$valueArray = array();
-				foreach ($keyArray as $keyArr) {
-					preg_match('/(?<Status>(\w+\s+)+)(?<Percentage>\d+.\d+.*)/', $keyArr[21], $matches);
-					$Status = str_replace(' ', '', $matches['Status']);
-					if ($this->config['uTorrentHideSeeding'] && $Status == "Seeding") {
-						// Do Nothing
-					} else if ($this->config['uTorrentHideCompleted'] && $Status == "Finished") {
-						// Do Nothing
-					} else {
-                                                $value = array(
-                                                        'Hash' => $keyArr[0],
-                                                        'TorrentStatus' => $keyArr[1],
-                                                        'Name' => $keyArr[2],
-                                                        'Size' => $keyArr[3],
-                                                        'Progress' => $keyArr[4],
-                                                        'Downloaded' => $keyArr[5],
-                                                        'Uploaded' => $keyArr[6],
-                                                        'Ratio' => $keyArr[7],
-                                                        'upSpeed' => $keyArr[8],
-                                                        'downSpeed' => $keyArr[9],
-                                                        'eta' => $keyArr[10],
-                                                        'Labels' => $keyArr[11],
-                                                        'PeersConnected' => $keyArr[12],
-                                                        'PeersInSwarm' => $keyArr[13],
-                                                        'SeedsConnected' => $keyArr[14],
-                                                        'SeedsInSwarm' => $keyArr[15],
-                                                        'Availability' => $keyArr[16],
-                                                        'TorrentQueueOrder' => $keyArr[17],
-                                                        'Remaining' => $keyArr[18],
-                                                        'DownloadUrl' => $keyArr[19],
-                                                        'RssFeedUrl' => $keyArr[20],
-                                                        'Message' => $keyArr[21],
-                                                        'StreamId' => $keyArr[22],
-                                                        'DateAdded' => $keyArr[23],
-                                                        'DateCompleted' => $keyArr[24],
-                                                        'AppUpdateUrl' => $keyArr[25],
-                                                        'RootDownloadPath' => $keyArr[26],
-                                                        'Unknown27' => $keyArr[27],
-                                                        'Unknown28' => $keyArr[28],
-                                                        'Status' => $Status,
-                                                        'Percent' => str_replace(' ', '', $matches['Percentage']),
-                                                );
-						array_push($valueArray, $value);
+				if ($keyArray) {
+					foreach ($keyArray as $keyArr) {
+						preg_match('/(?<Status>(\w+\s+)+)(?<Percentage>\d+.\d+.*)/', $keyArr[21], $matches);
+						$Status = str_replace(' ', '', $matches['Status']);
+						if ($this->config['uTorrentHideSeeding'] && $Status == "Seeding") {
+							// Do Nothing
+						} else if ($this->config['uTorrentHideCompleted'] && $Status == "Finished") {
+							// Do Nothing
+						} else {
+							$value = array(
+								'Hash' => $keyArr[0],
+								'TorrentStatus' => $keyArr[1],
+								'Name' => $keyArr[2],
+								'Size' => $keyArr[3],
+								'Progress' => $keyArr[4],
+								'Downloaded' => $keyArr[5],
+								'Uploaded' => $keyArr[6],
+								'Ratio' => $keyArr[7],
+								'upSpeed' => $keyArr[8],
+								'downSpeed' => $keyArr[9],
+								'eta' => $keyArr[10],
+								'Labels' => $keyArr[11],
+								'PeersConnected' => $keyArr[12],
+								'PeersInSwarm' => $keyArr[13],
+								'SeedsConnected' => $keyArr[14],
+								'SeedsInSwarm' => $keyArr[15],
+								'Availability' => $keyArr[16],
+								'TorrentQueueOrder' => $keyArr[17],
+								'Remaining' => $keyArr[18],
+								'DownloadUrl' => $keyArr[19],
+								'RssFeedUrl' => $keyArr[20],
+								'Message' => $keyArr[21],
+								'StreamId' => $keyArr[22],
+								'DateAdded' => $keyArr[23],
+								'DateCompleted' => $keyArr[24],
+								'AppUpdateUrl' => $keyArr[25],
+								'RootDownloadPath' => $keyArr[26],
+								'Unknown27' => $keyArr[27],
+								'Unknown28' => $keyArr[28],
+								'Status' => $Status,
+								'Percent' => str_replace(' ', '', $matches['Percentage']),
+							);
+							array_push($valueArray, $value);
+						}
 					}
+					$api['content']['queueItems'] = $valueArray;
+					$api['content'] = $api['content'] ?? false;
+					$this->setAPIResponse('success', null, 200, $api);
+					return $api;
+				} else {
+					return false;
 				}
-				$api['content']['queueItems'] = $valueArray;
-				$api['content'] = $api['content'] ?? false;
-				$this->setAPIResponse('success', null, 200, $api);
-				return $api;
 			}
 		} catch (Requests_Exception $e) {
 			$this->writeLog('error', 'uTorrent Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
