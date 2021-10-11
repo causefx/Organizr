@@ -1,6 +1,7 @@
 <?php
 return array(
 	'INVITES-enabled' => false,
+	'INVITES-dbVersion' => '1.0.0',
 	'INVITES-type-include' => 'plex',
 	'INVITES-plexLibraries' => '',
 	'INVITES-EmbyTemplate' => '',
