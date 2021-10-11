@@ -651,6 +651,10 @@ table.dataTable thead tr th:last-child {
 table.dataTable thead tr th:first-child {
     border-radius: 10px 0 0 0;
 }
+.open>.dropdown-menu.pull-right.log-filter-dropdown {
+    top: 160px;
+    right: 75px;
+}
 .el-element-overlay .el-card-item .el-overlay-1 img.imageSourceLeft {
     width: 56%;
     display: block;
