@@ -40,7 +40,7 @@ class Invites extends Organizr
 			if ($GLOBALS['plugins']['Invites']['version'] !== $this->config['INVITES-dbVersion']) {
 				$this->updateConfig(array('INVITES-dbVersion' => $oldVer));
 				$this->setLoggerChannel('Invites Plugin');
-				$this->debug('Updated INVITES-dbVersion to ' . $oldVer);
+				$this->logger->debug('Updated INVITES-dbVersion to ' . $oldVer);
 			}
 			return true;
 		}
@@ -62,9 +62,9 @@ class Invites extends Organizr
 		$addColumn = $this->addColumnToDatabase('invites', 'invitedby', 'TEXT');
 		$this->setLoggerChannel('Invites Plugin');
 		if ($addColumn) {
-			$this->info('Updated Invites Database');
+			$this->logger->info('Updated Invites Database');
 		} else {
-			$this->warning('Could not update Invites Database');
+			$this->logger->warning('Could not update Invites Database');
 		}
 	}
 	

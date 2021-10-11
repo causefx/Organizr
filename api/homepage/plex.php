@@ -676,7 +676,7 @@ trait PlexHomepageItem
 				$this->updateConfig(array('homepageCustomStreamNames' => $names));
 				$this->config['homepageCustomStreamNames'] = $names;
 				$this->setLoggerChannel('Tautulli');
-				$this->debug('Updating Tautulli custom names config item', $names);
+				$this->logger->debug('Updating Tautulli custom names config item', $names);
 			}
 		}
 	}

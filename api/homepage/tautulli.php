@@ -89,7 +89,7 @@ trait TautulliHomepageItem
 				return false;
 			}
 		} catch (Requests_Exception $e) {
-			$this->critical($e, [$url]);
+			$this->logger->critical($e, [$url]);
 			$this->setAPIResponse('error', $e->getMessage(), 500);
 			return false;
 		}
@@ -217,7 +217,7 @@ trait TautulliHomepageItem
 				}
 			}
 		} catch (Requests_Exception $e) {
-			$this->critical($e, [$url]);
+			$this->logger->critical($e, [$url]);
 			$this->setAPIResponse('error', $e->getMessage(), 500);
 			return false;
 		};
