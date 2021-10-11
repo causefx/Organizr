@@ -11302,6 +11302,43 @@ function toggleTopBarHamburger(){
 	$('.sidebar-head .open-close i').first().toggleClass('ti-menu ti-shift-left mouse');
 	$('.toggle-side-menu').toggleClass('hidden');
 }
+function toggleLogFilter(filter = 'INFO'){
+	//choose-organizr-log
+	filter = filter.toUpperCase();
+	$.each($('.choose-organizr-log').children(), function(i,v) {
+		let url = $(v).val();
+		let newURL = updateUrlParameter(url,'filter',filter)
+		$(v).val(newURL);
+	});
+	$('.log-filter-text').text(filter);
+	$('.log-filter-text').text(filter);
+	let currentURL = organizrLogTable.ajax.url();
+	let updatedURL = updateUrlParameter(currentURL,'filter',filter);
+	organizrLogTable.ajax.url(updatedURL);
+	organizrLogTable.clear().draw().ajax.reload(null, false);
+}
+function updateUrlParameter(uri, key, value) {
+	// remove the hash part before operating on the uri
+	var i = uri.indexOf('#');
+	var hash = i === -1 ? ''  : uri.substr(i);
+	uri = i === -1 ? uri : uri.substr(0, i);
+	var re = new RegExp("([?&])" + key + "=.*?(&|$)", "i");
+	var separator = uri.indexOf('?') !== -1 ? "&" : "?";
+	if (value === null) {
+		// remove key-value pair if value is specifically null
+		uri = uri.replace(new RegExp("([?&]?)" + key + "=[^&]*", "i"), '');
+		if (uri.slice(-1) === '?') {
+			uri = uri.slice(0, -1);
+		}
+		// replace first occurrence of & by ? if no ? is present
+		if (uri.indexOf('?') === -1) uri = uri.replace(/&/, '?');
+	} else if (uri.match(re)) {
+		uri = uri.replace(re, '$1' + key + "=" + value + '$2');
+	} else {
+		uri = uri + separator + key + "=" + value;
+	}
+	return uri + hash;
+}
 function launch(){
 	console.info('https://docs.organizr.app/help/faq/migration-guide#version-2-0-greater-than-version-2-1');
 	organizrConsole('API V2 API','If you see a 404 Error for api/v2/launch below this line, you have not setup the new location block... See URL above this line', 'error');
