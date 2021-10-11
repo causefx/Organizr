@@ -371,7 +371,7 @@ $app->delete('/plugins/invites/{code}', function ($request, $response, $args) {
 	 */
 	$Invites = new Invites();
 	if ($Invites->checkRoute($request)) {
-		if ($Invites->qualifyRequest(1, true)) {
+		if ($Invites->qualifyRequest($Invites->config['INVITES-Auth-include'], true)) {
 			$Invites->_invitesPluginDeleteCode($args['code']);
 		}
 	}
