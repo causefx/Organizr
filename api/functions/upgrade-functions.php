@@ -73,7 +73,7 @@ trait UpgradeFunctions
 			if ($updateSuccess && $this->version !== $this->config['configVersion']) {
 				$this->updateConfig(array('apply_CONFIG_VERSION' => $this->version));
 				$this->setLoggerChannel('Update');
-				$this->debug('Updated config version to ' . $this->version);
+				$this->logger->debug('Updated config version to ' . $this->version);
 			}
 			if ($updateSuccess == false) {
 				die($this->showHTML('Database update failed', 'Please manually check logs and fix - Then reload this page'));

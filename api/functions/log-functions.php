@@ -218,65 +218,59 @@ trait LogFunctions
 	
 	public function setupLogger($channel = 'Organizr', $username = null)
 	{
-		if ($this->hasDB()) {
-			if ($this->log) {
-				if (!$username) {
-					$username = $this->user['username'] ?? 'System';
-				}
-				$loggerBuilder = new Nekonomokochan\PhpJsonLogger\LoggerBuilder();
-				$loggerBuilder->setMaxFiles($this->config['maxLogFiles']);
-				$loggerBuilder->setFileName($this->log);
-				$loggerBuilder->setTraceId($username);
-				$loggerBuilder->setChannel(ucwords(strtolower($channel)));
-				switch ($this->config['logLevel']) {
-					case 'DEBUG':
-						$logLevel = Nekonomokochan\PhpJsonLogger\LoggerBuilder::DEBUG;
-						break;
-					case 'INFO':
-						$logLevel = Nekonomokochan\PhpJsonLogger\LoggerBuilder::INFO;
-						break;
-					case 'NOTICE':
-						$logLevel = Nekonomokochan\PhpJsonLogger\LoggerBuilder::NOTICE;
-						break;
-					case 'ERROR':
-						$logLevel = Nekonomokochan\PhpJsonLogger\LoggerBuilder::ERROR;
-						break;
-					case 'CRITICAL':
-						$logLevel = Nekonomokochan\PhpJsonLogger\LoggerBuilder::CRITICAL;
-						break;
-					case 'ALERT':
-						$logLevel = Nekonomokochan\PhpJsonLogger\LoggerBuilder::ALERT;
-						break;
-					case 'EMERGENCY':
-						$logLevel = Nekonomokochan\PhpJsonLogger\LoggerBuilder::EMERGENCY;
-						break;
-					default:
-						$logLevel = Nekonomokochan\PhpJsonLogger\LoggerBuilder::WARNING;
-						break;
-				}
-				$loggerBuilder->setLogLevel($logLevel);
-				try {
-					$this->logger = $loggerBuilder->build();
-				} catch (Exception $e) {
-					// nothing so far
-					$this->logger = null;
-				}
-				/* setup:
-				set the log channel before you send log (You can set an optional Username (2nd Variable) | If user is logged already logged in, it will use their username):
-				$this->setLoggerChannel('Plex Homepage');
-				normal log:
-				$this->info('test');
-				normal log with context ($context must be an array):
-				$this->info('test', $context);
-				exception:
-				$this->critical($exception, $context);
-				*/
-			} else {
-				$this->logger = null;
-			}
-		} else {
+		if (!$username) {
+			$username = $this->user['username'] ?? 'System';
+		}
+		$loggerBuilder = new OrganizrLogger();
+		$loggerBuilder->setReadyStatus($this->hasDB() && $this->log);
+		$loggerBuilder->setMaxFiles($this->config['maxLogFiles']);
+		$loggerBuilder->setFileName($this->log);
+		$loggerBuilder->setTraceId($username);
+		$loggerBuilder->setChannel(ucwords(strtolower($channel)));
+		switch ($this->config['logLevel']) {
+			case 'DEBUG':
+				$logLevel = Nekonomokochan\PhpJsonLogger\LoggerBuilder::DEBUG;
+				break;
+			case 'INFO':
+				$logLevel = Nekonomokochan\PhpJsonLogger\LoggerBuilder::INFO;
+				break;
+			case 'NOTICE':
+				$logLevel = Nekonomokochan\PhpJsonLogger\LoggerBuilder::NOTICE;
+				break;
+			case 'ERROR':
+				$logLevel = Nekonomokochan\PhpJsonLogger\LoggerBuilder::ERROR;
+				break;
+			case 'CRITICAL':
+				$logLevel = Nekonomokochan\PhpJsonLogger\LoggerBuilder::CRITICAL;
+				break;
+			case 'ALERT':
+				$logLevel = Nekonomokochan\PhpJsonLogger\LoggerBuilder::ALERT;
+				break;
+			case 'EMERGENCY':
+				$logLevel = Nekonomokochan\PhpJsonLogger\LoggerBuilder::EMERGENCY;
+				break;
+			default:
+				$logLevel = Nekonomokochan\PhpJsonLogger\LoggerBuilder::WARNING;
+				break;
+		}
+		$loggerBuilder->setLogLevel($logLevel);
+		try {
+			$this->logger = $loggerBuilder->build();
+		} catch (Exception $e) {
+			// nothing so far
 			$this->logger = null;
 		}
+		/* setup:
+		set the log channel before you send log (You can set an optional Username (2nd Variable) | If user is logged already logged in, it will use their username):
+		$this->setLoggerChannel('Plex Homepage');
+		normal log:
+		$this->logger->info('test');
+		normal log with context ($context must be an array):
+		$this->logger->info('test', $context);
+		exception:
+		$this->logger->critical($exception, $context);
+		*/
+		
 	}
 	
 	public function getLog($pageSize = 10, $offset = 0, $filter = 'NONE', $number = 0)
@@ -309,12 +303,12 @@ trait LogFunctions
 	public function purgeLog($number)
 	{
 		$this->setLoggerChannel('Logger');
-		$this->debug('Starting log purge function');
+		$this->logger->debug('Starting log purge function');
 		if ($this->log) {
-			$this->debug('Checking if log id exists');
+			$this->logger->debug('Checking if log id exists');
 			if ($number !== 0) {
 				if ($number == 'all' || $number == 'combined-logs') {
-					$this->debug('Cannot delete log [all] as it is not a real log');
+					$this->logger->debug('Cannot delete log [all] as it is not a real log');
 					$this->setResponse(409, 'Cannot delete log [all] as it is not a real log');
 					return false;
 				}
@@ -329,21 +323,21 @@ trait LogFunctions
 			}
 			preg_match('/[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])/', $file, $log);
 			$log = $log[0];
-			$this->debug('Checking if log exists');
+			$this->logger->debug('Checking if log exists');
 			if (file_exists($file)) {
-				$this->debug('Log: ' . $log . ' does exist');
-				$this->debug('Attempting to purge log: ' . $log);
+				$this->logger->debug('Log: ' . $log . ' does exist');
+				$this->logger->debug('Attempting to purge log: ' . $log);
 				if (unlink($file)) {
-					$this->info('Log: ' . $log . ' has been purged/deleted');
+					$this->logger->info('Log: ' . $log . ' has been purged/deleted');
 					$this->setResponse(200, 'Log purged');
 					return true;
 				} else {
-					$this->warning('Log: ' . $log . ' could not be purged/deleted');
+					$this->logger->warning('Log: ' . $log . ' could not be purged/deleted');
 					$this->setResponse(500, 'Log could not be purged');
 					return false;
 				}
 			} else {
-				$this->debug('Log does not exist');
+				$this->logger->debug('Log does not exist');
 				$this->setResponse(404, 'Log does not exist');
 				return false;
 			}

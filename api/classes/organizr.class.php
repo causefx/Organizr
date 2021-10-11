@@ -249,7 +249,7 @@ class Organizr
 			if ($this->config['blacklisted'] !== '') {
 				if (in_array($currentIP, $this->arrayIP($this->config['blacklisted']))) {
 					$this->setLoggerChannel('Authentication');
-					$this->debug('User was sent to black hole', $this->config['blacklisted']);
+					$this->logger->debug('User was sent to black hole', $this->config['blacklisted']);
 					die($this->showHTML('Blacklisted', $this->config['blacklistedMessage']));
 				}
 			}
@@ -1221,7 +1221,7 @@ class Organizr
 		if (isset($_COOKIE[$this->cookieName])) {
 			if ($token == $_COOKIE[$this->cookieName]) {
 				$this->setLoggerChannel('Authentication');
-				$this->debug('Token was invalid - deleting cookie and user session');
+				$this->logger->debug('Token was invalid - deleting cookie and user session');
 				$this->coookie('delete', $this->cookieName);
 				$this->user = null;
 			}
@@ -1239,7 +1239,7 @@ class Organizr
 			$tokenCheck = ($this->searchArray($allTokens, 'token', $token) !== false);
 			if (!$tokenCheck) {
 				$this->setLoggerChannel('Authentication');
-				$this->debug('Token failed check against all token listings', $allTokens);
+				$this->logger->debug('Token failed check against all token listings', $allTokens);
 				$this->invalidToken($token);
 				if ($api) {
 					$this->setResponse(403, 'Token was not in approved list');
@@ -1271,7 +1271,7 @@ class Organizr
 				$this->setResponse(403, 'Token was invalid');
 			}
 			$this->setLoggerChannel('Authentication');
-			$this->debug('User  token was invalid', $token);
+			$this->logger->debug('User  token was invalid', $token);
 			$this->invalidToken($token);
 		}
 		if ($api) {
@@ -3572,7 +3572,7 @@ class Organizr
 	public function createToken($username, $email, $days = 1)
 	{
 		$this->setLoggerChannel('Authentication', $username);
-		$this->debug('Starting token creation function');
+		$this->logger->debug('Starting token creation function');
 		$days = ($days > 365) ? 365 : $days;
 		//Quick get user ID
 		$result = $this->getUserByUsernameAndEmail($username, $email);
@@ -3616,7 +3616,7 @@ class Organizr
 			),
 		];
 		$token = $this->processQueries($response);
-		$this->debug('Token creation function has finished');
+		$this->logger->debug('Token creation function has finished');
 		return $jwttoken;
 		
 	}
@@ -3636,7 +3636,7 @@ class Organizr
 		$days = (isset($remember)) ? $this->config['rememberMeDays'] : 1;
 		// Set logger channel
 		$this->setLoggerChannel('Authentication', $username);
-		$this->debug('Starting login function');
+		$this->logger->debug('Starting login function');
 		// Set  other variables
 		$function = 'plugin_auth_' . $this->config['authBackend'];
 		$authSuccess = false;
@@ -3645,7 +3645,7 @@ class Organizr
 		// Check Login attempts and kill if over limit
 		if ($loginAttempts > $this->config['loginAttempts'] || isset($_COOKIE['lockout'])) {
 			$this->coookieSeconds('set', 'lockout', $this->config['loginLockout'], $this->config['loginLockout']);
-			$this->warning('User is locked out');
+			$this->logger->warning('User is locked out');
 			$this->setAPIResponse('error', 'User is locked out', 403);
 			return false;
 		}
@@ -3655,16 +3655,16 @@ class Organizr
 				$usernameHeader = $this->getallheaders()[$this->config['authProxyHeaderName']] ?? $username;
 				$emailHeader = $this->getallheaders()[$this->config['authProxyHeaderNameEmail']] ?? null;
 				$this->setLoggerChannel('Authentication', $usernameHeader);
-				$this->debug('Starting Auth Proxy verification');
+				$this->logger->debug('Starting Auth Proxy verification');
 				$whitelistRange = $this->analyzeIP($this->config['authProxyWhitelist']);
 				$authProxy = $this->authProxyRangeCheck($whitelistRange['from'], $whitelistRange['to']);
 				$username = ($authProxy) ? $usernameHeader : $username;
 				$password = ($password == null) ? $this->random_ascii_string(10) : $password;
 				$addEmailToAuthProxy = ($authProxy && $emailHeader) ? ['email' => $emailHeader] : true;
 				if ($authProxy) {
-					$this->info('User has been verified using Auth Proxy');
+					$this->logger->info('User has been verified using Auth Proxy');
 				} else {
-					$this->warning('User has failed verification using Auth Proxy');
+					$this->logger->warning('User has failed verification using Auth Proxy');
 				}
 			}
 		}
@@ -3689,7 +3689,7 @@ class Organizr
 					if (!$authSuccess) {
 						// perform the internal authentication step
 						if (password_verify($password, $result['password'])) {
-							$this->debug('User password has been verified');
+							$this->logger->debug('User password has been verified');
 							$authSuccess = true;
 						}
 					}
@@ -3700,7 +3700,7 @@ class Organizr
 			switch ($oAuthType) {
 				case 'plex':
 					if ($this->config['plexoAuth']) {
-						$this->debug('Starting Plex oAuth verification');
+						$this->logger->debug('Starting Plex oAuth verification');
 						$tokenInfo = $this->checkPlexToken($oAuth);
 						if ($tokenInfo) {
 							$authSuccess = array(
@@ -3710,14 +3710,14 @@ class Organizr
 								'token' => $tokenInfo['user']['authToken'],
 								'oauth' => 'plex'
 							);
-							$this->debug('User\'s Plex Token has been verified');
+							$this->logger->debug('User\'s Plex Token has been verified');
 							$this->coookie('set', 'oAuth', 'true', $this->config['rememberMeDays']);
 							$authSuccess = ((!empty($this->config['plexAdmin']) && strtolower($this->config['plexAdmin']) == strtolower($tokenInfo['user']['username'])) || (!empty($this->config['plexAdmin']) && strtolower($this->config['plexAdmin']) == strtolower($tokenInfo['user']['email'])) || $this->checkPlexUser($tokenInfo['user']['username'])) ? $authSuccess : false;
 						} else {
-							$this->warning('User\'s Plex Token has failed verification');
+							$this->logger->warning('User\'s Plex Token has failed verification');
 						}
 					} else {
-						$this->debug('Plex oAuth is not setup');
+						$this->logger->debug('Plex oAuth is not setup');
 						$this->setAPIResponse('error', 'Plex oAuth is not setup', 422);
 						return false;
 					}
@@ -3744,13 +3744,13 @@ class Organizr
 				if (!$passwordMatches) {
 					$this->updateUserPassword($password, $result['id']);
 					$this->setLoggerChannel('Authentication', $username);
-					$this->info('User Password updated from backend');
+					$this->logger->info('User Password updated from backend');
 				}
 				if ($token !== '') {
 					if ($token !== $result['plex_token']) {
 						$this->updateUserPlexToken($token, $result['id']);
 						$this->setLoggerChannel('Authentication', $username);
-						$this->info('User Plex Token updated from backend');
+						$this->logger->info('User Plex Token updated from backend');
 					}
 				}
 				// 2FA might go here
@@ -3770,57 +3770,57 @@ class Organizr
 					}
 					if ($tfaProceed) {
 						$this->setLoggerChannel('Authentication', $username);
-						$this->debug('Starting 2FA verification');
+						$this->logger->debug('Starting 2FA verification');
 						$TFA = explode('::', $result['auth_service']);
 						// Is code with login info?
 						if ($tfaCode == '') {
-							$this->debug('Sending 2FA response to login UI');
+							$this->logger->debug('Sending 2FA response to login UI');
 							$this->setAPIResponse('warning', '2FA Code Needed', 422);
 							return false;
 						} else {
 							if (!$this->verify2FA($TFA[1], $tfaCode, $TFA[0])) {
-								$this->warning('Incorrect 2FA');
+								$this->logger->warning('Incorrect 2FA');
 								$this->setAPIResponse('error', 'Wrong 2FA', 422);
 								return false;
 							} else {
-								$this->info('2FA verification passed');
+								$this->logger->info('2FA verification passed');
 							}
 						}
 					}
 				}
 				// End 2FA
 				// authentication passed - 1) mark active and update token
-				$this->debug('Starting token creation function');
+				$this->logger->debug('Starting token creation function');
 				$createToken = $this->createToken($result['username'], $result['email'], $days);
 				if ($createToken) {
-					$this->debug('Token has been created');
-					$this->debug('Token creation function has finished');
-					$this->info('User has logged in');
-					$this->debug('Starting SSO check function');
+					$this->logger->debug('Token has been created');
+					$this->logger->debug('Token creation function has finished');
+					$this->logger->info('User has logged in');
+					$this->logger->debug('Starting SSO check function');
 					$this->ssoCheck($result, $password, $token); //need to work on this
 					return ($output) ? array('name' => $this->cookieName, 'token' => (string)$createToken) : true;
 				} else {
-					$this->warning('Token creation error');
+					$this->logger->warning('Token creation error');
 					$this->setAPIResponse('error', 'Token creation error', 500);
 					return false;
 				}
 			} else {
 				// Create User
 				$this->setLoggerChannel('Authentication', (is_array($authSuccess) && isset($authSuccess['username']) ? $authSuccess['username'] : $username));
-				$this->debug('Starting Registration function');
+				$this->logger->debug('Starting Registration function');
 				return $this->authRegister((is_array($authSuccess) && isset($authSuccess['username']) ? $authSuccess['username'] : $username), $password, (is_array($authSuccess) && isset($authSuccess['email']) ? $authSuccess['email'] : ''), $token);
 			}
 		} else {
 			// authentication failed
 			$this->setLoggerChannel('Authentication', $username);
-			$this->warning('Wrong Password');
+			$this->logger->warning('Wrong Password');
 			if ($loginAttempts >= $this->config['loginAttempts']) {
-				$this->warning('User exceeded maximum login attempts');
+				$this->logger->warning('User exceeded maximum login attempts');
 				$this->coookieSeconds('set', 'lockout', $this->config['loginLockout'], $this->config['loginLockout']);
 				$this->setAPIResponse('error', 'User is locked out', 403);
 				return false;
 			} else {
-				$this->debug('User has not exceeded maximum login attempts');
+				$this->logger->debug('User has not exceeded maximum login attempts');
 				$this->setAPIResponse('error', 'User credentials incorrect', 401);
 				return false;
 			}
@@ -3830,8 +3830,8 @@ class Organizr
 	public function logout()
 	{
 		$this->setLoggerChannel('Authentication');
-		$this->debug('Starting log out process');
-		$this->info('User has logged out');
+		$this->logger->debug('Starting log out process');
+		$this->logger->info('User has logged out');
 		$this->coookie('delete', $this->cookieName);
 		$this->coookie('delete', 'mpt');
 		$this->coookie('delete', 'Auth');
@@ -3842,7 +3842,7 @@ class Organizr
 		$this->clearJellyfinTokens();
 		$this->revokeTokenCurrentUser($this->user['token']);
 		$this->clearKomgaToken();
-		$this->debug('Log out process has finished');
+		$this->logger->debug('Log out process has finished');
 		$this->user = null;
 		return true;
 	}
@@ -7080,7 +7080,7 @@ class Organizr
 				'data' => $apiData
 			];
 			$this->setLoggerChannel('Socks');
-			$this->debug('Sending Socks request', $debugInformation);
+			$this->logger->debug('Sending Socks request', $debugInformation);
 			try {
 				switch ($requestObject->getMethod()) {
 					case 'GET':
@@ -7102,7 +7102,7 @@ class Organizr
 			} catch (Requests_Exception $e) {
 				$this->setAPIResponse('error', $e->getMessage(), 500);
 				$this->setLoggerChannel('Socks');
-				$this->critical($e, $debugInformation);
+				$this->logger->critical($e, $debugInformation);
 				return null;
 			}
 		} else {
@@ -7241,7 +7241,7 @@ class Organizr
 		$firstKey = '';
 		if ($this->config['includeDatabaseQueriesInDebug']) {
 			$this->setLoggerChannel('Database');
-			$this->debug('Query to database', $request);
+			$this->logger->debug('Query to database', $request);
 		}
 		try {
 			foreach ($request as $k => $v) {
@@ -7277,11 +7277,11 @@ class Organizr
 			}
 		} catch (Exception $e) {
 			$this->setLoggerChannel('Database');
-			$this->critical($e, $request);
+			$this->logger->critical($e, $request);
 			return false;
 		}
 		if ($this->config['includeDatabaseQueriesInDebug']) {
-			$this->debug('Results from database', $results);
+			$this->logger->debug('Results from database', $results);
 		}
 		return count($request) > 1 ? $results : $results[$firstKey];
 	}
