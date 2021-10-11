@@ -201,7 +201,7 @@ class Invites extends Organizr
 		}
 		$info = $this->processQueries($response);
 		if (!$info) {
-			$this->setAPIResponse('error', 'Code not found'.$response, 404);
+			$this->setAPIResponse('error', 'Code not found', 404);
 			return false;
 		}
 		$response = [
