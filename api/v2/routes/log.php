@@ -4,7 +4,10 @@ $app->get('/log[/{number}]', function ($request, $response, $args) {
 	if ($Organizr->checkRoute($request)) {
 		if ($Organizr->qualifyRequest(1, true)) {
 			$args['number'] = $args['number'] ?? 0;
-			$Organizr->getLog(1000, 0, 'NONE', $args['number']);
+			$_GET['pageSize'] = $_GET['pageSize'] ?? 1000;
+			$_GET['offset'] = $_GET['offset'] ?? 0;
+			$_GET['filter'] = $_GET['filter'] ?? 'NONE';
+			$Organizr->getLog($_GET['pageSize'], $_GET['offset'], $_GET['filter'], $args['number']);
 		}
 	}
 	$response->getBody()->write(jsonE($GLOBALS['api']));
