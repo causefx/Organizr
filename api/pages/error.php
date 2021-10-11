@@ -14,7 +14,7 @@ function get_page_error($Organizr)
 	$errorDetails = $Organizr->errorCodes($error);
 	$redirect = $_GET['vars']['var2'] ?? null;
 	if ($redirect) {
-		$Organizr->debug($redirect);
+		$Organizr->logger->debug($redirect);
 	}
 	$GLOBALS['responseCode'] = 200;
 	return '
