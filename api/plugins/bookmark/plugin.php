@@ -1,13 +1,13 @@
 <?php
 // PLUGIN INFORMATION
-$GLOBALS['plugins'][]['Bookmark'] = array( // Plugin Name
+$GLOBALS['plugins']['Bookmark'] = array( // Plugin Name
 	'name' => 'Bookmark', // Plugin Name
 	'author' => 'leet1994', // Who wrote the plugin
 	'category' => 'Utilities', // One to Two Word Description
 	'link' => '', // Link to plugin info
 	'license' => 'personal,business', // License Type use , for multiple
 	'idPrefix' => 'BOOKMARK', // html element id prefix
-	'configPrefix' => 'BOOKMARK', // config file prefix for array items without the hypen
+	'configPrefix' => 'BOOKMARK', // config file prefix for array items without the hyphen
 	'dbPrefix' => 'BOOKMARK', // db prefix
 	'version' => '0.1.0', // SemVer of plugin
 	'image' => 'api/plugins/bookmark/logo.png', // 1:1 non transparent image for plugin
