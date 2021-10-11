@@ -263,12 +263,14 @@ class Organizr
 			$disk = $this->checkDisk($directory);
 			$diskLevels = [
 				'warn' => 1000000000,
-				'error' => 100000000
+				'warn_human_readable' => $this->human_filesize(1000000000, 0),
+				'error' => 100000000,
+				'error_human_readable' => $this->human_filesize(100000000, 0),
 			];
-			if ($disk['free'] <= $diskLevels['error']) {
+			if ($disk['free']['raw'] <= $diskLevels['error']) {
 				die($this->showHTML('Low Disk Space', 'You are dangerously low on disk space.<br/>There is only ' . $disk['free']['human_readable'] . ' remaining.<br/><b>Percent Used = ' . $disk['used']['percent_used'] . '%</b>'));
-			} elseif ($disk['free'] <= $diskLevels['warn']) {
-				$this->warnings[] = 'You are low on disk space.  There is only ' . $disk['free']['human_readable'] . ' remaining.';
+			} elseif ($disk['free']['raw'] <= $diskLevels['warn']) {
+				$this->warnings[] = 'You are low on disk space.  There is only ' . $disk['free']['human_readable'] . ' remaining.  This warning shows up because you are past the warning threshold of ' . $diskLevels['warn_human_readable'];
 			}
 		}
 		return true;
