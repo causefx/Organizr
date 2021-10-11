@@ -2,14 +2,14 @@
 // PLUGIN INFORMATION
 use Pusher\PusherException;
 
-$GLOBALS['plugins'][]['Chat'] = array( // Plugin Name
+$GLOBALS['plugins']['Chat'] = array( // Plugin Name
 	'name' => 'Chat', // Plugin Name
 	'author' => 'CauseFX', // Who wrote the plugin
 	'category' => 'Utilities', // One to Two Word Description
 	'link' => '', // Link to plugin info
 	'license' => 'personal,business', // License Type use , for multiple
 	'idPrefix' => 'CHAT', // html element id prefix
-	'configPrefix' => 'CHAT', // config file prefix for array items without the hypen
+	'configPrefix' => 'CHAT', // config file prefix for array items without the hyphen
 	'version' => '1.0.0', // SemVer of plugin
 	'image' => 'api/plugins/chat/logo.png', // 1:1 non transparent image for plugin
 	'settings' => true, // does plugin need a settings modal?

@@ -1,6 +1,6 @@
 <?php
 // PLUGIN INFORMATION
-$GLOBALS['plugins'][]['HealthChecks'] = array( // Plugin Name
+$GLOBALS['plugins']['HealthChecks'] = array( // Plugin Name
 	'name' => 'HealthChecks', // Plugin Name
 	'author' => 'CauseFX', // Who wrote the plugin
 	'category' => 'Utilities', // One to Two Word Description

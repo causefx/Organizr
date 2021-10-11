@@ -1,14 +1,14 @@
 <?php
 // PLUGIN INFORMATION
-$GLOBALS['plugins'][]['Invites'] = array( // Plugin Name
+$GLOBALS['plugins']['Invites'] = array( // Plugin Name
 	'name' => 'Invites', // Plugin Name
 	'author' => 'CauseFX', // Who wrote the plugin
 	'category' => 'Management', // One to Two Word Description
 	'link' => '', // Link to plugin info
 	'license' => 'personal', // License Type use , for multiple
 	'idPrefix' => 'INVITES', // html element id prefix
-	'configPrefix' => 'INVITES', // config file prefix for array items without the hypen
-	'version' => '1.0.0', // SemVer of plugin
+	'configPrefix' => 'INVITES', // config file prefix for array items without the hyphen
+	'version' => '1.1.0', // SemVer of plugin
 	'image' => 'api/plugins/invites/logo.png', // 1:1 non transparent image for plugin
 	'settings' => true, // does plugin need a settings modal?
 	'bind' => true, // use default bind to make settings page - true or false
@@ -18,6 +18,56 @@ $GLOBALS['plugins'][]['Invites'] = array( // Plugin Name
 
 class Invites extends Organizr
 {
+	public function __construct()
+	{
+		parent::__construct();
+		$this->_pluginUpgradeCheck();
+	}
+	
+	public function _pluginUpgradeCheck()
+	{
+		if ($this->hasDB()) {
+			$compare = new Composer\Semver\Comparator;
+			$oldVer = $this->config['INVITES-dbVersion'];
+			// Upgrade check start for version below
+			$versionCheck = '1.1.0';
+			if ($compare->lessThan($oldVer, $versionCheck)) {
+				$oldVer = $versionCheck;
+				$this->_pluginUpgradeToVersion($versionCheck);
+			}
+			// End Upgrade check start for version above
+			// Update config.php version if different to the installed version
+			if ($GLOBALS['plugins']['Invites']['version'] !== $this->config['INVITES-dbVersion']) {
+				$this->updateConfig(array('INVITES-dbVersion' => $oldVer));
+				$this->setLoggerChannel('Invites Plugin');
+				$this->debug('Updated INVITES-dbVersion to ' . $oldVer);
+			}
+			return true;
+		}
+	}
+	
+	public function _pluginUpgradeToVersion($version = '1.1.0')
+	{
+		switch ($version) {
+			case '1.1.0':
+				$this->_addInvitedByColumnToDatabase();
+				break;
+		}
+		$this->setResponse(200, 'Ran plugin update function for version: ' . $version);
+		return true;
+	}
+	
+	public function _addInvitedByColumnToDatabase()
+	{
+		$addColumn = $this->addColumnToDatabase('invites', 'invitedby', 'TEXT');
+		$this->setLoggerChannel('Invites Plugin');
+		if ($addColumn) {
+			$this->info('Updated Invites Database');
+		} else {
+			$this->warning('Could not update Invites Database');
+		}
+	}
+	
 	public function _invitesPluginGetCodes()
 	{
 		if ($this->qualifyRequest(1, false)) {

@@ -48,7 +48,7 @@ function get_page_settings_settings_logs($Organizr)
 	})
 	.DataTable({
 		"ajax": {
-			"url": "api/v2/log/0",
+			"url": "api/v2/log/0?filter=NONE&pageSize=1000&offset=0",
 			"dataSrc": function(json) {
 				return json.response.data.results;
 			}
