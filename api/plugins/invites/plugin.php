@@ -97,6 +97,14 @@ class Invites extends Organizr
 		$code = ($array['code']) ?? null;
 		$username = ($array['username']) ?? null;
 		$email = ($array['email']) ?? null;
+		$invites = $this->_invitesPluginGetCodes();
+		$inviteCount = count($invites);
+		if (!$this->qualifyRequest(1, false)) {
+			if ($this->config['INVITES-maximum-invites'] != 0 && $inviteCount >= $this->config['INVITES-maximum-invites']) {
+			$this->setAPIResponse('error', 'Maximum number of invites reached', 409);
+			return false;
+			}
+		}
 		if (!$code) {
 			$this->setAPIResponse('error', 'Code not supplied', 409);
 			return false;
@@ -188,16 +196,21 @@ class Invites extends Organizr
 				)
 			];
 		} else {
-			$response = [
-				array(
-					'function' => 'fetch',
-					'query' => array(
-						'SELECT * FROM invites WHERE invitedby = ? AND code = ? COLLATE NOCASE',
-						$this->user['username'],
-						$code
+			if ($this->config['INVITES-allow-delete']) {
+				$response = [
+					array(
+						'function' => 'fetch',
+						'query' => array(
+							'SELECT * FROM invites WHERE invitedby = ? AND code = ? COLLATE NOCASE',
+							$this->user['username'],
+							$code
+						)
 					)
-				)
-			];
+				];
+			} else {
+				$this->setAPIResponse('error', 'You are not permitted to delete invites.', 409);
+				return false;
+			}
 		}
 		$info = $this->processQueries($response);
 		if (!$info) {
@@ -342,6 +355,21 @@ class Invites extends Organizr
 					'label' => 'Minimum Authentication',
 					'value' => $this->config['INVITES-Auth-include'],
 					'options' => $this->groupSelect()
+				),
+				array(
+					'type' => 'switch',
+					'name' => 'INVITES-allow-delete-include',
+					'label' => 'Allow users to delete invites',
+					'help' => 'This must be disabled to enforce invitation limits.',
+					'value' => $this->config['INVITES-allow-delete-include']
+				),
+				array(
+					'type' => 'number',
+					'name' => 'INVITES-maximum-invites',
+					'label' => 'Maximum number of invites permitted for users.',
+					'help' => 'Set to 0 to disable the limit.',
+					'value' => $this->config['INVITES-maximum-invites'],
+					'placeholder' => '0'
 				),
 			),
 			'Plex Settings' => array(

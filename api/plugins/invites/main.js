@@ -303,7 +303,7 @@ function buildInvites(array){
 			<td>`+v.ip+`</td>
 			<td>`+v.invitedby+`</td>
 			<td>`+v.valid+`</td>
-			<td><button type="button" class="btn btn-danger btn-outline btn-circle btn-lg m-r-5" onclick="deleteInvite('`+v.code+`','`+v.id+`');"><i class="ti-trash"></i></button></td>
+			<td class="deleteButton"><button type="button" class="btn btn-danger btn-outline btn-circle btn-lg m-r-5" onclick="deleteInvite('`+v.code+`','`+v.id+`');"><i class="ti-trash"></i></button></td>
 		</tr>
 		`;
 	});
@@ -337,7 +337,7 @@ $(document).on('click', '.inviteModal', function() {
 									<th lang="en">IP ADDRESS</th>
 									<th lang="en">INVITED BY</th>
 									<th lang="en">VALID</th>
-									<th lang="en">DELETE</th>
+									<th lang="en" class="deleteButton">DELETE</th>
 								</tr>
 							</thead>
 							<tbody id="manageInviteTable">
@@ -350,6 +350,9 @@ $(document).on('click', '.inviteModal', function() {
 			<div class="clearfix"></div>
 			`;
 			$('.invite-div').html(htmlDOM);
+			if (activeInfo.plugins.includes["INVITES-allow-delete-include"] === false && activeInfo.user.groupID > 1) {
+				$('.deleteButton').hide();
+			}
 		}).fail(function(xhr) {
 			console.error("Organizr Function: API Connection Failed");
 		});

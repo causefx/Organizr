@@ -8,5 +8,7 @@ return array(
 	'INVITES-EmbyTemplate' => '',
 	'INVITES-plex-tv-labels' => '',
 	'INVITES-plex-music-labels' => '',
-	'INVITES-plex-movies-labels' => ''
+	'INVITES-plex-movies-labels' => '',
+	'INVITES-allow-delete-include' => false,
+	'INVITES-maximum-invites' => '0'
 );
