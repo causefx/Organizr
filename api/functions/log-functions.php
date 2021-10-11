@@ -259,6 +259,7 @@ trait LogFunctions
 					$this->logger = $loggerBuilder->build();
 				} catch (Exception $e) {
 					// nothing so far
+					$this->logger = null;
 				}
 				/* setup:
 				set the log channel before you send log (You can set an optional Username (2nd Variable) | If user is logged already logged in, it will use their username):
@@ -270,7 +271,11 @@ trait LogFunctions
 				exception:
 				$this->critical($exception, $context);
 				*/
+			} else {
+				$this->logger = null;
 			}
+		} else {
+			$this->logger = null;
 		}
 	}
 	
@@ -373,10 +378,10 @@ trait LogFunctions
 				foreach ($logs as $k => $log) {
 					$selected = $i == 0 ? 'selected' : '';
 					preg_match('/[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])/', $log, $name);
-					$options .= '<option data-id="' . $k . '" value="api/v2/log/' . $k . '" ' . $selected . '>' . $name[0] . '</option>';
+					$options .= '<option data-id="' . $k . '" value="api/v2/log/' . $k . '?filter=NONE&pageSize=1000&offset=0" ' . $selected . '>' . $name[0] . '</option>';
 					$i++;
 				}
-				return '<select class="form-control choose-organizr-log"><option data-id="all" value="api/v2/log/all">All</option>' . $options . '</select>';
+				return '<select class="form-control choose-organizr-log"><option data-id="all" value="api/v2/log/all?filter=NONE&pageSize=1000&offset=0">All</option>' . $options . '</select>';
 			}
 		}
 		return false;
