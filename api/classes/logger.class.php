@@ -28,7 +28,6 @@ class OrganizrLogger extends LoggerBuilder
 		if (!$this->isReady) {
 			$this->setChannel(self::DEFAULT_CHANNEL);
 			$this->setLogLevel(self::INFO);
-			$this->setFileName('/tmp/organizr-temp.log');
 			$this->setMaxFiles(1);
 		}
 		return new Logger($this);

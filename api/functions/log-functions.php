@@ -224,7 +224,7 @@ trait LogFunctions
 		$loggerBuilder = new OrganizrLogger();
 		$loggerBuilder->setReadyStatus($this->hasDB() && $this->log);
 		$loggerBuilder->setMaxFiles($this->config['maxLogFiles']);
-		$loggerBuilder->setFileName($this->log);
+		$loggerBuilder->setFileName($this->tempLogIfNeeded());
 		$loggerBuilder->setTraceId($username);
 		$loggerBuilder->setChannel(ucwords(strtolower($channel)));
 		switch ($this->config['logLevel']) {
@@ -271,6 +271,15 @@ trait LogFunctions
 		$this->logger->critical($exception, $context);
 		*/
 		
+	}
+	
+	public function tempLogIfNeeded()
+	{
+		if (!$this->log) {
+			return $this->randString() . '.log';
+		} else {
+			return $this->log;
+		}
 	}
 	
 	public function getLog($pageSize = 10, $offset = 0, $filter = 'NONE', $number = 0)
