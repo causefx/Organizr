@@ -8,7 +8,7 @@ class OrganizrLogger extends LoggerBuilder
 	public $isReady;
 	
 	/**
-	 * @return string
+	 * @return boolean
 	 */
 	public function getReadyStatus(): bool
 	{
@@ -16,7 +16,7 @@ class OrganizrLogger extends LoggerBuilder
 	}
 	
 	/**
-	 * @param string $traceId
+	 * @param boolean $readyStatus
 	 */
 	public function setReadyStatus(bool $readyStatus)
 	{
