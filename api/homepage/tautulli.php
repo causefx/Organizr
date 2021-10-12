@@ -15,9 +15,9 @@ trait TautulliHomepageItem
 			return $homepageInformation;
 		}
 		$libraryList = [['name' => 'Refresh page to update List', 'value' => '', 'disabled' => true]];
-		if ($this->config['plexID'] !== '' && $this->config['plexToken'] !== '') {
+		if (!empty($this->config['tautulliApikey']) && !empty($this->config['tautulliURL'])) {
 			$libraryList = [];
-			$loop = $this->plexLibraryList('key')['libraries'];
+			$loop = $this->tautulliLibraryList('key')['libraries'];
 			foreach ($loop as $key => $value) {
 				$libraryList[] = ['name' => $key, 'value' => $value];
 			}
@@ -250,5 +250,34 @@ trait TautulliHomepageItem
 		$api = isset($api) ? $api : false;
 		$this->setAPIResponse('success', null, 200, $api);
 		return $api;
+	}
+
+	public function tautulliLibraryList()
+	{
+		$url = $this->qualifyURL($this->config['tautulliURL']);
+		$apiURL = $url . '/api/v2?apikey=' . $this->config['tautulliApikey'];
+		
+		if (!empty($this->config['tautulliApikey']) && !empty($this->config['tautulliURL'])) {
+
+			$liblistUrl = $apiURL . '&cmd=get_libraries';
+			$options = $this->requestOptions($this->config['tautulliURL'], $this->config['homepageTautulliRefresh'], $this->config['tautulliDisableCertCheck'], $this->config['tautulliUseCustomCertificate']);
+			try {
+				$liblist = Requests::get($liblistUrl, [], $options);
+				$libraryList = array();
+				if ($liblist->success) {
+					$liblist = json_decode($liblist->body, true);
+					foreach ($liblist['response']['data'] as $lib) {
+						$libraryList['libraries'][(string)$lib['section_name']] = (string)$lib["section_id"];
+					}
+					$libraryList = array_change_key_case($libraryList, CASE_LOWER);
+					return $libraryList;
+				}
+			} catch (Requests_Exception $e) {
+				$this->setAPIResponse('error', 'Tautulli Homepage Error - Unable to get list of libraries: '.$e->getMessage(), 500);
+				$this->writeLog('error', 'Tautulli Homepage Error - Unable to get list of libraries: ' . $e->getMessage(), 'SYSTEM');
+				return false;
+			};
+		}
+		return false;
 	}
 }
