@@ -276,7 +276,7 @@ trait LogFunctions
 	public function tempLogIfNeeded()
 	{
 		if (!$this->log) {
-			return $this->randString() . '.log';
+			return $this->root . DIRECTORY_SEPARATOR . 'tmp' . DIRECTORY_SEPARATOR . 'organizr-' . $this->randString() . '.log';
 		} else {
 			return $this->log;
 		}
