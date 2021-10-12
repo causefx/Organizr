@@ -256,9 +256,7 @@ trait TautulliHomepageItem
 	{
 		$url = $this->qualifyURL($this->config['tautulliURL']);
 		$apiURL = $url . '/api/v2?apikey=' . $this->config['tautulliApikey'];
-		
 		if (!empty($this->config['tautulliApikey']) && !empty($this->config['tautulliURL'])) {
-
 			$liblistUrl = $apiURL . '&cmd=get_libraries';
 			$options = $this->requestOptions($this->config['tautulliURL'], $this->config['homepageTautulliRefresh'], $this->config['tautulliDisableCertCheck'], $this->config['tautulliUseCustomCertificate']);
 			try {
