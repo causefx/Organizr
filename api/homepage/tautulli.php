@@ -162,8 +162,10 @@ trait TautulliHomepageItem
 				$homestats = json_decode($homestats->body, true);
 				foreach ($homestats['response']['data'] as $s => $stats) {
 					foreach ($stats['rows'] as $i => $v) {
-						if (in_array($v['section_id'],$homepageTautulliViewingStatsExclude)) {
-							unset($homestats['response']['data'][$s]['rows'][$i]);
+						if (array_key_exists('section_id', $v)) {
+							if (in_array($v['section_id'],$homepageTautulliViewingStatsExclude)) {
+								unset($homestats['response']['data'][$s]['rows'][$i]);
+							}
 						}
 					}
 				}
@@ -192,8 +194,10 @@ trait TautulliHomepageItem
 				$homepageTautulliLibraryStatsExclude = explode(",",$this->config['homepageTautulliLibraryStatsExclude']);
 				$libstats = json_decode($libstats->body, true);
 				foreach ($libstats['response']['data']['data'] as $i => $v) {
-					if (in_array($v['section_id'],$homepageTautulliLibraryStatsExclude)) {
-						unset($libstats['response']['data']['data'][$i]);
+					if (array_key_exists('section_id', $v)) {
+						if (in_array($v['section_id'],$homepageTautulliLibraryStatsExclude)) {
+							unset($libstats['response']['data']['data'][$i]);
+						}
 					}
 				}
 				$libstats['response']['data']['data'] = array_values($libstats['response']['data']['data']);
