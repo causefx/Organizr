@@ -13,7 +13,7 @@ function inviteLaunch(){
 	</div>
 	`;
 	if(activeInfo.plugins["INVITES-enabled"] == true){
-		if (activeInfo.user.loggedin === true && activeInfo.user.groupID <= 1) {
+		if (activeInfo.user.loggedin === true && activeInfo.user.groupID <= activeInfo.plugins.includes["INVITES-Auth-include"]) {
 			menuList = `<li><a class="inline-popups inviteModal" href="#invite-area" data-effect="mfp-zoom-out"><i class="fa fa-ticket fa-fw"></i> <span lang="en">Manage Invites</span></a></li>`;
 			htmlDOM += `
 			<div id="new-invite-area" class="white-popup mfp-with-anim mfp-hide">
@@ -301,8 +301,9 @@ function buildInvites(array){
 			<td>`+v.dateused+`</td>
 			<td>`+v.usedby+`</td>
 			<td>`+v.ip+`</td>
+			<td>`+v.invitedby+`</td>
 			<td>`+v.valid+`</td>
-			<td><button type="button" class="btn btn-danger btn-outline btn-circle btn-lg m-r-5" onclick="deleteInvite('`+v.code+`','`+v.id+`');"><i class="ti-trash"></i></button></td>
+			<td class="deleteButton"><button type="button" class="btn btn-danger btn-outline btn-circle btn-lg m-r-5" onclick="deleteInvite('`+v.code+`','`+v.id+`');"><i class="ti-trash"></i></button></td>
 		</tr>
 		`;
 	});
@@ -310,7 +311,7 @@ function buildInvites(array){
 }
 $(document).on('click', '.inviteModal', function() {
 	var htmlDOM = '';
-	if (activeInfo.user.loggedin === true && activeInfo.user.groupID <= 1) {
+	if (activeInfo.user.loggedin === true && activeInfo.user.groupID <= activeInfo.plugins.includes["INVITES-Auth-include"]) {
 		ajaxloader(".content-wrap","in");
 		organizrAPI2('GET','api/v2/plugins/invites').success(function(data) {
 			var response = data.response;
@@ -334,8 +335,9 @@ $(document).on('click', '.inviteModal', function() {
 									<th lang="en">DATE USED</th>
 									<th lang="en">USED BY</th>
 									<th lang="en">IP ADDRESS</th>
+									<th lang="en">INVITED BY</th>
 									<th lang="en">VALID</th>
-									<th lang="en">DELETE</th>
+									<th lang="en" class="deleteButton">DELETE</th>
 								</tr>
 							</thead>
 							<tbody id="manageInviteTable">
@@ -348,6 +350,9 @@ $(document).on('click', '.inviteModal', function() {
 			<div class="clearfix"></div>
 			`;
 			$('.invite-div').html(htmlDOM);
+			if (activeInfo.plugins.includes["INVITES-allow-delete-include"] === false && activeInfo.user.groupID > 1) {
+				$('.deleteButton').hide();
+			}
 		}).fail(function(xhr) {
 			console.error("Organizr Function: API Connection Failed");
 		});
