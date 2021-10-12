@@ -3914,8 +3914,8 @@ class Organizr
 			if ($this->createUser($username, $password, $email)) {
 				$this->writeLog('success', 'Registration Function - A User has registered', $username);
 				if ($this->createToken($username, $email, $this->config['rememberMeDays'])) {
-					$this->writeLoginLog($username, 'success');
-					$this->writeLog('success', 'Login Function - A User has logged in', $username);
+					$this->setLoggerChannel('Authentication', $username);
+					$this->logger->info('User has logged in');
 					return true;
 				}
 			} else {
@@ -3960,8 +3960,8 @@ class Organizr
 				$PhpMailer->_phpMailerPluginSendEmail($sendEmail);
 			}
 			if ($this->createToken($username, $email, $this->config['rememberMeDays'])) {
-				$this->writeLoginLog($username, 'success');
-				$this->writeLog('success', 'Login Function - A User has logged in', $username);
+				$this->setLoggerChannel('Authentication', $username);
+				$this->logger->info('User has logged in');
 				return true;
 			} else {
 				return false;
@@ -4337,24 +4337,6 @@ class Organizr
 		} else {
 			return false;
 		}
-	}
-	
-	public function writeLoginLog($username, $authType)
-	{
-		$username = htmlspecialchars($username, ENT_QUOTES);
-		if ($this->checkLog($this->organizrLoginLog)) {
-			$getLog = str_replace("\r\ndate", "date", file_get_contents($this->organizrLoginLog));
-			$gotLog = json_decode($getLog, true);
-		}
-		$logEntryFirst = array('logType' => 'login_log', 'auth' => array(array('date' => date("Y-m-d H:i:s"), 'utc_date' => $this->currentTime, 'username' => $username, 'ip' => $this->userIP(), 'auth_type' => $authType)));
-		$logEntry = array('date' => date("Y-m-d H:i:s"), 'utc_date' => $this->currentTime, 'username' => $username, 'ip' => $this->userIP(), 'auth_type' => $authType);
-		if (isset($gotLog)) {
-			array_push($gotLog["auth"], $logEntry);
-			$writeFailLog = str_replace("date", "\r\ndate", json_encode($gotLog));
-		} else {
-			$writeFailLog = str_replace("date", "\r\ndate", json_encode($logEntryFirst));
-		}
-		file_put_contents($this->organizrLoginLog, $writeFailLog);
 	}
 	
 	public function writeLog($type = 'error', $message = null, $username = null)
