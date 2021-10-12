@@ -14,6 +14,14 @@ trait TautulliHomepageItem
 		if ($infoOnly) {
 			return $homepageInformation;
 		}
+		$libraryList = [['name' => 'Refresh page to update List', 'value' => '', 'disabled' => true]];
+		if ($this->config['plexID'] !== '' && $this->config['plexToken'] !== '') {
+			$libraryList = [];
+			$loop = $this->plexLibraryList('key')['libraries'];
+			foreach ($loop as $key => $value) {
+				$libraryList[] = ['name' => $key, 'value' => $value];
+			}
+		}
 		$homepageSettings = [
 			'debug' => true,
 			'settings' => [
@@ -41,6 +49,7 @@ trait TautulliHomepageItem
 				'Library Stats' => [
 					$this->settingsOption('switch', 'tautulliLibraries', ['label' => 'Libraries', 'help' => 'Shows/hides the card with library information.']),
 					$this->settingsOption('auth', 'homepageTautulliLibraryAuth'),
+					$this->settingsOption('plex-library-exclude', 'homepageTautulliLibraryStatsExclude', ['options' => $libraryList]),
 				],
 				'Viewing Stats' => [
 					$this->settingsOption('switch', 'tautulliPopularMovies', ['label' => 'Popular Movies', 'help' => 'Shows/hides the card with Popular Movie information.']),
@@ -48,6 +57,7 @@ trait TautulliHomepageItem
 					$this->settingsOption('switch', 'tautulliTopMovies', ['label' => 'Top Movies', 'help' => 'Shows/hides the card with Top Movies information.']),
 					$this->settingsOption('switch', 'tautulliTopTV', ['label' => 'Top TV', 'help' => 'Shows/hides the card with Top TV information.']),
 					$this->settingsOption('auth', 'homepageTautulliViewsAuth'),
+					$this->settingsOption('plex-library-exclude', 'homepageTautulliViewingStatsExclude', ['options' => $libraryList]),
 				],
 				'Misc Stats' => [
 					$this->settingsOption('switch', 'tautulliTopUsers', ['label' => 'Top Users', 'help' => 'Shows/hides the card with Top Users information.']),
@@ -148,7 +158,16 @@ trait TautulliHomepageItem
 			$options = $this->requestOptions($this->config['tautulliURL'], $this->config['homepageTautulliRefresh'], $this->config['tautulliDisableCertCheck'], $this->config['tautulliUseCustomCertificate']);
 			$homestats = Requests::get($homestatsUrl, [], $options);
 			if ($homestats->success) {
+				$homepageTautulliViewingStatsExclude = explode(",",$this->config['homepageTautulliViewingStatsExclude']);
 				$homestats = json_decode($homestats->body, true);
+				foreach ($homestats['response']['data'] as $s => $stats) {
+					foreach ($stats['rows'] as $i => $v) {
+						if (in_array($v['section_id'],$homepageTautulliViewingStatsExclude)) {
+							unset($homestats['response']['data'][$s]['rows'][$i]);
+						}
+					}
+				}
+				$homestats['response']['data'] = array_values($homestats['response']['data']);
 				$api['homestats'] = $homestats['response'];
 				// Cache art & thumb for first result in each tautulli API result
 				$categories = ['top_movies', 'top_tv', 'popular_movies', 'popular_tv'];
@@ -170,7 +189,14 @@ trait TautulliHomepageItem
 			$options = $this->requestOptions($this->config['tautulliURL'], $this->config['homepageTautulliRefresh'], $this->config['tautulliDisableCertCheck'], $this->config['tautulliUseCustomCertificate']);
 			$libstats = Requests::get($libstatsUrl, [], $options);
 			if ($libstats->success) {
+				$homepageTautulliLibraryStatsExclude = explode(",",$this->config['homepageTautulliLibraryStatsExclude']);
 				$libstats = json_decode($libstats->body, true);
+				foreach ($libstats['response']['data']['data'] as $i => $v) {
+					if (in_array($v['section_id'],$homepageTautulliLibraryStatsExclude)) {
+						unset($libstats['response']['data']['data'][$i]);
+					}
+				}
+				$libstats['response']['data']['data'] = array_values($libstats['response']['data']['data']);
 				$api['libstats'] = $libstats['response']['data'];
 				$categories = ['movie.svg', 'show.svg', 'artist.svg'];
 				foreach ($categories as $cat) {
