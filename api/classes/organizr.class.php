@@ -1768,640 +1768,108 @@ class Organizr
 	public function getSettingsMain()
 	{
 		$certificateStatus = $this->hasCustomCert() ? '<span lang="en">Custom Certificate Loaded</span><br />Located at <span>' . $this->getCustomCert() . '</span>' : '<span lang="en">Custom Certificate not found - please upload below</span>';
-		return array(
-			'Settings Page' => array(
-				array(
-					'type' => 'select',
-					'name' => 'defaultSettingsTab',
-					'label' => 'Default Settings Tab',
-					'value' => $this->config['defaultSettingsTab'],
-					'options' => $this->getSettingsTabs(),
-					'help' => 'Choose which Settings Tab to be default when opening settings page'
-				),
-			),
+		return [
+			'Settings Page' => [
+				$this->settingsOption('select', 'defaultSettingsTab', ['label' => 'Default Settings Tab', 'options' => $this->getSettingsTabs(), 'help' => 'Choose which Settings Tab to be default when opening settings page']),
+			],
 			'Database' => [
 				$this->settingsOption('notice', '', ['notice' => 'danger', 'title' => 'Warning', 'body' => 'This feature is experimental - You may face unexpected database is locked errors in logs']),
 				$this->settingsOption('html', '', ['label' => 'Journal Mode Status', 'html' => '<script>getJournalMode();</script><h4 class="journal-mode font-bold text-uppercase"><i class="fa fa-spin fa-circle-o-notch"></i></h4>']),
-				//$this->settingsOption('blank'),
 				$this->settingsOption('button', '', ['label' => 'Set DELETE Mode (Default)', 'icon' => 'icon-notebook', 'text' => 'Set', 'attr' => 'onclick="setJournalMode(\'DELETE\')"']),
 				$this->settingsOption('button', '', ['label' => 'Set WAL Mode', 'icon' => 'icon-notebook', 'text' => 'Set', 'attr' => 'onclick="setJournalMode(\'WAL\')"']),
 			],
-			'Github' => array(
-				array(
-					'type' => 'select',
-					'name' => 'branch',
-					'label' => 'Branch',
-					'value' => $this->config['branch'],
-					'options' => $this->getBranches(),
-					'disabled' => $this->docker,
-					'help' => ($this->docker) ? 'Since you are using the Official Docker image, Change the image to change the branch' : 'Choose which branch to download from'
-				),
-				array(
-					'type' => 'button',
-					'name' => 'force-install-branch',
-					'label' => 'Force Install Branch',
-					'class' => 'updateNow',
-					'icon' => 'fa fa-download',
-					'text' => 'Retrieve',
-					'attr' => ($this->docker) ? 'title="You can just restart your docker to update"' : '',
-					'help' => ($this->docker) ? 'Since you are using the official Docker image, you can just restart your Docker container to update Organizr' : 'This will re-download all of the source files for Organizr'
-				)
-			),
-			'API' => array(
-				array(
-					'type' => 'password-alt-copy',
-					'name' => 'organizrAPI',
-					'label' => 'Organizr API',
-					'value' => $this->config['organizrAPI']
-				),
-				array(
-					'type' => 'button',
-					'label' => 'Generate New API Key',
-					'class' => 'newAPIKey',
-					'icon' => 'fa fa-refresh',
-					'text' => 'Generate'
-				),
+			'Github' => [
+				$this->settingsOption('select', 'branch', ['label' => 'Branch', 'value' => $this->config['branch'], 'options' => $this->getBranches(), 'disabled' => $this->docker, 'help' => ($this->docker) ? 'Since you are using the Official Docker image, Change the image to change the branch' : 'Choose which branch to download from']),
+				$this->settingsOption('button', 'force-install-branch', ['label' => 'Force Install Branch', 'class' => 'updateNow', 'icon' => 'fa fa-download', 'text' => 'Retrieve', 'attr' => ($this->docker) ? 'title="You can just restart your docker to update"' : '', 'help' => ($this->docker) ? 'Since you are using the official Docker image, you can just restart your Docker container to update Organizr' : 'This will re-download all of the source files for Organizr']),
+			],
+			'API' => [
+				$this->settingsOption('password-alt-copy', 'organizrAPI', ['label' => 'Organizr API']),
+				$this->settingsOption('button', null, ['label' => 'Generate New API Key', 'class' => 'newAPIKey', 'icon' => 'fa fa-refresh', 'text' => 'Generate']),
 				$this->settingsOption('notice', null, ['title' => 'API Documentation', 'body' => 'The documentation for Organizr\'s API is included with this installation.  To access the docs, use the button below.', 'bodyHTML' => '<br/><br/><div class="row"><div class="col-lg-2 col-sm-4 col-xs-12"><a href="' . $this->getServerPath() . 'docs/" target="_blank" class="btn btn-block btn-primary text-white" lang="en">Organizr Docs</a></div></div>'])
-			),
-			'Authentication' => array(
-				array(
-					'type' => 'select',
-					'name' => 'authType',
-					'id' => 'authSelect',
-					'label' => 'Authentication Type',
-					'value' => $this->config['authType'],
-					'options' => $this->getAuthTypes()
-				),
-				array(
-					'type' => 'select',
-					'name' => 'authBackend',
-					'id' => 'authBackendSelect',
-					'label' => 'Authentication Backend',
-					'class' => 'backendAuth switchAuth',
-					'value' => $this->config['authBackend'],
-					'options' => $this->getAuthBackends()
-				),
-				array(
-					'type' => 'password-alt',
-					'name' => 'plexToken',
-					'class' => 'plexAuth switchAuth',
-					'label' => 'Plex Token',
-					'value' => $this->config['plexToken'],
-					'placeholder' => 'Use Get Token Button'
-				),
-				array(
-					'type' => 'button',
-					'label' => 'Get Plex Token',
-					'class' => 'getPlexTokenAuth plexAuth switchAuth',
-					'icon' => 'fa fa-ticket',
-					'text' => 'Retrieve',
-					'attr' => 'onclick="PlexOAuth(oAuthSuccess,oAuthError, null, \'#settings-main-form [name=plexToken]\')"'
-				),
-				array(
-					'type' => 'password-alt',
-					'name' => 'plexID',
-					'class' => 'plexAuth switchAuth',
-					'label' => 'Plex Machine',
-					'value' => $this->config['plexID'],
-					'placeholder' => 'Use Get Plex Machine Button'
-				),
-				array(
-					'type' => 'button',
-					'label' => 'Get Plex Machine',
-					'class' => 'getPlexMachineAuth plexAuth switchAuth',
-					'icon' => 'fa fa-id-badge',
-					'text' => 'Retrieve',
-					'attr' => 'onclick="showPlexMachineForm(\'#settings-main-form [name=plexID]\')"'
-				),
-				array(
-					'type' => 'input',
-					'name' => 'plexAdmin',
-					'label' => 'Plex Admin Username',
-					'class' => 'plexAuth switchAuth',
-					'value' => $this->config['plexAdmin'],
-					'placeholder' => 'Admin username for Plex'
-				),
-				array(
-					'type' => 'switch',
-					'name' => 'plexoAuth',
-					'label' => 'Enable Plex oAuth',
-					'class' => 'plexAuth switchAuth',
-					'value' => $this->config['plexoAuth']
-				),
-				array(
-					'type' => 'switch',
-					'name' => 'ignoreTFAIfPlexOAuth',
-					'label' => 'Ignore 2FA if Plex OAuth ',
-					'class' => 'plexAuth switchAuth',
-					'value' => $this->config['ignoreTFAIfPlexOAuth'],
-					'help' => 'Enabling this will disable Organizr 2FA (If applicable) if User uses Plex OAuth to login'
-				),
-				array(
-					'type' => 'switch',
-					'name' => 'plexStrictFriends',
-					'label' => 'Strict Plex Friends ',
-					'class' => 'plexAuth switchAuth',
-					'value' => $this->config['plexStrictFriends'],
-					'help' => 'Enabling this will only allow Friends that have shares to the Machine ID entered above to login, Having this disabled will allow all Friends on your Friends list to login'
-				),
-				array(
-					'type' => 'switch',
-					'name' => 'ignoreTFALocal',
-					'label' => 'Ignore External 2FA on Local Subnet',
-					'value' => $this->config['ignoreTFALocal'],
-					'help' => 'Enabling this will bypass external 2FA security if user is on local Subnet'
-				),
-				array(
-					'type' => 'input',
-					'name' => 'authBackendHost',
-					'class' => 'ldapAuth ftpAuth switchAuth',
-					'label' => 'Host Address',
-					'value' => $this->config['authBackendHost'],
-					'placeholder' => 'http(s) | ftp(s) | ldap(s)://hostname:port'
-				),
-				array(
-					'type' => 'input',
-					'name' => 'authBaseDN',
-					'class' => 'ldapAuth switchAuth',
-					'label' => 'Host Base DN',
-					'value' => $this->config['authBaseDN'],
-					'placeholder' => 'cn=%s,dc=sub,dc=domain,dc=com'
-				),
-				array(
-					'type' => 'input',
-					'name' => 'authBackendHostPrefix',
-					'class' => 'ldapAuth switchAuth',
-					'label' => 'Account Prefix',
-					'id' => 'authBackendHostPrefix-input',
-					'value' => $this->config['authBackendHostPrefix'],
-					'placeholder' => 'Account prefix - i.e. Controller\ from Controller\Username for AD - uid= for OpenLDAP'
-				),
-				array(
-					'type' => 'input',
-					'name' => 'authBackendHostSuffix',
-					'class' => 'ldapAuth switchAuth',
-					'label' => 'Account Suffix',
-					'id' => 'authBackendHostSuffix-input',
-					'value' => $this->config['authBackendHostSuffix'],
-					'placeholder' => 'Account suffix - start with comma - ,ou=people,dc=domain,dc=tld'
-				),
-				array(
-					'type' => 'input',
-					'name' => 'ldapBindUsername',
-					'class' => 'ldapAuth switchAuth',
-					'label' => 'Bind Username',
-					'value' => $this->config['ldapBindUsername'],
-					'placeholder' => ''
-				),
-				array(
-					'type' => 'password',
-					'name' => 'ldapBindPassword',
-					'class' => 'ldapAuth switchAuth',
-					'label' => 'Bind Password',
-					'value' => $this->config['ldapBindPassword']
-				),
-				array(
-					'type' => 'select',
-					'name' => 'ldapType',
-					'id' => 'ldapType',
-					'label' => 'LDAP Backend Type',
-					'class' => 'ldapAuth switchAuth',
-					'value' => $this->config['ldapType'],
-					'options' => $this->getLDAPOptions()
-				),
-				array(
-					'type' => 'html',
-					'class' => 'ldapAuth switchAuth',
-					'label' => 'Account DN',
-					'html' => '<span id="accountDN" class="ldapAuth switchAuth">' . $this->config['authBackendHostPrefix'] . 'TestAcct' . $this->config['authBackendHostSuffix'] . '</span>'
-				),
-				array(
-					'type' => 'switch',
-					'name' => 'ldapSSL',
-					'class' => 'ldapAuth switchAuth',
-					'label' => 'Enable LDAP SSL',
-					'value' => $this->config['ldapSSL'],
-					'help' => 'This will enable the use of SSL for LDAP connections'
-				),
-				array(
-					'type' => 'switch',
-					'name' => 'ldapSSL',
-					'class' => 'ldapAuth switchAuth',
-					'label' => 'Enable LDAP TLS',
-					'value' => $this->config['ldapTLS'],
-					'help' => 'This will enable the use of TLS for LDAP connections'
-				),
-				array(
-					'type' => 'button',
-					'name' => 'test-button-ldap',
-					'label' => 'Test Connection',
-					'icon' => 'fa fa-flask',
-					'class' => 'ldapAuth switchAuth',
-					'text' => 'Test Connection',
-					'attr' => 'onclick="testAPIConnection(\'ldap\')"',
-					'help' => 'Remember! Please save before using the test button!'
-				),
-				array(
-					'type' => 'button',
-					'name' => 'test-button-ldap-login',
-					'label' => 'Test Login',
-					'icon' => 'fa fa-flask',
-					'class' => 'ldapAuth switchAuth',
-					'text' => 'Test Login',
-					'attr' => 'onclick="showLDAPLoginTest()"'
-				),
-				array(
-					'type' => 'input',
-					'name' => 'embyURL',
-					'class' => 'embyAuth switchAuth',
-					'label' => 'Emby URL',
-					'value' => $this->config['embyURL'],
-					'help' => 'Please make sure to use local IP address and port - You also may use local dns name too.',
-					'placeholder' => 'http(s)://hostname:port'
-				),
-				array(
-					'type' => 'password-alt',
-					'name' => 'embyToken',
-					'class' => 'embyAuth switchAuth',
-					'label' => 'Emby Token',
-					'value' => $this->config['embyToken'],
-					'placeholder' => ''
-				),
-				array(
-					'type' => 'input',
-					'name' => 'jellyfinURL',
-					'class' => 'jellyfinAuth switchAuth',
-					'label' => 'Jellyfin URL',
-					'value' => $this->config['jellyfinURL'],
-					'help' => 'Please make sure to use local IP address and port - You also may use local dns name too.',
-					'placeholder' => 'http(s)://hostname:port'
-				),
-				array(
-					'type' => 'password-alt',
-					'name' => 'jellyfinToken',
-					'class' => 'jellyfinAuth switchAuth',
-					'label' => 'Jellyfin Token',
-					'value' => $this->config['jellyfinToken'],
-					'placeholder' => ''
-				),
-			),
-			'Security' => array(
-				array(
-					'type' => 'number',
-					'name' => 'loginAttempts',
-					'label' => 'Max Login Attempts',
-					'value' => $this->config['loginAttempts'],
-					'placeholder' => ''
-				),
-				array(
-					'type' => 'select',
-					'name' => 'loginLockout',
-					'label' => 'Login Lockout Seconds',
-					'value' => $this->config['loginLockout'],
-					'options' => $this->timeOptions()
-				),
-				array(
-					'type' => 'number',
-					'name' => 'lockoutTimeout',
-					'label' => 'Inactivity Timer [Minutes]',
-					'value' => $this->config['lockoutTimeout'],
-					'placeholder' => ''
-				),
-				array(
-					'type' => 'switch',
-					'name' => 'lockoutSystem',
-					'label' => 'Inactivity Lock',
-					'value' => $this->config['lockoutSystem']
-				),
-				array(
-					'type' => 'select',
-					'name' => 'lockoutMinAuth',
-					'label' => 'Lockout Groups From',
-					'value' => $this->config['lockoutMinAuth'],
-					'options' => $this->groupSelect()
-				),
-				array(
-					'type' => 'select',
-					'name' => 'lockoutMaxAuth',
-					'label' => 'Lockout Groups To',
-					'value' => $this->config['lockoutMaxAuth'],
-					'options' => $this->groupSelect()
-				),
-				array(
-					'type' => 'switch',
-					'name' => 'traefikAuthEnable',
-					'label' => 'Enable Traefik Auth Redirect',
-					'help' => 'This will enable the webserver to forward errors so traefik will accept them',
-					'value' => $this->config['traefikAuthEnable']
-				),
-				array(
-					'type' => 'input',
-					'name' => 'traefikDomainOverride',
-					'label' => 'Traefik Domain for Return Override',
-					'value' => $this->config['traefikDomainOverride'],
-					'help' => 'Please use a FQDN on this URL Override',
-					'placeholder' => 'http(s)://domain'
-				),
-				array(
-					'type' => 'select',
-					'name' => 'debugAreaAuth',
-					'label' => 'Minimum Authentication for Debug Area',
-					'value' => $this->config['debugAreaAuth'],
-					'options' => $this->groupSelect(),
-					'settings' => '{}'
-				),
-				array(
-					'type' => 'select2',
-					'class' => 'select2-multiple',
-					'id' => 'sandbox-select-' . $this->random_ascii_string(6),
-					'name' => 'sandbox',
-					'label' => 'iFrame Sandbox',
-					'value' => $this->config['sandbox'],
-					'help' => 'WARNING! This can potentially mess up your iFrames',
-					'options' => array(
-						array(
-							'name' => 'Allow Presentation',
-							'value' => 'allow-presentation'
-						),
-						array(
-							'name' => 'Allow Forms',
-							'value' => 'allow-forms'
-						),
-						array(
-							'name' => 'Allow Same Origin',
-							'value' => 'allow-same-origin'
-						),
-						array(
-							'name' => 'Allow Orientation Lock',
-							'value' => 'allow-orientation-lock'
-						),
-						array(
-							'name' => 'Allow Pointer Lock',
-							'value' => 'allow-pointer-lock'
-						),
-						array(
-							'name' => 'Allow Scripts',
-							'value' => 'allow-scripts'
-						),
-						array(
-							'name' => 'Allow Popups',
-							'value' => 'allow-popups'
-						),
-						array(
-							'name' => 'Allow Popups To Escape Sandbox',
-							'value' => 'allow-popups-to-escape-sandbox'
-						),
-						array(
-							'name' => 'Allow Modals',
-							'value' => 'allow-modals'
-						),
-						array(
-							'name' => 'Allow Top Navigation',
-							'value' => 'allow-top-navigation'
-						),
-						array(
-							'name' => 'Allow Top Navigation By User Activation',
-							'value' => 'allow-top-navigation-by-user-activation'
-						),
-						array(
-							'name' => 'Allow Downloads',
-							'value' => 'allow-downloads'
-						),
-					)
-				),
-				array(
-					'type' => 'select2',
-					'class' => 'select2-multiple',
-					'id' => 'blacklisted-select-' . $this->random_ascii_string(6),
-					'name' => 'blacklisted',
-					'label' => 'Blacklisted IP\'s',
-					'value' => $this->config['blacklisted'],
-					'help' => 'WARNING! This will block anyone with these IP\'s',
-					'options' => $this->makeOptionsFromValues($this->config['blacklisted']),
-					'settings' => '{tags: true}',
-				),
-				array(
-					'type' => 'textbox',
-					'name' => 'blacklistedMessage',
-					'class' => '',
-					'label' => 'Blacklisted Error Message',
-					'value' => $this->config['blacklistedMessage'],
-					'attr' => 'rows="10"',
-				),
-			),
-			'Logs' => array(
-				array(
-					'type' => 'select',
-					'name' => 'logLevel',
-					'label' => 'Log Level',
-					'value' => $this->config['logLevel'],
-					'options' => $this->logLevels()
-				),
-				array(
-					'type' => 'switch',
-					'name' => 'includeDatabaseQueriesInDebug',
-					'label' => 'Include Database Queries',
-					'help' => 'Include Database queries in debug logs',
-					'value' => $this->config['includeDatabaseQueriesInDebug'],
-				),
-				array(
-					'type' => 'number',
-					'name' => 'maxLogFiles',
-					'label' => 'Maximum Log Files',
-					'help' => 'Number of log files to preserve',
-					'value' => $this->config['maxLogFiles'],
-					'placeholder' => '',
-					'attr' => 'min="1"'
-				),
-				array(
-					'type' => 'select',
-					'name' => 'logLiveUpdateRefresh',
-					'label' => 'Live Update Refresh',
-					'value' => $this->config['logLiveUpdateRefresh'],
-					'options' => $this->timeOptions()
-				),
-				array(
-					'type' => 'select',
-					'name' => 'logPageSize',
-					'label' => 'Log Page Size',
-					'value' => $this->config['logPageSize'],
-					'options' => [['name' => '10 Items', 'value' => '10'], ['name' => '25 Items', 'value' => '25'], ['name' => '50 Items', 'value' => '50'], ['name' => '100 Items', 'value' => '100']]
-				),
-			),
-			'Login' => array(
-				array(
-					'type' => 'password-alt',
-					'name' => 'registrationPassword',
-					'label' => 'Registration Password',
-					'help' => 'Sets the password for the Registration form on the login screen',
-					'value' => $this->config['registrationPassword'],
-				),
-				array(
-					'type' => 'switch',
-					'name' => 'hideRegistration',
-					'label' => 'Hide Registration',
-					'help' => 'Enable this to hide the Registration button on the login screen',
-					'value' => $this->config['hideRegistration'],
-				),
-				array(
-					'type' => 'number',
-					'name' => 'rememberMeDays',
-					'label' => 'Remember Me Length',
-					'help' => 'Number of days cookies and tokens will be valid for',
-					'value' => $this->config['rememberMeDays'],
-					'placeholder' => '',
-					'attr' => 'min="1"'
-				),
-				array(
-					'type' => 'switch',
-					'name' => 'rememberMe',
-					'label' => 'Remember Me',
-					'help' => 'Default status of Remember Me button on login screen',
-					'value' => $this->config['rememberMe'],
-				),
+			],
+			'Authentication' => [
+				$this->settingsOption('select', 'authType', ['id' => 'authSelect', 'label' => 'Authentication Type', 'value' => $this->config['authType'], 'options' => $this->getAuthTypes()]),
+				$this->settingsOption('select', 'authBackend', ['id' => 'authBackendSelect', 'label' => 'Authentication Backend', 'class' => 'backendAuth switchAuth', 'value' => $this->config['authBackend'], 'options' => $this->getAuthBackends()]),
+				$this->settingsOption('token', 'plexToken', ['class' => 'plexAuth switchAuth']),
+				$this->settingsOption('button', '', ['class' => 'getPlexTokenAuth plexAuth switchAuth', 'label' => 'Get Plex Token', 'icon' => 'fa fa-ticket', 'text' => 'Retrieve', 'attr' => 'onclick="PlexOAuth(oAuthSuccess,oAuthError, null, \'#settings-main-form [name=plexToken]\')"']),
+				$this->settingsOption('password-alt', 'plexID', ['class' => 'plexAuth switchAuth', 'label' => 'Plex Machine', 'placeholder' => 'Use Get Plex Machine Button']),
+				$this->settingsOption('button', '', ['class' => 'getPlexMachineAuth plexAuth switchAuth', 'label' => 'Get Plex Machine', 'icon' => 'fa fa-id-badge', 'text' => 'Retrieve', 'attr' => 'onclick="showPlexMachineForm(\'#settings-main-form [name=plexID]\')"']),
+				$this->settingsOption('input', 'plexAdmin', ['label' => 'Plex Admin Username or Email', 'class' => 'plexAuth switchAuth', 'placeholder' => 'Admin username for Plex']),
+				$this->settingsOption('switch', 'plexoAuth', ['label' => 'Enable Plex oAuth', 'class' => 'plexAuth switchAuth']),
+				$this->settingsOption('switch', 'ignoreTFAIfPlexOAuth', ['label' => 'Ignore 2FA if Plex OAuth ', 'class' => 'plexAuth switchAuth', 'help' => 'Enabling this will disable Organizr 2FA (If applicable) if User uses Plex OAuth to login']),
+				$this->settingsOption('switch', 'plexStrictFriends', ['label' => 'Strict Plex Friends ', 'class' => 'plexAuth switchAuth', 'help' => 'Enabling this will only allow Friends that have shares to the Machine ID entered above to login, Having this disabled will allow all Friends on your Friends list to login']),
+				$this->settingsOption('switch', 'ignoreTFALocal', ['label' => 'Ignore External 2FA on Local Subnet', 'help' => 'Enabling this will bypass external 2FA security if user is on local Subnet']),
+				$this->settingsOption('url', 'authBackendHost', ['class' => 'ldapAuth ftpAuth switchAuth', 'label' => 'Host Address', 'placeholder' => 'http(s) | ftp(s) | ldap(s)://hostname:port']),
+				$this->settingsOption('input', 'authBaseDN', ['class' => 'ldapAuth switchAuth', 'label' => 'Host Base DN', 'placeholder' => 'cn=%s,dc=sub,dc=domain,dc=com']),
+				$this->settingsOption('input', 'authBackendHostPrefix', ['class' => 'ldapAuth switchAuth', 'label' => 'Account Prefix', 'id' => 'authBackendHostPrefix-input', 'placeholder' => 'Account prefix - i.e. Controller\ from Controller\Username for AD - uid= for OpenLDAP']),
+				$this->settingsOption('input', 'authBackendHostSuffix', ['class' => 'ldapAuth switchAuth', 'label' => 'Account Suffix', 'id' => 'authBackendHostSuffix-input', 'placeholder' => 'Account suffix - start with comma - ,ou=people,dc=domain,dc=tld']),
+				$this->settingsOption('input', 'ldapBindUsername', ['class' => 'ldapAuth switchAuth', 'label' => 'Bind Username']),
+				$this->settingsOption('password', 'ldapBindPassword', ['class' => 'ldapAuth switchAuth', 'label' => 'Bind Password']),
+				$this->settingsOption('select', 'ldapType', ['id' => 'ldapType', 'label' => 'LDAP Backend Type', 'class' => 'ldapAuth switchAuth', 'options' => $this->getLDAPOptions()]),
+				$this->settingsOption('html', null, ['class' => 'ldapAuth switchAuth', 'label' => 'Account DN', 'html' => '<span id="accountDN" class="ldapAuth switchAuth">' . $this->config['authBackendHostPrefix'] . 'TestAcct' . $this->config['authBackendHostSuffix'] . '</span>']),
+				$this->settingsOption('blank', null, ['class' => 'ldapAuth switchAuth']),
+				$this->settingsOption('switch', 'ldapSSL', ['class' => 'ldapAuth switchAuth', 'label' => 'Enable LDAP SSL', 'help' => 'This will enable the use of SSL for LDAP connections']),
+				$this->settingsOption('switch', 'ldapSSL', ['class' => 'ldapAuth switchAuth', 'label' => 'Enable LDAP TLS', 'help' => 'This will enable the use of TLS for LDAP connections']),
+				$this->settingsOption('test', 'ldap', ['class' => 'ldapAuth switchAuth']),
+				$this->settingsOption('test', '', ['label' => 'Test Login', 'class' => 'ldapAuth switchAuth', 'text' => 'Test Login', 'attr' => 'onclick="showLDAPLoginTest()"']),
+				$this->settingsOption('url', 'embyURL', ['class' => 'embyAuth switchAuth', 'label' => 'Emby URL', 'help' => 'Please make sure to use local IP address and port - You also may use local dns name too.']),
+				$this->settingsOption('token', 'embyToken', ['class' => 'embyAuth switchAuth', 'label' => 'Emby Token']),
+				$this->settingsOption('url', 'jellyfinURL', ['class' => 'jellyfinAuth switchAuth', 'label' => 'Jellyfin URL', 'help' => 'Please make sure to use local IP address and port - You also may use local dns name too.']),
+				$this->settingsOption('token', 'jellyfinToken', ['class' => 'jellyfinAuth switchAuth', 'label' => 'Jellyfin Token']),
+			],
+			'Security' => [
+				$this->settingsOption('number', 'loginAttempts', ['label' => 'Max Login Attempts']),
+				$this->settingsOption('select', 'loginLockout', ['label' => 'Login Lockout Seconds', 'options' => $this->timeOptions()]),
+				$this->settingsOption('number', 'lockoutTimeout', ['label' => 'Inactivity Timer [Minutes]']),
+				$this->settingsOption('switch', 'lockoutSystem', ['label' => 'Inactivity Lock']),
+				$this->settingsOption('select', 'lockoutMinAuth', ['label' => 'Lockout Groups From', 'options' => $this->groupSelect()]),
+				$this->settingsOption('select', 'lockoutMaxAuth', ['label' => 'Lockout Groups To', 'options' => $this->groupSelect()]),
+				$this->settingsOption('switch', 'traefikAuthEnable', ['label' => 'Enable Traefik Auth Redirect', 'help' => 'This will enable the webserver to forward errors so traefik will accept them']),
+				$this->settingsOption('input', 'traefikDomainOverride', ['label' => 'Traefik Domain for Return Override', 'help' => 'Please use a FQDN on this URL Override', 'placeholder' => 'http(s)://domain']),
+				$this->settingsOption('select', 'debugAreaAuth', ['label' => 'Minimum Authentication for Debug Area', 'options' => $this->groupSelect(), 'settings' => '{}']),
+				$this->settingsOption('multiple', 'sandbox', ['override' => 12, 'label' => 'iFrame Sandbox', 'help' => 'WARNING! This can potentially mess up your iFrames', 'options' => $this->sandboxOptions()]),
+				$this->settingsOption('multiple', 'blacklisted', ['override' => 12, 'label' => 'Blacklisted IP\'s', 'help' => 'WARNING! This will block anyone with these IP\'s', 'options' => $this->makeOptionsFromValues($this->config['blacklisted']), 'settings' => '{tags: true}']),
+				$this->settingsOption('code-editor', 'blacklistedMessage', ['mode' => 'html']),
+			],
+			'Logs' => [
+				$this->settingsOption('select', 'logLevel', ['label' => 'Log Level', 'options' => $this->logLevels()]),
+				$this->settingsOption('switch', 'includeDatabaseQueriesInDebug', ['label' => 'Include Database Queries', 'help' => 'Include Database queries in debug logs']),
+				$this->settingsOption('number', 'maxLogFiles', ['label' => 'Maximum Log Files', 'help' => 'Number of log files to preserve', 'attr' => 'min="1"']),
+				$this->settingsOption('select', 'logLiveUpdateRefresh', ['label' => 'Live Update Refresh', 'options' => $this->timeOptions()]),
+				$this->settingsOption('select', 'logPageSize', ['label' => 'Log Page Size', 'options' => [['name' => '10 Items', 'value' => '10'], ['name' => '25 Items', 'value' => '25'], ['name' => '50 Items', 'value' => '50'], ['name' => '100 Items', 'value' => '100']]]),
+			],
+			'Login' => [
+				$this->settingsOption('password', 'registrationPassword', ['label' => 'Registration Password', 'help' => 'Sets the password for the Registration form on the login screen']),
+				$this->settingsOption('switch', 'hideRegistration', ['label' => 'Hide Registration', 'help' => 'Enable this to hide the Registration button on the login screen']),
+				$this->settingsOption('number', 'rememberMeDays', ['label' => 'Remember Me Length', 'help' => 'Number of days cookies and tokens will be valid for', 'attr' => 'min="1"']),
+				$this->settingsOption('switch', 'rememberMe', ['label' => 'Remember Me', 'help' => 'Default status of Remember Me button on login screen']),
 				$this->settingsOption('multiple-url', 'localIPList', ['label' => 'Override Local IP or Subnet', 'help' => 'IPv4 only at the moment - This will set your login as local if your IP falls within the From and To']),
-				array(
-					'type' => 'input',
-					'name' => 'wanDomain',
-					'label' => 'WAN Domain',
-					'value' => $this->config['wanDomain'],
-					'placeholder' => 'only domain and tld - i.e. domain.com',
-					'help' => 'Enter domain if you wish to be forwarded to a local address - Local Address filled out on next item'
-				),
-				array(
-					'type' => 'input',
-					'name' => 'localAddress',
-					'label' => 'Local Address',
-					'value' => $this->config['localAddress'],
-					'placeholder' => 'http://home.local',
-					'help' => 'Full local address of organizr install - i.e. http://home.local or http://192.168.0.100'
-				),
-				array(
-					'type' => 'switch',
-					'name' => 'enableLocalAddressForward',
-					'label' => 'Enable Local Address Forward',
-					'help' => 'Enables the local address forward if on local address and accessed from WAN Domain',
-					'value' => $this->config['enableLocalAddressForward'],
-				),
-				array(
-					'type' => 'switch',
-					'name' => 'disableRecoverPass',
-					'label' => 'Disable Recover Password',
-					'help' => 'Disables recover password area',
-					'value' => $this->config['disableRecoverPass'],
-				),
-				array(
-					'type' => 'input',
-					'name' => 'customForgotPassText',
-					'label' => 'Custom Recover Password Text',
-					'value' => $this->config['customForgotPassText'],
-					'placeholder' => '',
-					'help' => 'Text or HTML for recovery password section'
-				),
-			),
-			'Auth Proxy' => array(
-				array(
-					'type' => 'switch',
-					'name' => 'authProxyEnabled',
-					'label' => 'Auth Proxy',
-					'help' => 'Enable option to set Auth Proxy Header Login',
-					'value' => $this->config['authProxyEnabled'],
-				),
-				array(
-					'type' => 'input',
-					'name' => 'authProxyWhitelist',
-					'label' => 'Auth Proxy Whitelist',
-					'value' => $this->config['authProxyWhitelist'],
-					'placeholder' => 'i.e. 10.0.0.0/24 or 10.0.0.20',
-					'help' => 'IPv4 only at the moment - This must be set to work, will accept subnet or IP address'
-				),
-				array(
-					'type' => 'input',
-					'name' => 'authProxyHeaderName',
-					'label' => 'Auth Proxy Header Name',
-					'value' => $this->config['authProxyHeaderName'],
-					'placeholder' => 'i.e. X-Forwarded-User',
-					'help' => 'Please choose a unique value for added security'
-				),
-				array(
-					'type' => 'input',
-					'name' => 'authProxyHeaderNameEmail',
-					'label' => 'Auth Proxy Header Name for Email',
-					'value' => $this->config['authProxyHeaderNameEmail'],
-					'placeholder' => 'i.e. X-Forwarded-Email',
-					'help' => 'Please choose a unique value for added security'
-				)
-			),
-			'Ping' => array(
-				array(
-					'type' => 'select',
-					'name' => 'pingAuth',
-					'label' => 'Minimum Authentication',
-					'value' => $this->config['pingAuth'],
-					'options' => $this->groupSelect()
-				),
-				array(
-					'type' => 'select',
-					'name' => 'pingAuthMessage',
-					'label' => 'Minimum Authentication for Message and Sound',
-					'value' => $this->config['pingAuthMessage'],
-					'options' => $this->groupSelect()
-				),
-				array(
-					'type' => 'select',
-					'name' => 'pingOnlineSound',
-					'label' => 'Online Sound',
-					'value' => $this->config['pingOnlineSound'],
-					'options' => $this->getSounds()
-				),
-				array(
-					'type' => 'select',
-					'name' => 'pingOfflineSound',
-					'label' => 'Offline Sound',
-					'value' => $this->config['pingOfflineSound'],
-					'options' => $this->getSounds()
-				),
-				array(
-					'type' => 'switch',
-					'name' => 'pingMs',
-					'label' => 'Show Ping Time',
-					'value' => $this->config['pingMs']
-				),
-				array(
-					'type' => 'switch',
-					'name' => 'statusSounds',
-					'label' => 'Enable Notify Sounds',
-					'value' => $this->config['statusSounds'],
-					'help' => 'Will play a sound if the server goes down and will play sound if comes back up.',
-				),
-				array(
-					'type' => 'select',
-					'name' => 'pingAuthMs',
-					'label' => 'Minimum Authentication for Time Display',
-					'value' => $this->config['pingAuthMs'],
-					'options' => $this->groupSelect()
-				),
-				array(
-					'type' => 'select',
-					'name' => 'adminPingRefresh',
-					'label' => 'Admin Refresh Seconds',
-					'value' => $this->config['adminPingRefresh'],
-					'options' => $this->timeOptions()
-				),
-				array(
-					'type' => 'select',
-					'name' => 'otherPingRefresh',
-					'label' => 'Everyone Refresh Seconds',
-					'value' => $this->config['otherPingRefresh'],
-					'options' => $this->timeOptions()
-				),
-			),
-			'Certificate' => array(
-				array(
-					'type' => 'html',
-					'label' => '',
-					'override' => 12,
-					'html' => '
+				$this->settingsOption('input', 'wanDomain', ['label' => 'WAN Domain', 'placeholder' => 'only domain and tld - i.e. domain.com', 'help' => 'Enter domain if you wish to be forwarded to a local address - Local Address filled out on next item']),
+				$this->settingsOption('url', 'localAddress', ['label' => 'Local Address', 'placeholder' => 'http://home.local', 'help' => 'Full local address of organizr install - i.e. http://home.local or http://192.168.0.100']),
+				$this->settingsOption('switch', 'enableLocalAddressForward', ['label' => 'Enable Local Address Forward', 'help' => 'Enables the local address forward if on local address and accessed from WAN Domain']),
+				$this->settingsOption('switch', 'disableRecoverPass', ['label' => 'Disable Recover Password', 'help' => 'Disables recover password area']),
+				$this->settingsOption('input', 'customForgotPassText', ['label' => 'Custom Recover Password Text', 'help' => 'Text or HTML for recovery password section']),
+			],
+			'Auth Proxy' => [
+				$this->settingsOption('switch', 'authProxyEnabled', ['label' => 'Auth Proxy', 'help' => 'Enable option to set Auth Proxy Header Login']),
+				$this->settingsOption('input', 'authProxyWhitelist', ['label' => 'Auth Proxy Whitelist', 'placeholder' => 'i.e. 10.0.0.0/24 or 10.0.0.20', 'help' => 'IPv4 only at the moment - This must be set to work, will accept subnet or IP address']),
+				$this->settingsOption('input', 'authProxyHeaderName', ['label' => 'Auth Proxy Header Name', 'placeholder' => 'i.e. X-Forwarded-User', 'help' => 'Please choose a unique value for added security']),
+				$this->settingsOption('input', 'authProxyHeaderNameEmail', ['label' => 'Auth Proxy Header Name for Email', 'placeholder' => 'i.e. X-Forwarded-Email', 'help' => 'Please choose a unique value for added security']),
+			],
+			'Ping' => [
+				$this->settingsOption('auth', 'pingAuth'),
+				$this->settingsOption('auth', 'pingAuthMessage', ['label' => 'Minimum Authentication for Message and Sound']),
+				$this->settingsOption('select', 'pingOnlineSound', ['label' => 'Online Sound', 'options' => $this->getSounds()]),
+				$this->settingsOption('select', 'pingOfflineSound', ['label' => 'Offline Sound', 'options' => $this->getSounds()]),
+				$this->settingsOption('switch', 'pingMs', ['label' => 'Show Ping Time']),
+				$this->settingsOption('switch', 'statusSounds', ['label' => 'Enable Notify Sounds', 'help' => 'Will play a sound if the server goes down and will play sound if comes back up.']),
+				$this->settingsOption('auth', 'pingAuthMs', ['label' => 'Minimum Authentication for Time Display']),
+				$this->settingsOption('refresh', 'adminPingRefresh', ['label' => 'Admin Refresh Seconds']),
+				$this->settingsOption('refresh', 'otherPingRefresh', ['label' => 'Everyone Refresh Seconds']),
+			],
+			'Certificate' => [
+				$this->settingsOption('html', '', ['override' => 12,
+						'html' => '
 					<script>
 						let myDropzone = new Dropzone("#upload-custom-certificate", {
 							url: "api/v2/certificate/custom",
@@ -2440,10 +1908,10 @@ class Organizr
 							</div>
 						</div>
 					</div>
-					'
+					']
 				)
-			),
-		);
+			],
+		];
 	}
 	
 	public function getSettingsSSO()
