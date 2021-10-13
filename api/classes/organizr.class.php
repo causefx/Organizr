@@ -1631,302 +1631,59 @@ class Organizr
 	
 	public function getCustomizeAppearance()
 	{
-		return array(
-			'Top Bar' => array(
-				array(
-					'type' => 'input',
-					'name' => 'logo',
-					'label' => 'Logo',
-					'value' => $this->config['logo']
-				),
-				array(
-					'type' => 'input',
-					'name' => 'title',
-					'label' => 'Title',
-					'value' => $this->config['title']
-				),
-				array(
-					'type' => 'switch',
-					'name' => 'useLogo',
-					'label' => 'Use Logo instead of Title',
-					'value' => $this->config['useLogo'],
-					'help' => 'Also sets the title of your site'
-				),
-				array(
-					'type' => 'input',
-					'name' => 'description',
-					'label' => 'Meta Description',
-					'value' => $this->config['description'],
-					'help' => 'Used to set the description for SEO meta tags'
-				),
-			),
-			'Side Menu' => array(
+		return [
+			'Top Bar' => [
+				$this->settingsOption('input', 'logo', ['label' => 'Logo URL']),
+				$this->settingsOption('input', 'title', ['label' => 'Organizr Title']),
+				$this->settingsOption('switch', 'useLogo', ['label' => 'Use Logo instead of Title', 'help' => 'Also sets the title of your site']),
+				$this->settingsOption('input', 'description', ['label' => 'Meta Description', 'help' => 'Used to set the description for SEO meta tags']),
+			],
+			'Side Menu' => [
 				$this->settingsOption('switch', 'allowCollapsableSideMenu', ['label' => 'Allow Side Menu to be Collapsable']),
 				$this->settingsOption('switch', 'sideMenuCollapsed', ['label' => 'Side Menu Collapsed at Launch']),
 				$this->settingsOption('switch', 'collapseSideMenuOnClick', ['label' => 'Collapse Side Menu after clicking Tab']),
-				array(
-					'type' => 'switch',
-					'name' => 'githubMenuLink',
-					'label' => 'Show GitHub Repo Link',
-					'value' => $this->config['githubMenuLink']
-				),
-				array(
-					'type' => 'switch',
-					'name' => 'organizrFeatureRequestLink',
-					'label' => 'Show Organizr Feature Request Link',
-					'value' => $this->config['organizrFeatureRequestLink']
-				),
-				array(
-					'type' => 'switch',
-					'name' => 'organizrSupportMenuLink',
-					'label' => 'Show Organizr Support Link',
-					'value' => $this->config['organizrSupportMenuLink']
-				),
-				array(
-					'type' => 'switch',
-					'name' => 'organizrDocsMenuLink',
-					'label' => 'Show Organizr Docs Link',
-					'value' => $this->config['organizrDocsMenuLink']
-				),
-				array(
-					'type' => 'switch',
-					'name' => 'organizrSignoutMenuLink',
-					'label' => 'Show Organizr Sign out & in Button on Sidebar',
-					'value' => $this->config['organizrSignoutMenuLink']
-				),
-				array(
-					'type' => 'switch',
-					'name' => 'expandCategoriesByDefault',
-					'label' => 'Expand All Categories',
-					'value' => $this->config['expandCategoriesByDefault']
-				),
-				array(
-					'type' => 'switch',
-					'name' => 'autoCollapseCategories',
-					'label' => 'Auto-Collapse Categories',
-					'value' => $this->config['autoCollapseCategories']
-				),
-				array(
-					'type' => 'switch',
-					'name' => 'autoExpandNavBar',
-					'label' => 'Auto-Expand Nav Bar',
-					'value' => $this->config['autoExpandNavBar']
-				),
-				array(
-					'type' => 'select',
-					'name' => 'unsortedTabs',
-					'label' => 'Unsorted Tab Placement',
-					'value' => $this->config['unsortedTabs'],
-					'options' => array(
-						array(
-							'name' => 'Top',
-							'value' => 'top'
-						),
-						array(
-							'name' => 'Bottom',
-							'value' => 'bottom'
-						)
-					)
-				),
-			),
-			'Login Page' => array(
-				array(
-					'type' => 'input',
-					'name' => 'loginLogo',
-					'label' => 'Login Logo',
-					'value' => $this->config['loginLogo'],
-				),
-				array(
-					'type' => 'input',
-					'name' => 'loginWallpaper',
-					'label' => 'Login Wallpaper',
-					'value' => $this->config['loginWallpaper'],
-					'help' => 'You may enter multiple URL\'s using the CSV format.  i.e. link#1,link#2,link#3'
-				),
-				array(
-					'type' => 'switch',
-					'name' => 'useLogoLogin',
-					'label' => 'Use Logo instead of Title on Login Page',
-					'value' => $this->config['useLogoLogin']
-				),
-				array(
-					'type' => 'switch',
-					'name' => 'minimalLoginScreen',
-					'label' => 'Minimal Login Screen',
-					'value' => $this->config['minimalLoginScreen']
-				)
-			),
-			'Options' => array(
-				array(
-					'type' => 'switch',
-					'name' => 'alternateHomepageHeaders',
-					'label' => 'Alternate Homepage Titles',
-					'value' => $this->config['alternateHomepageHeaders']
-				),
-				array(
-					'type' => 'switch',
-					'name' => 'debugErrors',
-					'label' => 'Show Debug Errors',
-					'value' => $this->config['debugErrors']
-				),
-				array(
-					'type' => 'switch',
-					'name' => 'easterEggs',
-					'label' => 'Show Easter Eggs',
-					'value' => $this->config['easterEggs']
-				),
-				array(
-					'type' => 'input',
-					'name' => 'gaTrackingID',
-					'label' => 'Google Analytics Tracking ID',
-					'placeholder' => 'e.g. UA-XXXXXXXXX-X',
-					'value' => $this->config['gaTrackingID']
-				)
-			),
-			'Colors & Themes' => array(
-				array(
-					'type' => 'html',
-					'override' => 12,
-					'label' => '',
-					'html' => '
-					<div class="row">
-						<div class="col-lg-12">
-							<div class="panel panel-info">
-								<div class="panel-heading">
-									<span lang="en">Notice</span>
-								</div>
-								<div class="panel-wrapper collapse in" aria-expanded="true">
-									<div class="panel-body">
-										<span lang="en">The value of #987654 is just a placeholder, you can change to any value you like.</span>
-										<span lang="en">To revert back to default, save with no value defined in the relevant field.</span>
-									</div>
-								</div>
-							</div>
-						</div>
-					</div>
-					',
-				),
-				array(
-					'type' => 'blank',
-					'label' => ''
-				),
+				$this->settingsOption('switch', 'githubMenuLink', ['label' => 'Show GitHub Repo Link']),
+				$this->settingsOption('switch', 'organizrFeatureRequestLink', ['label' => 'Show Organizr Feature Request Link']),
+				$this->settingsOption('switch', 'organizrSupportMenuLink', ['label' => 'Show Organizr Support Link']),
+				$this->settingsOption('switch', 'organizrDocsMenuLink', ['label' => 'Show Organizr Docs Link']),
+				$this->settingsOption('switch', 'organizrSignoutMenuLink', ['label' => 'Show Organizr Sign out & in Button on Sidebar']),
+				$this->settingsOption('switch', 'expandCategoriesByDefault', ['label' => 'Expand All Categories']),
+				$this->settingsOption('switch', 'autoCollapseCategories', ['label' => 'Auto-Collapse Categories']),
+				$this->settingsOption('switch', 'autoExpandNavBar', ['label' => 'Auto-Expand Nav Bar']),
+				$this->settingsOption('select', 'unsortedTabs', ['label' => 'Unsorted Tab Placement', 'options' => [['name' => 'Top', 'value' => 'top'], ['name' => 'Bottom', 'value' => 'bottom']]]),
+			],
+			'Login Page' => [
+				$this->settingsOption('input', 'loginLogo', ['label' => 'Login Logo URL']),
+				$this->settingsOption('multiple-url', 'loginWallpaper', ['label' => 'Login Wallpaper URL', 'help' => 'You may enter multiple URL\'s']),
+				$this->settingsOption('switch', 'useLogoLogin', ['label' => 'Use Logo instead of Title on Login Page']),
+				$this->settingsOption('switch', 'minimalLoginScreen', ['label' => 'Minimal Login Screen']),
+			],
+			'Options' => [
+				$this->settingsOption('switch', 'alternateHomepageHeaders', ['label' => 'Alternate Homepage Titles']),
+				$this->settingsOption('switch', 'debugErrors', ['label' => 'Show Debug Errors']),
+				$this->settingsOption('switch', 'easterEggs', ['label' => 'Show Easter Eggs']),
+				$this->settingsOption('input', 'gaTrackingID', ['label' => 'Google Analytics Tracking ID', 'placeholder' => 'e.g. UA-XXXXXXXXX-X']),
+			],
+			'Colors & Themes' => [
+				$this->settingsOption('notice', null, ['notice' => 'info', 'title' => 'Attention', 'bodyHTML' => '<span lang="en">The value of #987654 is just a placeholder, you can change to any value you like.</span><span lang="en">To revert back to default, save with no value defined in the relevant field.</span>']),
+				$this->settingsOption('blank'),
 				$this->settingsOption('button', '', ['label' => 'Reset Colors', 'icon' => 'fa fa-ticket', 'text' => 'Reset', 'attr' => 'onclick="resetCustomColors()"']),
 				$this->settingsOption('blank'),
-				array(
-					'type' => 'input',
-					'name' => 'headerColor',
-					'label' => 'Nav Bar Color',
-					'value' => $this->config['headerColor'],
-					'class' => 'pick-a-color-custom-options',
-					'attr' => 'data-original="' . $this->config['headerColor'] . '"'
-				),
-				array(
-					'type' => 'input',
-					'name' => 'headerTextColor',
-					'label' => 'Nav Bar Text Color',
-					'value' => $this->config['headerTextColor'],
-					'class' => 'pick-a-color-custom-options',
-					'attr' => 'data-original="' . $this->config['headerTextColor'] . '"'
-				),
-				array(
-					'type' => 'input',
-					'name' => 'sidebarColor',
-					'label' => 'Side Bar Color',
-					'value' => $this->config['sidebarColor'],
-					'class' => 'pick-a-color-custom-options',
-					'attr' => 'data-original="' . $this->config['sidebarColor'] . '"'
-				),
-				array(
-					'type' => 'input',
-					'name' => 'sidebarTextColor',
-					'label' => 'Side Bar Text Color',
-					'value' => $this->config['sidebarTextColor'],
-					'class' => 'pick-a-color-custom-options',
-					'attr' => 'data-original="' . $this->config['sidebarTextColor'] . '"'
-				),
-				array(
-					'type' => 'input',
-					'name' => 'accentColor',
-					'label' => 'Accent Color',
-					'value' => $this->config['accentColor'],
-					'class' => 'pick-a-color-custom-options',
-					'attr' => 'data-original="' . $this->config['accentColor'] . '"'
-				),
-				array(
-					'type' => 'input',
-					'name' => 'accentTextColor',
-					'label' => 'Accent Text Color',
-					'value' => $this->config['accentTextColor'],
-					'class' => 'pick-a-color-custom-options',
-					'attr' => 'data-original="' . $this->config['accentTextColor'] . '"'
-				),
-				array(
-					'type' => 'input',
-					'name' => 'buttonColor',
-					'label' => 'Button Color',
-					'value' => $this->config['buttonColor'],
-					'class' => 'pick-a-color-custom-options',
-					'attr' => 'data-original="' . $this->config['buttonColor'] . '"'
-				),
-				array(
-					'type' => 'input',
-					'name' => 'buttonTextColor',
-					'label' => 'Button Text Color',
-					'value' => $this->config['buttonTextColor'],
-					'class' => 'pick-a-color-custom-options',
-					'attr' => 'data-original="' . $this->config['buttonTextColor'] . '"'
-				),
-				array(
-					'type' => 'select',
-					'name' => 'theme',
-					'label' => 'Theme',
-					'class' => 'themeChanger',
-					'value' => $this->config['theme'],
-					'options' => $this->getThemes()
-				),
-				array(
-					'type' => 'select',
-					'name' => 'style',
-					'label' => 'Style',
-					'class' => 'styleChanger',
-					'value' => $this->config['style'],
-					'options' => array(
-						array(
-							'name' => 'Light',
-							'value' => 'light'
-						),
-						array(
-							'name' => 'Dark',
-							'value' => 'dark'
-						),
-						array(
-							'name' => 'Horizontal',
-							'value' => 'horizontal'
-						)
-					)
-				)
-			),
-			'Notifications' => array(
-				array(
-					'type' => 'select',
-					'name' => 'notificationBackbone',
-					'class' => 'notifyChanger',
-					'label' => 'Type',
-					'value' => $this->config['notificationBackbone'],
-					'options' => $this->notificationTypesOptions()
-				),
-				array(
-					'type' => 'select',
-					'name' => 'notificationPosition',
-					'class' => 'notifyPositionChanger',
-					'label' => 'Position',
-					'value' => $this->config['notificationPosition'],
-					'options' => $this->notificationPositionsOptions()
-				),
-				array(
-					'type' => 'html',
-					'label' => 'Test Message',
-					'html' => '
+				$this->settingsOption('color', 'headerColor', ['label' => 'Nav Bar Color']),
+				$this->settingsOption('color', 'headerTextColor', ['label' => 'Nav Bar Text Color']),
+				$this->settingsOption('color', 'sidebarColor', ['label' => 'Side Bar Color']),
+				$this->settingsOption('color', 'sidebarTextColor', ['label' => 'Side Bar Text Color']),
+				$this->settingsOption('color', 'accentColor', ['label' => 'Accent Color']),
+				$this->settingsOption('color', 'accentTextColor', ['label' => 'Accent Text Color']),
+				$this->settingsOption('color', 'buttonColor', ['label' => 'Button Color']),
+				$this->settingsOption('color', 'buttonTextColor', ['label' => 'Button Text Color']),
+				$this->settingsOption('select', 'theme', ['label' => 'Theme', 'class' => 'themeChanger', 'options' => $this->getThemes()]),
+				$this->settingsOption('select', 'style', ['label' => 'Style', 'class' => 'styleChanger', 'options' => [['name' => 'Light', 'value' => 'light'], ['name' => 'Dark', 'value' => 'dark'], ['name' => 'Horizontal', 'value' => 'horizontal']]]),
+			],
+			'Notifications' => [
+				$this->settingsOption('select', 'notificationBackbone', ['label' => 'Type', 'class' => 'notifyChanger', 'options' => $this->notificationTypesOptions()]),
+				$this->settingsOption('select', 'notificationPosition', ['label' => 'Position', 'class' => 'notifyPositionChanger', 'options' => $this->notificationPositionsOptions()]),
+				$this->settingsOption('html', null, ['label' => 'Test Message', 'html' => '
 					<div class="btn-group m-r-10 dropup">
 						<button aria-expanded="false" data-toggle="dropdown" class="btn btn-info btn-outline dropdown-toggle waves-effect waves-light" type="button">
 							<i class="fa fa-comment m-r-5"></i>
@@ -1939,23 +1696,11 @@ class Organizr
 							<li><a onclick="message(\'Test Message\',\'This is a error Message\',activeInfo.settings.notifications.position,\'#FFF\',\'error\',\'5000\');">Error</a></li>
 						</ul>
 					</div>
-					'
-				)
-			),
-			'FavIcon' => array(
-				array(
-					'type' => 'textbox',
-					'name' => 'favIcon',
-					'class' => '',
-					'label' => 'Fav Icon Code',
-					'value' => $this->config['favIcon'],
-					'placeholder' => 'Paste Contents from https://realfavicongenerator.net/',
-					'attr' => 'rows="10"',
+					']
 				),
-				array(
-					'type' => 'html',
-					'label' => 'Instructions',
-					'html' => '
+			],
+			'FavIcon' => [
+				$this->settingsOption('html', null, ['label' => 'Instructions', 'override' => 12, 'html' => '
 					<div class="panel panel-default">
 						<div class="panel-heading">
 							<a href="https://realfavicongenerator.net/" target="_blank"><span class="label label-info m-l-5">Visit FavIcon Site</span></a>
@@ -1975,78 +1720,23 @@ class Organizr
 							</div>
 						</div>
 					</div>
-					'
+					']
 				),
-			),
-			'Custom CSS' => array(
-				array(
-					'type' => 'html',
-					'override' => 12,
-					'label' => 'Custom CSS [Can replace colors from above]',
-					'html' => '<button type="button" class="hidden saveCss btn btn-info btn-circle pull-right m-r-5 m-l-10"><i class="fa fa-save"></i> </button><div id="customCSSEditor" style="height:300px">' . htmlentities($this->config['customCss']) . '</div>'
-				),
-				array(
-					'type' => 'textbox',
-					'name' => 'customCss',
-					'class' => 'hidden cssTextarea',
-					'label' => '',
-					'value' => $this->config['customCss'],
-					'placeholder' => 'No &lt;style&gt; tags needed',
-					'attr' => 'rows="10"',
-				),
-			),
-			'Theme CSS' => array(
-				array(
-					'type' => 'html',
-					'override' => 12,
-					'label' => 'Theme CSS [Can replace colors from above]',
-					'html' => '<button type="button" class="hidden saveCssTheme btn btn-info btn-circle pull-right m-r-5 m-l-10"><i class="fa fa-save"></i> </button><div id="customThemeCSSEditor" style="height:300px">' . htmlentities($this->config['customThemeCss']) . '</div>'
-				),
-				array(
-					'type' => 'textbox',
-					'name' => 'customThemeCss',
-					'class' => 'hidden cssThemeTextarea',
-					'label' => '',
-					'value' => $this->config['customThemeCss'],
-					'placeholder' => 'No &lt;style&gt; tags needed',
-					'attr' => 'rows="10"',
-				),
-			),
-			'Custom Javascript' => array(
-				array(
-					'type' => 'html',
-					'override' => 12,
-					'label' => 'Custom Javascript',
-					'html' => '<button type="button" class="hidden saveJava btn btn-info btn-circle pull-right m-r-5 m-l-10"><i class="fa fa-save"></i> </button><div id="customJavaEditor" style="height:300px">' . htmlentities($this->config['customJava']) . '</div>'
-				),
-				array(
-					'type' => 'textbox',
-					'name' => 'customJava',
-					'class' => 'hidden javaTextarea',
-					'label' => '',
-					'value' => $this->config['customJava'],
-					'placeholder' => 'No &lt;script&gt; tags needed',
-					'attr' => 'rows="10"',
-				),
-			),
-			'Theme Javascript' => array(
-				array(
-					'type' => 'html',
-					'override' => 12,
-					'label' => 'Theme Javascript',
-					'html' => '<button type="button" class="hidden saveJavaTheme btn btn-info btn-circle pull-right m-r-5 m-l-10"><i class="fa fa-save"></i> </button><div id="customThemeJavaEditor" style="height:300px">' . htmlentities($this->config['customThemeJava']) . '</div>'
-				),
-				array(
-					'type' => 'textbox',
-					'name' => 'customThemeJava',
-					'class' => 'hidden javaThemeTextarea',
-					'label' => '',
-					'value' => $this->config['customThemeJava'],
-					'placeholder' => 'No &lt;script&gt; tags needed',
-					'attr' => 'rows="10"',
-				),
-			),
-		);
+				$this->settingsOption('code-editor', 'favIcon', ['label' => 'Fav Icon Code', 'mode' => 'html']),
+			],
+			'Custom CSS' => [
+				$this->settingsOption('code-editor', 'customCss', ['label' => 'Custom CSS', 'mode' => 'css']),
+			],
+			'Theme CSS' => [
+				$this->settingsOption('code-editor', 'customThemeCss', ['label' => 'Theme CSS', 'mode' => 'css']),
+			],
+			'Custom Javascript' => [
+				$this->settingsOption('code-editor', 'customJava', ['label' => 'Custom Javascript', 'mode' => 'javascript']),
+			],
+			'Theme Javascript' => [
+				$this->settingsOption('code-editor', 'customThemeJava', ['label' => 'Theme Javascript', 'mode' => 'javascript']),
+			],
+		];
 	}
 	
 	public function loadAppearance()
