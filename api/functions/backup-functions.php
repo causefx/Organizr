@@ -99,7 +99,8 @@ trait BackupFunctions
 		$totalFiles = 0;
 		$totalFileSize = 0;
 		foreach ($files as $file) {
-			if (file_exists($path . $file)) {
+			$ext = strtolower(pathinfo($file, PATHINFO_EXTENSION));
+			if (file_exists($path . $file) && $ext == 'zip') {
 				$size = filesize($path . $file);
 				$totalFileSize = $totalFileSize + $size;
 				$totalFiles = $totalFiles + 1;
@@ -117,6 +118,7 @@ trait BackupFunctions
 		}
 		$fileList['total_files'] = $totalFiles;
 		$fileList['total_size'] = $this->human_filesize($totalFileSize, 2);
+		$fileList['files'] = array_reverse($fileList['files']);
 		$this->setAPIResponse('success', null, 200, array_reverse($fileList));
 		return array_reverse($fileList);
 	}
