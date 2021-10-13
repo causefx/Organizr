@@ -3798,7 +3798,6 @@ class Organizr
 				$createToken = $this->createToken($result['username'], $result['email'], $days);
 				if ($createToken) {
 					$this->logger->info('User has logged in');
-					$this->logger->debug('Starting SSO check function');
 					$this->ssoCheck($result, $password, $token); //need to work on this
 					return ($output) ? array('name' => $this->cookieName, 'token' => (string)$createToken) : true;
 				} else {
