@@ -54,11 +54,12 @@ trait OptionsFunction
 			case 'test':
 				$settingMerge = [
 					'type' => 'button',
-					'label' => '',
+					'label' => 'Test Connection',
 					'icon' => 'fa fa-flask',
 					'class' => 'pull-right',
 					'text' => 'Test Connection',
-					'attr' => 'onclick="testAPIConnection(\'' . $name . '\')"'
+					'attr' => 'onclick="testAPIConnection(\'' . $name . '\')"',
+					'help' => 'Remember! Please save before using the test button!'
 				];
 				break;
 			case 'url':
@@ -106,6 +107,12 @@ trait OptionsFunction
 			case 'passwordalt':
 				$settingMerge = [
 					'type' => 'password-alt',
+					'label' => 'Password',
+				];
+				break;
+			case 'passwordaltcopy':
+				$settingMerge = [
+					'type' => 'password-alt-copy',
 					'label' => 'Password',
 				];
 				break;
@@ -450,6 +457,60 @@ trait OptionsFunction
 				'name' => 'Emergency',
 				'value' => 'EMERGENCY'
 			]
+		];
+	}
+	
+	public function sandboxOptions()
+	{
+		return [
+			[
+				'name' => 'Allow Presentation',
+				'value' => 'allow-presentation'
+			],
+			[
+				'name' => 'Allow Forms',
+				'value' => 'allow-forms'
+			],
+			[
+				'name' => 'Allow Same Origin',
+				'value' => 'allow-same-origin'
+			],
+			[
+				'name' => 'Allow Orientation Lock',
+				'value' => 'allow-orientation-lock'
+			],
+			[
+				'name' => 'Allow Pointer Lock',
+				'value' => 'allow-pointer-lock'
+			],
+			[
+				'name' => 'Allow Scripts',
+				'value' => 'allow-scripts'
+			],
+			[
+				'name' => 'Allow Popups',
+				'value' => 'allow-popups'
+			],
+			[
+				'name' => 'Allow Popups To Escape Sandbox',
+				'value' => 'allow-popups-to-escape-sandbox'
+			],
+			[
+				'name' => 'Allow Modals',
+				'value' => 'allow-modals'
+			],
+			[
+				'name' => 'Allow Top Navigation',
+				'value' => 'allow-top-navigation'
+			],
+			[
+				'name' => 'Allow Top Navigation By User Activation',
+				'value' => 'allow-top-navigation-by-user-activation'
+			],
+			[
+				'name' => 'Allow Downloads',
+				'value' => 'allow-downloads'
+			],
 		];
 	}
 	
