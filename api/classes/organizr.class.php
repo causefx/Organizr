@@ -3616,6 +3616,11 @@ class Organizr
 			),
 		];
 		$token = $this->processQueries($response);
+		if ($jwttoken) {
+			$this->logger->debug('Token has been created');
+		} else {
+			$this->logger->warning('Token creation error');
+		}
 		$this->logger->debug('Token creation function has finished');
 		return $jwttoken;
 		
@@ -3790,17 +3795,13 @@ class Organizr
 				}
 				// End 2FA
 				// authentication passed - 1) mark active and update token
-				$this->logger->debug('Starting token creation function');
 				$createToken = $this->createToken($result['username'], $result['email'], $days);
 				if ($createToken) {
-					$this->logger->debug('Token has been created');
-					$this->logger->debug('Token creation function has finished');
 					$this->logger->info('User has logged in');
 					$this->logger->debug('Starting SSO check function');
 					$this->ssoCheck($result, $password, $token); //need to work on this
 					return ($output) ? array('name' => $this->cookieName, 'token' => (string)$createToken) : true;
 				} else {
-					$this->logger->warning('Token creation error');
 					$this->setAPIResponse('error', 'Token creation error', 500);
 					return false;
 				}
