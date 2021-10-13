@@ -10954,10 +10954,16 @@ function oAuthLoginNeededCheck() {
 function ipInfoSpan(ip){
     return '<span class="ipInfo mouse">'+ip+'</span>';
 }
+function jsFriendlyJSONStringify (s) {
+	return JSON.stringify(s).
+	replace('\'', "").
+	replace(/\u2028/g, '\\u2028').
+	replace(/\u2029/g, '\\u2029');
+}
 function logContext(row){
 	let buttons = '';
-	buttons += (Object.keys(row).length > 0) ? '<button data-toggle="tooltip" title="" data-original-title="View Details" class="btn btn-xs btn-primary waves-effect waves-light log-details m-r-5" data-details=\''+JSON.stringify(row)+'\'><i class="mdi mdi-file-find"></i></button>' : '';
-	buttons += (Object.keys(row).length > 0) ? '<button data-toggle="tooltip" title="" data-original-title="Copy Log" class="btn btn-xs btn-info waves-effect waves-light clipboard m-r-5" data-clipboard-text=\''+JSON.stringify(row)+'\'><i class="mdi mdi-content-copy"></i></button>' : '';
+	buttons += (Object.keys(row).length > 0) ? '<button data-toggle="tooltip" title="" data-original-title="View Details" class="btn btn-xs btn-primary waves-effect waves-light log-details m-r-5" data-details=\''+jsFriendlyJSONStringify(row)+'\'><i class="mdi mdi-file-find"></i></button>' : '';
+	buttons += (Object.keys(row).length > 0) ? '<button data-toggle="tooltip" title="" data-original-title="Copy Log" class="btn btn-xs btn-info waves-effect waves-light clipboard m-r-5" data-clipboard-text=\''+jsFriendlyJSONStringify(row)+'\'><i class="mdi mdi-content-copy"></i></button>' : '';
 	return buttons;
 }
 function formatLogDetails(details){
