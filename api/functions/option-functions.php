@@ -369,6 +369,14 @@ trait OptionsFunction
 					'options' => $this->limitOptions()
 				];
 				break;
+			case 'color':
+				$settingMerge = [
+					'type' => 'input',
+					'label' => 'Color',
+					'class' => 'pick-a-color-custom-options',
+					'attr' => 'data-original="' . $this->config[$name] . '"'
+				];
+				break;
 			default:
 				$settingMerge = [
 					'type' => strtolower($type),
