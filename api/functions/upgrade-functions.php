@@ -64,6 +64,14 @@ trait UpgradeFunctions
 				$this->upgradeToVersion($versionCheck);
 			}
 			// End Upgrade check start for version above
+			// Upgrade check start for version below
+			$versionCheck = '2.1.860';
+			if ($compare->lessThan($oldVer, $versionCheck)) {
+				$updateDB = false;
+				$oldVer = $versionCheck;
+				$this->upgradeToVersion($versionCheck);
+			}
+			// End Upgrade check start for version above
 			if ($updateDB == true) {
 				//return 'Upgraded Needed - Current Version '.$oldVer.' - New Version: '.$versionCheck;
 				// Upgrade database to latest version
@@ -216,6 +224,8 @@ trait UpgradeFunctions
 				$this->removeOldPluginDirectoriesAndFiles();
 			case '2.1.525':
 				$this->removeOldCustomHTML();
+			case '2.1.860':
+				$this->upgradeInstalledPluginsConfigItem();
 			default:
 				$this->setAPIResponse('success', 'Ran update function for version: ' . $version, 200);
 				return true;
@@ -252,6 +262,37 @@ trait UpgradeFunctions
 			),
 		];
 		return $this->processQueries($response);
+	}
+	
+	public function upgradeInstalledPluginsConfigItem()
+	{
+		$oldConfigItem = $this->config['installedPlugins'];
+		if (gettype($oldConfigItem) == 'string') {
+			if ((strpos($oldConfigItem, '|') !== false)) {
+				$newPlugins = [];
+				$plugins = explode('|', $oldConfigItem);
+				foreach ($plugins as $plugin) {
+					$info = explode(':', $plugin);
+					$newPlugins[$info[0]] = [
+						'name' => $info[0],
+						'version' => $info[1],
+						'repo' => 'organizr'
+					];
+				}
+			} else {
+				$newPlugins = [];
+				$info = explode(':', $oldConfigItem);
+				$newPlugins[$info[0]] = [
+					'name' => $info[0],
+					'version' => $info[1],
+					'repo' => 'https://github.com/Organizr/Organizr-Plugins'
+				];
+			}
+			$this->updateConfig(['installedPlugins' => $newPlugins]);
+		} elseif (gettype($oldConfigItem) == 'array') {
+			$this->updateConfig(['installedPlugins' => $oldConfigItem]);
+		}
+		return true;
 	}
 	
 	public function removeOldPluginDirectoriesAndFiles()
