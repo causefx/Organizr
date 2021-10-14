@@ -1390,16 +1390,27 @@ function loadMarketplace(type){
 	    OrganizrApiError(xhr);
     });
 }
+function loadPluginMarketplace(){
+	organizrAPI2('GET','api/v2/plugins/marketplace').success(function(data) {
+		try {
+			let response = data.response;
+			loadMarketplacePluginsItems(response.data);
+		}catch(e) {
+			organizrCatchError(e,data);
+		}
+	}).fail(function(xhr) {
+		OrganizrApiError(xhr, 'Copy JSON Failed');
+	});
+}
 function loadMarketplacePluginsItems(plugins){
     var pluginList = '';
     $.each(plugins, function(i,v) {
         if(v.icon == null || v.icon == ''){ v.icon = 'test.png'; }
-        v.status = pluginStatus(i,v.version);
         var installButton = (v.status == 'Update Available') ? 'fa fa-download' : 'fa fa-plus';
         var removeButton = (v.status == 'Not Installed') ? 'disabled' : '';
         v.name = i;
         pluginList += `
-            <tr class="pluginManagement" data-name="`+i+`" data-version="`+v.version+`">
+            <tr class="pluginManagement" data-name="${i}" data-version="${v.version}" data-repo="${v.repo}">
                 <td class="text-center el-element-overlay">
                     <div class="el-card-item p-0">
                         <div class="el-card-avatar el-overlay-1 m-0">
@@ -1658,14 +1669,12 @@ function removePlugin(plugin=null){
     message('Removing Plugin',plugin,activeInfo.settings.notifications.position,"#FFF","success","5000");
 	organizrAPI2('DELETE','api/v2/plugins/manage/' + plugin, {}).success(function(data) {
 		try {
-			var html = data.response;
+			let html = data.response;
+			loadPluginMarketplace();
+			message(plugin+' Removed','',activeInfo.settings.notifications.position,"#FFF","success","5000");
 		}catch(e) {
 			organizrCatchError(e,data);
 		}
-		activeInfo.settings.misc.installedPlugins = (html.data == null) ? '' : html.data;
-		loadMarketplace('plugins');
-		message(plugin+' Removed','',activeInfo.settings.notifications.position,"#FFF","success","5000");
-
 	}).fail(function(xhr) {
 		OrganizrApiError(xhr, 'Removal Failed');
 	});
@@ -1697,13 +1706,11 @@ function installPlugin(plugin=null){
 	organizrAPI2('POST','api/v2/plugins/manage/' + plugin, {}).success(function(data) {
 		try {
 			var html = data.response;
+			loadPluginMarketplace();
+			message(plugin+' Installed','',activeInfo.settings.notifications.position,"#FFF","success","5000");
 		}catch(e) {
 			organizrCatchError(e,data);
 		}
-		activeInfo.settings.misc.installedPlugins = html.data;
-		loadMarketplace('plugins');
-		message(plugin+' Installed','',activeInfo.settings.notifications.position,"#FFF","success","5000");
-
 	}).fail(function(xhr) {
 		OrganizrApiError(xhr, 'Install Failed');
 	});
@@ -2090,6 +2097,18 @@ function buildImageManagerView(){
         }catch(e) {
 	        organizrCatchError(e,data);
         }
+	}).fail(function(xhr) {
+		OrganizrApiError(xhr);
+	});
+}
+function buildPluginsSettings(){
+	organizrAPI2('GET','api/v2/settings/plugin').success(function(data) {
+		try {
+			let response = data.response;
+			$('#plugin-settings-form').html(buildFormGroup(response.data));
+		}catch(e) {
+			organizrCatchError(e,data);
+		}
 	}).fail(function(xhr) {
 		OrganizrApiError(xhr);
 	});
