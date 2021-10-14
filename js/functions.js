@@ -1161,7 +1161,87 @@ function buildFormItem(item){
 			return '<span class="text-danger">BuildFormItem Class not setup...';
 	}
 }
-function buildPluginsItem(array){
+function buildPluginsItem(array, type = 'enabled'){
+	var activePlugins = '';
+	var inactivePlugins = '';
+	$.each(array, function(i,v) {
+		var settingsPage = (v.settings == true && type == 'enabled') ? `
+		<!-- Plugin Settings Page -->
+		<form id="`+v.idPrefix+`-settings-page" class="mfp-hide white-popup mfp-with-anim addFormTick col-md-10 col-md-offset-1" autocomplete="off">
+            <div class="panel bg-org panel-info">
+                <div class="panel-heading">
+                    <span lang="en">`+v.name+` Settings</span>
+                    <button type="button" class="btn bg-org btn-circle close-popup pull-right"><i class="fa fa-times"></i> </button>
+                    <button id="`+v.idPrefix+`-settings-page-save" onclick="submitSettingsForm('`+v.idPrefix+`-settings-page')" class="btn btn-sm btn-info btn-rounded waves-effect waves-light pull-right hidden animated loop-animation rubberBand m-r-20" type="button"><span class="btn-label"><i class="fa fa-save"></i></span><span lang="en">Save</span></button>
+                </div>
+                <div class="panel-wrapper collapse in" aria-expanded="true">
+                    <div class="bg-org">
+                        <fieldset id="`+v.idPrefix+`-settings-items" style="border:0;" class=""><h2>Loading...</h2></fieldset>
+                    </div>
+                    <div class="clearfix"></div>
+                </div>
+            </div>
+		</form>
+		` : '';
+		var href = (v.settings == true) ? '#'+v.idPrefix+'-settings-page' : 'javascript:void(0);';
+		if(v.enabled == true){
+			var activeToggle = `<li><a class="btn default btn-outline disablePlugin" href="javascript:void(0);" data-plugin-name="`+v.name+`" data-config-prefix="`+v.configPrefix+`" data-config-name="`+v.configPrefix+`-enabled"><i class="ti-power-off fa-2x"></i></a></li>`;
+			var settings = `<li><a class="btn default btn-outline popup-with-form" href="`+href+`" data-effect="mfp-3d-unfold"data-plugin-name="`+v.name+`" id="`+v.idPrefix+`-settings-button" data-config-prefix="`+v.configPrefix+`" data-api="${v.api}" data-settings="${v.settings}" data-bind="${v.bind}"><i class="ti-panel fa-2x"></i></a></li>`;
+		}else{
+			var activeToggle = `<li><a class="btn default btn-outline enablePlugin" href="javascript:void(0);" data-plugin-name="`+v.name+`" data-config-prefix="`+v.configPrefix+`" data-config-name="`+v.configPrefix+`-enabled"><i class="ti-plug fa-2x"></i></a></li>`;
+			var settings = '';
+		}
+		var plugin = `
+		<div class="col-lg-2 col-md-2 col-sm-4 col-xs-4">
+			<div class="white-box m-0">
+				<div class="el-card-item p-0">
+					<div class="el-card-avatar el-overlay-1 m-0"> <img class="lazyload" data-src="`+v.image+`">
+						<div class="el-overlay">
+							<ul class="el-info">
+								${settings} ${activeToggle}
+							</ul>
+						</div>
+					</div>
+					<div class="el-card-content">
+						<h3 class="box-title elip">`+v.name+`</h3>
+						<small class="elip text-uppercase p-b-10">`+v.category+`</small>
+					</div>
+				</div>
+			</div>
+		</div>
+		`;
+		if(v.enabled == true){
+			activePlugins += plugin+settingsPage;
+		}else{
+			inactivePlugins += plugin+settingsPage;
+		}
+	});
+	activePlugins = (activePlugins.length !== 0) ? activePlugins : '<h2 class="text-center" lang="en">Nothing Active</h2>';
+	inactivePlugins = (inactivePlugins.length !== 0) ? inactivePlugins : '<h2 class="text-center" lang="en">Everything Active</h2>';
+	return (type === 'enabled') ? `
+	<div class="panel bg-org panel-info">
+		<div class="panel-heading">
+			<span lang="en">Active Plugins</span>
+		</div>
+		<div class="panel-wrapper collapse in" aria-expanded="true">
+			<div class="panel-body bg-org">
+				<div class="row el-element-overlay m-b-40">`+activePlugins+`</div>
+			</div>
+		</div>
+	</div>
+	<div class="clearfix"></div>` : `	
+	<div class="panel bg-org panel-info">
+		<div class="panel-heading">
+			<span lang="en">Inactive Plugins</span>
+		</div>
+		<div class="panel-wrapper collapse in" aria-expanded="true">
+			<div class="panel-body bg-org">
+				<div class="row el-element-overlay m-b-40">`+inactivePlugins+`</div>
+			</div>
+		</div>
+	</div>`;
+}
+function buildPluginsItemOld(array){
 	var activePlugins = '';
 	var inactivePlugins = '';
 	$.each(array, function(i,v) {
@@ -1831,14 +1911,26 @@ function buildHomepageItem(array){
 	}
 	return listing;
 }
-function buildPlugins(){
+function buildPluginsOLD(){
 	organizrAPI2('GET','api/v2/plugins').success(function(data) {
         try {
             var response = data.response;
         }catch(e) {
 	        organizrCatchError(e,data);
         }
-		$('#main-plugin-area').html(buildPluginsItem(response.data));
+		$('#main-plugin-area').html(buildPluginsItemOLD(response.data));
+	}).fail(function(xhr) {
+		OrganizrApiError(xhr);
+	});
+}
+function buildPlugins(status = 'enabled'){
+	organizrAPI2('GET','api/v2/plugins/' + status).success(function(data) {
+		try {
+			var response = data.response;
+		}catch(e) {
+			organizrCatchError(e,data);
+		}
+		$('#'+status+'-plugin-area').html(buildPluginsItem(response.data, status));
 	}).fail(function(xhr) {
 		OrganizrApiError(xhr);
 	});

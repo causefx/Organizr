@@ -2010,6 +2010,27 @@ class Organizr
 	
 	public function systemMenuLists()
 	{
+		$pluginsMenu = [
+			[
+				'active' => false,
+				'api' => 'api/v2/page/settings_plugins_enabled',
+				'anchor' => 'settings-plugins-enabled-anchor',
+				'name' => 'Active',
+			],
+			[
+				'active' => false,
+				'api' => 'api/v2/page/settings_plugins_disabled',
+				'anchor' => 'settings-plugins-disabled-anchor',
+				'name' => 'Inactive',
+			],
+			[
+				'active' => false,
+				'api' => false,
+				'anchor' => 'settings-plugins-marketplace-anchor',
+				'name' => 'Marketplace',
+				'onclick' => 'loadMarketplace(\'plugins\');'
+			],
+		];
 		$userManagementMenu = [
 			[
 				'active' => false,
@@ -2119,6 +2140,7 @@ class Organizr
 		$systemMenus['tab_editor'] = $this->buildSettingsMenus($tabEditorMenu, 'Tab Editor');
 		$systemMenus['customize'] = $this->buildSettingsMenus($customizeMenu, 'Customize');
 		$systemMenus['user_management'] = $this->buildSettingsMenus($userManagementMenu, 'User Management');
+		$systemMenus['plugins'] = $this->buildSettingsMenus($pluginsMenu, 'Plugins');
 		return $systemMenus;
 	}
 	

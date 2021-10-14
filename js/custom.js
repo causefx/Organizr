@@ -1154,7 +1154,6 @@ $(document).on('click', '.enablePlugin', function() {
 	ajaxloader(".content-wrap","in");
 	let pluginConfigValue = $(this).attr('data-config-name');
 	let callbacks = $.Callbacks();
-	callbacks.add( buildPlugins );
 	callbacks.add( ajaxloader );
 	let data = {};
 	data[pluginConfigValue] = 'true';
@@ -1162,6 +1161,8 @@ $(document).on('click', '.enablePlugin', function() {
 		try {
 			message('Plugin Enabled','',activeInfo.settings.notifications.position,"#FFF","success","5000");
 			if(callbacks){ callbacks.fire(); }
+			buildPlugins('disabled');
+			//buildPlugins('enabled');
 		}catch(e) {
 			organizrCatchError(e,data);
 		}
@@ -1187,7 +1188,6 @@ $(document).on('click', '.disablePlugin', function() {
 	        ajaxloader(".content-wrap","in");
 			let pluginConfigValue = plugin.attr('data-config-name');
 	        var callbacks = $.Callbacks();
-	        callbacks.add( buildPlugins );
 	        callbacks.add( ajaxloader );
 	        var data = {};
 	        data[pluginConfigValue] = 'false';
@@ -1195,6 +1195,7 @@ $(document).on('click', '.disablePlugin', function() {
 		        try {
 			        message('Plugin Disabled','',activeInfo.settings.notifications.position,"#FFF","success","5000");
 			        if(callbacks){ callbacks.fire(); }
+			        buildPlugins('enabled');
 		        }catch(e) {
 			        organizrCatchError(e,data);
 		        }
