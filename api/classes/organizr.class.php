@@ -673,14 +673,30 @@ class Organizr
 		}
 	}
 	
-	public function getPlugins()
+	public function getPlugins($returnType = 'all')
 	{
 		if ($this->hasDB()) {
+			switch ($returnType) {
+				case 'enabled':
+					$returnType = 'enabled';
+					break;
+				case 'disabled':
+					$returnType = 'disabled';
+					break;
+				default:
+					$returnType = 'all';
+			}
 			$pluginList = [];
 			foreach ($GLOBALS['plugins'] as $key => $value) {
 				if (strpos($value['license'], $this->config['license']) !== false) {
 					$GLOBALS['plugins'][$key]['enabled'] = $this->config[$value['configPrefix'] . '-enabled'];
-					$pluginList[$key] = $GLOBALS['plugins'][$key];
+					if ($returnType == 'all') {
+						$pluginList[$key] = $GLOBALS['plugins'][$key];
+					} elseif ($returnType == 'enabled' && $this->config[$value['configPrefix'] . '-enabled'] == true) {
+						$pluginList[$key] = $GLOBALS['plugins'][$key];
+					} elseif ($returnType == 'disabled' && $this->config[$value['configPrefix'] . '-enabled'] == false) {
+						$pluginList[$key] = $GLOBALS['plugins'][$key];
+					}
 				}
 			}
 			asort($pluginList);
