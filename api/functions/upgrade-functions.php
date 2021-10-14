@@ -281,12 +281,14 @@ trait UpgradeFunctions
 				}
 			} else {
 				$newPlugins = [];
-				$info = explode(':', $oldConfigItem);
-				$newPlugins[$info[0]] = [
-					'name' => $info[0],
-					'version' => $info[1],
-					'repo' => 'https://github.com/Organizr/Organizr-Plugins'
-				];
+				if ($oldConfigItem !== '') {
+					$info = explode(':', $oldConfigItem);
+					$newPlugins[$info[0]] = [
+						'name' => $info[0],
+						'version' => $info[1],
+						'repo' => 'https://github.com/Organizr/Organizr-Plugins'
+					];
+				}
 			}
 			$this->updateConfig(['installedPlugins' => $newPlugins]);
 		} elseif (gettype($oldConfigItem) == 'array') {
