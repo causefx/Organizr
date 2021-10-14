@@ -2010,42 +2010,6 @@ function buildCustomizeAppearance(){
 	        organizrCatchError(e,data);
         }
 		$('#customize-appearance-form').html(buildFormGroup(response.data));
-		cssEditor = ace.edit("customCSSEditor");
-		var CssMode = ace.require("ace/mode/css").Mode;
-		cssEditor.session.setMode(new CssMode());
-		cssEditor.setTheme("ace/theme/idle_fingers");
-		cssEditor.setShowPrintMargin(false);
-		cssEditor.session.on('change', function(delta) {
-            $('.cssTextarea').val(cssEditor.getValue());
-            $('#customize-appearance-form-save').removeClass('hidden');
-		});
-        cssThemeEditor = ace.edit("customThemeCSSEditor");
-        var CssThemeMode = ace.require("ace/mode/css").Mode;
-        cssThemeEditor.session.setMode(new CssThemeMode());
-        cssThemeEditor.setTheme("ace/theme/idle_fingers");
-        cssThemeEditor.setShowPrintMargin(false);
-        cssThemeEditor.session.on('change', function(delta) {
-            $('.cssThemeTextarea').val(cssThemeEditor.getValue());
-            $('#customize-appearance-form-save').removeClass('hidden');
-        });
-        javaEditor = ace.edit("customJavaEditor");
-        var JavaMode = ace.require("ace/mode/javascript").Mode;
-        javaEditor.session.setMode(new JavaMode());
-        javaEditor.setTheme("ace/theme/idle_fingers");
-        javaEditor.setShowPrintMargin(false);
-        javaEditor.session.on('change', function(delta) {
-            $('.javaTextarea').val(javaEditor.getValue());
-            $('#customize-appearance-form-save').removeClass('hidden');
-        });
-        javaThemeEditor = ace.edit("customThemeJavaEditor");
-        var JavaThemeMode = ace.require("ace/mode/javascript").Mode;
-        javaThemeEditor.session.setMode(new JavaThemeMode());
-        javaThemeEditor.setTheme("ace/theme/idle_fingers");
-        javaThemeEditor.setShowPrintMargin(false);
-        javaThemeEditor.session.on('change', function(delta) {
-            $('.javaThemeTextarea').val(javaThemeEditor.getValue());
-            $('#customize-appearance-form-save').removeClass('hidden');
-        });
 		$("input.pick-a-color-custom-options").ColorPickerSliders({
 			placement: 'bottom',
 			color: '#987654',
