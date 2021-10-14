@@ -1645,6 +1645,16 @@ class Organizr
 		return null;
 	}
 	
+	public function getPluginSettings()
+	{
+		return [
+			'Marketplace' => [
+				$this->settingsOption('notice', null, ['notice' => 'danger', 'body' => '3rd Party Repositories are not affiliated with Organizr and therefore the code on these repositories are not inspected.  Use at your own risk.']),
+				$this->settingsOption('multiple-url', 'externalPluginMarketplaceRepos', ['override' => 12, 'label' => 'External Marketplace Repo', 'help' => 'Only supports Github repos']),
+			]
+		];
+	}
+	
 	public function getCustomizeAppearance()
 	{
 		return [
@@ -2025,10 +2035,16 @@ class Organizr
 			],
 			[
 				'active' => false,
+				'api' => 'api/v2/page/settings_plugins_settings',
+				'anchor' => 'settings-plugins-settings-anchor',
+				'name' => 'Settings',
+			],
+			[
+				'active' => false,
 				'api' => false,
 				'anchor' => 'settings-plugins-marketplace-anchor',
 				'name' => 'Marketplace',
-				'onclick' => 'loadMarketplace(\'plugins\');'
+				'onclick' => 'loadPluginMarketplace();'
 			],
 		];
 		$userManagementMenu = [
@@ -4555,60 +4571,6 @@ class Organizr
 		return true;
 	}
 	
-	public function removePlugin($plugin)
-	{
-		$plugin = $this->reverseCleanClassName($plugin);
-		$array = $this->getPluginsGithub();
-		$arrayLower = array_change_key_case($array);
-		if (!$array) {
-			$this->setAPIResponse('error', 'Could not access plugin marketplace', 409);
-			return false;
-		}
-		if (!$arrayLower[$plugin]) {
-			$this->setAPIResponse('error', 'Plugin does not exist in marketplace', 404);
-			return false;
-		} else {
-			$key = array_search($plugin, array_keys($arrayLower));
-			$plugin = array_keys($array)[$key];
-		}
-		$array = $array[$plugin];
-		$name = $plugin;
-		$version = $array['version'];
-		$installedPluginsNew = '';
-		$pluginDir = $this->root . DIRECTORY_SEPARATOR . 'api' . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . $array['github_folder'] . DIRECTORY_SEPARATOR;
-		$dirExists = file_exists($pluginDir);
-		if ($dirExists) {
-			if (!$this->rrmdir($pluginDir)) {
-				$this->writeLog('error', 'Plugin Function -  Remove File Failed  for: ' . $array['github_folder'], $this->user['username']);
-				return false;
-			}
-		} else {
-			$this->setAPIResponse('error', 'Plugin is not installed', 404);
-			return false;
-		}
-		if ($this->config['installedPlugins'] !== '') {
-			$installedPlugins = explode('|', $this->config['installedPlugins']);
-			foreach ($installedPlugins as $k => $v) {
-				$plugins = explode(':', $v);
-				$installedPluginsList[$plugins[0]] = $plugins[1];
-			}
-			if (isset($installedPluginsList[$name])) {
-				foreach ($installedPluginsList as $k => $v) {
-					if ($k !== $name) {
-						if ($installedPluginsNew == '') {
-							$installedPluginsNew .= $k . ':' . $v;
-						} else {
-							$installedPluginsNew .= '|' . $k . ':' . $v;
-						}
-					}
-				}
-			}
-		}
-		$this->updateConfig(array('installedPlugins' => $installedPluginsNew));
-		$this->setAPIResponse('success', 'Plugin removed', 200, $installedPluginsNew);
-		return true;
-	}
-	
 	public function pluginFileListFormat($files, $folder)
 	{
 		$filesList = false;
@@ -4633,10 +4595,28 @@ class Organizr
 		return false;
 	}
 	
+	public function getPluginFilesFromRepo($plugin, $pluginDetails)
+	{
+		if (stripos($pluginDetails['repo'], 'github.com') !== false) {
+			$repo = explode('https://github.com/', $pluginDetails['repo']);
+			$folder = $pluginDetails['github_folder'] !== 'root' ? $pluginDetails['github_folder'] : '';
+			$url = 'https://api.github.com/repos/' . $repo[1] . '/contents/' . $folder;
+		} else {
+			return false;
+		}
+		$options = array('verify' => false);
+		$response = Requests::get($url, array(), $options);
+		if ($response->success) {
+			return json_decode($response->body, true);
+		}
+		return false;
+	}
+	
 	public function installPlugin($plugin)
 	{
+		$this->setLoggerChannel('Plugin Marketplace');
 		$plugin = $this->reverseCleanClassName($plugin);
-		$array = $this->getPluginsGithub();
+		$array = $this->getPluginsMarketplace();
 		$arrayLower = array_change_key_case($array);
 		if (!$array) {
 			$this->setAPIResponse('error', 'Could not access plugin marketplace', 409);
@@ -4653,23 +4633,23 @@ class Organizr
 		// Check Version of Organizr against minimum version needed
 		$compare = new Composer\Semver\Comparator;
 		if (!$compare->lessThan($array['minimum_organizr_version'], $this->version)) {
+			$this->logger->warning('Minimum Organizr version needed: ' . $array['minimum_organizr_version']);
 			$this->setResponse(500, 'Minimum Organizr version needed: ' . $array['minimum_organizr_version']);
 			return true;
 		}
-		$files = $this->getPluginFilesFromGithub($array['github_folder']);
+		$files = $this->getPluginFilesFromRepo($plugin, $array);
 		if ($files) {
-			$downloadList = $this->pluginFileListFormat($files, $array['github_folder']);
+			$downloadList = $this->pluginFileListFormat($files, $array['project_folder']);
 		} else {
-			$this->writeLog('error', 'Plugin Function -  Downloaded File Failed  for: ' . $array['github_folder'], $this->user['username']);
+			$this->logger->warning('File list failed for: ' . $array['github_folder']);
 			$this->setAPIResponse('error', 'Could not get download list for plugin', 409);
 			return false;
 		}
 		if (!$downloadList) {
+			$this->logger->warning('Setting download list failed for: ' . $array['github_folder']);
 			$this->setAPIResponse('error', 'Could not get download list for plugin', 409);
 			return false;
 		}
-		$name = $plugin;
-		$version = $array['version'];
 		foreach ($downloadList as $k => $v) {
 			$file = array(
 				'from' => $v['githubPath'],
@@ -4677,36 +4657,72 @@ class Organizr
 				'path' => str_replace(array('/', '\\'), DIRECTORY_SEPARATOR, $this->root . $v['path'])
 			);
 			if (!$this->downloadFileToPath($file['from'], $file['to'], $file['path'])) {
-				$this->writeLog('error', 'Plugin Function -  Downloaded File Failed  for: ' . $v['githubPath'], $this->user['username']);
+				$this->setLoggerChannel('Plugin Marketplace');
+				$this->logger->warning('Downloaded File Failed  for: ' . $v['githubPath']);
 				$this->setAPIResponse('error', 'Plugin download failed', 500);
 				return false;
 			}
 		}
-		if ($this->config['installedPlugins'] !== '') {
-			$installedPlugins = explode('|', $this->config['installedPlugins']);
-			foreach ($installedPlugins as $k => $v) {
-				$plugins = explode(':', $v);
-				$installedPluginsList[$plugins[0]] = $plugins[1];
-			}
-			if (isset($installedPluginsList[$name])) {
-				$installedPluginsList[$name] = $version;
-				$installedPluginsNew = '';
-				foreach ($installedPluginsList as $k => $v) {
-					if ($installedPluginsNew == '') {
-						$installedPluginsNew .= $k . ':' . $v;
-					} else {
-						$installedPluginsNew .= '|' . $k . ':' . $v;
-					}
-				}
-			} else {
-				$installedPluginsNew = $this->config['installedPlugins'] . '|' . $name . ':' . $version;
+		$this->updateInstalledPlugins('install', $plugin, $array);
+		$this->setAPIResponse('success', 'Plugin installed', 200, $array);
+		return true;
+	}
+	
+	public function removePlugin($plugin)
+	{
+		$this->setLoggerChannel('Plugin Marketplace');
+		$plugin = $this->reverseCleanClassName($plugin);
+		$array = $this->getPluginsMarketplace();
+		$arrayLower = array_change_key_case($array);
+		if (!$array) {
+			$this->setAPIResponse('error', 'Could not access plugin marketplace', 409);
+			return false;
+		}
+		if (!$arrayLower[$plugin]) {
+			$this->setAPIResponse('error', 'Plugin does not exist in marketplace', 404);
+			return false;
+		} else {
+			$key = array_search($plugin, array_keys($arrayLower));
+			$plugin = array_keys($array)[$key];
+		}
+		$array = $array[$plugin];
+		$pluginDir = $this->root . DIRECTORY_SEPARATOR . 'api' . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . $array['project_folder'] . DIRECTORY_SEPARATOR;
+		$dirExists = file_exists($pluginDir);
+		if ($dirExists) {
+			if (!$this->rrmdir($pluginDir)) {
+				$this->logger->info('Remove File Failed  for: ' . $array['project_folder']);
+				return false;
 			}
 		} else {
-			$installedPluginsNew = $name . ':' . $version;
+			$this->setAPIResponse('error', 'Plugin is not installed', 404);
+			return false;
 		}
-		$this->updateConfig(array('installedPlugins' => $installedPluginsNew));
-		$this->setAPIResponse('success', 'Plugin installed', 200, $installedPluginsNew);
+		$this->updateInstalledPlugins('uninstall', $plugin, $array);
+		$this->setAPIResponse('success', 'Plugin removed', 200, $array);
 		return true;
+	}
+	
+	public function updateInstalledPlugins($action, $plugin, $pluginDetails)
+	{
+		if (!$action || !$plugin || !$pluginDetails) {
+			return false;
+		}
+		$config = $this->config['installedPlugins'];
+		switch ($action) {
+			case 'install':
+			case 'update':
+				$update[$plugin] = [
+					'name' => $plugin,
+					'version' => $pluginDetails['version'],
+					'repo' => $pluginDetails['repo']
+				];
+				$config = array_merge($config, $update);
+				break;
+			default:
+				unset($config[$plugin]);
+				break;
+		}
+		$this->updateConfig(['installedPlugins' => $config]);
 	}
 	
 	public function getThemesGithub()
@@ -4733,6 +4749,78 @@ class Organizr
 			return false;
 		}
 		return false;
+	}
+	
+	public function getPluginsMarketplace()
+	{
+		$plugins = $this->getPluginsGithubCombined();
+		foreach ($plugins as $pluginName => $pluginDetails) {
+			$plugins[$pluginName]['installed'] = (isset($this->config['installedPlugins'][$pluginName]));
+			$plugins[$pluginName]['installed_version'] = $this->config['installedPlugins'][$pluginName]['version'] ?? null;
+			$plugins[$pluginName]['needs_update'] = ($plugins[$pluginName]['installed'] && ($plugins[$pluginName]['installed_version'] !== $plugins[$pluginName]['version']));
+			$plugins[$pluginName]['status'] = $this->getPluginStatus($plugins[$pluginName]);
+		}
+		return $plugins;
+	}
+	
+	public function getPluginStatus($pluginDetails)
+	{
+		if ($pluginDetails['needs_update']) {
+			return 'Update Available';
+		} elseif ($pluginDetails['installed']) {
+			return 'Up to date';
+		} else {
+			return 'Not Installed';
+		}
+	}
+	
+	public function getPluginsGithubCombined()
+	{
+		// Organizr Repo
+		$urls = [$this->getMarketplaceJSONFromRepo('https://github.com/Organizr/Organizr-Plugins')];
+		foreach (explode(',', $this->config['externalPluginMarketplaceRepos']) as $repo) {
+			$urls[] = $this->getMarketplaceJSONFromRepo($repo);
+		}
+		$plugins = [];
+		foreach ($urls as $repo) {
+			$options = ($this->localURL($repo)) ? array('verify' => false) : array();
+			try {
+				$response = Requests::get($repo, array(), $options);
+				if ($response->success) {
+					$plugins = array_merge($plugins, json_decode($response->body, true));
+				}
+			} catch (Requests_Exception $e) {
+				//return false;
+			}
+		}
+		return $plugins;
+	}
+	
+	public function getMarketplaceJSONFromRepo($url)
+	{
+		if (stripos($url, '.json') !== false) {
+			return $url;
+		} elseif (stripos($url, 'github.com') !== false) {
+			$repo = explode('https://github.com/', $url);
+			$newURL = 'https://api.github.com/repos/' . $repo[1] . '/contents';
+			$options = ($this->localURL($newURL)) ? array('verify' => false) : array();
+			try {
+				$response = Requests::get($newURL, array(), $options);
+				if ($response->success) {
+					$jsonFiles = json_decode($response->body, true);
+					foreach ($jsonFiles as $file) {
+						if (stripos($file['name'], '.json') !== false) {
+							return $file['download_url'];
+						}
+					}
+					return false;
+				} else {
+					return false;
+				}
+			} catch (Requests_Exception $e) {
+				return false;
+			}
+		}
 	}
 	
 	public function getOpenCollectiveBackers()
