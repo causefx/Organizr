@@ -395,7 +395,7 @@ return [
 	'lockoutMinAuth' => '1',
 	'themeInstalled' => '',
 	'themeVersion' => '',
-	'installedPlugins' => '',
+	'installedPlugins' => [],
 	'installedThemes' => '',
 	'authDebug' => false,
 	'customJava' => '',
