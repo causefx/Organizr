@@ -616,5 +616,6 @@ return [
 	'maxLogFiles' => '7',
 	'logLiveUpdateRefresh' => '5000',
 	'logPageSize' => '50',
-	'includeDatabaseQueriesInDebug' => false
+	'includeDatabaseQueriesInDebug' => false,
+	'externalPluginMarketplaceRepos' => ''
 ];
