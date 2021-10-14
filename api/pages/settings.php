@@ -105,7 +105,9 @@ function get_page_settings($Organizr)
 														<th lang="en" style="text-align:center">DELETE</th>
 													</tr>
 												</thead>
-												<tbody id="manageThemeTable"></tbody>
+												<tbody id="manageThemeTable">
+													<td class="text-center" colspan="12"><i class="fa fa-spin fa-spinner"></i></td>
+												</tbody>
 											</table>
 										</div>
 									</div>
@@ -155,6 +157,10 @@ function get_page_settings($Organizr)
 								<h2 lang="en">Loading...</h2>
 								<div class="clearfix"></div>
 							</div>
+							<div role="tabpanel" class="tab-pane fade" id="settings-plugins-settings">
+								<h2 lang="en">Loading...</h2>
+								<div class="clearfix"></div>
+							</div>
 							<div role="tabpanel" class="tab-pane fade" id="settings-plugins-marketplace">
 								<div class="panel bg-org panel-info">
 									<div class="panel-heading">
@@ -174,7 +180,7 @@ function get_page_settings($Organizr)
 														<th lang="en" style="text-align:center">DELETE</th>
 													</tr>
 												</thead>
-												<tbody id="managePluginTable"></tbody>
+												<tbody id="managePluginTable"><td class="text-center" colspan="12"><i class="fa fa-spin fa-spinner"></i></td></tbody>
 											</table>
 										</div>
 									</div>
