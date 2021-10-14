@@ -99,7 +99,7 @@ trait LogFunctions
 					foreach ($logs as $log) {
 						if (file_exists($log)) {
 							$lineGenerator = Bcremer\LineReader\LineReader::readLinesBackwards($log);
-							$lines = array_merge(iterator_to_array($lineGenerator), $lines);
+							$lines = array_merge($lines, iterator_to_array($lineGenerator));
 						}
 					}
 				}
