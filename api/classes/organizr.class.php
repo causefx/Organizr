@@ -227,6 +227,8 @@ class Organizr
 	public function phpErrors()
 	{
 		$errorTypes = $this->dev ? E_ERROR | E_WARNING | E_PARSE | E_NOTICE : 0;
+		// Temp overwrite for now
+		$errorTypes = E_ERROR | E_WARNING | E_PARSE | E_NOTICE;
 		$displayErrors = $this->dev ? 1 : 0;
 		error_reporting($errorTypes);
 		ini_set('display_errors', $displayErrors);
