@@ -1653,6 +1653,7 @@ class Organizr
 			'Marketplace' => [
 				$this->settingsOption('notice', null, ['notice' => 'danger', 'body' => '3rd Party Repositories are not affiliated with Organizr and therefore the code on these repositories are not inspected.  Use at your own risk.']),
 				$this->settingsOption('multiple-url', 'externalPluginMarketplaceRepos', ['override' => 12, 'label' => 'External Marketplace Repo', 'help' => 'Only supports Github repos']),
+				$this->settingsOption('switch', 'checkForPluginUpdate', ['label' => 'Check for Plugin Updates', ['help' => 'Check for updates on page load']])
 			]
 		];
 	}

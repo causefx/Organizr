@@ -3770,6 +3770,32 @@ function newsLoad(){
 	    OrganizrApiError(xhr);
     });
 }
+function checkPluginUpdates(){
+	if(!activeInfo.user.loggedin || activeInfo.user.groupID > 1){
+		return false;
+	}
+	organizrAPI2('get','api/v2/plugins/marketplace').success(function(data) {
+		try {
+			let update = false;
+			let pluginsNeedingUpdate = [];
+			let plugins = data.response.data;
+			$.each(plugins, function(i,v) {
+				if(v.needs_update){
+					update = true;
+					pluginsNeedingUpdate.push(i);
+				}
+			});
+			if(update){
+				pluginsNeedingUpdate = '[' + pluginsNeedingUpdate.join(', ') + ']';
+				messageSingle(window.lang.translate('Update Available'), 'The following plugin(s) need updates: ' + pluginsNeedingUpdate, activeInfo.settings.notifications.position, '#FFF', 'update', '600000');
+			}
+		}catch(e) {
+			organizrCatchError(e,data);
+		}
+	}).fail(function(xhr) {
+		OrganizrApiError(xhr, 'News');
+	});
+}
 function checkCommitLoad(){
     if(activeInfo.settings.misc.docker && activeInfo.settings.misc.githubCommit !== 'n/a' && activeInfo.settings.misc.githubCommit !== null) {
 	    if(checkCommitLoadStatus == false) {
@@ -11266,6 +11292,7 @@ function checkForUpdates(){
 	if(activeInfo.user.loggedin && activeInfo.user.groupID <= 1){
 		updateCheck();
 		checkCommitLoad();
+		checkPluginUpdates();
 	}
 }
 

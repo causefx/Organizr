@@ -617,5 +617,6 @@ return [
 	'logLiveUpdateRefresh' => '5000',
 	'logPageSize' => '50',
 	'includeDatabaseQueriesInDebug' => false,
-	'externalPluginMarketplaceRepos' => ''
+	'externalPluginMarketplaceRepos' => '',
+	'checkForPluginUpdate' => true
 ];
