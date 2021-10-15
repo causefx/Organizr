@@ -49,6 +49,8 @@ trait SabNZBdHomepageItem
 	
 	public function testConnectionSabNZBd()
 	{
+		$this->setLoggerChannel('Sabnzbd Homepage');
+		$this->logger->debug('Starting API Connection Test');
 		if (!empty($this->config['sabnzbdURL']) && !empty($this->config['sabnzbdToken'])) {
 			$url = $this->qualifyURL($this->config['sabnzbdURL']);
 			$url = $url . '/api?mode=queue&output=json&apikey=' . $this->config['sabnzbdToken'];
@@ -66,16 +68,20 @@ trait SabNZBdHomepageItem
 						$message = $data['error'];
 					}
 					$this->setAPIResponse($status, $message, $responseCode, $data);
+					$this->logger->debug('API Connection Test was successful');
 					return true;
 				} else {
 					$this->setAPIResponse('error', $response->body, 500);
+					$this->logger->debug('API Connection Test was unsuccessful');
 					return false;
 				}
 			} catch (Requests_Exception $e) {
+				$this->logger->critical($e, [$url]);
 				$this->setAPIResponse('error', $e->getMessage(), 500);
 				return false;
-			};
+			}
 		} else {
+			$this->logger->debug('URL and/or Token not setup');
 			$this->setAPIResponse('error', 'URL and/or Token not setup', 422);
 			return 'URL and/or Token not setup';
 		}
@@ -121,6 +127,7 @@ trait SabNZBdHomepageItem
 	
 	public function getSabNZBdHomepageQueue()
 	{
+		$this->setLoggerChannel('Sabnzbd Homepage');
 		if (!$this->homepageItemPermissions($this->sabNZBdHomepagePermissions('main'), true)) {
 			return false;
 		}
@@ -133,7 +140,7 @@ trait SabNZBdHomepageItem
 				$api['content']['queueItems'] = json_decode($response->body, true);
 			}
 		} catch (Requests_Exception $e) {
-			$this->writeLog('error', 'SabNZBd Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
+			$this->logger->critical($e, [$url]);
 			$this->setAPIResponse('error', $e->getMessage(), 500);
 			return false;
 		};
@@ -146,7 +153,7 @@ trait SabNZBdHomepageItem
 				$api['content']['historyItems'] = json_decode($response->body, true);
 			}
 		} catch (Requests_Exception $e) {
-			$this->writeLog('error', 'SabNZBd Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
+			$this->logger->critical($e, [$url]);
 			$this->setAPIResponse('error', $e->getMessage(), 500);
 			return false;
 		};
@@ -157,6 +164,7 @@ trait SabNZBdHomepageItem
 	
 	public function pauseSabNZBdQueue($target = null)
 	{
+		$this->setLoggerChannel('Sabnzbd Homepage');
 		if (!$this->homepageItemPermissions($this->sabNZBdHomepagePermissions('main'), true)) {
 			return false;
 		}
@@ -170,7 +178,7 @@ trait SabNZBdHomepageItem
 				$api['content'] = json_decode($response->body, true);
 			}
 		} catch (Requests_Exception $e) {
-			$this->writeLog('error', 'SabNZBd Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
+			$this->logger->critical($e, [$url]);
 			$this->setAPIResponse('error', $e->getMessage(), 500);
 			return false;
 		};
@@ -181,6 +189,7 @@ trait SabNZBdHomepageItem
 	
 	public function resumeSabNZBdQueue($target = null)
 	{
+		$this->setLoggerChannel('Sabnzbd Homepage');
 		if (!$this->homepageItemPermissions($this->sabNZBdHomepagePermissions('main'), true)) {
 			return false;
 		}
@@ -194,7 +203,7 @@ trait SabNZBdHomepageItem
 				$api['content'] = json_decode($response->body, true);
 			}
 		} catch (Requests_Exception $e) {
-			$this->writeLog('error', 'SabNZBd Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
+			$this->logger->critical($e, [$url]);
 			$this->setAPIResponse('error', $e->getMessage(), 500);
 			return false;
 		};

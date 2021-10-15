@@ -1,14 +1,14 @@
 <?php
 // PLUGIN INFORMATION
-$GLOBALS['plugins'][]['Invites'] = array( // Plugin Name
+$GLOBALS['plugins']['Invites'] = array( // Plugin Name
 	'name' => 'Invites', // Plugin Name
 	'author' => 'CauseFX', // Who wrote the plugin
 	'category' => 'Management', // One to Two Word Description
 	'link' => '', // Link to plugin info
 	'license' => 'personal', // License Type use , for multiple
 	'idPrefix' => 'INVITES', // html element id prefix
-	'configPrefix' => 'INVITES', // config file prefix for array items without the hypen
-	'version' => '1.0.0', // SemVer of plugin
+	'configPrefix' => 'INVITES', // config file prefix for array items without the hyphen
+	'version' => '1.1.0', // SemVer of plugin
 	'image' => 'api/plugins/invites/logo.png', // 1:1 non transparent image for plugin
 	'settings' => true, // does plugin need a settings modal?
 	'bind' => true, // use default bind to make settings page - true or false
@@ -18,14 +18,77 @@ $GLOBALS['plugins'][]['Invites'] = array( // Plugin Name
 
 class Invites extends Organizr
 {
+	public function __construct()
+	{
+		parent::__construct();
+		$this->_pluginUpgradeCheck();
+	}
+	
+	public function _pluginUpgradeCheck()
+	{
+		if ($this->hasDB()) {
+			$compare = new Composer\Semver\Comparator;
+			$oldVer = $this->config['INVITES-dbVersion'];
+			// Upgrade check start for version below
+			$versionCheck = '1.1.0';
+			if ($compare->lessThan($oldVer, $versionCheck)) {
+				$oldVer = $versionCheck;
+				$this->_pluginUpgradeToVersion($versionCheck);
+			}
+			// End Upgrade check start for version above
+			// Update config.php version if different to the installed version
+			if ($GLOBALS['plugins']['Invites']['version'] !== $this->config['INVITES-dbVersion']) {
+				$this->updateConfig(array('INVITES-dbVersion' => $oldVer));
+				$this->setLoggerChannel('Invites Plugin');
+				$this->logger->debug('Updated INVITES-dbVersion to ' . $oldVer);
+			}
+			return true;
+		}
+	}
+	
+	public function _pluginUpgradeToVersion($version = '1.1.0')
+	{
+		switch ($version) {
+			case '1.1.0':
+				$this->_addInvitedByColumnToDatabase();
+				break;
+		}
+		$this->setResponse(200, 'Ran plugin update function for version: ' . $version);
+		return true;
+	}
+	
+	public function _addInvitedByColumnToDatabase()
+	{
+		$addColumn = $this->addColumnToDatabase('invites', 'invitedby', 'TEXT');
+		$this->setLoggerChannel('Invites Plugin');
+		if ($addColumn) {
+			$this->logger->info('Updated Invites Database');
+		} else {
+			$this->logger->warning('Could not update Invites Database');
+		}
+	}
+	
 	public function _invitesPluginGetCodes()
 	{
-		$response = [
-			array(
-				'function' => 'fetchAll',
-				'query' => 'SELECT * FROM invites'
-			)
-		];
+		if ($this->qualifyRequest(1, false)) {
+			$response = [
+				array(
+					'function' => 'fetchAll',
+					'query' => 'SELECT * FROM invites'
+				)
+			];
+		} else {
+			$response = [
+				array(
+					'function' => 'fetchAll',
+					'query' => array (
+						'SELECT * FROM invites WHERE invitedby = ?',
+						$this->user['username']
+					)
+				)
+			];
+		}
+
 		return $this->processQueries($response);
 	}
 	
@@ -34,6 +97,14 @@ class Invites extends Organizr
 		$code = ($array['code']) ?? null;
 		$username = ($array['username']) ?? null;
 		$email = ($array['email']) ?? null;
+		$invites = $this->_invitesPluginGetCodes();
+		$inviteCount = count($invites);
+		if (!$this->qualifyRequest(1, false)) {
+			if ($this->config['INVITES-maximum-invites'] != 0 && $inviteCount >= $this->config['INVITES-maximum-invites']) {
+			$this->setAPIResponse('error', 'Maximum number of invites reached', 409);
+			return false;
+			}
+		}
 		if (!$code) {
 			$this->setAPIResponse('error', 'Code not supplied', 409);
 			return false;
@@ -52,6 +123,7 @@ class Invites extends Organizr
 			'username' => $username,
 			'valid' => 'Yes',
 			'type' => $this->config['INVITES-type-include'],
+			'invitedby' => $this->user['username'],
 		];
 		$response = [
 			array(
@@ -113,15 +185,33 @@ class Invites extends Organizr
 	
 	public function _invitesPluginDeleteCode($code)
 	{
-		$response = [
-			array(
-				'function' => 'fetch',
-				'query' => array(
-					'SELECT * FROM invites WHERE code = ? COLLATE NOCASE',
-					$code
+		if ($this->qualifyRequest(1, false)) {
+			$response = [
+				array(
+					'function' => 'fetch',
+					'query' => array(
+						'SELECT * FROM invites WHERE code = ? COLLATE NOCASE',
+						$code
+					)
 				)
-			)
-		];
+			];
+		} else {
+			if ($this->config['INVITES-allow-delete']) {
+				$response = [
+					array(
+						'function' => 'fetch',
+						'query' => array(
+							'SELECT * FROM invites WHERE invitedby = ? AND code = ? COLLATE NOCASE',
+							$this->user['username'],
+							$code
+						)
+					)
+				];
+			} else {
+				$this->setAPIResponse('error', 'You are not permitted to delete invites.', 409);
+				return false;
+			}
+		}
 		$info = $this->processQueries($response);
 		if (!$info) {
 			$this->setAPIResponse('error', 'Code not found', 404);
@@ -196,7 +286,7 @@ class Invites extends Organizr
 								$noLongerId = 0;
 								$libraries = explode(',', $this->config['INVITES-plexLibraries']);
 								foreach ($libraries as $child) {
-									if ($this->search_for_value($child, $libraryList)) {
+									if (!$this->search_for_value($child, $libraryList)) {
 										$libraryList['libraries']['No Longer Exists - ' . $noLongerId] = $child;
 										$noLongerId++;
 									}
@@ -258,7 +348,29 @@ class Invites extends Organizr
 							'value' => 'emby'
 						)
 					)
-				)
+				),
+				array(
+					'type' => 'select',
+					'name' => 'INVITES-Auth-include',
+					'label' => 'Minimum Authentication',
+					'value' => $this->config['INVITES-Auth-include'],
+					'options' => $this->groupSelect()
+				),
+				array(
+					'type' => 'switch',
+					'name' => 'INVITES-allow-delete-include',
+					'label' => 'Allow users to delete invites',
+					'help' => 'This must be disabled to enforce invitation limits.',
+					'value' => $this->config['INVITES-allow-delete-include']
+				),
+				array(
+					'type' => 'number',
+					'name' => 'INVITES-maximum-invites',
+					'label' => 'Maximum number of invites permitted for users.',
+					'help' => 'Set to 0 to disable the limit.',
+					'value' => $this->config['INVITES-maximum-invites'],
+					'placeholder' => '0'
+				),
 			),
 			'Plex Settings' => array(
 				array(
@@ -292,7 +404,7 @@ class Invites extends Organizr
 				array(
 					'type' => 'select2',
 					'class' => 'select2-multiple',
-					'id' => 'invite-select',
+					'id' => 'invite-select-' . $this->random_ascii_string(6),
 					'name' => 'INVITES-plexLibraries',
 					'label' => 'Libraries',
 					'value' => $this->config['INVITES-plexLibraries'],
@@ -483,5 +595,5 @@ class Invites extends Organizr
 		}
 		return (!empty($plexUser) ? $plexUser : null);
 	}
-	
+
 }

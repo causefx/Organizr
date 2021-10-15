@@ -226,7 +226,7 @@ function updateIssueLink(line){
 	    let issueNumber = numberSplit[1].replace('(', '').replace(')', '');
 	    let issueWord = issueType.toLowerCase() == 'fr' ? '<i class="icon-arrow-up-circle"></i> feature' : '<i class="fa fa-github"></i> issue';
 	    let colorType = issueType.toLowerCase() == 'fr' ? 'label-info' : 'label-primary';
-	    let issueLink = issueType.toLowerCase() == 'fr' ? 'https://vote.organizr.app/suggestions/' + issueNumber : 'https://github.com/causefx/Organizr/issues/' + issueNumber;
+	    let issueLink = issueType.toLowerCase() == 'fr' ? 'https://feature.organizr.app/posts/' + issueNumber : 'https://github.com/causefx/Organizr/issues/' + issueNumber;
         issueLink = '<span class="label upgrade-label text-uppercase ' + colorType + ' label-rounded font-12 pull-right"><a class="text-white text-uppercase" href="' + issueLink + '" target="_blank">' + issueWord + '</a></span>';
         return line.replace(preNumber, issueLink);
     }else{
@@ -1136,7 +1136,7 @@ function buildFormItem(item){
 		case 'select2':
             var select2ID = (item.id) ? '#'+item.id : '.'+item.name;
             let settings = (item.settings) ? item.settings : '{}';
-            return smallLabel+'<select class="m-b-10 '+extraClass+'"'+placeholder+value+id+name+disabled+type+label+attr+' multiple="multiple" data-placeholder="Choose">'+selectOptions(item.options, item.value)+'</select><script>$("'+select2ID+'").select2('+settings+');</script>';
+            return smallLabel+'<select class="m-b-10 '+extraClass+'"'+placeholder+value+id+name+disabled+type+label+attr+' multiple="multiple" data-placeholder="">'+selectOptions(item.options, item.value)+'</select><script>$("'+select2ID+'").select2('+settings+').on("select2:unselecting", function() { $(this).data("unselecting", true); }).on("select2:opening", function(e) { if ($(this).data("unselecting")) { $(this).removeData("unselecting");  e.preventDefault(); } });</script>';
 			break;
 		case 'switch':
 		case 'checkbox':
@@ -1161,7 +1161,87 @@ function buildFormItem(item){
 			return '<span class="text-danger">BuildFormItem Class not setup...';
 	}
 }
-function buildPluginsItem(array){
+function buildPluginsItem(array, type = 'enabled'){
+	var activePlugins = '';
+	var inactivePlugins = '';
+	$.each(array, function(i,v) {
+		var settingsPage = (v.settings == true && type == 'enabled') ? `
+		<!-- Plugin Settings Page -->
+		<form id="`+v.idPrefix+`-settings-page" class="mfp-hide white-popup mfp-with-anim addFormTick col-md-10 col-md-offset-1" autocomplete="off">
+            <div class="panel bg-org panel-info">
+                <div class="panel-heading">
+                    <span lang="en">`+v.name+` Settings</span>
+                    <button type="button" class="btn bg-org btn-circle close-popup pull-right"><i class="fa fa-times"></i> </button>
+                    <button id="`+v.idPrefix+`-settings-page-save" onclick="submitSettingsForm('`+v.idPrefix+`-settings-page')" class="btn btn-sm btn-info btn-rounded waves-effect waves-light pull-right hidden animated loop-animation rubberBand m-r-20" type="button"><span class="btn-label"><i class="fa fa-save"></i></span><span lang="en">Save</span></button>
+                </div>
+                <div class="panel-wrapper collapse in" aria-expanded="true">
+                    <div class="bg-org">
+                        <fieldset id="`+v.idPrefix+`-settings-items" style="border:0;" class=""><h2>Loading...</h2></fieldset>
+                    </div>
+                    <div class="clearfix"></div>
+                </div>
+            </div>
+		</form>
+		` : '';
+		var href = (v.settings == true) ? '#'+v.idPrefix+'-settings-page' : 'javascript:void(0);';
+		if(v.enabled == true){
+			var activeToggle = `<li><a class="btn default btn-outline disablePlugin" href="javascript:void(0);" data-plugin-name="`+v.name+`" data-config-prefix="`+v.configPrefix+`" data-config-name="`+v.configPrefix+`-enabled"><i class="ti-power-off fa-2x"></i></a></li>`;
+			var settings = `<li><a class="btn default btn-outline popup-with-form" href="`+href+`" data-effect="mfp-3d-unfold"data-plugin-name="`+v.name+`" id="`+v.idPrefix+`-settings-button" data-config-prefix="`+v.configPrefix+`" data-api="${v.api}" data-settings="${v.settings}" data-bind="${v.bind}"><i class="ti-panel fa-2x"></i></a></li>`;
+		}else{
+			var activeToggle = `<li><a class="btn default btn-outline enablePlugin" href="javascript:void(0);" data-plugin-name="`+v.name+`" data-config-prefix="`+v.configPrefix+`" data-config-name="`+v.configPrefix+`-enabled"><i class="ti-plug fa-2x"></i></a></li>`;
+			var settings = '';
+		}
+		var plugin = `
+		<div class="col-lg-2 col-md-2 col-sm-4 col-xs-4">
+			<div class="white-box m-0">
+				<div class="el-card-item p-0">
+					<div class="el-card-avatar el-overlay-1 m-0"> <img class="lazyload" data-src="`+v.image+`">
+						<div class="el-overlay">
+							<ul class="el-info">
+								${settings} ${activeToggle}
+							</ul>
+						</div>
+					</div>
+					<div class="el-card-content">
+						<h3 class="box-title elip">`+v.name+`</h3>
+						<small class="elip text-uppercase p-b-10">`+v.category+`</small>
+					</div>
+				</div>
+			</div>
+		</div>
+		`;
+		if(v.enabled == true){
+			activePlugins += plugin+settingsPage;
+		}else{
+			inactivePlugins += plugin+settingsPage;
+		}
+	});
+	activePlugins = (activePlugins.length !== 0) ? activePlugins : '<h2 class="text-center" lang="en">Nothing Active</h2>';
+	inactivePlugins = (inactivePlugins.length !== 0) ? inactivePlugins : '<h2 class="text-center" lang="en">Everything Active</h2>';
+	return (type === 'enabled') ? `
+	<div class="panel bg-org panel-info">
+		<div class="panel-heading">
+			<span lang="en">Active Plugins</span>
+		</div>
+		<div class="panel-wrapper collapse in" aria-expanded="true">
+			<div class="panel-body bg-org">
+				<div class="row el-element-overlay m-b-40">`+activePlugins+`</div>
+			</div>
+		</div>
+	</div>
+	<div class="clearfix"></div>` : `	
+	<div class="panel bg-org panel-info">
+		<div class="panel-heading">
+			<span lang="en">Inactive Plugins</span>
+		</div>
+		<div class="panel-wrapper collapse in" aria-expanded="true">
+			<div class="panel-body bg-org">
+				<div class="row el-element-overlay m-b-40">`+inactivePlugins+`</div>
+			</div>
+		</div>
+	</div>`;
+}
+function buildPluginsItemOld(array){
 	var activePlugins = '';
 	var inactivePlugins = '';
 	$.each(array, function(i,v) {
@@ -1310,16 +1390,27 @@ function loadMarketplace(type){
 	    OrganizrApiError(xhr);
     });
 }
+function loadPluginMarketplace(){
+	organizrAPI2('GET','api/v2/plugins/marketplace').success(function(data) {
+		try {
+			let response = data.response;
+			loadMarketplacePluginsItems(response.data);
+		}catch(e) {
+			organizrCatchError(e,data);
+		}
+	}).fail(function(xhr) {
+		OrganizrApiError(xhr, 'Copy JSON Failed');
+	});
+}
 function loadMarketplacePluginsItems(plugins){
     var pluginList = '';
     $.each(plugins, function(i,v) {
         if(v.icon == null || v.icon == ''){ v.icon = 'test.png'; }
-        v.status = pluginStatus(i,v.version);
         var installButton = (v.status == 'Update Available') ? 'fa fa-download' : 'fa fa-plus';
         var removeButton = (v.status == 'Not Installed') ? 'disabled' : '';
         v.name = i;
         pluginList += `
-            <tr class="pluginManagement" data-name="`+i+`" data-version="`+v.version+`">
+            <tr class="pluginManagement" data-name="${i}" data-version="${v.version}" data-repo="${v.repo}">
                 <td class="text-center el-element-overlay">
                     <div class="el-card-item p-0">
                         <div class="el-card-avatar el-overlay-1 m-0">
@@ -1578,14 +1669,12 @@ function removePlugin(plugin=null){
     message('Removing Plugin',plugin,activeInfo.settings.notifications.position,"#FFF","success","5000");
 	organizrAPI2('DELETE','api/v2/plugins/manage/' + plugin, {}).success(function(data) {
 		try {
-			var html = data.response;
+			let html = data.response;
+			loadPluginMarketplace();
+			message(plugin+' Removed','',activeInfo.settings.notifications.position,"#FFF","success","5000");
 		}catch(e) {
 			organizrCatchError(e,data);
 		}
-		activeInfo.settings.misc.installedPlugins = (html.data == null) ? '' : html.data;
-		loadMarketplace('plugins');
-		message(plugin+' Removed','',activeInfo.settings.notifications.position,"#FFF","success","5000");
-
 	}).fail(function(xhr) {
 		OrganizrApiError(xhr, 'Removal Failed');
 	});
@@ -1617,13 +1706,11 @@ function installPlugin(plugin=null){
 	organizrAPI2('POST','api/v2/plugins/manage/' + plugin, {}).success(function(data) {
 		try {
 			var html = data.response;
+			loadPluginMarketplace();
+			message(plugin+' Installed','',activeInfo.settings.notifications.position,"#FFF","success","5000");
 		}catch(e) {
 			organizrCatchError(e,data);
 		}
-		activeInfo.settings.misc.installedPlugins = html.data;
-		loadMarketplace('plugins');
-		message(plugin+' Installed','',activeInfo.settings.notifications.position,"#FFF","success","5000");
-
 	}).fail(function(xhr) {
 		OrganizrApiError(xhr, 'Install Failed');
 	});
@@ -1719,6 +1806,7 @@ function homepageItemFormHTML(v){
                     <span class="" lang="en">`+v.name+`</span>
                     <button data-toggle="tooltip" title="Close" data-placement="bottom"  type="button" class="btn btn-default btn-circle close-popup pull-right close-editHomepageItemDiv"><i class="fa fa-times"></i> </button>
                     ${docs}${debug}
+                    <button data-toggle="tooltip" title="Reset" data-placement="bottom" id="homepage-`+v.name+`-form-reset" onclick="editHomepageItem('`+v.name+`', true)" class="btn btn-inverse btn-circle waves-effect waves-light pull-right hidden m-r-5" type="button"><span class=""><i class="fa fa-undo"></i></span></button>
                     <button data-toggle="tooltip" title="Save" data-placement="bottom" id="homepage-`+v.name+`-form-save" onclick="submitSettingsForm('homepage-`+v.name+`-form', true)" class="btn btn-success btn-circle waves-effect waves-light pull-right hidden animated loop-animation rubberBand m-r-5" type="button"><span class=""><i class="fa fa-save"></i></span></button>
                 </div>
                 <div class="panel-wrapper collapse in" aria-expanded="true">
@@ -1758,13 +1846,17 @@ function completeHomepageLoad(item, data){
 	*/
 	pageLoad();
 }
-function editHomepageItem(item){
+function editHomepageItem(item, reload = false){
 	ajaxloader('.editHomepageItemBox-' + item, 'in');
 	organizrAPI2('GET','api/v2/settings/homepage/'+item).success(function(data) {
 		try {
 			let response = data.response;
 			let html = homepageItemFormHTML(response.data);
 			$('#editHomepageItem').html(html);
+			if(reload){
+				ajaxloader('.editHomepageItemBox-' + item);
+				return false;
+			}
 			/*$("#editHomepageItemCall").animatedModal({
 				top: '40px',
 				left: '0px',
@@ -1826,14 +1918,26 @@ function buildHomepageItem(array){
 	}
 	return listing;
 }
-function buildPlugins(){
+function buildPluginsOLD(){
 	organizrAPI2('GET','api/v2/plugins').success(function(data) {
         try {
             var response = data.response;
         }catch(e) {
 	        organizrCatchError(e,data);
         }
-		$('#main-plugin-area').html(buildPluginsItem(response.data));
+		$('#main-plugin-area').html(buildPluginsItemOLD(response.data));
+	}).fail(function(xhr) {
+		OrganizrApiError(xhr);
+	});
+}
+function buildPlugins(status = 'enabled'){
+	organizrAPI2('GET','api/v2/plugins/' + status).success(function(data) {
+		try {
+			var response = data.response;
+		}catch(e) {
+			organizrCatchError(e,data);
+		}
+		$('#'+status+'-plugin-area').html(buildPluginsItem(response.data, status));
 	}).fail(function(xhr) {
 		OrganizrApiError(xhr);
 	});
@@ -1997,6 +2101,18 @@ function buildImageManagerView(){
 		OrganizrApiError(xhr);
 	});
 }
+function buildPluginsSettings(){
+	organizrAPI2('GET','api/v2/settings/plugin').success(function(data) {
+		try {
+			let response = data.response;
+			$('#plugin-settings-form').html(buildFormGroup(response.data));
+		}catch(e) {
+			organizrCatchError(e,data);
+		}
+	}).fail(function(xhr) {
+		OrganizrApiError(xhr);
+	});
+}
 function buildCustomizeAppearance(){
 	organizrAPI2('GET','api/v2/settings/appearance').success(function(data) {
         try {
@@ -2005,42 +2121,6 @@ function buildCustomizeAppearance(){
 	        organizrCatchError(e,data);
         }
 		$('#customize-appearance-form').html(buildFormGroup(response.data));
-		cssEditor = ace.edit("customCSSEditor");
-		var CssMode = ace.require("ace/mode/css").Mode;
-		cssEditor.session.setMode(new CssMode());
-		cssEditor.setTheme("ace/theme/idle_fingers");
-		cssEditor.setShowPrintMargin(false);
-		cssEditor.session.on('change', function(delta) {
-            $('.cssTextarea').val(cssEditor.getValue());
-            $('#customize-appearance-form-save').removeClass('hidden');
-		});
-        cssThemeEditor = ace.edit("customThemeCSSEditor");
-        var CssThemeMode = ace.require("ace/mode/css").Mode;
-        cssThemeEditor.session.setMode(new CssThemeMode());
-        cssThemeEditor.setTheme("ace/theme/idle_fingers");
-        cssThemeEditor.setShowPrintMargin(false);
-        cssThemeEditor.session.on('change', function(delta) {
-            $('.cssThemeTextarea').val(cssThemeEditor.getValue());
-            $('#customize-appearance-form-save').removeClass('hidden');
-        });
-        javaEditor = ace.edit("customJavaEditor");
-        var JavaMode = ace.require("ace/mode/javascript").Mode;
-        javaEditor.session.setMode(new JavaMode());
-        javaEditor.setTheme("ace/theme/idle_fingers");
-        javaEditor.setShowPrintMargin(false);
-        javaEditor.session.on('change', function(delta) {
-            $('.javaTextarea').val(javaEditor.getValue());
-            $('#customize-appearance-form-save').removeClass('hidden');
-        });
-        javaThemeEditor = ace.edit("customThemeJavaEditor");
-        var JavaThemeMode = ace.require("ace/mode/javascript").Mode;
-        javaThemeEditor.session.setMode(new JavaThemeMode());
-        javaThemeEditor.setTheme("ace/theme/idle_fingers");
-        javaThemeEditor.setShowPrintMargin(false);
-        javaThemeEditor.session.on('change', function(delta) {
-            $('.javaThemeTextarea').val(javaThemeEditor.getValue());
-            $('#customize-appearance-form-save').removeClass('hidden');
-        });
 		$("input.pick-a-color-custom-options").ColorPickerSliders({
 			placement: 'bottom',
 			color: '#987654',
@@ -2792,7 +2872,7 @@ function menuExtras(active){
 			'type':1,
 			'group_id':1,
 			'name':'Feature Request',
-			'url':'https://vote.organizr.app',
+			'url':'https://feature.organizr.app',
 			'icon':'simpleline::arrow-up-circle',
 			'active':activeInfo.settings.menuLink.organizrFeatureRequestLink
 		}
@@ -3690,6 +3770,32 @@ function newsLoad(){
 	    OrganizrApiError(xhr);
     });
 }
+function checkPluginUpdates(){
+	if(!activeInfo.user.loggedin || activeInfo.user.groupID > 1){
+		return false;
+	}
+	organizrAPI2('get','api/v2/plugins/marketplace').success(function(data) {
+		try {
+			let update = false;
+			let pluginsNeedingUpdate = [];
+			let plugins = data.response.data;
+			$.each(plugins, function(i,v) {
+				if(v.needs_update){
+					update = true;
+					pluginsNeedingUpdate.push(i);
+				}
+			});
+			if(update){
+				pluginsNeedingUpdate = '[' + pluginsNeedingUpdate.join(', ') + ']';
+				messageSingle(window.lang.translate('Update Available'), 'The following plugin(s) need updates: ' + pluginsNeedingUpdate, activeInfo.settings.notifications.position, '#FFF', 'update', '600000');
+			}
+		}catch(e) {
+			organizrCatchError(e,data);
+		}
+	}).fail(function(xhr) {
+		OrganizrApiError(xhr, 'News');
+	});
+}
 function checkCommitLoad(){
     if(activeInfo.settings.misc.docker && activeInfo.settings.misc.githubCommit !== 'n/a' && activeInfo.settings.misc.githubCommit !== null) {
 	    if(checkCommitLoadStatus == false) {
@@ -4575,26 +4681,75 @@ function language(language){
 	var language = language.split("-");
 	return language[0];
 }
-function logIcon(type){
+function logIcon(type, label = false){
+	type = type.toLowerCase();
+	let info = {"color" : "info", "icon": "fa fa-check"};
 	switch (type) {
 		case "success":
-			return '<i class="fa fa-check text-success"></i><span class="hidden">Success</span>';
+			info.color = 'info';
+			info.icon = 'fa fa-check';
 			break;
 		case "info":
-			return '<i class="fa fa-info text-info"></i><span class="hidden">Info</span>';
+			info.color = 'info';
+			info.icon = 'mdi mdi-information';
+			break;
+		case "notice":
+			info.color = 'inverse';
+			info.icon = 'mdi mdi-information-variant';
 			break;
 		case "debug":
-			return '<i class="fa fa-code text-primary"></i><span class="hidden">Debug</span>';
+			info.color = 'primary';
+			info.icon = 'mdi mdi-code-tags-check';
 			break;
 		case "warning":
-			return '<i class="fa fa-exclamation-triangle text-warning"></i><span class="hidden">Warning</span>';
+			info.color = 'warning';
+			info.icon = 'mdi mdi-alert-box';
 			break;
 		case "error":
-			return '<i class="fa fa-close text-danger"></i><span class="hidden">Error</span>';
+			info.color = 'danger';
+			info.icon = 'mdi mdi-alert-outline';
+			break;
+		case "critical":
+			info.color = 'danger';
+			info.icon = 'mdi mdi-alert';
+			break;
+		case "alert":
+			info.color = 'danger';
+			info.icon = 'mdi mdi-alert-octagon';
+			break;
+		case "emergency":
+			info.color = 'danger';
+			info.icon = 'mdi mdi-alert-octagram';
 			break;
 		default:
-			return '<i class="fa fa-exclamation-triangle text-warning"></i><span class="hidden">Warning</span>';
+			info = {"color" : "info", "icon": "fa fa-check"};
+			break;
 	}
+	if(label){
+		return '<span class="label label-'+info.color+' log-label"> <i class="fa '+info.icon+' m-l-5 fa-fw"></i>&nbsp; <span lang="en" class="text-uppercase">'+type+'</span></span>';
+	}else{
+		return '<button class="btn btn-xs btn-'+info.color+' log-label no-mouse" type="button"><span class="btn-label pull-left"><i class="'+info.icon+' fa-fw"></i></span><span class="text-uppercase" lang="en">'+type+'</span></button>';
+	}
+}
+function toggleKillOrganizrLiveUpdate(interval = 5000){
+	if($('.organizr-log-live-update').hasClass('kill-organizr-log')){
+		clearTimeout(timeouts['organizr-log']);
+		$('.organizr-log-live-update i').toggleClass('fa-dot-circle-o animated loop-animation swing');
+		$('.organizr-log-live-update').toggleClass('kill-organizr-log');
+	}else{
+		$('.organizr-log-live-update').toggleClass('kill-organizr-log');
+		organizrLogLiveUpdate(interval);
+	}
+}
+function organizrLogLiveUpdate(interval = 5000){
+	var timeout = interval;
+	let timeoutTitle = 'organizr-log';
+	$('.organizr-log-live-update i').toggleClass('fa-dot-circle-o animated loop-animation swing');
+	organizrLogTable.ajax.reload(null, false);
+	setTimeout(function(){ if($('.organizr-log-live-update').hasClass('kill-organizr-log')){ $('.organizr-log-live-update i').toggleClass('fa-dot-circle-o animated loop-animation swing'); } }, interval - 500);
+	if(typeof timeouts[timeoutTitle] !== 'undefined'){ clearTimeout(timeouts[timeoutTitle]); }
+	timeouts[timeoutTitle] = setTimeout(function(){ organizrLogLiveUpdate(timeout); }, timeout);
+	delete timeout;
 }
 function radioLoop(element){
 	$('[type=radio][id!="'+element.id+'"]').each(function() { this.checked=false });
@@ -4646,7 +4801,7 @@ function loadAppearance(appearance){
 			.fc-toolbar,
 			.progress-bar-info,
 			.label-info,
-			.tabs-style-iconbox nav ul li.tab-current a
+			.tabs-style-iconbox nav ul li.tab-current a,
 			.swapLog.active {
 			    background-color: `+appearance.accentColor+` !important;
 			}
@@ -10511,6 +10666,9 @@ function toggleDebug(){
 	                                <li><a onclick="orgDebugList('activeInfo.settings.sso.jellyfin');"
 	                                       href="javascript:void(0)"
 	                                       lang="en">Jellyfin SSO</a></li>
+	                                <li><a onclick="orgDebugList('activeInfo.settings.sso.komga');"
+	                                       href="javascript:void(0)"
+	                                       lang="en">Komga SSO</a></li>
 	                                <li><a onclick="orgDebugList('activeInfo.settings.sso.misc');"
 	                                       href="javascript:void(0)"
 	                                       lang="en">Misc SSO</a></li>
@@ -10897,6 +11055,59 @@ function oAuthLoginNeededCheck() {
 function ipInfoSpan(ip){
     return '<span class="ipInfo mouse">'+ip+'</span>';
 }
+function jsFriendlyJSONStringify (s) {
+	return JSON.stringify(s).
+	replace('\'', "").
+	replace(/\u2028/g, '\\u2028').
+	replace(/\u2029/g, '\\u2029');
+}
+function logContext(row){
+	let buttons = '';
+	buttons += (Object.keys(row).length > 0) ? '<button data-toggle="tooltip" title="" data-original-title="View Details" class="btn btn-xs btn-primary waves-effect waves-light log-details m-r-5" data-details=\''+jsFriendlyJSONStringify(row)+'\'><i class="mdi mdi-file-find"></i></button>' : '';
+	buttons += (Object.keys(row).length > 0) ? '<button data-toggle="tooltip" title="" data-original-title="Copy Log" class="btn btn-xs btn-info waves-effect waves-light clipboard m-r-5" data-clipboard-text=\''+jsFriendlyJSONStringify(row)+'\'><i class="mdi mdi-content-copy"></i></button>' : '';
+	return buttons;
+}
+function formatLogDetails(details){
+	if(!details){
+		return false;
+	}
+	details = JSON.parse(details);
+	let m = moment.tz(details.datetime + 'Z', activeInfo.timezone);
+	details.datetime = moment(m).format('LLL');
+	let items = '';
+	items += `<li><div class="bg-inverse"><i class="mdi mdi-calendar-text text-white"></i></div> ${details.datetime}<span class="text-muted" lang="en">Date</span></li>`;
+	items += `<li><div class="bg-inverse"><i class="mdi mdi-account-box-outline text-white"></i></div> ${details.trace_id}<span class="text-muted" lang="en">User</span></li>`;
+	items += `<li><div class="bg-info"><i class="mdi mdi-function text-white"></i></div> ${details.channel}<span class="text-muted" lang="en">Function</span></li>`;
+	items += `<li><div class="bg-plex"><i class="mdi mdi-language-php text-white"></i></div> ${details.file}<code>#L${details.line}</code><span class="text-muted" lang="en">File</span></li>`;
+	let items2 = '';
+	items2 += (Object.keys(details.context).length > 0) ? `<div class="sl-item"><div class="sl-left bg-inverse"> <i class="mdi mdi-json"></i></div><div class="sl-right"><div class="p-t-10 desc" lang="en">Context</div></div><pre class="m-5 fc-scroller">${JSON.stringify(details.context,null, 5)}</pre></div>` : '';
+	items2 += (typeof details.errors !== 'undefined') ? `<div class="sl-item"><div class="sl-left bg-danger"> <i class="mdi mdi-code-braces"></i></div><div class="sl-right"><div class="p-t-10 desc" lang="en">Errors</div></div><pre class="m-5 fc-scroller">${JSON.stringify(details.errors,null, 5)}</pre></div>` : '';
+	var div = `
+		<div class="col-lg-12">
+			<div class="panel panel-default text-left">
+				<div class="panel-heading"><i class="mdi mdi-file-find fa-lg fa-2x"></i> <span lang="en">Log Details</span> <span class="pull-right">${logIcon(details.log_level, true)}</span></div>
+				<div class="panel-wrapper collapse in">
+					<div class="panel-body bg-org">
+						<h3>${details.message}</h3>
+						<div class="white-box">
+							<ul class="feeds">
+								${items}
+							</ul>
+						</div>
+						<div class="steamline">
+							${items2}
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>`;
+	swal({
+		content: createElementFromHTML(div),
+		buttons: false,
+		className: 'orgAlertTransparent'
+	});
+	pageLoad();
+}
 function checkToken(activate = false){
     if(typeof activeInfo !== 'undefined'){
         if(typeof activeInfo.settings.misc.uuid !== 'undefined'){
@@ -11068,8 +11279,12 @@ function OrganizrApiError(xhr, secondaryMessage = null){
 		msg = 'Connection Error';
 	}
 	organizrConsole('Organizr API Function',msg,'error');
-	if(secondaryMessage){
-		messageSingle(secondaryMessage, msg, activeInfo.settings.notifications.position, '#FFF', 'error', '10000');
+
+	if(msg !== 'abort') {
+		if(secondaryMessage){
+			messageSingle(secondaryMessage, msg, activeInfo.settings.notifications.position, '#FFF', 'error', '10000');
+		}
+		console.trace();
 	}
 	return false;
 }
@@ -11077,6 +11292,7 @@ function checkForUpdates(){
 	if(activeInfo.user.loggedin && activeInfo.user.groupID <= 1){
 		updateCheck();
 		checkCommitLoad();
+		checkPluginUpdates();
 	}
 }
 
@@ -11193,6 +11409,43 @@ function toggleTopBarHamburger(){
 	$('.sidebar-head .hide-menu.hidden-xs').text('Hide Menu');
 	$('.sidebar-head .open-close i').first().toggleClass('ti-menu ti-shift-left mouse');
 	$('.toggle-side-menu').toggleClass('hidden');
+}
+function toggleLogFilter(filter = 'INFO'){
+	//choose-organizr-log
+	filter = filter.toUpperCase();
+	$.each($('.choose-organizr-log').children(), function(i,v) {
+		let url = $(v).val();
+		let newURL = updateUrlParameter(url,'filter',filter)
+		$(v).val(newURL);
+	});
+	$('.log-filter-text').text(filter);
+	$('.log-filter-text').text(filter);
+	let currentURL = organizrLogTable.ajax.url();
+	let updatedURL = updateUrlParameter(currentURL,'filter',filter);
+	organizrLogTable.ajax.url(updatedURL);
+	organizrLogTable.clear().draw().ajax.reload(null, false);
+}
+function updateUrlParameter(uri, key, value) {
+	// remove the hash part before operating on the uri
+	var i = uri.indexOf('#');
+	var hash = i === -1 ? ''  : uri.substr(i);
+	uri = i === -1 ? uri : uri.substr(0, i);
+	var re = new RegExp("([?&])" + key + "=.*?(&|$)", "i");
+	var separator = uri.indexOf('?') !== -1 ? "&" : "?";
+	if (value === null) {
+		// remove key-value pair if value is specifically null
+		uri = uri.replace(new RegExp("([?&]?)" + key + "=[^&]*", "i"), '');
+		if (uri.slice(-1) === '?') {
+			uri = uri.slice(0, -1);
+		}
+		// replace first occurrence of & by ? if no ? is present
+		if (uri.indexOf('?') === -1) uri = uri.replace(/&/, '?');
+	} else if (uri.match(re)) {
+		uri = uri.replace(re, '$1' + key + "=" + value + '$2');
+	} else {
+		uri = uri + separator + key + "=" + value;
+	}
+	return uri + hash;
 }
 function launch(){
 	console.info('https://docs.organizr.app/help/faq/migration-guide#version-2-0-greater-than-version-2-1');

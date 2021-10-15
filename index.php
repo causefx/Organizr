@@ -223,7 +223,7 @@ $Organizr = new Organizr();
 <script src="plugins/bower_components/dropzone-master/dist/dropzone.min.js"></script>
 <script src="plugins/bower_components/owl.carousel/owl.carousel.min.js"></script>
 <script src="plugins/bower_components/calendar/dist/fullcalendar.min.js"></script>
-<script src="plugins/bower_components/custom-select/custom-select.min.js"></script>
+<script src="plugins/bower_components/custom-select/custom-select.min.js?v=<?php echo $Organizr->fileHash; ?>"></script>
 <script src="plugins/bower_components/bootstrap-select/bootstrap-select.min.js"></script>
 <script src="plugins/bower_components/tinymce/tinymce.min.js"></script>
 <script src="plugins/bower_components/multiselect/js/jquery.multi-select.js"></script>

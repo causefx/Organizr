@@ -11,7 +11,8 @@ function get_page_settings($Organizr)
 	if (!$Organizr->qualifyRequest(1, true)) {
 		return false;
 	}
-	$Organizr->writeLog('success', 'Admin Function -  Accessed Settings Page', $Organizr->user['username']);
+	$Organizr->setLoggerChannel('Organizr');
+	$Organizr->logger->info('Accessed admin settings page');
 	$systemMenus = $Organizr->systemMenuLists();
 	return $Organizr->pluginFiles('js', true) . $Organizr->loadJavascriptFile('js/Sortable.min.js') . '
 <script>
@@ -51,7 +52,7 @@ function get_page_settings($Organizr)
 						<li onclick="changeSettingsMenu(\'Settings::Customize\')" id="settings-main-customize-anchor"><a href="#settings-main-customize" class="sticon ti-paint-bucket"><span lang="en">Customize</span></a></li>
 						<li onclick="changeSettingsMenu(\'Settings::User Management\')" id="settings-main-user-management-anchor"><a href="#settings-main-user-management" class="sticon ti-user"><span lang="en">User Management</span></a></li>
 						<li onclick="changeSettingsMenu(\'Settings::Image Manager\');loadSettingsPage2(\'api/v2/page/settings_image_manager\',\'#settings-image-manager-view\',\'Image Viewer\');" id="settings-main-image-manager-anchor"><a href="#settings-main-image-manager" class="sticon ti-image"><span lang="en">Image Manager</span></a></li>
-						<li onclick="changeSettingsMenu(\'Settings::Plugins\');loadSettingsPage2(\'api/v2/page/settings_plugins\',\'#settings-main-plugins\',\'Plugins\');" id="settings-main-plugins-anchor"><a href="#settings-main-plugins" class="sticon ti-plug"><span lang="en">Plugins</span></a></li>
+						<li onclick="changeSettingsMenu(\'Settings::Plugins\')" id="settings-main-plugins-anchor"><a href="#settings-main-plugins" class="sticon ti-plug"><span lang="en">Plugins</span></a></li>
 						<li onclick="changeSettingsMenu(\'Settings::System Settings\');authDebugCheck();" id="settings-main-system-settings-anchor"><a href="#settings-main-system-settings" class="sticon ti-settings"><span lang="en">System Settings</span></a></li>
 					</ul>
 				</nav>
@@ -104,7 +105,9 @@ function get_page_settings($Organizr)
 														<th lang="en" style="text-align:center">DELETE</th>
 													</tr>
 												</thead>
-												<tbody id="manageThemeTable"></tbody>
+												<tbody id="manageThemeTable">
+													<td class="text-center" colspan="12"><i class="fa fa-spin fa-spinner"></i></td>
+												</tbody>
 											</table>
 										</div>
 									</div>
@@ -143,7 +146,47 @@ function get_page_settings($Organizr)
 					</section>
 					<! -- PLUGINS -->
 					<section id="settings-main-plugins">
-						<h2 lang="en">Plugins</h2>
+						' . $systemMenus['plugins'] . '
+						<!-- Tab panes -->
+						<div class="tab-content">
+							<div role="tabpanel" class="tab-pane fade" id="settings-plugins-enabled">
+								<h2 lang="en">Loading...</h2>
+								<div class="clearfix"></div>
+							</div>
+							<div role="tabpanel" class="tab-pane fade" id="settings-plugins-disabled">
+								<h2 lang="en">Loading...</h2>
+								<div class="clearfix"></div>
+							</div>
+							<div role="tabpanel" class="tab-pane fade" id="settings-plugins-settings">
+								<h2 lang="en">Loading...</h2>
+								<div class="clearfix"></div>
+							</div>
+							<div role="tabpanel" class="tab-pane fade" id="settings-plugins-marketplace">
+								<div class="panel bg-org panel-info">
+									<div class="panel-heading">
+										<span lang="en">Plugin Marketplace</span>
+									</div>
+									<div class="panel-wrapper collapse in" aria-expanded="true">
+										<div class="table-responsive">
+											<table class="table table-hover manage-u-table">
+												<thead>
+													<tr>
+														<th width="70" class="text-center" lang="en">PLUGIN</th>
+														<th></th>
+														<th lang="en">CATEGORY</th>
+														<th lang="en">STATUS</th>
+														<th lang="en" style="text-align:center">INFO</th>
+														<th lang="en" style="text-align:center">INSTALL</th>
+														<th lang="en" style="text-align:center">DELETE</th>
+													</tr>
+												</thead>
+												<tbody id="managePluginTable"><td class="text-center" colspan="12"><i class="fa fa-spin fa-spinner"></i></td></tbody>
+											</table>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
 					</section>
 					<! -- SYSTEM SETTINGS -->
 					<section id="settings-main-system-settings">

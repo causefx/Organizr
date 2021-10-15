@@ -63,7 +63,7 @@ class Organizr
 	
 	// ===================================
 	// Organizr Version
-	public $version = '2.1.730';
+	public $version = '2.1.1020';
 	// ===================================
 	// Quick php Version check
 	public $minimumPHP = '7.3';
@@ -81,6 +81,8 @@ class Organizr
 	public $commit;
 	public $fileHash;
 	public $cookieName;
+	public $log;
+	public $logger;
 	public $organizrLog;
 	public $organizrLoginLog;
 	public $timeExecution;
@@ -123,9 +125,12 @@ class Organizr
 		$this->fileHash = trim($this->fileHash);
 		// Load Config file
 		$this->config = $this->config();
-		// Set organizr Log file location
+		// Set organizr Logs and logger
+		$this->log = $this->setOrganizrLog();
+		$this->setLoggerChannel();
+		// Set organizr Log file location - will deprecate soon
 		$this->organizrLog = ($this->hasDB()) ? $this->config['dbLocation'] . 'organizrLog.json' : false;
-		// Set organizr Login Log file location
+		// Set organizr Login Log file location - will deprecate soon
 		$this->organizrLoginLog = ($this->hasDB()) ? $this->config['dbLocation'] . 'organizrLoginLog.json' : false;
 		// Set Paths
 		$this->paths = array(
@@ -195,7 +200,7 @@ class Organizr
 		}
 	}
 	
-	public function setCurrentUser()
+	public function setCurrentUser($validate = true)
 	{
 		$user = false;
 		if ($this->hasDB()) {
@@ -204,7 +209,10 @@ class Organizr
 			}
 		}
 		$this->user = ($user) ?: $this->guestUser();
-		$this->checkUserTokenForValidation();
+		$this->setLoggerChannel(null, $this->user['username']);
+		if ($validate) {
+			$this->checkUserTokenForValidation();
+		}
 	}
 	
 	public function checkUserTokenForValidation()
@@ -219,6 +227,8 @@ class Organizr
 	public function phpErrors()
 	{
 		$errorTypes = $this->dev ? E_ERROR | E_WARNING | E_PARSE | E_NOTICE : 0;
+		// Temp overwrite for now
+		$errorTypes = E_ERROR | E_WARNING | E_PARSE | E_NOTICE;
 		$displayErrors = $this->dev ? 1 : 0;
 		error_reporting($errorTypes);
 		ini_set('display_errors', $displayErrors);
@@ -240,7 +250,8 @@ class Organizr
 			$currentIP = $this->userIP();
 			if ($this->config['blacklisted'] !== '') {
 				if (in_array($currentIP, $this->arrayIP($this->config['blacklisted']))) {
-					$this->debug('User was sent to blackhole - Blacklisted IPs: ' . $this->config['blacklisted']);
+					$this->setLoggerChannel('Authentication');
+					$this->logger->debug('User was sent to black hole', $this->config['blacklisted']);
 					die($this->showHTML('Blacklisted', $this->config['blacklistedMessage']));
 				}
 			}
@@ -254,12 +265,14 @@ class Organizr
 			$disk = $this->checkDisk($directory);
 			$diskLevels = [
 				'warn' => 1000000000,
-				'error' => 100000000
+				'warn_human_readable' => $this->human_filesize(1000000000, 0),
+				'error' => 100000000,
+				'error_human_readable' => $this->human_filesize(100000000, 0),
 			];
-			if ($disk['free'] <= $diskLevels['error']) {
+			if ($disk['free']['raw'] <= $diskLevels['error']) {
 				die($this->showHTML('Low Disk Space', 'You are dangerously low on disk space.<br/>There is only ' . $disk['free']['human_readable'] . ' remaining.<br/><b>Percent Used = ' . $disk['used']['percent_used'] . '%</b>'));
-			} elseif ($disk['free'] <= $diskLevels['warn']) {
-				$this->warnings[] = 'You are low on disk space.  There is only ' . $disk['free']['human_readable'] . ' remaining.';
+			} elseif ($disk['free']['raw'] <= $diskLevels['warn']) {
+				$this->warnings[] = 'You are low on disk space.  There is only ' . $disk['free']['human_readable'] . ' remaining.  This warning shows up because you are past the warning threshold of ' . $diskLevels['warn_human_readable'];
 			}
 		}
 		return true;
@@ -662,15 +675,29 @@ class Organizr
 		}
 	}
 	
-	public function getPlugins()
+	public function getPlugins($returnType = 'all')
 	{
 		if ($this->hasDB()) {
+			switch ($returnType) {
+				case 'enabled':
+					$returnType = 'enabled';
+					break;
+				case 'disabled':
+					$returnType = 'disabled';
+					break;
+				default:
+					$returnType = 'all';
+			}
 			$pluginList = [];
-			foreach ($GLOBALS['plugins'] as $plugin) {
-				foreach ($plugin as $key => $value) {
-					if (strpos($value['license'], $this->config['license']) !== false) {
-						$plugin[$key]['enabled'] = $this->config[$value['configPrefix'] . '-enabled'];
-						$pluginList[$key] = $plugin[$key];
+			foreach ($GLOBALS['plugins'] as $key => $value) {
+				if (strpos($value['license'], $this->config['license']) !== false) {
+					$GLOBALS['plugins'][$key]['enabled'] = $this->config[$value['configPrefix'] . '-enabled'];
+					if ($returnType == 'all') {
+						$pluginList[$key] = $GLOBALS['plugins'][$key];
+					} elseif ($returnType == 'enabled' && $this->config[$value['configPrefix'] . '-enabled'] == true) {
+						$pluginList[$key] = $GLOBALS['plugins'][$key];
+					} elseif ($returnType == 'disabled' && $this->config[$value['configPrefix'] . '-enabled'] == false) {
+						$pluginList[$key] = $GLOBALS['plugins'][$key];
 					}
 				}
 			}
@@ -874,168 +901,6 @@ class Organizr
 				die($this->showHTML('Config File Malformed', 'dbLocation and/or dbName is not listed in config.php'));
 			}
 		}
-	}
-	
-	public function upgradeCheck()
-	{
-		if ($this->hasDB()) {
-			$tempLock = $this->config['dbLocation'] . 'DBLOCK.txt';
-			$updateComplete = $this->config['dbLocation'] . 'completed.txt';
-			$cleanup = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'upgrade' . DIRECTORY_SEPARATOR;
-			if (file_exists($updateComplete)) {
-				@unlink($updateComplete);
-				@$this->rrmdir($cleanup);
-			}
-			if (file_exists($tempLock)) {
-				die($this->showHTML('Upgrading', 'Please wait...'));
-			}
-			$updateDB = false;
-			$updateSuccess = true;
-			$compare = new Composer\Semver\Comparator;
-			$oldVer = $this->config['configVersion'];
-			// Upgrade check start for version below
-			$versionCheck = '2.0.0-beta-200';
-			if ($compare->lessThan($oldVer, $versionCheck)) {
-				$updateDB = true;
-				$oldVer = $versionCheck;
-			}
-			// End Upgrade check start for version above
-			// Upgrade check start for version below
-			$versionCheck = '2.0.0-beta-500';
-			if ($compare->lessThan($oldVer, $versionCheck)) {
-				$updateDB = true;
-				$oldVer = $versionCheck;
-			}
-			// End Upgrade check start for version above
-			// Upgrade check start for version below
-			$versionCheck = '2.0.0-beta-800';
-			if ($compare->lessThan($oldVer, $versionCheck)) {
-				$updateDB = true;
-				$oldVer = $versionCheck;
-			}
-			// End Upgrade check start for version above
-			// Upgrade check start for version below
-			$versionCheck = '2.1.0';
-			if ($compare->lessThan($oldVer, $versionCheck)) {
-				$updateDB = false;
-				$oldVer = $versionCheck;
-				$this->upgradeToVersion($versionCheck);
-			}
-			// End Upgrade check start for version above
-			// Upgrade check start for version below
-			$versionCheck = '2.1.400';
-			if ($compare->lessThan($oldVer, $versionCheck)) {
-				$updateDB = false;
-				$oldVer = $versionCheck;
-				$this->upgradeToVersion($versionCheck);
-			}
-			// End Upgrade check start for version above
-			// Upgrade check start for version below
-			$versionCheck = '2.1.525';
-			if ($compare->lessThan($oldVer, $versionCheck)) {
-				$updateDB = false;
-				$oldVer = $versionCheck;
-				$this->upgradeToVersion($versionCheck);
-			}
-			// End Upgrade check start for version above
-			if ($updateDB == true) {
-				//return 'Upgraded Needed - Current Version '.$oldVer.' - New Version: '.$versionCheck;
-				// Upgrade database to latest version
-				$updateSuccess = $this->updateDB($oldVer);
-			}
-			// Update config.php version if different to the installed version
-			if ($updateSuccess && $this->version !== $this->config['configVersion']) {
-				$this->updateConfig(array('apply_CONFIG_VERSION' => $this->version));
-				$this->debug('Updated config version to ' . $this->version);
-			}
-			if ($updateSuccess == false) {
-				die($this->showHTML('Database update failed', 'Please manually check logs and fix - Then reload this page'));
-			}
-			return true;
-		}
-	}
-	
-	public function updateDB($oldVerNum = false)
-	{
-		$tempLock = $this->config['dbLocation'] . 'DBLOCK.txt';
-		if (!file_exists($tempLock)) {
-			touch($tempLock);
-			$migrationDB = 'tempMigration.db';
-			$pathDigest = pathinfo($this->config['dbLocation'] . $this->config['dbName']);
-			if (file_exists($this->config['dbLocation'] . $migrationDB)) {
-				unlink($this->config['dbLocation'] . $migrationDB);
-			}
-			// Create Temp DB First
-			$this->connectOtherDB();
-			$backupDB = $pathDigest['dirname'] . '/' . $pathDigest['filename'] . '[' . date('Y-m-d_H-i-s') . ']' . ($oldVerNum ? '[' . $oldVerNum . ']' : '') . '.bak.db';
-			copy($this->config['dbLocation'] . $this->config['dbName'], $backupDB);
-			$success = $this->createDB($this->config['dbLocation'], true);
-			if ($success) {
-				$response = [
-					array(
-						'function' => 'fetchAll',
-						'query' => array(
-							'SELECT name FROM sqlite_master WHERE type="table"'
-						)
-					),
-				];
-				$tables = $this->processQueries($response);
-				foreach ($tables as $table) {
-					$response = [
-						array(
-							'function' => 'fetchAll',
-							'query' => array(
-								'SELECT * FROM ' . $table['name']
-							)
-						),
-					];
-					$data = $this->processQueries($response);
-					$this->writeLog('success', 'Update Function -  Grabbed Table data for Table: ' . $table['name'], 'Database');
-					foreach ($data as $row) {
-						$response = [
-							array(
-								'function' => 'query',
-								'query' => array(
-									'INSERT into ' . $table['name'],
-									$row
-								)
-							),
-						];
-						$this->processQueries($response, true);
-					}
-					$this->writeLog('success', 'Update Function -  Wrote Table data for Table: ' . $table['name'], 'Database');
-				}
-				$this->writeLog('success', 'Update Function -  All Table data converted - Starting Movement', 'Database');
-				$this->db->disconnect();
-				$this->otherDb->disconnect();
-				// Remove Current Database
-				if (file_exists($this->config['dbLocation'] . $migrationDB)) {
-					$oldFileSize = filesize($this->config['dbLocation'] . $this->config['dbName']);
-					$newFileSize = filesize($this->config['dbLocation'] . $migrationDB);
-					if ($newFileSize > 0) {
-						$this->writeLog('success', 'Update Function -  Table Size of new DB ok..', 'Database');
-						@unlink($this->config['dbLocation'] . $this->config['dbName']);
-						copy($this->config['dbLocation'] . $migrationDB, $this->config['dbLocation'] . $this->config['dbName']);
-						@unlink($this->config['dbLocation'] . $migrationDB);
-						$this->writeLog('success', 'Update Function -  Migrated Old Info to new Database', 'Database');
-						@unlink($tempLock);
-						return true;
-					} else {
-						$this->writeLog('error', 'Update Function -  Filesize is zero', 'Database');
-					}
-				} else {
-					$this->writeLog('error', 'Update Function -  Migration DB does not exist', 'Database');
-				}
-				@unlink($tempLock);
-				return false;
-				
-			} else {
-				$this->writeLog('error', 'Update Function -  Could not create migration DB', 'Database');
-			}
-			@unlink($tempLock);
-			return false;
-		}
-		return false;
 	}
 	
 	// Create config file in the return syntax
@@ -1373,9 +1238,10 @@ class Organizr
 	{
 		if (isset($_COOKIE[$this->cookieName])) {
 			if ($token == $_COOKIE[$this->cookieName]) {
+				$this->setLoggerChannel('Authentication');
+				$this->logger->debug('Token was invalid - deleting cookie and user session');
 				$this->coookie('delete', $this->cookieName);
 				$this->user = null;
-				$this->debug('Token was invalid - deleting cookie and user session');
 			}
 		}
 	}
@@ -1390,7 +1256,8 @@ class Organizr
 			$user = $this->getUserById($userInfo['userID']);
 			$tokenCheck = ($this->searchArray($allTokens, 'token', $token) !== false);
 			if (!$tokenCheck) {
-				$this->debug('Token failed check Token listing: ' . json_encode($allTokens) . ' User Id: ' . $userInfo['userID']);
+				$this->setLoggerChannel('Authentication');
+				$this->logger->debug('Token failed check against all token listings', $allTokens);
 				$this->invalidToken($token);
 				if ($api) {
 					$this->setResponse(403, 'Token was not in approved list');
@@ -1421,7 +1288,8 @@ class Organizr
 			if ($api) {
 				$this->setResponse(403, 'Token was invalid');
 			}
-			$this->debug('Token was invalid');
+			$this->setLoggerChannel('Authentication');
+			$this->logger->debug('User  token was invalid', $token);
 			$this->invalidToken($token);
 		}
 		if ($api) {
@@ -1502,6 +1370,7 @@ class Organizr
 			'{email}' => $this->user['email'],
 			'{group}' => $this->user['group'],
 			'{group_id}' => $this->user['groupID'],
+			'{komga}' => $_COOKIE['komga_token'] ?? ''
 		];
 		if (empty($tabs)) {
 			return $tabs;
@@ -1778,304 +1647,72 @@ class Organizr
 		return null;
 	}
 	
+	public function getPluginSettings()
+	{
+		return [
+			'Marketplace' => [
+				$this->settingsOption('notice', null, ['notice' => 'danger', 'body' => '3rd Party Repositories are not affiliated with Organizr and therefore the code on these repositories are not inspected.  Use at your own risk.']),
+				$this->settingsOption('multiple-url', 'externalPluginMarketplaceRepos', ['override' => 12, 'label' => 'External Marketplace Repo', 'help' => 'Only supports Github repos']),
+				$this->settingsOption('switch', 'checkForPluginUpdate', ['label' => 'Check for Plugin Updates', ['help' => 'Check for updates on page load']])
+			]
+		];
+	}
+	
 	public function getCustomizeAppearance()
 	{
-		return array(
-			'Top Bar' => array(
-				array(
-					'type' => 'input',
-					'name' => 'logo',
-					'label' => 'Logo',
-					'value' => $this->config['logo']
-				),
-				array(
-					'type' => 'input',
-					'name' => 'title',
-					'label' => 'Title',
-					'value' => $this->config['title']
-				),
-				array(
-					'type' => 'switch',
-					'name' => 'useLogo',
-					'label' => 'Use Logo instead of Title',
-					'value' => $this->config['useLogo'],
-					'help' => 'Also sets the title of your site'
-				),
-				array(
-					'type' => 'input',
-					'name' => 'description',
-					'label' => 'Meta Description',
-					'value' => $this->config['description'],
-					'help' => 'Used to set the description for SEO meta tags'
-				),
-			),
-			'Side Menu' => array(
+		return [
+			'Top Bar' => [
+				$this->settingsOption('input', 'logo', ['label' => 'Logo URL']),
+				$this->settingsOption('input', 'title', ['label' => 'Organizr Title']),
+				$this->settingsOption('switch', 'useLogo', ['label' => 'Use Logo instead of Title', 'help' => 'Also sets the title of your site']),
+				$this->settingsOption('input', 'description', ['label' => 'Meta Description', 'help' => 'Used to set the description for SEO meta tags']),
+			],
+			'Side Menu' => [
 				$this->settingsOption('switch', 'allowCollapsableSideMenu', ['label' => 'Allow Side Menu to be Collapsable']),
 				$this->settingsOption('switch', 'sideMenuCollapsed', ['label' => 'Side Menu Collapsed at Launch']),
 				$this->settingsOption('switch', 'collapseSideMenuOnClick', ['label' => 'Collapse Side Menu after clicking Tab']),
-				array(
-					'type' => 'switch',
-					'name' => 'githubMenuLink',
-					'label' => 'Show GitHub Repo Link',
-					'value' => $this->config['githubMenuLink']
-				),
-				array(
-					'type' => 'switch',
-					'name' => 'organizrFeatureRequestLink',
-					'label' => 'Show Organizr Feature Request Link',
-					'value' => $this->config['organizrFeatureRequestLink']
-				),
-				array(
-					'type' => 'switch',
-					'name' => 'organizrSupportMenuLink',
-					'label' => 'Show Organizr Support Link',
-					'value' => $this->config['organizrSupportMenuLink']
-				),
-				array(
-					'type' => 'switch',
-					'name' => 'organizrDocsMenuLink',
-					'label' => 'Show Organizr Docs Link',
-					'value' => $this->config['organizrDocsMenuLink']
-				),
-				array(
-					'type' => 'switch',
-					'name' => 'organizrSignoutMenuLink',
-					'label' => 'Show Organizr Sign out & in Button on Sidebar',
-					'value' => $this->config['organizrSignoutMenuLink']
-				),
-				array(
-					'type' => 'switch',
-					'name' => 'expandCategoriesByDefault',
-					'label' => 'Expand All Categories',
-					'value' => $this->config['expandCategoriesByDefault']
-				),
-				array(
-					'type' => 'switch',
-					'name' => 'autoCollapseCategories',
-					'label' => 'Auto-Collapse Categories',
-					'value' => $this->config['autoCollapseCategories']
-				),
-				array(
-					'type' => 'switch',
-					'name' => 'autoExpandNavBar',
-					'label' => 'Auto-Expand Nav Bar',
-					'value' => $this->config['autoExpandNavBar']
-				),
-				array(
-					'type' => 'select',
-					'name' => 'unsortedTabs',
-					'label' => 'Unsorted Tab Placement',
-					'value' => $this->config['unsortedTabs'],
-					'options' => array(
-						array(
-							'name' => 'Top',
-							'value' => 'top'
-						),
-						array(
-							'name' => 'Bottom',
-							'value' => 'bottom'
-						)
-					)
-				),
-			),
-			'Login Page' => array(
-				array(
-					'type' => 'input',
-					'name' => 'loginLogo',
-					'label' => 'Login Logo',
-					'value' => $this->config['loginLogo'],
-				),
-				array(
-					'type' => 'input',
-					'name' => 'loginWallpaper',
-					'label' => 'Login Wallpaper',
-					'value' => $this->config['loginWallpaper'],
-					'help' => 'You may enter multiple URL\'s using the CSV format.  i.e. link#1,link#2,link#3'
-				),
-				array(
-					'type' => 'switch',
-					'name' => 'useLogoLogin',
-					'label' => 'Use Logo instead of Title on Login Page',
-					'value' => $this->config['useLogoLogin']
-				),
-				array(
-					'type' => 'switch',
-					'name' => 'minimalLoginScreen',
-					'label' => 'Minimal Login Screen',
-					'value' => $this->config['minimalLoginScreen']
-				)
-			),
-			'Options' => array(
-				array(
-					'type' => 'switch',
-					'name' => 'alternateHomepageHeaders',
-					'label' => 'Alternate Homepage Titles',
-					'value' => $this->config['alternateHomepageHeaders']
-				),
-				array(
-					'type' => 'switch',
-					'name' => 'debugErrors',
-					'label' => 'Show Debug Errors',
-					'value' => $this->config['debugErrors']
-				),
-				array(
-					'type' => 'switch',
-					'name' => 'easterEggs',
-					'label' => 'Show Easter Eggs',
-					'value' => $this->config['easterEggs']
-				),
-				array(
-					'type' => 'input',
-					'name' => 'gaTrackingID',
-					'label' => 'Google Analytics Tracking ID',
-					'placeholder' => 'e.g. UA-XXXXXXXXX-X',
-					'value' => $this->config['gaTrackingID']
-				)
-			),
-			'Colors & Themes' => array(
-				array(
-					'type' => 'html',
-					'override' => 12,
-					'label' => '',
-					'html' => '
-					<div class="row">
-						<div class="col-lg-12">
-							<div class="panel panel-info">
-								<div class="panel-heading">
-									<span lang="en">Notice</span>
-								</div>
-								<div class="panel-wrapper collapse in" aria-expanded="true">
-									<div class="panel-body">
-										<span lang="en">The value of #987654 is just a placeholder, you can change to any value you like.</span>
-										<span lang="en">To revert back to default, save with no value defined in the relevant field.</span>
-									</div>
-								</div>
-							</div>
-						</div>
-					</div>
-					',
-				),
-				array(
-					'type' => 'blank',
-					'label' => ''
-				),
+				$this->settingsOption('switch', 'githubMenuLink', ['label' => 'Show GitHub Repo Link']),
+				$this->settingsOption('switch', 'organizrFeatureRequestLink', ['label' => 'Show Organizr Feature Request Link']),
+				$this->settingsOption('switch', 'organizrSupportMenuLink', ['label' => 'Show Organizr Support Link']),
+				$this->settingsOption('switch', 'organizrDocsMenuLink', ['label' => 'Show Organizr Docs Link']),
+				$this->settingsOption('switch', 'organizrSignoutMenuLink', ['label' => 'Show Organizr Sign out & in Button on Sidebar']),
+				$this->settingsOption('switch', 'expandCategoriesByDefault', ['label' => 'Expand All Categories']),
+				$this->settingsOption('switch', 'autoCollapseCategories', ['label' => 'Auto-Collapse Categories']),
+				$this->settingsOption('switch', 'autoExpandNavBar', ['label' => 'Auto-Expand Nav Bar']),
+				$this->settingsOption('select', 'unsortedTabs', ['label' => 'Unsorted Tab Placement', 'options' => [['name' => 'Top', 'value' => 'top'], ['name' => 'Bottom', 'value' => 'bottom']]]),
+			],
+			'Login Page' => [
+				$this->settingsOption('input', 'loginLogo', ['label' => 'Login Logo URL']),
+				$this->settingsOption('multiple-url', 'loginWallpaper', ['label' => 'Login Wallpaper URL', 'help' => 'You may enter multiple URL\'s']),
+				$this->settingsOption('switch', 'useLogoLogin', ['label' => 'Use Logo instead of Title on Login Page']),
+				$this->settingsOption('switch', 'minimalLoginScreen', ['label' => 'Minimal Login Screen']),
+			],
+			'Options' => [
+				$this->settingsOption('switch', 'alternateHomepageHeaders', ['label' => 'Alternate Homepage Titles']),
+				$this->settingsOption('switch', 'debugErrors', ['label' => 'Show Debug Errors']),
+				$this->settingsOption('switch', 'easterEggs', ['label' => 'Show Easter Eggs']),
+				$this->settingsOption('input', 'gaTrackingID', ['label' => 'Google Analytics Tracking ID', 'placeholder' => 'e.g. UA-XXXXXXXXX-X']),
+			],
+			'Colors & Themes' => [
+				$this->settingsOption('notice', null, ['notice' => 'info', 'title' => 'Attention', 'bodyHTML' => '<span lang="en">The value of #987654 is just a placeholder, you can change to any value you like.</span><span lang="en">To revert back to default, save with no value defined in the relevant field.</span>']),
+				$this->settingsOption('blank'),
 				$this->settingsOption('button', '', ['label' => 'Reset Colors', 'icon' => 'fa fa-ticket', 'text' => 'Reset', 'attr' => 'onclick="resetCustomColors()"']),
 				$this->settingsOption('blank'),
-				array(
-					'type' => 'input',
-					'name' => 'headerColor',
-					'label' => 'Nav Bar Color',
-					'value' => $this->config['headerColor'],
-					'class' => 'pick-a-color-custom-options',
-					'attr' => 'data-original="' . $this->config['headerColor'] . '"'
-				),
-				array(
-					'type' => 'input',
-					'name' => 'headerTextColor',
-					'label' => 'Nav Bar Text Color',
-					'value' => $this->config['headerTextColor'],
-					'class' => 'pick-a-color-custom-options',
-					'attr' => 'data-original="' . $this->config['headerTextColor'] . '"'
-				),
-				array(
-					'type' => 'input',
-					'name' => 'sidebarColor',
-					'label' => 'Side Bar Color',
-					'value' => $this->config['sidebarColor'],
-					'class' => 'pick-a-color-custom-options',
-					'attr' => 'data-original="' . $this->config['sidebarColor'] . '"'
-				),
-				array(
-					'type' => 'input',
-					'name' => 'sidebarTextColor',
-					'label' => 'Side Bar Text Color',
-					'value' => $this->config['sidebarTextColor'],
-					'class' => 'pick-a-color-custom-options',
-					'attr' => 'data-original="' . $this->config['sidebarTextColor'] . '"'
-				),
-				array(
-					'type' => 'input',
-					'name' => 'accentColor',
-					'label' => 'Accent Color',
-					'value' => $this->config['accentColor'],
-					'class' => 'pick-a-color-custom-options',
-					'attr' => 'data-original="' . $this->config['accentColor'] . '"'
-				),
-				array(
-					'type' => 'input',
-					'name' => 'accentTextColor',
-					'label' => 'Accent Text Color',
-					'value' => $this->config['accentTextColor'],
-					'class' => 'pick-a-color-custom-options',
-					'attr' => 'data-original="' . $this->config['accentTextColor'] . '"'
-				),
-				array(
-					'type' => 'input',
-					'name' => 'buttonColor',
-					'label' => 'Button Color',
-					'value' => $this->config['buttonColor'],
-					'class' => 'pick-a-color-custom-options',
-					'attr' => 'data-original="' . $this->config['buttonColor'] . '"'
-				),
-				array(
-					'type' => 'input',
-					'name' => 'buttonTextColor',
-					'label' => 'Button Text Color',
-					'value' => $this->config['buttonTextColor'],
-					'class' => 'pick-a-color-custom-options',
-					'attr' => 'data-original="' . $this->config['buttonTextColor'] . '"'
-				),
-				array(
-					'type' => 'select',
-					'name' => 'theme',
-					'label' => 'Theme',
-					'class' => 'themeChanger',
-					'value' => $this->config['theme'],
-					'options' => $this->getThemes()
-				),
-				array(
-					'type' => 'select',
-					'name' => 'style',
-					'label' => 'Style',
-					'class' => 'styleChanger',
-					'value' => $this->config['style'],
-					'options' => array(
-						array(
-							'name' => 'Light',
-							'value' => 'light'
-						),
-						array(
-							'name' => 'Dark',
-							'value' => 'dark'
-						),
-						array(
-							'name' => 'Horizontal',
-							'value' => 'horizontal'
-						)
-					)
-				)
-			),
-			'Notifications' => array(
-				array(
-					'type' => 'select',
-					'name' => 'notificationBackbone',
-					'class' => 'notifyChanger',
-					'label' => 'Type',
-					'value' => $this->config['notificationBackbone'],
-					'options' => $this->notificationTypesOptions()
-				),
-				array(
-					'type' => 'select',
-					'name' => 'notificationPosition',
-					'class' => 'notifyPositionChanger',
-					'label' => 'Position',
-					'value' => $this->config['notificationPosition'],
-					'options' => $this->notificationPositionsOptions()
-				),
-				array(
-					'type' => 'html',
-					'label' => 'Test Message',
-					'html' => '
+				$this->settingsOption('color', 'headerColor', ['label' => 'Nav Bar Color']),
+				$this->settingsOption('color', 'headerTextColor', ['label' => 'Nav Bar Text Color']),
+				$this->settingsOption('color', 'sidebarColor', ['label' => 'Side Bar Color']),
+				$this->settingsOption('color', 'sidebarTextColor', ['label' => 'Side Bar Text Color']),
+				$this->settingsOption('color', 'accentColor', ['label' => 'Accent Color']),
+				$this->settingsOption('color', 'accentTextColor', ['label' => 'Accent Text Color']),
+				$this->settingsOption('color', 'buttonColor', ['label' => 'Button Color']),
+				$this->settingsOption('color', 'buttonTextColor', ['label' => 'Button Text Color']),
+				$this->settingsOption('select', 'theme', ['label' => 'Theme', 'class' => 'themeChanger', 'options' => $this->getThemes()]),
+				$this->settingsOption('select', 'style', ['label' => 'Style', 'class' => 'styleChanger', 'options' => [['name' => 'Light', 'value' => 'light'], ['name' => 'Dark', 'value' => 'dark'], ['name' => 'Horizontal', 'value' => 'horizontal']]]),
+			],
+			'Notifications' => [
+				$this->settingsOption('select', 'notificationBackbone', ['label' => 'Type', 'class' => 'notifyChanger', 'options' => $this->notificationTypesOptions()]),
+				$this->settingsOption('select', 'notificationPosition', ['label' => 'Position', 'class' => 'notifyPositionChanger', 'options' => $this->notificationPositionsOptions()]),
+				$this->settingsOption('html', null, ['label' => 'Test Message', 'html' => '
 					<div class="btn-group m-r-10 dropup">
 						<button aria-expanded="false" data-toggle="dropdown" class="btn btn-info btn-outline dropdown-toggle waves-effect waves-light" type="button">
 							<i class="fa fa-comment m-r-5"></i>
@@ -2088,23 +1725,11 @@ class Organizr
 							<li><a onclick="message(\'Test Message\',\'This is a error Message\',activeInfo.settings.notifications.position,\'#FFF\',\'error\',\'5000\');">Error</a></li>
 						</ul>
 					</div>
-					'
-				)
-			),
-			'FavIcon' => array(
-				array(
-					'type' => 'textbox',
-					'name' => 'favIcon',
-					'class' => '',
-					'label' => 'Fav Icon Code',
-					'value' => $this->config['favIcon'],
-					'placeholder' => 'Paste Contents from https://realfavicongenerator.net/',
-					'attr' => 'rows="10"',
+					']
 				),
-				array(
-					'type' => 'html',
-					'label' => 'Instructions',
-					'html' => '
+			],
+			'FavIcon' => [
+				$this->settingsOption('html', null, ['label' => 'Instructions', 'override' => 12, 'html' => '
 					<div class="panel panel-default">
 						<div class="panel-heading">
 							<a href="https://realfavicongenerator.net/" target="_blank"><span class="label label-info m-l-5">Visit FavIcon Site</span></a>
@@ -2124,78 +1749,23 @@ class Organizr
 							</div>
 						</div>
 					</div>
-					'
+					']
 				),
-			),
-			'Custom CSS' => array(
-				array(
-					'type' => 'html',
-					'override' => 12,
-					'label' => 'Custom CSS [Can replace colors from above]',
-					'html' => '<button type="button" class="hidden saveCss btn btn-info btn-circle pull-right m-r-5 m-l-10"><i class="fa fa-save"></i> </button><div id="customCSSEditor" style="height:300px">' . htmlentities($this->config['customCss']) . '</div>'
-				),
-				array(
-					'type' => 'textbox',
-					'name' => 'customCss',
-					'class' => 'hidden cssTextarea',
-					'label' => '',
-					'value' => $this->config['customCss'],
-					'placeholder' => 'No &lt;style&gt; tags needed',
-					'attr' => 'rows="10"',
-				),
-			),
-			'Theme CSS' => array(
-				array(
-					'type' => 'html',
-					'override' => 12,
-					'label' => 'Theme CSS [Can replace colors from above]',
-					'html' => '<button type="button" class="hidden saveCssTheme btn btn-info btn-circle pull-right m-r-5 m-l-10"><i class="fa fa-save"></i> </button><div id="customThemeCSSEditor" style="height:300px">' . htmlentities($this->config['customThemeCss']) . '</div>'
-				),
-				array(
-					'type' => 'textbox',
-					'name' => 'customThemeCss',
-					'class' => 'hidden cssThemeTextarea',
-					'label' => '',
-					'value' => $this->config['customThemeCss'],
-					'placeholder' => 'No &lt;style&gt; tags needed',
-					'attr' => 'rows="10"',
-				),
-			),
-			'Custom Javascript' => array(
-				array(
-					'type' => 'html',
-					'override' => 12,
-					'label' => 'Custom Javascript',
-					'html' => '<button type="button" class="hidden saveJava btn btn-info btn-circle pull-right m-r-5 m-l-10"><i class="fa fa-save"></i> </button><div id="customJavaEditor" style="height:300px">' . htmlentities($this->config['customJava']) . '</div>'
-				),
-				array(
-					'type' => 'textbox',
-					'name' => 'customJava',
-					'class' => 'hidden javaTextarea',
-					'label' => '',
-					'value' => $this->config['customJava'],
-					'placeholder' => 'No &lt;script&gt; tags needed',
-					'attr' => 'rows="10"',
-				),
-			),
-			'Theme Javascript' => array(
-				array(
-					'type' => 'html',
-					'override' => 12,
-					'label' => 'Theme Javascript',
-					'html' => '<button type="button" class="hidden saveJavaTheme btn btn-info btn-circle pull-right m-r-5 m-l-10"><i class="fa fa-save"></i> </button><div id="customThemeJavaEditor" style="height:300px">' . htmlentities($this->config['customThemeJava']) . '</div>'
-				),
-				array(
-					'type' => 'textbox',
-					'name' => 'customThemeJava',
-					'class' => 'hidden javaThemeTextarea',
-					'label' => '',
-					'value' => $this->config['customThemeJava'],
-					'placeholder' => 'No &lt;script&gt; tags needed',
-					'attr' => 'rows="10"',
-				),
-			),
-		);
+				$this->settingsOption('code-editor', 'favIcon', ['label' => 'Fav Icon Code', 'mode' => 'html']),
+			],
+			'Custom CSS' => [
+				$this->settingsOption('code-editor', 'customCss', ['label' => 'Custom CSS', 'mode' => 'css']),
+			],
+			'Theme CSS' => [
+				$this->settingsOption('code-editor', 'customThemeCss', ['label' => 'Theme CSS', 'mode' => 'css']),
+			],
+			'Custom Javascript' => [
+				$this->settingsOption('code-editor', 'customJava', ['label' => 'Custom Javascript', 'mode' => 'javascript']),
+			],
+			'Theme Javascript' => [
+				$this->settingsOption('code-editor', 'customThemeJava', ['label' => 'Theme Javascript', 'mode' => 'javascript']),
+			],
+		];
 	}
 	
 	public function loadAppearance()
@@ -2227,601 +1797,108 @@ class Organizr
 	public function getSettingsMain()
 	{
 		$certificateStatus = $this->hasCustomCert() ? '<span lang="en">Custom Certificate Loaded</span><br />Located at <span>' . $this->getCustomCert() . '</span>' : '<span lang="en">Custom Certificate not found - please upload below</span>';
-		return array(
-			'Settings Page' => array(
-				array(
-					'type' => 'select',
-					'name' => 'defaultSettingsTab',
-					'label' => 'Default Settings Tab',
-					'value' => $this->config['defaultSettingsTab'],
-					'options' => $this->getSettingsTabs(),
-					'help' => 'Choose which Settings Tab to be default when opening settings page'
-				),
-			),
+		return [
+			'Settings Page' => [
+				$this->settingsOption('select', 'defaultSettingsTab', ['label' => 'Default Settings Tab', 'options' => $this->getSettingsTabs(), 'help' => 'Choose which Settings Tab to be default when opening settings page']),
+			],
 			'Database' => [
 				$this->settingsOption('notice', '', ['notice' => 'danger', 'title' => 'Warning', 'body' => 'This feature is experimental - You may face unexpected database is locked errors in logs']),
 				$this->settingsOption('html', '', ['label' => 'Journal Mode Status', 'html' => '<script>getJournalMode();</script><h4 class="journal-mode font-bold text-uppercase"><i class="fa fa-spin fa-circle-o-notch"></i></h4>']),
-				//$this->settingsOption('blank'),
 				$this->settingsOption('button', '', ['label' => 'Set DELETE Mode (Default)', 'icon' => 'icon-notebook', 'text' => 'Set', 'attr' => 'onclick="setJournalMode(\'DELETE\')"']),
 				$this->settingsOption('button', '', ['label' => 'Set WAL Mode', 'icon' => 'icon-notebook', 'text' => 'Set', 'attr' => 'onclick="setJournalMode(\'WAL\')"']),
 			],
-			'Github' => array(
-				array(
-					'type' => 'select',
-					'name' => 'branch',
-					'label' => 'Branch',
-					'value' => $this->config['branch'],
-					'options' => $this->getBranches(),
-					'disabled' => $this->docker,
-					'help' => ($this->docker) ? 'Since you are using the Official Docker image, Change the image to change the branch' : 'Choose which branch to download from'
-				),
-				array(
-					'type' => 'button',
-					'name' => 'force-install-branch',
-					'label' => 'Force Install Branch',
-					'class' => 'updateNow',
-					'icon' => 'fa fa-download',
-					'text' => 'Retrieve',
-					'attr' => ($this->docker) ? 'title="You can just restart your docker to update"' : '',
-					'help' => ($this->docker) ? 'Since you are using the official Docker image, you can just restart your Docker container to update Organizr' : 'This will re-download all of the source files for Organizr'
-				)
-			),
-			'API' => array(
-				array(
-					'type' => 'password-alt-copy',
-					'name' => 'organizrAPI',
-					'label' => 'Organizr API',
-					'value' => $this->config['organizrAPI']
-				),
-				array(
-					'type' => 'button',
-					'label' => 'Generate New API Key',
-					'class' => 'newAPIKey',
-					'icon' => 'fa fa-refresh',
-					'text' => 'Generate'
-				),
+			'Github' => [
+				$this->settingsOption('select', 'branch', ['label' => 'Branch', 'value' => $this->config['branch'], 'options' => $this->getBranches(), 'disabled' => $this->docker, 'help' => ($this->docker) ? 'Since you are using the Official Docker image, Change the image to change the branch' : 'Choose which branch to download from']),
+				$this->settingsOption('button', 'force-install-branch', ['label' => 'Force Install Branch', 'class' => 'updateNow', 'icon' => 'fa fa-download', 'text' => 'Retrieve', 'attr' => ($this->docker) ? 'title="You can just restart your docker to update"' : '', 'help' => ($this->docker) ? 'Since you are using the official Docker image, you can just restart your Docker container to update Organizr' : 'This will re-download all of the source files for Organizr']),
+			],
+			'API' => [
+				$this->settingsOption('password-alt-copy', 'organizrAPI', ['label' => 'Organizr API']),
+				$this->settingsOption('button', null, ['label' => 'Generate New API Key', 'class' => 'newAPIKey', 'icon' => 'fa fa-refresh', 'text' => 'Generate']),
 				$this->settingsOption('notice', null, ['title' => 'API Documentation', 'body' => 'The documentation for Organizr\'s API is included with this installation.  To access the docs, use the button below.', 'bodyHTML' => '<br/><br/><div class="row"><div class="col-lg-2 col-sm-4 col-xs-12"><a href="' . $this->getServerPath() . 'docs/" target="_blank" class="btn btn-block btn-primary text-white" lang="en">Organizr Docs</a></div></div>'])
-			),
-			'Authentication' => array(
-				array(
-					'type' => 'select',
-					'name' => 'authType',
-					'id' => 'authSelect',
-					'label' => 'Authentication Type',
-					'value' => $this->config['authType'],
-					'options' => $this->getAuthTypes()
-				),
-				array(
-					'type' => 'select',
-					'name' => 'authBackend',
-					'id' => 'authBackendSelect',
-					'label' => 'Authentication Backend',
-					'class' => 'backendAuth switchAuth',
-					'value' => $this->config['authBackend'],
-					'options' => $this->getAuthBackends()
-				),
-				array(
-					'type' => 'password-alt',
-					'name' => 'plexToken',
-					'class' => 'plexAuth switchAuth',
-					'label' => 'Plex Token',
-					'value' => $this->config['plexToken'],
-					'placeholder' => 'Use Get Token Button'
-				),
-				array(
-					'type' => 'button',
-					'label' => 'Get Plex Token',
-					'class' => 'getPlexTokenAuth plexAuth switchAuth',
-					'icon' => 'fa fa-ticket',
-					'text' => 'Retrieve',
-					'attr' => 'onclick="PlexOAuth(oAuthSuccess,oAuthError, null, \'#settings-main-form [name=plexToken]\')"'
-				),
-				array(
-					'type' => 'password-alt',
-					'name' => 'plexID',
-					'class' => 'plexAuth switchAuth',
-					'label' => 'Plex Machine',
-					'value' => $this->config['plexID'],
-					'placeholder' => 'Use Get Plex Machine Button'
-				),
-				array(
-					'type' => 'button',
-					'label' => 'Get Plex Machine',
-					'class' => 'getPlexMachineAuth plexAuth switchAuth',
-					'icon' => 'fa fa-id-badge',
-					'text' => 'Retrieve',
-					'attr' => 'onclick="showPlexMachineForm(\'#settings-main-form [name=plexID]\')"'
-				),
-				array(
-					'type' => 'input',
-					'name' => 'plexAdmin',
-					'label' => 'Plex Admin Username',
-					'class' => 'plexAuth switchAuth',
-					'value' => $this->config['plexAdmin'],
-					'placeholder' => 'Admin username for Plex'
-				),
-				array(
-					'type' => 'switch',
-					'name' => 'plexoAuth',
-					'label' => 'Enable Plex oAuth',
-					'class' => 'plexAuth switchAuth',
-					'value' => $this->config['plexoAuth']
-				),
-				array(
-					'type' => 'switch',
-					'name' => 'ignoreTFAIfPlexOAuth',
-					'label' => 'Ignore 2FA if Plex OAuth ',
-					'class' => 'plexAuth switchAuth',
-					'value' => $this->config['ignoreTFAIfPlexOAuth'],
-					'help' => 'Enabling this will disable Organizr 2FA (If applicable) if User uses Plex OAuth to login'
-				),
-				array(
-					'type' => 'switch',
-					'name' => 'plexStrictFriends',
-					'label' => 'Strict Plex Friends ',
-					'class' => 'plexAuth switchAuth',
-					'value' => $this->config['plexStrictFriends'],
-					'help' => 'Enabling this will only allow Friends that have shares to the Machine ID entered above to login, Having this disabled will allow all Friends on your Friends list to login'
-				),
-				array(
-					'type' => 'switch',
-					'name' => 'ignoreTFALocal',
-					'label' => 'Ignore External 2FA on Local Subnet',
-					'value' => $this->config['ignoreTFALocal'],
-					'help' => 'Enabling this will bypass external 2FA security if user is on local Subnet'
-				),
-				array(
-					'type' => 'input',
-					'name' => 'authBackendHost',
-					'class' => 'ldapAuth ftpAuth switchAuth',
-					'label' => 'Host Address',
-					'value' => $this->config['authBackendHost'],
-					'placeholder' => 'http(s) | ftp(s) | ldap(s)://hostname:port'
-				),
-				array(
-					'type' => 'input',
-					'name' => 'authBaseDN',
-					'class' => 'ldapAuth switchAuth',
-					'label' => 'Host Base DN',
-					'value' => $this->config['authBaseDN'],
-					'placeholder' => 'cn=%s,dc=sub,dc=domain,dc=com'
-				),
-				array(
-					'type' => 'input',
-					'name' => 'authBackendHostPrefix',
-					'class' => 'ldapAuth switchAuth',
-					'label' => 'Account Prefix',
-					'id' => 'authBackendHostPrefix-input',
-					'value' => $this->config['authBackendHostPrefix'],
-					'placeholder' => 'Account prefix - i.e. Controller\ from Controller\Username for AD - uid= for OpenLDAP'
-				),
-				array(
-					'type' => 'input',
-					'name' => 'authBackendHostSuffix',
-					'class' => 'ldapAuth switchAuth',
-					'label' => 'Account Suffix',
-					'id' => 'authBackendHostSuffix-input',
-					'value' => $this->config['authBackendHostSuffix'],
-					'placeholder' => 'Account suffix - start with comma - ,ou=people,dc=domain,dc=tld'
-				),
-				array(
-					'type' => 'input',
-					'name' => 'ldapBindUsername',
-					'class' => 'ldapAuth switchAuth',
-					'label' => 'Bind Username',
-					'value' => $this->config['ldapBindUsername'],
-					'placeholder' => ''
-				),
-				array(
-					'type' => 'password',
-					'name' => 'ldapBindPassword',
-					'class' => 'ldapAuth switchAuth',
-					'label' => 'Bind Password',
-					'value' => $this->config['ldapBindPassword']
-				),
-				array(
-					'type' => 'select',
-					'name' => 'ldapType',
-					'id' => 'ldapType',
-					'label' => 'LDAP Backend Type',
-					'class' => 'ldapAuth switchAuth',
-					'value' => $this->config['ldapType'],
-					'options' => $this->getLDAPOptions()
-				),
-				array(
-					'type' => 'html',
-					'class' => 'ldapAuth switchAuth',
-					'label' => 'Account DN',
-					'html' => '<span id="accountDN" class="ldapAuth switchAuth">' . $this->config['authBackendHostPrefix'] . 'TestAcct' . $this->config['authBackendHostSuffix'] . '</span>'
-				),
-				array(
-					'type' => 'switch',
-					'name' => 'ldapSSL',
-					'class' => 'ldapAuth switchAuth',
-					'label' => 'Enable LDAP SSL',
-					'value' => $this->config['ldapSSL'],
-					'help' => 'This will enable the use of SSL for LDAP connections'
-				),
-				array(
-					'type' => 'switch',
-					'name' => 'ldapSSL',
-					'class' => 'ldapAuth switchAuth',
-					'label' => 'Enable LDAP TLS',
-					'value' => $this->config['ldapTLS'],
-					'help' => 'This will enable the use of TLS for LDAP connections'
-				),
-				array(
-					'type' => 'button',
-					'name' => 'test-button-ldap',
-					'label' => 'Test Connection',
-					'icon' => 'fa fa-flask',
-					'class' => 'ldapAuth switchAuth',
-					'text' => 'Test Connection',
-					'attr' => 'onclick="testAPIConnection(\'ldap\')"',
-					'help' => 'Remember! Please save before using the test button!'
-				),
-				array(
-					'type' => 'button',
-					'name' => 'test-button-ldap-login',
-					'label' => 'Test Login',
-					'icon' => 'fa fa-flask',
-					'class' => 'ldapAuth switchAuth',
-					'text' => 'Test Login',
-					'attr' => 'onclick="showLDAPLoginTest()"'
-				),
-				array(
-					'type' => 'input',
-					'name' => 'embyURL',
-					'class' => 'embyAuth switchAuth',
-					'label' => 'Emby URL',
-					'value' => $this->config['embyURL'],
-					'help' => 'Please make sure to use local IP address and port - You also may use local dns name too.',
-					'placeholder' => 'http(s)://hostname:port'
-				),
-				array(
-					'type' => 'password-alt',
-					'name' => 'embyToken',
-					'class' => 'embyAuth switchAuth',
-					'label' => 'Emby Token',
-					'value' => $this->config['embyToken'],
-					'placeholder' => ''
-				),
-				array(
-					'type' => 'input',
-					'name' => 'jellyfinURL',
-					'class' => 'jellyfinAuth switchAuth',
-					'label' => 'Jellyfin URL',
-					'value' => $this->config['jellyfinURL'],
-					'help' => 'Please make sure to use local IP address and port - You also may use local dns name too.',
-					'placeholder' => 'http(s)://hostname:port'
-				),
-				array(
-					'type' => 'password-alt',
-					'name' => 'jellyfinToken',
-					'class' => 'jellyfinAuth switchAuth',
-					'label' => 'Jellyfin Token',
-					'value' => $this->config['jellyfinToken'],
-					'placeholder' => ''
-				),
-			),
-			'Security' => array(
-				array(
-					'type' => 'number',
-					'name' => 'loginAttempts',
-					'label' => 'Max Login Attempts',
-					'value' => $this->config['loginAttempts'],
-					'placeholder' => ''
-				),
-				array(
-					'type' => 'select',
-					'name' => 'loginLockout',
-					'label' => 'Login Lockout Seconds',
-					'value' => $this->config['loginLockout'],
-					'options' => $this->timeOptions()
-				),
-				array(
-					'type' => 'number',
-					'name' => 'lockoutTimeout',
-					'label' => 'Inactivity Timer [Minutes]',
-					'value' => $this->config['lockoutTimeout'],
-					'placeholder' => ''
-				),
-				array(
-					'type' => 'switch',
-					'name' => 'lockoutSystem',
-					'label' => 'Inactivity Lock',
-					'value' => $this->config['lockoutSystem']
-				),
-				array(
-					'type' => 'select',
-					'name' => 'lockoutMinAuth',
-					'label' => 'Lockout Groups From',
-					'value' => $this->config['lockoutMinAuth'],
-					'options' => $this->groupSelect()
-				),
-				array(
-					'type' => 'select',
-					'name' => 'lockoutMaxAuth',
-					'label' => 'Lockout Groups To',
-					'value' => $this->config['lockoutMaxAuth'],
-					'options' => $this->groupSelect()
-				),
-				array(
-					'type' => 'switch',
-					'name' => 'traefikAuthEnable',
-					'label' => 'Enable Traefik Auth Redirect',
-					'help' => 'This will enable the webserver to forward errors so traefik will accept them',
-					'value' => $this->config['traefikAuthEnable']
-				),
-				array(
-					'type' => 'input',
-					'name' => 'traefikDomainOverride',
-					'label' => 'Traefik Domain for Return Override',
-					'value' => $this->config['traefikDomainOverride'],
-					'help' => 'Please use a FQDN on this URL Override',
-					'placeholder' => 'http(s)://domain'
-				),
-				array(
-					'type' => 'select',
-					'name' => 'debugAreaAuth',
-					'label' => 'Minimum Authentication for Debug Area',
-					'value' => $this->config['debugAreaAuth'],
-					'options' => $this->groupSelect(),
-					'settings' => '{}'
-				),
-				array(
-					'type' => 'select2',
-					'class' => 'select2-multiple',
-					'id' => 'sandbox-select',
-					'name' => 'sandbox',
-					'label' => 'iFrame Sandbox',
-					'value' => $this->config['sandbox'],
-					'help' => 'WARNING! This can potentially mess up your iFrames',
-					'options' => array(
-						array(
-							'name' => 'Allow Presentation',
-							'value' => 'allow-presentation'
-						),
-						array(
-							'name' => 'Allow Forms',
-							'value' => 'allow-forms'
-						),
-						array(
-							'name' => 'Allow Same Origin',
-							'value' => 'allow-same-origin'
-						),
-						array(
-							'name' => 'Allow Orientation Lock',
-							'value' => 'allow-orientation-lock'
-						),
-						array(
-							'name' => 'Allow Pointer Lock',
-							'value' => 'allow-pointer-lock'
-						),
-						array(
-							'name' => 'Allow Scripts',
-							'value' => 'allow-scripts'
-						),
-						array(
-							'name' => 'Allow Popups',
-							'value' => 'allow-popups'
-						),
-						array(
-							'name' => 'Allow Popups To Escape Sandbox',
-							'value' => 'allow-popups-to-escape-sandbox'
-						),
-						array(
-							'name' => 'Allow Modals',
-							'value' => 'allow-modals'
-						),
-						array(
-							'name' => 'Allow Top Navigation',
-							'value' => 'allow-top-navigation'
-						),
-						array(
-							'name' => 'Allow Top Navigation By User Activation',
-							'value' => 'allow-top-navigation-by-user-activation'
-						),
-						array(
-							'name' => 'Allow Downloads',
-							'value' => 'allow-downloads'
-						),
-					)
-				),
-				array(
-					'type' => 'select2',
-					'class' => 'select2-multiple',
-					'id' => 'blacklisted-select',
-					'name' => 'blacklisted',
-					'label' => 'Blacklisted IP\'s',
-					'value' => $this->config['blacklisted'],
-					'help' => 'WARNING! This will block anyone with these IP\'s',
-					'options' => $this->makeOptionsFromValues($this->config['blacklisted']),
-					'settings' => '{tags: true}',
-				),
-				array(
-					'type' => 'textbox',
-					'name' => 'blacklistedMessage',
-					'class' => '',
-					'label' => 'Blacklisted Error Message',
-					'value' => $this->config['blacklistedMessage'],
-					'attr' => 'rows="10"',
-				),
-			),
-			'Login' => array(
-				array(
-					'type' => 'password-alt',
-					'name' => 'registrationPassword',
-					'label' => 'Registration Password',
-					'help' => 'Sets the password for the Registration form on the login screen',
-					'value' => $this->config['registrationPassword'],
-				),
-				array(
-					'type' => 'switch',
-					'name' => 'hideRegistration',
-					'label' => 'Hide Registration',
-					'help' => 'Enable this to hide the Registration button on the login screen',
-					'value' => $this->config['hideRegistration'],
-				),
-				array(
-					'type' => 'number',
-					'name' => 'rememberMeDays',
-					'label' => 'Remember Me Length',
-					'help' => 'Number of days cookies and tokens will be valid for',
-					'value' => $this->config['rememberMeDays'],
-					'placeholder' => '',
-					'attr' => 'min="1"'
-				),
-				array(
-					'type' => 'switch',
-					'name' => 'rememberMe',
-					'label' => 'Remember Me',
-					'help' => 'Default status of Remember Me button on login screen',
-					'value' => $this->config['rememberMe'],
-				),
+			],
+			'Authentication' => [
+				$this->settingsOption('select', 'authType', ['id' => 'authSelect', 'label' => 'Authentication Type', 'value' => $this->config['authType'], 'options' => $this->getAuthTypes()]),
+				$this->settingsOption('select', 'authBackend', ['id' => 'authBackendSelect', 'label' => 'Authentication Backend', 'class' => 'backendAuth switchAuth', 'value' => $this->config['authBackend'], 'options' => $this->getAuthBackends()]),
+				$this->settingsOption('token', 'plexToken', ['class' => 'plexAuth switchAuth']),
+				$this->settingsOption('button', '', ['class' => 'getPlexTokenAuth plexAuth switchAuth', 'label' => 'Get Plex Token', 'icon' => 'fa fa-ticket', 'text' => 'Retrieve', 'attr' => 'onclick="PlexOAuth(oAuthSuccess,oAuthError, null, \'#settings-main-form [name=plexToken]\')"']),
+				$this->settingsOption('password-alt', 'plexID', ['class' => 'plexAuth switchAuth', 'label' => 'Plex Machine', 'placeholder' => 'Use Get Plex Machine Button']),
+				$this->settingsOption('button', '', ['class' => 'getPlexMachineAuth plexAuth switchAuth', 'label' => 'Get Plex Machine', 'icon' => 'fa fa-id-badge', 'text' => 'Retrieve', 'attr' => 'onclick="showPlexMachineForm(\'#settings-main-form [name=plexID]\')"']),
+				$this->settingsOption('input', 'plexAdmin', ['label' => 'Plex Admin Username or Email', 'class' => 'plexAuth switchAuth', 'placeholder' => 'Admin username for Plex']),
+				$this->settingsOption('switch', 'plexoAuth', ['label' => 'Enable Plex oAuth', 'class' => 'plexAuth switchAuth']),
+				$this->settingsOption('switch', 'ignoreTFAIfPlexOAuth', ['label' => 'Ignore 2FA if Plex OAuth ', 'class' => 'plexAuth switchAuth', 'help' => 'Enabling this will disable Organizr 2FA (If applicable) if User uses Plex OAuth to login']),
+				$this->settingsOption('switch', 'plexStrictFriends', ['label' => 'Strict Plex Friends ', 'class' => 'plexAuth switchAuth', 'help' => 'Enabling this will only allow Friends that have shares to the Machine ID entered above to login, Having this disabled will allow all Friends on your Friends list to login']),
+				$this->settingsOption('switch', 'ignoreTFALocal', ['label' => 'Ignore External 2FA on Local Subnet', 'help' => 'Enabling this will bypass external 2FA security if user is on local Subnet']),
+				$this->settingsOption('url', 'authBackendHost', ['class' => 'ldapAuth ftpAuth switchAuth', 'label' => 'Host Address', 'placeholder' => 'http(s) | ftp(s) | ldap(s)://hostname:port']),
+				$this->settingsOption('input', 'authBaseDN', ['class' => 'ldapAuth switchAuth', 'label' => 'Host Base DN', 'placeholder' => 'cn=%s,dc=sub,dc=domain,dc=com']),
+				$this->settingsOption('input', 'authBackendHostPrefix', ['class' => 'ldapAuth switchAuth', 'label' => 'Account Prefix', 'id' => 'authBackendHostPrefix-input', 'placeholder' => 'Account prefix - i.e. Controller\ from Controller\Username for AD - uid= for OpenLDAP']),
+				$this->settingsOption('input', 'authBackendHostSuffix', ['class' => 'ldapAuth switchAuth', 'label' => 'Account Suffix', 'id' => 'authBackendHostSuffix-input', 'placeholder' => 'Account suffix - start with comma - ,ou=people,dc=domain,dc=tld']),
+				$this->settingsOption('input', 'ldapBindUsername', ['class' => 'ldapAuth switchAuth', 'label' => 'Bind Username']),
+				$this->settingsOption('password', 'ldapBindPassword', ['class' => 'ldapAuth switchAuth', 'label' => 'Bind Password']),
+				$this->settingsOption('select', 'ldapType', ['id' => 'ldapType', 'label' => 'LDAP Backend Type', 'class' => 'ldapAuth switchAuth', 'options' => $this->getLDAPOptions()]),
+				$this->settingsOption('html', null, ['class' => 'ldapAuth switchAuth', 'label' => 'Account DN', 'html' => '<span id="accountDN" class="ldapAuth switchAuth">' . $this->config['authBackendHostPrefix'] . 'TestAcct' . $this->config['authBackendHostSuffix'] . '</span>']),
+				$this->settingsOption('blank', null, ['class' => 'ldapAuth switchAuth']),
+				$this->settingsOption('switch', 'ldapSSL', ['class' => 'ldapAuth switchAuth', 'label' => 'Enable LDAP SSL', 'help' => 'This will enable the use of SSL for LDAP connections']),
+				$this->settingsOption('switch', 'ldapSSL', ['class' => 'ldapAuth switchAuth', 'label' => 'Enable LDAP TLS', 'help' => 'This will enable the use of TLS for LDAP connections']),
+				$this->settingsOption('test', 'ldap', ['class' => 'ldapAuth switchAuth']),
+				$this->settingsOption('test', '', ['label' => 'Test Login', 'class' => 'ldapAuth switchAuth', 'text' => 'Test Login', 'attr' => 'onclick="showLDAPLoginTest()"']),
+				$this->settingsOption('url', 'embyURL', ['class' => 'embyAuth switchAuth', 'label' => 'Emby URL', 'help' => 'Please make sure to use local IP address and port - You also may use local dns name too.']),
+				$this->settingsOption('token', 'embyToken', ['class' => 'embyAuth switchAuth', 'label' => 'Emby Token']),
+				$this->settingsOption('url', 'jellyfinURL', ['class' => 'jellyfinAuth switchAuth', 'label' => 'Jellyfin URL', 'help' => 'Please make sure to use local IP address and port - You also may use local dns name too.']),
+				$this->settingsOption('token', 'jellyfinToken', ['class' => 'jellyfinAuth switchAuth', 'label' => 'Jellyfin Token']),
+			],
+			'Security' => [
+				$this->settingsOption('number', 'loginAttempts', ['label' => 'Max Login Attempts']),
+				$this->settingsOption('select', 'loginLockout', ['label' => 'Login Lockout Seconds', 'options' => $this->timeOptions()]),
+				$this->settingsOption('number', 'lockoutTimeout', ['label' => 'Inactivity Timer [Minutes]']),
+				$this->settingsOption('switch', 'lockoutSystem', ['label' => 'Inactivity Lock']),
+				$this->settingsOption('select', 'lockoutMinAuth', ['label' => 'Lockout Groups From', 'options' => $this->groupSelect()]),
+				$this->settingsOption('select', 'lockoutMaxAuth', ['label' => 'Lockout Groups To', 'options' => $this->groupSelect()]),
+				$this->settingsOption('switch', 'traefikAuthEnable', ['label' => 'Enable Traefik Auth Redirect', 'help' => 'This will enable the webserver to forward errors so traefik will accept them']),
+				$this->settingsOption('input', 'traefikDomainOverride', ['label' => 'Traefik Domain for Return Override', 'help' => 'Please use a FQDN on this URL Override', 'placeholder' => 'http(s)://domain']),
+				$this->settingsOption('select', 'debugAreaAuth', ['label' => 'Minimum Authentication for Debug Area', 'options' => $this->groupSelect(), 'settings' => '{}']),
+				$this->settingsOption('multiple', 'sandbox', ['override' => 12, 'label' => 'iFrame Sandbox', 'help' => 'WARNING! This can potentially mess up your iFrames', 'options' => $this->sandboxOptions()]),
+				$this->settingsOption('multiple', 'blacklisted', ['override' => 12, 'label' => 'Blacklisted IP\'s', 'help' => 'WARNING! This will block anyone with these IP\'s', 'options' => $this->makeOptionsFromValues($this->config['blacklisted']), 'settings' => '{tags: true}']),
+				$this->settingsOption('code-editor', 'blacklistedMessage', ['mode' => 'html']),
+			],
+			'Logs' => [
+				$this->settingsOption('select', 'logLevel', ['label' => 'Log Level', 'options' => $this->logLevels()]),
+				$this->settingsOption('switch', 'includeDatabaseQueriesInDebug', ['label' => 'Include Database Queries', 'help' => 'Include Database queries in debug logs']),
+				$this->settingsOption('number', 'maxLogFiles', ['label' => 'Maximum Log Files', 'help' => 'Number of log files to preserve', 'attr' => 'min="1"']),
+				$this->settingsOption('select', 'logLiveUpdateRefresh', ['label' => 'Live Update Refresh', 'options' => $this->timeOptions()]),
+				$this->settingsOption('select', 'logPageSize', ['label' => 'Log Page Size', 'options' => [['name' => '10 Items', 'value' => '10'], ['name' => '25 Items', 'value' => '25'], ['name' => '50 Items', 'value' => '50'], ['name' => '100 Items', 'value' => '100']]]),
+			],
+			'Login' => [
+				$this->settingsOption('password', 'registrationPassword', ['label' => 'Registration Password', 'help' => 'Sets the password for the Registration form on the login screen']),
+				$this->settingsOption('switch', 'hideRegistration', ['label' => 'Hide Registration', 'help' => 'Enable this to hide the Registration button on the login screen']),
+				$this->settingsOption('number', 'rememberMeDays', ['label' => 'Remember Me Length', 'help' => 'Number of days cookies and tokens will be valid for', 'attr' => 'min="1"']),
+				$this->settingsOption('switch', 'rememberMe', ['label' => 'Remember Me', 'help' => 'Default status of Remember Me button on login screen']),
 				$this->settingsOption('multiple-url', 'localIPList', ['label' => 'Override Local IP or Subnet', 'help' => 'IPv4 only at the moment - This will set your login as local if your IP falls within the From and To']),
-				array(
-					'type' => 'input',
-					'name' => 'wanDomain',
-					'label' => 'WAN Domain',
-					'value' => $this->config['wanDomain'],
-					'placeholder' => 'only domain and tld - i.e. domain.com',
-					'help' => 'Enter domain if you wish to be forwarded to a local address - Local Address filled out on next item'
-				),
-				array(
-					'type' => 'input',
-					'name' => 'localAddress',
-					'label' => 'Local Address',
-					'value' => $this->config['localAddress'],
-					'placeholder' => 'http://home.local',
-					'help' => 'Full local address of organizr install - i.e. http://home.local or http://192.168.0.100'
-				),
-				array(
-					'type' => 'switch',
-					'name' => 'enableLocalAddressForward',
-					'label' => 'Enable Local Address Forward',
-					'help' => 'Enables the local address forward if on local address and accessed from WAN Domain',
-					'value' => $this->config['enableLocalAddressForward'],
-				),
-				array(
-					'type' => 'switch',
-					'name' => 'disableRecoverPass',
-					'label' => 'Disable Recover Password',
-					'help' => 'Disables recover password area',
-					'value' => $this->config['disableRecoverPass'],
-				),
-				array(
-					'type' => 'input',
-					'name' => 'customForgotPassText',
-					'label' => 'Custom Recover Password Text',
-					'value' => $this->config['customForgotPassText'],
-					'placeholder' => '',
-					'help' => 'Text or HTML for recovery password section'
-				),
-			),
-			'Auth Proxy' => array(
-				array(
-					'type' => 'switch',
-					'name' => 'authProxyEnabled',
-					'label' => 'Auth Proxy',
-					'help' => 'Enable option to set Auth Proxy Header Login',
-					'value' => $this->config['authProxyEnabled'],
-				),
-				array(
-					'type' => 'input',
-					'name' => 'authProxyWhitelist',
-					'label' => 'Auth Proxy Whitelist',
-					'value' => $this->config['authProxyWhitelist'],
-					'placeholder' => 'i.e. 10.0.0.0/24 or 10.0.0.20',
-					'help' => 'IPv4 only at the moment - This must be set to work, will accept subnet or IP address'
-				),
-				array(
-					'type' => 'input',
-					'name' => 'authProxyHeaderName',
-					'label' => 'Auth Proxy Header Name',
-					'value' => $this->config['authProxyHeaderName'],
-					'placeholder' => 'i.e. X-Forwarded-User',
-					'help' => 'Please choose a unique value for added security'
-				),
-				array(
-					'type' => 'input',
-					'name' => 'authProxyHeaderNameEmail',
-					'label' => 'Auth Proxy Header Name for Email',
-					'value' => $this->config['authProxyHeaderNameEmail'],
-					'placeholder' => 'i.e. X-Forwarded-Email',
-					'help' => 'Please choose a unique value for added security'
-				)
-			),
-			'Ping' => array(
-				array(
-					'type' => 'select',
-					'name' => 'pingAuth',
-					'label' => 'Minimum Authentication',
-					'value' => $this->config['pingAuth'],
-					'options' => $this->groupSelect()
-				),
-				array(
-					'type' => 'select',
-					'name' => 'pingAuthMessage',
-					'label' => 'Minimum Authentication for Message and Sound',
-					'value' => $this->config['pingAuthMessage'],
-					'options' => $this->groupSelect()
-				),
-				array(
-					'type' => 'select',
-					'name' => 'pingOnlineSound',
-					'label' => 'Online Sound',
-					'value' => $this->config['pingOnlineSound'],
-					'options' => $this->getSounds()
-				),
-				array(
-					'type' => 'select',
-					'name' => 'pingOfflineSound',
-					'label' => 'Offline Sound',
-					'value' => $this->config['pingOfflineSound'],
-					'options' => $this->getSounds()
-				),
-				array(
-					'type' => 'switch',
-					'name' => 'pingMs',
-					'label' => 'Show Ping Time',
-					'value' => $this->config['pingMs']
-				),
-				array(
-					'type' => 'switch',
-					'name' => 'statusSounds',
-					'label' => 'Enable Notify Sounds',
-					'value' => $this->config['statusSounds'],
-					'help' => 'Will play a sound if the server goes down and will play sound if comes back up.',
-				),
-				array(
-					'type' => 'select',
-					'name' => 'pingAuthMs',
-					'label' => 'Minimum Authentication for Time Display',
-					'value' => $this->config['pingAuthMs'],
-					'options' => $this->groupSelect()
-				),
-				array(
-					'type' => 'select',
-					'name' => 'adminPingRefresh',
-					'label' => 'Admin Refresh Seconds',
-					'value' => $this->config['adminPingRefresh'],
-					'options' => $this->timeOptions()
-				),
-				array(
-					'type' => 'select',
-					'name' => 'otherPingRefresh',
-					'label' => 'Everyone Refresh Seconds',
-					'value' => $this->config['otherPingRefresh'],
-					'options' => $this->timeOptions()
-				),
-			),
-			'Certificate' => array(
-				array(
-					'type' => 'html',
-					'label' => '',
-					'override' => 12,
-					'html' => '
+				$this->settingsOption('input', 'wanDomain', ['label' => 'WAN Domain', 'placeholder' => 'only domain and tld - i.e. domain.com', 'help' => 'Enter domain if you wish to be forwarded to a local address - Local Address filled out on next item']),
+				$this->settingsOption('url', 'localAddress', ['label' => 'Local Address', 'placeholder' => 'http://home.local', 'help' => 'Full local address of organizr install - i.e. http://home.local or http://192.168.0.100']),
+				$this->settingsOption('switch', 'enableLocalAddressForward', ['label' => 'Enable Local Address Forward', 'help' => 'Enables the local address forward if on local address and accessed from WAN Domain']),
+				$this->settingsOption('switch', 'disableRecoverPass', ['label' => 'Disable Recover Password', 'help' => 'Disables recover password area']),
+				$this->settingsOption('input', 'customForgotPassText', ['label' => 'Custom Recover Password Text', 'help' => 'Text or HTML for recovery password section']),
+			],
+			'Auth Proxy' => [
+				$this->settingsOption('switch', 'authProxyEnabled', ['label' => 'Auth Proxy', 'help' => 'Enable option to set Auth Proxy Header Login']),
+				$this->settingsOption('input', 'authProxyWhitelist', ['label' => 'Auth Proxy Whitelist', 'placeholder' => 'i.e. 10.0.0.0/24 or 10.0.0.20', 'help' => 'IPv4 only at the moment - This must be set to work, will accept subnet or IP address']),
+				$this->settingsOption('input', 'authProxyHeaderName', ['label' => 'Auth Proxy Header Name', 'placeholder' => 'i.e. X-Forwarded-User', 'help' => 'Please choose a unique value for added security']),
+				$this->settingsOption('input', 'authProxyHeaderNameEmail', ['label' => 'Auth Proxy Header Name for Email', 'placeholder' => 'i.e. X-Forwarded-Email', 'help' => 'Please choose a unique value for added security']),
+			],
+			'Ping' => [
+				$this->settingsOption('auth', 'pingAuth'),
+				$this->settingsOption('auth', 'pingAuthMessage', ['label' => 'Minimum Authentication for Message and Sound']),
+				$this->settingsOption('select', 'pingOnlineSound', ['label' => 'Online Sound', 'options' => $this->getSounds()]),
+				$this->settingsOption('select', 'pingOfflineSound', ['label' => 'Offline Sound', 'options' => $this->getSounds()]),
+				$this->settingsOption('switch', 'pingMs', ['label' => 'Show Ping Time']),
+				$this->settingsOption('switch', 'statusSounds', ['label' => 'Enable Notify Sounds', 'help' => 'Will play a sound if the server goes down and will play sound if comes back up.']),
+				$this->settingsOption('auth', 'pingAuthMs', ['label' => 'Minimum Authentication for Time Display']),
+				$this->settingsOption('refresh', 'adminPingRefresh', ['label' => 'Admin Refresh Seconds']),
+				$this->settingsOption('refresh', 'otherPingRefresh', ['label' => 'Everyone Refresh Seconds']),
+			],
+			'Certificate' => [
+				$this->settingsOption('html', '', ['override' => 12,
+						'html' => '
 					<script>
 						let myDropzone = new Dropzone("#upload-custom-certificate", {
 							url: "api/v2/certificate/custom",
@@ -2860,234 +1937,119 @@ class Organizr
 							</div>
 						</div>
 					</div>
-					'
+					']
 				)
-			),
-		);
+			],
+		];
 	}
 	
 	public function getSettingsSSO()
 	{
 		return [
 			'FYI' => [
-				[
-					'type' => 'html',
-					'label' => '',
-					'override' => 12,
-					'html' => '
-					<div class="row">
-						<div class="col-lg-12">
-							<div class="panel panel-primary">
-								<div class="panel-heading"><span lang="en">Please Read First</span></div>
-								<div class="panel-wrapper collapse in" aria-expanded="true">
-									<div class="panel-body">
-										<span lang="en">Using multiple SSO application will cause your Cookie Header item to increase.  If you haven\'t increased it by now, please follow this guide</span>
-										<br/><br/>
-										<div class="row">
-											<div class="col-lg-2 col-sm-4 col-xs-12">
-												<a href="https://docs.organizr.app/help/faq/organizr-login-error" target="_blank" class="btn btn-block btn-primary text-white" lang="en">Cookie Header Guide</a>
+				$this->settingsOption('html', '', ['override' => 12,
+						'html' => '
+						<div class="row">
+							<div class="col-lg-12">
+								<div class="panel panel-primary">
+									<div class="panel-heading"><span lang="en">Please Read First</span></div>
+									<div class="panel-wrapper collapse in" aria-expanded="true">
+										<div class="panel-body">
+											<span lang="en">Using multiple SSO application will cause your Cookie Header item to increase.  If you haven\'t increased it by now, please follow this guide</span>
+											<br/><br/>
+											<div class="row">
+												<div class="col-lg-2 col-sm-4 col-xs-12">
+													<a href="https://docs.organizr.app/help/faq/organizr-login-error" target="_blank" class="btn btn-block btn-primary text-white" lang="en">Cookie Header Guide</a>
+												</div>
 											</div>
+											<br/>
+											<span lang="en">This is not the same as database authentication - i.e. Plex Authentication | Emby Authentication | FTP Authentication<br/>Click Main on the sub-menu above.</span>
 										</div>
-										<br/>
-										<span lang="en">This is not the same as database authentication - i.e. Plex Authentication | Emby Authentication | FTP Authentication<br/>Click Main on the sub-menu above.</span>
 									</div>
 								</div>
 							</div>
-						</div>
-					</div>
-					'
-				]
+						</div>'
+					]
+				),
 			],
 			'Plex' => [
-				[
-					'type' => 'password-alt',
-					'name' => 'plexToken',
-					'label' => 'Plex Token',
-					'value' => $this->config['plexToken'],
-					'placeholder' => 'Use Get Token Button'
-				],
-				[
-					'type' => 'button',
-					'label' => 'Get Plex Token',
-					'icon' => 'fa fa-ticket',
-					'text' => 'Retrieve',
-					'attr' => 'onclick="PlexOAuth(oAuthSuccess,oAuthError, null, \'#sso-form [name=plexToken]\')"'
-				],
-				[
-					'type' => 'password-alt',
-					'name' => 'plexID',
-					'label' => 'Plex Machine',
-					'value' => $this->config['plexID'],
-					'placeholder' => 'Use Get Plex Machine Button'
-				],
-				[
-					'type' => 'button',
-					'label' => 'Get Plex Machine',
-					'icon' => 'fa fa-id-badge',
-					'text' => 'Retrieve',
-					'attr' => 'onclick="showPlexMachineForm(\'#sso-form [name=plexID]\')"'
-				],
-				[
-					'type' => 'input',
-					'name' => 'plexAdmin',
-					'label' => 'Admin Username',
-					'value' => $this->config['plexAdmin'],
-					'placeholder' => 'Admin username for Plex'
-				],
-				[
-					'type' => 'blank',
-					'label' => ''
-				],
-				[
-					'type' => 'html',
-					'label' => 'Plex Note',
-					'html' => '<span lang="en">Please make sure both Token and Machine are filled in</span>'
-				],
-				[
-					'type' => 'switch',
-					'name' => 'ssoPlex',
-					'label' => 'Enable',
-					'value' => $this->config['ssoPlex']
-				]
+				$this->settingsOption('token', 'plexToken'),
+				$this->settingsOption('button', '', ['label' => 'Get Plex Token', 'icon' => 'fa fa-ticket', 'text' => 'Retrieve', 'attr' => 'onclick="PlexOAuth(oAuthSuccess,oAuthError, null, \'#sso-form [name=plexToken]\')"']),
+				$this->settingsOption('password-alt', 'plexID', ['label' => 'Plex Machine']),
+				$this->settingsOption('button', '', ['label' => 'Get Plex Machine', 'icon' => 'fa fa-id-badge', 'text' => 'Retrieve', 'attr' => 'onclick="showPlexMachineForm(\'#sso-form [name=plexID]\')"']),
+				$this->settingsOption('input', 'plexAdmin', ['label' => 'Plex Admin Username or Email']),
+				$this->settingsOption('blank'),
+				$this->settingsOption('html', 'Plex Note', ['html' => '<span lang="en">Please make sure both Token and Machine are filled in</span>']),
+				$this->settingsOption('enable', 'ssoPlex'),
 			],
 			'Tautulli' => [
 				$this->settingsOption('multiple-url', 'tautulliURL'),
+				$this->settingsOption('auth', 'ssoTautulliAuth'),
 				$this->settingsOption('enable', 'ssoTautulli'),
 			],
 			'Overseerr' => [
-				[
-					'type' => 'input',
-					'name' => 'overseerrURL',
-					'label' => 'Overseerr URL',
-					'value' => $this->config['overseerrURL'],
-					'help' => 'Please make sure to use local IP address and port - You also may use local dns name too.',
-					'placeholder' => 'http(s)://hostname:port'
-				],
-				[
-					'type' => 'password-alt',
-					'name' => 'overseerrToken',
-					'label' => 'Token',
-					'value' => $this->config['overseerrToken']
-				],
-				[
-					'type' => 'input',
-					'name' => 'overseerrFallbackUser',
-					'label' => 'Overseerr Fallback Email',
-					'value' => $this->config['overseerrFallbackUser'],
-					'help' => 'DO NOT SET THIS TO YOUR ADMIN ACCOUNT. We recommend you create a local account as a "catch all" for when Organizr is unable to perform SSO.  Organizr will request a User Token based off of this user credentials',
-				],
-				[
-					'type' => 'password-alt',
-					'name' => 'overseerrFallbackPassword',
-					'label' => 'Overseerr Fallback Password',
-					'value' => $this->config['overseerrFallbackPassword'],
-				],
-				[
-					'type' => 'switch',
-					'name' => 'ssoOverseerr',
-					'label' => 'Enable',
-					'value' => $this->config['ssoOverseerr']
-				]
+				$this->settingsOption('url', 'overseerrURL'),
+				$this->settingsOption('token', 'overseerrToken'),
+				$this->settingsOption('username', 'overseerrFallbackUser', ['label' => 'Overseerr Fallback Email', 'help' => 'DO NOT SET THIS TO YOUR ADMIN ACCOUNT. We recommend you create a local account as a "catch all" for when Organizr is unable to perform SSO.  Organizr will request a User Token based off of this user credentials']),
+				$this->settingsOption('password', 'overseerrFallbackPassword', ['label' => 'Overseerr Fallback Password']),
+				$this->settingsOption('enable', 'ssoOverseerr'),
 			],
 			'Petio' => [
-				[
-					'type' => 'input',
-					'name' => 'petioURL',
-					'label' => 'Petio URL',
-					'value' => $this->config['petioURL'],
-					'help' => 'Please make sure to use local IP address and port - You also may use local dns name too.',
-					'placeholder' => 'http(s)://hostname:port'
-				],
-				[
-					'type' => 'password-alt',
-					'name' => 'petioToken',
-					'label' => 'Token',
-					'value' => $this->config['petioToken']
-				],
-				[
-					'type' => 'input',
-					'name' => 'petioFallbackUser',
-					'label' => 'Petio Fallback User',
-					'value' => $this->config['petioFallbackUser'],
-					'help' => 'DO NOT SET THIS TO YOUR ADMIN ACCOUNT. We recommend you create a local account as a "catch all" for when Organizr is unable to perform SSO.  Organizr will request a User Token based off of this user credentials',
-				],
-				[
-					'type' => 'password-alt',
-					'name' => 'petioFallbackPassword',
-					'label' => 'Petio Fallback Password',
-					'value' => $this->config['petioFallbackPassword'],
-				],
-				[
-					'type' => 'switch',
-					'name' => 'ssoPetio',
-					'label' => 'Enable',
-					'value' => $this->config['ssoPetio']
-				]
+				$this->settingsOption('url', 'petioURL'),
+				$this->settingsOption('token', 'petioToken'),
+				$this->settingsOption('username', 'petioFallbackUser', ['label' => 'Petio Fallback Email', 'help' => 'DO NOT SET THIS TO YOUR ADMIN ACCOUNT. We recommend you create a local account as a "catch all" for when Organizr is unable to perform SSO.  Organizr will request a User Token based off of this user credentials']),
+				$this->settingsOption('password', 'petioFallbackPassword', ['label' => 'Petio Fallback Password']),
+				$this->settingsOption('enable', 'ssoPetio'),
 			],
 			'Ombi' => [
-				[
-					'type' => 'input',
-					'name' => 'ombiURL',
-					'label' => 'Ombi URL',
-					'value' => $this->config['ombiURL'],
-					'help' => 'Please make sure to use local IP address and port - You also may use local dns name too.',
-					'placeholder' => 'http(s)://hostname:port'
-				],
-				[
-					'type' => 'password-alt',
-					'name' => 'ombiToken',
-					'label' => 'Token',
-					'value' => $this->config['ombiToken']
-				],
-				[
-					'type' => 'input',
-					'name' => 'ombiFallbackUser',
-					'label' => 'Ombi Fallback User',
-					'value' => $this->config['ombiFallbackUser'],
-					'help' => 'DO NOT SET THIS TO YOUR ADMIN ACCOUNT. We recommend you create a local account as a "catch all" for when Organizr is unable to perform SSO.  Organizr will request a User Token based off of this user credentials'
-				],
-				[
-					'type' => 'password-alt',
-					'name' => 'ombiFallbackPassword',
-					'label' => 'Ombi Fallback Password',
-					'value' => $this->config['ombiFallbackPassword']
-				],
-				[
-					'type' => 'switch',
-					'name' => 'ssoOmbi',
-					'label' => 'Enable',
-					'value' => $this->config['ssoOmbi']
-				]
+				$this->settingsOption('url', 'ombiURL'),
+				$this->settingsOption('token', 'ombiToken'),
+				$this->settingsOption('username', 'ombiFallbackUser', ['label' => 'Ombi Fallback Email', 'help' => 'DO NOT SET THIS TO YOUR ADMIN ACCOUNT. We recommend you create a local account as a "catch all" for when Organizr is unable to perform SSO.  Organizr will request a User Token based off of this user credentials']),
+				$this->settingsOption('password', 'ombiFallbackPassword', ['label' => 'Ombi Fallback Password']),
+				$this->settingsOption('enable', 'ssoOmbi'),
 			],
 			'Jellyfin' => [
-				[
-					'type' => 'input',
-					'name' => 'jellyfinURL',
-					'label' => 'Jellyfin API URL',
-					'value' => $this->config['jellyfinURL'],
-					'help' => 'Please make sure to use the local address to the API',
-					'placeholder' => 'http(s)://hostname:port'
-				],
-				[
-					'type' => 'input',
-					'name' => 'jellyfinSSOURL',
-					'label' => 'Jellyfin SSO URL',
-					'value' => $this->config['jellyfinSSOURL'],
-					'help' => 'Please make sure to use the same (sub)domain to access Jellyfin as Organizr\'s',
-					'placeholder' => 'http(s)://domain.com'
-				],
-				[
-					'type' => 'switch',
-					'name' => 'ssoJellyfin',
-					'label' => 'Enable',
-					'value' => $this->config['ssoJellyfin']
-				]
-			]
+				$this->settingsOption('url', 'jellyfinURL', ['label' => 'Jellyfin API URL', 'help' => 'Please make sure to use the local address to the API']),
+				$this->settingsOption('url', 'jellyfinSSOURL', ['label' => 'Jellyfin SSO URL', 'help' => 'Please make sure to use the same (sub)domain to access Jellyfin as Organizr\'s']),
+				$this->settingsOption('enable', 'ssoJellyfin'),
+			],
+			'Komga' => [
+				$this->settingsOption('url', 'komgaURL'),
+				$this->settingsOption('auth', 'ssoKomgaAuth'),
+				$this->settingsOption('enable', 'ssoKomga'),
+			],
 		];
 	}
 	
 	public function systemMenuLists()
 	{
+		$pluginsMenu = [
+			[
+				'active' => false,
+				'api' => 'api/v2/page/settings_plugins_enabled',
+				'anchor' => 'settings-plugins-enabled-anchor',
+				'name' => 'Active',
+			],
+			[
+				'active' => false,
+				'api' => 'api/v2/page/settings_plugins_disabled',
+				'anchor' => 'settings-plugins-disabled-anchor',
+				'name' => 'Inactive',
+			],
+			[
+				'active' => false,
+				'api' => 'api/v2/page/settings_plugins_settings',
+				'anchor' => 'settings-plugins-settings-anchor',
+				'name' => 'Settings',
+			],
+			[
+				'active' => false,
+				'api' => false,
+				'anchor' => 'settings-plugins-marketplace-anchor',
+				'name' => 'Marketplace',
+				'onclick' => 'loadPluginMarketplace();'
+			],
+		];
 		$userManagementMenu = [
 			[
 				'active' => false,
@@ -3197,6 +2159,7 @@ class Organizr
 		$systemMenus['tab_editor'] = $this->buildSettingsMenus($tabEditorMenu, 'Tab Editor');
 		$systemMenus['customize'] = $this->buildSettingsMenus($customizeMenu, 'Customize');
 		$systemMenus['user_management'] = $this->buildSettingsMenus($userManagementMenu, 'User Management');
+		$systemMenus['plugins'] = $this->buildSettingsMenus($pluginsMenu, 'Plugins');
 		return $systemMenus;
 	}
 	
@@ -3675,6 +2638,8 @@ class Organizr
 	
 	public function createToken($username, $email, $days = 1)
 	{
+		$this->setLoggerChannel('Authentication', $username);
+		$this->logger->debug('Starting token creation function');
 		$days = ($days > 365) ? 365 : $days;
 		//Quick get user ID
 		$result = $this->getUserByUsernameAndEmail($username, $email);
@@ -3718,6 +2683,12 @@ class Organizr
 			),
 		];
 		$token = $this->processQueries($response);
+		if ($jwttoken) {
+			$this->logger->debug('Token has been created');
+		} else {
+			$this->logger->warning('Token creation error');
+		}
+		$this->logger->debug('Token creation function has finished');
 		return $jwttoken;
 		
 	}
@@ -3735,6 +2706,9 @@ class Organizr
 		$output = $array['output'] ?? null;
 		$username = (strpos($this->config['authBackend'], 'emby') !== false) ? $username : strtolower($username);
 		$days = (isset($remember)) ? $this->config['rememberMeDays'] : 1;
+		// Set logger channel
+		$this->setLoggerChannel('Authentication', $username);
+		$this->logger->debug('Starting login function');
 		// Set  other variables
 		$function = 'plugin_auth_' . $this->config['authBackend'];
 		$authSuccess = false;
@@ -3743,6 +2717,7 @@ class Organizr
 		// Check Login attempts and kill if over limit
 		if ($loginAttempts > $this->config['loginAttempts'] || isset($_COOKIE['lockout'])) {
 			$this->coookieSeconds('set', 'lockout', $this->config['loginLockout'], $this->config['loginLockout']);
+			$this->logger->warning('User is locked out');
 			$this->setAPIResponse('error', 'User is locked out', 403);
 			return false;
 		}
@@ -3751,16 +2726,17 @@ class Organizr
 			if (isset($this->getallheaders()[$this->config['authProxyHeaderName']])) {
 				$usernameHeader = $this->getallheaders()[$this->config['authProxyHeaderName']] ?? $username;
 				$emailHeader = $this->getallheaders()[$this->config['authProxyHeaderNameEmail']] ?? null;
-				$this->writeLog('success', 'Auth Proxy Function - Starting Verification for IP: ' . $this->userIP() . ' for request on: ' . $_SERVER['REMOTE_ADDR'] . ' against IP/Subnet: ' . $this->config['authProxyWhitelist'], $usernameHeader);
+				$this->setLoggerChannel('Authentication', $usernameHeader);
+				$this->logger->debug('Starting Auth Proxy verification');
 				$whitelistRange = $this->analyzeIP($this->config['authProxyWhitelist']);
 				$authProxy = $this->authProxyRangeCheck($whitelistRange['from'], $whitelistRange['to']);
 				$username = ($authProxy) ? $usernameHeader : $username;
 				$password = ($password == null) ? $this->random_ascii_string(10) : $password;
 				$addEmailToAuthProxy = ($authProxy && $emailHeader) ? ['email' => $emailHeader] : true;
 				if ($authProxy) {
-					$this->writeLog('success', 'Auth Proxy Function - IP: ' . $this->userIP() . ' has been verified', $usernameHeader);
+					$this->logger->info('User has been verified using Auth Proxy');
 				} else {
-					$this->writeLog('error', 'Auth Proxy Function - IP: ' . $this->userIP() . ' has failed verification', $usernameHeader);
+					$this->logger->warning('User has failed verification using Auth Proxy');
 				}
 			}
 		}
@@ -3785,6 +2761,7 @@ class Organizr
 					if (!$authSuccess) {
 						// perform the internal authentication step
 						if (password_verify($password, $result['password'])) {
+							$this->logger->debug('User password has been verified');
 							$authSuccess = true;
 						}
 					}
@@ -3795,6 +2772,7 @@ class Organizr
 			switch ($oAuthType) {
 				case 'plex':
 					if ($this->config['plexoAuth']) {
+						$this->logger->debug('Starting Plex oAuth verification');
 						$tokenInfo = $this->checkPlexToken($oAuth);
 						if ($tokenInfo) {
 							$authSuccess = array(
@@ -3804,10 +2782,14 @@ class Organizr
 								'token' => $tokenInfo['user']['authToken'],
 								'oauth' => 'plex'
 							);
+							$this->logger->debug('User\'s Plex Token has been verified');
 							$this->coookie('set', 'oAuth', 'true', $this->config['rememberMeDays']);
 							$authSuccess = ((!empty($this->config['plexAdmin']) && strtolower($this->config['plexAdmin']) == strtolower($tokenInfo['user']['username'])) || (!empty($this->config['plexAdmin']) && strtolower($this->config['plexAdmin']) == strtolower($tokenInfo['user']['email'])) || $this->checkPlexUser($tokenInfo['user']['username'])) ? $authSuccess : false;
+						} else {
+							$this->logger->warning('User\'s Plex Token has failed verification');
 						}
 					} else {
+						$this->logger->debug('Plex oAuth is not setup');
 						$this->setAPIResponse('error', 'Plex oAuth is not setup', 422);
 						return false;
 					}
@@ -3833,12 +2815,14 @@ class Organizr
 				//does org password need to be updated
 				if (!$passwordMatches) {
 					$this->updateUserPassword($password, $result['id']);
-					$this->writeLog('success', 'Login Function - User Password updated from backend', $username);
+					$this->setLoggerChannel('Authentication', $username);
+					$this->logger->info('User Password updated from backend');
 				}
 				if ($token !== '') {
 					if ($token !== $result['plex_token']) {
 						$this->updateUserPlexToken($token, $result['id']);
-						$this->writeLog('success', 'Login Function - User Plex Token updated from backend', $username);
+						$this->setLoggerChannel('Authentication', $username);
+						$this->logger->info('User Plex Token updated from backend');
 					}
 				}
 				// 2FA might go here
@@ -3857,17 +2841,21 @@ class Organizr
 						}
 					}
 					if ($tfaProceed) {
+						$this->setLoggerChannel('Authentication', $username);
+						$this->logger->debug('Starting 2FA verification');
 						$TFA = explode('::', $result['auth_service']);
 						// Is code with login info?
 						if ($tfaCode == '') {
+							$this->logger->debug('Sending 2FA response to login UI');
 							$this->setAPIResponse('warning', '2FA Code Needed', 422);
 							return false;
 						} else {
 							if (!$this->verify2FA($TFA[1], $tfaCode, $TFA[0])) {
-								$this->writeLoginLog($username, 'error');
-								$this->writeLog('error', 'Login Function - Wrong 2FA', $username);
+								$this->logger->warning('Incorrect 2FA');
 								$this->setAPIResponse('error', 'Wrong 2FA', 422);
 								return false;
+							} else {
+								$this->logger->info('2FA verification passed');
 							}
 						}
 					}
@@ -3876,8 +2864,7 @@ class Organizr
 				// authentication passed - 1) mark active and update token
 				$createToken = $this->createToken($result['username'], $result['email'], $days);
 				if ($createToken) {
-					$this->writeLoginLog($username, 'success');
-					$this->writeLog('success', 'Login Function - A User has logged in', $username);
+					$this->logger->info('User has logged in');
 					$this->ssoCheck($result, $password, $token); //need to work on this
 					return ($output) ? array('name' => $this->cookieName, 'token' => (string)$createToken) : true;
 				} else {
@@ -3886,17 +2873,21 @@ class Organizr
 				}
 			} else {
 				// Create User
+				$this->setLoggerChannel('Authentication', (is_array($authSuccess) && isset($authSuccess['username']) ? $authSuccess['username'] : $username));
+				$this->logger->debug('Starting Registration function');
 				return $this->authRegister((is_array($authSuccess) && isset($authSuccess['username']) ? $authSuccess['username'] : $username), $password, (is_array($authSuccess) && isset($authSuccess['email']) ? $authSuccess['email'] : ''), $token);
 			}
 		} else {
 			// authentication failed
-			$this->writeLoginLog($username, 'error');
-			$this->writeLog('error', 'Login Function - Wrong Password', $username);
+			$this->setLoggerChannel('Authentication', $username);
+			$this->logger->warning('Wrong Password');
 			if ($loginAttempts >= $this->config['loginAttempts']) {
+				$this->logger->warning('User exceeded maximum login attempts');
 				$this->coookieSeconds('set', 'lockout', $this->config['loginLockout'], $this->config['loginLockout']);
 				$this->setAPIResponse('error', 'User is locked out', 403);
 				return false;
 			} else {
+				$this->logger->debug('User has not exceeded maximum login attempts');
 				$this->setAPIResponse('error', 'User credentials incorrect', 401);
 				return false;
 			}
@@ -3905,6 +2896,9 @@ class Organizr
 	
 	public function logout()
 	{
+		$this->setLoggerChannel('Authentication');
+		$this->logger->debug('Starting log out process');
+		$this->logger->info('User has logged out');
 		$this->coookie('delete', $this->cookieName);
 		$this->coookie('delete', 'mpt');
 		$this->coookie('delete', 'Auth');
@@ -3914,6 +2908,8 @@ class Organizr
 		$this->clearTautulliTokens();
 		$this->clearJellyfinTokens();
 		$this->revokeTokenCurrentUser($this->user['token']);
+		$this->clearKomgaToken();
+		$this->logger->debug('Log out process has finished');
 		$this->user = null;
 		return true;
 	}
@@ -3985,8 +2981,8 @@ class Organizr
 			if ($this->createUser($username, $password, $email)) {
 				$this->writeLog('success', 'Registration Function - A User has registered', $username);
 				if ($this->createToken($username, $email, $this->config['rememberMeDays'])) {
-					$this->writeLoginLog($username, 'success');
-					$this->writeLog('success', 'Login Function - A User has logged in', $username);
+					$this->setLoggerChannel('Authentication', $username);
+					$this->logger->info('User has logged in');
 					return true;
 				}
 			} else {
@@ -4001,6 +2997,7 @@ class Organizr
 	
 	public function authRegister($username, $password, $email, $token = null)
 	{
+		$this->setLoggerChannel('Authentication', $username);
 		if ($this->config['authBackend'] !== '') {
 			$this->ombiImport($this->config['authBackend']);
 		}
@@ -4030,8 +3027,8 @@ class Organizr
 				$PhpMailer->_phpMailerPluginSendEmail($sendEmail);
 			}
 			if ($this->createToken($username, $email, $this->config['rememberMeDays'])) {
-				$this->writeLoginLog($username, 'success');
-				$this->writeLog('success', 'Login Function - A User has logged in', $username);
+				$this->setLoggerChannel('Authentication', $username);
+				$this->logger->info('User has logged in');
 				return true;
 			} else {
 				return false;
@@ -4323,6 +3320,11 @@ class Organizr
 					'url' => ($this->config['jellyfinURL'] !== '') ? $this->config['jellyfinURL'] : false,
 					'ssoUrl' => ($this->config['jellyfinSSOURL'] !== '') ? $this->config['jellyfinSSOURL'] : false,
 				),
+				'komga' => [
+					'enabled' => (bool)$this->config['ssoKomga'],
+					'cookie' => isset($_COOKIE['komga_token']),
+					'url' => ($this->config['komgaURL'] !== '') ? $this->config['komgaURL'] : false,
+				]
 			),
 			'ping' => array(
 				'onlineSound' => $this->config['pingOnlineSound'],
@@ -4391,72 +3393,6 @@ class Organizr
 		);
 	}
 	
-	public function getLog($log, $reverse = true)
-	{
-		switch ($log) {
-			case 'login':
-			case 'loginLog':
-			case 'loginlog':
-				$file = $this->organizrLoginLog;
-				$parent = 'auth';
-				break;
-			case 'org':
-			case 'organizr':
-			case 'organizrLog':
-			case 'orglog':
-				$file = $this->organizrLog;
-				$parent = 'log_items';
-				break;
-			default:
-				$this->setAPIResponse('error', 'Log not defined', 404);
-				return null;
-		}
-		if (!file_exists($file)) {
-			$this->setAPIResponse('error', 'Log does not exist', 404);
-			return null;
-		}
-		$getLog = str_replace("\r\ndate", "date", file_get_contents($file));
-		$gotLog = json_decode($getLog, true);
-		return ($reverse) ? array_reverse($gotLog[$parent]) : $gotLog[$parent];
-	}
-	
-	public function purgeLog($log)
-	{
-		
-		switch ($log) {
-			case 'login':
-			case 'loginLog':
-			case 'loginlog':
-				$file = $this->organizrLoginLog;
-				break;
-			case 'org':
-			case 'organizr':
-			case 'organizrLog':
-			case 'orgLog':
-			case 'orglog':
-				$file = $this->organizrLog;
-				break;
-			default:
-				$this->setAPIResponse('error', 'Log not defined', 404);
-				return null;
-		}
-		if (file_exists($file)) {
-			if (unlink($file)) {
-				$this->writeLog('success', 'Log Management Function - Log: ' . $log . ' has been purged/deleted', 'SYSTEM');
-				$this->setAPIResponse(null, 'Log purged');
-				return true;
-			} else {
-				$this->writeLog('error', 'Log Management Function - Log: ' . $log . ' - Error Occurred', 'SYSTEM');
-				$this->setAPIResponse('error', 'Log could not be purged', 500);
-				return false;
-			}
-		} else {
-			$this->setAPIResponse('error', 'Log does not exist', 404);
-			return false;
-		}
-		
-	}
-	
 	public function checkLog($path)
 	{
 		if (file_exists($path)) {
@@ -4468,24 +3404,6 @@ class Organizr
 		} else {
 			return false;
 		}
-	}
-	
-	public function writeLoginLog($username, $authType)
-	{
-		$username = htmlspecialchars($username, ENT_QUOTES);
-		if ($this->checkLog($this->organizrLoginLog)) {
-			$getLog = str_replace("\r\ndate", "date", file_get_contents($this->organizrLoginLog));
-			$gotLog = json_decode($getLog, true);
-		}
-		$logEntryFirst = array('logType' => 'login_log', 'auth' => array(array('date' => date("Y-m-d H:i:s"), 'utc_date' => $this->currentTime, 'username' => $username, 'ip' => $this->userIP(), 'auth_type' => $authType)));
-		$logEntry = array('date' => date("Y-m-d H:i:s"), 'utc_date' => $this->currentTime, 'username' => $username, 'ip' => $this->userIP(), 'auth_type' => $authType);
-		if (isset($gotLog)) {
-			array_push($gotLog["auth"], $logEntry);
-			$writeFailLog = str_replace("date", "\r\ndate", json_encode($gotLog));
-		} else {
-			$writeFailLog = str_replace("date", "\r\ndate", json_encode($logEntryFirst));
-		}
-		file_put_contents($this->organizrLoginLog, $writeFailLog);
 	}
 	
 	public function writeLog($type = 'error', $message = null, $username = null)
@@ -5656,60 +4574,6 @@ class Organizr
 		return true;
 	}
 	
-	public function removePlugin($plugin)
-	{
-		$plugin = $this->reverseCleanClassName($plugin);
-		$array = $this->getPluginsGithub();
-		$arrayLower = array_change_key_case($array);
-		if (!$array) {
-			$this->setAPIResponse('error', 'Could not access plugin marketplace', 409);
-			return false;
-		}
-		if (!$arrayLower[$plugin]) {
-			$this->setAPIResponse('error', 'Plugin does not exist in marketplace', 404);
-			return false;
-		} else {
-			$key = array_search($plugin, array_keys($arrayLower));
-			$plugin = array_keys($array)[$key];
-		}
-		$array = $array[$plugin];
-		$name = $plugin;
-		$version = $array['version'];
-		$installedPluginsNew = '';
-		$pluginDir = $this->root . DIRECTORY_SEPARATOR . 'api' . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . $array['github_folder'] . DIRECTORY_SEPARATOR;
-		$dirExists = file_exists($pluginDir);
-		if ($dirExists) {
-			if (!$this->rrmdir($pluginDir)) {
-				$this->writeLog('error', 'Plugin Function -  Remove File Failed  for: ' . $array['github_folder'], $this->user['username']);
-				return false;
-			}
-		} else {
-			$this->setAPIResponse('error', 'Plugin is not installed', 404);
-			return false;
-		}
-		if ($this->config['installedPlugins'] !== '') {
-			$installedPlugins = explode('|', $this->config['installedPlugins']);
-			foreach ($installedPlugins as $k => $v) {
-				$plugins = explode(':', $v);
-				$installedPluginsList[$plugins[0]] = $plugins[1];
-			}
-			if (isset($installedPluginsList[$name])) {
-				foreach ($installedPluginsList as $k => $v) {
-					if ($k !== $name) {
-						if ($installedPluginsNew == '') {
-							$installedPluginsNew .= $k . ':' . $v;
-						} else {
-							$installedPluginsNew .= '|' . $k . ':' . $v;
-						}
-					}
-				}
-			}
-		}
-		$this->updateConfig(array('installedPlugins' => $installedPluginsNew));
-		$this->setAPIResponse('success', 'Plugin removed', 200, $installedPluginsNew);
-		return true;
-	}
-	
 	public function pluginFileListFormat($files, $folder)
 	{
 		$filesList = false;
@@ -5734,10 +4598,28 @@ class Organizr
 		return false;
 	}
 	
+	public function getPluginFilesFromRepo($plugin, $pluginDetails)
+	{
+		if (stripos($pluginDetails['repo'], 'github.com') !== false) {
+			$repo = explode('https://github.com/', $pluginDetails['repo']);
+			$folder = $pluginDetails['github_folder'] !== 'root' ? $pluginDetails['github_folder'] : '';
+			$url = 'https://api.github.com/repos/' . $repo[1] . '/contents/' . $folder;
+		} else {
+			return false;
+		}
+		$options = array('verify' => false);
+		$response = Requests::get($url, array(), $options);
+		if ($response->success) {
+			return json_decode($response->body, true);
+		}
+		return false;
+	}
+	
 	public function installPlugin($plugin)
 	{
+		$this->setLoggerChannel('Plugin Marketplace');
 		$plugin = $this->reverseCleanClassName($plugin);
-		$array = $this->getPluginsGithub();
+		$array = $this->getPluginsMarketplace();
 		$arrayLower = array_change_key_case($array);
 		if (!$array) {
 			$this->setAPIResponse('error', 'Could not access plugin marketplace', 409);
@@ -5754,23 +4636,23 @@ class Organizr
 		// Check Version of Organizr against minimum version needed
 		$compare = new Composer\Semver\Comparator;
 		if (!$compare->lessThan($array['minimum_organizr_version'], $this->version)) {
+			$this->logger->warning('Minimum Organizr version needed: ' . $array['minimum_organizr_version']);
 			$this->setResponse(500, 'Minimum Organizr version needed: ' . $array['minimum_organizr_version']);
 			return true;
 		}
-		$files = $this->getPluginFilesFromGithub($array['github_folder']);
+		$files = $this->getPluginFilesFromRepo($plugin, $array);
 		if ($files) {
-			$downloadList = $this->pluginFileListFormat($files, $array['github_folder']);
+			$downloadList = $this->pluginFileListFormat($files, $array['project_folder']);
 		} else {
-			$this->writeLog('error', 'Plugin Function -  Downloaded File Failed  for: ' . $array['github_folder'], $this->user['username']);
+			$this->logger->warning('File list failed for: ' . $array['github_folder']);
 			$this->setAPIResponse('error', 'Could not get download list for plugin', 409);
 			return false;
 		}
 		if (!$downloadList) {
+			$this->logger->warning('Setting download list failed for: ' . $array['github_folder']);
 			$this->setAPIResponse('error', 'Could not get download list for plugin', 409);
 			return false;
 		}
-		$name = $plugin;
-		$version = $array['version'];
 		foreach ($downloadList as $k => $v) {
 			$file = array(
 				'from' => $v['githubPath'],
@@ -5778,36 +4660,72 @@ class Organizr
 				'path' => str_replace(array('/', '\\'), DIRECTORY_SEPARATOR, $this->root . $v['path'])
 			);
 			if (!$this->downloadFileToPath($file['from'], $file['to'], $file['path'])) {
-				$this->writeLog('error', 'Plugin Function -  Downloaded File Failed  for: ' . $v['githubPath'], $this->user['username']);
+				$this->setLoggerChannel('Plugin Marketplace');
+				$this->logger->warning('Downloaded File Failed  for: ' . $v['githubPath']);
 				$this->setAPIResponse('error', 'Plugin download failed', 500);
 				return false;
 			}
 		}
-		if ($this->config['installedPlugins'] !== '') {
-			$installedPlugins = explode('|', $this->config['installedPlugins']);
-			foreach ($installedPlugins as $k => $v) {
-				$plugins = explode(':', $v);
-				$installedPluginsList[$plugins[0]] = $plugins[1];
-			}
-			if (isset($installedPluginsList[$name])) {
-				$installedPluginsList[$name] = $version;
-				$installedPluginsNew = '';
-				foreach ($installedPluginsList as $k => $v) {
-					if ($installedPluginsNew == '') {
-						$installedPluginsNew .= $k . ':' . $v;
-					} else {
-						$installedPluginsNew .= '|' . $k . ':' . $v;
-					}
-				}
-			} else {
-				$installedPluginsNew = $this->config['installedPlugins'] . '|' . $name . ':' . $version;
+		$this->updateInstalledPlugins('install', $plugin, $array);
+		$this->setAPIResponse('success', 'Plugin installed', 200, $array);
+		return true;
+	}
+	
+	public function removePlugin($plugin)
+	{
+		$this->setLoggerChannel('Plugin Marketplace');
+		$plugin = $this->reverseCleanClassName($plugin);
+		$array = $this->getPluginsMarketplace();
+		$arrayLower = array_change_key_case($array);
+		if (!$array) {
+			$this->setAPIResponse('error', 'Could not access plugin marketplace', 409);
+			return false;
+		}
+		if (!$arrayLower[$plugin]) {
+			$this->setAPIResponse('error', 'Plugin does not exist in marketplace', 404);
+			return false;
+		} else {
+			$key = array_search($plugin, array_keys($arrayLower));
+			$plugin = array_keys($array)[$key];
+		}
+		$array = $array[$plugin];
+		$pluginDir = $this->root . DIRECTORY_SEPARATOR . 'api' . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . $array['project_folder'] . DIRECTORY_SEPARATOR;
+		$dirExists = file_exists($pluginDir);
+		if ($dirExists) {
+			if (!$this->rrmdir($pluginDir)) {
+				$this->logger->info('Remove File Failed  for: ' . $array['project_folder']);
+				return false;
 			}
 		} else {
-			$installedPluginsNew = $name . ':' . $version;
+			$this->setAPIResponse('error', 'Plugin is not installed', 404);
+			return false;
 		}
-		$this->updateConfig(array('installedPlugins' => $installedPluginsNew));
-		$this->setAPIResponse('success', 'Plugin installed', 200, $installedPluginsNew);
+		$this->updateInstalledPlugins('uninstall', $plugin, $array);
+		$this->setAPIResponse('success', 'Plugin removed', 200, $array);
 		return true;
+	}
+	
+	public function updateInstalledPlugins($action, $plugin, $pluginDetails)
+	{
+		if (!$action || !$plugin || !$pluginDetails) {
+			return false;
+		}
+		$config = $this->config['installedPlugins'];
+		switch ($action) {
+			case 'install':
+			case 'update':
+				$update[$plugin] = [
+					'name' => $plugin,
+					'version' => $pluginDetails['version'],
+					'repo' => $pluginDetails['repo']
+				];
+				$config = array_merge($config, $update);
+				break;
+			default:
+				unset($config[$plugin]);
+				break;
+		}
+		$this->updateConfig(['installedPlugins' => $config]);
 	}
 	
 	public function getThemesGithub()
@@ -5834,6 +4752,78 @@ class Organizr
 			return false;
 		}
 		return false;
+	}
+	
+	public function getPluginsMarketplace()
+	{
+		$plugins = $this->getPluginsGithubCombined();
+		foreach ($plugins as $pluginName => $pluginDetails) {
+			$plugins[$pluginName]['installed'] = (isset($this->config['installedPlugins'][$pluginName]));
+			$plugins[$pluginName]['installed_version'] = $this->config['installedPlugins'][$pluginName]['version'] ?? null;
+			$plugins[$pluginName]['needs_update'] = ($plugins[$pluginName]['installed'] && ($plugins[$pluginName]['installed_version'] !== $plugins[$pluginName]['version']));
+			$plugins[$pluginName]['status'] = $this->getPluginStatus($plugins[$pluginName]);
+		}
+		return $plugins;
+	}
+	
+	public function getPluginStatus($pluginDetails)
+	{
+		if ($pluginDetails['needs_update']) {
+			return 'Update Available';
+		} elseif ($pluginDetails['installed']) {
+			return 'Up to date';
+		} else {
+			return 'Not Installed';
+		}
+	}
+	
+	public function getPluginsGithubCombined()
+	{
+		// Organizr Repo
+		$urls = [$this->getMarketplaceJSONFromRepo('https://github.com/Organizr/Organizr-Plugins')];
+		foreach (explode(',', $this->config['externalPluginMarketplaceRepos']) as $repo) {
+			$urls[] = $this->getMarketplaceJSONFromRepo($repo);
+		}
+		$plugins = [];
+		foreach ($urls as $repo) {
+			$options = ($this->localURL($repo)) ? array('verify' => false) : array();
+			try {
+				$response = Requests::get($repo, array(), $options);
+				if ($response->success) {
+					$plugins = array_merge($plugins, json_decode($response->body, true));
+				}
+			} catch (Requests_Exception $e) {
+				//return false;
+			}
+		}
+		return $plugins;
+	}
+	
+	public function getMarketplaceJSONFromRepo($url)
+	{
+		if (stripos($url, '.json') !== false) {
+			return $url;
+		} elseif (stripos($url, 'github.com') !== false) {
+			$repo = explode('https://github.com/', $url);
+			$newURL = 'https://api.github.com/repos/' . $repo[1] . '/contents';
+			$options = ($this->localURL($newURL)) ? array('verify' => false) : array();
+			try {
+				$response = Requests::get($newURL, array(), $options);
+				if ($response->success) {
+					$jsonFiles = json_decode($response->body, true);
+					foreach ($jsonFiles as $file) {
+						if (stripos($file['name'], '.json') !== false) {
+							return $file['download_url'];
+						}
+					}
+					return false;
+				} else {
+					return false;
+				}
+			} catch (Requests_Exception $e) {
+				return false;
+			}
+		}
 	}
 	
 	public function getOpenCollectiveBackers()
@@ -6954,6 +5944,35 @@ class Organizr
 		}
 	}
 	
+	public function chooseInstance($url = null, $token = null, $instance = 0, $type = null)
+	{
+		if (!$url || !$token) {
+			return false;
+		}
+		$list = $this->csvHomepageUrlToken($url, $token);
+		if ($type) {
+			$type = strtolower($type);
+			switch ($type) {
+				case 'url':
+				case 'token':
+					break;
+				default:
+					$type = 'url';
+					break;
+			}
+			if (is_numeric($instance)) {
+				return $list[$instance][$type];
+			} else {
+				return $list;
+			}
+		}
+		if (is_numeric($instance)) {
+			return $list[$instance];
+		} else {
+			return $list;
+		}
+	}
+	
 	public function CBPFWTabs()
 	{
 		return '
@@ -7181,7 +6200,8 @@ class Organizr
 				'options' => $options,
 				'data' => $apiData
 			];
-			//$this->debug(json_encode($debugInformation));
+			$this->setLoggerChannel('Socks');
+			$this->logger->debug('Sending Socks request', $debugInformation);
 			try {
 				switch ($requestObject->getMethod()) {
 					case 'GET':
@@ -7202,6 +6222,8 @@ class Organizr
 				return $call->body;
 			} catch (Requests_Exception $e) {
 				$this->setAPIResponse('error', $e->getMessage(), 500);
+				$this->setLoggerChannel('Socks');
+				$this->logger->critical($e, $debugInformation);
 				return null;
 			}
 		} else {
@@ -7338,9 +6360,12 @@ class Organizr
 	{
 		$results = array();
 		$firstKey = '';
+		if ($this->config['includeDatabaseQueriesInDebug']) {
+			$this->setLoggerChannel('Database');
+			$this->logger->debug('Query to database', $request);
+		}
 		try {
 			foreach ($request as $k => $v) {
-				
 				$query = ($migration) ? $this->otherDb->query($v['query']) : $this->db->query($v['query']);
 				$keyName = (isset($v['key'])) ? $v['key'] : $k;
 				$firstKey = (isset($v['key']) && $k == 0) ? $v['key'] : $k;
@@ -7371,10 +6396,13 @@ class Organizr
 						return false;
 				}
 			}
-			
 		} catch (Exception $e) {
-			$this->debug($e->getMessage());
+			$this->setLoggerChannel('Database');
+			$this->logger->critical($e, $request);
 			return false;
+		}
+		if ($this->config['includeDatabaseQueriesInDebug']) {
+			$this->logger->debug('Results from database', $results);
 		}
 		return count($request) > 1 ? $results : $results[$firstKey];
 	}

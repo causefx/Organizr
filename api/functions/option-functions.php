@@ -30,6 +30,7 @@ trait OptionsFunction
 				];
 				break;
 			case 'auth':
+				$this->setGroupOptionsVariable();
 				$settingMerge = [
 					'type' => 'select',
 					'label' => 'Minimum Authentication',
@@ -53,11 +54,12 @@ trait OptionsFunction
 			case 'test':
 				$settingMerge = [
 					'type' => 'button',
-					'label' => '',
+					'label' => 'Test Connection',
 					'icon' => 'fa fa-flask',
 					'class' => 'pull-right',
 					'text' => 'Test Connection',
-					'attr' => 'onclick="testAPIConnection(\'' . $name . '\')"'
+					'attr' => 'onclick="testAPIConnection(\'' . $name . '\')"',
+					'help' => 'Remember! Please save before using the test button!'
 				];
 				break;
 			case 'url':
@@ -72,22 +74,22 @@ trait OptionsFunction
 				$settingMerge = [
 					'type' => 'select2',
 					'class' => 'select2-multiple',
-					'id' => $name . '-select',
+					'id' => $name . '-select-' . $this->random_ascii_string(6),
 					'label' => 'Multiple URL\'s',
 					'help' => 'Please make sure to use local IP address and port - You also may use local dns name too.',
 					'placeholder' => 'http(s)://hostname:port',
 					'options' => $this->makeOptionsFromValues($this->config[$name]),
-					'settings' => '{tags: true, selectOnClose: true, closeOnSelect: true}',
+					'settings' => '{tags: true, selectOnClose: true, closeOnSelect: true, allowClear: true}',
 				];
 				break;
 			case 'multiple':
 				$settingMerge = [
 					'type' => 'select2',
 					'class' => 'select2-multiple',
-					'id' => $name . '-select',
+					'id' => $name . '-select-' . $this->random_ascii_string(6),
 					'label' => 'Multiple Values\'s',
 					'options' => $this->makeOptionsFromValues($this->config[$name]),
-					'settings' => '{tags: true, selectOnClose: true, closeOnSelect: true}',
+					'settings' => '{tags: true, selectOnClose: true, closeOnSelect: true, allowClear: true}',
 				];
 				break;
 			case 'username':
@@ -108,6 +110,12 @@ trait OptionsFunction
 					'label' => 'Password',
 				];
 				break;
+			case 'passwordaltcopy':
+				$settingMerge = [
+					'type' => 'password-alt-copy',
+					'label' => 'Password',
+				];
+				break;
 			case 'apikey':
 			case 'token':
 				$settingMerge = [
@@ -120,10 +128,10 @@ trait OptionsFunction
 				$settingMerge = [
 					'type' => 'select2',
 					'class' => 'select2-multiple',
-					'id' => $name . '-select',
+					'id' => $name . '-select-' . $this->random_ascii_string(6),
 					'label' => 'Multiple API Key/Token\'s',
 					'options' => $this->makeOptionsFromValues($this->config[$name]),
-					'settings' => '{tags: true, theme: "default password-alt", selectOnClose: true, closeOnSelect: true}',
+					'settings' => '{tags: true, theme: "default", selectionCssClass: "password-alt", selectOnClose: true, closeOnSelect: true, allowClear: true}',
 				];
 				break;
 			case 'notice':
@@ -263,7 +271,7 @@ trait OptionsFunction
 				$settingMerge = [
 					'type' => 'select2',
 					'class' => 'select2-multiple',
-					'id' => $name . '-exclude-select',
+					'id' => $name . '-exclude-select-' . $this->random_ascii_string(6),
 					'label' => 'Libraries to Exclude',
 					'options' => $extras['options']
 				];
@@ -272,7 +280,7 @@ trait OptionsFunction
 				$settingMerge = [
 					'type' => 'select2',
 					'class' => 'select2-multiple',
-					'id' => $name . '-include-select',
+					'id' => $name . '-include-select-' . $this->random_ascii_string(6),
 					'label' => 'Libraries to Include',
 					'options' => $extras['options']
 				];
@@ -368,6 +376,14 @@ trait OptionsFunction
 					'options' => $this->limitOptions()
 				];
 				break;
+			case 'color':
+				$settingMerge = [
+					'type' => 'input',
+					'label' => 'Color',
+					'class' => 'pick-a-color-custom-options',
+					'attr' => 'data-original="' . $this->config[$name] . '"'
+				];
+				break;
 			default:
 				$settingMerge = [
 					'type' => strtolower($type),
@@ -404,6 +420,98 @@ trait OptionsFunction
 			];
 		}
 		return $formattedValues;
+	}
+	
+	public function logLevels()
+	{
+		return [
+			[
+				'name' => 'Debug',
+				'value' => 'DEBUG'
+			],
+			[
+				'name' => 'Info',
+				'value' => 'INFO'
+			],
+			[
+				'name' => 'Notice',
+				'value' => 'NOTICE'
+			],
+			[
+				'name' => 'Warning',
+				'value' => 'WARNING'
+			],
+			[
+				'name' => 'Error',
+				'value' => 'ERROR'
+			],
+			[
+				'name' => 'Critical',
+				'value' => 'CRITICAL'
+			],
+			[
+				'name' => 'Alert',
+				'value' => 'ALERT'
+			],
+			[
+				'name' => 'Emergency',
+				'value' => 'EMERGENCY'
+			]
+		];
+	}
+	
+	public function sandboxOptions()
+	{
+		return [
+			[
+				'name' => 'Allow Presentation',
+				'value' => 'allow-presentation'
+			],
+			[
+				'name' => 'Allow Forms',
+				'value' => 'allow-forms'
+			],
+			[
+				'name' => 'Allow Same Origin',
+				'value' => 'allow-same-origin'
+			],
+			[
+				'name' => 'Allow Orientation Lock',
+				'value' => 'allow-orientation-lock'
+			],
+			[
+				'name' => 'Allow Pointer Lock',
+				'value' => 'allow-pointer-lock'
+			],
+			[
+				'name' => 'Allow Scripts',
+				'value' => 'allow-scripts'
+			],
+			[
+				'name' => 'Allow Popups',
+				'value' => 'allow-popups'
+			],
+			[
+				'name' => 'Allow Popups To Escape Sandbox',
+				'value' => 'allow-popups-to-escape-sandbox'
+			],
+			[
+				'name' => 'Allow Modals',
+				'value' => 'allow-modals'
+			],
+			[
+				'name' => 'Allow Top Navigation',
+				'value' => 'allow-top-navigation'
+			],
+			[
+				'name' => 'Allow Top Navigation By User Activation',
+				'value' => 'allow-top-navigation-by-user-activation'
+			],
+			[
+				'name' => 'Allow Downloads',
+				'value' => 'allow-downloads'
+			],
+		];
 	}
 	
 	public function calendarLocaleOptions()

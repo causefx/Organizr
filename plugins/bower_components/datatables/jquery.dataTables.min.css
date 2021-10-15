@@ -353,7 +353,7 @@ table.dataTable td {
     color: white !important;
     border: 1px solid #6164c1;
     background-color: #6164c1;
-    
+
 }
 .dataTables_wrapper .dataTables_paginate .paginate_button:active {
     outline: none;
@@ -447,4 +447,3 @@ table.dataTable td {
         margin-top: 0.5em
     }
 }
-

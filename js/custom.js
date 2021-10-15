@@ -1082,7 +1082,8 @@ $(document).on('change keydown', '.addFormTick :input', function(e) {
     $(this).attr('data-changed', true);
     $(this).closest('.form-group').addClass('has-success');
     var formID = $(this).closest('form').attr('id');
-    $('#'+formID+'-save').removeClass('hidden');
+	$('#'+formID+'-save').removeClass('hidden');
+	$('#'+formID+'-reset').removeClass('hidden');
     switch ($(this).attr('type')) {
         case 'switch':
         case 'checkbox':
@@ -1153,7 +1154,6 @@ $(document).on('click', '.enablePlugin', function() {
 	ajaxloader(".content-wrap","in");
 	let pluginConfigValue = $(this).attr('data-config-name');
 	let callbacks = $.Callbacks();
-	callbacks.add( buildPlugins );
 	callbacks.add( ajaxloader );
 	let data = {};
 	data[pluginConfigValue] = 'true';
@@ -1161,6 +1161,8 @@ $(document).on('click', '.enablePlugin', function() {
 		try {
 			message('Plugin Enabled','',activeInfo.settings.notifications.position,"#FFF","success","5000");
 			if(callbacks){ callbacks.fire(); }
+			buildPlugins('disabled');
+			//buildPlugins('enabled');
 		}catch(e) {
 			organizrCatchError(e,data);
 		}
@@ -1186,7 +1188,6 @@ $(document).on('click', '.disablePlugin', function() {
 	        ajaxloader(".content-wrap","in");
 			let pluginConfigValue = plugin.attr('data-config-name');
 	        var callbacks = $.Callbacks();
-	        callbacks.add( buildPlugins );
 	        callbacks.add( ajaxloader );
 	        var data = {};
 	        data[pluginConfigValue] = 'false';
@@ -1194,6 +1195,7 @@ $(document).on('click', '.disablePlugin', function() {
 		        try {
 			        message('Plugin Disabled','',activeInfo.settings.notifications.position,"#FFF","success","5000");
 			        if(callbacks){ callbacks.fire(); }
+			        buildPlugins('enabled');
 		        }catch(e) {
 			        organizrCatchError(e,data);
 		        }
@@ -1459,38 +1461,28 @@ $(document).on("click", ".newAPIKey", function () {
 });
 // purge log
 $(document).on("click", ".purgeLog", function () {
-    var name = $('.swapLog.active').attr('data-name');
-    if(name !== ''){
-	    var post = {
-		    api:'api/v2/log/' + name,
+    let logId = $('.choose-organizr-log option:selected').attr('data-id');
+    if(logId){
+	    let post = {
+		    api:'api/v2/log/' + logId,
 		    messageTitle:'',
-		    messageBody:window.lang.translate('Deleted Log')+': '+name,
+		    messageBody:window.lang.translate('Deleted Log'),
 		    error:'Organizr Function: User API Connection Failed'
 	    };
 	    organizrAPI2('DELETE',post.api,'',true).success(function(data) {
 		    loadSettingsPage2('api/v2/page/settings_settings_logs','#settings-settings-logs','Log Viewer');
 		    try {
-			    var response = data.response;
+			    let response = data.response;
+			    message(post.messageTitle,post.messageBody,activeInfo.settings.notifications.position,"#FFF","success","5000");
 		    }catch(e) {
 			    organizrCatchError(e,data);
 		    }
-		    message(post.messageTitle,post.messageBody,activeInfo.settings.notifications.position,"#FFF","success","5000");
-		    var callbacks = $.Callbacks();
-		    switch ($(this).attr('data-name')){
-			    case 'loginLog':
-				    loginLogTable.ajax.reload(null, false);
-				    break;
-			    case 'orgLog':
-				    organizrLogTable.ajax.reload(null, false);
-				    break;
-			    default:
-		    }
-		    if(callbacks){ callbacks.fire(); }
 	    }).fail(function(xhr) {
 		    OrganizrApiError(xhr, 'API Error');
 	    });
+    }else{
+	    message('','Could not get Log Id',activeInfo.settings.notifications.position,'#FFF','warning','5000');
     }
-
 });
 $(document).on("click", ".delete-backup", function () {
 	$('#settings-settings-backup').block({
@@ -1931,4 +1923,15 @@ $(document).on('click', '.toggle-side-menu', function() {
 // Toggle Side Menu Other
 $(document).on('click', '.ti-shift-left.mouse', function() {
 	toggleSideMenu();
+});
+
+// Log Details
+$(document).on('click', '.log-details', function() {
+	let details = $(this).attr('data-details');
+	formatLogDetails(details);
+});
+
+// Choose Log choose-organizr-log
+$(document).on("change", ".choose-organizr-log", function () {
+	organizrLogTable.ajax.url($(this).val()).load();
 });

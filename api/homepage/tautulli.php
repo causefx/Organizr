@@ -14,6 +14,14 @@ trait TautulliHomepageItem
 		if ($infoOnly) {
 			return $homepageInformation;
 		}
+		$libraryList = [['name' => 'Refresh page to update List', 'value' => '', 'disabled' => true]];
+		if (!empty($this->config['tautulliApikey']) && !empty($this->config['tautulliURL'])) {
+			$libraryList = [];
+			$loop = $this->tautulliLibraryList('key')['libraries'];
+			foreach ($loop as $key => $value) {
+				$libraryList[] = ['name' => $key, 'value' => $value];
+			}
+		}
 		$homepageSettings = [
 			'debug' => true,
 			'settings' => [
@@ -41,6 +49,7 @@ trait TautulliHomepageItem
 				'Library Stats' => [
 					$this->settingsOption('switch', 'tautulliLibraries', ['label' => 'Libraries', 'help' => 'Shows/hides the card with library information.']),
 					$this->settingsOption('auth', 'homepageTautulliLibraryAuth'),
+					$this->settingsOption('plex-library-exclude', 'homepageTautulliLibraryStatsExclude', ['options' => $libraryList]),
 				],
 				'Viewing Stats' => [
 					$this->settingsOption('switch', 'tautulliPopularMovies', ['label' => 'Popular Movies', 'help' => 'Shows/hides the card with Popular Movie information.']),
@@ -48,6 +57,7 @@ trait TautulliHomepageItem
 					$this->settingsOption('switch', 'tautulliTopMovies', ['label' => 'Top Movies', 'help' => 'Shows/hides the card with Top Movies information.']),
 					$this->settingsOption('switch', 'tautulliTopTV', ['label' => 'Top TV', 'help' => 'Shows/hides the card with Top TV information.']),
 					$this->settingsOption('auth', 'homepageTautulliViewsAuth'),
+					$this->settingsOption('plex-library-exclude', 'homepageTautulliViewingStatsExclude', ['options' => $libraryList]),
 				],
 				'Misc Stats' => [
 					$this->settingsOption('switch', 'tautulliTopUsers', ['label' => 'Top Users', 'help' => 'Shows/hides the card with Top Users information.']),
@@ -66,6 +76,7 @@ trait TautulliHomepageItem
 	
 	public function testConnectionTautulli()
 	{
+		$this->setLoggerChannel('Tautulli Homepage');
 		if (empty($this->config['tautulliURL'])) {
 			$this->setAPIResponse('error', 'Tautulli URL is not defined', 422);
 			return false;
@@ -88,7 +99,7 @@ trait TautulliHomepageItem
 				return false;
 			}
 		} catch (Requests_Exception $e) {
-			$this->writeLog('error', 'Tautulli Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
+			$this->logger->critical($e, [$url]);
 			$this->setAPIResponse('error', $e->getMessage(), 500);
 			return false;
 		}
@@ -131,6 +142,7 @@ trait TautulliHomepageItem
 	
 	public function getTautulliHomepageData()
 	{
+		$this->setLoggerChannel('Tautulli Homepage');
 		if (!$this->homepageItemPermissions($this->tautulliHomepagePermissions('main'), true)) {
 			return false;
 		}
@@ -146,7 +158,18 @@ trait TautulliHomepageItem
 			$options = $this->requestOptions($this->config['tautulliURL'], $this->config['homepageTautulliRefresh'], $this->config['tautulliDisableCertCheck'], $this->config['tautulliUseCustomCertificate']);
 			$homestats = Requests::get($homestatsUrl, [], $options);
 			if ($homestats->success) {
+				$homepageTautulliViewingStatsExclude = explode(",",$this->config['homepageTautulliViewingStatsExclude']);
 				$homestats = json_decode($homestats->body, true);
+				foreach ($homestats['response']['data'] as $s => $stats) {
+					foreach ($stats['rows'] as $i => $v) {
+						if (array_key_exists('section_id', $v)) {
+							if (in_array($v['section_id'],$homepageTautulliViewingStatsExclude)) {
+								unset($homestats['response']['data'][$s]['rows'][$i]);
+							}
+						}
+					}
+				}
+				$homestats['response']['data'] = array_values($homestats['response']['data']);
 				$api['homestats'] = $homestats['response'];
 				// Cache art & thumb for first result in each tautulli API result
 				$categories = ['top_movies', 'top_tv', 'popular_movies', 'popular_tv'];
@@ -168,7 +191,16 @@ trait TautulliHomepageItem
 			$options = $this->requestOptions($this->config['tautulliURL'], $this->config['homepageTautulliRefresh'], $this->config['tautulliDisableCertCheck'], $this->config['tautulliUseCustomCertificate']);
 			$libstats = Requests::get($libstatsUrl, [], $options);
 			if ($libstats->success) {
+				$homepageTautulliLibraryStatsExclude = explode(",",$this->config['homepageTautulliLibraryStatsExclude']);
 				$libstats = json_decode($libstats->body, true);
+				foreach ($libstats['response']['data']['data'] as $i => $v) {
+					if (array_key_exists('section_id', $v)) {
+						if (in_array($v['section_id'],$homepageTautulliLibraryStatsExclude)) {
+							unset($libstats['response']['data']['data'][$i]);
+						}
+					}
+				}
+				$libstats['response']['data']['data'] = array_values($libstats['response']['data']['data']);
 				$api['libstats'] = $libstats['response']['data'];
 				$categories = ['movie.svg', 'show.svg', 'artist.svg'];
 				foreach ($categories as $cat) {
@@ -215,12 +247,39 @@ trait TautulliHomepageItem
 				}
 			}
 		} catch (Requests_Exception $e) {
-			$this->writeLog('error', 'Tautulli Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
+			$this->logger->critical($e, [$url]);
 			$this->setAPIResponse('error', $e->getMessage(), 500);
 			return false;
 		};
 		$api = isset($api) ? $api : false;
 		$this->setAPIResponse('success', null, 200, $api);
 		return $api;
+	}
+
+	public function tautulliLibraryList()
+	{
+		$url = $this->qualifyURL($this->config['tautulliURL']);
+		$apiURL = $url . '/api/v2?apikey=' . $this->config['tautulliApikey'];
+		if (!empty($this->config['tautulliApikey']) && !empty($this->config['tautulliURL'])) {
+			$liblistUrl = $apiURL . '&cmd=get_libraries';
+			$options = $this->requestOptions($this->config['tautulliURL'], $this->config['homepageTautulliRefresh'], $this->config['tautulliDisableCertCheck'], $this->config['tautulliUseCustomCertificate']);
+			try {
+				$liblist = Requests::get($liblistUrl, [], $options);
+				$libraryList = array();
+				if ($liblist->success) {
+					$liblist = json_decode($liblist->body, true);
+					foreach ($liblist['response']['data'] as $lib) {
+						$libraryList['libraries'][(string)$lib['section_name']] = (string)$lib["section_id"];
+					}
+					$libraryList = array_change_key_case($libraryList, CASE_LOWER);
+					return $libraryList;
+				}
+			} catch (Requests_Exception $e) {
+				$this->setAPIResponse('error', 'Tautulli Homepage Error - Unable to get list of libraries: '.$e->getMessage(), 500);
+				$this->writeLog('error', 'Tautulli Homepage Error - Unable to get list of libraries: ' . $e->getMessage(), 'SYSTEM');
+				return false;
+			};
+		}
+		return false;
 	}
 }

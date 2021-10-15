@@ -1,6 +1,6 @@
 <?php
 // PLUGIN INFORMATION
-$GLOBALS['plugins'][]['PHP Mailer'] = array( // Plugin Name
+$GLOBALS['plugins']['PHP Mailer'] = array( // Plugin Name
 	'name' => 'PHP Mailer', // Plugin Name
 	'author' => 'PHP Mailer', // Who wrote the plugin
 	'category' => 'Mail', // One to Two Word Description

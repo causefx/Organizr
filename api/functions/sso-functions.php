@@ -8,6 +8,7 @@ trait SSOFunctions
 			'myPlexAccessToken' => $_COOKIE['mpt'] ?? false,
 			'id_token' => $_COOKIE['Auth'] ?? false,
 			'jellyfin_credentials' => $_COOKIE['jellyfin_credentials'] ?? false,
+			'komga_token' => $_COOKIE['komga_token'] ?? false
 		);
 		// Jellyfin cookie
 		foreach (array_keys($_COOKIE) as $k => $v) {
@@ -28,54 +29,112 @@ trait SSOFunctions
 			'ombi' => 'username',
 			'overseerr' => 'email',
 			'tautulli' => 'username',
-			'petio' => 'username'
+			'petio' => 'username',
+			'komga' => 'email'
 		);
 		return (gettype($userobj) == 'string') ? $userobj : $userobj[$map[$app]];
 	}
 	
 	public function ssoCheck($userobj, $password, $token = null)
 	{
+		$this->setCurrentUser(false);
+		$this->setLoggerChannel('Authentication', $userobj['username']);
+		$this->logger->debug('Starting SSO check function');
 		if ($this->config['ssoPlex'] && $token) {
+			$this->logger->debug('Setting Plex SSO cookie');
 			$this->coookie('set', 'mpt', $token, $this->config['rememberMeDays'], false);
 		}
 		if ($this->config['ssoOmbi']) {
+			$this->logger->debug('Starting Ombi SSO check function');
 			$fallback = ($this->config['ombiFallbackUser'] !== '' && $this->config['ombiFallbackPassword'] !== '');
 			$ombiToken = $this->getOmbiToken($this->getSSOUserFor('ombi', $userobj), $password, $token, $fallback);
 			if ($ombiToken) {
+				$this->logger->debug('Setting Ombi SSO cookie');
 				$this->coookie('set', 'Auth', $ombiToken, $this->config['rememberMeDays'], false);
+			} else {
+				$this->logger->debug('No Ombi token received from backend');
 			}
 		}
-		if ($this->config['ssoTautulli']) {
+		if ($this->config['ssoTautulli'] && $this->qualifyRequest($this->config['ssoTautulliAuth'])) {
+			$this->logger->debug('Starting Tautulli SSO check function');
 			$tautulliToken = $this->getTautulliToken($this->getSSOUserFor('tautulli', $userobj), $password, $token);
 			if ($tautulliToken) {
 				foreach ($tautulliToken as $key => $value) {
+					$this->logger->debug('Setting Tautulli SSO cookie');
 					$this->coookie('set', 'tautulli_token_' . $value['uuid'], $value['token'], $this->config['rememberMeDays'], true, $value['path']);
 				}
+			} else {
+				$this->logger->debug('No Tautulli token received from backend');
 			}
 		}
 		if ($this->config['ssoJellyfin']) {
+			$this->logger->debug('Starting Jellyfin SSO check function');
 			$jellyfinToken = $this->getJellyfinToken($this->getSSOUserFor('jellyfin', $userobj), $password);
 			if ($jellyfinToken) {
 				foreach ($jellyfinToken as $k => $v) {
+					$this->logger->debug('Setting Jellyfin SSO cookie');
 					$this->coookie('set', $k, $v, $this->config['rememberMeDays'], false);
 				}
+			} else {
+				$this->logger->debug('No Jellyfin token received from backend');
 			}
 		}
 		if ($this->config['ssoOverseerr']) {
+			$this->logger->debug('Starting Overseerr SSO check function');
 			$fallback = ($this->config['overseerrFallbackUser'] !== '' && $this->config['overseerrFallbackPassword'] !== '');
 			$overseerrToken = $this->getOverseerrToken($this->getSSOUserFor('overseerr', $userobj), $password, $token, $fallback);
 			if ($overseerrToken) {
+				$this->logger->debug('Setting Overseerr SSO cookie');
 				$this->coookie('set', 'connect.sid', $overseerrToken, $this->config['rememberMeDays'], false);
+			} else {
+				$this->logger->debug('No Overseerr token received from backend');
 			}
 		}
 		if ($this->config['ssoPetio']) {
+			$this->logger->debug('Starting Petio SSO check function');
 			$fallback = ($this->config['petioFallbackUser'] !== '' && $this->config['petioFallbackPassword'] !== '');
 			$petioToken = $this->getPetioToken($this->getSSOUserFor('petio', $userobj), $password, $token, $fallback);
 			if ($petioToken) {
+				$this->logger->debug('Setting Petio SSO cookie');
 				$this->coookie('set', 'petio_jwt', $petioToken, $this->config['rememberMeDays'], false);
+			} else {
+				$this->logger->debug('No Petio token received from backend');
+			}
+		}
+		if ($this->config['ssoKomga'] && $this->qualifyRequest($this->config['ssoKomgaAuth'])) {
+			$this->logger->debug('Starting Komga SSO check function');
+			$komga = $this->getKomgaToken($this->getSSOUserFor('komga', $userobj), $password);
+			if ($komga) {
+				$this->logger->debug('Setting Komga SSO cookie');
+				$this->coookie('set', 'komga_token', $komga, $this->config['rememberMeDays'], false);
+			} else {
+				$this->logger->debug('No Komga token received from backend');
 			}
 		}
 		return true;
+	}
+	
+	public function getKomgaToken($email, $password)
+	{
+		try {
+			$credentials = array('auth' => new Requests_Auth_Digest(array($email, $password)));
+			$url = $this->qualifyURL($this->config['komgaURL']);
+			$options = $this->requestOptions($url, 60000, true, false, $credentials);
+			$response = Requests::get($url . '/api/v1/users/me', ['X-Auth-Token' => 'organizrSSO'], $options);
+			if ($response->success) {
+				if ($response->headers['x-auth-token']) {
+					$this->writeLog('success', 'Komga Token Function - Grabbed token.', $email);
+					return $response->headers['x-auth-token'];
+				} else {
+					$this->writeLog('error', 'Komga Token Function - Komga did not return Token', $email);
+				}
+			} else {
+				$this->writeLog('error', 'Komga Token Function - Komga did not return Token', $email);
+			}
+		} catch (Requests_Exception $e) {
+			$this->writeLog('error', 'Komga Token Function - Error: ' . $e->getMessage(), $email);
+		}
+		return false;
 	}
 	
 	public function getJellyfinToken($username, $password)

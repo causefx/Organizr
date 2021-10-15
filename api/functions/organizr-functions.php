@@ -709,6 +709,25 @@ trait OrganizrFunctions
 		$this->coookie('delete', 'jellyfin_credentials');
 	}
 	
+	public function clearKomgaToken()
+	{
+		if (isset($_COOKIE['komga_token'])) {
+			try {
+				$url = $this->qualifyURL($this->config['komgaURL']);
+				$options = $this->requestOptions($url, 60000, true, false);
+				$response = Requests::post($url . '/api/v1/users/logout', ['X-Auth-Token' => $_COOKIE['komga_token']], $options);
+				if ($response->success) {
+					$this->writeLog('success', 'Komga Token Function - Logged User out', 'SYSTEM');
+				} else {
+					$this->writeLog('error', 'Komga Token Function - Unable to Logged User out', 'SYSTEM');
+				}
+			} catch (Requests_Exception $e) {
+				$this->writeLog('error', 'Komga Token Function - Error: ' . $e->getMessage(), 'SYSTEM');
+			}
+			$this->coookie('delete', 'komga_token');
+		}
+	}
+	
 	public function analyzeIP($ip)
 	{
 		if (strpos($ip, '/') !== false) {
