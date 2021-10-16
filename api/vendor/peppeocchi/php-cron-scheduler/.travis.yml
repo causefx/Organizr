@@ -1,0 +1,23 @@
+language: php
+php:
+  - '7.3'
+  - '7.4'
+  - '8.0'
+  - hhvm
+
+matrix:
+  allow_failures:
+    - php: hhvm
+  fast_finish: true
+
+sudo: false
+
+install:
+  - curl -s http://getcomposer.org/installer | php
+  - php composer.phar install --no-interaction
+
+script:
+  - XDEBUG_MODE=coverage php vendor/bin/phpunit -c phpunit.xml --coverage-clover clover.xml
+
+after_success:
+  - travis_retry php vendor/bin/php-coveralls -v
