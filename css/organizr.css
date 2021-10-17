@@ -4901,3 +4901,7 @@ td.mouse-grab.sort-tabs-handle {
 .input-group-btn:not(:last-child) .btn{
     border-radius: 0;
 }
+.orgLogDiv select, .orgLogDiv input {
+    padding: 8px;
+    border-radius: 4px;
+}

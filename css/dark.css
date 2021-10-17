@@ -16667,3 +16667,10 @@ tr.jsgrid-header-row th {
 .jsgrid-selected-row td {
     background: #232323 !important;
 }
+.orgLogDiv select:focus, .orgLogDiv input:focus {
+    box-shadow: none;
+    border-color: #96a2b4;
+}
+.orgLogDiv select, .orgLogDiv input {
+    border: 1px solid rgba(120,130,140,0.2);
+}

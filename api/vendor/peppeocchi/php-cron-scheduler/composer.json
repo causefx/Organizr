@@ -1,0 +1,41 @@
+{
+    "name": "peppeocchi/php-cron-scheduler",
+    "description": "PHP Cron Job Scheduler",
+    "license": "MIT",
+    "keywords": ["cron job", "scheduler"],
+    "authors": [
+        {
+            "name": "Giuseppe Occhipinti",
+            "email": "peppeocchi@gmail.com"
+        },
+        {
+            "name": "Carsten Windler",
+            "email": "carsten@carstenwindler.de",
+            "homepage": "http://carstenwindler.de",
+            "role": "Contributor"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {
+        "php": "^7.3 || ^8.0",
+        "dragonmantank/cron-expression": "^3.0"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "~9.5",
+        "php-coveralls/php-coveralls": "^2.4",
+        "swiftmailer/swiftmailer": "~5.4 || ^6.0"
+    },
+    "suggest": {
+        "swiftmailer/swiftmailer": "Required to send the output of a job to email address/es (~5.4 || ^6.0)."
+    },
+    "autoload": {
+        "psr-4": {
+            "GO\\": "src/GO/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Tests\\": "tests/GO/"
+        }
+    }
+}

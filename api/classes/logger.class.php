@@ -1,6 +1,5 @@
 <?php
 
-use Nekonomokochan\PhpJsonLogger\Logger;
 use Nekonomokochan\PhpJsonLogger\LoggerBuilder;
 
 class OrganizrLogger extends LoggerBuilder
@@ -23,13 +22,13 @@ class OrganizrLogger extends LoggerBuilder
 		$this->isReady = $readyStatus;
 	}
 	
-	public function build(): Logger
+	public function build(): OrganizrLoggerExt
 	{
 		if (!$this->isReady) {
 			$this->setChannel('Organizr');
 			$this->setLogLevel(self::DEBUG);
 			$this->setMaxFiles(1);
 		}
-		return new Logger($this);
+		return new OrganizrLoggerExt($this);
 	}
 }

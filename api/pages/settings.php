@@ -12,7 +12,7 @@ function get_page_settings($Organizr)
 		return false;
 	}
 	$Organizr->setLoggerChannel('Organizr');
-	$Organizr->logger->info('Accessed admin settings page');
+	$Organizr->logger->notice('Accessed admin settings page');
 	$systemMenus = $Organizr->systemMenuLists();
 	return $Organizr->pluginFiles('js', true) . $Organizr->loadJavascriptFile('js/Sortable.min.js') . '
 <script>

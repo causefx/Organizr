@@ -1,0 +1,10 @@
+.DS_Store
+
+/vendor
+composer.lock
+
+/examples
+*.old
+
+# PHPUnit coverage file
+clover.xml

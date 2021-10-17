@@ -6,7 +6,7 @@
     'aliases' => 
     array (
     ),
-    'reference' => '19b7b1e70d3dc94a63451008db2737eaaddf8cbf',
+    'reference' => 'ed5f925046b2d5d1fcfd5b5a24fbe7d16936c1d4',
     'name' => '__root__',
   ),
   'versions' => 
@@ -18,7 +18,7 @@
       'aliases' => 
       array (
       ),
-      'reference' => '19b7b1e70d3dc94a63451008db2737eaaddf8cbf',
+      'reference' => 'ed5f925046b2d5d1fcfd5b5a24fbe7d16936c1d4',
     ),
     'adldap2/adldap2' => 
     array (
@@ -89,6 +89,15 @@
       array (
       ),
       'reference' => 'e864bbf5904cb8f5bb334f99209b48018522f042',
+    ),
+    'dragonmantank/cron-expression' => 
+    array (
+      'pretty_version' => 'v3.1.0',
+      'version' => '3.1.0.0',
+      'aliases' => 
+      array (
+      ),
+      'reference' => '7a8c6e56ab3ffcc538d05e8155bb42269abf1a0c',
     ),
     'fig/http-message-util' => 
     array (
@@ -189,6 +198,13 @@
       ),
       'reference' => 'c6b00f05152ae2c9b04a448f99c7590beb6042f5',
     ),
+    'mtdowling/cron-expression' => 
+    array (
+      'replaced' => 
+      array (
+        0 => '^1.0',
+      ),
+    ),
     'myclabs/php-enum' => 
     array (
       'pretty_version' => '1.8.0',
@@ -260,6 +276,15 @@
       array (
       ),
       'reference' => '3f2fd07977541b4d630ea0365ad0eceddee5179c',
+    ),
+    'peppeocchi/php-cron-scheduler' => 
+    array (
+      'pretty_version' => 'v4.0',
+      'version' => '4.0.0.0',
+      'aliases' => 
+      array (
+      ),
+      'reference' => '0acfa032e60f0ea22a27b96a6b15a673a31d3448',
     ),
     'php-http/httplug' => 
     array (
@@ -556,6 +581,15 @@
       array (
       ),
       'reference' => 'c1a36a2a8a0aa731c1acdcd83f57724ffe630d00',
+    ),
+    'webmozart/assert' => 
+    array (
+      'pretty_version' => '1.10.0',
+      'version' => '1.10.0.0',
+      'aliases' => 
+      array (
+      ),
+      'reference' => '6964c76c7804814a842473e0c8fd15bab0f18e25',
     ),
     'zircote/swagger-php' => 
     array (
