@@ -251,7 +251,7 @@ class Organizr
 			if ($this->config['blacklisted'] !== '') {
 				if (in_array($currentIP, $this->arrayIP($this->config['blacklisted']))) {
 					$this->setLoggerChannel('Authentication');
-					$this->logger->debug('User was sent to black hole', $this->config['blacklisted']);
+					$this->logger->debug('User was sent to black hole', ['blacklist' => $this->config['blacklisted']]);
 					die($this->showHTML('Blacklisted', $this->config['blacklistedMessage']));
 				}
 			}
@@ -1289,7 +1289,7 @@ class Organizr
 				$this->setResponse(403, 'Token was invalid');
 			}
 			$this->setLoggerChannel('Authentication');
-			$this->logger->debug('User  token was invalid', $token);
+			$this->logger->debug('User  token was invalid', ['token' => $token]);
 			$this->invalidToken($token);
 		}
 		if ($api) {
@@ -6354,6 +6354,25 @@ class Organizr
 			$this->setResponse(404, 'Journal Mode not found');
 		}
 		return $query;
+	}
+	
+	public function testCronFrequency($frequency = null)
+	{
+		if (is_array($frequency)) {
+			$frequency = str_replace('_', ' ', array_keys($frequency)[0]);
+		}
+		if (!$frequency) {
+			$this->setResponse(409, 'Frequency was not supplied');
+			return false;
+		}
+		try {
+			$frequency = new Cron\CronExpression($frequency);
+			$this->setResponse(200, 'Frequency was validated');
+			return true;
+		} catch (InvalidArgumentException $e) {
+			$this->setResponse(500, $e->getMessage());
+			return false;
+		}
 	}
 	
 	protected function processQueries(array $request, $migration = false)
