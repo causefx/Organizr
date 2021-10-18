@@ -11067,20 +11067,20 @@ function jsFriendlyJSONStringify (s) {
 }
 function logContext(row){
 	let buttons = '';
-	buttons += (Object.keys(row).length > 0) ? '<button data-toggle="tooltip" title="" data-original-title="View Details" class="btn btn-xs btn-primary waves-effect waves-light log-details m-r-5" data-details=\''+jsFriendlyJSONStringify(row)+'\'><i class="mdi mdi-file-find"></i></button>' : '';
-	buttons += (Object.keys(row).length > 0) ? '<button data-toggle="tooltip" title="" data-original-title="Copy Log" class="btn btn-xs btn-info waves-effect waves-light clipboard m-r-5" data-clipboard-text=\''+jsFriendlyJSONStringify(row)+'\'><i class="mdi mdi-content-copy"></i></button>' : '';
+	buttons += (Object.keys(row).length > 0) ? '<button data-toggle="tooltip" title="" data-original-title="View Details" class="btn btn-xs btn-primary waves-effect waves-light log-details m-r-5" data-trace="'+row.trace_id+'"><i class="mdi mdi-file-find"></i></button>' : '';
+	buttons += (Object.keys(row).length > 0) ? '<button data-toggle="tooltip" title="" data-original-title="Copy Log" class="btn btn-xs btn-info waves-effect waves-light log-details m-r-5" data-trace="'+row.trace_id+'" data-clipboard="true"><i class="mdi mdi-content-copy"></i></button>' : '';
 	return buttons;
 }
 function formatLogDetails(details){
 	if(!details){
 		return false;
 	}
-	details = JSON.parse(details);
 	let m = moment.tz(details.datetime + 'Z', activeInfo.timezone);
 	details.datetime = moment(m).format('LLL');
 	let items = '';
 	items += `<li><div class="bg-inverse"><i class="mdi mdi-calendar-text text-white"></i></div> ${details.datetime}<span class="text-muted" lang="en">Date</span></li>`;
-	items += `<li><div class="bg-inverse"><i class="mdi mdi-account-box-outline text-white"></i></div> ${details.trace_id}<span class="text-muted" lang="en">User</span></li>`;
+	items += `<li><div class="bg-warning"><i class="mdi mdi-robot text-white"></i></div> ${details.trace_id}<span class="text-muted" lang="en">Trace ID</span></li>`;
+	items += `<li><div class="bg-primary"><i class="mdi mdi-account-box-outline text-white"></i></div> ${details.username}<span class="text-muted" lang="en">User</span></li>`;
 	items += `<li><div class="bg-info"><i class="mdi mdi-function text-white"></i></div> ${details.channel}<span class="text-muted" lang="en">Function</span></li>`;
 	items += `<li><div class="bg-plex"><i class="mdi mdi-language-php text-white"></i></div> ${details.file}<code>#L${details.line}</code><span class="text-muted" lang="en">File</span></li>`;
 	let items2 = '';

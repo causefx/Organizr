@@ -14,6 +14,10 @@ $(document).ready(function () {
         message('Clipboard',e.text,activeInfo.settings.notifications.position,'#FFF','info','5000');
         e.clearSelection();
     });
+	internalClipboard.on('success', function(e) {
+		message('Clipboard',e.text,activeInfo.settings.notifications.position,'#FFF','info','5000');
+		e.clearSelection();
+	});
     "use strict";
     var body = $("body");
 
@@ -1927,8 +1931,23 @@ $(document).on('click', '.ti-shift-left.mouse', function() {
 
 // Log Details
 $(document).on('click', '.log-details', function() {
-	let details = $(this).attr('data-details');
-	formatLogDetails(details);
+	let trace = $(this).attr('data-trace');
+	let activateClipboard = $(this).attr('data-clipboard');
+	organizrAPI2('GET','api/v2/log/all/'+trace).success(function(data) {
+		try {
+			let response = data.response;
+			if(activateClipboard){
+				clipboard(true,JSON.stringify(response.data));
+			}else{
+				formatLogDetails(response.data);
+			}
+
+		}catch(e) {
+			organizrCatchError(e,data);
+		}
+	}).fail(function(xhr) {
+		OrganizrApiError(xhr, 'API Error');
+	})
 });
 
 // Choose Log choose-organizr-log
