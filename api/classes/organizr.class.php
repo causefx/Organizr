@@ -4611,7 +4611,7 @@ class Organizr
 				return $github['default_branch'] ?? null;
 			} else {
 				$this->setLoggerChannel('Plugins');
-				$this->logger->warning('Plugin failed to get branch from Github');
+				$this->logger->warning('Plugin failed to get branch from Github', $this->apiResponseFormatter($response->body));
 				return false;
 			}
 		} catch (Requests_Exception $e) {
@@ -4635,7 +4635,7 @@ class Organizr
 				return is_array($github) ? $github : null;
 			} else {
 				$this->setLoggerChannel('Plugins');
-				$this->logger->warning('Plugin failed to get branch from Github');
+				$this->logger->warning('Plugin failed to get branch from Github', $this->apiResponseFormatter($response->body));
 				return false;
 			}
 		} catch (Requests_Exception $e) {
@@ -4862,6 +4862,10 @@ class Organizr
 				$response = Requests::get($repo, array(), $options);
 				if ($response->success) {
 					$plugins = array_merge($plugins, json_decode($response->body, true));
+				} else {
+					$this->setLoggerChannel('Plugins');
+					$this->logger->warning('Getting Marketplace items from Github', $this->apiResponseFormatter($response->body));
+					return false;
 				}
 			} catch (Requests_Exception $e) {
 				//return false;
@@ -4889,6 +4893,8 @@ class Organizr
 					}
 					return false;
 				} else {
+					$this->setLoggerChannel('Plugins');
+					$this->logger->warning('Getting Marketplace JSON from Github', $this->apiResponseFormatter($response->body));
 					return false;
 				}
 			} catch (Requests_Exception $e) {
