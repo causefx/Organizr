@@ -1157,6 +1157,9 @@ function buildFormItem(item){
         case 'arrayMultiple':
             return '<span class="text-danger">BuildFormItem Class not setup...';
             break;
+		case 'cron':
+			return `${smallLabel}<div class="input-group"><input data-changed="false" class="form-control ${extraClass}" ${placeholder} ${value} ${id} ${name} ${disabled} ${type} ${label} ${attr} autocomplete="new-password"><span class="input-group-btn"><button class="btn btn-info test-cron" type="button"><i class="fa fa-flask"></i></button></span></div>`;
+			break;
 		default:
 			return '<span class="text-danger">BuildFormItem Class not setup...';
 	}
@@ -1391,6 +1394,7 @@ function loadMarketplace(type){
     });
 }
 function loadPluginMarketplace(){
+	$('#managePluginTable').html('<td class="text-center" colspan="12"><i class="fa fa-spin fa-spinner"></i></td>');
 	organizrAPI2('GET','api/v2/plugins/marketplace').success(function(data) {
 		try {
 			let response = data.response;
