@@ -4661,6 +4661,7 @@ class Organizr
 						$fileList[] = $v;
 					} else {
 						if (stripos($v['path'], $folder) !== false) {
+							$v['path'] = (substr($v['path'], 0, strlen($folder)) == $folder) ? substr($v['path'], (strlen($folder) + 1)) : $v['path'];
 							$fileList[] = $v;
 						}
 					}
