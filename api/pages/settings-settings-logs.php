@@ -85,7 +85,7 @@ function get_page_settings_settings_logs($Organizr)
 				return ipInfoSpan(data);
 			}
 		}, {
-			"data": "trace_id"
+			"data": "username"
 		}, {
 			data: "context",
 			render: function(data, type, row) {

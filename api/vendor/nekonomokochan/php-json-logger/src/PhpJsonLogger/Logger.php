@@ -69,95 +69,99 @@ class Logger extends \Monolog\Logger
      * @param $message
      * @param $context
      */
-    public function debug($message, array $context = [])
+    public function debug($message, $context = '')
     {
+	    $context = $this->formatParamToArray($context);
         $this->addDebug($message, $context);
     }
 
     /**
      * @param $message
-     * @param array $context
+     * @param $context
      */
-    public function info($message, array $context = [])
+    public function info($message, $context = '')
     {
+	    $context = $this->formatParamToArray($context);
         $this->addInfo($message, $context);
     }
 
     /**
      * @param $message
-     * @param array $context
+     * @param $context
      */
-    public function notice($message, array $context = [])
+    public function notice($message, $context = '')
     {
+	    $context = $this->formatParamToArray($context);
         $this->addNotice($message, $context);
     }
 
     /**
      * @param $message
-     * @param array $context
+     * @param $context
      */
-    public function warning($message, array $context = [])
+    public function warning($message, $context = '')
     {
+	    $context = $this->formatParamToArray($context);
         $this->addWarning($message, $context);
     }
 
     /**
      * @param \Throwable $e
-     * @param array $context
+     * @param $context
      */
-    public function error($e, array $context = [])
+    public function error($e, $context = '')
     {
         if ($this->isErrorObject($e) === false) {
             throw new \InvalidArgumentException(
                 $this->generateInvalidArgumentMessage(__METHOD__)
             );
         }
-
+	    $context = $this->formatParamToArray($context);
         $this->addError(get_class($e), $this->formatPhpJsonLoggerErrorsContext($e, $context));
     }
 
     /**
      * @param \Throwable $e
-     * @param array $context
+     * @param $context
      */
-    public function critical($e, array $context = [])
+    public function critical($e, $context = '')
     {
         if ($this->isErrorObject($e) === false) {
             throw new \InvalidArgumentException(
                 $this->generateInvalidArgumentMessage(__METHOD__)
             );
         }
-
+	    $context = $this->formatParamToArray($context);
         $this->addCritical(get_class($e), $this->formatPhpJsonLoggerErrorsContext($e, $context));
     }
 
     /**
      * @param \Throwable $e
-     * @param array $context
+     * @param $context
      */
-    public function alert($e, array $context = [])
+    public function alert($e, $context = '')
     {
         if ($this->isErrorObject($e) === false) {
             throw new \InvalidArgumentException(
                 $this->generateInvalidArgumentMessage(__METHOD__)
             );
         }
-
+	    $context = $this->formatParamToArray($context);
         $this->addAlert(get_class($e), $this->formatPhpJsonLoggerErrorsContext($e, $context));
     }
 
     /**
      * @param \Throwable $e
-     * @param array $context
+     * @param $context
      */
-    public function emergency($e, array $context = [])
+    public function emergency($e, $context = '')
     {
         if ($this->isErrorObject($e) === false) {
             throw new \InvalidArgumentException(
                 $this->generateInvalidArgumentMessage(__METHOD__)
             );
         }
-
+	    $context = $this->formatParamToArray($context);
         $this->addEmergency(get_class($e), $this->formatPhpJsonLoggerErrorsContext($e, $context));
     }
 
@@ -232,4 +236,12 @@ class Logger extends \Monolog\Logger
     {
         return 'Please give the exception class to the ' . $method;
     }
+	private function formatParamToArray($value): array
+	{
+		if (is_array($value)) {
+			return $value;
+		} else {
+			return (empty($value)) ? [] : ['data' => $value];
+		}
+	}
 }
