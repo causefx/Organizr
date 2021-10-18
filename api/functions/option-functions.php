@@ -92,6 +92,14 @@ trait OptionsFunction
 					'settings' => '{tags: true, selectOnClose: true, closeOnSelect: true, allowClear: true}',
 				];
 				break;
+			case 'cron':
+				$settingMerge = [
+					'type' => 'cron',
+					'label' => 'Cron Frequency',
+					'help' => 'You may use either Cron format or - @hourly, @daily, @monthly',
+					'placeholder' => '* * * * *'
+				];
+				break;
 			case 'username':
 				$settingMerge = [
 					'type' => 'input',
