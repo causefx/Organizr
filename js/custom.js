@@ -1935,3 +1935,9 @@ $(document).on('click', '.log-details', function() {
 $(document).on("change", ".choose-organizr-log", function () {
 	organizrLogTable.ajax.url($(this).val()).load();
 });
+
+// Test cron
+$(document).on('click', '.test-cron', function() {
+	let cron = $(this).parent().parent().find('input').val();
+	testAPIConnection('cron',cron);
+});
