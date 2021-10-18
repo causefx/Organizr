@@ -4578,11 +4578,13 @@ class Organizr
 	{
 		$filesList = false;
 		foreach ($files as $k => $v) {
-			$filesList[] = array(
-				'fileName' => $v['name'],
-				'path' => DIRECTORY_SEPARATOR . 'api' . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . $folder . DIRECTORY_SEPARATOR,
-				'githubPath' => $v['download_url']
-			);
+			if ($v['type'] !== 'dir') {
+				$filesList[] = array(
+					'fileName' => $v['name'],
+					'path' => DIRECTORY_SEPARATOR . 'api' . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . $folder . DIRECTORY_SEPARATOR . str_replace($v['name'], '', $v['path']),
+					'githubPath' => $v['download_url']
+				);
+			}
 		}
 		return $filesList;
 	}
@@ -4598,19 +4600,87 @@ class Organizr
 		return false;
 	}
 	
+	public function getBranchFromGithub($repo)
+	{
+		$url = 'https://api.github.com/repos/' . $repo;
+		$options = array('verify' => false);
+		$response = Requests::get($url, array(), $options);
+		try {
+			if ($response->success) {
+				$github = json_decode($response->body, true);
+				return $github['default_branch'] ?? null;
+			} else {
+				$this->setLoggerChannel('Plugins');
+				$this->logger->warning('Plugin failed to get branch from Github');
+				return false;
+			}
+		} catch (Requests_Exception $e) {
+			$this->logger->error($e);
+			$this->setAPIResponse('error', $e->getMessage(), 401);
+			return false;
+		}
+	}
+	
+	public function getFilesFromGithub($repo, $branch)
+	{
+		if (!$repo || !$branch) {
+			return false;
+		}
+		$url = 'https://api.github.com/repos/' . $repo . '/git/trees/' . $branch . '?recursive=1';
+		$options = array('verify' => false);
+		$response = Requests::get($url, array(), $options);
+		try {
+			if ($response->success) {
+				$github = json_decode($response->body, true);
+				return is_array($github) ? $github : null;
+			} else {
+				$this->setLoggerChannel('Plugins');
+				$this->logger->warning('Plugin failed to get branch from Github');
+				return false;
+			}
+		} catch (Requests_Exception $e) {
+			$this->logger->error($e);
+			$this->setAPIResponse('error', $e->getMessage(), 401);
+			return false;
+		}
+	}
+	
+	public function formatFilesFromGithub($files, $repo, $branch, $folder)
+	{
+		if (!$files || !$repo || !$branch || !$folder) {
+			return false;
+		}
+		if (isset($files['tree'])) {
+			$fileList = [];
+			foreach ($files['tree'] as $k => $v) {
+				if ($v['type'] !== 'tree') {
+					$fileInfo = pathinfo($v['path']);
+					$v['name'] = $fileInfo['basename'];
+					$v['download_url'] = 'https://raw.githubusercontent.com/' . $repo . '/' . $branch . '/' . $v['path'];
+					if ($folder == 'root') {
+						$fileList[] = $v;
+					} else {
+						if (stripos($v['path'], $folder) !== false) {
+							$fileList[] = $v;
+						}
+					}
+				}
+			}
+			return $fileList;
+		}
+		return false;
+	}
+	
 	public function getPluginFilesFromRepo($plugin, $pluginDetails)
 	{
 		if (stripos($pluginDetails['repo'], 'github.com') !== false) {
 			$repo = explode('https://github.com/', $pluginDetails['repo']);
-			$folder = $pluginDetails['github_folder'] !== 'root' ? $pluginDetails['github_folder'] : '';
-			$url = 'https://api.github.com/repos/' . $repo[1] . '/contents/' . $folder;
 		} else {
 			return false;
 		}
-		$options = array('verify' => false);
-		$response = Requests::get($url, array(), $options);
-		if ($response->success) {
-			return json_decode($response->body, true);
+		$branch = $this->getBranchFromGithub($repo[1]);
+		if ($branch) {
+			return $this->formatFilesFromGithub($this->getFilesFromGithub($repo[1], $branch), $repo[1], $branch, $pluginDetails['github_folder']);
 		}
 		return false;
 	}
