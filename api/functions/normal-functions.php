@@ -585,6 +585,20 @@ trait NormalFunctions
 		return sprintf("%.{$dec}f %s", $bytes / (1024 ** $factor), $size[$factor]);
 	}
 	
+	public function apiResponseFormatter($response)
+	{
+		if (is_array($response)) {
+			return $response;
+		}
+		if (empty($response) || $response == '') {
+			return ['api_response' => 'No data'];
+		}
+		if ($this->json_validator($response)) {
+			return json_decode($response, true);
+		}
+		return ['api_response' => 'No data'];
+	}
+	
 	public function json_validator($data = null)
 	{
 		if (!empty($data)) {
