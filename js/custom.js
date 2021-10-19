@@ -1933,6 +1933,8 @@ $(document).on('click', '.ti-shift-left.mouse', function() {
 $(document).on('click', '.log-details', function() {
 	let trace = $(this).attr('data-trace');
 	let activateClipboard = $(this).attr('data-clipboard');
+	let el = $(this);
+	el.find('i').toggleClass('fa fa-lg fa-spin mdi-reload');
 	organizrAPI2('GET','api/v2/log/all/'+trace).success(function(data) {
 		try {
 			let response = data.response;
@@ -1941,12 +1943,13 @@ $(document).on('click', '.log-details', function() {
 			}else{
 				formatLogDetails(response.data);
 			}
-
 		}catch(e) {
 			organizrCatchError(e,data);
 		}
+		el.find('i').toggleClass('fa fa-lg fa-spin mdi-reload');
 	}).fail(function(xhr) {
 		OrganizrApiError(xhr, 'API Error');
+		el.find('i').toggleClass('fa fa-lg fa-spin mdi-reload');
 	})
 });
 
