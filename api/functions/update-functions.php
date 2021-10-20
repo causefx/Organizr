@@ -2,7 +2,7 @@
 
 trait UpdateFunctions
 {
-	public function getUpdateMechanism()
+	public function updateOrganizr()
 	{
 		if ($this->docker) {
 			return $this->dockerUpdate();
@@ -15,6 +15,10 @@ trait UpdateFunctions
 	
 	public function dockerUpdate()
 	{
+		if (!$this->docker) {
+			$this->setResponse(409, 'Your install type is not Docker');
+			return false;
+		}
 		$dockerUpdate = null;
 		ini_set('max_execution_time', 0);
 		set_time_limit(0);
@@ -36,6 +40,10 @@ trait UpdateFunctions
 	
 	public function windowsUpdate()
 	{
+		if ($this->docker || $this->getOS() !== 'win') {
+			$this->setResponse(409, 'Your install type is not Windows');
+			return false;
+		}
 		$branch = ($this->config['branch'] == 'v2-master') ? '-m' : '-d';
 		ini_set('max_execution_time', 0);
 		set_time_limit(0);
@@ -53,6 +61,10 @@ trait UpdateFunctions
 	
 	public function linuxUpdate()
 	{
+		if ($this->docker || $this->getOS() == 'win') {
+			$this->setResponse(409, 'Your install type is not Linux');
+			return false;
+		}
 		$branch = $this->config['branch'] == 'v2-master';
 		ini_set('max_execution_time', 0);
 		set_time_limit(0);
