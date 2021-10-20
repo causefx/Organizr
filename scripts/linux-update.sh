@@ -20,7 +20,7 @@ cd ./upgrade                                                                    
 curl -sSL ${URL} > upgrade.zip                                                   && \
 unzip upgrade.zip                                                                && \
 cd ${FOLDER}                                                                     && \
-cp -r ./ ../../../org                                                            && \
+cp -r ./ ../../../                                                               && \
 cd ../                                                                           && \
 rm upgrade.zip                                                                   && \
 rm -rf ${FOLDER}                                                                 && \
