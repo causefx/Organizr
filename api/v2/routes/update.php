@@ -149,6 +149,30 @@ $app->get('/update/windows', function ($request, $response, $args) {
 		->withStatus($GLOBALS['responseCode']);
 	
 });
+$app->get('/update/linux', function ($request, $response, $args) {
+	/**
+	 * @OA\Get(
+	 *     security={{ "api_key":{} }},
+	 *     tags={"update"},
+	 *     path="/api/v2/update/linux",
+	 *     summary="Update Organizr install using Linux script",
+	 *     @OA\Response(response="200",description="Success",@OA\JsonContent(ref="#/components/schemas/success-message")),
+	 *     @OA\Response(response="401",description="Unauthorized",@OA\JsonContent(ref="#/components/schemas/unauthorized-message")),
+	 *     @OA\Response(response="404",description="Error",@OA\JsonContent(ref="#/components/schemas/error-message")),
+	 *     @OA\Response(response="422",description="Error",@OA\JsonContent(ref="#/components/schemas/error-message")),
+	 *     @OA\Response(response="500",description="Error",@OA\JsonContent(ref="#/components/schemas/error-message")),
+	 * )
+	 */
+	$Organizr = ($request->getAttribute('Organizr')) ?? new Organizr();
+	if ($Organizr->qualifyRequest(1, true)) {
+		$Organizr->linuxUpdate();
+	}
+	$response->getBody()->write(jsonE($GLOBALS['api']));
+	return $response
+		->withHeader('Content-Type', 'application/json;charset=UTF-8')
+		->withStatus($GLOBALS['responseCode']);
+	
+});
 $app->get('/update/migrate/{version}', function ($request, $response, $args) {
 	/**
 	 * @OA\Get(
