@@ -2,9 +2,22 @@
 
 trait UpdateFunctions
 {
+	public function getUpdateMechanism()
+	{
+		if ($this->docker) {
+			return $this->dockerUpdate();
+		} elseif ($this->getOS() == 'win') {
+			return $this->windowsUpdate();
+		} else {
+			return $this->linuxUpdate();
+		}
+	}
+	
 	public function dockerUpdate()
 	{
 		$dockerUpdate = null;
+		ini_set('max_execution_time', 0);
+		set_time_limit(0);
 		chdir('/etc/cont-init.d/');
 		if (file_exists('./30-install')) {
 			$this->setAPIResponse('error', 'Update failed - OrgTools is deprecated - please use organizr/organizr', 500);
@@ -31,6 +44,23 @@ trait UpdateFunctions
 		$windowsUpdate = shell_exec($windowsScript);
 		if ($windowsUpdate) {
 			$this->setAPIResponse('success', $windowsUpdate, 200);
+			return true;
+		} else {
+			$this->setAPIResponse('success', 'Update Complete - check log.txt for output', 200);
+			return false;
+		}
+	}
+	
+	public function linuxUpdate()
+	{
+		$branch = $this->config['branch'] == 'v2-master';
+		ini_set('max_execution_time', 0);
+		set_time_limit(0);
+		$logFile = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'scripts' . DIRECTORY_SEPARATOR . 'log.txt';
+		$script = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'scripts' . DIRECTORY_SEPARATOR . 'linux-update.sh ' . $branch . ' > ' . $logFile . ' 2>&1';
+		$update = shell_exec($script);
+		if ($update) {
+			$this->setAPIResponse('success', $update, 200);
 			return true;
 		} else {
 			$this->setAPIResponse('success', 'Update Complete - check log.txt for output', 200);
