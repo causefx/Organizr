@@ -13,13 +13,14 @@ else
   echo "$1 is not a valid branch, exiting"
   exit 1
 fi
+SCRIPTPATH="$( cd -- "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P )"
 FOLDER="Organizr-"${BRANCH#v}
 URL=https://github.com/causefx/Organizr/archive/${BRANCH}.zip
-mkdir -p ./upgrade                                                               && \
-cd ./upgrade                                                                     && \
+mkdir -p $SCRIPTPATH"/upgrade"                                                   && \
+cd $SCRIPTPATH"/upgrade"                                                         && \
 curl -sSL ${URL} > upgrade.zip                                                   && \
 unzip upgrade.zip                                                                && \
-cd ${FOLDER}                                                                     && \
+cd $SCRIPTPATH"/upgrade/"${FOLDER}                                               && \
 cp -r ./ ../../../                                                               && \
 cd ../                                                                           && \
 rm upgrade.zip                                                                   && \
