@@ -21,7 +21,9 @@ URL=https://github.com/causefx/Organizr/archive/${BRANCH}.zip
 mkdir -p $UPGRADEPATH                                                  && \
 curl -sSL ${URL} > $UPGRADEFILE                                        && \
 unzip $UPGRADEFILE -d $UPGRADEPATH                                     && \
-cp -r $FOLDER/ $SCRIPTPATH/../                                         && \
+cd $FOLDER                                                             && \
+cp -r ./ $SCRIPTPATH/../                                               && \
+cd $SCRIPTPATH                                                         && \
 rm $UPGRADEFILE                                                        && \
 rm -rf $FOLDER                                                         && \
 rm -rf $UPGRADEPATH                                                    && \
