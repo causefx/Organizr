@@ -65,7 +65,7 @@ trait UpdateFunctions
 			$this->setResponse(409, 'Your install type is not Linux');
 			return false;
 		}
-		$branch = $this->config['branch'] == 'v2-master';
+		$branch = $this->config['branch'];
 		ini_set('max_execution_time', 0);
 		set_time_limit(0);
 		$logFile = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'scripts' . DIRECTORY_SEPARATOR . 'log.txt';
