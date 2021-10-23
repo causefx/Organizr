@@ -226,6 +226,7 @@ trait OptionsFunction
 					'type' => 'switch',
 					'label' => 'Hide Seeding',
 				];
+				break;
 			case 'hidecompleted':
 				$settingMerge = [
 					'type' => 'switch',
