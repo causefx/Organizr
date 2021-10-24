@@ -26,7 +26,7 @@ $folder = __DIR__ . DIRECTORY_SEPARATOR . 'plugins';
 $directoryIterator = new RecursiveDirectoryIterator($folder, FilesystemIterator::SKIP_DOTS);
 $iteratorIterator = new RecursiveIteratorIterator($directoryIterator);
 foreach ($iteratorIterator as $info) {
-	if ($info->getFilename() == 'plugin.php' || $info->getFilename() == 'page.php') {
+	if ($info->getFilename() == 'plugin.php' || $info->getFilename() == 'page.php' || $info->getFilename() == 'cron.php') {
 		require_once $info->getPathname();
 	}
 }
