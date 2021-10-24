@@ -2,7 +2,7 @@
 require_once 'api/functions.php';
 $Organizr = new Organizr();
 $Organizr->setLoggerChannel('Cron');
-if ($Organizr->isLocalOrServer()) {
+if ($Organizr->isLocalOrServer() && $Organizr->hasDB()) {
 	// Create a new scheduler
 	$scheduler = new GO\Scheduler();
 	// Clear any pre-existing jobs if any
@@ -74,6 +74,8 @@ if ($Organizr->isLocalOrServer()) {
 		$Organizr->logger->warning('Cron jobs have failed', ['jobs' => $scheduler->getFailedJobs()]);
 	}
 } else {
-	$Organizr->logger->warning('Unauthorized user tried to access cron file');
+	if ($Organizr->hasDB()) {
+		$Organizr->logger->warning('Unauthorized user tried to access cron file');
+	}
 	die($Organizr->showHTML('Unauthorized', 'Go-on.... Git!!!'));
 }
