@@ -253,7 +253,7 @@ trait NormalFunctions
 		} elseif (isset($_SERVER['REMOTE_ADDR'])) {
 			$ipaddress = $_SERVER['REMOTE_ADDR'];
 		} else {
-			$ipaddress = 'UNKNOWN';
+			$ipaddress = '127.0.0.1';
 		}
 		if (strpos($ipaddress, ',') !== false) {
 			list($first, $last) = explode(",", $ipaddress);
@@ -262,6 +262,14 @@ trait NormalFunctions
 		} else {
 			return $ipaddress;
 		}
+	}
+	
+	public function serverIP()
+	{
+		if (array_key_exists('SERVER_ADDR', $_SERVER)) {
+			return $_SERVER['SERVER_ADDR'];
+		}
+		return '127.0.0.1';
 	}
 	
 	public function parseDomain($value, $force = false)
@@ -575,6 +583,20 @@ trait NormalFunctions
 			}
 		}
 		return $isLocal;
+	}
+	
+	public function isLocalOrServer()
+	{
+		$isLocalOrServer = false;
+		$isLocal = $this->isLocal();
+		if (!$isLocal) {
+			if ($this->userIP() == $this->serverIP()) {
+				$isLocalOrServer = true;
+			}
+		} else {
+			$isLocalOrServer = true;
+		}
+		return $isLocalOrServer;
 	}
 	
 	public function human_filesize($bytes, $dec = 2)
