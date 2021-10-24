@@ -95,7 +95,7 @@ trait OptionsFunction
 			case 'cron':
 				$settingMerge = [
 					'type' => 'cron',
-					'label' => 'Cron Frequency',
+					'label' => 'Cron Schedule',
 					'help' => 'You may use either Cron format or - @hourly, @daily, @monthly',
 					'placeholder' => '* * * * *'
 				];

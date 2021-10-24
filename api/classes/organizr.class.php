@@ -6433,18 +6433,18 @@ class Organizr
 		return $query;
 	}
 	
-	public function testCronFrequency($frequency = null)
+	public function testCronSchedule($schedule = null)
 	{
-		if (is_array($frequency)) {
-			$frequency = str_replace('_', ' ', array_keys($frequency)[0]);
+		if (is_array($schedule)) {
+			$schedule = str_replace('_', ' ', array_keys($schedule)[0]);
 		}
-		if (!$frequency) {
-			$this->setResponse(409, 'Frequency was not supplied');
+		if (!$schedule) {
+			$this->setResponse(409, 'Schedule was not supplied');
 			return false;
 		}
 		try {
-			$frequency = new Cron\CronExpression($frequency);
-			$this->setResponse(200, 'Frequency was validated');
+			$schedule = new Cron\CronExpression($schedule);
+			$this->setResponse(200, 'Schedule was validated');
 			return true;
 		} catch (InvalidArgumentException $e) {
 			$this->setResponse(500, $e->getMessage());

@@ -582,7 +582,7 @@ $app->post('/test/cron', function ($request, $response, $args) {
 	 *     security={{ "api_key":{} }},
 	 *     tags={"test connection"},
 	 *     path="/api/v2/test/cron",
-	 *     summary="Test cron frequency",
+	 *     summary="Test cron schedule",
 	 *     @OA\Response(response="200",description="Success",@OA\JsonContent(ref="#/components/schemas/success-message")),
 	 *     @OA\Response(response="401",description="Unauthorized",@OA\JsonContent(ref="#/components/schemas/unauthorized-message")),
 	 *     @OA\Response(response="422",description="Error",@OA\JsonContent(ref="#/components/schemas/error-message")),
@@ -591,7 +591,7 @@ $app->post('/test/cron', function ($request, $response, $args) {
 	 */
 	$Organizr = ($request->getAttribute('Organizr')) ?? new Organizr();
 	if ($Organizr->qualifyRequest(1, true)) {
-		$Organizr->testCronFrequency($Organizr->apiData($request));
+		$Organizr->testCronSchedule($Organizr->apiData($request));
 	}
 	$response->getBody()->write(jsonE($GLOBALS['api']));
 	return $response

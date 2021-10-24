@@ -11,16 +11,16 @@ if ($Organizr->isLocalOrServer()) {
 	// Add plugin cron
 	$Organizr->logger->debug('Checking if any plugins have cron jobs');
 	foreach ($GLOBALS['cron'] as $cronJob) {
-		if (isset($cronJob['enabled']) && isset($cronJob['class']) && isset($cronJob['function']) && isset($cronJob['frequency'])) {
+		if (isset($cronJob['enabled']) && isset($cronJob['class']) && isset($cronJob['function']) && isset($cronJob['schedule'])) {
 			if ($Organizr->config[$cronJob['enabled']]) {
 				if (class_exists($cronJob['class'])) {
 					$Organizr->logger->debug('Starting cron job for function: ' . $cronJob['function'], ['cronJob' => $cronJob]);
-					$Organizr->logger->debug('Validating cron job frequency', ['frequency' => $cronJob['frequency']]);
+					$Organizr->logger->debug('Validating cron job schedule', ['schedule' => $cronJob['schedule']]);
 					try {
-						$frequency = new Cron\CronExpression($Organizr->config[$cronJob['frequency']]);
-						$Organizr->logger->debug('Cron frequency has passed validation', ['frequency' => $Organizr->config[$cronJob['frequency']]]);
+						$schedule = new Cron\CronExpression($Organizr->config[$cronJob['schedule']]);
+						$Organizr->logger->debug('Cron schedule has passed validation', ['schedule' => $Organizr->config[$cronJob['schedule']]]);
 					} catch (InvalidArgumentException $e) {
-						$Organizr->logger->warn('Cron frequency has failed validation', ['frequency' => $Organizr->config[$cronJob['frequency']]]);
+						$Organizr->logger->warn('Cron schedule has failed validation', ['schedule' => $Organizr->config[$cronJob['schedule']]]);
 						$Organizr->logger->error($e);
 						break;
 					}
@@ -37,7 +37,7 @@ if ($Organizr->isLocalOrServer()) {
 									'output' => $output,
 								]);
 							})
-							->at($Organizr->config[$cronJob['frequency']]);
+							->at($Organizr->config[$cronJob['schedule']]);
 					}
 				}
 			} else {
