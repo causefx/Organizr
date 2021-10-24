@@ -3,6 +3,8 @@ require_once 'api/functions.php';
 $Organizr = new Organizr();
 $Organizr->setLoggerChannel('Cron');
 if ($Organizr->isLocalOrServer() && $Organizr->hasDB()) {
+	// Set user as Organizr API
+	$_GET['apikey'] = $Organizr->config['organizrAPI'];
 	// Create a new scheduler
 	$scheduler = new GO\Scheduler();
 	// Clear any pre-existing jobs if any
@@ -12,9 +14,11 @@ if ($Organizr->isLocalOrServer() && $Organizr->hasDB()) {
 	$Organizr->logger->debug('Checking if any plugins have cron jobs');
 	foreach ($GLOBALS['cron'] as $cronJob) {
 		if (isset($cronJob['enabled']) && isset($cronJob['class']) && isset($cronJob['function']) && isset($cronJob['schedule'])) {
+			$Organizr->logger->debug('Starting cron job for function: ' . $cronJob['function'], ['cronJob' => $cronJob]);
 			if ($Organizr->config[$cronJob['enabled']]) {
+				$Organizr->logger->debug('Checking if cron job class exists', ['cronJob' => $cronJob]);
 				if (class_exists($cronJob['class'])) {
-					$Organizr->logger->debug('Starting cron job for function: ' . $cronJob['function'], ['cronJob' => $cronJob]);
+					$Organizr->logger->debug('Class exists', ['cronJob' => $cronJob]);
 					$Organizr->logger->debug('Validating cron job schedule', ['schedule' => $cronJob['schedule']]);
 					try {
 						$schedule = new Cron\CronExpression($Organizr->config[$cronJob['schedule']]);
@@ -26,10 +30,12 @@ if ($Organizr->isLocalOrServer() && $Organizr->hasDB()) {
 					}
 					$plugin = new $cronJob['class']();
 					$function = $cronJob['function'];
+					$Organizr->logger->debug('Checking if cron job method exists', ['cronJob' => $cronJob]);
 					if (method_exists($plugin, $function)) {
+						$Organizr->logger->debug('Method exists', ['cronJob' => $cronJob]);
 						$scheduler->call(
 							function ($plugin, $function) use ($Organizr) {
-								$Organizr->logger->debug('Starting cron job for function: ' . $function);
+								$Organizr->logger->debug('Running cron job', ['function' => $function]);
 								return $plugin->$function();
 							}, [$plugin, $function])
 							->then(function ($output) use ($Organizr) {
@@ -38,7 +44,11 @@ if ($Organizr->isLocalOrServer() && $Organizr->hasDB()) {
 								]);
 							})
 							->at($Organizr->config[$cronJob['schedule']]);
+					} else {
+						$Organizr->warning('Method error', ['cronJob' => $cronJob['class']]);
 					}
+				} else {
+					$Organizr->warning('Class error', ['cronJob' => $cronJob['class']]);
 				}
 			} else {
 				$Organizr->logger->debug('Cron job is not enabled', ['cronJob' => $cronJob]);
