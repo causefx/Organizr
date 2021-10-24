@@ -3791,7 +3791,7 @@ function checkPluginUpdates(){
 			});
 			if(update){
 				pluginsNeedingUpdate = '[' + pluginsNeedingUpdate.join(', ') + ']';
-				messageSingle(window.lang.translate('Update Available'), 'The following plugin(s) need updates: ' + pluginsNeedingUpdate, activeInfo.settings.notifications.position, '#FFF', 'update', '600000');
+				messageSingle(window.lang.translate('Update Available'), '<a href="javascript:void(0)" onclick="shortcut(\'plugin-marketplace\');"><span lang="en">The following plugin(s) need updates</span></a>: ' + pluginsNeedingUpdate, activeInfo.settings.notifications.position, '#FFF', 'update', '600000');
 			}
 		}catch(e) {
 			organizrCatchError(e,data);
@@ -11332,7 +11332,15 @@ function msToTime(s) {
 	if(ms >= '500'){ secs = pad(parseFloat(secs) + 1, 2); }
 	return hours+mins+secs;
 }
-
+function clickSettingsTab(){
+	let tabs = $('.allTabsList');
+	$.each(tabs, function(i,v) {
+		let tab = $(v);
+		if(tab.attr('data-url') == 'api/v2/page/settings'){
+			tab.find('a').trigger('click');
+		}
+	});
+}
 function clickMenuItem(selector){
 	if($(selector).length >= 1){
 		$(selector).click();
@@ -11350,10 +11358,16 @@ function shortcut(selectors = ''){
 			selectors = [];
 		}else{
 			switch (selectors){
+				case 'plugin-marketplace':
+					clickSettingsTab();
+					selectors = ['#settings-main-plugins-anchor', '#settings-plugins-marketplace-anchor'];
+					break;
 				case 'custom-cert':
+					clickSettingsTab();
 					selectors = ['#settings-main-system-settings-anchor','#settings-settings-main-anchor','a[href$="Certificate"]'];
 					break;
 				default:
+					clickSettingsTab();
 					selectors = ['#settings-main-system-settings-anchor'];
 
 			}
