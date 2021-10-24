@@ -21,44 +21,41 @@ class HealthChecks extends Organizr
 	public function _healthCheckPluginGetSettings()
 	{
 		return array(
-			'FYI' => array(
+			'Cron' => array(
 				array(
 					'type' => 'html',
 					'label' => '',
 					'override' => 12,
 					'html' => '
 						<div class="row">
-						    <div class="col-lg-12">
-						        <div class="panel panel-info">
-						            <div class="panel-heading">
-						                <span lang="en">ATTENTION</span>
-						            </div>
-						            <div class="panel-wrapper collapse in" aria-expanded="true">
-						                <div class="panel-body">
-						                	<h4 lang="en">Once this plugin is setup, you will need to setup a CRON job</h4>
-						                    <br/>
-						                    <span>
-						                    	<h4><b lang="en">CRON Job URL</b></h4>
-						                    	<code>' . $this->getServerPath() . 'api/v2/plugins/healthchecks/run</code><br/>
-						                    	<h5><b lang="en">Frequency</b></h5>
-						                    	<span lang="en">As often as you like - i.e. every 1 minute</span>
-						                    </span>
-						                </div>
-						            </div>
-						        </div>
-						    </div>
+							<div class="col-lg-12">
+								<div class="panel panel-info">
+									<div class="panel-heading">
+										<span lang="en">ATTENTION</span>
+									</div>
+									<div class="panel-wrapper collapse in" aria-expanded="true">
+										<div class="panel-body">
+											<h4 lang="en">Once this plugin is setup, you will need to setup a CRON job</h4>
+											<br/>
+											<span>
+												<h4><b lang="en">CRON Job URL</b></h4>
+												<code>' . $this->getServerPath() . 'api/v2/plugins/healthchecks/run</code><br/>
+												<h5><b lang="en">Schedule</b></h5>
+												<span lang="en">As often as you like - i.e. every 1 minute</span>
+											</span>
+										</div>
+									</div>
+								</div>
+							</div>
 						</div>
 						'
-				)
+				),
+				$this->settingsOption('blank'),
+				$this->settingsOption('enable', 'HEALTHCHECKS-cron-run-enabled'),
+				$this->settingsOption('cron', 'HEALTHCHECKS-cron-run-schedule')
 			),
 			'Options' => array(
-				array(
-					'type' => 'select',
-					'name' => 'HEALTHCHECKS-Auth-include',
-					'label' => 'Minimum Authentication',
-					'value' => $this->config['HEALTHCHECKS-Auth-include'],
-					'options' => $this->groupSelect()
-				),
+				$this->settingsOption('auth', 'HEALTHCHECKS-Auth-include'),
 				array(
 					'type' => 'input',
 					'name' => 'HEALTHCHECKS-PingURL',
@@ -101,23 +98,23 @@ class HealthChecks extends Organizr
 					'override' => 12,
 					'html' => '
 						<div class="row">
-						    <div class="col-lg-12">
-						        <div class="panel panel-danger">
-						            <div class="panel-heading">
-						                <span lang="en">ATTENTION</span>
-						            </div>
-						            <div class="panel-wrapper collapse in" aria-expanded="true">
-						                <div class="panel-body">
-						                	<h4 lang="en">Please use a Full Access Token</h4>
-						                    <br/>
-						                    <div>
-						                    	<p lang="en">Do not use a Read-Only Token as that will not give a correct UUID for sending the results to HealthChecks.io</p>
-						                    	<p lang="en">Make sure to save before using the import button on Services tab</p>
-						                    </div>
-						                </div>
-						            </div>
-						        </div>
-						    </div>
+							<div class="col-lg-12">
+								<div class="panel panel-danger">
+									<div class="panel-heading">
+										<span lang="en">ATTENTION</span>
+									</div>
+									<div class="panel-wrapper collapse in" aria-expanded="true">
+										<div class="panel-body">
+											<h4 lang="en">Please use a Full Access Token</h4>
+											<br/>
+											<div>
+												<p lang="en">Do not use a Read-Only Token as that will not give a correct UUID for sending the results to HealthChecks.io</p>
+												<p lang="en">Make sure to save before using the import button on Services tab</p>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
 						</div>
 						'
 				)
@@ -264,8 +261,10 @@ class HealthChecks extends Organizr
 				$this->_healthCheckPluginUUID($v['UUID'], $pass);
 			}
 			$this->setAPIResponse('success', null, 200, $allItems);
+			return $allItems;
 		} else {
 			$this->setAPIResponse('error', 'User does not have access', 401);
 		}
+		return false;
 	}
 }
