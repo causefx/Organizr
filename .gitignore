@@ -72,6 +72,7 @@ test.php
 users.db
 speedtest.db
 chatpack.db
+Cron.txt
 Docker.txt
 Github.txt
 Demo.txt

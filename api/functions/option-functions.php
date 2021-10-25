@@ -100,6 +100,52 @@ trait OptionsFunction
 					'placeholder' => '* * * * *'
 				];
 				break;
+			case 'cronfile':
+				$path = $this->root . DIRECTORY_SEPARATOR . 'cron.php';
+				$server = $this->serverIP();
+				$installInstruction = ($this->docker) ?
+					'<p lang="en">No action needed.  Organizr\'s docker image comes with the Cron job built-in</p>' :
+					'<p lang="en">Setup a Cron job so it\'s call will originate from either the server\'s IP address or a local IP address.  Please use the following information to set up the Cron Job correctly.</p>
+					<h5>Cron Information</h5>
+					<ul class="list-icons">
+						<li><i class="fa fa-caret-right text-info"></i> <b lang="en">Schedule</b> <small>* * * * *</small></li>
+						<li><i class="fa fa-caret-right text-info"></i> <b lang="en">File Path</b> <small>' . $path . '</small></li>
+					</ul>
+					<h5>Command Examples</h5>
+					<ul class="list-icons">
+						<li><i class="ti-angle-right"></i> * * * * * /path/to/php ' . $path . '</li>
+						<li><i class="ti-angle-right"></i> * * * * * curl -XGET -sL  "http://' . $server . '/cron.php"</li>
+					</ul>
+					';
+				$settingMerge = [
+					'type' => 'html',
+					'override' => 12,
+					'label' => '',
+					'html' => '
+						<div class="row">
+							<div class="col-lg-12">
+								<div class="panel panel-info">
+									<div class="panel-heading">
+										<span lang="en">Cron Instructions</span>
+									</div>
+									<div class="panel-wrapper collapse in" aria-expanded="true">
+										<div class="panel-body">
+											<h3 lang="en">Instructions for your install type</h3>
+											<span>' . $installInstruction . '</span>
+											<button onclick="checkCronFile();" class="btn btn-outline btn-info btn-lg btn-block" lang="en">Check Cron Status</button>
+											<div class="m-t-15 hidden cron-results-container">
+												<div class="well">
+													<pre class="cron-results"></pre>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+						'
+				];
+				break;
 			case 'username':
 				$settingMerge = [
 					'type' => 'input',

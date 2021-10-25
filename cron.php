@@ -10,6 +10,28 @@ if ($Organizr->isLocalOrServer() && $Organizr->hasDB()) {
 	// Clear any pre-existing jobs if any
 	$scheduler->clearJobs();
 	$Organizr->logger->debug('Cron process starting');
+	// Auto-update Cron
+	if ($Organizr->config['autoUpdateCronEnabled'] && $Organizr->config['autoUpdateCronSchedule']) {
+		try {
+			$schedule = new Cron\CronExpression($Organizr->config['autoUpdateCronSchedule']);
+			$Organizr->logger->debug('Cron schedule has passed validation', ['schedule' => $Organizr->config['autoUpdateCronSchedule']]);
+			$scheduler->call(
+				function ($Organizr) {
+					$Organizr->logger->debug('Running cron job', ['function' => 'Auto-update']);
+					return $Organizr->updateOrganizr();
+				})
+				->then(function ($output) use ($Organizr) {
+					$Organizr->logger->debug('Completed cron job', [
+						'output' => $output,
+					]);
+				})
+				->at($Organizr->config['autoUpdateCronSchedule']);
+		} catch (InvalidArgumentException $e) {
+			$Organizr->logger->warning('Cron schedule has failed validation', ['schedule' => $Organizr->config['autoUpdateCronSchedule']]);
+			$Organizr->logger->error($e);
+		}
+	}
+	// End Auto-update Cron
 	// Add plugin cron
 	$Organizr->logger->debug('Checking if any plugins have cron jobs');
 	foreach ($GLOBALS['cron'] as $cronJob) {
@@ -24,7 +46,7 @@ if ($Organizr->isLocalOrServer() && $Organizr->hasDB()) {
 						$schedule = new Cron\CronExpression($Organizr->config[$cronJob['schedule']]);
 						$Organizr->logger->debug('Cron schedule has passed validation', ['schedule' => $Organizr->config[$cronJob['schedule']]]);
 					} catch (InvalidArgumentException $e) {
-						$Organizr->logger->warn('Cron schedule has failed validation', ['schedule' => $Organizr->config[$cronJob['schedule']]]);
+						$Organizr->logger->warning('Cron schedule has failed validation', ['schedule' => $Organizr->config[$cronJob['schedule']]]);
 						$Organizr->logger->error($e);
 						break;
 					}
@@ -83,6 +105,8 @@ if ($Organizr->isLocalOrServer() && $Organizr->hasDB()) {
 	if (!empty($scheduler->getFailedJobs())) {
 		$Organizr->logger->warning('Cron jobs have failed', ['jobs' => $scheduler->getFailedJobs()]);
 	}
+	// End Run and set file with time
+	$Organizr->createCronFile();
 } else {
 	if ($Organizr->hasDB()) {
 		$Organizr->logger->warning('Unauthorized user tried to access cron file');

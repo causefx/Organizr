@@ -1164,6 +1164,20 @@ function buildFormItem(item){
 			return '<span class="text-danger">BuildFormItem Class not setup...';
 	}
 }
+function checkCronFile(){
+	$('.cron-results-container').removeClass('hidden');
+	organizrAPI2('GET','api/v2/test/cron').success(function(data) {
+		try {
+			$('.cron-results').text('Cron file is setup correctly');
+		}catch(e) {
+			$('.cron-results').text('Unknown error');
+			organizrCatchError(e,data);
+		}
+	}).fail(function(xhr) {
+		$('.cron-results').text('Cron file is not setup or is setup incorrectly');
+		OrganizrApiError(xhr);
+	});
+}
 function buildPluginsItem(array, type = 'enabled'){
 	var activePlugins = '';
 	var inactivePlugins = '';

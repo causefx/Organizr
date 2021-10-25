@@ -1867,6 +1867,12 @@ class Organizr
 				$this->settingsOption('select', 'logLiveUpdateRefresh', ['label' => 'Live Update Refresh', 'options' => $this->timeOptions()]),
 				$this->settingsOption('select', 'logPageSize', ['label' => 'Log Page Size', 'options' => [['name' => '10 Items', 'value' => '10'], ['name' => '25 Items', 'value' => '25'], ['name' => '50 Items', 'value' => '50'], ['name' => '100 Items', 'value' => '100']]]),
 			],
+			'Cron' => [
+				$this->settingsOption('cron-file'),
+				$this->settingsOption('blank'),
+				$this->settingsOption('enable', 'autoUpdateCronEnabled', ['label' => 'Auto-Update Organizr']),
+				$this->settingsOption('cron', 'autoUpdateCronSchedule'),
+			],
 			'Login' => [
 				$this->settingsOption('password', 'registrationPassword', ['label' => 'Registration Password', 'help' => 'Sets the password for the Registration form on the login screen']),
 				$this->settingsOption('switch', 'hideRegistration', ['label' => 'Hide Registration', 'help' => 'Enable this to hide the Registration button on the login screen']),
@@ -5817,6 +5823,18 @@ class Organizr
 			$this->setAPIResponse('error', pathinfo($_FILES['file']['name'], PATHINFO_BASENAME) . ' is not approved to be uploaded', 403);
 			return false;
 		}
+	}
+	
+	public function createCronFile()
+	{
+		$file = $this->root . DIRECTORY_SEPARATOR . 'Cron.txt';
+		file_put_contents($file, time());
+	}
+	
+	public function checkCronFile()
+	{
+		$file = $this->root . DIRECTORY_SEPARATOR . 'Cron.txt';
+		return file_exists($file) && time() - 120 < filemtime($file);
 	}
 	
 	public function plexJoinAPI($array)

@@ -598,3 +598,30 @@ $app->post('/test/cron', function ($request, $response, $args) {
 		->withHeader('Content-Type', 'application/json;charset=UTF-8')
 		->withStatus($GLOBALS['responseCode']);
 });
+$app->get('/test/cron', function ($request, $response, $args) {
+	/**
+	 * @OA\Get(
+	 *     security={{ "api_key":{} }},
+	 *     tags={"test connection"},
+	 *     path="/api/v2/test/cron",
+	 *     summary="Test if cron is setup correctly",
+	 *     @OA\Response(response="200",description="Success",@OA\JsonContent(ref="#/components/schemas/success-message")),
+	 *     @OA\Response(response="401",description="Unauthorized",@OA\JsonContent(ref="#/components/schemas/unauthorized-message")),
+	 *     @OA\Response(response="422",description="Error",@OA\JsonContent(ref="#/components/schemas/error-message")),
+	 *     @OA\Response(response="500",description="Error",@OA\JsonContent(ref="#/components/schemas/error-message")),
+	 * )
+	 */
+	$Organizr = ($request->getAttribute('Organizr')) ?? new Organizr();
+	if ($Organizr->qualifyRequest(1, true)) {
+		$file = $Organizr->checkCronFile();
+		if ($file) {
+			$Organizr->setResponse(200, 'Cron file is setup');
+		} else {
+			$Organizr->setResponse(500, 'Cron file is not setup correctly');
+		}
+	}
+	$response->getBody()->write(jsonE($GLOBALS['api']));
+	return $response
+		->withHeader('Content-Type', 'application/json;charset=UTF-8')
+		->withStatus($GLOBALS['responseCode']);
+});
