@@ -290,11 +290,11 @@ trait SonarrHomepageItem
 			}
 			$bottomTitle = 'S' . sprintf("%02d", $child['seasonNumber']) . 'E' . sprintf("%02d", $child['episodeNumber']) . ' - ' . $child['title'];
 			$details = array(
-				"seasonCount" => $child['series']['seasonCount'],
+				"seasonCount" => $child['series']['seasonCount'] ?? isset($child['series']['seasons']) ? count($child['series']['seasons']) : 0,
 				"status" => $child['series']['status'],
 				"topTitle" => $seriesName,
 				"bottomTitle" => $bottomTitle,
-				"overview" => isset($child['overview']) ? $child['overview'] : '',
+				"overview" => $child['overview'] ?? '',
 				"runtime" => $child['series']['runtime'],
 				"image" => $fanart,
 				"ratings" => $child['series']['ratings']['value'],
