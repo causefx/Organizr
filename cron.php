@@ -110,6 +110,7 @@ if ($Organizr->isLocalOrServer() && $Organizr->hasDB()) {
 } else {
 	if ($Organizr->hasDB()) {
 		$Organizr->logger->warning('Unauthorized user tried to access cron file');
+		die($Organizr->showHTML('Unauthorized', 'Go-on.... Git!!!'));
 	}
-	die($Organizr->showHTML('Unauthorized', 'Go-on.... Git!!!'));
+	die('Unauthorized');
 }
