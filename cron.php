@@ -16,7 +16,7 @@ if ($Organizr->isLocalOrServer() && $Organizr->hasDB()) {
 			$schedule = new Cron\CronExpression($Organizr->config['autoUpdateCronSchedule']);
 			$Organizr->logger->debug('Cron schedule has passed validation', ['schedule' => $Organizr->config['autoUpdateCronSchedule']]);
 			$scheduler->call(
-				function ($Organizr) {
+				function () use ($Organizr) {
 					$Organizr->logger->debug('Running cron job', ['function' => 'Auto-update']);
 					return $Organizr->updateOrganizr();
 				})
