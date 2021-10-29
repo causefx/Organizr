@@ -22,7 +22,7 @@ class HealthChecks extends Organizr
 	{
 		return array(
 			'Cron' => array(
-				array(
+				/*array(
 					'type' => 'html',
 					'label' => '',
 					'override' => 12,
@@ -49,7 +49,8 @@ class HealthChecks extends Organizr
 							</div>
 						</div>
 						'
-				),
+				),*/
+				$this->settingsOption('cron-file'),
 				$this->settingsOption('blank'),
 				$this->settingsOption('enable', 'HEALTHCHECKS-cron-run-enabled'),
 				$this->settingsOption('cron', 'HEALTHCHECKS-cron-run-schedule')

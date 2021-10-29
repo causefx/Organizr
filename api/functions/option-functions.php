@@ -126,13 +126,13 @@ trait OptionsFunction
 							<div class="col-lg-12">
 								<div class="panel panel-info">
 									<div class="panel-heading">
-										<span lang="en">Cron Instructions</span>
+										<span lang="en">Organizr Enable Cron Instructions</span>
 									</div>
 									<div class="panel-wrapper collapse in" aria-expanded="true">
 										<div class="panel-body">
 											<h3 lang="en">Instructions for your install type</h3>
 											<span>' . $installInstruction . '</span>
-											<button onclick="checkCronFile();" class="btn btn-outline btn-info btn-lg btn-block" lang="en">Check Cron Status</button>
+											<button type="button" onclick="checkCronFile();" class="btn btn-outline btn-info btn-lg btn-block" lang="en">Check Cron Status</button>
 											<div class="m-t-15 hidden cron-results-container">
 												<div class="well">
 													<pre class="cron-results"></pre>
