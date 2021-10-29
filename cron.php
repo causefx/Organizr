@@ -29,6 +29,8 @@ if ($Organizr->isLocalOrServer() && $Organizr->hasDB()) {
 		} catch (InvalidArgumentException $e) {
 			$Organizr->logger->warning('Cron schedule has failed validation', ['schedule' => $Organizr->config['autoUpdateCronSchedule']]);
 			$Organizr->logger->error($e);
+		} catch (Exception $e) {
+			$Organizr->logger->error($e);
 		}
 	}
 	// End Auto-update Cron
@@ -45,29 +47,32 @@ if ($Organizr->isLocalOrServer() && $Organizr->hasDB()) {
 					try {
 						$schedule = new Cron\CronExpression($Organizr->config[$cronJob['schedule']]);
 						$Organizr->logger->debug('Cron schedule has passed validation', ['schedule' => $Organizr->config[$cronJob['schedule']]]);
+						$plugin = new $cronJob['class']();
+						$function = $cronJob['function'];
+						$Organizr->logger->debug('Checking if cron job method exists', ['cronJob' => $cronJob]);
+						if (method_exists($plugin, $function)) {
+							$Organizr->logger->debug('Method exists', ['cronJob' => $cronJob]);
+							$scheduler->call(
+								function ($plugin, $function) use ($Organizr) {
+									$Organizr->logger->debug('Running cron job', ['function' => $function]);
+									return $plugin->$function();
+								}, [$plugin, $function])
+								->then(function ($output) use ($Organizr) {
+									$Organizr->logger->debug('Completed cron job', [
+										'output' => $output,
+									]);
+								})
+								->at($Organizr->config[$cronJob['schedule']]);
+						} else {
+							$Organizr->warning('Method error', ['cronJob' => $cronJob['class']]);
+						}
 					} catch (InvalidArgumentException $e) {
 						$Organizr->logger->warning('Cron schedule has failed validation', ['schedule' => $Organizr->config[$cronJob['schedule']]]);
 						$Organizr->logger->error($e);
 						break;
-					}
-					$plugin = new $cronJob['class']();
-					$function = $cronJob['function'];
-					$Organizr->logger->debug('Checking if cron job method exists', ['cronJob' => $cronJob]);
-					if (method_exists($plugin, $function)) {
-						$Organizr->logger->debug('Method exists', ['cronJob' => $cronJob]);
-						$scheduler->call(
-							function ($plugin, $function) use ($Organizr) {
-								$Organizr->logger->debug('Running cron job', ['function' => $function]);
-								return $plugin->$function();
-							}, [$plugin, $function])
-							->then(function ($output) use ($Organizr) {
-								$Organizr->logger->debug('Completed cron job', [
-									'output' => $output,
-								]);
-							})
-							->at($Organizr->config[$cronJob['schedule']]);
-					} else {
-						$Organizr->warning('Method error', ['cronJob' => $cronJob['class']]);
+					} catch (Exception $e) {
+						$Organizr->logger->error($e);
+						break;
 					}
 				} else {
 					$Organizr->warning('Class error', ['cronJob' => $cronJob['class']]);
