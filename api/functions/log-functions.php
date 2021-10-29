@@ -67,7 +67,7 @@ trait LogFunctions
 		return false;
 	}
 	
-	public function readLog($file, $pageSize = 10, $offset = 0, $filter = 'NONE')
+	public function readLog($file, $pageSize = 10, $offset = 0, $filter = 'NONE', $trace_id = null)
 	{
 		$combinedLogs = false;
 		if ($file == 'combined-logs') {
@@ -107,11 +107,17 @@ trait LogFunctions
 				$lineGenerator = Bcremer\LineReader\LineReader::readLinesBackwards($file);
 				$lines = iterator_to_array($lineGenerator);
 			}
-			if ($filter) {
+			if ($filter || $trace_id) {
 				$results = [];
 				foreach ($lines as $line) {
-					if (stripos($line, '"' . $filter . '"') !== false) {
-						$results[] = $line;
+					if ($filter) {
+						if (stripos($line, '"' . $filter . '"') !== false) {
+							$results[] = $line;
+						}
+					} elseif ($trace_id) {
+						if (stripos($line, '"' . $trace_id . '"') !== false) {
+							$results = $line;
+						}
 					}
 				}
 				$lines = $results;
@@ -123,22 +129,26 @@ trait LogFunctions
 	
 	public function formatLogResults($lines, $pageSize, $offset)
 	{
-		$totalLines = count($lines);
-		$totalPages = $totalLines / $pageSize;
-		$results = array_slice($lines, $offset, $pageSize);
-		$lines = [];
-		foreach ($results as $line) {
-			$lines[] = json_decode($line, true);
+		if (is_array($lines)) {
+			$totalLines = count($lines);
+			$totalPages = $totalLines / $pageSize;
+			$results = array_slice($lines, $offset, $pageSize);
+			$lines = [];
+			foreach ($results as $line) {
+				$lines[] = json_decode($line, true);
+			}
+			return [
+				'pageInfo' => [
+					'results' => $totalLines,
+					'totalPages' => ceil($totalPages),
+					'pageSize' => $pageSize,
+					'page' => $offset >= $totalPages ? -1 : ceil($offset / $pageSize) + 1
+				],
+				'results' => $lines
+			];
+		} else {
+			return json_decode($lines, true);
 		}
-		return [
-			'pageInfo' => [
-				'results' => $totalLines,
-				'totalPages' => ceil($totalPages),
-				'pageSize' => $pageSize,
-				'page' => $offset >= $totalPages ? -1 : ceil($offset / $pageSize) + 1
-			],
-			'results' => $lines
-		];
 	}
 	
 	public function getLatestLogFile()
@@ -282,7 +292,7 @@ trait LogFunctions
 		}
 	}
 	
-	public function getLog($pageSize = 10, $offset = 0, $filter = 'NONE', $number = 0)
+	public function getLog($pageSize = 10, $offset = 0, $filter = 'NONE', $number = 0, $trace_id = null)
 	{
 		if ($this->log) {
 			if (isset($this->log)) {
@@ -296,8 +306,9 @@ trait LogFunctions
 				} else {
 					$log = $this->getLatestLogFile();
 				}
-				$readLog = $this->readLog($log, 1000, 0, $filter);
-				$this->setResponse(200, 'Results for log: ' . $log, $readLog);
+				$readLog = $this->readLog($log, $pageSize, $offset, $filter, $trace_id);
+				$msg = ($trace_id) ? 'Results for trace_id: ' . $trace_id : 'Results for log: ' . $log;
+				$this->setResponse(200, $msg, $readLog);
 				return $readLog;
 			} else {
 				$this->setResponse(404, 'Log not found');

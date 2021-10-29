@@ -1157,9 +1157,26 @@ function buildFormItem(item){
         case 'arrayMultiple':
             return '<span class="text-danger">BuildFormItem Class not setup...';
             break;
+		case 'cron':
+			return `${smallLabel}<div class="input-group"><input data-changed="false" class="form-control ${extraClass}" ${placeholder} ${value} ${id} ${name} ${disabled} ${type} ${label} ${attr} autocomplete="new-password"><span class="input-group-btn"><button class="btn btn-info test-cron" type="button"><i class="fa fa-flask"></i></button></span></div>`;
+			break;
 		default:
 			return '<span class="text-danger">BuildFormItem Class not setup...';
 	}
+}
+function checkCronFile(){
+	$('.cron-results-container').removeClass('hidden');
+	organizrAPI2('GET','api/v2/test/cron').success(function(data) {
+		try {
+			$('.cron-results').text('Cron file is setup correctly');
+		}catch(e) {
+			$('.cron-results').text('Unknown error');
+			organizrCatchError(e,data);
+		}
+	}).fail(function(xhr) {
+		$('.cron-results').text('Cron file is not setup or is setup incorrectly');
+		OrganizrApiError(xhr);
+	});
 }
 function buildPluginsItem(array, type = 'enabled'){
 	var activePlugins = '';
@@ -1391,6 +1408,7 @@ function loadMarketplace(type){
     });
 }
 function loadPluginMarketplace(){
+	$('#managePluginTable').html('<td class="text-center" colspan="12"><i class="fa fa-spin fa-spinner"></i></td>');
 	organizrAPI2('GET','api/v2/plugins/marketplace').success(function(data) {
 		try {
 			let response = data.response;
@@ -3787,7 +3805,7 @@ function checkPluginUpdates(){
 			});
 			if(update){
 				pluginsNeedingUpdate = '[' + pluginsNeedingUpdate.join(', ') + ']';
-				messageSingle(window.lang.translate('Update Available'), 'The following plugin(s) need updates: ' + pluginsNeedingUpdate, activeInfo.settings.notifications.position, '#FFF', 'update', '600000');
+				messageSingle(window.lang.translate('Update Available'), '<a href="javascript:void(0)" onclick="shortcut(\'plugin-marketplace\');"><span lang="en">The following plugin(s) need updates</span></a>: ' + pluginsNeedingUpdate, activeInfo.settings.notifications.position, '#FFF', 'update', '600000');
 			}
 		}catch(e) {
 			organizrCatchError(e,data);
@@ -11063,20 +11081,20 @@ function jsFriendlyJSONStringify (s) {
 }
 function logContext(row){
 	let buttons = '';
-	buttons += (Object.keys(row).length > 0) ? '<button data-toggle="tooltip" title="" data-original-title="View Details" class="btn btn-xs btn-primary waves-effect waves-light log-details m-r-5" data-details=\''+jsFriendlyJSONStringify(row)+'\'><i class="mdi mdi-file-find"></i></button>' : '';
-	buttons += (Object.keys(row).length > 0) ? '<button data-toggle="tooltip" title="" data-original-title="Copy Log" class="btn btn-xs btn-info waves-effect waves-light clipboard m-r-5" data-clipboard-text=\''+jsFriendlyJSONStringify(row)+'\'><i class="mdi mdi-content-copy"></i></button>' : '';
+	buttons += (Object.keys(row).length > 0) ? '<button data-toggle="tooltip" title="" data-original-title="View Details" class="btn btn-xs btn-primary waves-effect waves-light log-details m-r-5" data-trace="'+row.trace_id+'"><i class="mdi mdi-file-find"></i></button>' : '';
+	buttons += (Object.keys(row).length > 0) ? '<button data-toggle="tooltip" title="" data-original-title="Copy Log" class="btn btn-xs btn-info waves-effect waves-light log-details m-r-5" data-trace="'+row.trace_id+'" data-clipboard="true"><i class="mdi mdi-content-copy"></i></button>' : '';
 	return buttons;
 }
 function formatLogDetails(details){
 	if(!details){
 		return false;
 	}
-	details = JSON.parse(details);
 	let m = moment.tz(details.datetime + 'Z', activeInfo.timezone);
 	details.datetime = moment(m).format('LLL');
 	let items = '';
 	items += `<li><div class="bg-inverse"><i class="mdi mdi-calendar-text text-white"></i></div> ${details.datetime}<span class="text-muted" lang="en">Date</span></li>`;
-	items += `<li><div class="bg-inverse"><i class="mdi mdi-account-box-outline text-white"></i></div> ${details.trace_id}<span class="text-muted" lang="en">User</span></li>`;
+	items += `<li><div class="bg-warning"><i class="mdi mdi-robot text-white"></i></div> ${details.trace_id}<span class="text-muted" lang="en">Trace ID</span></li>`;
+	items += `<li><div class="bg-primary"><i class="mdi mdi-account-box-outline text-white"></i></div> ${details.username}<span class="text-muted" lang="en">User</span></li>`;
 	items += `<li><div class="bg-info"><i class="mdi mdi-function text-white"></i></div> ${details.channel}<span class="text-muted" lang="en">Function</span></li>`;
 	items += `<li><div class="bg-plex"><i class="mdi mdi-language-php text-white"></i></div> ${details.file}<code>#L${details.line}</code><span class="text-muted" lang="en">File</span></li>`;
 	let items2 = '';
@@ -11328,7 +11346,15 @@ function msToTime(s) {
 	if(ms >= '500'){ secs = pad(parseFloat(secs) + 1, 2); }
 	return hours+mins+secs;
 }
-
+function clickSettingsTab(){
+	let tabs = $('.allTabsList');
+	$.each(tabs, function(i,v) {
+		let tab = $(v);
+		if(tab.attr('data-url') == 'api/v2/page/settings'){
+			tab.find('a').trigger('click');
+		}
+	});
+}
 function clickMenuItem(selector){
 	if($(selector).length >= 1){
 		$(selector).click();
@@ -11346,10 +11372,16 @@ function shortcut(selectors = ''){
 			selectors = [];
 		}else{
 			switch (selectors){
+				case 'plugin-marketplace':
+					clickSettingsTab();
+					selectors = ['#settings-main-plugins-anchor', '#settings-plugins-marketplace-anchor'];
+					break;
 				case 'custom-cert':
+					clickSettingsTab();
 					selectors = ['#settings-main-system-settings-anchor','#settings-settings-main-anchor','a[href$="Certificate"]'];
 					break;
 				default:
+					clickSettingsTab();
 					selectors = ['#settings-main-system-settings-anchor'];
 
 			}

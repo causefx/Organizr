@@ -2,7 +2,7 @@
 namespace Nekonomokochan\PhpJsonLogger;
 
 use Monolog\Formatter\JsonFormatter as BaseJsonFormatter;
-
+use Ramsey\Uuid\Uuid;
 /**
  * Class JsonFormatter
  *
@@ -22,7 +22,8 @@ class JsonFormatter extends BaseJsonFormatter
             'log_level'         => $record['level_name'],
             'message'           => $record['message'],
             'channel'           => $record['channel'],
-            'trace_id'          => $record['extra']['trace_id'],
+	        'username'          => $record['extra']['trace_id'],
+	        'trace_id'          => $this->generateUuid(),
             'file'              => $record['extra']['file'],
             'line'              => $record['extra']['line'],
             'context'           => $record['context'],
@@ -55,4 +56,9 @@ class JsonFormatter extends BaseJsonFormatter
 
         return ($time - $createdTime) * 1000;
     }
+    
+	private function generateUuid(): string
+	{
+		return Uuid::uuid4()->toString();
+	}
 }

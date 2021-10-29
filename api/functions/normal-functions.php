@@ -253,7 +253,7 @@ trait NormalFunctions
 		} elseif (isset($_SERVER['REMOTE_ADDR'])) {
 			$ipaddress = $_SERVER['REMOTE_ADDR'];
 		} else {
-			$ipaddress = 'UNKNOWN';
+			$ipaddress = '127.0.0.1';
 		}
 		if (strpos($ipaddress, ',') !== false) {
 			list($first, $last) = explode(",", $ipaddress);
@@ -262,6 +262,14 @@ trait NormalFunctions
 		} else {
 			return $ipaddress;
 		}
+	}
+	
+	public function serverIP()
+	{
+		if (array_key_exists('SERVER_ADDR', $_SERVER)) {
+			return $_SERVER['SERVER_ADDR'];
+		}
+		return '127.0.0.1';
 	}
 	
 	public function parseDomain($value, $force = false)
@@ -577,12 +585,40 @@ trait NormalFunctions
 		return $isLocal;
 	}
 	
+	public function isLocalOrServer()
+	{
+		$isLocalOrServer = false;
+		$isLocal = $this->isLocal();
+		if (!$isLocal) {
+			if ($this->userIP() == $this->serverIP()) {
+				$isLocalOrServer = true;
+			}
+		} else {
+			$isLocalOrServer = true;
+		}
+		return $isLocalOrServer;
+	}
+	
 	public function human_filesize($bytes, $dec = 2)
 	{
 		$bytes = number_format($bytes, 0, '.', '');
 		$size = array('B', 'kB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB');
 		$factor = floor((strlen($bytes) - 1) / 3);
 		return sprintf("%.{$dec}f %s", $bytes / (1024 ** $factor), $size[$factor]);
+	}
+	
+	public function apiResponseFormatter($response)
+	{
+		if (is_array($response)) {
+			return $response;
+		}
+		if (empty($response) || $response == '') {
+			return ['api_response' => 'No data'];
+		}
+		if ($this->json_validator($response)) {
+			return json_decode($response, true);
+		}
+		return ['api_response' => 'No data'];
 	}
 	
 	public function json_validator($data = null)

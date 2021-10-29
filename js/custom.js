@@ -14,6 +14,10 @@ $(document).ready(function () {
         message('Clipboard',e.text,activeInfo.settings.notifications.position,'#FFF','info','5000');
         e.clearSelection();
     });
+	internalClipboard.on('success', function(e) {
+		message('Clipboard',e.text,activeInfo.settings.notifications.position,'#FFF','info','5000');
+		e.clearSelection();
+	});
     "use strict";
     var body = $("body");
 
@@ -1927,11 +1931,35 @@ $(document).on('click', '.ti-shift-left.mouse', function() {
 
 // Log Details
 $(document).on('click', '.log-details', function() {
-	let details = $(this).attr('data-details');
-	formatLogDetails(details);
+	let trace = $(this).attr('data-trace');
+	let activateClipboard = $(this).attr('data-clipboard');
+	let el = $(this);
+	el.find('i').toggleClass('fa fa-lg fa-spin mdi-reload');
+	organizrAPI2('GET','api/v2/log/all/'+trace).success(function(data) {
+		try {
+			let response = data.response;
+			if(activateClipboard){
+				clipboard(true,JSON.stringify(response.data));
+			}else{
+				formatLogDetails(response.data);
+			}
+		}catch(e) {
+			organizrCatchError(e,data);
+		}
+		el.find('i').toggleClass('fa fa-lg fa-spin mdi-reload');
+	}).fail(function(xhr) {
+		OrganizrApiError(xhr, 'API Error');
+		el.find('i').toggleClass('fa fa-lg fa-spin mdi-reload');
+	})
 });
 
 // Choose Log choose-organizr-log
 $(document).on("change", ".choose-organizr-log", function () {
 	organizrLogTable.ajax.url($(this).val()).load();
+});
+
+// Test cron
+$(document).on('click', '.test-cron', function() {
+	let cron = $(this).parent().parent().find('input').val();
+	testAPIConnection('cron',cron);
 });

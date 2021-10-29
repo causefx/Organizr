@@ -618,5 +618,7 @@ return [
 	'logPageSize' => '50',
 	'includeDatabaseQueriesInDebug' => false,
 	'externalPluginMarketplaceRepos' => '',
-	'checkForPluginUpdate' => true
+	'checkForPluginUpdate' => true,
+	'autoUpdateCronEnabled' => false,
+	'autoUpdateCronSchedule' => '@weekly'
 ];

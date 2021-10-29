@@ -63,7 +63,7 @@ class Organizr
 	
 	// ===================================
 	// Organizr Version
-	public $version = '2.1.1030';
+	public $version = '2.1.1110';
 	// ===================================
 	// Quick php Version check
 	public $minimumPHP = '7.3';
@@ -1866,6 +1866,12 @@ class Organizr
 				$this->settingsOption('number', 'maxLogFiles', ['label' => 'Maximum Log Files', 'help' => 'Number of log files to preserve', 'attr' => 'min="1"']),
 				$this->settingsOption('select', 'logLiveUpdateRefresh', ['label' => 'Live Update Refresh', 'options' => $this->timeOptions()]),
 				$this->settingsOption('select', 'logPageSize', ['label' => 'Log Page Size', 'options' => [['name' => '10 Items', 'value' => '10'], ['name' => '25 Items', 'value' => '25'], ['name' => '50 Items', 'value' => '50'], ['name' => '100 Items', 'value' => '100']]]),
+			],
+			'Cron' => [
+				$this->settingsOption('cron-file'),
+				$this->settingsOption('blank'),
+				$this->settingsOption('enable', 'autoUpdateCronEnabled', ['label' => 'Auto-Update Organizr']),
+				$this->settingsOption('cron', 'autoUpdateCronSchedule'),
 			],
 			'Login' => [
 				$this->settingsOption('password', 'registrationPassword', ['label' => 'Registration Password', 'help' => 'Sets the password for the Registration form on the login screen']),
@@ -4578,11 +4584,13 @@ class Organizr
 	{
 		$filesList = false;
 		foreach ($files as $k => $v) {
-			$filesList[] = array(
-				'fileName' => $v['name'],
-				'path' => DIRECTORY_SEPARATOR . 'api' . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . $folder . DIRECTORY_SEPARATOR,
-				'githubPath' => $v['download_url']
-			);
+			if ($v['type'] !== 'dir') {
+				$filesList[] = array(
+					'fileName' => $v['name'],
+					'path' => DIRECTORY_SEPARATOR . 'api' . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . $folder . DIRECTORY_SEPARATOR . str_replace($v['name'], '', $v['path']),
+					'githubPath' => $v['download_url']
+				);
+			}
 		}
 		return $filesList;
 	}
@@ -4598,19 +4606,88 @@ class Organizr
 		return false;
 	}
 	
+	public function getBranchFromGithub($repo)
+	{
+		$url = 'https://api.github.com/repos/' . $repo;
+		$options = array('verify' => false);
+		$response = Requests::get($url, array(), $options);
+		try {
+			if ($response->success) {
+				$github = json_decode($response->body, true);
+				return $github['default_branch'] ?? null;
+			} else {
+				$this->setLoggerChannel('Plugins');
+				$this->logger->warning('Plugin failed to get branch from Github', $this->apiResponseFormatter($response->body));
+				return false;
+			}
+		} catch (Requests_Exception $e) {
+			$this->logger->error($e);
+			$this->setAPIResponse('error', $e->getMessage(), 401);
+			return false;
+		}
+	}
+	
+	public function getFilesFromGithub($repo, $branch)
+	{
+		if (!$repo || !$branch) {
+			return false;
+		}
+		$url = 'https://api.github.com/repos/' . $repo . '/git/trees/' . $branch . '?recursive=1';
+		$options = array('verify' => false);
+		$response = Requests::get($url, array(), $options);
+		try {
+			if ($response->success) {
+				$github = json_decode($response->body, true);
+				return is_array($github) ? $github : null;
+			} else {
+				$this->setLoggerChannel('Plugins');
+				$this->logger->warning('Plugin failed to get branch from Github', $this->apiResponseFormatter($response->body));
+				return false;
+			}
+		} catch (Requests_Exception $e) {
+			$this->logger->error($e);
+			$this->setAPIResponse('error', $e->getMessage(), 401);
+			return false;
+		}
+	}
+	
+	public function formatFilesFromGithub($files, $repo, $branch, $folder)
+	{
+		if (!$files || !$repo || !$branch || !$folder) {
+			return false;
+		}
+		if (isset($files['tree'])) {
+			$fileList = [];
+			foreach ($files['tree'] as $k => $v) {
+				if ($v['type'] !== 'tree') {
+					$fileInfo = pathinfo($v['path']);
+					$v['name'] = $fileInfo['basename'];
+					$v['download_url'] = 'https://raw.githubusercontent.com/' . $repo . '/' . $branch . '/' . $v['path'];
+					if ($folder == 'root') {
+						$fileList[] = $v;
+					} else {
+						if (stripos($v['path'], $folder) !== false) {
+							$v['path'] = (substr($v['path'], 0, strlen($folder)) == $folder) ? substr($v['path'], (strlen($folder) + 1)) : $v['path'];
+							$fileList[] = $v;
+						}
+					}
+				}
+			}
+			return $fileList;
+		}
+		return false;
+	}
+	
 	public function getPluginFilesFromRepo($plugin, $pluginDetails)
 	{
 		if (stripos($pluginDetails['repo'], 'github.com') !== false) {
 			$repo = explode('https://github.com/', $pluginDetails['repo']);
-			$folder = $pluginDetails['github_folder'] !== 'root' ? $pluginDetails['github_folder'] : '';
-			$url = 'https://api.github.com/repos/' . $repo[1] . '/contents/' . $folder;
 		} else {
 			return false;
 		}
-		$options = array('verify' => false);
-		$response = Requests::get($url, array(), $options);
-		if ($response->success) {
-			return json_decode($response->body, true);
+		$branch = $this->getBranchFromGithub($repo[1]);
+		if ($branch) {
+			return $this->formatFilesFromGithub($this->getFilesFromGithub($repo[1], $branch), $repo[1], $branch, $pluginDetails['github_folder']);
 		}
 		return false;
 	}
@@ -4635,9 +4712,9 @@ class Organizr
 		$array = $array[$plugin];
 		// Check Version of Organizr against minimum version needed
 		$compare = new Composer\Semver\Comparator;
-		if (!$compare->lessThan($array['minimum_organizr_version'], $this->version)) {
+		if ($compare->lessThan($this->version, $array['minimum_organizr_version'])) {
 			$this->logger->warning('Minimum Organizr version needed: ' . $array['minimum_organizr_version']);
-			$this->setResponse(500, 'Minimum Organizr version needed: ' . $array['minimum_organizr_version']);
+			$this->setResponse(500, 'Minimum Organizr version needed: ' . $array['minimum_organizr_version'] . ' | Current Version: ' . $this->version);
 			return true;
 		}
 		$files = $this->getPluginFilesFromRepo($plugin, $array);
@@ -4791,6 +4868,10 @@ class Organizr
 				$response = Requests::get($repo, array(), $options);
 				if ($response->success) {
 					$plugins = array_merge($plugins, json_decode($response->body, true));
+				} else {
+					$this->setLoggerChannel('Plugins');
+					$this->logger->warning('Getting Marketplace items from Github', $this->apiResponseFormatter($response->body));
+					return false;
 				}
 			} catch (Requests_Exception $e) {
 				//return false;
@@ -4818,6 +4899,8 @@ class Organizr
 					}
 					return false;
 				} else {
+					$this->setLoggerChannel('Plugins');
+					$this->logger->warning('Getting Marketplace JSON from Github', $this->apiResponseFormatter($response->body));
 					return false;
 				}
 			} catch (Requests_Exception $e) {
@@ -5742,6 +5825,18 @@ class Organizr
 		}
 	}
 	
+	public function createCronFile()
+	{
+		$file = $this->root . DIRECTORY_SEPARATOR . 'Cron.txt';
+		file_put_contents($file, time());
+	}
+	
+	public function checkCronFile()
+	{
+		$file = $this->root . DIRECTORY_SEPARATOR . 'Cron.txt';
+		return file_exists($file) && time() - 120 < filemtime($file);
+	}
+	
 	public function plexJoinAPI($array)
 	{
 		$username = ($array['username']) ?? null;
@@ -6356,18 +6451,18 @@ class Organizr
 		return $query;
 	}
 	
-	public function testCronFrequency($frequency = null)
+	public function testCronSchedule($schedule = null)
 	{
-		if (is_array($frequency)) {
-			$frequency = str_replace('_', ' ', array_keys($frequency)[0]);
+		if (is_array($schedule)) {
+			$schedule = str_replace('_', ' ', array_keys($schedule)[0]);
 		}
-		if (!$frequency) {
-			$this->setResponse(409, 'Frequency was not supplied');
+		if (!$schedule) {
+			$this->setResponse(409, 'Schedule was not supplied');
 			return false;
 		}
 		try {
-			$frequency = new Cron\CronExpression($frequency);
-			$this->setResponse(200, 'Frequency was validated');
+			$schedule = new Cron\CronExpression($schedule);
+			$this->setResponse(200, 'Schedule was validated');
 			return true;
 		} catch (InvalidArgumentException $e) {
 			$this->setResponse(500, $e->getMessage());

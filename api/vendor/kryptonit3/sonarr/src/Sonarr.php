@@ -71,6 +71,9 @@ class Sonarr
 	    if ( $this->type == 'lidarr' ) {
 		    $uriData['includeArtist'] = 'true';
 	    }
+	    if ( $this->type == 'sonarr' ) {
+		    $uriData['includeSeries'] = 'true';
+	    }
 	    $response = [
             'uri' => 'calendar',
             'type' => 'get',
@@ -658,7 +661,7 @@ class Sonarr
 		    $compare = new Comparator;
 		    switch ($this->type){
 			    case 'sonarr':
-				    $versionCheck = '';
+				    $versionCheck = 'v3/';
 				    break;
 			    case 'radarr':
 			    	$versionCheck =  'v3/';
