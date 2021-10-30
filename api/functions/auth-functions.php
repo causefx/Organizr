@@ -41,7 +41,7 @@ trait AuthFunctions
 				// Custom LDAP Options
 				'custom_options' => [
 					// See: http://php.net/ldap_set_option
-					//LDAP_OPT_X_TLS_REQUIRE_CERT => LDAP_OPT_X_TLS_HARD
+					LDAP_OPT_X_TLS_REQUIRE_CERT => LDAP_OPT_X_TLS_ALLOW
 				]
 			];
 			// Add a connection provider to Adldap.
@@ -116,7 +116,7 @@ trait AuthFunctions
 				// Custom LDAP Options
 				'custom_options' => [
 					// See: http://php.net/ldap_set_option
-					//LDAP_OPT_X_TLS_REQUIRE_CERT => LDAP_OPT_X_TLS_HARD
+					LDAP_OPT_X_TLS_REQUIRE_CERT => LDAP_OPT_X_TLS_ALLOW
 				]
 			];
 			// Add a connection provider to Adldap.
@@ -313,7 +313,7 @@ trait AuthFunctions
 				// Custom LDAP Options
 				'custom_options' => [
 					// See: http://php.net/ldap_set_option
-					//LDAP_OPT_X_TLS_REQUIRE_CERT => LDAP_OPT_X_TLS_HARD
+					LDAP_OPT_X_TLS_REQUIRE_CERT => LDAP_OPT_X_TLS_ALLOW
 				]
 			];
 			// Add a connection provider to Adldap.
