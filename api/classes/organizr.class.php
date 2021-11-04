@@ -6286,6 +6286,10 @@ class Organizr
 					$headers[$header] = $headerKey;
 				}
 			}
+			if ($requestObject->hasHeader('Content-Type')) {
+				$headerKey = $requestObject->getHeaderLine('Content-Type');
+				$headers['Content-Type'] = $headerKey;
+			}
 			$debugInformation = [
 				'type' => $requestObject->getMethod(),
 				'headerType' => $requestObject->getHeaderLine('Content-Type'),
@@ -6314,6 +6318,7 @@ class Organizr
 					default:
 						$call = Requests::get($url, $headers, $options);
 				}
+				$this->logger->debug('Socks Response', $this->json_validator($call->body) ? json_decode($call->body, true) : $call->body);
 				return $call->body;
 			} catch (Requests_Exception $e) {
 				$this->setAPIResponse('error', $e->getMessage(), 500);
