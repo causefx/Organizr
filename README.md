@@ -38,14 +38,14 @@ Do you have quite a bit of services running on your computer or server? Do you h
 - Custom tabs for your services
 - Customise the top bar by adding your own site logo or site name
 - Enable or disable iFrame for your tabs
-- Fail2ban support ([see wiki](https://docs.organizr.app/books/setup-features/page/fail2ban-integration))
+- Fail2ban support ([see wiki](https://docs.organizr.app/features/fail2ban-integration))
 - Fullscreen Support
 - Gravatar Support
 - Keyboard shortcut support (Check help tab in settings)
 - Login with Plex/Emby/LDAP or sFTP credentials
 - Mobile support
 - Multiple login support
-- Nginx Auth_Request support ([see wiki](https://docs.organizr.app/books/setup-features/page/serverauth))
+- Nginx Auth_Request support ([see wiki](https://docs.organizr.app/features/server-authentication))
 - Organizr login log viewer
 - Personalise any theme: Customise the look and feel of Organizr with access to the colour palette
 - Pin/Unpin sidebar
