@@ -601,8 +601,11 @@ class Organizr
 				$this->setAPIResponse('error', 'Missing info', 401);
 				$this->logger->debug('Missing info', $userInfo);
 			}
+			return true;
+		} else {
+			$this->setAPIResponse('error', 'Organizr is not setup or an error occurred', 401);
+			return false;
 		}
-		return true;
 	}
 	
 	public function getIpInfo($ip = null)
