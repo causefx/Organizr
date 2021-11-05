@@ -99,6 +99,8 @@ class Organizr
 		$this->checkPHP();
 		// Check Disk Space
 		$this->checkDiskSpace();
+		// Set UUID for device
+		$this->setDeviceUUID();
 		// Constructed from Updater?
 		$this->updating = $updating;
 		// Set Project Root directory
@@ -198,6 +200,21 @@ class Organizr
 		} catch (Dibi\Exception $e) {
 			$this->otherDb = null;
 		}
+	}
+	
+	public function setDeviceUUID()
+	{
+		if (!isset($_COOKIE['organizr_user_uuid'])) {
+			$this->coookie('set', 'organizr_user_uuid', $this->gen_uuid(), 7);
+		}
+	}
+	
+	public function refreshDeviceUUID()
+	{
+		if (isset($_COOKIE['organizr_user_uuid'])) {
+			$this->coookie('delete', 'organizr_user_uuid');
+		}
+		$this->coookie('set', 'organizr_user_uuid', $this->gen_uuid(), 7);
 	}
 	
 	public function setCurrentUser($validate = true)
@@ -488,6 +505,7 @@ class Organizr
 	public function auth()
 	{
 		if ($this->hasDB()) {
+			$this->setLoggerChannel('Auth');
 			if (isset($_GET['type'])) {
 				switch (strtolower($_GET['type'])) {
 					case 'whitelist':
@@ -537,13 +555,16 @@ class Organizr
 				"group" => $currentGroup,
 				"email" => $currentEmail,
 				"user_ip" => $currentIP,
-				"requested_group" => $group
+				"requested_group" => $group,
+				"uuid" => $_COOKIE['organizr_user_uuid'] ?? 'n/a'
 			];
+			$this->logger->debug('Starting check', $userInfo);
 			$responseMessage = 'User is not Authorized or User is locked';
 			if ($whitelist) {
 				if (in_array($currentIP, $this->arrayIP($whitelist))) {
 					$responseMessage = 'User is whitelisted';
 					$this->setAPIResponse('success', $responseMessage, 200, $userInfo);
+					$this->logger->debug($responseMessage, $userInfo);
 					return true;
 				}
 			}
@@ -551,6 +572,7 @@ class Organizr
 				if (in_array($currentIP, $this->arrayIP($blacklist))) {
 					$responseMessage = 'User is blacklisted';
 					$this->setAPIResponse('error', $responseMessage, 401, $userInfo);
+					$this->logger->debug($responseMessage, $userInfo);
 					return true;
 				}
 			}
@@ -566,15 +588,18 @@ class Organizr
 					header("X-Organizr-Group: $currentGroup");
 					$responseMessage = 'User is authorized';
 					$this->setAPIResponse('success', $responseMessage, 200, $userInfo);
+					$this->logger->debug($responseMessage, $userInfo);
 				} else {
 					if (!$redirect) {
 						$this->setAPIResponse('error', $responseMessage, 401, $userInfo);
+						$this->logger->debug($responseMessage, $userInfo);
 					} else {
 						exit(http_response_code(401) . header($redirect));
 					}
 				}
 			} else {
 				$this->setAPIResponse('error', 'Missing info', 401);
+				$this->logger->debug('Missing info', $userInfo);
 			}
 		}
 		return true;
@@ -2915,6 +2940,7 @@ class Organizr
 		$this->clearJellyfinTokens();
 		$this->revokeTokenCurrentUser($this->user['token']);
 		$this->clearKomgaToken();
+		$this->refreshDeviceUUID();
 		$this->logger->debug('Log out process has finished');
 		$this->user = null;
 		return true;
