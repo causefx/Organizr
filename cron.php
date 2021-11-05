@@ -108,7 +108,7 @@ if ($Organizr->isLocalOrServer() && $Organizr->hasDB()) {
 	//$Organizr->prettyPrint($scheduler->getFailedJobs());
 	$Organizr->logger->debug('Cron process completion', ['verbose' => $scheduler->getVerboseOutput()]);
 	if (!empty($scheduler->getFailedJobs())) {
-		$Organizr->logger->warning('Cron jobs have failed', ['jobs' => $scheduler->getFailedJobs()]);
+		$Organizr->logger->warning('Cron jobs have failed', ['jobs' => $scheduler->getFailedJobs(), 'verbose' => $scheduler->getVerboseOutput()]);
 	}
 	// End Run and set file with time
 	$Organizr->createCronFile();
