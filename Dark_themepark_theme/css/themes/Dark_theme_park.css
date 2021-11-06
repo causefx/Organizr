@@ -12,8 +12,8 @@
 /*			      https://github.com/gilbN/theme.park			 */
 
 /* ORGANIZR DARK THEME */
-@import url("https://theme-park.dev/CSS/themes/organizr/organizr-base.css");
-@import url("https://theme-park.dev/CSS/variables/dark.css");
+@import url("https://theme-park.dev/css/base/organizr/dark.css");
+
 
 /* APP VARS */
 :root {

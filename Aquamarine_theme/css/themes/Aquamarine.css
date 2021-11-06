@@ -11,8 +11,7 @@
 /*			      https://github.com/gilbN/theme.park			 */
 
 /* ORGANIZR AQUAMARINE THEME */
-@import url("https://theme-park.dev/CSS/themes/organizr/organizr-base.css");
-@import url("https://theme-park.dev/CSS/variables/aquamarine.css");
+@import url("https://theme-park.dev/css/base/organizr/aquamarine.css");
 
 /* APP VARS */
 :root {
