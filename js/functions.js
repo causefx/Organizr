@@ -5244,7 +5244,7 @@ function buildStreamTooltip(bandwidth, streams, type){
     if(streams['transcode'] !== 0){
         streamText += spacer + streams['transcode']  + ' Transcode(s)';
     }
-    html += '<span class="label label-info m-l-20 mouse" title="" data-toggle="tooltip" data-original-title="'+ streamText + bandwidthText +'"><i class="fa fa-info"></i></span>';
+    html += '<span class="label label-info m-l-20 mouse" title="" data-toggle="tooltip" data-original-title="'+ streamText + bandwidthText +'" data-placement="bottom"><i class="fa fa-info"></i></span>';
     return `
     <script>$('.streamDetails-`+type+`').html('`+html+`');$('[data-toggle="tooltip"]').tooltip();</script>
     `;
