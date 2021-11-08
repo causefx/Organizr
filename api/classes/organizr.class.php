@@ -344,7 +344,6 @@ class Organizr
 				'total' => 'error accessing path',
 			];
 		}
-
 	}
 
 	public function errorCodes($error = 000)
@@ -1161,7 +1160,6 @@ class Organizr
 			),
 		];
 		return $this->hasDB() ? $this->processQueries($response) : $guest;
-
 	}
 
 	public function getSchema()
@@ -1681,6 +1679,7 @@ class Organizr
 			'Marketplace' => [
 				$this->settingsOption('notice', null, ['notice' => 'danger', 'body' => '3rd Party Repositories are not affiliated with Organizr and therefore the code on these repositories are not inspected.  Use at your own risk.']),
 				$this->settingsOption('multiple-url', 'externalPluginMarketplaceRepos', ['override' => 12, 'label' => 'External Marketplace Repo', 'help' => 'Only supports Github repos']),
+				$this->settingsOption('token', 'githubAccessToken', ['label' => 'Github Person Access Token', 'help' => 'The Github Person Access Token will help with API rate limiting as well as let you access your own Private Repos']),
 				$this->settingsOption('switch', 'checkForPluginUpdate', ['label' => 'Check for Plugin Updates', ['help' => 'Check for updates on page load']])
 			]
 		];
@@ -2379,7 +2378,6 @@ class Organizr
 			} else {
 				$this->setAPIResponse('error', 'error creating database', 500);
 			}
-
 		} else {
 			$this->setAPIResponse('error', 'error creating config', 500);
 		}
@@ -2724,7 +2722,6 @@ class Organizr
 		}
 		$this->logger->debug('Token creation function has finished');
 		return $jwttoken;
-
 	}
 
 	public function login($array)
@@ -3899,7 +3896,6 @@ class Organizr
 			),
 		];
 		return $this->processQueries($response);
-
 	}
 
 	public function getTableColumnsFormatted($table)
@@ -4484,7 +4480,6 @@ class Organizr
 			}
 		}
 		return $filesList;
-
 	}
 
 	public function removeTheme($theme)
@@ -4639,7 +4634,7 @@ class Organizr
 	{
 		$url = 'https://api.github.com/repos/' . $repo;
 		$options = array('verify' => false);
-		$response = Requests::get($url, array(), $options);
+		$response = Requests::get($url, $this->setGithubAccessToken(), $options);
 		try {
 			if ($response->success) {
 				$github = json_decode($response->body, true);
@@ -4663,7 +4658,7 @@ class Organizr
 		}
 		$url = 'https://api.github.com/repos/' . $repo . '/git/trees/' . $branch . '?recursive=1';
 		$options = array('verify' => false);
-		$response = Requests::get($url, array(), $options);
+		$response = Requests::get($url, $this->setGithubAccessToken(), $options);
 		try {
 			if ($response->success) {
 				$github = json_decode($response->body, true);
@@ -4918,7 +4913,7 @@ class Organizr
 			$newURL = 'https://api.github.com/repos/' . $repo[1] . '/contents';
 			$options = ($this->localURL($newURL)) ? array('verify' => false) : array();
 			try {
-				$response = Requests::get($newURL, array(), $options);
+				$response = Requests::get($newURL, $this->setGithubAccessToken(), $options);
 				if ($response->success) {
 					$jsonFiles = json_decode($response->body, true);
 					foreach ($jsonFiles as $file) {
@@ -4935,6 +4930,22 @@ class Organizr
 			} catch (Requests_Exception $e) {
 				return false;
 			}
+		}
+		return false;
+	}
+
+	public function setGithubAccessToken()
+	{
+		return ($this->config['githubAccessToken'] !== '') ? ['Authorization' => 'token ' . $this->config['githubAccessToken']] : [];
+	}
+
+	public function formatGithubAccessToken()
+	{
+		$accessToken = $this->setGithubAccessToken();
+		if (count($accessToken) >= 1) {
+			return key($accessToken) . ': ' . $accessToken[key($accessToken)];
+		} else {
+			return '';
 		}
 	}
 
@@ -5160,14 +5171,30 @@ class Organizr
 
 	public function downloadFileToPath($from, $to, $path)
 	{
+		if ((stripos($from, 'api.github.com') !== false) && $this->config['githubAccessToken'] !== '') {
+			$context = stream_context_create(
+				array(
+					'ssl' => array(
+						'verify_peer' => false,
+						'cafile' => $this->getCert()
+					),
+					'http' => array(
+						'method' => 'GET',
+						'header' => $this->formatGithubAccessToken()
+					)
+				)
+			);
+		} else {
+			$context = stream_context_create([]);
+		}
 		ini_set('max_execution_time', 0);
 		set_time_limit(0);
 		if (@!mkdir($path, 0777, true)) {
 			$this->writeLog("error", "organizr could not create folder or folder already exists", 'SYSTEM');
 		}
-		$file = fopen($from, 'rb');
+		$file = fopen($from, 'rb', false, $context);
 		if ($file) {
-			$newf = fopen($to, 'wb');
+			$newf = fopen($to, 'wb', false, $context);
 			if ($newf) {
 				while (!feof($file)) {
 					fwrite($newf, fread($file, 1024 * 8), 1024 * 8);
@@ -5324,7 +5351,6 @@ class Organizr
 										'id' => (string)$child['id'],
 									);
 								}
-
 							}
 						}
 						return $results;
@@ -5622,7 +5648,6 @@ class Organizr
 		if (array_key_exists('group_id', $array)) {
 			$this->setAPIResponse('error', 'Cannot change group_id', 409);
 			return false;
-
 		}
 		if (array_key_exists('group', $array)) {
 			if ($array['group'] == '') {

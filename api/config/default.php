@@ -618,6 +618,7 @@ return [
 	'logPageSize' => '50',
 	'includeDatabaseQueriesInDebug' => false,
 	'externalPluginMarketplaceRepos' => '',
+	'githubAccessToken' => '',
 	'checkForPluginUpdate' => true,
 	'autoUpdateCronEnabled' => false,
 	'autoUpdateCronSchedule' => '@weekly'
