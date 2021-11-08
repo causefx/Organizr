@@ -11,8 +11,7 @@
 /*			      https://github.com/gilbN/theme.park			 */
 
 /* ORGANIZR HOTLINE THEME */
-@import url("https://theme-park.dev/CSS/themes/organizr/organizr-base.css");
-@import url("https://theme-park.dev/CSS/variables/hotline.css");
+@import url("https://theme-park.dev/css/base/organizr/hotline.css");
 
 /* APP VARS */
 :root {

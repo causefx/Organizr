@@ -11,8 +11,8 @@
 /*			      https://github.com/gilbN/theme.park			 */
 
 /* ORGANIZR DRACULA THEME */
-@import url("https://theme-park.dev/CSS/themes/organizr/organizr-base.css");
-@import url("https://theme-park.dev/CSS/variables/dracula.css");
+@import url("https://theme-park.dev/css/base/organizr/dracula.css");
+
 
 /* APP VARS */
 :root {
