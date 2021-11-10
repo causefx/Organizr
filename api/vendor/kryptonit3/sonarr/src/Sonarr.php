@@ -341,7 +341,7 @@ class Sonarr
             'uri' => $uri,
             'type' => 'get',
             'data' => [
-            	'includeUnknownSeriesItems' => false
+            	'includeUnknownSeriesItems' => 'false'
             ]
         ];
 
