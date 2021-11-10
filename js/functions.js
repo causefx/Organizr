@@ -4352,6 +4352,7 @@ function organizrAPI2(type,path,data=null,asyncValue=true){
 	}
 }
 function loadSettingsPage2(api,element,organizrFn){
+    $(element).html('<h2 class="col-lg-12 text-center well"><i class="fa fa-spin fa-refresh"></i><br> Loading</h2>');
 	organizrAPI2('get',api).success(function(data) {
 		try {
 			var response = data.response;
