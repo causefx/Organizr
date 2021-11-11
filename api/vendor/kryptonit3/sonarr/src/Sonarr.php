@@ -342,6 +342,7 @@ class Sonarr
             'type' => 'get',
             'data' => [
             	'includeUnknownSeriesItems' => 'false',
+	            'pageSize' => 1000
             ]
         ];
 	    if ( $this->type == 'sonarr' ) {

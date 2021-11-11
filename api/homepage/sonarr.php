@@ -176,10 +176,10 @@ trait SonarrHomepageItem
 				$results = $downloader->getQueue();
 				$downloadList = json_decode($results, true);
 				if (is_array($downloadList) || is_object($downloadList)) {
-					$queue = (array_key_exists('error', $downloadList)) ? '' : $downloadList;
+					$queue = (array_key_exists('error', $downloadList)) ? [] : $downloadList;
 					$queue = $queue['records'] ?? $queue;
 				} else {
-					$queue = '';
+					$queue = [];
 				}
 				if (!empty($queue)) {
 					$queueItems = array_merge($queueItems, $queue);
