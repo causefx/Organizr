@@ -62,7 +62,7 @@ trait SonarrHomepageItem
 		];
 		return array_merge($homepageInformation, $homepageSettings);
 	}
-	
+
 	public function testConnectionSonarr()
 	{
 		if (empty($this->config['sonarrURL'])) {
@@ -94,7 +94,6 @@ trait SonarrHomepageItem
 					$errors .= $ip . ': Response was not JSON';
 					$failed = true;
 				}
-				
 			} catch (Exception $e) {
 				$failed = true;
 				$ip = $value['url'];
@@ -110,7 +109,7 @@ trait SonarrHomepageItem
 			return true;
 		}
 	}
-	
+
 	public function sonarrHomepagePermissions($key = null)
 	{
 		$permissions = [
@@ -143,7 +142,7 @@ trait SonarrHomepageItem
 		];
 		return $this->homepageCheckKeyPermissions($key, $permissions);
 	}
-	
+
 	public function homepageOrderSonarrQueue()
 	{
 		if ($this->homepageItemPermissions($this->sonarrHomepagePermissions('queue'))) {
@@ -162,7 +161,7 @@ trait SonarrHomepageItem
 				';
 		}
 	}
-	
+
 	public function getSonarrQueue()
 	{
 		if (!$this->homepageItemPermissions($this->sonarrHomepagePermissions('queue'), true)) {
@@ -178,6 +177,7 @@ trait SonarrHomepageItem
 				$downloadList = json_decode($results, true);
 				if (is_array($downloadList) || is_object($downloadList)) {
 					$queue = (array_key_exists('error', $downloadList)) ? '' : $downloadList;
+					$queue = $queue['records'] ?? $queue;
 				} else {
 					$queue = '';
 				}
@@ -190,11 +190,11 @@ trait SonarrHomepageItem
 		}
 		$api['content']['queueItems'] = $queueItems;
 		$api['content']['historyItems'] = false;
-		$api['content'] = isset($api['content']) ? $api['content'] : false;
+		$api['content'] = $api['content'] ?? false;
 		$this->setAPIResponse('success', null, 200, $api);
-		return $api;;
+		return $api;
 	}
-	
+
 	public function getSonarrCalendar($startDate = null, $endDate = null)
 	{
 		$startDate = ($startDate) ?? $_GET['start'] ?? date('Y-m-d', strtotime('-' . $this->config['calendarStart'] . ' days'));
@@ -228,7 +228,7 @@ trait SonarrHomepageItem
 		$this->setAPIResponse('success', null, 200, $calendarItems);
 		return $calendarItems;
 	}
-	
+
 	public function formatSonarrCalendar($array, $number)
 	{
 		$array = json_decode($array, true);
