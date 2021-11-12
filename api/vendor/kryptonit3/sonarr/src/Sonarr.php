@@ -341,9 +341,14 @@ class Sonarr
             'uri' => $uri,
             'type' => 'get',
             'data' => [
-            	'includeUnknownSeriesItems' => false
+            	'includeUnknownSeriesItems' => 'false',
+	            'pageSize' => 1000
             ]
         ];
+	    if ( $this->type == 'sonarr' ) {
+		    $response['data']['includeSeries'] = 'true';
+		    $response['data']['includeEpisode'] = 'true';
+	    }
 
         return $this->processRequest($response);
     }

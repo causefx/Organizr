@@ -64,7 +64,7 @@ if ($Organizr->isLocalOrServer() && $Organizr->hasDB()) {
 								})
 								->at($Organizr->config[$cronJob['schedule']]);
 						} else {
-							$Organizr->warning('Method error', ['cronJob' => $cronJob['class']]);
+							$Organizr->logger->warning('Method error', ['cronJob' => $cronJob['class']]);
 						}
 					} catch (InvalidArgumentException $e) {
 						$Organizr->logger->warning('Cron schedule has failed validation', ['schedule' => $Organizr->config[$cronJob['schedule']]]);
@@ -75,7 +75,7 @@ if ($Organizr->isLocalOrServer() && $Organizr->hasDB()) {
 						break;
 					}
 				} else {
-					$Organizr->warning('Class error', ['cronJob' => $cronJob['class']]);
+					$Organizr->logger->warning('Class error', ['cronJob' => $cronJob['class']]);
 				}
 			} else {
 				$Organizr->logger->debug('Cron job is not enabled', ['cronJob' => $cronJob]);
@@ -108,7 +108,7 @@ if ($Organizr->isLocalOrServer() && $Organizr->hasDB()) {
 	//$Organizr->prettyPrint($scheduler->getFailedJobs());
 	$Organizr->logger->debug('Cron process completion', ['verbose' => $scheduler->getVerboseOutput()]);
 	if (!empty($scheduler->getFailedJobs())) {
-		$Organizr->logger->warning('Cron jobs have failed', ['jobs' => $scheduler->getFailedJobs()]);
+		$Organizr->logger->warning('Cron jobs have failed', ['jobs' => $scheduler->getFailedJobs(), 'verbose' => $scheduler->getVerboseOutput()]);
 	}
 	// End Run and set file with time
 	$Organizr->createCronFile();

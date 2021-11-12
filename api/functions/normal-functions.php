@@ -327,6 +327,7 @@ trait NormalFunctions
 		if (!$http) {
 			$HTTPOnly = false;
 		}
+		$_SERVER['HTTP_HOST'] = $_SERVER['HTTP_HOST'] ?? '';
 		$Domain = $this->parseDomain($_SERVER['HTTP_HOST']);
 		$DomainTest = $this->parseDomain($_SERVER['HTTP_HOST'], true);
 		if ($type == 'set') {
@@ -375,6 +376,7 @@ trait NormalFunctions
 		if (!$http) {
 			$HTTPOnly = false;
 		}
+		$_SERVER['HTTP_HOST'] = $_SERVER['HTTP_HOST'] ?? '';
 		$Domain = $this->parseDomain($_SERVER['HTTP_HOST']);
 		$DomainTest = $this->parseDomain($_SERVER['HTTP_HOST'], true);
 		if ($type == 'set') {

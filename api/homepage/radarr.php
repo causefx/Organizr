@@ -61,7 +61,7 @@ trait RadarrHomepageItem
 		];
 		return array_merge($homepageInformation, $homepageSettings);
 	}
-	
+
 	public function testConnectionRadarr()
 	{
 		if (empty($this->config['radarrURL'])) {
@@ -93,7 +93,6 @@ trait RadarrHomepageItem
 					$errors .= $ip . ': Response was not JSON';
 					$failed = true;
 				}
-				
 			} catch (Exception $e) {
 				$failed = true;
 				$ip = $value['url'];
@@ -109,7 +108,7 @@ trait RadarrHomepageItem
 			return true;
 		}
 	}
-	
+
 	public function radarrHomepagePermissions($key = null)
 	{
 		$permissions = [
@@ -142,7 +141,7 @@ trait RadarrHomepageItem
 		];
 		return $this->homepageCheckKeyPermissions($key, $permissions);
 	}
-	
+
 	public function homepageOrderRadarrQueue()
 	{
 		if ($this->homepageItemPermissions($this->radarrHomepagePermissions('queue'))) {
@@ -161,7 +160,7 @@ trait RadarrHomepageItem
 				';
 		}
 	}
-	
+
 	public function getRadarrQueue()
 	{
 		if (!$this->homepageItemPermissions($this->radarrHomepagePermissions('queue'), true)) {
@@ -176,24 +175,25 @@ trait RadarrHomepageItem
 				$results = $downloader->getQueue();
 				$downloadList = json_decode($results, true);
 				if (is_array($downloadList) || is_object($downloadList)) {
-					$queue = (array_key_exists('error', $downloadList)) ? '' : $downloadList;
+					$queue = (array_key_exists('error', $downloadList)) ? [] : $downloadList;
+					$queue = $queue['records'] ?? $queue;
 				} else {
-					$queue = '';
+					$queue = [];
 				}
 				if (!empty($queue)) {
 					$queueItems = array_merge($queueItems, $queue);
 				}
 			} catch (Exception $e) {
-				$this->writeLog('error', 'Radarr Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
+				$this->logger->error($e);
 			}
 		}
 		$api['content']['queueItems'] = $queueItems;
 		$api['content']['historyItems'] = false;
-		$api['content'] = isset($api['content']) ? $api['content'] : false;
+		$api['content'] = $api['content'] ?? false;
 		$this->setAPIResponse('success', null, 200, $api);
-		return $api;;
+		return $api;
 	}
-	
+
 	public function getRadarrCalendar($startDate = null, $endDate = null)
 	{
 		$startDate = ($startDate) ?? $_GET['start'] ?? date('Y-m-d', strtotime('-' . $this->config['calendarStart'] . ' days'));
@@ -227,7 +227,7 @@ trait RadarrHomepageItem
 		$this->setAPIResponse('success', null, 200, $calendarItems);
 		return $calendarItems;
 	}
-	
+
 	public function formatRadarrCalendar($array, $number, $url)
 	{
 		$url = rtrim($url, '/'); //remove trailing slash
@@ -298,7 +298,6 @@ trait RadarrHomepageItem
 						} else {
 							$banner = $image['url'];
 						}
-						
 					}
 				}
 				if ($banner !== "/plugins/images/cache/no-np.png" || (strpos($banner, 'apikey') !== false)) {

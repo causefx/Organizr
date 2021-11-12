@@ -4352,6 +4352,7 @@ function organizrAPI2(type,path,data=null,asyncValue=true){
 	}
 }
 function loadSettingsPage2(api,element,organizrFn){
+    $(element).html('<h2 class="col-lg-12 text-center well"><i class="fa fa-spin fa-refresh"></i><br> Loading</h2>');
 	organizrAPI2('get',api).success(function(data) {
 		try {
 			var response = data.response;
@@ -5244,7 +5245,7 @@ function buildStreamTooltip(bandwidth, streams, type){
     if(streams['transcode'] !== 0){
         streamText += spacer + streams['transcode']  + ' Transcode(s)';
     }
-    html += '<span class="label label-info m-l-20 mouse" title="" data-toggle="tooltip" data-original-title="'+ streamText + bandwidthText +'"><i class="fa fa-info"></i></span>';
+    html += '<span class="label label-info m-l-20 mouse" title="" data-toggle="tooltip" data-original-title="'+ streamText + bandwidthText +'" data-placement="bottom"><i class="fa fa-info"></i></span>';
     return `
     <script>$('.streamDetails-`+type+`').html('`+html+`');$('[data-toggle="tooltip"]').tooltip();</script>
     `;
@@ -6510,12 +6511,13 @@ function buildDownloaderItem(array, source, type='none'){
 				queue = '<tr><td class="max-texts" lang="en">Nothing in queue</td></tr>';
 				break;
 			}
-			$.each(array.content.queueItems, function(i,v) {
+            let sonarrQueueSet = (typeof array.content.queueItems.records == 'undefined') ? array.content.queueItems : array.content.queueItems.records;
+			$.each(sonarrQueueSet, function(i,v) {
 				count = count + 1;
 				var percent = Math.floor(((v.size - v.sizeleft) / v.size) * 100);
 				percent = (isNaN(percent)) ? '0' : percent;
 				var size = v.size != -1 ? humanFileSize(v.size,false) : "?";
-				v.name = v.series.title;
+                v.name = (typeof v.series == 'undefined') ? v.title : v.series.title;
 				queue += `
                 <tr>
                     <td class="">`+v.name+`</td>
