@@ -64,17 +64,4 @@ trait BookmarksHomepageItem
 		}
 	}
 
-	public function getBookmarksData()
-	{
-		if (!$this->homepageItemPermissions($this->bookmarksHomepagePermissions('main'), true)) {
-			return false;
-		}
-		$api['content'] = array(
-			'bookmarks' => 'bookmarks here!',
-		);
-
-		$api['content'] = isset($api['content']) ? $api['content'] : false;
-		$this->setAPIResponse('success', null, 200, $api);
-		return $api;
-	}
 }
