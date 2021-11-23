@@ -11589,3 +11589,29 @@ function launch(){
 		}
 	});
 }
+
+function homepageBookmarks(timeout){
+    var timeout = (typeof timeout !== 'undefined') ? timeout : activeInfo.settings.homepage.refresh.homepageBookmarksRefresh;
+    organizrAPI2('GET','api/v2/plugins/bookmark/page').success(function(data) {
+        try {
+            let response = data.response;
+            document.getElementById('homepageOrderBookmarks').innerHTML = '';
+            if(response.data !== null){
+                $('#homepageOrderBookmarks').html(buildBookmarks(response.data));
+            }
+        }catch(e) {
+            organizrCatchError(e,data);
+        }
+    }).fail(function(xhr) {
+        OrganizrApiError(xhr);
+    });
+    let timeoutTitle = 'Bookmarks-Homepage';
+    if(typeof timeouts[timeoutTitle] !== 'undefined'){ clearTimeout(timeouts[timeoutTitle]); }
+    timeouts[timeoutTitle] = setTimeout(function(){ homepageBookmarks(timeout); }, timeout);
+    delete timeout;
+}
+
+function buildBookmarks(data){
+    var returnData = data;
+    return returnData;
+}

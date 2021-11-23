@@ -60,6 +60,7 @@ class Organizr
 	use UnifiHomepageItem;
 	use WeatherHomepageItem;
 	use uTorrentHomepageItem;
+    use BookmarksHomepageItem;
 
 	// ===================================
 	// Organizr Version
@@ -3733,6 +3734,13 @@ class Organizr
 						$class .= ' faded';
 					}
 					break;
+                case 'homepageOrderBookmarks':
+                    $class = 'bg-bookmarks';
+                    $image = 'plugins/images/bookmark.png';
+                    if (!$this->config['homepageBookmarksEnabled']) {
+                        $class .= ' faded';
+                    }
+                    break;
 				default:
 					$class = 'blue-bg';
 					$image = '';
