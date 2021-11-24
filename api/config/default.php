@@ -366,6 +366,7 @@ return [
 	'homepageJellyfinLink' => 'http://hostname:port/jellyfin/web/index.html#!/details?id={id}&serverId={serverId}',
     'homepageBookmarksAuth' => '1',
     'homepageBookmarksEnabled' => false,
+    'homepageBookmarksRefresh' => '3600000',
     'calendarDefault' => 'month',
 	'calendarFirstDay' => '1',
 	'calendarStart' => '14',
