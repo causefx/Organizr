@@ -5778,6 +5778,8 @@ function buildRequestResult(array,media_type=null,list=null,page=null,search=fal
     var previousHidden = (currentPage == 1) ? 'disabled' : '';
     var nextHidden = (currentPage == totalPages) ? 'disabled' : '';
     var pageList = '';
+    let previousEnabled = (pagePrevious !== 0);
+    let nextEnabled = (pageNext <= totalPages);
 	if(array.results.length == 0){
 		return '<h2 class="text-center" lang="en">No Results</h2>';
 	}
@@ -5826,15 +5828,15 @@ function buildRequestResult(array,media_type=null,list=null,page=null,search=fal
             var pageLink = (value == '...') ? '' : `onclick="requestList('`+list+`', '`+media_type+`', '`+value+`');"`;
             pageList += '<li class="'+activePage+disabled+'"> <a '+pageLink+' href="javascript:void(0)">'+value+'</a> </li>'
         });
-
+        let previousOnclick = previousEnabled ? `onclick="requestList('${list}', '${media_type}', '${pagePrevious}')";` : ``;
+        let nextOnclick = nextEnabled ? `onclick="requestList('${list}', '${media_type}', '${pageNext}')";` : ``;
 		next = `
 		<div class="clearfix"></div>
 		<div class="button-box text-center p-b-0">
             <ul class="pagination m-b-0">
-                <li class="`+previousHidden+`"> <a href="javascript:void(0)" onclick="requestList('`+list+`', '`+media_type+`', '`+pagePrevious+`');"><i class="fa fa-angle-left"></i></a> </li>
-
+                <li class="`+previousHidden+`"> <a href="javascript:void(0)" ${previousOnclick}><i class="fa fa-angle-left"></i></a> </li>
                 `+pageList+`
-                <li class="`+nextHidden+`"> <a href="javascript:void(0)" onclick="requestList('`+list+`', '`+media_type+`', '`+pageNext+`');"><i class="fa fa-angle-right"></i></a> </li>
+                <li class="`+nextHidden+`"> <a href="javascript:void(0)" ${nextOnclick}><i class="fa fa-angle-right"></i></a> </li>
             </ul>
         </div>
 		`;
@@ -6127,7 +6129,7 @@ function doneTyping () {
 		ajaxloader();
 	});
 }
-function requestList (list, type, page=1) {
+function requestList(list, type, page=1) {
 	ajaxloader('.search-div', 'in');
 	requestSearchList(list,page).success(function(data) {
 		if(typeof data.results !== 'undefined'){
@@ -9948,7 +9950,7 @@ function splitPoster(str){
 function buildMediaResults(array,source,term){
     if(array.content.length == 0){
 		var none = '<h2 class="text-center" lang="en">No Results for:</h2><h3 class="text-center" lang="en">'+term+'</h3>';
-        none += (activeInfo.settings.homepage.ombi.enabled == true) ? `<button onclick="forceSearch('`+term+`')" class="btn btn-block btn-info" lang="en">Would you like to Request it?</button>` : '';
+        none += (activeInfo.settings.homepage.ombi.enabled == true || activeInfo.settings.homepage.overseerr.enabled == true) ? `<button onclick="forceSearch('`+term+`')" class="btn btn-block btn-info" lang="en">Would you like to Request it?</button>` : '';
         return none;
 	}
     var results = '';
@@ -9985,8 +9987,8 @@ function buildMediaResults(array,source,term){
         `;
 
     });
-	//ombi setup?
-	if(activeInfo.settings.homepage.ombi.enabled == true){
+	//requests setup?
+	if(activeInfo.settings.homepage.ombi.enabled == true || activeInfo.settings.homepage.overseerr.enabled == true){
 		results += `
 		<div class="col-lg-3 col-md-4 col-sm-6 col-xs-12 m-t-20 request-result-item request-result-movie mouse"  onclick="forceSearch('`+term+`')">
 			<div class="white-box m-b-10">
@@ -11586,4 +11588,30 @@ function launch(){
 			orgErrorAlert('<h3>Webserver Error:</h3>' + xhr.responseText);
 		}
 	});
+}
+
+function homepageBookmarks(timeout){
+    var timeout = (typeof timeout !== 'undefined') ? timeout : activeInfo.settings.homepage.refresh.homepageBookmarksRefresh;
+    organizrAPI2('GET','api/v2/plugins/bookmark/page').success(function(data) {
+        try {
+            let response = data.response;
+            document.getElementById('homepageOrderBookmarks').innerHTML = '';
+            if(response.data !== null){
+                $('#homepageOrderBookmarks').html(buildBookmarks(response.data));
+            }
+        }catch(e) {
+            organizrCatchError(e,data);
+        }
+    }).fail(function(xhr) {
+        OrganizrApiError(xhr);
+    });
+    let timeoutTitle = 'Bookmarks-Homepage';
+    if(typeof timeouts[timeoutTitle] !== 'undefined'){ clearTimeout(timeouts[timeoutTitle]); }
+    timeouts[timeoutTitle] = setTimeout(function(){ homepageBookmarks(timeout); }, timeout);
+    delete timeout;
+}
+
+function buildBookmarks(data){
+    var returnData = data;
+    return returnData;
 }

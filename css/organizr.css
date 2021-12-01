@@ -1081,6 +1081,10 @@ input#inviteCodeInput {
     background: #3e8c25;
 }
 
+.bg-bookmarks {
+    background: #d90101;
+}
+
 .bg-transmission {
     background: #950000;
 }
