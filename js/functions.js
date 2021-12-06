@@ -411,13 +411,12 @@ function ajaxloader(element=null, action='out'){
 	}
 }
 function getDefault(tabName,tabType){
-	if(getHash() === false){
+	if(getHash() === false || getHash() == 'OrganizrLogin'){
 		if(tabName !== null && tabType !== null){
 			switchTab(tabName,tabType);
 		}else{
 			$('#side-menu').children().first().children().click()
 		}
-
 	}else{
 		var hashTab = getHash();
 		var hashType = getTabType(hashTab);
@@ -3055,6 +3054,7 @@ function buildLogin(){
             var response = data.response;
 	        organizrConsole('Organizr Function','Opening Login Page');
 	        $('.login-area').html(response.data);
+            setHash('OrganizrLogin');
         }catch(e) {
 	        organizrCatchError(e,data);
         }
@@ -4352,7 +4352,7 @@ function organizrAPI2(type,path,data=null,asyncValue=true){
 	}
 }
 function loadSettingsPage2(api,element,organizrFn){
-    $(element).html('<h2 class="col-lg-12 text-center well"><i class="fa fa-spin fa-refresh"></i><br> Loading</h2>');
+    $(element).html('<h2 class="col-lg-12 text-center well bg-org"><i class="fa fa-spin fa-refresh"></i><br> <span lang="en">Loading</span></h2><div class="clearfix"></div>');
 	organizrAPI2('get',api).success(function(data) {
 		try {
 			var response = data.response;
