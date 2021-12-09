@@ -14,7 +14,7 @@ trait OptionsFunction
 		}
 		return $settings;
 	}
-	
+
 	public function settingsOption($type, $name = null, $extras = null)
 	{
 		$type = strtolower(str_replace('-', '', $type));
@@ -376,7 +376,7 @@ trait OptionsFunction
 						' . $name . '.session.setMode(new mode());
 						' . $name . '.setTheme("ace/theme/idle_fingers");
 						' . $name . '.setShowPrintMargin(false);
-						' . $name . '.session.on("change", function(delta) { $(".' . $name . 'Textarea").val(' . $name . '.getValue()) });
+						' . $name . '.session.on("change", function(delta) { $(".' . $name . 'Textarea").val(' . $name . '.getValue()); $(".' . $name . 'Textarea").trigger("change") });
 					</script>
 					'
 				];
@@ -454,7 +454,7 @@ trait OptionsFunction
 		}
 		return $setting;
 	}
-	
+
 	public function makeOptionsFromValues($values = null)
 	{
 		$formattedValues = [];
@@ -476,7 +476,7 @@ trait OptionsFunction
 		}
 		return $formattedValues;
 	}
-	
+
 	public function logLevels()
 	{
 		return [
@@ -514,7 +514,7 @@ trait OptionsFunction
 			]
 		];
 	}
-	
+
 	public function sandboxOptions()
 	{
 		return [
@@ -568,7 +568,7 @@ trait OptionsFunction
 			],
 		];
 	}
-	
+
 	public function calendarLocaleOptions()
 	{
 		return [
@@ -765,9 +765,8 @@ trait OptionsFunction
 				'name' => 'Chinese (Taiwan)'
 			]
 		];
-		
 	}
-	
+
 	public function daysOptions()
 	{
 		return array(
@@ -801,7 +800,7 @@ trait OptionsFunction
 			)
 		);
 	}
-	
+
 	public function mediaServerOptions()
 	{
 		return array(
@@ -819,7 +818,7 @@ trait OptionsFunction
 			)
 		);
 	}
-	
+
 	public function requestTvOptions($includeUserOption = false)
 	{
 		$options = [
@@ -845,7 +844,7 @@ trait OptionsFunction
 		}
 		return $options;
 	}
-	
+
 	public function requestServiceOptions()
 	{
 		return [
@@ -859,7 +858,7 @@ trait OptionsFunction
 			]
 		];
 	}
-	
+
 	public function limitOptions()
 	{
 		return array(
@@ -901,7 +900,7 @@ trait OptionsFunction
 			),
 		);
 	}
-	
+
 	public function notificationTypesOptions()
 	{
 		return array(
@@ -923,7 +922,7 @@ trait OptionsFunction
 			),
 		);
 	}
-	
+
 	public function notificationPositionsOptions()
 	{
 		return array(
@@ -957,7 +956,7 @@ trait OptionsFunction
 			),
 		);
 	}
-	
+
 	public function timeOptions()
 	{
 		return array(
@@ -1006,9 +1005,8 @@ trait OptionsFunction
 				'value' => '3600000'
 			),
 		);
-		
 	}
-	
+
 	public function netdataOptions()
 	{
 		return [
@@ -1054,7 +1052,7 @@ trait OptionsFunction
 			]
 		];
 	}
-	
+
 	public function netdataChartOptions()
 	{
 		return [
@@ -1068,7 +1066,7 @@ trait OptionsFunction
 			]
 		];
 	}
-	
+
 	public function netdataColourOptions()
 	{
 		return [
@@ -1098,7 +1096,7 @@ trait OptionsFunction
 			]
 		];
 	}
-	
+
 	public function netdataSizeOptions()
 	{
 		return [
@@ -1116,7 +1114,7 @@ trait OptionsFunction
 			]
 		];
 	}
-	
+
 	public function timeFormatOptions()
 	{
 		return array(
@@ -1150,7 +1148,7 @@ trait OptionsFunction
 			)
 		);
 	}
-	
+
 	public function rTorrentSortOptions()
 	{
 		return array(
@@ -1204,7 +1202,7 @@ trait OptionsFunction
 			),
 		);
 	}
-	
+
 	public function qBittorrentApiOptions()
 	{
 		return array(
@@ -1218,7 +1216,7 @@ trait OptionsFunction
 			),
 		);
 	}
-	
+
 	public function qBittorrentSortOptions()
 	{
 		return array(
@@ -1284,7 +1282,7 @@ trait OptionsFunction
 			)
 		);
 	}
-	
+
 	public function calendarDefaultOptions()
 	{
 		return array(
