@@ -3434,7 +3434,8 @@ function submitSettingsForm(form, homepageItem = false){
     var submit = {};
     $.each(list, function(i,v) {
         var values = false;
-        if(typeof v === 'object' && typeof v.length === 'undefined'){
+
+        if(Object.prototype.toString.call(v) === '[object Object]'){
             values = getSubmitSettingsFormValueObject(form, i, v)
         }else{
             values = getSubmitSettingsFormValueSingle(form, i, v)
@@ -4352,7 +4353,7 @@ function organizrAPI2(type,path,data=null,asyncValue=true){
 	}
 }
 function loadSettingsPage2(api,element,organizrFn){
-    $(element).html('<h2 class="col-lg-12 text-center well bg-org"><i class="fa fa-spin fa-refresh"></i><br> <span lang="en">Loading</span></h2><div class="clearfix"></div>');
+    $(element).html('<h2 class="col-lg-12 m-t-0 text-center well bg-org"><i class="fa fa-spin fa-refresh"></i><br> <span lang="en">Loading</span></h2><div class="clearfix"></div>');
 	organizrAPI2('get',api).success(function(data) {
 		try {
 			var response = data.response;
