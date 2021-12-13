@@ -9475,9 +9475,10 @@ function PopupCenter(url, title, w, h) {
     return newWindow;
 }
 function getPlexHeaders(){
+    let plexTitle = activeInfo.appearance.title == '' ? 'Organizr' : activeInfo.appearance.title;
     return {
         'Accept': 'application/json',
-        'X-Plex-Product': activeInfo.appearance.title,
+        'X-Plex-Product': plexTitle,
         'X-Plex-Version': '2.0',
         'X-Plex-Client-Identifier': activeInfo.settings.misc.uuid,
         'X-Plex-Model': 'Plex OAuth',
