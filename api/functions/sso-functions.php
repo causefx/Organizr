@@ -21,7 +21,7 @@ trait SSOFunctions
 		}
 		return $cookies;
 	}
-	
+
 	public function getSSOUserFor($app, $userobj)
 	{
 		$map = array(
@@ -34,11 +34,11 @@ trait SSOFunctions
 		);
 		return (gettype($userobj) == 'string') ? $userobj : $userobj[$map[$app]];
 	}
-	
+
 	public function ssoCheck($userobj, $password, $token = null)
 	{
 		$this->setCurrentUser(false);
-		$this->setLoggerChannel('Authentication', $userobj['username']);
+		$this->setLoggerChannel('Authentication', $this->user['username']);
 		$this->logger->debug('Starting SSO check function');
 		if ($this->config['ssoPlex'] && $token) {
 			$this->logger->debug('Setting Plex SSO cookie');
@@ -113,7 +113,7 @@ trait SSOFunctions
 		}
 		return true;
 	}
-	
+
 	public function getKomgaToken($email, $password)
 	{
 		try {
@@ -136,7 +136,7 @@ trait SSOFunctions
 		}
 		return false;
 	}
-	
+
 	public function getJellyfinToken($username, $password)
 	{
 		$token = null;
@@ -171,7 +171,7 @@ trait SSOFunctions
 		}
 		return false;
 	}
-	
+
 	public function getOmbiToken($username, $password, $oAuthToken = null, $fallback = false)
 	{
 		$token = null;
@@ -212,7 +212,7 @@ trait SSOFunctions
 			return false;
 		}
 	}
-	
+
 	public function getTautulliToken($username, $password, $plexToken = null)
 	{
 		$token = null;
@@ -252,7 +252,7 @@ trait SSOFunctions
 		}
 		return ($token) ? $token : false;
 	}
-	
+
 	public function getOverseerrToken($email, $password, $oAuthToken = null, $fallback = false)
 	{
 		$token = null;
@@ -292,7 +292,7 @@ trait SSOFunctions
 			return false;
 		}
 	}
-	
+
 	public function getPetioToken($username, $password, $oAuthToken = null, $fallback = false)
 	{
 		$token = null;
