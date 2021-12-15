@@ -60,7 +60,7 @@ class Organizr
 	use UnifiHomepageItem;
 	use WeatherHomepageItem;
 	use uTorrentHomepageItem;
-    use BookmarksHomepageItem;
+	use BookmarksHomepageItem;
 
 	// ===================================
 	// Organizr Version
@@ -678,7 +678,8 @@ class Organizr
 		if (!in_array($route, $GLOBALS['bypass'])) {
 			if ($this->isApprovedRequest($method, $data) === false) {
 				$this->setAPIResponse('error', 'Not authorized for current Route: ' . $route, 401);
-				$this->writeLog('success', 'Killed Attack From [' . (isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : 'No Referer') . ']', $this->user['username']);
+				$this->setLoggerChannel('API Security');
+				$this->logger->notice('Killed Attack From [' . ($_SERVER['HTTP_REFERER'] ?? 'No Referer') . ']');
 				return false;
 			}
 		}
@@ -1591,7 +1592,8 @@ class Organizr
 		$removeImage = $approvedPath . pathinfo($image, PATHINFO_BASENAME);
 		if ($this->approvedFileExtension($removeImage, 'image')) {
 			if (file_exists(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . $removeImage)) {
-				$this->writeLog('success', 'Image Manager Function -  Deleted Image [' . pathinfo($image, PATHINFO_BASENAME) . ']', $this->user['username']);
+				$this->setLoggerChannel('Image Manager');
+				$this->logger->info('Image Manager Function -  Deleted Image [' . pathinfo($image, PATHINFO_BASENAME) . ']');
 				$this->setAPIResponse(null, pathinfo($image, PATHINFO_BASENAME) . ' has been deleted', null);
 				return (unlink(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . $removeImage));
 			} else {
@@ -2959,7 +2961,8 @@ class Organizr
 		if ($isUser) {
 			$this->updateUserPassword($newPassword, $isUser['id']);
 			$this->setAPIResponse('success', 'User password has been reset', 200);
-			$this->writeLog('success', 'User Management Function - User: ' . $isUser['username'] . '\'s password was reset', $isUser['username']);
+			$this->setLoggerChannel('User Management');
+			$this->logger->info('User Management Function - User: ' . $isUser['username'] . '\'s password was reset');
 			if ($this->config['PHPMAILER-enabled']) {
 				$PhpMailer = new PhpMailer();
 				$emailTemplate = array(
@@ -3009,10 +3012,11 @@ class Organizr
 			$this->setAPIResponse('error', 'Registration Password was not supplied', 422);
 			return false;
 		}
+		$this->setLoggerChannel('User Registration');
 		if ($registrationPassword == $this->decrypt($this->config['registrationPassword'])) {
-			$this->writeLog('success', 'Registration Function - Registration Password Verified', $username);
+			$this->logger->debug('Registration Password Verified');
 			if ($this->createUser($username, $password, $email)) {
-				$this->writeLog('success', 'Registration Function - A User has registered', $username);
+				$this->logger->info('A User has registered');
 				if ($this->createToken($username, $email, $this->config['rememberMeDays'])) {
 					$this->setLoggerChannel('Authentication', $username);
 					$this->logger->info('User has logged in');
@@ -3022,7 +3026,7 @@ class Organizr
 				return false;
 			}
 		} else {
-			$this->writeLog('warning', 'Registration Function - Wrong Password', $username);
+			$this->logger->warning('Wrong Password');
 			$this->setAPIResponse('error', 'Registration Password was incorrect', 401);
 			return false;
 		}
@@ -3039,7 +3043,7 @@ class Organizr
 			$password = $this->random_ascii_string(10);
 		}
 		if ($this->createUser($username, $password, $email)) {
-			$this->writeLog('success', 'Registration Function - A User has registered', $username);
+			$this->logger->info('A User has registered');
 			if ($this->config['PHPMAILER-enabled'] && $email !== '') {
 				$PhpMailer = new PhpMailer();
 				$emailTemplate = array(
@@ -3060,14 +3064,13 @@ class Organizr
 				$PhpMailer->_phpMailerPluginSendEmail($sendEmail);
 			}
 			if ($this->createToken($username, $email, $this->config['rememberMeDays'])) {
-				$this->setLoggerChannel('Authentication', $username);
 				$this->logger->info('User has logged in');
 				return true;
 			} else {
 				return false;
 			}
 		} else {
-			$this->writeLog('error', 'Registration Function - An error occurred', $username);
+			$this->logger->warning('Registration error occurred');
 			return false;
 		}
 	}
@@ -3485,7 +3488,8 @@ class Organizr
 			if ($this->checkFormKey($formKey)) {
 				return true;
 			} else {
-				$this->writeLog('error', 'API ERROR: Unable to authenticate Form Key: ' . $formKey, $this->user['username']);
+				$this->setLoggerChannel('Authentication');
+				$this->logger->warning('Unable to authenticate Form Key: ' . $formKey);
 				return false;
 			}
 		} else {
@@ -3734,13 +3738,13 @@ class Organizr
 						$class .= ' faded';
 					}
 					break;
-                case 'homepageOrderBookmarks':
-                    $class = 'bg-bookmarks';
-                    $image = 'plugins/images/bookmark.png';
-                    if (!$this->config['homepageBookmarksEnabled']) {
-                        $class .= ' faded';
-                    }
-                    break;
+				case 'homepageOrderBookmarks':
+					$class = 'bg-bookmarks';
+					$image = 'plugins/images/bookmark.png';
+					if (!$this->config['homepageBookmarksEnabled']) {
+						$class .= ' faded';
+					}
+					break;
 				default:
 					$class = 'blue-bg';
 					$image = '';
@@ -4184,7 +4188,8 @@ class Organizr
 		];
 		$tabInfo = $this->getTabById($id);
 		if ($tabInfo) {
-			$this->writeLog('success', 'Tab Delete Function -  Deleted Tab [' . $tabInfo['name'] . ']', $this->user['username']);
+			$this->setLoggerChannel('Tab Management');
+			$this->logger->debug('Deleted Tab [' . $tabInfo['name'] . ']');
 			$this->setAPIResponse('success', 'Tab deleted', 204);
 			return $this->processQueries($response);
 		} else {
@@ -4233,7 +4238,8 @@ class Organizr
 			),
 		];
 		$this->setAPIResponse(null, 'Tab added');
-		$this->writeLog('success', 'Tab Editor Function -  Added Tab for [' . $array['name'] . ']', $this->user['username']);
+		$this->setLoggerChannel('Tab Management');
+		$this->logger->debug('Added Tab for [' . $array['name'] . ']');
 		return $this->processQueries($response);
 	}
 
@@ -4277,7 +4283,8 @@ class Organizr
 			),
 		];
 		$this->setAPIResponse(null, 'Tab info updated');
-		$this->writeLog('success', 'Tab Editor Function -  Edited Tab Info for [' . $tabInfo['name'] . ']', $this->user['username']);
+		$this->setLoggerChannel('Tab Management');
+		$this->logger->debug('Edited Tab Info for [' . $tabInfo['name'] . ']');
 		return $this->processQueries($response);
 	}
 
@@ -4346,7 +4353,8 @@ class Organizr
 			),
 		];
 		$this->setAPIResponse(null, 'Category added');
-		$this->writeLog('success', 'Category Editor Function -  Added Category for [' . $array['category'] . ']', $this->user['username']);
+		$this->setLoggerChannel('Category Management');
+		$this->logger->debug('Added Category for [' . $array['category'] . ']');
 		return $this->processQueries($response);
 	}
 
@@ -4390,7 +4398,8 @@ class Organizr
 			),
 		];
 		$this->setAPIResponse(null, 'Category info updated');
-		$this->writeLog('success', 'Category Editor Function -  Edited Category Info for [' . $categoryInfo['category'] . ']', $this->user['username']);
+		$this->setLoggerChannel('Category Management');
+		$this->logger->debug('Edited Category [' . $categoryInfo['category'] . ']');
 		return $this->processQueries($response);
 	}
 
@@ -4440,7 +4449,8 @@ class Organizr
 		];
 		$categoryInfo = $this->getCategoryById($id);
 		if ($categoryInfo) {
-			$this->writeLog('success', 'Category Delete Function -  Deleted Category [' . $categoryInfo['category'] . ']', $this->user['username']);
+			$this->setLoggerChannel('Category Management');
+			$this->logger->debug('Deleted Category [' . $categoryInfo['category'] . ']');
 			$this->setAPIResponse('success', 'Category deleted', 204);
 			return $this->processQueries($response);
 		} else {
@@ -4522,7 +4532,8 @@ class Organizr
 				'path' => str_replace(array('/', '\\'), DIRECTORY_SEPARATOR, $this->root . $v['path'])
 			);
 			if (!$this->rrmdir($file['to'])) {
-				$this->writeLog('error', 'Theme Function -  Remove File Failed  for: ' . $v['githubPath'], $this->user['username']);
+				$this->setLoggerChannel('Theme Management');
+				$this->logger->warning('Remove File Failed  for: ' . $v['githubPath']);
 				return false;
 			}
 		}
@@ -4580,7 +4591,8 @@ class Organizr
 				'path' => str_replace(array('/', '\\'), DIRECTORY_SEPARATOR, $this->root . $v['path'])
 			);
 			if (!$this->downloadFileToPath($file['from'], $file['to'], $file['path'])) {
-				$this->writeLog('error', 'Theme Function -  Downloaded File Failed  for: ' . $v['githubPath'], $this->user['username']);
+				$this->setLoggerChannel('Theme Management');
+				$this->logger->warning('Downloaded File Failed  for: ' . $v['githubPath']);
 				$this->setAPIResponse('error', 'Theme download failed', 500);
 				return false;
 			}
@@ -5117,10 +5129,11 @@ class Organizr
 		set_time_limit(0);
 		$zip = new ZipArchive;
 		$extractPath = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . "upgrade/";
+		$this->setLoggerChannel('File Management');
 		if ($zip->open($extractPath . $zipFile) != "true") {
-			$this->writeLog("error", "organizr could not unzip upgrade.zip");
+			$this->logger->warning('organizr could not unzip upgrade.zip');
 		} else {
-			$this->writeLog("success", "organizr unzipped upgrade.zip");
+			$this->logger->debug('organizr unzipped upgrade.zip');
 		}
 		/* Extract Zip File */
 		$zip->extractTo($extractPath);
@@ -5133,9 +5146,10 @@ class Organizr
 		ini_set('max_execution_time', 0);
 		set_time_limit(0);
 		$folderPath = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . "upgrade" . DIRECTORY_SEPARATOR;
+		$this->setLoggerChannel('File Management');
 		if (!file_exists($folderPath)) {
 			if (@!mkdir($folderPath)) {
-				$this->writeLog('error', 'Update Function -  Folder Creation failed', $this->user['username']);
+				$this->logger->warning('Folder Creation failed');
 				return false;
 			}
 		}
@@ -5157,21 +5171,21 @@ class Organizr
 				}
 			}
 		} else {
-			$this->writeLog("error", "organizr could not download $url");
+			$this->logger->warning('Organizr could not download ' . $url);
 			return false;
 		}
 		if ($file) {
 			fclose($file);
-			$this->writeLog("success", "organizr finished downloading the github zip file");
+			$this->logger->debug('Organizr finished downloading the github zip file');
 		} else {
-			$this->writeLog("error", "organizr could not download the github zip file");
+			$this->logger->warning('Organizr could not download the github zip file');
 			return false;
 		}
 		if ($newf) {
 			fclose($newf);
-			$this->writeLog("success", "organizr created upgrade zip file from github zip file");
+			$this->logger->debug('Organizr created upgrade zip file from github zip file');
 		} else {
-			$this->writeLog("error", "organizr could not create upgrade zip file from github zip file");
+			$this->logger->warning('Organizr could not create upgrade zip file from github zip file');
 			return false;
 		}
 		return true;
@@ -5197,8 +5211,9 @@ class Organizr
 		}
 		ini_set('max_execution_time', 0);
 		set_time_limit(0);
+		$this->setLoggerChannel('File Management');
 		if (@!mkdir($path, 0777, true)) {
-			$this->writeLog("error", "organizr could not create folder or folder already exists", 'SYSTEM');
+			$this->logger->warning('Organizr could not create folder or folder already exists');
 		}
 		$file = fopen($from, 'rb', false, $context);
 		if ($file) {
@@ -5209,19 +5224,19 @@ class Organizr
 				}
 			}
 		} else {
-			$this->writeLog("error", "organizr could not download file", 'SYSTEM');
+			$this->logger->warning('Organizr could not download file');
 		}
 		if ($file) {
 			fclose($file);
-			$this->writeLog("success", "organizr finished downloading the file", 'SYSTEM');
+			$this->logger->debug('Organizr finished downloading the file');
 		} else {
-			$this->writeLog("error", "organizr could not download the file", 'SYSTEM');
+			$this->logger->warning('Organizr could not download file');
 		}
 		if ($newf) {
 			fclose($newf);
-			$this->writeLog("success", "organizr saved/moved the file", 'SYSTEM');
+			$this->logger->debug('Organizr saved and/or moved the file');
 		} else {
-			$this->writeLog("error", "organizr could not saved/moved the file", 'SYSTEM');
+			$this->logger->warning('Organizr could not save and/or move the file');
 		}
 		return true;
 	}
@@ -5284,7 +5299,8 @@ class Organizr
 			if ($user['username'] !== '' && $user['email'] !== '' && $password !== '') {
 				$newUser = $this->createUser($user['username'], $password, $user['email']);
 				if (!$newUser) {
-					$this->writeLog('error', 'Import Function - Error', $user['username']);
+					$this->setLoggerChannel('User Management');
+					$this->logger->warning('An error occurred during user import');
 				} else {
 					$imported++;
 				}
@@ -5367,7 +5383,8 @@ class Organizr
 			}
 			return false;
 		} catch (Requests_Exception $e) {
-			$this->writeLog('success', 'Plex Import User Function - Error: ' . $e->getMessage(), 'SYSTEM');
+			$this->setLoggerChannel('User Management');
+			$this->logger->error($e);
 		}
 		return false;
 	}
@@ -5407,7 +5424,8 @@ class Organizr
 			}
 			return false;
 		} catch (Requests_Exception $e) {
-			$this->writeLog('success', 'Jellyfin Import User Function - Error: ' . $e->getMessage(), 'SYSTEM');
+			$this->setLoggerChannel('User Management');
+			$this->logger->error($e);
 		}
 		return false;
 	}
@@ -5447,7 +5465,8 @@ class Organizr
 			}
 			return false;
 		} catch (Requests_Exception $e) {
-			$this->writeLog('success', 'Emby Import User Function - Error: ' . $e->getMessage(), 'SYSTEM');
+			$this->setLoggerChannel('User Management');
+			$this->logger->error($e);
 		}
 		return false;
 	}
@@ -5544,7 +5563,8 @@ class Organizr
 			),
 		];
 		$this->setAPIResponse(null, 'User info updated');
-		$this->writeLog('success', 'User Editor Function -  Updated User Info for [' . $user['username'] . ']', $this->user['username']);
+		$this->setLoggerChannel('User Management');
+		$this->logger->info('Updated User Info for [' . $user['username'] . ']');
 		return $this->processQueries($response);
 	}
 
@@ -5565,7 +5585,8 @@ class Organizr
 			return false;
 		}
 		if ($userInfo) {
-			$this->writeLog('success', 'User Delete Function -  Deleted User [' . $userInfo['username'] . ']', $this->user['username']);
+			$this->setLoggerChannel('User Management');
+			$this->logger->info('Deleted User [' . $userInfo['username'] . ']');
 			$this->setAPIResponse('success', 'User deleted', 204);
 			return $this->processQueries($response);
 		} else {
@@ -5587,11 +5608,12 @@ class Organizr
 			$this->setAPIResponse('error', 'Password was not supplied', 409);
 			return false;
 		}
+		$this->setLoggerChannel('User Management');
 		if ($this->createUser($username, $password, $email)) {
-			$this->writeLog('success', 'Create User Function - Account created for [' . $username . ']', $this->user['username']);
+			$this->logger->info('Account created for [' . $username . ']');
 			return true;
 		} else {
-			$this->writeLog('error', 'Create User Function - An error occurred', $this->user['username']);
+			$this->logger->warning('An error occurred');
 			return false;
 		}
 	}
@@ -5695,7 +5717,8 @@ class Organizr
 			),
 		];
 		$this->setAPIResponse(null, 'Group info updated');
-		$this->writeLog('success', 'Group Editor Function -  Edited Group Info for [' . $groupInfo['group'] . ']', $this->user['username']);
+		$this->setLoggerChannel('Group Management');
+		$this->logger->info('Edited Group Info for [' . $groupInfo['group'] . ']');
 		return $this->processQueries($response);
 	}
 
@@ -5720,7 +5743,8 @@ class Organizr
 			return false;
 		}
 		if ($groupInfo) {
-			$this->writeLog('success', 'Group Delete Function -  Deleted Group [' . $groupInfo['group'] . ']', $this->user['username']);
+			$this->setLoggerChannel('Group Management');
+			$this->logger->info('Deleted Group [' . $groupInfo['group'] . ']');
 			$this->setAPIResponse('success', 'Group deleted', 204);
 			return $this->processQueries($response);
 		} else {
@@ -5766,7 +5790,8 @@ class Organizr
 			),
 		];
 		$this->setAPIResponse(null, 'Group added');
-		$this->writeLog('success', 'Group Editor Function -  Added Group for [' . $array['group'] . ']', $this->user['username']);
+		$this->setLoggerChannel('Group Management');
+		$this->logger->info('Added Group for [' . $array['group'] . ']');
 		return $this->processQueries($response);
 	}
 
@@ -5799,7 +5824,8 @@ class Organizr
 							return $libraryList;
 						}
 					} catch (Requests_Exception $e) {
-						$this->writeLog('error', 'Plex Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
+						$this->setLoggerChannel('User Management');
+						$this->logger->error($e);
 					}
 				}
 				break;
@@ -5955,7 +5981,8 @@ class Organizr
 			$this->setAPIResponse($status, $msg, $code);
 			return (!empty($success) && empty($errors));
 		} catch (Requests_Exception $e) {
-			$this->writeLog('error', 'Plex.TV Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
+			$this->setLoggerChannel('User Management');
+			$this->logger->error($e);
 			$this->setAPIResponse('error', 'An Error Occurred', 409);
 			return false;
 		}
@@ -5990,7 +6017,8 @@ class Organizr
 				)
 			),
 		];
-		$this->writeLog('success', 'User Lockout Function - User: ' . $user['username'] . ' account locked', $this->user['username']);
+		$this->setLoggerChannel('User Management');
+		$this->logger->info('User: ' . $user['username'] . ' account locked');
 		$this->setAPIResponse('success', 'User account locked', 200);
 		return $this->processQueries($response);
 	}
@@ -6027,7 +6055,8 @@ class Organizr
 				)
 			),
 		];
-		$this->writeLog('success', 'User Lockout Function - User: ' . $user['username'] . ' account unlocked', $this->user['username']);
+		$this->setLoggerChannel('User Management');
+		$this->logger->info('User: ' . $user['username'] . ' account unlocked');
 		$this->setAPIResponse('success', 'User account unlocked', 200);
 		return $this->processQueries($response);
 	}
@@ -6437,7 +6466,8 @@ class Organizr
 				return $items;
 			}
 		} catch (Requests_Exception $e) {
-			$this->writeLog('success', 'Plex Get Servers Function - Error: ' . $e->getMessage(), 'SYSTEM');
+			$this->setLoggerChannel('Plex Connection');
+			$this->logger->error($e);
 			$this->setAPIResponse('error', $e->getMessage(), 500);
 		}
 	}
