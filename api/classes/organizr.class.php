@@ -27,6 +27,7 @@ class Organizr
 	use UpgradeFunctions;
 
 	// Use homepage item functions
+	use BookmarksHomepageItem;
 	use CalendarHomepageItem;
 	use CouchPotatoHomepageItem;
 	use DelugeHomepageItem;
@@ -60,7 +61,6 @@ class Organizr
 	use UnifiHomepageItem;
 	use WeatherHomepageItem;
 	use uTorrentHomepageItem;
-	use BookmarksHomepageItem;
 
 	// ===================================
 	// Organizr Version
