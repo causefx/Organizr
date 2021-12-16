@@ -79,7 +79,7 @@ function get_page_settings_tab_editor_tabs($Organizr)
 		</div>
 		<div class="table-responsive">
 			<form id="submit-tabs-form" onsubmit="return false;">
-				<table class="table table-hover manage-u-table">
+				<table class="table table-hover manage-u-table m-b-0">
 					<thead>
 						<tr>
 							<th width="20" class="text-center"></th>
