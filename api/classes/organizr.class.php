@@ -255,8 +255,8 @@ class Organizr
 	public function checkForOrganizrOAuth()
 	{
 		// Oauth?
-		if ($this->config['authProxyEnabled'] && $this->config['authProxyHeaderName'] !== '' && $this->config['authProxyWhitelist'] !== '') {
-			if (isset(getallheaders()[$this->config['authProxyHeaderName']])) {
+		if ($this->config['authProxyEnabled'] && ($this->config['authProxyHeaderName'] !== '' || $this->config['authProxyHeaderNameEmail'] !== '') && $this->config['authProxyWhitelist'] !== '') {
+			if (isset(getallheaders()[$this->config['authProxyHeaderName']]) || isset(getallheaders()[$this->config['authProxyHeaderNameEmail']])) {
 				$this->coookieSeconds('set', 'organizrOAuth', 'true', 20000, false);
 			}
 		}
