@@ -237,6 +237,12 @@ trait LidarrHomepageItem
 					$fanart = str_replace('http://', 'https://', $image['url']);
 				}
 			}
+			$href = "";
+			if (!empty($this->config['lidarrURL'])){
+				$href_arr = explode(',',$this->config['lidarrURL']);
+				$href = reset($href_arr) . '/artist/' . $child['artist']['foreignArtistId'];
+				$href = str_replace("//artist/","/artist/",$href);
+			}
 			$details = array(
 				"seasonCount" => '',
 				"status" => '',
@@ -252,6 +258,8 @@ trait LidarrHomepageItem
 				"videoCodec" => "unknown",
 				"size" => "unknown",
 				"genres" => $child['genres'],
+				"href" => strtolower($href),
+				"icon" => "/plugins/images/tabs/lidarr.png",
 			);
 			array_push($gotCalendar, array(
 				"id" => "Lidarr-" . $number . "-" . $i,
