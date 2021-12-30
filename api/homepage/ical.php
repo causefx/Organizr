@@ -49,6 +49,14 @@ trait ICalHomepageItem
 			case('Japan Standard Time'):
 				$timezone = 'Asia/Tokyo';
 				break;
+			case('Western European Time');
+			case('Western European Standard Time');
+			case('Western European Summer Time');
+			case('W. Europe Time');
+			case('W. Europe Standard Time');
+			case('W. Europe Summer Time');
+				$timezone = 'Europe/Lisbon';
+				break;
 		}
 		return $timezone;
 	}
