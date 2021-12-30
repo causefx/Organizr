@@ -289,6 +289,12 @@ trait SonarrHomepageItem
 				}
 			}
 			$bottomTitle = 'S' . sprintf("%02d", $child['seasonNumber']) . 'E' . sprintf("%02d", $child['episodeNumber']) . ' - ' . $child['title'];
+			$href = "";
+			if (!empty($this->config['sonarrURL'])){
+				$href_arr = explode(',',$this->config['sonarrURL']);
+				$href = reset($href_arr) . '/series/' . preg_replace('/[^A-Za-z0-9. -]/', '', preg_replace('/[[:space:]]+/', '-', $seriesName));
+				$href = str_replace("//series/","/series/",$href);
+			}
 			$details = array(
 				"seasonCount" => $child['series']['seasonCount'] ?? isset($child['series']['seasons']) ? count($child['series']['seasons']) : 0,
 				"status" => $child['series']['status'],
@@ -304,6 +310,8 @@ trait SonarrHomepageItem
 				"videoCodec" => $child["hasFile"] && isset($child['episodeFile']['mediaInfo']) ? $child['episodeFile']['mediaInfo']['videoCodec'] : "unknown",
 				"size" => $child["hasFile"] && isset($child['episodeFile']['size']) ? $child['episodeFile']['size'] : "unknown",
 				"genres" => $child['series']['genres'],
+				"href" => strtolower($href),
+				"icon" => "/plugins/images/tabs/sonarr.png",
 			);
 			array_push($gotCalendar, array(
 				"id" => "Sonarr-" . $number . "-" . $i,
