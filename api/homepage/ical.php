@@ -44,17 +44,17 @@ trait ICalHomepageItem
 			case('India Standard Time'):
 				$timezone = 'Asia/New_Delhi';
 				break;
-			case('JST');
+			case('JST'):
 			case('Japan Time'):
 			case('Japan Standard Time'):
 				$timezone = 'Asia/Tokyo';
 				break;
-			case('Western European Time');
-			case('Western European Standard Time');
-			case('Western European Summer Time');
-			case('W. Europe Time');
-			case('W. Europe Standard Time');
-			case('W. Europe Summer Time');
+			case('Western European Time'):
+			case('Western European Standard Time'):
+			case('Western European Summer Time'):
+			case('W. Europe Time'):
+			case('W. Europe Standard Time'):
+			case('W. Europe Summer Time'):
 				$timezone = 'Europe/Lisbon';
 				break;
 		}
