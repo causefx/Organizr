@@ -322,6 +322,12 @@ trait RadarrHomepageItem
 					}
 				}
 				$alternativeTitles = empty($alternativeTitles) ? "" : substr($alternativeTitles, 0, -2);
+				$href = "";
+				if (!empty($this->config['radarrURL'])){
+					$href_arr = explode(',',$this->config['radarrURL']);
+					$href = reset($href_arr) . '/movie/' . $movieID;
+					$href = str_replace("//movie/","/movie/",$href);
+				}
 				$details = array(
 					"topTitle" => $movieName,
 					"bottomTitle" => $alternativeTitles,
@@ -338,6 +344,8 @@ trait RadarrHomepageItem
 					"genres" => $child['genres'],
 					"year" => isset($child['year']) ? $child['year'] : '',
 					"studio" => isset($child['studio']) ? $child['studio'] : '',
+					"href" => strtolower($href),
+					"icon" => "/plugins/images/tabs/radarr.png",
 				);
 				array_push($gotCalendar, array(
 					"id" => "Radarr-" . $number . "-" . $i,
