@@ -6957,6 +6957,14 @@ function buildYoutubeLink(title){
 		`;
 	}
 }
+function buildPVRLink(href, ico){
+	if (href){
+		var styleOverride = `width:55px;height:44px;background-image: url(${ico});background-repeat:no-repeat;background-size:25px;background-position:center;`;
+		return `
+		<div class="btn btn-inverse waves-effect waves-light" type="button" onclick="window.open('${href}')" style="${styleOverride}"></div>
+		`;
+	} 
+}
 function buildCalendarMetadata(array){
 	var metadata = '';
 	var genres = '';
@@ -6983,7 +6991,7 @@ function buildCalendarMetadata(array){
 	                <h2 class="m-b-0 font-medium pull-right text-right">
 						`+array.topTitle+`<button type="button" class="btn bg-org btn-circle close-popup m-l-10"><i class="fa fa-times"></i> </button><br>
 						<small class="m-t-0 text-white">`+array.bottomTitle+`</small><br>
-						`+buildYoutubeLink(array.topTitle)+`
+						`+buildPVRLink(array.href, array.icon)+buildYoutubeLink(array.topTitle)+`
 					</h2>
 	            </div>
 				<div class="genre-list p-10">`+genres+`</div>
