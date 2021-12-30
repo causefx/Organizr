@@ -30,10 +30,25 @@ trait ICalHomepageItem
 			case('Eastern Standard Time'):
 				$timezone = 'America/New_York';
 				break;
+			case('MST'):
+			case('Mountain Time'):
+			case('Mountain Standard Time'):
+				$timezone = 'America/Denver';
+				break;
 			case('PST'):
 			case('Pacific Time'):
 			case('Pacific Standard Time'):
 				$timezone = 'America/Los_Angeles';
+				break;
+			case('AKST'):
+			case('Alaska Time'):
+			case('Alaska Standard Time'):
+				$timezone = 'America/Anchorage';
+				break;
+			case('HST'):
+			case('Hawaii Time'):
+			case('Hawaii Standard Time'):
+				$timezone = 'Pacific/Honolulu';
 				break;
 			case('China Time'):
 			case('China Standard Time'):
@@ -49,6 +64,8 @@ trait ICalHomepageItem
 			case('Japan Standard Time'):
 				$timezone = 'Asia/Tokyo';
 				break;
+			case('WET'):
+			case('WEST'):
 			case('Western European Time'):
 			case('Western European Standard Time'):
 			case('Western European Summer Time'):
