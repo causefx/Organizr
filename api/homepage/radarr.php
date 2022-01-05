@@ -329,15 +329,15 @@ trait RadarrHomepageItem
 					"overview" => $child['overview'],
 					"runtime" => $child['runtime'],
 					"image" => $banner,
-					"ratings" => $child['ratings']['value'],
+					"ratings" => $child['ratings']['value'] ?? 0,
 					"videoQuality" => $child["hasFile"] ? @$child['movieFile']['quality']['quality']['name'] : "unknown",
 					"audioChannels" => $child["hasFile"] ? @$child['movieFile']['mediaInfo']['audioChannels'] : "unknown",
 					"audioCodec" => $child["hasFile"] ? @$child['movieFile']['mediaInfo']['audioFormat'] : "unknown",
 					"videoCodec" => $child["hasFile"] ? @$child['movieFile']['mediaInfo']['videoCodec'] : "unknown",
 					"size" => $child["hasFile"] ? @$child['movieFile']['size'] : "unknown",
 					"genres" => $child['genres'],
-					"year" => isset($child['year']) ? $child['year'] : '',
-					"studio" => isset($child['studio']) ? $child['studio'] : '',
+					"year" => $child['year'] ?? '',
+					"studio" => $child['studio'] ?? '',
 				);
 				array_push($gotCalendar, array(
 					"id" => "Radarr-" . $number . "-" . $i,
