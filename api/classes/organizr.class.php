@@ -5295,15 +5295,17 @@ class Organizr
 	public function importUsers($array)
 	{
 		$imported = 0;
-		foreach ($array as $user) {
-			$password = $this->random_ascii_string(30);
-			if ($user['username'] !== '' && $user['email'] !== '' && $password !== '') {
-				$newUser = $this->createUser($user['username'], $password, $user['email']);
-				if (!$newUser) {
-					$this->setLoggerChannel('User Management');
-					$this->logger->warning('An error occurred during user import');
-				} else {
-					$imported++;
+		if ($array) {
+			foreach ($array as $user) {
+				$password = $this->random_ascii_string(30);
+				if ($user['username'] !== '' && $user['email'] !== '' && $password !== '') {
+					$newUser = $this->createUser($user['username'], $password, $user['email']);
+					if (!$newUser) {
+						$this->setLoggerChannel('User Management');
+						$this->logger->warning('An error occurred during user import');
+					} else {
+						$imported++;
+					}
 				}
 			}
 		}
