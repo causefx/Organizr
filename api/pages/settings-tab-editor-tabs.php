@@ -121,11 +121,11 @@ function get_page_settings_tab_editor_tabs($Organizr)
 			</div>
 			<div class="form-group">
 				<label class="control-label" for="new-tab-form-inputURLNew" lang="en">Tab URL</label>
-				<input type="text" class="form-control" id="new-tab-form-inputURLNew" name="url"  required="">
+				<input type="text" class="form-control" id="new-tab-form-inputURLNew" name="url" placeholder="http(s)://domain.com" required="">
 			</div>
 			<div class="form-group">
 				<label class="control-label" for="new-tab-form-inputURLLocalNew" lang="en">Tab Local URL</label>
-				<input type="text" class="form-control" id="new-tab-form-inputURLLocalNew" name="url_local">
+				<input type="text" class="form-control" id="new-tab-form-inputURLLocalNew" name="url_local" placeholder="http://192.168.0.1">
 			</div>
 			<div class="form-group">
 				<label class="control-label" for="new-tab-form-inputPingURLNew" lang="en">Ping URL</label>
