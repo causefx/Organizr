@@ -3200,6 +3200,8 @@ class Organizr
 		$this->applyTabVariables($queries['tabs']);
 		$all['tabs'] = $queries['tabs'];
 		foreach ($queries['tabs'] as $k => $v) {
+			$v['url_local'] = $this->qualifyURL($v['url_local']);
+			$v['url'] = $this->qualifyURL($v['url']);
 			$v['access_url'] = (!empty($v['url_local']) && ($v['url_local'] !== null) && ($v['url_local'] !== 'null') && $this->isLocal() && $v['type'] !== 0) ? $v['url_local'] : $v['url'];
 		}
 		$count = array_map(function ($element) {
@@ -3207,7 +3209,7 @@ class Organizr
 		}, $queries['tabs']);
 		$count = (array_count_values($count));
 		foreach ($queries['categories'] as $k => $v) {
-			$v['count'] = isset($count[$v['category_id']]) ? $count[$v['category_id']] : 0;
+			$v['count'] = $count[$v['category_id']] ?? 0;
 		}
 		$all['categories'] = $queries['categories'];
 		switch ($type) {
