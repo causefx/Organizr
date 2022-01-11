@@ -3224,7 +3224,7 @@ class Organizr
 
 	public function checkTabURL($url = null)
 	{
-		return $url ? $this->qualifyURL($url) : '';
+		return $url !== '' && $url !== null & $url !== 'null' ? $this->qualifyURL($url) : '';
 	}
 
 	public function refreshList()
