@@ -3200,8 +3200,8 @@ class Organizr
 		$this->applyTabVariables($queries['tabs']);
 		$all['tabs'] = $queries['tabs'];
 		foreach ($queries['tabs'] as $k => $v) {
-			$v['url_local'] = $this->qualifyURL($v['url_local']);
-			$v['url'] = $this->qualifyURL($v['url']);
+			$v['url_local'] = $v['type'] !== 0 ? $this->qualifyURL($v['url_local']) : $v['url_local'];
+			$v['url'] = $v['type'] !== 0 ? $this->qualifyURL($v['url']) : $v['url'];
 			$v['access_url'] = (!empty($v['url_local']) && ($v['url_local'] !== null) && ($v['url_local'] !== 'null') && $this->isLocal() && $v['type'] !== 0) ? $v['url_local'] : $v['url'];
 		}
 		$count = array_map(function ($element) {
