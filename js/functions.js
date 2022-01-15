@@ -11388,6 +11388,10 @@ function shortcut(selectors = ''){
 			selectors = [];
 		}else{
 			switch (selectors){
+                case 'log-settings':
+                    clickSettingsTab();
+                    selectors = ['#settings-main-system-settings-anchor', '#settings-settings-main-anchor','a[href$="Logs"]'];
+                    break;
 				case 'plugin-marketplace':
 					clickSettingsTab();
 					selectors = ['#settings-main-plugins-anchor', '#settings-plugins-marketplace-anchor'];

@@ -16,6 +16,7 @@ function get_page_settings_settings_logs($Organizr)
 	return '
 	<div class="btn-group m-b-20 pull-left">' . $logsDropdown . '</div>
 	<button class="btn btn-danger waves-effect waves-light pull-right purgeLog" type="button" data-toggle="tooltip" data-placement="bottom" title="" data-original-title="Purge Log"><i class="fa fa-trash"></i></span></button>
+	<button onclick="shortcut(\'log-settings\')" class="btn btn-inverse waves-effect waves-light pull-right m-r-5" type="button" data-toggle="tooltip" data-placement="bottom" title="" data-original-title="Log Settings"><i class="fa fa-cog"></i></span></button>
 	<button onclick="organizrLogTable.clear().draw().ajax.reload(null, false)" class="btn btn-info waves-effect waves-light pull-right reloadLog m-r-5" type="button" data-toggle="tooltip" data-placement="bottom" title="" data-original-title="Reload Log"><i class="fa fa-refresh"></i></span></button>
 	<button onclick="toggleKillOrganizrLiveUpdate(' . $Organizr->config['logLiveUpdateRefresh'] . ');" class="btn btn-primary waves-effect waves-light pull-right organizr-log-live-update m-r-5" type="button" data-toggle="tooltip" data-placement="bottom" title="" data-original-title="Live Update"><i class="fa fa-clock-o"></i></span></button>
 	' . $filterDropdown . '
