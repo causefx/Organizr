@@ -100,6 +100,14 @@ trait OptionsFunction
 					'placeholder' => '* * * * *'
 				];
 				break;
+			case 'folder':
+				$settingMerge = [
+					'type' => 'folder',
+					'label' => 'Save Path',
+					'help' => 'Folder path',
+					'placeholder' => '/path/to/folder'
+				];
+				break;
 			case 'cronfile':
 				$path = $this->root . DIRECTORY_SEPARATOR . 'cron.php';
 				$server = $this->serverIP();

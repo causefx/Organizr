@@ -2,71 +2,77 @@
 
 trait LogFunctions
 {
+	public function logLocation()
+	{
+		return isset($this->config['logLocation']) && $this->config['logLocation'] !== '' ? $this->config['logLocation'] : $this->config['dbLocation'] . 'logs' . DIRECTORY_SEPARATOR;
+	}
+
 	public function debug($msg, $context = [])
 	{
 		if ($this->logger) {
 			$this->logger->debug($msg, $context);
 		}
 	}
-	
+
 	public function info($msg, $context = [])
 	{
 		if ($this->logger) {
 			$this->logger->info($msg, $context);
 		}
 	}
-	
+
 	public function notice($msg, $context = [])
 	{
 		if ($this->logger) {
 			$this->logger->notice($msg, $context);
 		}
 	}
-	
+
 	public function warning($msg, $context = [])
 	{
 		if ($this->logger) {
 			$this->logger->warning($msg, $context);
 		}
 	}
-	
+
 	public function error($msg, $context = [])
 	{
 		if ($this->logger) {
 			$this->logger->error($msg, $context);
 		}
 	}
-	
+
 	public function critical($msg, $context = [])
 	{
 		if ($this->logger) {
 			$this->logger->critical($msg, $context);
 		}
 	}
-	
+
 	public function alert($msg, $context = [])
 	{
 		if ($this->logger) {
 			$this->logger->alert($msg, $context);
 		}
 	}
-	
+
 	public function emergency($msg, $context = [])
 	{
 		if ($this->logger) {
 			$this->logger->emergency($msg, $context);
 		}
 	}
-	
+
 	public function setOrganizrLog()
 	{
 		if ($this->hasDB()) {
-			$logPath = $this->config['dbLocation'] . 'logs' . DIRECTORY_SEPARATOR;
+			$this->makeDir($this->logLocation());
+			$logPath = $this->logLocation();
 			return $logPath . 'organizr.log';
 		}
 		return false;
 	}
-	
+
 	public function readLog($file, $pageSize = 10, $offset = 0, $filter = 'NONE', $trace_id = null)
 	{
 		$combinedLogs = false;
@@ -126,7 +132,7 @@ trait LogFunctions
 		}
 		return false;
 	}
-	
+
 	public function formatLogResults($lines, $pageSize, $offset)
 	{
 		if (is_array($lines)) {
@@ -150,12 +156,12 @@ trait LogFunctions
 			return json_decode($lines, true);
 		}
 	}
-	
+
 	public function getLatestLogFile()
 	{
 		if ($this->log) {
 			if (isset($this->log)) {
-				$folder = $this->config['dbLocation'] . 'logs' . DIRECTORY_SEPARATOR;
+				$folder = $this->logLocation();
 				$directoryIterator = new RecursiveDirectoryIterator($folder, FilesystemIterator::SKIP_DOTS);
 				$iteratorIterator = new RecursiveIteratorIterator($directoryIterator);
 				$files = [];
@@ -176,12 +182,12 @@ trait LogFunctions
 		}
 		return false;
 	}
-	
+
 	public function getLogFiles()
 	{
 		if ($this->log) {
 			if (isset($this->log)) {
-				$folder = $this->config['dbLocation'] . 'logs' . DIRECTORY_SEPARATOR;
+				$folder = $this->logLocation();
 				$directoryIterator = new RecursiveDirectoryIterator($folder, FilesystemIterator::SKIP_DOTS);
 				$iteratorIterator = new RecursiveIteratorIterator($directoryIterator);
 				$files = [];
@@ -200,7 +206,7 @@ trait LogFunctions
 		}
 		return false;
 	}
-	
+
 	public function setLoggerChannel($channel = 'Organizr', $username = null)
 	{
 		if ($this->hasDB()) {
@@ -225,7 +231,7 @@ trait LogFunctions
 			}
 		}
 	}
-	
+
 	public function setupLogger($channel = 'Organizr', $username = null)
 	{
 		if (!$username) {
@@ -280,9 +286,8 @@ trait LogFunctions
 		exception:
 		$this->logger->critical($exception, $context);
 		*/
-		
 	}
-	
+
 	public function tempLogIfNeeded()
 	{
 		if (!$this->log) {
@@ -291,7 +296,7 @@ trait LogFunctions
 			return $this->log;
 		}
 	}
-	
+
 	public function getLog($pageSize = 10, $offset = 0, $filter = 'NONE', $number = 0, $trace_id = null)
 	{
 		if ($this->log) {
@@ -319,7 +324,7 @@ trait LogFunctions
 			return false;
 		}
 	}
-	
+
 	public function purgeLog($number)
 	{
 		$this->setLoggerChannel('Logger');
@@ -366,7 +371,7 @@ trait LogFunctions
 			return false;
 		}
 	}
-	
+
 	public function logArray($context)
 	{
 		if (!is_array($context)) {
@@ -380,7 +385,7 @@ trait LogFunctions
 			return $context;
 		}
 	}
-	
+
 	function buildLogDropdown()
 	{
 		$logs = $this->getLogFiles();
@@ -400,7 +405,7 @@ trait LogFunctions
 		}
 		return false;
 	}
-	
+
 	function buildFilterDropdown()
 	{
 		$dropdownItems = '<li><a href="javascript:toggleLogFilter(\'DEBUG\')"><span lang="en">Debug</span></a></li>';

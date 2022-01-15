@@ -698,6 +698,11 @@ trait NormalFunctions
 		}
 		return false;
 	}
+
+	public function makeDir($dirPath, $mode = 0777)
+	{
+		return is_dir($dirPath) || @mkdir($dirPath, $mode, true);
+	}
 }
 
 // Leave for deluge class

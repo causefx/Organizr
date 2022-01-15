@@ -1891,6 +1891,7 @@ class Organizr
 				$this->settingsOption('code-editor', 'blacklistedMessage', ['mode' => 'html']),
 			],
 			'Logs' => [
+				$this->settingsOption('folder', 'logLocation', ['label' => 'Log Save Path', 'help' => 'Folder path to save Organizr Logs - Please test before saving', 'value' => $this->logLocation()]),
 				$this->settingsOption('select', 'logLevel', ['label' => 'Log Level', 'options' => $this->logLevels()]),
 				$this->settingsOption('switch', 'includeDatabaseQueriesInDebug', ['label' => 'Include Database Queries', 'help' => 'Include Database queries in debug logs']),
 				$this->settingsOption('number', 'maxLogFiles', ['label' => 'Maximum Log Files', 'help' => 'Number of log files to preserve', 'attr' => 'min="1"']),
@@ -2228,6 +2229,16 @@ class Organizr
 						$v = $this->encrypt($v);
 					}
 				}
+			}
+			switch ($k) {
+				case 'logLocation':
+				case 'dbLocation':
+					if (!empty($v)) {
+						$v = $this->cleanDirectory($v);
+					}
+					break;
+				default:
+					break;
 			}
 			if (strtolower($k) !== 'formkey') {
 				$newItem[$k] = $v;
@@ -6573,6 +6584,23 @@ class Organizr
 			return true;
 		} catch (InvalidArgumentException $e) {
 			$this->setResponse(500, $e->getMessage());
+			return false;
+		}
+	}
+
+	public function testFolder($folder = null)
+	{
+		$folder = $folder['folder'] ?? null;
+		if (!$folder) {
+			$this->setResponse(409, 'Folder was not supplied');
+			return false;
+		}
+		$testFolder = $this->makeDir($folder);
+		if ($testFolder) {
+			$this->setResponse(200, 'Folder approved for logs');
+			return true;
+		} else {
+			$this->setResponse(409, 'Folder path is not valid or permissions insufficient');
 			return false;
 		}
 	}

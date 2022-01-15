@@ -1963,3 +1963,9 @@ $(document).on('click', '.test-cron', function() {
 	let cron = $(this).parent().parent().find('input').val();
 	testAPIConnection('cron',cron);
 });
+
+// Test Folder
+$(document).on('click', '.test-folder', function() {
+    let folder = $(this).parent().parent().find('input').val();
+    testAPIConnection('folder',{'folder':folder});
+});
