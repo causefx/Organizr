@@ -111,6 +111,17 @@ $app->any('/auth/[{group}[/{type}[/{ips}]]]', function ($request, $response, $ar
 		->withHeader('Content-Type', 'application/json;charset=UTF-8')
 		->withStatus($GLOBALS['responseCode']);
 });
+$app->any('/organizr-auth/[{group}[/{type}[/{ips}]]]', function ($request, $response, $args) {
+	$Organizr = ($request->getAttribute('Organizr')) ?? new Organizr();
+	$_GET['group'] = $args['group'] ?? 0;
+	$_GET['type'] = $args['type'] ?? 'deny';
+	$_GET['ips'] = $args['ips'] ?? '192.0.0.0';
+	$Organizr->auth();
+	$response->getBody()->write(jsonE($GLOBALS['api']));
+	return $response
+		->withHeader('Content-Type', 'application/json;charset=UTF-8')
+		->withStatus($GLOBALS['responseCode']);
+});
 $app->get('/launch', function ($request, $response, $args) {
 	$Organizr = ($request->getAttribute('Organizr')) ?? new Organizr();
 	$tabInfo = $Organizr->getUserTabsAndCategories();
@@ -131,5 +142,4 @@ $app->get('/launch', function ($request, $response, $args) {
 	return $response
 		->withHeader('Content-Type', 'application/json;charset=UTF-8')
 		->withStatus($GLOBALS['responseCode']);
-	
 });
