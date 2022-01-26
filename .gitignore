@@ -90,6 +90,8 @@ config/users*.bak.db
 config/tmp/*
 data/*
 data/config/*
+!data/routes/index.html
+!data/pages/index.html
 docs/api.json
 images/cache/*
 backups/*
