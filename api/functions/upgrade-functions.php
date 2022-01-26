@@ -72,6 +72,14 @@ trait UpgradeFunctions
 				$this->upgradeToVersion($versionCheck);
 			}
 			// End Upgrade check start for version above
+			// Upgrade check start for version below
+			$versionCheck = '2.1.1400';
+			if ($compare->lessThan($oldVer, $versionCheck)) {
+				$updateDB = false;
+				$oldVer = $versionCheck;
+				$this->upgradeToVersion($versionCheck);
+			}
+			// End Upgrade check start for version above
 			if ($updateDB == true) {
 				//return 'Upgraded Needed - Current Version '.$oldVer.' - New Version: '.$versionCheck;
 				// Upgrade database to latest version
@@ -225,7 +233,7 @@ trait UpgradeFunctions
 				$this->removeOldCustomHTML();
 			case '2.1.860':
 				$this->upgradeInstalledPluginsConfigItem();
-			case '2.1.1300':
+			case '2.1.1400':
 				$this->upgradeDataToFolder();
 			default:
 				$this->setAPIResponse('success', 'Ran update function for version: ' . $version, 200);
