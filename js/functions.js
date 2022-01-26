@@ -2088,10 +2088,11 @@ function buildImageManagerViewItem(array){
 	if (Array.isArray(array)) {
 		$.each(array, function(i,v) {
 			var filepath = v.split("/");
-			var name = filepath[3].split(".");
+			var name = filepath[(filepath.length) - 1].split(".");
 			var clipboardText = v.replace(/ /g,"%20");
-			imageListing += `
-			<a class="imageManagerItem" href="javascript:void(0);" data-toggle="lightbox" data-gallery="multiimages" data-title="`+name[0]+`" data-clipboard-text="`+clipboardText+`" data-image-path="`+v+`" data-image-name="`+name[0]+`" data-image-name-ext="`+filepath[3]+`"><img data-src="`+v+`" alt="tabImage" class="all studio lazyload" /> </a>
+            var fileAndExt = filepath[(filepath.length) - 1];
+            imageListing += `
+			<a class="imageManagerItem" href="javascript:void(0);" data-toggle="lightbox" data-gallery="multiimages" data-title="`+name[0]+`" data-clipboard-text="`+clipboardText+`" data-image-path="`+v+`" data-image-name="`+name[0]+`" data-image-name-ext="`+fileAndExt+`"><img data-src="`+v+`" alt="tabImage" class="all studio lazyload" /> </a>
 			`;
 		});
 	}

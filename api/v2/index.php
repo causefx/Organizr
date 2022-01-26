@@ -99,8 +99,10 @@ foreach (glob(__DIR__ . DIRECTORY_SEPARATOR . 'routes' . DIRECTORY_SEPARATOR . '
 /*
  * Include all custom routes
  */
-foreach (glob(__DIR__ . DIRECTORY_SEPARATOR . 'routes' . DIRECTORY_SEPARATOR . 'custom' . DIRECTORY_SEPARATOR . '*.php') as $filename) {
-	require_once $filename;
+if (file_exists(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR . 'routes')) {
+	foreach (glob(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR . 'routes' . DIRECTORY_SEPARATOR . '*.php') as $filename) {
+		require_once $filename;
+	}
 }
 /*
  * Include all Plugin routes
@@ -111,6 +113,19 @@ $iteratorIterator = new RecursiveIteratorIterator($directoryIterator);
 foreach ($iteratorIterator as $info) {
 	if ($info->getFilename() == 'api.php') {
 		require_once $info->getPathname();
+	}
+}
+/*
+ * Include all custom Plugin routes
+ */
+if (file_exists(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR . 'plugins')) {
+	$folder = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR . 'plugins';
+	$directoryIterator = new RecursiveDirectoryIterator($folder, FilesystemIterator::SKIP_DOTS);
+	$iteratorIterator = new RecursiveIteratorIterator($directoryIterator);
+	foreach ($iteratorIterator as $info) {
+		if ($info->getFilename() == 'api.php') {
+			require_once $info->getPathname();
+		}
 	}
 }
 /*

@@ -109,7 +109,8 @@ class Organizr
 		// Set Start Execution Time
 		$this->timeExecution = $this->timeExecution();
 		// Set location path to user config path
-		$this->userConfigPath = dirname(__DIR__, 1) . DIRECTORY_SEPARATOR . 'config' . DIRECTORY_SEPARATOR . 'config.php';
+		$this->chooseConfigFile();
+		//$this->userConfigPath = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR . 'config' . DIRECTORY_SEPARATOR . 'config.php';
 		// Set location path to default config path
 		$this->defaultConfigPath = dirname(__DIR__, 1) . DIRECTORY_SEPARATOR . 'config' . DIRECTORY_SEPARATOR . 'default.php';
 		// Set current time
@@ -139,7 +140,7 @@ class Organizr
 		$this->paths = array(
 			'Root Folder' => dirname(__DIR__, 2) . DIRECTORY_SEPARATOR,
 			'Cache Folder' => dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . 'images' . DIRECTORY_SEPARATOR . 'cache' . DIRECTORY_SEPARATOR,
-			'Tab Folder' => dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . 'images' . DIRECTORY_SEPARATOR . 'userTabs' . DIRECTORY_SEPARATOR,
+			'Tab Folder' => $this->root . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR . 'userTabs' . DIRECTORY_SEPARATOR,
 			'API Folder' => dirname(__DIR__, 1) . DIRECTORY_SEPARATOR,
 			'DB Folder' => ($this->hasDB()) ? $this->config['dbLocation'] : false
 		);
@@ -162,6 +163,25 @@ class Organizr
 	public function __destruct()
 	{
 		$this->disconnectDB();
+	}
+
+	public function chooseConfigFile()
+	{
+
+		$oldUserConfigPath = dirname(__DIR__, 1) . DIRECTORY_SEPARATOR . 'config' . DIRECTORY_SEPARATOR . 'config.php';
+		$userConfigPath = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR . 'config' . DIRECTORY_SEPARATOR . 'config.php';
+		if (file_exists($userConfigPath) && file_exists($oldUserConfigPath)) {
+			$this->userConfigPath = $userConfigPath;
+		} elseif (file_exists($oldUserConfigPath)) {
+			$this->makeDir(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR . 'config' . DIRECTORY_SEPARATOR);
+			if ($this->rcopy($oldUserConfigPath, $userConfigPath)) {
+				$this->userConfigPath = $userConfigPath;
+			} else {
+				$this->userConfigPath = $oldUserConfigPath;
+			}
+		} else {
+			$this->userConfigPath = $userConfigPath;
+		}
 	}
 
 	protected function connectDB()
@@ -756,7 +776,7 @@ class Organizr
 			<meta name="theme-color" content="#ffffff">
 		';
 		if ($this->config['favIcon'] !== '' && $rootPath !== '') {
-			$this->config['favIcon'] = str_replace('plugins/images/faviconCustom', $rootPath . 'plugins/images/faviconCustom', $this->config['favIcon']);
+			$this->config['favIcon'] = str_replace('data/favicon', $rootPath . 'data/favicon', $this->config['favIcon']);
 		}
 		return ($this->config['favIcon'] == '') ? $favicon : $this->config['favIcon'];
 	}
@@ -1534,8 +1554,8 @@ class Organizr
 				);
 			}
 		}
-		$dirname = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . 'images' . DIRECTORY_SEPARATOR . 'userTabs' . DIRECTORY_SEPARATOR;
-		$path = 'plugins/images/userTabs/';
+		$dirname = $this->root . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR . 'userTabs' . DIRECTORY_SEPARATOR;
+		$path = 'data/userTabs/';
 		$images = scandir($dirname);
 		foreach ($images as $image) {
 			if (!in_array($image, $ignore)) {
@@ -1588,7 +1608,7 @@ class Organizr
 			$this->setAPIResponse('error', 'No image supplied', 422);
 			return false;
 		}
-		$approvedPath = 'plugins/images/userTabs/';
+		$approvedPath = 'data/userTabs/';
 		$removeImage = $approvedPath . pathinfo($image, PATHINFO_BASENAME);
 		if ($this->approvedFileExtension($removeImage, 'image')) {
 			if (file_exists(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . $removeImage)) {
@@ -1613,7 +1633,7 @@ class Organizr
 			ini_set('upload_max_filesize', '10M');
 			ini_set('post_max_size', '10M');
 			$tempFile = $_FILES['file']['tmp_name'];
-			$targetPath = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . 'images' . DIRECTORY_SEPARATOR . 'userTabs' . DIRECTORY_SEPARATOR;
+			$targetPath = $this->root . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR . 'userTabs' . DIRECTORY_SEPARATOR;
 			$targetFile = $targetPath . $_FILES['file']['name'];
 			$this->setAPIResponse(null, pathinfo($_FILES['file']['name'], PATHINFO_BASENAME) . ' has been uploaded', null);
 			return move_uploaded_file($tempFile, $targetFile);
@@ -1771,9 +1791,9 @@ class Organizr
 									<li lang="en"><i class="fa fa-caret-right text-info"></i> Choose your image to use</li>
 									<li lang="en"><i class="fa fa-caret-right text-info"></i> Edit settings to your liking</li>
 									<li lang="en"><i class="fa fa-caret-right text-info"></i> At bottom of page on [Favicon Generator Options] under [Path] choose [I cannot or I do not want to place favicon files at the root of my web site.]</li>
-									<li lang="en"><i class="fa fa-caret-right text-info"></i> Enter this path <code>plugins/images/faviconCustom</code></li>
+									<li lang="en"><i class="fa fa-caret-right text-info"></i> Enter this path <code>data/favicon</code></li>
 									<li lang="en"><i class="fa fa-caret-right text-info"></i> Click [Generate your Favicons and HTML code]</li>
-									<li lang="en"><i class="fa fa-caret-right text-info"></i> Download and unzip file and place in <code>plugins/images/faviconCustom</code></li>
+									<li lang="en"><i class="fa fa-caret-right text-info"></i> Download and unzip file and place in <code>data/favicon</code></li>
 									<li lang="en"><i class="fa fa-caret-right text-info"></i> Copy code and paste inside left box</li>
 								</ul>
 							</div>
@@ -2246,6 +2266,8 @@ class Organizr
 			}
 		}
 		$this->setAPIResponse('success', 'Config items updated', 200);
+		$this->setLoggerChannel('Config');
+		$this->logger->info('Config items updated', array_keys($array));
 		return (bool)$this->updateConfig($newItem);
 	}
 
@@ -4650,11 +4672,12 @@ class Organizr
 			if ($v['type'] !== 'dir') {
 				$filesList[] = array(
 					'fileName' => $v['name'],
-					'path' => DIRECTORY_SEPARATOR . 'api' . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . $folder . DIRECTORY_SEPARATOR . str_replace($v['name'], '', $v['path']),
+					'path' => $this->root . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . $folder . DIRECTORY_SEPARATOR . str_replace($v['name'], '', $v['path']),
 					'githubPath' => $v['download_url']
 				);
 			}
 		}
+		$this->makeDir($this->root . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . $folder);
 		return $filesList;
 	}
 
@@ -4796,9 +4819,10 @@ class Organizr
 		foreach ($downloadList as $k => $v) {
 			$file = array(
 				'from' => $v['githubPath'],
-				'to' => str_replace(array('/', '\\'), DIRECTORY_SEPARATOR, $this->root . $v['path'] . $v['fileName']),
-				'path' => str_replace(array('/', '\\'), DIRECTORY_SEPARATOR, $this->root . $v['path'])
+				'to' => str_replace(array('/', '\\'), DIRECTORY_SEPARATOR, $v['path'] . $v['fileName']),
+				'path' => str_replace(array('/', '\\'), DIRECTORY_SEPARATOR, $v['path'])
 			);
+			$this->makeDir($this->root . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR . 'plugins');
 			if (!$this->downloadFileToPath($file['from'], $file['to'], $file['path'])) {
 				$this->setLoggerChannel('Plugin Marketplace');
 				$this->logger->warning('Downloaded File Failed  for: ' . $v['githubPath']);
@@ -4829,7 +4853,7 @@ class Organizr
 			$plugin = array_keys($array)[$key];
 		}
 		$array = $array[$plugin];
-		$pluginDir = $this->root . DIRECTORY_SEPARATOR . 'api' . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . $array['project_folder'] . DIRECTORY_SEPARATOR;
+		$pluginDir = $this->root . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . $array['project_folder'] . DIRECTORY_SEPARATOR;
 		$dirExists = file_exists($pluginDir);
 		if ($dirExists) {
 			if (!$this->rrmdir($pluginDir)) {
@@ -5230,10 +5254,8 @@ class Organizr
 		}
 		ini_set('max_execution_time', 0);
 		set_time_limit(0);
-		$this->setLoggerChannel('File Management');
-		if (@!mkdir($path, 0777, true)) {
-			$this->logger->warning('Organizr could not create folder or folder already exists');
-		}
+
+		$this->makeDir($path);
 		$file = fopen($from, 'rb', false, $context);
 		if ($file) {
 			$newf = fopen($to, 'wb', false, $context);
@@ -5909,12 +5931,12 @@ class Organizr
 
 	public function hasCustomCert()
 	{
-		return file_exists(dirname(__DIR__, 1) . DIRECTORY_SEPARATOR . 'functions' . DIRECTORY_SEPARATOR . 'cert' . DIRECTORY_SEPARATOR . 'custom.pem');
+		return file_exists($this->root . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR . 'cert' . DIRECTORY_SEPARATOR . 'custom.pem');
 	}
 
 	public function getCustomCert()
 	{
-		return ($this->hasCustomCert()) ? dirname(__DIR__, 1) . DIRECTORY_SEPARATOR . 'functions' . DIRECTORY_SEPARATOR . 'cert' . DIRECTORY_SEPARATOR . 'custom.pem' : false;
+		return ($this->hasCustomCert()) ? $this->root . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR . 'cert' . DIRECTORY_SEPARATOR . 'custom.pem' : false;
 	}
 
 	public function uploadCert()
@@ -5924,9 +5946,10 @@ class Organizr
 			ini_set('upload_max_filesize', '10M');
 			ini_set('post_max_size', '10M');
 			$tempFile = $_FILES['file']['tmp_name'];
-			$targetPath = dirname(__DIR__, 1) . DIRECTORY_SEPARATOR . 'functions' . DIRECTORY_SEPARATOR . 'cert' . DIRECTORY_SEPARATOR;
+			$targetPath = $this->root . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR . 'cert' . DIRECTORY_SEPARATOR;
 			$targetFile = $targetPath . 'custom.pem';
 			$this->setAPIResponse(null, pathinfo($_FILES['file']['name'], PATHINFO_BASENAME) . ' has been uploaded', null);
+			$this->makeDir($this->root . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR . 'cert');
 			return move_uploaded_file($tempFile, $targetFile);
 		} else {
 			$this->setAPIResponse('error', pathinfo($_FILES['file']['name'], PATHINFO_BASENAME) . ' is not approved to be uploaded', 403);

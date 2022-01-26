@@ -247,8 +247,8 @@ trait OrganizrFunctions
 				);
 			}
 		}
-		$dirname = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . 'images' . DIRECTORY_SEPARATOR . 'userTabs' . DIRECTORY_SEPARATOR;
-		$path = 'plugins/images/userTabs/';
+		$dirname = $this->root . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR . 'userTabs' . DIRECTORY_SEPARATOR;
+		$path = 'data/userTabs/';
 		$images = scandir($dirname);
 		foreach ($images as $image) {
 			if (!in_array($image, $ignore)) {
