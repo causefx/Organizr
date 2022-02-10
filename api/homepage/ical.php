@@ -12,7 +12,7 @@ trait ICalHomepageItem
 		}
 		return $success;
 	}
-	
+
 	public function calendarStandardizeTimezone($timezone)
 	{
 		switch ($timezone) {
@@ -77,7 +77,7 @@ trait ICalHomepageItem
 		}
 		return $timezone;
 	}
-	
+
 	public function getCalenderRepeat($value)
 	{
 		//FREQ=DAILY
@@ -94,7 +94,7 @@ trait ICalHomepageItem
 			return $first[1];
 		}
 	}
-	
+
 	public function getCalenderRepeatUntil($value)
 	{
 		$first = explode('UNTIL=', $value);
@@ -109,7 +109,7 @@ trait ICalHomepageItem
 			return false;
 		}
 	}
-	
+
 	public function getCalenderRepeatCount($value)
 	{
 		$first = explode('COUNT=', $value);
@@ -119,7 +119,7 @@ trait ICalHomepageItem
 			return false;
 		}
 	}
-	
+
 	public function file_get_contents_curl($url)
 	{
 		$ch = curl_init();
@@ -134,7 +134,7 @@ trait ICalHomepageItem
 		curl_close($ch);
 		return $data;
 	}
-	
+
 	public function getIcsEventsAsArray($file)
 	{
 		$icalString = $this->file_get_contents_curl($file);
@@ -154,7 +154,7 @@ trait ICalHomepageItem
 		}
 		return $icsDates;
 	}
-	
+
 	/* funcion is to avaid the elements wich is not having the proper start, end  and summary informations */
 	public function getICSDates($key, $subKey, $subValue, $icsDates)
 	{
@@ -168,7 +168,7 @@ trait ICalHomepageItem
 		}
 		return $icsDates;
 	}
-	
+
 	public function getICalendar()
 	{
 		if (!$this->config['homepageCalendarEnabled']) {
