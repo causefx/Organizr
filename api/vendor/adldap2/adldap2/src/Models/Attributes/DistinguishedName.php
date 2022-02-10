@@ -52,7 +52,7 @@ class DistinguishedName
         foreach ($this->components as $component => $values) {
             array_map(function ($value) use ($component, &$components) {
                 // Assemble the component and escape the value.
-                $components[] = sprintf('%s=%s', $component, ldap_escape($value, '', 2));
+                $components[] = sprintf('%s=%s', $component, ldap_escape((string) $value, '', 2));
             }, $values);
         }
 

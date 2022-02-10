@@ -171,6 +171,7 @@ abstract class Model implements ArrayAccess, JsonSerializable
      *
      * @return bool
      */
+    #[\ReturnTypeWillChange]
     public function offsetExists($offset)
     {
         return !is_null($this->getAttribute($offset));
@@ -183,6 +184,7 @@ abstract class Model implements ArrayAccess, JsonSerializable
      *
      * @return mixed
      */
+    #[\ReturnTypeWillChange]
     public function offsetGet($offset)
     {
         return $this->getAttribute($offset);
@@ -196,6 +198,7 @@ abstract class Model implements ArrayAccess, JsonSerializable
      *
      * @return void
      */
+    #[\ReturnTypeWillChange]
     public function offsetSet($offset, $value)
     {
         $this->setAttribute($offset, $value);
@@ -208,6 +211,7 @@ abstract class Model implements ArrayAccess, JsonSerializable
      *
      * @return void
      */
+    #[\ReturnTypeWillChange]
     public function offsetUnset($offset)
     {
         unset($this->attributes[$offset]);
@@ -230,6 +234,7 @@ abstract class Model implements ArrayAccess, JsonSerializable
      *
      * @return array
      */
+    #[\ReturnTypeWillChange]
     public function jsonSerialize()
     {
         $attributes = $this->getAttributes();
@@ -828,6 +833,10 @@ abstract class Model implements ArrayAccess, JsonSerializable
     public function getMaxPasswordAgeDays()
     {
         $age = $this->getMaxPasswordAge();
+
+        if ($age === null) {
+            return 0;
+        }
 
         return (int) (abs($age) / 10000000 / 60 / 60 / 24);
     }

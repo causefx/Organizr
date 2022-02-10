@@ -327,6 +327,10 @@ class User extends Entry implements Authenticatable
     {
         $workstations = $this->getFirstAttribute($this->schema->userWorkstations());
 
+        if ($workstations === null) {
+            return [];
+        }
+
         return array_filter(explode(',', $workstations));
     }
 
