@@ -78,6 +78,38 @@ trait ICalHomepageItem
 		return $timezone;
 	}
 
+	public function getCalendarExtraDates($start, $rule, $timezone)
+	{
+		$extraDates = [];
+		try {
+			if (stripos($rule, 'FREQ') !== false) {
+				$until = $this->getCalenderRepeatUntil($rule);
+				$start = new DateTime ($start);
+				$startDate = new DateTime ($this->currentTime);
+				$startDate->setTime($start->format('H'), $start->format('i'));
+				$startDate->modify('-' . $this->config['calendarStart'] . ' days');
+				$endDate = new DateTime ($this->currentTime);
+				$endDate->modify('+' . $this->config['calendarEnd'] . ' days');
+				$until = $until ? new DateTime($until) : $endDate;
+				$dates = new \Recurr\Rule(trim($rule));
+				$dates->setStartDate($startDate)->setUntil($until);
+				$transformer = new \Recurr\Transformer\ArrayTransformer();
+				$transformerConfig = new \Recurr\Transformer\ArrayTransformerConfig();
+				$transformerConfig->enableLastDayOfMonthFix();
+				$transformer->setConfig($transformerConfig);
+				foreach (@$transformer->transform($dates) as $key => $date) {
+					if ($date->getStart() >= $startDate) {
+						$extraDates[$key]['start'] = $date->getStart();
+						$extraDates[$key]['end'] = $date->getEnd();
+					}
+				}
+			}
+		} catch (\Recurr\Exception\InvalidRRule | \Recurr\Exception\InvalidWeekday | Exception $e) {
+			return $extraDates;
+		}
+		return $extraDates;
+	}
+
 	public function getCalenderRepeat($value)
 	{
 		//FREQ=DAILY
@@ -155,7 +187,7 @@ trait ICalHomepageItem
 		return $icsDates;
 	}
 
-	/* funcion is to avaid the elements wich is not having the proper start, end  and summary informations */
+	/* function is to avoid the elements which is not having the proper start, end and summary information */
 	public function getICSDates($key, $subKey, $subValue, $icsDates)
 	{
 		if ($key != 0 && $subKey == 0) {
@@ -188,6 +220,7 @@ trait ICalHomepageItem
 		$calendarURLList = explode(',', $this->config['calendariCal']);
 		$icalEvents = array();
 		foreach ($calendarURLList as $key => $value) {
+			$dates = [];
 			$icsEvents = $this->getIcsEventsAsArray($value);
 			if (isset($icsEvents) && !empty($icsEvents)) {
 				$timeZone = isset($icsEvents [1] ['X-WR-TIMEZONE']) ? trim($icsEvents[1]['X-WR-TIMEZONE']) : date_default_timezone_get();
@@ -202,7 +235,7 @@ trait ICalHomepageItem
 					});
 					if (!empty($startKeys) && !empty($endKeys) && isset($icsEvent['SUMMARY'])) {
 						/* Getting start date and time */
-						$repeat = isset($icsEvent ['RRULE']) ? $icsEvent ['RRULE'] : false;
+						$repeat = $icsEvent ['RRULE'] ?? false;
 						if (!$originalTimeZone) {
 							$tzKey = array_keys($startKeys);
 							if (strpos($tzKey[0], 'TZID=') !== false) {
@@ -212,57 +245,26 @@ trait ICalHomepageItem
 						}
 						$start = reset($startKeys);
 						$end = reset($endKeys);
-						$totalDays = $this->config['calendarStart'] + $this->config['calendarEnd'];
+						$oldestDay = new DateTime ($this->currentTime);
+						$oldestDay->modify('-' . $this->config['calendarStart'] . ' days');
+						$newestDay = new DateTime ($this->currentTime);
+						$newestDay->modify('+' . $this->config['calendarEnd'] . ' days');
 						if ($repeat) {
-							$repeatOverride = $this->getCalenderRepeatCount(trim($icsEvent["RRULE"]));
-							switch (trim(strtolower($this->getCalenderRepeat($repeat)))) {
-								case 'daily':
-									$repeat = ($repeatOverride) ? $repeatOverride : $totalDays;
-									$term = 'days';
-									break;
-								case 'weekly':
-									$repeat = ($repeatOverride) ? $repeatOverride : round($totalDays / 7);
-									$term = 'weeks';
-									break;
-								case 'monthly':
-									$repeat = ($repeatOverride) ? $repeatOverride : round($totalDays / 30);
-									$term = 'months';
-									break;
-								case 'yearly':
-									$repeat = ($repeatOverride) ? $repeatOverride : round($totalDays / 365);
-									$term = 'years';
-									break;
-								default:
-									$repeat = ($repeatOverride) ? $repeatOverride : $totalDays;
-									$term = 'days';
-									break;
-							}
+							$dates = $this->getCalendarExtraDates($start, $icsEvent['RRULE'], $originalTimeZone);
 						} else {
-							$repeat = 1;
-							$term = 'day';
-						}
-						$calendarTimes = 0;
-						while ($calendarTimes < $repeat) {
-							$currentDate = new DateTime ($this->currentTime);
-							$oldestDay = new DateTime ($this->currentTime);
-							$oldestDay->modify('-' . $this->config['calendarStart'] . ' days');
-							$newestDay = new DateTime ($this->currentTime);
-							$newestDay->modify('+' . $this->config['calendarEnd'] . ' days');
-							/* Converting to datetime and apply the timezone to get proper date time */
-							$startDt = new DateTime ($start);
-							/* Getting end date with time */
-							$endDt = new DateTime ($end);
-							if ($calendarTimes !== 0) {
-								$dateDiff = date_diff($startDt, $currentDate);
-								$startDt->modify($dateDiff->format('%R') . (round(($dateDiff->days) / 7)) . ' weeks');
-								$startDt->modify('+' . $calendarTimes . ' ' . $term);
-								$endDt->modify($dateDiff->format('%R') . (round(($dateDiff->days) / 7)) . ' weeks');
-								$endDt->modify('+' . $calendarTimes . ' ' . $term);
-							} elseif ($calendarTimes == 0 && $repeat !== 1) {
-								$dateDiff = date_diff($startDt, $currentDate);
-								$startDt->modify($dateDiff->format('%R') . (round(($dateDiff->days) / 7)) . ' weeks');
-								$endDt->modify($dateDiff->format('%R') . (round(($dateDiff->days) / 7)) . ' weeks');
+							$dates[] = [
+								'start' => new DateTime ($start),
+								'end' => new DateTime ($end)
+							];
+							if ($oldestDay > new DateTime ($end)) {
+								continue;
 							}
+						}
+						foreach ($dates as $eventDate) {
+							/* Converting to datetime and apply the timezone to get proper date time */
+							$startDt = $eventDate['start'];
+							/* Getting end date with time */
+							$endDt = $eventDate['end'];
 							$calendarStartDiff = date_diff($startDt, $newestDay);
 							$calendarEndDiff = date_diff($startDt, $oldestDay);
 							if ($originalTimeZone && $originalTimeZone !== 'UTC' && (strpos($start, 'Z') == false)) {
@@ -281,6 +283,7 @@ trait ICalHomepageItem
 							$endDt->setTimeZone(new DateTimezone ($timeZone));
 							$startDate = $startDt->format(DateTime::ATOM);
 							$endDate = $endDt->format(DateTime::ATOM);
+							$dates = isset($icsEvent['RRULE']) ? $dates : null;
 							if (new DateTime() < $endDt) {
 								$extraClass = 'text-info';
 							} else {
@@ -291,12 +294,8 @@ trait ICalHomepageItem
 							if (!$this->calendarDaysCheck($calendarStartDiff->format('%R') . $calendarStartDiff->days, $calendarEndDiff->format('%R') . $calendarEndDiff->days)) {
 								break;
 							}
-							if (isset($icsEvent["RRULE"]) && $this->getCalenderRepeatUntil(trim($icsEvent["RRULE"]))) {
-								$untilDate = new DateTime ($this->getCalenderRepeatUntil(trim($icsEvent["RRULE"])));
-								$untilDiff = date_diff($currentDate, $untilDate);
-								if ($untilDiff->days > 0) {
-									break;
-								}
+							if ($startDt->format('H') == 0 && $startDt->format('i') == 0) {
+								$startDate = $startDt->format('Y-m-d');
 							}
 							$icalEvents[] = array(
 								'title' => $eventName,
@@ -307,7 +306,6 @@ trait ICalHomepageItem
 								'end' => $endDate,
 								'bgColor' => str_replace('text', 'bg', $extraClass),
 							);
-							$calendarTimes = $calendarTimes + 1;
 						}
 					}
 				}
