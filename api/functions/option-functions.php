@@ -471,7 +471,7 @@ trait OptionsFunction
 		return $setting;
 	}
 
-	public function makeOptionsFromValues($values = null)
+	public function makeOptionsFromValues($values = null, $appendBlank = null, $blankLabel = null)
 	{
 		if ($appendBlank === true){
 			$formattedValues[] = [
