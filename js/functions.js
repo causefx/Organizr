@@ -6966,7 +6966,11 @@ function buildPVRLink(href, ico){
 		return `
 		<div class="btn btn-inverse waves-effect waves-light" type="button" onclick="window.open('${href}')" style="${styleOverride}"></div>
 		`;
-	} 
+	} else {
+		return `
+		 
+		`;
+	}
 }
 function buildCalendarMetadata(array){
 	var metadata = '';
