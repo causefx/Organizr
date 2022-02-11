@@ -42,6 +42,7 @@ trait LidarrHomepageItem
 					$this->settingsOption('calendar-locale', 'calendarLocale'),
 					$this->settingsOption('calendar-limit', 'calendarLimit'),
 					$this->settingsOption('refresh', 'calendarRefresh'),
+					$this->settingsOption('calendar-link-url', 'lidarrCalendarLink'),
 				],
 				'Test Connection' => [
 					$this->settingsOption('blank', null, ['label' => 'Please Save before Testing']),
@@ -237,10 +238,13 @@ trait LidarrHomepageItem
 					$fanart = str_replace('http://', 'https://', $image['url']);
 				}
 			}
-			$href = "";
-			if (!empty($this->config['lidarrURL'])){
+			$href = $this->config['lidarrCalendarLink'] ?? '';
+			if (empty($href) && !empty($this->config['lidarrURL'])){
 				$href_arr = explode(',',$this->config['lidarrURL']);
-				$href = reset($href_arr) . '/artist/' . $child['artist']['foreignArtistId'];
+				$href = reset($href_arr);
+			}
+			if (!empty($href)){
+				$href = $href . '/artist/' . $child['artist']['foreignArtistId'];
 				$href = str_replace("//artist/","/artist/",$href);
 			}
 			$details = array(

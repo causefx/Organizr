@@ -447,6 +447,14 @@ trait OptionsFunction
 					'attr' => 'data-original="' . $this->config[$name] . '"'
 				];
 				break;
+			case 'calendarlinkurl':
+				$settingMerge = [
+					'type' => 'select',
+					'label' => 'Target URL',
+					'help' => 'Set the primary URL used when clicking on calendar icon.',
+					'options' => $this->makeOptionsFromValues($this->config[str_replace('CalendarLink','',$name).'URL'], true, 'Use Default'),
+				];
+				break;
 			default:
 				$settingMerge = [
 					'type' => strtolower($type),
@@ -463,9 +471,16 @@ trait OptionsFunction
 		return $setting;
 	}
 
-	public function makeOptionsFromValues($values = null)
+	public function makeOptionsFromValues($values = null, $appendBlank = null, $blankLabel = null)
 	{
-		$formattedValues = [];
+		if ($appendBlank === true){
+			$formattedValues[] = [
+				'name' => (!empty($blankLabel)) ? $blankLabel : 'Select option...',
+				'value' => ''
+			];
+		} else {
+			$formattedValues = [];
+		}
 		if (strpos($values, ',') !== false) {
 			$explode = explode(',', $values);
 			foreach ($explode as $item) {

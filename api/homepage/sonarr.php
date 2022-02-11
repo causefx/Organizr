@@ -52,6 +52,7 @@ trait SonarrHomepageItem
 					$this->settingsOption('calendar-locale', 'calendarLocale'),
 					$this->settingsOption('calendar-limit', 'calendarLimit'),
 					$this->settingsOption('refresh', 'calendarRefresh'),
+					$this->settingsOption('calendar-link-url', 'sonarrCalendarLink'),
 					$this->settingsOption('switch', 'sonarrUnmonitored', ['label' => 'Show Unmonitored']),
 				],
 				'Test Connection' => [
@@ -289,10 +290,13 @@ trait SonarrHomepageItem
 				}
 			}
 			$bottomTitle = 'S' . sprintf("%02d", $child['seasonNumber']) . 'E' . sprintf("%02d", $child['episodeNumber']) . ' - ' . $child['title'];
-			$href = "";
-			if (!empty($this->config['sonarrURL'])){
+			$href = $this->config['sonarrCalendarLink'] ?? '';
+			if (empty($href) && !empty($this->config['sonarrURL'])){
 				$href_arr = explode(',',$this->config['sonarrURL']);
-				$href = reset($href_arr) . '/series/' . preg_replace('/[^A-Za-z0-9. -]/', '', preg_replace('/[[:space:]]+/', '-', $seriesName));
+				$href = reset($href_arr);
+			}
+			if (!empty($href)){
+				$href = $href . '/series/' . preg_replace('/[^A-Za-z0-9. -]/', '', preg_replace('/[[:space:]]+/', '-', $seriesName));
 				$href = str_replace("//series/","/series/",$href);
 			}
 			$details = array(
