@@ -48,6 +48,8 @@ trait RadarrHomepageItem
 					$this->settingsOption('calendar-locale', 'calendarLocale'),
 					$this->settingsOption('calendar-limit', 'calendarLimit'),
 					$this->settingsOption('refresh', 'calendarRefresh'),
+					$this->settingsOption('calendar-link-url', 'radarrCalendarLink'),
+					$this->settingsOption('blank', null),
 					$this->settingsOption('switch', 'radarrUnmonitored', ['label' => 'Show Unmonitored']),
 					$this->settingsOption('switch', 'radarrPhysicalRelease', ['label' => 'Show Physical Releases']),
 					$this->settingsOption('switch', 'radarrDigitalRelease', ['label' => 'Show Digital Releases']),
@@ -322,10 +324,13 @@ trait RadarrHomepageItem
 					}
 				}
 				$alternativeTitles = empty($alternativeTitles) ? "" : substr($alternativeTitles, 0, -2);
-				$href = "";
-				if (!empty($this->config['radarrURL'])){
+				$href = $this->config['radarrCalendarLink'] ?? '';
+				if (empty($href) && !empty($this->config['radarrURL'])){
 					$href_arr = explode(',',$this->config['radarrURL']);
-					$href = reset($href_arr) . '/movie/' . $movieID;
+					$href = reset($href_arr);
+				}
+				if (!empty($href)){
+					$href = $href . '/movie/' . $movieID;
 					$href = str_replace("//movie/","/movie/",$href);
 				}
 				$details = array(
