@@ -90,9 +90,10 @@ trait ICalHomepageItem
 				$startDate->modify('-' . $this->config['calendarStart'] . ' days');
 				$endDate = new DateTime ($this->currentTime);
 				$endDate->modify('+' . $this->config['calendarEnd'] . ' days');
+				$start = (stripos($rule, 'BYDAY') !== false || stripos($rule, 'BYMONTHDAY') !== false || stripos($rule, 'DAILY') !== false) ? $startDate : $start;
 				$until = $until ? new DateTime($until) : $endDate;
 				$dates = new \Recurr\Rule(trim($rule));
-				$dates->setStartDate($startDate)->setUntil($until);
+				$dates->setStartDate($start)->setUntil($until);
 				$transformer = new \Recurr\Transformer\ArrayTransformer();
 				$transformerConfig = new \Recurr\Transformer\ArrayTransformerConfig();
 				$transformerConfig->enableLastDayOfMonthFix();
