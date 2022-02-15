@@ -41,9 +41,13 @@ trait LidarrHomepageItem
 					$this->settingsOption('calendar-time-format', 'calendarTimeFormat'),
 					$this->settingsOption('calendar-locale', 'calendarLocale'),
 					$this->settingsOption('calendar-limit', 'calendarLimit'),
-					$this->settingsOption('refresh', 'calendarRefresh'),
+					$this->settingsOption('refresh', 'calendarRefresh'),					
+					$this->settingsOption('blank', '', ['type' => 'html', 'html' => '<hr />']),
+					$this->settingsOption('blank', '', ['type' => 'html', 'html' => '<hr />']),
+					$this->settingsOption('enable', 'lidarrIcon', ['label' => 'Show Lidarr Icon', 'value' => $this->config['lidarrIcon'] ?? true]),
 					$this->settingsOption('calendar-link-url', 'lidarrCalendarLink'),
-					$this->settingsOption('calendar-frame-target', 'lidarrFrameTarget'),
+					$this->settingsOption('blank'),
+					$this->settingsOption('calendar-frame-target', 'lidarrFrameTarget')
 				],
 				'Test Connection' => [
 					$this->settingsOption('blank', null, ['label' => 'Please Save before Testing']),
@@ -265,7 +269,8 @@ trait LidarrHomepageItem
 				"genres" => $child['genres'],
 				"href" => strtolower($href),
 				"icon" => "/plugins/images/tabs/lidarr.png",
-				"frame" => $this->config['lidarrFrameTarget'] ?? ''
+				"frame" => $this->config['lidarrFrameTarget'] ?? '',
+				"showLink" => $this->config['lidarrIcon'] ?? true
 			);
 			array_push($gotCalendar, array(
 				"id" => "Lidarr-" . $number . "-" . $i,
