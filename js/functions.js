@@ -967,7 +967,7 @@ function closeCurrentTab(event){
 			organizrConsole('Tab Function','No Available Tab to open', 'error');
 	}
 }
-function tabActions(event,name, type){
+function tabActions(event, name, type, redirectURL = ""){
 	if(event.which == 3){
 		return false;
 	}
@@ -988,6 +988,10 @@ function tabActions(event,name, type){
 		switchTab(cleanClass(name), type);
 		if(type !== 2){
 			$('.splash-screen').removeClass('in').addClass('hidden');
+		}
+		if (redirectURL){
+			$('.close-popup').trigger('click');
+			$('#frame-'+cleanClass(name)).attr('src',redirectURL);
 		}
 	}
 }
@@ -6960,12 +6964,18 @@ function buildYoutubeLink(title){
 		`;
 	}
 }
-function buildPVRLink(href, ico){
+function buildPVRLink(href, ico = "", frame = ""){
 	if (href){
 		var styleOverride = `width:55px;height:44px;background-image: url(${ico});background-repeat:no-repeat;background-size:25px;background-position:center;`;
-		return `
-		<div class="btn btn-inverse waves-effect waves-light" type="button" onclick="window.open('${href}')" style="${styleOverride}"></div>
-		`;
+		if (frame){
+			return `
+			<div class="btn btn-inverse waves-effect waves-light" type="button" onclick="tabActions(0,'${frame}',1,'${href}');" style="${styleOverride}"></div>
+			`;
+		} else {
+			return `
+			<div class="btn btn-inverse waves-effect waves-light" type="button" onclick="window.open('${href}')" style="${styleOverride}"></div>
+			`;
+		}
 	} else {
 		return `
 		 
