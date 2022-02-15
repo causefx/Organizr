@@ -53,6 +53,8 @@ trait SonarrHomepageItem
 					$this->settingsOption('calendar-limit', 'calendarLimit'),
 					$this->settingsOption('refresh', 'calendarRefresh'),
 					$this->settingsOption('calendar-link-url', 'sonarrCalendarLink'),
+					$this->settingsOption('calendar-frame-target', 'sonarrFrameTarget'),
+					$this->settingsOption('blank'),
 					$this->settingsOption('switch', 'sonarrUnmonitored', ['label' => 'Show Unmonitored']),
 				],
 				'Test Connection' => [
@@ -316,6 +318,7 @@ trait SonarrHomepageItem
 				"genres" => $child['series']['genres'],
 				"href" => strtolower($href),
 				"icon" => "/plugins/images/tabs/sonarr.png",
+				"frame" => $this->config['sonarrFrameTarget'] ?? '',
 			);
 			array_push($gotCalendar, array(
 				"id" => "Sonarr-" . $number . "-" . $i,
