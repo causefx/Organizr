@@ -298,7 +298,7 @@ trait SonarrHomepageItem
 				$href = reset($href_arr);
 			}
 			if (!empty($href)){
-				$href = $href . '/series/' . preg_replace('/[^A-Za-z0-9. -]/', '', preg_replace('/[[:space:]]+/', '-', $seriesName));
+				$href = $href . '/series/' . preg_replace('/[^A-Za-z0-9. -]/', '', str_replace('&', 'and', preg_replace('/[[:space:]]+/', '-', $seriesName)));
 				$href = str_replace("//series/","/series/",$href);
 			}
 			$details = array(
