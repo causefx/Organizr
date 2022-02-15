@@ -52,10 +52,14 @@ trait SonarrHomepageItem
 					$this->settingsOption('calendar-locale', 'calendarLocale'),
 					$this->settingsOption('calendar-limit', 'calendarLimit'),
 					$this->settingsOption('refresh', 'calendarRefresh'),
-					$this->settingsOption('calendar-link-url', 'sonarrCalendarLink'),
-					$this->settingsOption('calendar-frame-target', 'sonarrFrameTarget'),
 					$this->settingsOption('blank'),
 					$this->settingsOption('switch', 'sonarrUnmonitored', ['label' => 'Show Unmonitored']),
+					$this->settingsOption('blank', '', ['type' => 'html', 'html' => '<hr />']),
+					$this->settingsOption('blank', '', ['type' => 'html', 'html' => '<hr />']),
+					$this->settingsOption('enable', 'sonarrIcon', ['label' => 'Show Sonarr Icon', 'value' => $this->config['sonarrIcon'] ?? true]),
+					$this->settingsOption('calendar-link-url', 'sonarrCalendarLink'),
+					$this->settingsOption('blank'),
+					$this->settingsOption('calendar-frame-target', 'sonarrFrameTarget')									
 				],
 				'Test Connection' => [
 					$this->settingsOption('blank', null, ['label' => 'Please Save before Testing']),
@@ -319,6 +323,7 @@ trait SonarrHomepageItem
 				"href" => strtolower($href),
 				"icon" => "/plugins/images/tabs/sonarr.png",
 				"frame" => $this->config['sonarrFrameTarget'] ?? '',
+				"showLink" => $this->config['sonarrIcon'] ?? true
 			);
 			array_push($gotCalendar, array(
 				"id" => "Sonarr-" . $number . "-" . $i,
