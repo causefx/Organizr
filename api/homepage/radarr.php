@@ -49,7 +49,7 @@ trait RadarrHomepageItem
 					$this->settingsOption('calendar-limit', 'calendarLimit'),
 					$this->settingsOption('refresh', 'calendarRefresh'),
 					$this->settingsOption('calendar-link-url', 'radarrCalendarLink'),
-					$this->settingsOption('blank', null),
+					$this->settingsOption('calendar-frame-target', 'radarrFrameTarget'),
 					$this->settingsOption('switch', 'radarrUnmonitored', ['label' => 'Show Unmonitored']),
 					$this->settingsOption('switch', 'radarrPhysicalRelease', ['label' => 'Show Physical Releases']),
 					$this->settingsOption('switch', 'radarrDigitalRelease', ['label' => 'Show Digital Releases']),
@@ -351,6 +351,7 @@ trait RadarrHomepageItem
 					"studio" => $child['studio'] ?? '',
 					"href" => strtolower($href),
 					"icon" => "/plugins/images/tabs/radarr.png",
+					"frame" => $this->config['radarrFrameTarget'] ?? ''
 				);
 				array_push($gotCalendar, array(
 					"id" => "Radarr-" . $number . "-" . $i,
