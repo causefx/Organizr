@@ -16,10 +16,12 @@ trait PlexHomepageItem
 		}
 		$libraryList = [['name' => 'Refresh page to update List', 'value' => '', 'disabled' => true]];
 		if ($this->config['plexID'] !== '' && $this->config['plexToken'] !== '') {
-			$libraryList = [];
-			$loop = $this->plexLibraryList('key')['libraries'];
-			foreach ($loop as $key => $value) {
-				$libraryList[] = ['name' => $key, 'value' => $value];
+			$loop = $this->plexLibraryList('key');
+			if ($loop) {
+				$loop = $loop['libraries'];
+				foreach ($loop as $key => $value) {
+					$libraryList[] = ['name' => $key, 'value' => $value];
+				}
 			}
 		}
 		$homepageSettings = [
@@ -266,6 +268,9 @@ trait PlexHomepageItem
 				$api['group'] = '1';
 				$this->setAPIResponse('success', null, 200, $api);
 				return $api;
+			} else {
+				$this->setAPIResponse('error', null, 401, []);
+				return [];
 			}
 		} catch (Exception $e) {
 			$this->setAPIResponse('error', null, 422, [$e->getMessage()]);
