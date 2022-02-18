@@ -462,8 +462,8 @@ trait PlexHomepageItem
 		$nowPlayingHeight = $this->getCacheImageSize('nph');
 		$nowPlayingWidth = $this->getCacheImageSize('npw');
 		// Cache Directories
-		$cacheDirectory = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . 'images' . DIRECTORY_SEPARATOR . 'cache' . DIRECTORY_SEPARATOR;
-		$cacheDirectoryWeb = 'plugins/images/cache/';
+		$cacheDirectory = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR . 'cache' . DIRECTORY_SEPARATOR;
+		$cacheDirectoryWeb = 'data/cache/';
 		// Types
 		switch ($item['type']) {
 			case 'show':
@@ -493,7 +493,7 @@ trait PlexHomepageItem
 				$plexItem['metadataKey'] = (string)$item['parentRatingKey'];
 				break;
 			case 'episode':
-				$useImage = (isset($item['live']) ? 'plugins/images/cache/livetv.png' : null);
+				$useImage = (isset($item['live']) ? 'plugins/images/homepage/livetv.png' : null);
 				$plexItem['type'] = 'tv';
 				$plexItem['title'] = (string)$item['grandparentTitle'];
 				$plexItem['secondaryTitle'] = (string)$item['parentTitle'] . ' - Episode ' . (string)$item['index'];
@@ -508,7 +508,7 @@ trait PlexHomepageItem
 				$plexItem['metadataKey'] = (string)($item['grandparentRatingKey'] ?? $item['parentRatingKey'] ?? $item['ratingKey']);
 				break;
 			case 'clip':
-				$useImage = (isset($item['live']) ? "plugins/images/cache/livetv.png" : null);
+				$useImage = (isset($item['live']) ? "plugins/images/homepage/livetv.png" : null);
 				$plexItem['type'] = 'clip';
 				$plexItem['title'] = (isset($item['live']) ? 'Live TV' : (string)$item['title']);
 				$plexItem['secondaryTitle'] = '';
@@ -537,7 +537,7 @@ trait PlexHomepageItem
 				$plexItem['metadataKey'] = isset($item['grandparentRatingKey']) ? (string)$item['grandparentRatingKey'] : (string)$item['parentRatingKey'];
 				break;
 			default:
-				$useImage = (isset($item['live']) ? 'plugins/images/cache/livetv.png' : null);
+				$useImage = (isset($item['live']) ? 'plugins/images/homepage/livetv.png' : null);
 				$plexItem['type'] = 'movie';
 				$plexItem['title'] = (string)$item['title'];
 				$plexItem['secondaryTitle'] = (string)$item['year'];
@@ -636,11 +636,11 @@ trait PlexHomepageItem
 			$plexItem['imageURL'] = 'api/v2/homepage/image?source=plex&img=' . $plexItem['thumb'] . '&height=' . $height . '&width=' . $width . '&key=' . $plexItem['key'] . '';
 		}
 		if (!$plexItem['nowPlayingThumb']) {
-			$plexItem['nowPlayingOriginalImage'] = $plexItem['nowPlayingImageURL'] = "plugins/images/cache/no-np.png";
+			$plexItem['nowPlayingOriginalImage'] = $plexItem['nowPlayingImageURL'] = "plugins/images/homepage/no-np.png";
 			$plexItem['nowPlayingKey'] = "no-np";
 		}
 		if (!$plexItem['thumb'] || $plexItem['addedAt'] >= (time() - 300)) {
-			$plexItem['originalImage'] = $plexItem['imageURL'] = "plugins/images/cache/no-list.png";
+			$plexItem['originalImage'] = $plexItem['imageURL'] = "plugins/images/homepage/no-list.png";
 			$plexItem['key'] = "no-list";
 		}
 		if (isset($useImage)) {

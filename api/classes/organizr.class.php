@@ -139,7 +139,7 @@ class Organizr
 		// Set Paths
 		$this->paths = array(
 			'Root Folder' => dirname(__DIR__, 2) . DIRECTORY_SEPARATOR,
-			'Cache Folder' => dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . 'images' . DIRECTORY_SEPARATOR . 'cache' . DIRECTORY_SEPARATOR,
+			'Cache Folder' => dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR . 'cache' . DIRECTORY_SEPARATOR,
 			'Tab Folder' => $this->root . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR . 'userTabs' . DIRECTORY_SEPARATOR,
 			'API Folder' => dirname(__DIR__, 1) . DIRECTORY_SEPARATOR,
 			'DB Folder' => ($this->hasDB()) ? $this->config['dbLocation'] : false

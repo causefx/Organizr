@@ -5126,8 +5126,8 @@ function buildStreamItem(array,source){
 		switch (v.type) {
 			case 'music':
 				icon = 'icon-music-tone-alt';
-				width = (v.nowPlayingImageURL !== 'plugins/images/cache/no-np.png') ? 56 : 100;
-				bg = (v.nowPlayingImageURL !== 'plugins/images/cache/no-np.png') ? `
+				width = (v.nowPlayingImageURL !== 'plugins/images/homepage/no-np.png') ? 56 : 100;
+				bg = (v.nowPlayingImageURL !== 'plugins/images/homepage/no-np.png') ? `
 				<img class="imageSource imageSourceLeft" src="`+v.nowPlayingImageURL+`">
 				<img class="imageSource imageSourceRight" src="`+v.nowPlayingImageURL+`">
 				` : '';
@@ -5364,7 +5364,7 @@ function buildRequestItem(array, extra=null){
                 var iconType = (v.type == 'tv') ? 'fa-tv ' : 'fa-film';
 				var badge = '';
 				var badge2 = '';
-				var bg = (v.background.includes('.')) ? v.background : 'plugins/images/cache/no-np.png';
+				var bg = (v.background.includes('.')) ? v.background : 'plugins/images/homepage/no-np.png';
 				v.user = (activeInfo.settings.homepage.ombi.alias && service === 'ombi') || (activeInfo.settings.homepage.overseerr.enabled && service === 'overseerr') ? v.userAlias : v.user;
 				//Set Status
 				var status = (v.approved) ? '<span class="badge bg-org m-r-10" lang="en">Approved</span>' : '<span class="badge bg-danger m-r-10" lang="en">Unapproved</span>';
@@ -5793,7 +5793,7 @@ function buildRequestResult(array,media_type=null,list=null,page=null,search=fal
 			total = total + 1;
 			tv = (media_type == 'tv') ? tv + 1 : tv;
 			movie = (media_type == 'movie') ? movie + 1 : movie;
-			var bg = (v.poster_path !== null) ? `https://image.tmdb.org/t/p/w300/`+v.poster_path : 'plugins/images/cache/no-list.png';
+			var bg = (v.poster_path !== null) ? `https://image.tmdb.org/t/p/w300/`+v.poster_path : 'plugins/images/homepage/no-list.png';
 			var top = (v.title) ? v.title : (v.original_title) ? v.original_title : (v.original_name) ? v.original_name : '';
 			var bottom = (v.release_date) ? v.release_date : (v.first_air_date) ? v.first_air_date : '';
 			if(comments){
@@ -7832,7 +7832,7 @@ function buildTautulliItem(array){
                     <div class="card-body h-100 bg-org-alt">
                         <table class="h-100 w-100">
                             <tr>
-                                <td rowspan='2' class="poster-td text-center"><img src="plugins/images/cache/tautulli-`+type+`.svg" class="lib-icon" alt="library icon"></td>
+                                <td rowspan='2' class="poster-td text-center"><img src="data/cache/tautulli-`+type+`.svg" class="lib-icon" alt="library icon"></td>
                                 ${cardTitle}
                             </tr>
                             <tr>
@@ -7903,7 +7903,7 @@ function buildTautulliItem(array){
                                     if(stat == 'top_users') {
                                         card += `<td rowspan="2" class="poster-td text-center"><img src="`+e['rows'][0]['user_thumb']+`" class="poster avatar" alt="user avatar"></td>`;
                                     } else if(stat == 'top_platforms') {
-                                        card += `<td rowspan="2" class="poster-td text-center"><img src="plugins/images/cache/tautulli-`+e['rows'][0]['platform_name']+`.svg" class="poster" alt="platform icon"></td>`;
+                                        card += `<td rowspan="2" class="poster-td text-center"><img src="data/cache/tautulli-`+e['rows'][0]['platform_name']+`.svg" class="poster" alt="platform icon"></td>`;
                                     } else {
                                         card += `<td rowspan="2" class="poster-td"><img src="`+e['rows'][0]['thumb']+`" class="poster" alt="movie poster"></td>`;
                                     }
@@ -10010,7 +10010,7 @@ function buildMediaResults(array,source,term){
 		<div class="col-lg-3 col-md-4 col-sm-6 col-xs-12 m-t-20 request-result-item request-result-movie mouse"  onclick="forceSearch('`+term+`')">
 			<div class="white-box m-b-10">
 				<div class="el-card-item p-b-0">
-					<div class="el-card-avatar el-overlay-1 m-b-5"> <img class="lazyload resultImages mouse" data-src="plugins/images/cache/no-request.png">
+					<div class="el-card-avatar el-overlay-1 m-b-5"> <img class="lazyload resultImages mouse" data-src="plugins/images/homepage/no-request.png">
 						<div class="customPoster">
 							<a href="javascript:void(0);">`+splitPoster(term)+`</a>
 						</div>

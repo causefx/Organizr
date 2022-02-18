@@ -450,7 +450,7 @@ trait OrganizrFunctions
 	public function getHomepageMediaImage()
 	{
 		$refresh = false;
-		$cacheDirectory = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . 'images' . DIRECTORY_SEPARATOR . 'cache' . DIRECTORY_SEPARATOR;
+		$cacheDirectory = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR . 'cache' . DIRECTORY_SEPARATOR;
 		if (!file_exists($cacheDirectory)) {
 			mkdir($cacheDirectory, 0777, true);
 		}
@@ -524,7 +524,7 @@ trait OrganizrFunctions
 
 	public function cacheImage($url, $name, $extension = 'jpg')
 	{
-		$cacheDirectory = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . 'images' . DIRECTORY_SEPARATOR . 'cache' . DIRECTORY_SEPARATOR;
+		$cacheDirectory = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR . 'cache' . DIRECTORY_SEPARATOR;
 		if (!file_exists($cacheDirectory)) {
 			mkdir($cacheDirectory, 0777, true);
 		}
