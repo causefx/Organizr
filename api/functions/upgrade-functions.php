@@ -73,7 +73,7 @@ trait UpgradeFunctions
 			}
 			// End Upgrade check start for version above
 			// Upgrade check start for version below
-			$versionCheck = '2.1.1400';
+			$versionCheck = '2.1.1500';
 			if ($compare->lessThan($oldVer, $versionCheck)) {
 				$updateDB = false;
 				$oldVer = $versionCheck;
@@ -233,12 +233,25 @@ trait UpgradeFunctions
 				$this->removeOldCustomHTML();
 			case '2.1.860':
 				$this->upgradeInstalledPluginsConfigItem();
-			case '2.1.1400':
+			case '2.1.1500':
 				$this->upgradeDataToFolder();
 			default:
 				$this->setAPIResponse('success', 'Ran update function for version: ' . $version, 200);
 				return true;
 		}
+	}
+
+	public function removeOldCacheFolder()
+	{
+		$folder = $this->root . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . 'images' . DIRECTORY_SEPARATOR . 'cache' . DIRECTORY_SEPARATOR;
+		$this->setLoggerChannel('Migration');
+		$this->logger->info('Running Old Cache folder migration');
+		if (file_exists($folder)) {
+			$this->rrmdir($folder);
+			$this->logger->info('Old Cache folder found');
+			$this->logger->info('Removed Old Cache folder');
+		}
+		return true;
 	}
 
 	public function upgradeDataToFolder()
@@ -320,6 +333,8 @@ trait UpgradeFunctions
 						$this->logger->info('Custom routes was migrated over');
 					}
 				}
+				// Migrate over cache folder
+				$this->removeOldCacheFolder();
 			}
 			return true;
 		}
