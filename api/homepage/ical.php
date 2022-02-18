@@ -242,6 +242,7 @@ trait ICalHomepageItem
 							if (strpos($tzKey[0], 'TZID=') !== false) {
 								$originalTimeZone = explode('TZID=', (string)$tzKey[0]);
 								$originalTimeZone = (count($originalTimeZone) >= 2) ? str_replace('"', '', $originalTimeZone[1]) : false;
+								$originalTimeZone = stripos($originalTimeZone, ';') !== false ? explode(';', $originalTimeZone)[0] : $originalTimeZone;
 							}
 						}
 						$start = reset($startKeys);
@@ -277,8 +278,10 @@ trait ICalHomepageItem
 								$dateTimeOriginalOffset = $dateTimeOriginal->getOffset() / 3600;
 								$dateTimeUTCOffset = $dateTimeUTC->getOffset() / 3600;
 								$diff = $dateTimeUTCOffset - $dateTimeOriginalOffset;
-								$startDt->modify('+ ' . $diff . ' hour');
-								$endDt->modify('+ ' . $diff . ' hour');
+								if ((int)$diff >= 0) {
+									$startDt->modify('+ ' . $diff . ' hour');
+									$endDt->modify('+ ' . $diff . ' hour');
+								}
 							}
 							$startDt->setTimeZone(new DateTimezone ($timeZone));
 							$endDt->setTimeZone(new DateTimezone ($timeZone));
