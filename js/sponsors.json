@@ -1,15 +1,15 @@
 [
   {
-    "company_name": "EvoSeedbox",
-    "logo": "https://user-images.githubusercontent.com/16184466/59205364-9d5c5380-8b57-11e9-909c-95ddc5634a72.jpg",
-    "website": "https://evoseedbox.com/",
-    "coupon": "evoizr",
-    "coupon_about": "100% off First Month",
-    "about": "<b>Quality Seedboxes<\/b><br\/>\r\nOur last seedbox went into light-speed, it'll be on the other side of the galaxy by now."
+    "company_name": "Seedboxes.cc",
+    "logo": "https://user-images.githubusercontent.com/16184466/154811062-201be154-6868-4a24-ade6-a26278935415.png",
+    "logo_dark": "https://user-images.githubusercontent.com/16184466/154811063-80476df1-8dd1-440e-8fb5-e5d02f2d31e6.png",
+    "website": "https://www.seedboxes.cc/",
+    "about": "<b>Seed with monster power<\/b><br\/>\r\nReliable and affordable web hosting, with the power of your friendly monsters!\nSimple, Elegant, Full Featured."
   },
   {
     "company_name": "Unraid",
     "logo": "https://user-images.githubusercontent.com/16184466/49177230-e6f6f680-f309-11e8-9d6a-67be65109d14.png",
+    "logo_dark": "https://user-images.githubusercontent.com/16184466/49177230-e6f6f680-f309-11e8-9d6a-67be65109d14.png",
     "website": "https://unraid.net/"
   }
 ]
