@@ -227,7 +227,9 @@ trait LogFunctions
 			}
 			if ($setLogger) {
 				$channel = $channel ?: 'Organizr';
-				$this->setupLogger($channel, $username);
+				return $this->setupLogger($channel, $username);
+			} else {
+				return $this->logger;
 			}
 		}
 	}
@@ -272,9 +274,11 @@ trait LogFunctions
 		$loggerBuilder->setLogLevel($logLevel);
 		try {
 			$this->logger = $loggerBuilder->build();
+			return $this->logger;
 		} catch (Exception $e) {
 			// nothing so far
 			$this->logger = null;
+			return $this->logger;
 		}
 		/* setup:
 		set the log channel before you send log (You can set an optional Username (2nd Variable) | If user is logged already logged in, it will use their username):
