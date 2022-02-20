@@ -3920,6 +3920,11 @@ function sponsorDetails(id){
 		        <p><span class="label label-rouded label-info pull-right">${response[id].coupon}</span>
 		        <span class=" pull-left">${response[id].coupon_about}</span></p>
 		    ` : '';
+            if(typeof response[id].logo_dark !== 'undefined'){
+                if(activeInfo.style == 'dark'){
+                    response[id].logo = response[id].logo_dark;
+                }
+            }
 			let html = `
 		        <div class="panel panel-default">
                     <div class="panel-heading">${response[id].company_name}</div>
@@ -3952,15 +3957,18 @@ function sponsorDetails(id){
 	});
 }
 function sponsorAbout(id,array){
-
-
-    var coupon = (array.coupon == null) ? false : true;
-    var couponAbout = (array.coupon_about == null) ? false : true;
+    var coupon = (array.coupon != null);
+    var couponAbout = (array.coupon_about != null);
     var extraInfo = (coupon && couponAbout) ? `
         <h3>Coupon Code:</h3>
         <p><span class="label label-rouded label-info pull-right">`+array.coupon+`</span>
         <span class=" pull-left">`+array.coupon_about+`</span></p>
     ` : '';
+    if(typeof array.logo_dark !== 'undefined'){
+        if(activeInfo.style == 'dark'){
+            array.logo = array.logo_dark;
+        }
+    }
     return `
         <!--  modal content -->
         <div id="sponsor-`+id+`-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel-`+id+`" aria-hidden="true" style="display: none;">
@@ -4005,6 +4013,11 @@ function buildSponsor(array){
             }
         }
         var sponsorAboutModal = (v.about) ? 'onclick="sponsorDetails(\''+i+'\');sponsorAnalytics(\''+v.company_name+'\');"' : 'onclick="window.open(\''+ v.website +'\', \'_blank\');sponsorAnalytics(\''+v.company_name+'\');"';
+        if(typeof v.logo_dark !== 'undefined'){
+            if(activeInfo.style == 'dark'){
+                v.logo = v.logo_dark;
+            }
+        }
         sponsors += `
             <!-- /.usercard -->
             <div class="item lazyload recent-sponsor mouse imageSource mouse" ${sponsorAboutModal} data-src="${v.logo}" data-id="${i}">
