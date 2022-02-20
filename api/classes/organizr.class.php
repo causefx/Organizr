@@ -706,18 +706,18 @@ class Organizr
 		return true;
 	}
 
-	public function apiData($request)
+	public function apiData($request, $decode = true)
 	{
 		switch ($request->getMethod()) {
 			case 'POST':
 				if (stripos($request->getHeaderLine('Content-Type'), 'application/json') !== false) {
-					return json_decode(file_get_contents('php://input', 'r'), true);
+					return $decode ? json_decode(file_get_contents('php://input', 'r'), true) : file_get_contents('php://input', 'r');
 				} else {
 					return $request->getParsedBody();
 				}
 			default:
 				if (stripos($request->getHeaderLine('Content-Type'), 'application/json') !== false) {
-					return json_decode(file_get_contents('php://input', 'r'), true);
+					return $decode ? json_decode(file_get_contents('php://input', 'r'), true) : file_get_contents('php://input', 'r');
 				} else {
 					return null;
 				}
@@ -6414,7 +6414,7 @@ class Organizr
 			$url = $this->cleanPath($url);
 			$options = ($this->localURL($appURL)) ? array('verify' => false, 'timeout' => 120) : array('timeout' => 120);
 			$headers = [];
-			$apiData = $this->json_validator($this->apiData($requestObject)) ? json_encode($this->apiData($requestObject)) : $this->apiData($requestObject);
+			$apiData = $this->apiData($requestObject, false);
 			if ($header) {
 				if ($requestObject->hasHeader($header)) {
 					$headerKey = $requestObject->getHeaderLine($header);
@@ -6432,7 +6432,7 @@ class Organizr
 				'headers' => $headers,
 				'url' => $url,
 				'options' => $options,
-				'data' => $apiData
+				'data' => $apiData,
 			];
 			$this->setLoggerChannel('Socks');
 			$this->logger->debug('Sending Socks request', $debugInformation);
