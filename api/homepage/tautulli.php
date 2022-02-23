@@ -14,12 +14,16 @@ trait TautulliHomepageItem
 		if ($infoOnly) {
 			return $homepageInformation;
 		}
+
 		$libraryList = [['name' => 'Refresh page to update List', 'value' => '', 'disabled' => true]];
 		if (!empty($this->config['tautulliApikey']) && !empty($this->config['tautulliURL'])) {
 			$libraryList = [];
-			$loop = $this->tautulliLibraryList('key')['libraries'];
-			foreach ($loop as $key => $value) {
-				$libraryList[] = ['name' => $key, 'value' => $value];
+			$loop = $this->tautulliLibraryList('key');
+			if ($loop) {
+				$loop = $loop['libraries'];
+				foreach ($loop as $key => $value) {
+					$libraryList[] = ['name' => $key, 'value' => $value];
+				}
 			}
 		}
 		$homepageSettings = [
@@ -275,10 +279,9 @@ trait TautulliHomepageItem
 					return $libraryList;
 				}
 			} catch (Requests_Exception $e) {
-				$this->setAPIResponse('error', 'Tautulli Homepage Error - Unable to get list of libraries: ' . $e->getMessage(), 500);
 				$this->writeLog('error', 'Tautulli Homepage Error - Unable to get list of libraries: ' . $e->getMessage(), 'SYSTEM');
 				return false;
-			};
+			}
 		}
 		return false;
 	}
