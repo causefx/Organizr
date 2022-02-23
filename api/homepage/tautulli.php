@@ -18,7 +18,7 @@ trait TautulliHomepageItem
 		$libraryList = [['name' => 'Refresh page to update List', 'value' => '', 'disabled' => true]];
 		if (!empty($this->config['tautulliApikey']) && !empty($this->config['tautulliURL'])) {
 			$libraryList = [];
-			$loop = $this->tautulliLibraryList('key');
+			$loop = $this->tautulliLibraryList();
 			if ($loop) {
 				$loop = $loop['libraries'];
 				foreach ($loop as $key => $value) {
