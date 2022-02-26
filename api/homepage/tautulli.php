@@ -179,17 +179,21 @@ trait TautulliHomepageItem
 				$categories = ['top_movies', 'top_tv', 'popular_movies', 'popular_tv'];
 				foreach ($categories as $cat) {
 					$key = array_search($cat, array_column($api['homestats']['data'], 'stat_id'));
-					$img = $api['homestats']['data'][$key]['rows'][0];
-					$this->cacheImage($url . '/pms_image_proxy?img=' . $img['art'] . '&rating_key=' . $img['rating_key'] . '&width=' . $nowPlayingWidth . '&height=' . $nowPlayingHeight, $img['rating_key'] . '-np');
-					$this->cacheImage($url . '/pms_image_proxy?img=' . $img['thumb'] . '&rating_key=' . $img['rating_key'] . '&width=' . $width . '&height=' . $height, $img['rating_key'] . '-list');
-					$img['art'] = 'data/cache/' . $img['rating_key'] . '-np.jpg';
-					$img['thumb'] = 'data/cache/' . $img['rating_key'] . '-list.jpg';
-					$api['homestats']['data'][$key]['rows'][0] = $img;
+					if (count($api['homestats']['data'][$key]['rows']) > 0) {
+						$img = $api['homestats']['data'][$key]['rows'][0];
+						$this->cacheImage($url . '/pms_image_proxy?img=' . $img['art'] . '&rating_key=' . $img['rating_key'] . '&width=' . $nowPlayingWidth . '&height=' . $nowPlayingHeight, $img['rating_key'] . '-np');
+						$this->cacheImage($url . '/pms_image_proxy?img=' . $img['thumb'] . '&rating_key=' . $img['rating_key'] . '&width=' . $width . '&height=' . $height, $img['rating_key'] . '-list');
+						$img['art'] = 'data/cache/' . $img['rating_key'] . '-np.jpg';
+						$img['thumb'] = 'data/cache/' . $img['rating_key'] . '-list.jpg';
+						$api['homestats']['data'][$key]['rows'][0] = $img;
+					}
 				}
 				// Cache the platform icon
-				$key = array_search('top_platforms', array_column($api['homestats']['data'], 'stat_id'));
-				$platform = $api['homestats']['data'][$key]['rows'][0]['platform_name'];
-				$this->cacheImage($url . '/images/platforms/' . $platform . '.svg', 'tautulli-' . $platform, 'svg');
+				if (count($api['homestats']['data'][$key]['rows']) > 0) {
+					$key = array_search('top_platforms', array_column($api['homestats']['data'], 'stat_id'));
+					$platform = $api['homestats']['data'][$key]['rows'][0]['platform_name'];
+					$this->cacheImage($url . '/images/platforms/' . $platform . '.svg', 'tautulli-' . $platform, 'svg');
+				}
 			}
 			$libstatsUrl = $apiURL . '&cmd=get_libraries_table';
 			$options = $this->requestOptions($this->config['tautulliURL'], $this->config['homepageTautulliRefresh'], $this->config['tautulliDisableCertCheck'], $this->config['tautulliUseCustomCertificate']);
