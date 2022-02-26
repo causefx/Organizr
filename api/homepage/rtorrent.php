@@ -4,7 +4,7 @@ trait RTorrentHomepageItem
 {
 	public function rTorrentSettingsArray($infoOnly = false)
 	{
-		
+
 		$homepageInformation = [
 			'name' => 'rTorrent',
 			'enabled' => strpos('personal', $this->config['license']) !== false,
@@ -77,7 +77,7 @@ trait RTorrentHomepageItem
 		];
 		return array_merge($homepageInformation, $homepageSettings);
 	}
-	
+
 	public function testConnectionRTorrent()
 	{
 		if (empty($this->config['rTorrentURL']) && empty($this->config['rTorrentURLOverride'])) {
@@ -89,7 +89,7 @@ trait RTorrentHomepageItem
 			$extraPath = (strpos($this->config['rTorrentURL'], '.php') !== false) ? '' : '/RPC2';
 			$extraPath = (empty($this->config['rTorrentURLOverride'])) ? $extraPath : '';
 			$url = $digest['scheme'] . '://' . $digest['host'] . $digest['port'] . $digest['path'] . $extraPath;
-			$options = $this->requestOptions($url, null, $this->config['rTorrentDisableCertCheck'], $this->config['rtorrentUseCustomCertificate']);
+			$options = $this->requestOptions($url, null, $this->config['rTorrentDisableCertCheck'], $this->config['rTorrentUseCustomCertificate']);
 			if ($this->config['rTorrentUsername'] !== '' && $this->decrypt($this->config['rTorrentPassword']) !== '') {
 				$credentials = array('auth' => new Requests_Auth_Digest(array($this->config['rTorrentUsername'], $this->decrypt($this->config['rTorrentPassword']))));
 				$options = array_merge($options, $credentials);
@@ -112,7 +112,7 @@ trait RTorrentHomepageItem
 			return false;
 		}
 	}
-	
+
 	public function rTorrentHomepagePermissions($key = null)
 	{
 		$permissions = [
@@ -128,7 +128,7 @@ trait RTorrentHomepageItem
 		];
 		return $this->homepageCheckKeyPermissions($key, $permissions);
 	}
-	
+
 	public function homepageOrderrTorrent()
 	{
 		if ($this->homepageItemPermissions($this->rTorrentHomepagePermissions('main'))) {
@@ -147,7 +147,7 @@ trait RTorrentHomepageItem
 				';
 		}
 	}
-	
+
 	public function checkOverrideURL($url, $override)
 	{
 		if (strpos($override, $url) !== false) {
@@ -156,7 +156,7 @@ trait RTorrentHomepageItem
 			return $url . $override;
 		}
 	}
-	
+
 	public function rTorrentStatus($completed, $state, $status)
 	{
 		if ($completed && $state && $status == 'seed') {
@@ -170,7 +170,7 @@ trait RTorrentHomepageItem
 		}
 		return ($state) ? $state : $status;
 	}
-	
+
 	public function getRTorrentHomepageQueue()
 	{
 		if (empty($this->config['rTorrentURL']) && empty($this->config['rTorrentURLOverride'])) {
