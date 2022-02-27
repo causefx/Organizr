@@ -1118,13 +1118,62 @@ class Organizr
 		return $this->config;
 	}
 
-	public function status()
+	public function status($action = false)
+	{
+		$status = [];
+		$dependenciesActive = [];
+		$dependenciesInactive = [];
+		$extensions = ['PDO_SQLITE', 'PDO', 'SQLITE3', 'zip', 'cURL', 'openssl', 'simplexml', 'json', 'session', 'filter'];
+		$functions = ['hash', 'fopen', 'fsockopen', 'fwrite', 'fclose', 'readfile'];
+		foreach ($extensions as $check) {
+			if (extension_loaded($check)) {
+				array_push($dependenciesActive, $check);
+			} else {
+				array_push($dependenciesInactive, $check);
+			}
+		}
+		foreach ($functions as $check) {
+			if (function_exists($check)) {
+				array_push($dependenciesActive, $check);
+			} else {
+				array_push($dependenciesInactive, $check);
+			}
+		}
+		$status['writable'] = is_writable(dirname(__DIR__, 2));
+		$status['minVersion'] = (version_compare(PHP_VERSION, $this->minimumPHP) >= 0);
+		$status['os'] = $this->getOS();
+		$status['php'] = phpversion();
+		$status['userConfigPathExists'] = file_exists($this->userConfigPath);
+		if (!($status['minVersion'])) {
+			$status['action'] = 'php';
+			if ($action) {
+				header($this->getServerPath() . 'api/v2/organizr/error');
+				exit;
+			}
+		} elseif (count($dependenciesInactive) > 0) {
+			$status['action'] = 'dependencies';
+		} elseif (!$status['writable']) {
+			$status['action'] = 'permission';
+		} elseif (!$status['userConfigPathExists']) {
+			$status['action'] = 'wizard';
+		} else {
+			$status['action'] = 'launch';
+			if ($action) {
+				echo '<script type="text/javascript"> window.location.href="' . $this->getServerPath() . 'api/v2/organizr/error' . '";</script>';
+				die(header($this->getServerPath() . 'api/v2/organizr/error'));
+				exit;
+			}
+		}
+		return $status;
+	}
+
+	public function launch()
 	{
 		$status = array();
 		$dependenciesActive = array();
 		$dependenciesInactive = array();
-		$extensions = array("PDO_SQLITE", "PDO", "SQLITE3", "zip", "cURL", "openssl", "simplexml", "json", "session", "filter");
-		$functions = array("hash", "fopen", "fsockopen", "fwrite", "fclose", "readfile");
+		$extensions = array('PDO_SQLITE', 'PDO', 'SQLITE3', 'zip', 'cURL', 'openssl', 'simplexml', 'json', 'session', 'filter');
+		$functions = array('hash', 'fopen', 'fsockopen', 'fwrite', 'fclose', 'readfile');
 		foreach ($extensions as $check) {
 			if (extension_loaded($check)) {
 				array_push($dependenciesActive, $check);
@@ -1140,12 +1189,12 @@ class Organizr
 			}
 		}
 		if (!file_exists($this->userConfigPath)) {
-			$status['status'] = "wizard";//wizard - ok for test
+			$status['status'] = 'wizard';//wizard - ok for test
 		}
 		if (count($dependenciesInactive) > 0 || !is_writable(dirname(__DIR__, 2)) || !(version_compare(PHP_VERSION, $this->minimumPHP) >= 0)) {
-			$status['status'] = "dependencies";
+			$status['status'] = 'dependencies';
 		}
-		$status['status'] = ($status['status']) ?? "ok";
+		$status['status'] = ($status['status']) ?? 'ok';
 		$status['writable'] = is_writable(dirname(__DIR__, 2)) ? 'yes' : 'no';
 		$status['minVersion'] = (version_compare(PHP_VERSION, $this->minimumPHP) >= 0) ? 'yes' : 'no';
 		$status['dependenciesActive'] = $dependenciesActive;
@@ -2074,6 +2123,9 @@ class Organizr
 				$this->settingsOption('url', 'komgaURL'),
 				$this->settingsOption('auth', 'ssoKomgaAuth'),
 				$this->settingsOption('enable', 'ssoKomga'),
+				$this->settingsOption('blank'),
+				$this->settingsOption('username', 'komgaFallbackUser', ['label' => 'Komga Fallback Email', 'help' => 'DO NOT SET THIS TO YOUR ADMIN ACCOUNT. We recommend you create a local account as a "catch all" for when Organizr is unable to perform SSO.  Organizr will request a User Token based off of this user credentials']),
+				$this->settingsOption('password', 'komgaFallbackPassword', ['label' => 'Komga Fallback Password']),
 			],
 		];
 	}
@@ -2791,9 +2843,9 @@ class Organizr
 		// Check if Auth Proxy is enabled
 		if ($this->config['authProxyEnabled'] && ($this->config['authProxyHeaderName'] !== '' || $this->config['authProxyHeaderNameEmail'] !== '') && $this->config['authProxyWhitelist'] !== '') {
 			if (isset($this->getallheaders()[$this->config['authProxyHeaderName']]) || isset($this->getallheaders()[$this->config['authProxyHeaderNameEmail']])) {
-				$usernameHeader = $this->getallheaders()[$this->config['authProxyHeaderName']] ?? $username;
+				$usernameHeader = $this->getallheaders()[$this->config['authProxyHeaderName']] ?? null;
 				$emailHeader = $this->getallheaders()[$this->config['authProxyHeaderNameEmail']] ?? null;
-				$headerForLogin = $emailHeader ?: $usernameHeader;
+				$headerForLogin = $usernameHeader ?: ($emailHeader ?: null);
 				$this->setLoggerChannel('Authentication', $headerForLogin);
 				$this->logger->debug('Starting Auth Proxy verification');
 				$whitelistRange = $this->analyzeIP($this->config['authProxyWhitelist']);

@@ -25,11 +25,7 @@ $app->get('/status', function ($request, $response, $args) {
 	 */
 	$Organizr = ($request->getAttribute('Organizr')) ?? new Organizr();
 	if ($Organizr->checkRoute($request)) {
-		$GLOBALS['api']['response']['data'] = array(
-			'status' => 'ok',
-			'api_version' => '2.0',
-			'organizr_version' => $Organizr->version
-		);
+		$GLOBALS['api']['response']['data'] = $Organizr->status(true);
 	}
 	$response->getBody()->write(jsonE($GLOBALS['api']));
 	return $response
@@ -135,7 +131,7 @@ $app->get('/launch', function ($request, $response, $args) {
 	$GLOBALS['api']['response']['data']['settings'] = $Organizr->organizrSpecialSettings();
 	$GLOBALS['api']['response']['data']['plugins'] = $Organizr->pluginGlobalList();
 	$GLOBALS['api']['response']['data']['appearance'] = $Organizr->loadAppearance();
-	$GLOBALS['api']['response']['data']['status'] = $Organizr->status();
+	$GLOBALS['api']['response']['data']['status'] = $Organizr->launch();
 	$GLOBALS['api']['response']['data']['sso'] = $Organizr->ssoCookies();
 	$GLOBALS['api']['response']['data']['warnings'] = $Organizr->warnings;
 	$response->getBody()->write(jsonE($GLOBALS['api']));
