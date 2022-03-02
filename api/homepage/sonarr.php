@@ -56,7 +56,7 @@ trait SonarrHomepageItem
 					$this->settingsOption('switch', 'sonarrUnmonitored', ['label' => 'Show Unmonitored']),
 					$this->settingsOption('blank', '', ['type' => 'html', 'html' => '<hr />']),
 					$this->settingsOption('blank', '', ['type' => 'html', 'html' => '<hr />']),
-					$this->settingsOption('enable', 'sonarrIcon', ['label' => 'Show Sonarr Icon', 'value' => $this->config['sonarrIcon'] ?? true]),
+					$this->settingsOption('enable', 'sonarrIcon', ['label' => 'Show Sonarr Icon'),
 					$this->settingsOption('calendar-link-url', 'sonarrCalendarLink'),
 					$this->settingsOption('blank'),
 					$this->settingsOption('calendar-frame-target', 'sonarrFrameTarget')									
@@ -322,8 +322,8 @@ trait SonarrHomepageItem
 				"genres" => $child['series']['genres'],
 				"href" => strtolower($href),
 				"icon" => "/plugins/images/tabs/sonarr.png",
-				"frame" => $this->config['sonarrFrameTarget'] ?? '',
-				"showLink" => $this->config['sonarrIcon'] ?? true
+				"frame" => $this->config['sonarrFrameTarget'],
+				"showLink" => $this->config['sonarrIcon']
 			);
 			array_push($gotCalendar, array(
 				"id" => "Sonarr-" . $number . "-" . $i,
