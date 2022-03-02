@@ -6670,7 +6670,9 @@ function buildDownloaderItem(array, source, type='none'){
                 var actionIcon = (v.Status == "Downloading") ? 'pause' : 'play';
                 queue += `
                 <tr>
-                    <td class="max-texts">`+v.name+`</td>
+                    <td class="max-texts">`+v.name;
+		    if (v.tracker_status != "") queue += `<i class="fa fa-caret-down ml-2" style="cursor:pointer" onclick="$(this).toggleClass('fa-caret-down');$(this).toggleClass('fa-caret-up');$('#status-`+v.hash+`').toggleClass('d-none');" aria-hidden="true"></i><br /><div class="well mb-0 mt-2 p-3 d-none" id="status-`+v.hash+`">`+v.tracker_status+`</div>`;
+		    queue +=`</td>
                     <td class="hidden-xs deluge-`+cleanClass(v.state)+`">`+v.state+`</td>
                     <td class="hidden-xs">`+size+`</td>
                     <td class="hidden-xs"><i class="fa fa-download"></i>&nbsp;`+download+`</td>
