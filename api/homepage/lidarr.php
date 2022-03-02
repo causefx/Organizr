@@ -44,7 +44,7 @@ trait LidarrHomepageItem
 					$this->settingsOption('refresh', 'calendarRefresh'),					
 					$this->settingsOption('blank', '', ['type' => 'html', 'html' => '<hr />']),
 					$this->settingsOption('blank', '', ['type' => 'html', 'html' => '<hr />']),
-					$this->settingsOption('enable', 'lidarrIcon', ['label' => 'Show Lidarr Icon', 'value' => $this->config['lidarrIcon'] ?? true]),
+					$this->settingsOption('enable', 'lidarrIcon', ['label' => 'Show Lidarr Icon']),
 					$this->settingsOption('calendar-link-url', 'lidarrCalendarLink'),
 					$this->settingsOption('blank'),
 					$this->settingsOption('calendar-frame-target', 'lidarrFrameTarget')
@@ -269,8 +269,8 @@ trait LidarrHomepageItem
 				"genres" => $child['genres'],
 				"href" => strtolower($href),
 				"icon" => "/plugins/images/tabs/lidarr.png",
-				"frame" => $this->config['lidarrFrameTarget'] ?? '',
-				"showLink" => $this->config['lidarrIcon'] ?? true
+				"frame" => $this->config['lidarrFrameTarget'],
+				"showLink" => $this->config['lidarrIcon']
 			);
 			array_push($gotCalendar, array(
 				"id" => "Lidarr-" . $number . "-" . $i,
