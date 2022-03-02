@@ -287,6 +287,12 @@ trait OptionsFunction
 					'label' => 'Hide Completed',
 				];
 				break;
+			case 'hidestatus':
+				$settingMerge = [
+					'type' => 'switch',
+					'label' => 'Hide Status',
+				];
+				break;
 			case 'limit':
 				$settingMerge = [
 					'type' => 'number',
