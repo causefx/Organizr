@@ -149,6 +149,7 @@ return [
 	'delugePassword' => '',
 	'delugeHideSeeding' => false,
 	'delugeHideCompleted' => false,
+	'delugeHideStatus' => true,
 	'delugeCombine' => false,
 	'delugeRefresh' => '60000',
 	'delugeDisableCertCheck' => false,
