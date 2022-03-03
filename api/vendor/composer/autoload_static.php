@@ -46,6 +46,7 @@ class ComposerStaticInitcbdc783d76f8e7563dcce7d8af053ecb
             'Symfony\\Component\\Yaml\\' => 23,
             'Symfony\\Component\\VarDumper\\' => 28,
             'Symfony\\Component\\Finder\\' => 25,
+            'Stripe\\' => 7,
             'Slim\\Psr7\\' => 10,
             'Slim\\' => 5,
         ),
@@ -180,6 +181,10 @@ class ComposerStaticInitcbdc783d76f8e7563dcce7d8af053ecb
         'Symfony\\Component\\Finder\\' => 
         array (
             0 => __DIR__ . '/..' . '/symfony/finder',
+        ),
+        'Stripe\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/stripe/stripe-php/lib',
         ),
         'Slim\\Psr7\\' => 
         array (

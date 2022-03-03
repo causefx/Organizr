@@ -31,6 +31,7 @@ class Organizr
 	use CalendarHomepageItem;
 	use CouchPotatoHomepageItem;
 	use DelugeHomepageItem;
+	use DonateHomepageItem;
 	use EmbyHomepageItem;
 	use HealthChecksHomepageItem;
 	use HTMLHomepageItem;
@@ -3730,6 +3731,13 @@ class Organizr
 					$class = 'bg-inverse';
 					$image = 'plugins/images/tabs/overseerr.png';
 					if (!$this->config['homepageOverseerrEnabled']) {
+						$class .= ' faded';
+					}
+					break;
+				case 'homepageOrderDonate':
+					$class = 'bg-primary';
+					$image = 'plugins/images/tabs/donate.png';
+					if (!$this->config['homepageDonateEnabled']) {
 						$class .= ' faded';
 					}
 					break;

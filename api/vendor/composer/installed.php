@@ -5,7 +5,7 @@
         'type' => 'library',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
-        'reference' => '701e4f24ee0581e875b5e980f29c0db26aaadeff',
+        'reference' => '25cfc0e03bca212cab4bcf9336d3fc8449b11e61',
         'name' => '__root__',
         'dev' => true,
     ),
@@ -16,7 +16,7 @@
             'type' => 'library',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
-            'reference' => '701e4f24ee0581e875b5e980f29c0db26aaadeff',
+            'reference' => '25cfc0e03bca212cab4bcf9336d3fc8449b11e61',
             'dev_requirement' => false,
         ),
         'adldap2/adldap2' => array(
@@ -491,6 +491,15 @@
             'install_path' => __DIR__ . '/../slim/slim',
             'aliases' => array(),
             'reference' => '0905e0775f8c1cfb3bbcfabeb6588dcfd8b82d3f',
+            'dev_requirement' => false,
+        ),
+        'stripe/stripe-php' => array(
+            'pretty_version' => 'v7.116.0',
+            'version' => '7.116.0.0',
+            'type' => 'library',
+            'install_path' => __DIR__ . '/../stripe/stripe-php',
+            'aliases' => array(),
+            'reference' => '7a39f594f213ed3f443a95adf769d1ecbc8393e7',
             'dev_requirement' => false,
         ),
         'symfony/deprecation-contracts' => array(

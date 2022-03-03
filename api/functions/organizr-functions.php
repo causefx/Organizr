@@ -786,8 +786,10 @@ trait OrganizrFunctions
 		return $options;
 	}
 
-	public function showHTML(string $title = 'Organizr Alert', string $notice = '')
+	public function showHTML(string $title = 'Organizr Alert', string $notice = '', bool $autoClose = false)
 	{
+		$close = $autoClose ? 'onLoad="setTimeout(\'closemyself()\',3000);"' : '';
+		$closeMessage = $autoClose ? '<p><sup>(This window will close automatically)</sup></p>' : '';
 		return
 			'<!DOCTYPE html>
 			<html lang="en">
@@ -798,13 +800,19 @@ trait OrganizrFunctions
 				<meta name="viewport" content="width=device-width, initial-scale=1.0">
 				<title>' . $title . '</title>
 			</head>
-
-			<body>
+			<script language=javascript>
+					function closemyself() {
+						window.opener=self;
+						window.close();
+					}
+			</script>
+			<body ' . $close . '>
 				<main>
 					<section>
 						<aside>
 							<h3>' . $title . '</h3>
 							<p>' . $notice . '</p>
+							' . $closeMessage . '
 						</aside>
 					</section>
 				</main>
