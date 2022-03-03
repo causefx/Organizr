@@ -117,7 +117,7 @@ trait DonateHomepageItem
 			$stripe = new \Stripe\StripeClient(
 				trim($this->config['homepageDonateSecretToken'])
 			);
-			$session = $stripe->checkout->sessions->create([
+			$sessionInfo = [
 				'payment_method_types' => ['card'],
 				'line_items' => [[
 					'price_data' => [
@@ -130,7 +130,11 @@ trait DonateHomepageItem
 				'mode' => 'payment',
 				'success_url' => $this->getServerPath() . 'api/v2/homepage/donate/success',
 				'cancel_url' => $this->getServerPath() . 'api/v2/homepage/donate/error',
-			]);
+			];
+			if ($this->user['email'] && stripos($this->user['email'], 'placeholder') == false) {
+				$sessionInfo = array_merge($sessionInfo, ['customer_email' => $this->user['email']]);
+			}
+			$session = $stripe->checkout->sessions->create($sessionInfo);
 			header('HTTP/1.1 303 See Other');
 			header('Location: ' . $session->url);
 		} catch (\Stripe\Exception\ApiErrorException $e) {
