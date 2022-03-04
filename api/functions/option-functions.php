@@ -461,6 +461,14 @@ trait OptionsFunction
 					'options' => $this->makeOptionsFromValues($this->config[str_replace('CalendarLink','',$name).'URL'], true, 'Use Default'),
 				];
 				break;
+			case 'calendarframetarget':
+				$settingMerge = [
+					'type' => 'select',
+					'label' => 'Target Tab',
+					'help' => 'Set the tab used when clicking on calendar icon. If not set, link will open in new window.',
+					'options' => $this->getIframeTabs($this->config[str_replace('FrameTarget','CalendarLink',$name)])
+				];
+				break;
 			default:
 				$settingMerge = [
 					'type' => strtolower($type),
@@ -475,6 +483,42 @@ trait OptionsFunction
 			}
 		}
 		return $setting;
+	}
+	
+	public function getIframeTabs($url = "")
+	{	
+		if (!empty($url)){
+			$response = [
+				array(
+					'function' => 'fetchAll',
+					'query' => array(
+						"SELECT * FROM tabs WHERE `enabled`='1' AND `type`='1' AND `group_id`>=? AND (`url` = '" . $url . "' OR `url_local` = '" . $url . "') ORDER BY `order` ASC",
+						$this->getUserLevel(),
+					)
+				)
+			];
+		} else {
+			$response = [
+				array(
+					'function' => 'fetchAll',
+					'query' => array(
+						"SELECT * FROM tabs WHERE `enabled`='1' AND `type`='1' AND `group_id`>=? ORDER BY `order` ASC",
+						$this->getUserLevel()
+					)
+				)
+			];
+		}
+		$formattedValues[] = [
+			'name' => 'Open in New Window',
+			'value' => ''
+		];
+		foreach($this->processQueries($response) as $result) {
+			$formattedValues[] = [
+				'name' => $result['name'],
+				'value' => $result['name']
+			];
+		}
+		return $formattedValues;
 	}
 
 	public function makeOptionsFromValues($values = null, $appendBlank = null, $blankLabel = null)

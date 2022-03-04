@@ -48,12 +48,16 @@ trait RadarrHomepageItem
 					$this->settingsOption('calendar-locale', 'calendarLocale'),
 					$this->settingsOption('calendar-limit', 'calendarLimit'),
 					$this->settingsOption('refresh', 'calendarRefresh'),
-					$this->settingsOption('calendar-link-url', 'radarrCalendarLink'),
-					$this->settingsOption('blank', null),
 					$this->settingsOption('switch', 'radarrUnmonitored', ['label' => 'Show Unmonitored']),
 					$this->settingsOption('switch', 'radarrPhysicalRelease', ['label' => 'Show Physical Releases']),
 					$this->settingsOption('switch', 'radarrDigitalRelease', ['label' => 'Show Digital Releases']),
 					$this->settingsOption('switch', 'radarrCinemaRelease', ['label' => 'Show Cinema Releases']),
+					$this->settingsOption('blank', '', ['type' => 'html', 'html' => '<hr />']),
+					$this->settingsOption('blank', '', ['type' => 'html', 'html' => '<hr />']),
+					$this->settingsOption('enable', 'radarrIcon', ['label' => 'Show Radarr Icon'),
+					$this->settingsOption('calendar-link-url', 'radarrCalendarLink'),
+					$this->settingsOption('blank'),
+					$this->settingsOption('calendar-frame-target', 'radarrFrameTarget')
 				],
 				'Test Connection' => [
 					$this->settingsOption('blank', null, ['label' => 'Please Save before Testing']),
@@ -351,6 +355,8 @@ trait RadarrHomepageItem
 					"studio" => $child['studio'] ?? '',
 					"href" => strtolower($href),
 					"icon" => "/plugins/images/tabs/radarr.png",
+					"frame" => $this->config['radarrFrameTarget'],
+					"showLink" => $this->config['radarrIcon']
 				);
 				array_push($gotCalendar, array(
 					"id" => "Radarr-" . $number . "-" . $i,

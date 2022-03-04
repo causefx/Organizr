@@ -52,8 +52,14 @@ trait SonarrHomepageItem
 					$this->settingsOption('calendar-locale', 'calendarLocale'),
 					$this->settingsOption('calendar-limit', 'calendarLimit'),
 					$this->settingsOption('refresh', 'calendarRefresh'),
-					$this->settingsOption('calendar-link-url', 'sonarrCalendarLink'),
+					$this->settingsOption('blank'),
 					$this->settingsOption('switch', 'sonarrUnmonitored', ['label' => 'Show Unmonitored']),
+					$this->settingsOption('blank', '', ['type' => 'html', 'html' => '<hr />']),
+					$this->settingsOption('blank', '', ['type' => 'html', 'html' => '<hr />']),
+					$this->settingsOption('enable', 'sonarrIcon', ['label' => 'Show Sonarr Icon'),
+					$this->settingsOption('calendar-link-url', 'sonarrCalendarLink'),
+					$this->settingsOption('blank'),
+					$this->settingsOption('calendar-frame-target', 'sonarrFrameTarget')									
 				],
 				'Test Connection' => [
 					$this->settingsOption('blank', null, ['label' => 'Please Save before Testing']),
@@ -295,9 +301,9 @@ trait SonarrHomepageItem
 				$href_arr = explode(',', $this->config['sonarrURL']);
 				$href = reset($href_arr);
 			}
-			if (!empty($href)) {
-				$href = $href . '/series/' . preg_replace('/[^A-Za-z0-9. -]/', '', preg_replace('/[[:space:]]+/', '-', $seriesName));
-				$href = str_replace("//series/", "/series/", $href);
+			if (!empty($href)){
+				$href = $href . '/series/' . preg_replace('/[^A-Za-z0-9 -]/', '', str_replace('&', 'and', preg_replace('/[[:space:]]+/', '-', $seriesName)));
+				$href = str_replace("//series/","/series/",$href);
 			}
 			$details = array(
 				"seasonCount" => $child['series']['seasonCount'] ?? isset($child['series']['seasons']) ? count($child['series']['seasons']) : 0,
@@ -316,6 +322,8 @@ trait SonarrHomepageItem
 				"genres" => $child['series']['genres'],
 				"href" => strtolower($href),
 				"icon" => "/plugins/images/tabs/sonarr.png",
+				"frame" => $this->config['sonarrFrameTarget'],
+				"showLink" => $this->config['sonarrIcon']
 			);
 			array_push($gotCalendar, array(
 				"id" => "Sonarr-" . $number . "-" . $i,
