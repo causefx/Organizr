@@ -6,7 +6,7 @@ trait OrganizrFunctions
 	{
 		return 'https://organizr.gitbook.io/organizr/' . $path;
 	}
-	
+
 	public function loadResources($files = [], $rootPath = '')
 	{
 		$scripts = '';
@@ -21,17 +21,17 @@ trait OrganizrFunctions
 		}
 		return $scripts;
 	}
-	
+
 	public function loadJavaResource($file = '', $rootPath = '')
 	{
 		return ($file !== '') ? '<script src="' . $rootPath . $file . '?v=' . trim($this->fileHash) . '"></script>' . "\n" : '';
 	}
-	
+
 	public function loadStyleResource($file = '', $rootPath = '')
 	{
 		return ($file !== '') ? '<link href="' . $rootPath . $file . '?v=' . trim($this->fileHash) . '" rel="stylesheet">' . "\n" : '';
 	}
-	
+
 	public function loadDefaultJavascriptFiles()
 	{
 		$javaFiles = [
@@ -54,12 +54,12 @@ trait OrganizrFunctions
 		}
 		return $scripts;
 	}
-	
+
 	public function loadJavascriptFile($file)
 	{
 		return '<script>loadJavascript("' . $file . '?v=' . trim($this->fileHash) . '");' . "</script>\n";
 	}
-	
+
 	public function embyJoinAPI($array)
 	{
 		$username = ($array['username']) ?? null;
@@ -79,7 +79,7 @@ trait OrganizrFunctions
 		}
 		return $this->embyJoin($username, $email, $password);
 	}
-	
+
 	public function embyJoin($username, $email, $password)
 	{
 		try {
@@ -162,7 +162,7 @@ trait OrganizrFunctions
 			return false;
 		}
 	}
-	
+
 	/*loads users from emby and returns a correctly formated policy for a new user.
 	*/
 	public function getEmbyTemplateUserJson()
@@ -198,7 +198,7 @@ trait OrganizrFunctions
 		unset($policy['DisablePremiumFeatures']);
 		return (json_encode($policy));
 	}
-	
+
 	public function checkHostPrefix($s)
 	{
 		if (empty($s)) {
@@ -206,7 +206,7 @@ trait OrganizrFunctions
 		}
 		return (substr($s, -1, 1) == '\\') ? $s : $s . '\\';
 	}
-	
+
 	public function approvedFileExtension($filename, $type = 'image')
 	{
 		$ext = strtolower(pathinfo($filename, PATHINFO_EXTENSION));
@@ -229,9 +229,8 @@ trait OrganizrFunctions
 					return false;
 			}
 		}
-		
 	}
-	
+
 	public function getImages()
 	{
 		$allIconsPrep = array();
@@ -248,8 +247,8 @@ trait OrganizrFunctions
 				);
 			}
 		}
-		$dirname = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . 'images' . DIRECTORY_SEPARATOR . 'userTabs' . DIRECTORY_SEPARATOR;
-		$path = 'plugins/images/userTabs/';
+		$dirname = $this->root . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR . 'userTabs' . DIRECTORY_SEPARATOR;
+		$path = 'data/userTabs/';
 		$images = scandir($dirname);
 		foreach ($images as $image) {
 			if (!in_array($image, $ignore)) {
@@ -265,7 +264,7 @@ trait OrganizrFunctions
 		}
 		return $allIcons;
 	}
-	
+
 	public function imageSelect($form)
 	{
 		$i = 1;
@@ -277,7 +276,7 @@ trait OrganizrFunctions
 		}
 		return $return . '</select>';
 	}
-	
+
 	public function getThemes()
 	{
 		$themes = array();
@@ -289,7 +288,7 @@ trait OrganizrFunctions
 		}
 		return $themes;
 	}
-	
+
 	public function getSounds()
 	{
 		$sounds = array();
@@ -307,7 +306,7 @@ trait OrganizrFunctions
 		}
 		return $sounds;
 	}
-	
+
 	public function getBranches()
 	{
 		return array(
@@ -321,7 +320,7 @@ trait OrganizrFunctions
 			)
 		);
 	}
-	
+
 	public function getSettingsTabs()
 	{
 		return array(
@@ -351,7 +350,7 @@ trait OrganizrFunctions
 			)
 		);
 	}
-	
+
 	public function getAuthTypes()
 	{
 		return array(
@@ -369,7 +368,7 @@ trait OrganizrFunctions
 			)
 		);
 	}
-	
+
 	public function getLDAPOptions()
 	{
 		return array(
@@ -387,7 +386,7 @@ trait OrganizrFunctions
 			),
 		);
 	}
-	
+
 	public function getAuthBackends()
 	{
 		$backendOptions = array();
@@ -426,7 +425,7 @@ trait OrganizrFunctions
 		ksort($backendOptions);
 		return $backendOptions;
 	}
-	
+
 	public function importUserButtons()
 	{
 		$emptyButtons = '
@@ -447,11 +446,11 @@ trait OrganizrFunctions
 		}
 		return ($buttons !== '') ? $buttons : $emptyButtons;
 	}
-	
+
 	public function getHomepageMediaImage()
 	{
 		$refresh = false;
-		$cacheDirectory = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . 'images' . DIRECTORY_SEPARATOR . 'cache' . DIRECTORY_SEPARATOR;
+		$cacheDirectory = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR . 'cache' . DIRECTORY_SEPARATOR;
 		if (!file_exists($cacheDirectory)) {
 			mkdir($cacheDirectory, 0777, true);
 		}
@@ -522,10 +521,10 @@ trait OrganizrFunctions
 			die($this->showHTML('Invalid Request', 'No image returned'));
 		}
 	}
-	
+
 	public function cacheImage($url, $name, $extension = 'jpg')
 	{
-		$cacheDirectory = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . 'images' . DIRECTORY_SEPARATOR . 'cache' . DIRECTORY_SEPARATOR;
+		$cacheDirectory = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR . 'cache' . DIRECTORY_SEPARATOR;
 		if (!file_exists($cacheDirectory)) {
 			mkdir($cacheDirectory, 0777, true);
 		}
@@ -535,7 +534,7 @@ trait OrganizrFunctions
 			@copy($url, $cacheFile);
 		}
 	}
-	
+
 	public function checkFrame($array, $url)
 	{
 		if (array_key_exists("x-frame-options", $array)) {
@@ -574,7 +573,7 @@ trait OrganizrFunctions
 			return true;
 		}
 	}
-	
+
 	public function frameTest($url)
 	{
 		if (!$url || $url == '') {
@@ -591,7 +590,7 @@ trait OrganizrFunctions
 			return false;
 		}
 	}
-	
+
 	public function groupSelect()
 	{
 		$groups = $this->getAllGroups();
@@ -604,24 +603,24 @@ trait OrganizrFunctions
 		}
 		return $select;
 	}
-	
+
 	public function showLogin()
 	{
 		if ($this->config['hideRegistration'] == false) {
 			return '<p><span lang="en">Don\'t have an account?</span><a href="#" class="text-primary m-l-5 to-register"><b lang="en">Sign Up</b></a></p>';
 		}
 	}
-	
+
 	public function checkoAuth()
 	{
 		return $this->config['plexoAuth'] && $this->config['authBackend'] == 'plex' && $this->config['authType'] !== 'internal';
 	}
-	
+
 	public function checkoAuthOnly()
 	{
 		return $this->config['plexoAuth'] && $this->config['authBackend'] == 'plex' && $this->config['authType'] == 'external';
 	}
-	
+
 	public function showoAuth()
 	{
 		$buttons = '';
@@ -648,7 +647,7 @@ trait OrganizrFunctions
         </div>
 	' : '';
 	}
-	
+
 	public function logoOrText()
 	{
 		$showLogo = $this->config['minimalLoginScreen'] ? '' : 'visible-xs';
@@ -659,13 +658,13 @@ trait OrganizrFunctions
 		}
 		return '<a href="javascript:void(0)" class="text-center db ' . $showLogo . '" id="login-logo">' . $html . '</a>';
 	}
-	
+
 	public function settingsDocker()
 	{
 		$type = ($this->docker) ? 'Official Docker' : 'Native';
 		return '<li><div class="bg-info"><i class="mdi mdi-flag mdi-24px text-white"></i></div><span class="text-muted hidden-xs m-t-10" lang="en">Install Type</span> ' . $type . '</li>';
 	}
-	
+
 	public function settingsPathChecks()
 	{
 		$paths = $this->pathsWritable($this->paths);
@@ -677,7 +676,7 @@ trait OrganizrFunctions
 		}
 		return $result . $items;
 	}
-	
+
 	public function pathsWritable($paths)
 	{
 		$results = array();
@@ -689,7 +688,7 @@ trait OrganizrFunctions
 		}
 		return $results;
 	}
-	
+
 	public function clearTautulliTokens()
 	{
 		foreach (array_keys($_COOKIE) as $k => $v) {
@@ -698,7 +697,7 @@ trait OrganizrFunctions
 			}
 		}
 	}
-	
+
 	public function clearJellyfinTokens()
 	{
 		foreach (array_keys($_COOKIE) as $k => $v) {
@@ -708,7 +707,7 @@ trait OrganizrFunctions
 		}
 		$this->coookie('delete', 'jellyfin_credentials');
 	}
-	
+
 	public function clearKomgaToken()
 	{
 		if (isset($_COOKIE['komga_token'])) {
@@ -727,7 +726,7 @@ trait OrganizrFunctions
 			$this->coookie('delete', 'komga_token');
 		}
 	}
-	
+
 	public function analyzeIP($ip)
 	{
 		if (strpos($ip, '/') !== false) {
@@ -743,7 +742,7 @@ trait OrganizrFunctions
 		}
 		return (isset($start_ip_long) && isset($last_ip_long)) ? array('from' => $start_ip_long, 'to' => $last_ip_long) : false;
 	}
-	
+
 	public function authProxyRangeCheck($from, $to)
 	{
 		$approved = false;
@@ -753,14 +752,15 @@ trait OrganizrFunctions
 		if ($userIP <= $high && $low <= $userIP) {
 			$approved = true;
 		}
+		$this->logger->debug('authProxy range check', ['server_ip' => $userIP, 'range_from' => $from, 'range_to' => $to, 'approved' => $approved]);
 		return $approved;
 	}
-	
+
 	public function userDefinedIdReplacementLink($link, $variables)
 	{
 		return strtr($link, $variables);
 	}
-	
+
 	public function requestOptions($url, $timeout = null, $override = false, $customCertificate = false, $extras = null)
 	{
 		$options = [];
@@ -785,9 +785,11 @@ trait OrganizrFunctions
 		}
 		return $options;
 	}
-	
-	public function showHTML(string $title = 'Organizr Alert', string $notice = '')
+
+	public function showHTML(string $title = 'Organizr Alert', string $notice = '', bool $autoClose = false)
 	{
+		$close = $autoClose ? 'onLoad="setTimeout(\'closemyself()\',3000);"' : '';
+		$closeMessage = $autoClose ? '<p><sup>(This window will close automatically)</sup></p>' : '';
 		return
 			'<!DOCTYPE html>
 			<html lang="en">
@@ -798,20 +800,26 @@ trait OrganizrFunctions
 				<meta name="viewport" content="width=device-width, initial-scale=1.0">
 				<title>' . $title . '</title>
 			</head>
-
-			<body>
+			<script language=javascript>
+					function closemyself() {
+						window.opener=self;
+						window.close();
+					}
+			</script>
+			<body ' . $close . '>
 				<main>
 					<section>
 						<aside>
 							<h3>' . $title . '</h3>
 							<p>' . $notice . '</p>
+							' . $closeMessage . '
 						</aside>
 					</section>
 				</main>
 			</body>
 			</html>';
 	}
-	
+
 	public function buildSettingsMenus($menuItems, $menuName)
 	{
 		$selectMenuItems = '';
@@ -834,7 +842,7 @@ trait OrganizrFunctions
 		$unorderedListMenu = '<ul class="nav customtab2 nav-tabs nav-non-mobile hidden-xs" data-dropdown="' . $menuNameLower . '-menu" role="tablist">' . $unorderedListMenuItems . '</ul>';
 		return $selectMenu . $unorderedListMenu;
 	}
-	
+
 	public function isJSON($string)
 	{
 		return is_string($string) && is_array(json_decode($string, true)) && (json_last_error() == JSON_ERROR_NONE);

@@ -105,7 +105,7 @@ class Utilities
      */
     public static function binaryGuidToString($binGuid)
     {
-        if (trim($binGuid) == '' || is_null($binGuid)) {
+        if ($binGuid === null || trim($binGuid) === '') {
             return;
         }
 

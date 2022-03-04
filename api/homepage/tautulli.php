@@ -14,12 +14,16 @@ trait TautulliHomepageItem
 		if ($infoOnly) {
 			return $homepageInformation;
 		}
+
 		$libraryList = [['name' => 'Refresh page to update List', 'value' => '', 'disabled' => true]];
 		if (!empty($this->config['tautulliApikey']) && !empty($this->config['tautulliURL'])) {
 			$libraryList = [];
-			$loop = $this->tautulliLibraryList('key')['libraries'];
-			foreach ($loop as $key => $value) {
-				$libraryList[] = ['name' => $key, 'value' => $value];
+			$loop = $this->tautulliLibraryList();
+			if ($loop) {
+				$loop = $loop['libraries'];
+				foreach ($loop as $key => $value) {
+					$libraryList[] = ['name' => $key, 'value' => $value];
+				}
 			}
 		}
 		$homepageSettings = [
@@ -73,7 +77,7 @@ trait TautulliHomepageItem
 		];
 		return array_merge($homepageInformation, $homepageSettings);
 	}
-	
+
 	public function testConnectionTautulli()
 	{
 		$this->setLoggerChannel('Tautulli Homepage');
@@ -104,7 +108,7 @@ trait TautulliHomepageItem
 			return false;
 		}
 	}
-	
+
 	public function tautulliHomepagePermissions($key = null)
 	{
 		$permissions = [
@@ -123,7 +127,7 @@ trait TautulliHomepageItem
 		];
 		return $this->homepageCheckKeyPermissions($key, $permissions);
 	}
-	
+
 	public function homepageOrdertautulli()
 	{
 		if ($this->homepageItemPermissions($this->tautulliHomepagePermissions('main'))) {
@@ -139,7 +143,7 @@ trait TautulliHomepageItem
 				';
 		}
 	}
-	
+
 	public function getTautulliHomepageData()
 	{
 		$this->setLoggerChannel('Tautulli Homepage');
@@ -158,12 +162,12 @@ trait TautulliHomepageItem
 			$options = $this->requestOptions($this->config['tautulliURL'], $this->config['homepageTautulliRefresh'], $this->config['tautulliDisableCertCheck'], $this->config['tautulliUseCustomCertificate']);
 			$homestats = Requests::get($homestatsUrl, [], $options);
 			if ($homestats->success) {
-				$homepageTautulliViewingStatsExclude = explode(",",$this->config['homepageTautulliViewingStatsExclude']);
+				$homepageTautulliViewingStatsExclude = explode(",", $this->config['homepageTautulliViewingStatsExclude']);
 				$homestats = json_decode($homestats->body, true);
 				foreach ($homestats['response']['data'] as $s => $stats) {
 					foreach ($stats['rows'] as $i => $v) {
 						if (array_key_exists('section_id', $v)) {
-							if (in_array($v['section_id'],$homepageTautulliViewingStatsExclude)) {
+							if (in_array($v['section_id'], $homepageTautulliViewingStatsExclude)) {
 								unset($homestats['response']['data'][$s]['rows'][$i]);
 							}
 						}
@@ -175,27 +179,31 @@ trait TautulliHomepageItem
 				$categories = ['top_movies', 'top_tv', 'popular_movies', 'popular_tv'];
 				foreach ($categories as $cat) {
 					$key = array_search($cat, array_column($api['homestats']['data'], 'stat_id'));
-					$img = $api['homestats']['data'][$key]['rows'][0];
-					$this->cacheImage($url . '/pms_image_proxy?img=' . $img['art'] . '&rating_key=' . $img['rating_key'] . '&width=' . $nowPlayingWidth . '&height=' . $nowPlayingHeight, $img['rating_key'] . '-np');
-					$this->cacheImage($url . '/pms_image_proxy?img=' . $img['thumb'] . '&rating_key=' . $img['rating_key'] . '&width=' . $width . '&height=' . $height, $img['rating_key'] . '-list');
-					$img['art'] = 'plugins/images/cache/' . $img['rating_key'] . '-np.jpg';
-					$img['thumb'] = 'plugins/images/cache/' . $img['rating_key'] . '-list.jpg';
-					$api['homestats']['data'][$key]['rows'][0] = $img;
+					if (count($api['homestats']['data'][$key]['rows']) > 0) {
+						$img = $api['homestats']['data'][$key]['rows'][0];
+						$this->cacheImage($url . '/pms_image_proxy?img=' . $img['art'] . '&rating_key=' . $img['rating_key'] . '&width=' . $nowPlayingWidth . '&height=' . $nowPlayingHeight, $img['rating_key'] . '-np');
+						$this->cacheImage($url . '/pms_image_proxy?img=' . $img['thumb'] . '&rating_key=' . $img['rating_key'] . '&width=' . $width . '&height=' . $height, $img['rating_key'] . '-list');
+						$img['art'] = 'data/cache/' . $img['rating_key'] . '-np.jpg';
+						$img['thumb'] = 'data/cache/' . $img['rating_key'] . '-list.jpg';
+						$api['homestats']['data'][$key]['rows'][0] = $img;
+					}
 				}
 				// Cache the platform icon
-				$key = array_search('top_platforms', array_column($api['homestats']['data'], 'stat_id'));
-				$platform = $api['homestats']['data'][$key]['rows'][0]['platform_name'];
-				$this->cacheImage($url . '/images/platforms/' . $platform . '.svg', 'tautulli-' . $platform, 'svg');
+				if (count($api['homestats']['data'][$key]['rows']) > 0) {
+					$key = array_search('top_platforms', array_column($api['homestats']['data'], 'stat_id'));
+					$platform = $api['homestats']['data'][$key]['rows'][0]['platform_name'];
+					$this->cacheImage($url . '/images/platforms/' . $platform . '.svg', 'tautulli-' . $platform, 'svg');
+				}
 			}
 			$libstatsUrl = $apiURL . '&cmd=get_libraries_table';
 			$options = $this->requestOptions($this->config['tautulliURL'], $this->config['homepageTautulliRefresh'], $this->config['tautulliDisableCertCheck'], $this->config['tautulliUseCustomCertificate']);
 			$libstats = Requests::get($libstatsUrl, [], $options);
 			if ($libstats->success) {
-				$homepageTautulliLibraryStatsExclude = explode(",",$this->config['homepageTautulliLibraryStatsExclude']);
+				$homepageTautulliLibraryStatsExclude = explode(",", $this->config['homepageTautulliLibraryStatsExclude']);
 				$libstats = json_decode($libstats->body, true);
 				foreach ($libstats['response']['data']['data'] as $i => $v) {
 					if (array_key_exists('section_id', $v)) {
-						if (in_array($v['section_id'],$homepageTautulliLibraryStatsExclude)) {
+						if (in_array($v['section_id'], $homepageTautulliLibraryStatsExclude)) {
 							unset($libstats['response']['data']['data'][$i]);
 						}
 					}
@@ -275,10 +283,9 @@ trait TautulliHomepageItem
 					return $libraryList;
 				}
 			} catch (Requests_Exception $e) {
-				$this->setAPIResponse('error', 'Tautulli Homepage Error - Unable to get list of libraries: '.$e->getMessage(), 500);
 				$this->writeLog('error', 'Tautulli Homepage Error - Unable to get list of libraries: ' . $e->getMessage(), 'SYSTEM');
 				return false;
-			};
+			}
 		}
 		return false;
 	}

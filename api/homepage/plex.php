@@ -16,10 +16,12 @@ trait PlexHomepageItem
 		}
 		$libraryList = [['name' => 'Refresh page to update List', 'value' => '', 'disabled' => true]];
 		if ($this->config['plexID'] !== '' && $this->config['plexToken'] !== '') {
-			$libraryList = [];
-			$loop = $this->plexLibraryList('key')['libraries'];
-			foreach ($loop as $key => $value) {
-				$libraryList[] = ['name' => $key, 'value' => $value];
+			$loop = $this->plexLibraryList('key');
+			if ($loop) {
+				$loop = $loop['libraries'];
+				foreach ($loop as $key => $value) {
+					$libraryList[] = ['name' => $key, 'value' => $value];
+				}
 			}
 		}
 		$homepageSettings = [
@@ -80,7 +82,7 @@ trait PlexHomepageItem
 		];
 		return array_merge($homepageInformation, $homepageSettings);
 	}
-	
+
 	public function testConnectionPlex()
 	{
 		if (!empty($this->config['plexURL']) && !empty($this->config['plexToken'])) {
@@ -105,7 +107,7 @@ trait PlexHomepageItem
 			return 'URL and/or Token not setup';
 		}
 	}
-	
+
 	public function plexHomepagePermissions($key = null)
 	{
 		$permissions = [
@@ -185,7 +187,7 @@ trait PlexHomepageItem
 		];
 		return $this->homepageCheckKeyPermissions($key, $permissions);
 	}
-	
+
 	public function homepageOrderplexnowplaying()
 	{
 		if ($this->homepageItemPermissions($this->plexHomepagePermissions('streams'))) {
@@ -201,7 +203,7 @@ trait PlexHomepageItem
 				';
 		}
 	}
-	
+
 	public function homepageOrderplexrecent()
 	{
 		if ($this->homepageItemPermissions($this->plexHomepagePermissions('recent'))) {
@@ -217,7 +219,7 @@ trait PlexHomepageItem
 				';
 		}
 	}
-	
+
 	public function homepageOrderplexplaylist()
 	{
 		if ($this->homepageItemPermissions($this->plexHomepagePermissions('playlists'))) {
@@ -233,7 +235,7 @@ trait PlexHomepageItem
 				';
 		}
 	}
-	
+
 	public function getPlexHomepageStreams()
 	{
 		if (!$this->homepageItemPermissions($this->plexHomepagePermissions('streams'), true)) {
@@ -266,13 +268,16 @@ trait PlexHomepageItem
 				$api['group'] = '1';
 				$this->setAPIResponse('success', null, 200, $api);
 				return $api;
+			} else {
+				$this->setAPIResponse('error', null, 401, []);
+				return [];
 			}
 		} catch (Exception $e) {
 			$this->setAPIResponse('error', null, 422, [$e->getMessage()]);
 			return false;
 		}
 	}
-	
+
 	public function getPlexHomepageRecent()
 	{
 		if (!$this->homepageItemPermissions($this->plexHomepagePermissions('recent'), true)) {
@@ -320,7 +325,7 @@ trait PlexHomepageItem
 			return false;
 		}
 	}
-	
+
 	public function getPlexHomepagePlaylists()
 	{
 		if (!$this->homepageItemPermissions($this->plexHomepagePermissions('playlists'), true)) {
@@ -366,7 +371,7 @@ trait PlexHomepageItem
 			return false;
 		}
 	}
-	
+
 	public function getPlexHomepageMetadata($array)
 	{
 		if (!$this->homepageItemPermissions($this->plexHomepagePermissions('metadata'), true)) {
@@ -408,7 +413,7 @@ trait PlexHomepageItem
 			return false;
 		}
 	}
-	
+
 	public function getPlexHomepageSearch($query)
 	{
 		if (!$this->homepageItemPermissions($this->plexHomepagePermissions('search'), true)) {
@@ -448,7 +453,7 @@ trait PlexHomepageItem
 			return false;
 		}
 	}
-	
+
 	public function resolvePlexItem($item)
 	{
 		// Static Height & Width
@@ -457,8 +462,8 @@ trait PlexHomepageItem
 		$nowPlayingHeight = $this->getCacheImageSize('nph');
 		$nowPlayingWidth = $this->getCacheImageSize('npw');
 		// Cache Directories
-		$cacheDirectory = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . 'images' . DIRECTORY_SEPARATOR . 'cache' . DIRECTORY_SEPARATOR;
-		$cacheDirectoryWeb = 'plugins/images/cache/';
+		$cacheDirectory = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR . 'cache' . DIRECTORY_SEPARATOR;
+		$cacheDirectoryWeb = 'data/cache/';
 		// Types
 		switch ($item['type']) {
 			case 'show':
@@ -488,21 +493,22 @@ trait PlexHomepageItem
 				$plexItem['metadataKey'] = (string)$item['parentRatingKey'];
 				break;
 			case 'episode':
+				$useImage = (isset($item['live']) ? 'plugins/images/homepage/livetv.png' : null);
 				$plexItem['type'] = 'tv';
 				$plexItem['title'] = (string)$item['grandparentTitle'];
 				$plexItem['secondaryTitle'] = (string)$item['parentTitle'] . ' - Episode ' . (string)$item['index'];
 				$plexItem['summary'] = (string)$item['title'];
-				$plexItem['ratingKey'] = (string)$item['parentRatingKey'];
+				$plexItem['ratingKey'] = (string)($item['parentRatingKey'] ?? $item['ratingKey']);
 				$plexItem['thumb'] = ($item['parentThumb'] ? (string)$item['parentThumb'] : (string)$item['grandparentThumb']);
 				$plexItem['key'] = (string)$item['ratingKey'] . "-list";
 				$plexItem['nowPlayingThumb'] = (string)$item['grandparentArt'];
 				$plexItem['nowPlayingKey'] = (string)$item['grandparentRatingKey'] . "-np";
 				$plexItem['nowPlayingTitle'] = (string)$item['grandparentTitle'] . ' - ' . (string)$item['title'];
 				$plexItem['nowPlayingBottom'] = 'S' . (string)$item['parentIndex'] . ' · E' . (string)$item['index'];
-				$plexItem['metadataKey'] = (string)$item['grandparentRatingKey'];
+				$plexItem['metadataKey'] = (string)($item['grandparentRatingKey'] ?? $item['parentRatingKey'] ?? $item['ratingKey']);
 				break;
 			case 'clip':
-				$useImage = (isset($item['live']) ? "plugins/images/cache/livetv.png" : null);
+				$useImage = (isset($item['live']) ? "plugins/images/homepage/livetv.png" : null);
 				$plexItem['type'] = 'clip';
 				$plexItem['title'] = (isset($item['live']) ? 'Live TV' : (string)$item['title']);
 				$plexItem['secondaryTitle'] = '';
@@ -531,6 +537,7 @@ trait PlexHomepageItem
 				$plexItem['metadataKey'] = isset($item['grandparentRatingKey']) ? (string)$item['grandparentRatingKey'] : (string)$item['parentRatingKey'];
 				break;
 			default:
+				$useImage = (isset($item['live']) ? 'plugins/images/homepage/livetv.png' : null);
 				$plexItem['type'] = 'movie';
 				$plexItem['title'] = (string)$item['title'];
 				$plexItem['secondaryTitle'] = (string)$item['year'];
@@ -629,11 +636,11 @@ trait PlexHomepageItem
 			$plexItem['imageURL'] = 'api/v2/homepage/image?source=plex&img=' . $plexItem['thumb'] . '&height=' . $height . '&width=' . $width . '&key=' . $plexItem['key'] . '';
 		}
 		if (!$plexItem['nowPlayingThumb']) {
-			$plexItem['nowPlayingOriginalImage'] = $plexItem['nowPlayingImageURL'] = "plugins/images/cache/no-np.png";
+			$plexItem['nowPlayingOriginalImage'] = $plexItem['nowPlayingImageURL'] = "plugins/images/homepage/no-np.png";
 			$plexItem['nowPlayingKey'] = "no-np";
 		}
 		if (!$plexItem['thumb'] || $plexItem['addedAt'] >= (time() - 300)) {
-			$plexItem['originalImage'] = $plexItem['imageURL'] = "plugins/images/cache/no-list.png";
+			$plexItem['originalImage'] = $plexItem['imageURL'] = "plugins/images/homepage/no-list.png";
 			$plexItem['key'] = "no-list";
 		}
 		if (isset($useImage)) {
@@ -641,7 +648,7 @@ trait PlexHomepageItem
 		}
 		return $plexItem;
 	}
-	
+
 	public function getTautulliFriendlyNames($bypass = null)
 	{
 		$names = [];
@@ -666,7 +673,7 @@ trait PlexHomepageItem
 		$this->setAPIResponse('success', null, 200, $names);
 		return $names;
 	}
-	
+
 	public function setTautulliFriendlyNames()
 	{
 		if ($this->config['tautulliURL'] && $this->config['tautulliApikey'] && $this->config['homepageUseCustomStreamNames']) {
@@ -680,7 +687,7 @@ trait PlexHomepageItem
 			}
 		}
 	}
-	
+
 	private function formatPlexUserName($item)
 	{
 		$name = ($this->config['homepageShowStreamNames'] && $this->qualifyRequest($this->config['homepageShowStreamNamesAuth'])) ? (string)$item->User['title'] : "";
@@ -696,10 +703,10 @@ trait PlexHomepageItem
 		}
 		return $name;
 	}
-	
+
 	public function plexLibraryList($value = 'id')
 	{
-		
+
 		if (!empty($this->config['plexToken']) && !empty($this->config['plexID'])) {
 			$url = 'https://plex.tv/api/servers/' . $this->config['plexID'];
 			try {

@@ -52,7 +52,14 @@ trait SonarrHomepageItem
 					$this->settingsOption('calendar-locale', 'calendarLocale'),
 					$this->settingsOption('calendar-limit', 'calendarLimit'),
 					$this->settingsOption('refresh', 'calendarRefresh'),
+					$this->settingsOption('blank'),
 					$this->settingsOption('switch', 'sonarrUnmonitored', ['label' => 'Show Unmonitored']),
+					$this->settingsOption('blank', '', ['type' => 'html', 'html' => '<hr />']),
+					$this->settingsOption('blank', '', ['type' => 'html', 'html' => '<hr />']),
+					$this->settingsOption('enable', 'sonarrIcon', ['label' => 'Show Sonarr Icon']),
+					$this->settingsOption('calendar-link-url', 'sonarrCalendarLink'),
+					$this->settingsOption('blank'),
+					$this->settingsOption('calendar-frame-target', 'sonarrFrameTarget')
 				],
 				'Test Connection' => [
 					$this->settingsOption('blank', null, ['label' => 'Please Save before Testing']),
@@ -271,17 +278,17 @@ trait SonarrHomepageItem
 			} else {
 				$downloaded = "text-danger";
 			}
-			$fanart = "/plugins/images/cache/no-np.png";
+			$fanart = "/plugins/images/homepage/no-np.png";
 			foreach ($child['series']['images'] as $image) {
 				if ($image['coverType'] == "fanart") {
 					$fanart = $image['url'];
 				}
 			}
-			if ($fanart !== "/plugins/images/cache/no-np.png" || (strpos($fanart, '://') === false)) {
-				$cacheDirectory = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . 'images' . DIRECTORY_SEPARATOR . 'cache' . DIRECTORY_SEPARATOR;
+			if ($fanart !== "/plugins/images/homepage/no-np.png" || (strpos($fanart, '://') === false)) {
+				$cacheDirectory = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR . 'cache' . DIRECTORY_SEPARATOR;
 				$imageURL = $fanart;
 				$cacheFile = $cacheDirectory . $seriesID . '.jpg';
-				$fanart = 'plugins/images/cache/' . $seriesID . '.jpg';
+				$fanart = 'data/cache/' . $seriesID . '.jpg';
 				if (!file_exists($cacheFile)) {
 					$this->cacheImage($imageURL, $seriesID);
 					unset($imageURL);
@@ -289,6 +296,15 @@ trait SonarrHomepageItem
 				}
 			}
 			$bottomTitle = 'S' . sprintf("%02d", $child['seasonNumber']) . 'E' . sprintf("%02d", $child['episodeNumber']) . ' - ' . $child['title'];
+			$href = $this->config['sonarrCalendarLink'] ?? '';
+			if (empty($href) && !empty($this->config['sonarrURL'])) {
+				$href_arr = explode(',', $this->config['sonarrURL']);
+				$href = reset($href_arr);
+			}
+			if (!empty($href)) {
+				$href = $href . '/series/' . preg_replace('/[^A-Za-z0-9 -]/', '', str_replace('&', 'and', preg_replace('/[[:space:]]+/', '-', $seriesName)));
+				$href = str_replace("//series/", "/series/", $href);
+			}
 			$details = array(
 				"seasonCount" => $child['series']['seasonCount'] ?? isset($child['series']['seasons']) ? count($child['series']['seasons']) : 0,
 				"status" => $child['series']['status'],
@@ -304,6 +320,10 @@ trait SonarrHomepageItem
 				"videoCodec" => $child["hasFile"] && isset($child['episodeFile']['mediaInfo']) ? $child['episodeFile']['mediaInfo']['videoCodec'] : "unknown",
 				"size" => $child["hasFile"] && isset($child['episodeFile']['size']) ? $child['episodeFile']['size'] : "unknown",
 				"genres" => $child['series']['genres'],
+				"href" => strtolower($href),
+				"icon" => "/plugins/images/tabs/sonarr.png",
+				"frame" => $this->config['sonarrFrameTarget'],
+				"showLink" => $this->config['sonarrIcon']
 			);
 			array_push($gotCalendar, array(
 				"id" => "Sonarr-" . $number . "-" . $i,

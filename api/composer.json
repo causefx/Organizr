@@ -19,6 +19,8 @@
     "paquettg/php-html-parser": "^3.1",
     "nekonomokochan/php-json-logger": "^1.3",
     "bcremer/line-reader": "^1.1",
-    "peppeocchi/php-cron-scheduler": "^4.0"
+    "peppeocchi/php-cron-scheduler": "^4.0",
+    "simshaun/recurr": "^5.0",
+    "stripe/stripe-php": "^7.116"
   }
 }

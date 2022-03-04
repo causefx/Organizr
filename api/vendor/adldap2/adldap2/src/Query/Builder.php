@@ -13,6 +13,7 @@ use Adldap\Schemas\SchemaInterface;
 use Adldap\Query\Events\QueryExecuted;
 use Adldap\Models\ModelNotFoundException;
 use Adldap\Connections\ConnectionInterface;
+use LDAP\Result;
 
 class Builder
 {
@@ -585,19 +586,19 @@ class Builder
     }
 
     /**
-     * Parses the given LDAP resource by retrieving its entries.
+     * Parses the given LDAP result by retrieving its entries.
      *
-     * @param resource $resource
+     * @param resource|Result $result
      *
      * @return array
      */
-    protected function parse($resource)
+    protected function parse($result)
     {
-        if (is_resource($resource)) {
-            $entries = $this->connection->getEntries($resource);
+        if (is_resource($result) || $result instanceof Result) {
+            $entries = $this->connection->getEntries($result);
             
             // Free up memory.
-            $this->connection->freeResult($resource);
+            $this->connection->freeResult($result);
         } else {
             $entries = [];
         }
@@ -1091,7 +1092,7 @@ class Builder
         // We'll escape the value if raw isn't requested.
         $value = $raw ? $value : $this->escape($value);
 
-        $field = $this->escape($field, $ignore = null, 3);
+        $field = $this->escape($field, $ignore = '', 3);
 
         $this->addFilter($boolean, compact('field', 'operator', 'value'));
 
@@ -1705,7 +1706,7 @@ class Builder
      */
     public function escape($value, $ignore = '', $flags = 0)
     {
-        return ldap_escape($value, $ignore, $flags);
+        return ldap_escape((string) $value, $ignore, $flags);
     }
 
     /**

@@ -1,0 +1,50 @@
+name: Tests
+
+on:
+  push:
+    branches:
+      - master
+      - v9.0
+      - v8.0
+    paths-ignore:
+      - '**.md'
+  pull_request:
+    branches:
+      - master
+      - v9.0
+      - v8.0
+    paths-ignore:
+      - '**.md'
+  # Allow manually triggering the workflow
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: "ubuntu-latest"
+
+    strategy:
+      matrix:
+        php-version:
+          - "7.0"
+          - "7.1"
+          - "7.2"
+          - "7.3"
+          - "7.4"
+          - "8.0"
+          - "8.1"
+
+    name: PHP ${{ matrix.php-version }} tests
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php-version }}
+          extensions: ldap
+          coverage: none
+
+      - uses: "ramsey/composer-install@v1"
+
+      - name: "Run PHPUnit"
+        run: ./vendor/bin/simple-phpunit

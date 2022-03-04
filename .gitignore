@@ -88,6 +88,8 @@ config/users
 config/users*.db
 config/users*.bak.db
 config/tmp/*
+data/*
+data/config/*
 docs/api.json
 images/cache/*
 backups/*

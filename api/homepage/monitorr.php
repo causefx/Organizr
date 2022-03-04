@@ -37,7 +37,7 @@ trait MonitorrHomepageItem
 		];
 		return array_merge($homepageInformation, $homepageSettings);
 	}
-	
+
 	public function monitorrHomepagePermissions($key = null)
 	{
 		$permissions = [
@@ -55,7 +55,7 @@ trait MonitorrHomepageItem
 		];
 		return $this->homepageCheckKeyPermissions($key, $permissions);
 	}
-	
+
 	public function homepageOrderMonitorr()
 	{
 		if ($this->homepageItemPermissions($this->monitorrHomepagePermissions('main'))) {
@@ -71,7 +71,7 @@ trait MonitorrHomepageItem
 				';
 		}
 	}
-	
+
 	public function getMonitorrHomepageData()
 	{
 		if (!$this->homepageItemPermissions($this->monitorrHomepagePermissions('main'), true)) {
@@ -124,13 +124,13 @@ trait MonitorrHomepageItem
 					$ext = explode('.', $image);
 					$ext = $ext[key(array_slice($ext, -1, 1, true))];
 					$imageUrl = $url . '/assets' . $image;
-					$cacheDirectory = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . 'images' . DIRECTORY_SEPARATOR . 'cache' . DIRECTORY_SEPARATOR;
+					$cacheDirectory = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR . 'cache' . DIRECTORY_SEPARATOR;
 					$img = Requests::get($imageUrl, ['Token' => $this->config['organizrAPI']], $options);
 					if ($img->success) {
 						$base64 = 'data:image/' . $ext . ';base64,' . base64_encode($img->body);
 						$statuses[$service]['image'] = $base64;
 					} else {
-						$statuses[$service]['image'] = 'plugins/images/cache/no-list.png';
+						$statuses[$service]['image'] = 'plugins/images/homepage/no-list.png';
 					}
 					$linkMatch = [];
 					$linkPattern = '/<a class="servicetile" href="(.*)" target="_blank" style="display: block"><div id="serviceimg"><div><img id="' . strtolower($service) . '-service-img/';

@@ -52,6 +52,12 @@ trait RadarrHomepageItem
 					$this->settingsOption('switch', 'radarrPhysicalRelease', ['label' => 'Show Physical Releases']),
 					$this->settingsOption('switch', 'radarrDigitalRelease', ['label' => 'Show Digital Releases']),
 					$this->settingsOption('switch', 'radarrCinemaRelease', ['label' => 'Show Cinema Releases']),
+					$this->settingsOption('blank', '', ['type' => 'html', 'html' => '<hr />']),
+					$this->settingsOption('blank', '', ['type' => 'html', 'html' => '<hr />']),
+					$this->settingsOption('enable', 'radarrIcon', ['label' => 'Show Radarr Icon']),
+					$this->settingsOption('calendar-link-url', 'radarrCalendarLink'),
+					$this->settingsOption('blank'),
+					$this->settingsOption('calendar-frame-target', 'radarrFrameTarget')
 				],
 				'Test Connection' => [
 					$this->settingsOption('blank', null, ['label' => 'Please Save before Testing']),
@@ -283,7 +289,7 @@ trait RadarrHomepageItem
 				} else {
 					$downloaded = "text-danger";
 				}
-				$banner = "/plugins/images/cache/no-np.png";
+				$banner = "/plugins/images/homepage/no-np.png";
 				foreach ($child['images'] as $image) {
 					if ($image['coverType'] == "banner" || $image['coverType'] == "fanart") {
 						if (strpos($image['url'], '://') === false) {
@@ -300,11 +306,11 @@ trait RadarrHomepageItem
 						}
 					}
 				}
-				if ($banner !== "/plugins/images/cache/no-np.png" || (strpos($banner, 'apikey') !== false)) {
-					$cacheDirectory = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . 'images' . DIRECTORY_SEPARATOR . 'cache' . DIRECTORY_SEPARATOR;
+				if ($banner !== "/plugins/images/homepage/no-np.png" || (strpos($banner, 'apikey') !== false)) {
+					$cacheDirectory = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR . 'cache' . DIRECTORY_SEPARATOR;
 					$imageURL = $banner;
 					$cacheFile = $cacheDirectory . $movieID . '.jpg';
-					$banner = 'plugins/images/cache/' . $movieID . '.jpg';
+					$banner = 'data/cache/' . $movieID . '.jpg';
 					if (!file_exists($cacheFile)) {
 						$this->cacheImage($imageURL, $movieID);
 						unset($imageURL);
@@ -322,6 +328,15 @@ trait RadarrHomepageItem
 					}
 				}
 				$alternativeTitles = empty($alternativeTitles) ? "" : substr($alternativeTitles, 0, -2);
+				$href = $this->config['radarrCalendarLink'] ?? '';
+				if (empty($href) && !empty($this->config['radarrURL'])) {
+					$href_arr = explode(',', $this->config['radarrURL']);
+					$href = reset($href_arr);
+				}
+				if (!empty($href)) {
+					$href = $href . '/movie/' . $movieID;
+					$href = str_replace("//movie/", "/movie/", $href);
+				}
 				$details = array(
 					"topTitle" => $movieName,
 					"bottomTitle" => $alternativeTitles,
@@ -329,15 +344,19 @@ trait RadarrHomepageItem
 					"overview" => $child['overview'],
 					"runtime" => $child['runtime'],
 					"image" => $banner,
-					"ratings" => $child['ratings']['value'],
+					"ratings" => $child['ratings']['value'] ?? 0,
 					"videoQuality" => $child["hasFile"] ? @$child['movieFile']['quality']['quality']['name'] : "unknown",
 					"audioChannels" => $child["hasFile"] ? @$child['movieFile']['mediaInfo']['audioChannels'] : "unknown",
 					"audioCodec" => $child["hasFile"] ? @$child['movieFile']['mediaInfo']['audioFormat'] : "unknown",
 					"videoCodec" => $child["hasFile"] ? @$child['movieFile']['mediaInfo']['videoCodec'] : "unknown",
 					"size" => $child["hasFile"] ? @$child['movieFile']['size'] : "unknown",
 					"genres" => $child['genres'],
-					"year" => isset($child['year']) ? $child['year'] : '',
-					"studio" => isset($child['studio']) ? $child['studio'] : '',
+					"year" => $child['year'] ?? '',
+					"studio" => $child['studio'] ?? '',
+					"href" => strtolower($href),
+					"icon" => "/plugins/images/tabs/radarr.png",
+					"frame" => $this->config['radarrFrameTarget'],
+					"showLink" => $this->config['radarrIcon']
 				);
 				array_push($gotCalendar, array(
 					"id" => "Radarr-" . $number . "-" . $i,

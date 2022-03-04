@@ -72,6 +72,14 @@ trait UpgradeFunctions
 				$this->upgradeToVersion($versionCheck);
 			}
 			// End Upgrade check start for version above
+			// Upgrade check start for version below
+			$versionCheck = '2.1.1500';
+			if ($compare->lessThan($oldVer, $versionCheck)) {
+				$updateDB = false;
+				$oldVer = $versionCheck;
+				$this->upgradeToVersion($versionCheck);
+			}
+			// End Upgrade check start for version above
 			if ($updateDB == true) {
 				//return 'Upgraded Needed - Current Version '.$oldVer.' - New Version: '.$versionCheck;
 				// Upgrade database to latest version
@@ -89,7 +97,7 @@ trait UpgradeFunctions
 			return true;
 		}
 	}
-	
+
 	public function addColumnToDatabase($table = '', $columnName = '', $definition = 'TEXT')
 	{
 		if ($table == '' || $columnName == '' || $definition == '') {
@@ -130,7 +138,7 @@ trait UpgradeFunctions
 		}
 		return false;
 	}
-	
+
 	public function updateDB($oldVerNum = false)
 	{
 		$tempLock = $this->config['dbLocation'] . 'DBLOCK.txt';
@@ -204,7 +212,6 @@ trait UpgradeFunctions
 				}
 				@unlink($tempLock);
 				return false;
-				
 			} else {
 				$this->writeLog('error', 'Update Function -  Could not create migration DB', 'Database');
 			}
@@ -213,7 +220,7 @@ trait UpgradeFunctions
 		}
 		return false;
 	}
-	
+
 	public function upgradeToVersion($version = '2.1.0')
 	{
 		switch ($version) {
@@ -226,12 +233,114 @@ trait UpgradeFunctions
 				$this->removeOldCustomHTML();
 			case '2.1.860':
 				$this->upgradeInstalledPluginsConfigItem();
+			case '2.1.1500':
+				$this->upgradeDataToFolder();
 			default:
 				$this->setAPIResponse('success', 'Ran update function for version: ' . $version, 200);
 				return true;
 		}
 	}
-	
+
+	public function removeOldCacheFolder()
+	{
+		$folder = $this->root . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . 'images' . DIRECTORY_SEPARATOR . 'cache' . DIRECTORY_SEPARATOR;
+		$this->setLoggerChannel('Migration');
+		$this->logger->info('Running Old Cache folder migration');
+		if (file_exists($folder)) {
+			$this->rrmdir($folder);
+			$this->logger->info('Old Cache folder found');
+			$this->logger->info('Removed Old Cache folder');
+		}
+		return true;
+	}
+
+	public function upgradeDataToFolder()
+	{
+		if ($this->hasDB()) {
+			// Make main data folder
+			$rootFolderMade = $this->makeDir($this->root . DIRECTORY_SEPARATOR . 'data');
+			// Make config folder child
+			$this->makeDir($this->root . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR . 'config' . DIRECTORY_SEPARATOR);
+
+			if ($rootFolderMade) {
+				// Migrate over userTabs folder
+				$this->makeDir($this->root . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR . 'userTabs');
+				if ($this->rcopy($this->root . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . 'images' . DIRECTORY_SEPARATOR . 'userTabs', $this->root . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR . 'userTabs')) {
+					// Convert tabs over
+					$query = [
+						[
+							'function' => 'fetchAll',
+							'query' => [
+								'SELECT * FROM tabs WHERE image like "%userTabs%"'
+							]
+						],
+					];
+					$tabs = $this->processQueries($query);
+					if (count($tabs) > 0) {
+						foreach ($tabs as $tab) {
+							$newImage = str_replace('plugins/images/userTabs', 'data/userTabs', $tab['image']);
+							$updateQuery = [
+								[
+									'function' => 'query',
+									'query' => [
+										'UPDATE tabs SET',
+										['image' => $newImage],
+										'WHERE id = ?',
+										$tab['id']
+									]
+								],
+							];
+							$this->processQueries($updateQuery);
+						}
+					}
+					$this->setLoggerChannel('Migration');
+					$this->logger->info('The folder "userTabs" was migrated to new data folder');
+				}
+				// Migrate over custom cert
+				if (file_exists($this->root . DIRECTORY_SEPARATOR . 'api' . DIRECTORY_SEPARATOR . 'functions' . DIRECTORY_SEPARATOR . 'cert' . DIRECTORY_SEPARATOR . 'custom.pem')) {
+					// Make cert folder child
+					$this->makeDir($this->root . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR . 'cert' . DIRECTORY_SEPARATOR);
+					if ($this->rcopy($this->root . DIRECTORY_SEPARATOR . 'api' . DIRECTORY_SEPARATOR . 'functions' . DIRECTORY_SEPARATOR . 'cert' . DIRECTORY_SEPARATOR . 'custom.pem', $this->root . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR . 'cert' . DIRECTORY_SEPARATOR . 'custom.pem')) {
+						$this->setLoggerChannel('Migration');
+						$this->logger->info('Moved over custom cert file');
+					}
+				}
+				// Migrate over favIcon
+				$this->makeDir($this->root . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR . 'favicon');
+				if ($this->rcopy($this->root . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . 'images' . DIRECTORY_SEPARATOR . 'faviconCustom', $this->root . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR . 'favicon')) {
+					if ($this->config['favIcon'] !== '') {
+						$this->config['favIcon'] = str_replace('plugins/images/faviconCustom', 'data/favicon', $this->config['favIcon']);
+						$this->updateConfig(array('favIcon' => $this->config['favIcon']));
+					}
+					$this->setLoggerChannel('Migration');
+					$this->logger->info('Favicon was migrated over');
+				}
+				// Migrate over custom pages
+				$this->makeDir($this->root . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR . 'pages');
+				if (file_exists($this->root . DIRECTORY_SEPARATOR . 'api' . DIRECTORY_SEPARATOR . 'pages' . DIRECTORY_SEPARATOR . 'custom')) {
+					if ($this->rcopy($this->root . DIRECTORY_SEPARATOR . 'api' . DIRECTORY_SEPARATOR . 'pages' . DIRECTORY_SEPARATOR . 'custom', $this->root . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR . 'pages')) {
+						$this->rrmdir($this->root . DIRECTORY_SEPARATOR . 'api' . DIRECTORY_SEPARATOR . 'pages' . DIRECTORY_SEPARATOR . 'custom');
+						$this->setLoggerChannel('Migration');
+						$this->logger->info('Custom pages was migrated over');
+					}
+				}
+				// Migrate over custom routes
+				$this->makeDir($this->root . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR . 'routes');
+				if (file_exists($this->root . DIRECTORY_SEPARATOR . 'api' . DIRECTORY_SEPARATOR . 'v2' . DIRECTORY_SEPARATOR . 'routes' . DIRECTORY_SEPARATOR . 'custom')) {
+					if ($this->rcopy($this->root . DIRECTORY_SEPARATOR . 'api' . DIRECTORY_SEPARATOR . 'v2' . DIRECTORY_SEPARATOR . 'routes' . DIRECTORY_SEPARATOR . 'custom', $this->root . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR . 'routes')) {
+						$this->rrmdir($this->root . DIRECTORY_SEPARATOR . 'api' . DIRECTORY_SEPARATOR . 'v2' . DIRECTORY_SEPARATOR . 'routes' . DIRECTORY_SEPARATOR . 'custom');
+						$this->setLoggerChannel('Migration');
+						$this->logger->info('Custom routes was migrated over');
+					}
+				}
+				// Migrate over cache folder
+				$this->removeOldCacheFolder();
+			}
+			return true;
+		}
+		return false;
+	}
+
 	public function upgradeSettingsTabURL()
 	{
 		$response = [
@@ -247,7 +356,7 @@ trait UpgradeFunctions
 		];
 		return $this->processQueries($response);
 	}
-	
+
 	public function upgradeHomepageTabURL()
 	{
 		$response = [
@@ -263,7 +372,7 @@ trait UpgradeFunctions
 		];
 		return $this->processQueries($response);
 	}
-	
+
 	public function upgradeInstalledPluginsConfigItem()
 	{
 		$oldConfigItem = $this->config['installedPlugins'];
@@ -296,7 +405,7 @@ trait UpgradeFunctions
 		}
 		return true;
 	}
-	
+
 	public function removeOldPluginDirectoriesAndFiles()
 	{
 		$folders = [
@@ -326,7 +435,7 @@ trait UpgradeFunctions
 		}
 		return true;
 	}
-	
+
 	public function checkForConfigKeyAddToArray($keys)
 	{
 		$updateItems = [];
@@ -340,7 +449,7 @@ trait UpgradeFunctions
 		}
 		return $updateItems;
 	}
-	
+
 	public function removeOldCustomHTML()
 	{
 		$backup = $this->backupOrganizr();

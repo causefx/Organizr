@@ -52,8 +52,9 @@ trait DelugeHomepageItem
 				'Misc Options' => [
 					$this->settingsOption('hide-seeding', 'delugeHideSeeding'),
 					$this->settingsOption('hide-completed', 'delugeHideCompleted'),
-					$this->settingsOption('refresh', 'delugeRefresh'),
+					$this->settingsOption('hide-status', 'delugeHideStatus'),
 					$this->settingsOption('combine', 'delugeCombine'),
+					$this->settingsOption('refresh', 'delugeRefresh'),
 				],
 				'Test Connection' => [
 					$this->settingsOption('blank', null, ['label' => 'Please Save before Testing. Note that using a blank password might not work correctly.']),
@@ -128,7 +129,7 @@ trait DelugeHomepageItem
 		try {
 			$options = $this->requestOptions($this->config['delugeURL'], $this->config['delugeRefresh'], $this->config['delugeDisableCertCheck'], $this->config['delugeUseCustomCertificate'], ['organizr_cert' => $this->getCert(), 'custom_cert' => $this->getCustomCert()]);
 			$deluge = new deluge($this->config['delugeURL'], $this->decrypt($this->config['delugePassword']),$options);
-			$torrents = $deluge->getTorrents(null, 'comment, download_payload_rate, eta, hash, is_finished, is_seed, message, name, paused, progress, queue, state, total_size, upload_payload_rate');
+			$torrents = $deluge->getTorrents(null, 'comment, download_payload_rate, eta, hash, is_finished, is_seed, message, name, paused, progress, queue, state, total_size, upload_payload_rate, tracker_status');
 			foreach ($torrents as $key => $value) {
 				$tempStatus = $this->delugeStatus($value->queue, $value->state, $value->progress);
 				if ($tempStatus == 'Seeding' && $this->config['delugeHideSeeding']) {
@@ -136,6 +137,9 @@ trait DelugeHomepageItem
 				} elseif ($tempStatus == 'Finished' && $this->config['delugeHideCompleted']) {
 					//do nothing
 				} else {
+					if ($this->config['delugeHideStatus']){
+						$value->tracker_status = "";
+					}
 					$api['content']['queueItems'][] = $value;
 				}
 			}

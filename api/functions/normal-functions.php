@@ -27,12 +27,12 @@ trait NormalFunctions
 		//return $timeExtra[0] . 's ' . (number_format(('0.' . substr($timeExtra[1], 0, 4)), 4, '.', '') * 1000) . 'ms';
 		//return (number_format(('0.' . substr($timeExtra[1], 0, 4)), 4, '.', '') * 1000) . 'ms';
 	}
-	
+
 	public function getExtension($string)
 	{
 		return preg_replace("#(.+)?\.(\w+)(\?.+)?#", "$2", $string);
 	}
-	
+
 	public function get_browser_name()
 	{
 		$user_agent = $_SERVER['HTTP_USER_AGENT'];
@@ -51,13 +51,13 @@ trait NormalFunctions
 		}
 		return 'Other';
 	}
-	
+
 	public function array_filter_key(array $array, $callback)
 	{
 		$matchedKeys = array_filter(array_keys($array), $callback);
 		return array_intersect_key($array, array_flip($matchedKeys));
 	}
-	
+
 	public function getOS()
 	{
 		if (PHP_SHLIB_SUFFIX == "dll") {
@@ -66,14 +66,14 @@ trait NormalFunctions
 			return "*nix";
 		}
 	}
-	
+
 	// Get Gravatar Email Image
 	public function gravatar($email = '')
 	{
 		$email = md5(strtolower(trim($email)));
 		return "https://www.gravatar.com/avatar/$email?s=100&d=mm";
 	}
-	
+
 	// Clean Directory string
 	public function cleanDirectory($path)
 	{
@@ -86,14 +86,14 @@ trait NormalFunctions
 		}
 		return $path;
 	}
-	
+
 	// Print output all purrty
 	public function prettyPrint($v)
 	{
 		$trace = debug_backtrace()[0];
 		echo '<pre style="white-space: pre; text-overflow: ellipsis; overflow: hidden; background-color: #f2f2f2; border: 2px solid black; border-radius: 5px; padding: 5px; margin: 5px;">' . $trace['file'] . ':' . $trace['line'] . ' ' . gettype($v) . "\n\n" . print_r($v, 1) . '</pre><br/>';
 	}
-	
+
 	public function gen_uuid()
 	{
 		return sprintf('%04x%04x-%04x-%04x-%04x-%04x%04x%04x',
@@ -112,19 +112,19 @@ trait NormalFunctions
 			mt_rand(0, 0xffff), mt_rand(0, 0xffff), mt_rand(0, 0xffff)
 		);
 	}
-	
+
 	public function dbExtension($string)
 	{
 		return (substr($string, -3) == '.db') ? $string : $string . '.db';
 	}
-	
+
 	public function cleanPath($path)
 	{
 		$path = preg_replace('/([^:])(\/{2,})/', '$1/', $path);
 		$path = rtrim($path, '/');
 		return $path;
 	}
-	
+
 	public function searchArray($array, $field, $value)
 	{
 		foreach ($array as $key => $item) {
@@ -133,7 +133,7 @@ trait NormalFunctions
 		}
 		return false;
 	}
-	
+
 	public function localURL($url, $force = false)
 	{
 		if ($force) {
@@ -146,7 +146,7 @@ trait NormalFunctions
 		}
 		return false;
 	}
-	
+
 	public function arrayIP($string)
 	{
 		if (strpos($string, ',') !== false) {
@@ -159,7 +159,7 @@ trait NormalFunctions
 		}
 		return $result;
 	}
-	
+
 	public function timeExecution($previous = null)
 	{
 		if (!$previous) {
@@ -168,7 +168,7 @@ trait NormalFunctions
 			return (microtime(true) - $_SERVER["REQUEST_TIME_FLOAT"]) - $previous;
 		}
 	}
-	
+
 	public function getallheaders()
 	{
 		if (!function_exists('getallheaders')) {
@@ -186,7 +186,7 @@ trait NormalFunctions
 			return getallheaders();
 		}
 	}
-	
+
 	public function random_ascii_string($length)
 	{
 		$characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
@@ -197,7 +197,7 @@ trait NormalFunctions
 		}
 		return $randomString;
 	}
-	
+
 	// Generate Random string
 	public function randString($length = 10, $chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ')
 	{
@@ -207,7 +207,7 @@ trait NormalFunctions
 		}
 		return $tmp;
 	}
-	
+
 	public function isEncrypted($password)
 	{
 		switch (strlen($password)) {
@@ -223,7 +223,7 @@ trait NormalFunctions
 				return false;
 		}
 	}
-	
+
 	public function fillString($string, $length)
 	{
 		$filler = '0123456789abcdefghijklmnopqrstuvwxyz!@#$%^&*';
@@ -237,7 +237,7 @@ trait NormalFunctions
 			return $string;
 		}
 	}
-	
+
 	public function userIP()
 	{
 		if (isset($_SERVER['HTTP_CLIENT_IP'])) {
@@ -263,7 +263,7 @@ trait NormalFunctions
 			return $ipaddress;
 		}
 	}
-	
+
 	public function serverIP()
 	{
 		if (array_key_exists('SERVER_ADDR', $_SERVER)) {
@@ -271,7 +271,7 @@ trait NormalFunctions
 		}
 		return '127.0.0.1';
 	}
-	
+
 	public function parseDomain($value, $force = false)
 	{
 		$badDomains = array('ddns.net', 'ddnsking.com', '3utilities.com', 'bounceme.net', 'freedynamicdns.net', 'freedynamicdns.org', 'gotdns.ch', 'hopto.org', 'myddns.me', 'myds.me', 'myftp.biz', 'myftp.org', 'myvnc.com', 'noip.com', 'onthewifi.com', 'redirectme.net', 'serveblog.net', 'servecounterstrike.com', 'serveftp.com', 'servegame.com', 'servehalflife.com', 'servehttp.com', 'serveirc.com', 'serveminecraft.net', 'servemp3.com', 'servepics.com', 'servequake.com', 'sytes.net', 'viewdns.net', 'webhop.me', 'zapto.org');
@@ -309,7 +309,7 @@ trait NormalFunctions
 		}
 		return ($force) ? $value : $Domain;
 	}
-	
+
 	// Cookie Custom Function
 	public function coookie($type, $name, $value = '', $days = -1, $http = true, $path = '/')
 	{
@@ -360,7 +360,7 @@ trait NormalFunctions
 				. (!$HTTPOnly ? '' : '; HttpOnly'), false);
 		}
 	}
-	
+
 	public function coookieSeconds($type, $name, $value = '', $ms = null, $http = true, $path = '/')
 	{
 		if (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] == "https") {
@@ -409,13 +409,13 @@ trait NormalFunctions
 				. (!$HTTPOnly ? '' : '; HttpOnly'), false);
 		}
 	}
-	
+
 	// Qualify URL
 	public function qualifyURL($url, $return = false)
 	{
 		//local address?
 		if (substr($url, 0, 1) == "/") {
-			if (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != 'off') {
+			if ((isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != 'off') || (isset($_SERVER['HTTP_X_FORWARDED_SSL']) && $_SERVER['HTTP_X_FORWARDED_SSL'] != 'off') || (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] != 'http')) {
 				$protocol = "https://";
 			} else {
 				$protocol = "http://";
@@ -448,7 +448,7 @@ trait NormalFunctions
 		);
 		return ($return) ? $array : $scheme . '://' . $host . $port . $path . $query;
 	}
-	
+
 	public function getServer($over = false)
 	{
 		if ($over) {
@@ -458,7 +458,7 @@ trait NormalFunctions
 		}
 		return isset($_SERVER["HTTP_HOST"]) ? $_SERVER["HTTP_HOST"] : $_SERVER["SERVER_NAME"];
 	}
-	
+
 	public function getServerPath($over = false)
 	{
 		if ($over) {
@@ -497,7 +497,7 @@ trait NormalFunctions
 			return $url;
 		}
 	}
-	
+
 	public function convertIPToRange($ip)
 	{
 		if (strpos($ip, '/') !== false) {
@@ -518,7 +518,7 @@ trait NormalFunctions
 			'to' => $last_ip_long
 		];
 	}
-	
+
 	public function localIPRanges()
 	{
 		$mainArray = array(
@@ -571,7 +571,7 @@ trait NormalFunctions
 		*/
 		return $mainArray;
 	}
-	
+
 	public function isLocal($checkIP = null)
 	{
 		$isLocal = false;
@@ -586,7 +586,7 @@ trait NormalFunctions
 		}
 		return $isLocal;
 	}
-	
+
 	public function isLocalOrServer()
 	{
 		$isLocalOrServer = false;
@@ -600,7 +600,7 @@ trait NormalFunctions
 		}
 		return $isLocalOrServer;
 	}
-	
+
 	public function human_filesize($bytes, $dec = 2)
 	{
 		$bytes = number_format($bytes, 0, '.', '');
@@ -608,7 +608,7 @@ trait NormalFunctions
 		$factor = floor((strlen($bytes) - 1) / 3);
 		return sprintf("%.{$dec}f %s", $bytes / (1024 ** $factor), $size[$factor]);
 	}
-	
+
 	public function apiResponseFormatter($response)
 	{
 		if (is_array($response)) {
@@ -622,7 +622,7 @@ trait NormalFunctions
 		}
 		return ['api_response' => 'No data'];
 	}
-	
+
 	public function json_validator($data = null)
 	{
 		if (!empty($data)) {
@@ -631,12 +631,12 @@ trait NormalFunctions
 		}
 		return false;
 	}
-	
+
 	public function replace_first($search_str, $replacement_str, $src_str)
 	{
 		return (false !== ($pos = strpos($src_str, $search_str))) ? substr_replace($src_str, $replacement_str, $pos, strlen($search_str)) : $src_str;
 	}
-	
+
 	/**
 	 *  Check if an array is a multidimensional array.
 	 *
@@ -648,7 +648,7 @@ trait NormalFunctions
 		if (count(array_filter($x, 'is_array')) > 0) return true;
 		return false;
 	}
-	
+
 	/**
 	 *  Convert an object to an array.
 	 *
@@ -660,13 +660,13 @@ trait NormalFunctions
 		if (!is_object($object) && !is_array($object)) return $object;
 		return array_map(array($this, 'object_to_array'), (array)$object);
 	}
-	
+
 	/**
 	 *  Check if a value exists in the array/object.
 	 *
-	 * @param mixed   $needle   The value that you are searching for
-	 * @param mixed   $haystack The array/object to search
-	 * @param boolean $strict   Whether to use strict search or not
+	 * @param mixed $needle The value that you are searching for
+	 * @param mixed $haystack The array/object to search
+	 * @param boolean $strict Whether to use strict search or not
 	 * @return  boolean             Whether the value was found or not
 	 */
 	public function search_for_value($needle, $haystack, $strict = true)
@@ -697,6 +697,11 @@ trait NormalFunctions
 			}
 		}
 		return false;
+	}
+
+	public function makeDir($dirPath, $mode = 0777)
+	{
+		return is_dir($dirPath) || @mkdir($dirPath, $mode, true);
 	}
 }
 

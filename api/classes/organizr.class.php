@@ -27,9 +27,11 @@ class Organizr
 	use UpgradeFunctions;
 
 	// Use homepage item functions
+	use BookmarksHomepageItem;
 	use CalendarHomepageItem;
 	use CouchPotatoHomepageItem;
 	use DelugeHomepageItem;
+	use DonateHomepageItem;
 	use EmbyHomepageItem;
 	use HealthChecksHomepageItem;
 	use HTMLHomepageItem;
@@ -63,7 +65,7 @@ class Organizr
 
 	// ===================================
 	// Organizr Version
-	public $version = '2.1.1140';
+	public $version = '2.1.1680';
 	// ===================================
 	// Quick php Version check
 	public $minimumPHP = '7.3';
@@ -108,7 +110,8 @@ class Organizr
 		// Set Start Execution Time
 		$this->timeExecution = $this->timeExecution();
 		// Set location path to user config path
-		$this->userConfigPath = dirname(__DIR__, 1) . DIRECTORY_SEPARATOR . 'config' . DIRECTORY_SEPARATOR . 'config.php';
+		$this->chooseConfigFile();
+		//$this->userConfigPath = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR . 'config' . DIRECTORY_SEPARATOR . 'config.php';
 		// Set location path to default config path
 		$this->defaultConfigPath = dirname(__DIR__, 1) . DIRECTORY_SEPARATOR . 'config' . DIRECTORY_SEPARATOR . 'default.php';
 		// Set current time
@@ -137,8 +140,8 @@ class Organizr
 		// Set Paths
 		$this->paths = array(
 			'Root Folder' => dirname(__DIR__, 2) . DIRECTORY_SEPARATOR,
-			'Cache Folder' => dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . 'images' . DIRECTORY_SEPARATOR . 'cache' . DIRECTORY_SEPARATOR,
-			'Tab Folder' => dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . 'images' . DIRECTORY_SEPARATOR . 'userTabs' . DIRECTORY_SEPARATOR,
+			'Cache Folder' => dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR . 'cache' . DIRECTORY_SEPARATOR,
+			'Tab Folder' => $this->root . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR . 'userTabs' . DIRECTORY_SEPARATOR,
 			'API Folder' => dirname(__DIR__, 1) . DIRECTORY_SEPARATOR,
 			'DB Folder' => ($this->hasDB()) ? $this->config['dbLocation'] : false
 		);
@@ -161,6 +164,25 @@ class Organizr
 	public function __destruct()
 	{
 		$this->disconnectDB();
+	}
+
+	public function chooseConfigFile()
+	{
+
+		$oldUserConfigPath = dirname(__DIR__, 1) . DIRECTORY_SEPARATOR . 'config' . DIRECTORY_SEPARATOR . 'config.php';
+		$userConfigPath = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR . 'config' . DIRECTORY_SEPARATOR . 'config.php';
+		if (file_exists($userConfigPath) && file_exists($oldUserConfigPath)) {
+			$this->userConfigPath = $userConfigPath;
+		} elseif (file_exists($oldUserConfigPath)) {
+			$this->makeDir(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR . 'config' . DIRECTORY_SEPARATOR);
+			if ($this->rcopy($oldUserConfigPath, $userConfigPath)) {
+				$this->userConfigPath = $userConfigPath;
+			} else {
+				$this->userConfigPath = $oldUserConfigPath;
+			}
+		} else {
+			$this->userConfigPath = $userConfigPath;
+		}
 	}
 
 	protected function connectDB()
@@ -254,8 +276,8 @@ class Organizr
 	public function checkForOrganizrOAuth()
 	{
 		// Oauth?
-		if ($this->config['authProxyEnabled'] && $this->config['authProxyHeaderName'] !== '' && $this->config['authProxyWhitelist'] !== '') {
-			if (isset(getallheaders()[$this->config['authProxyHeaderName']])) {
+		if ($this->config['authProxyEnabled'] && ($this->config['authProxyHeaderName'] !== '' || $this->config['authProxyHeaderNameEmail'] !== '') && $this->config['authProxyWhitelist'] !== '') {
+			if (isset(getallheaders()[$this->config['authProxyHeaderName']]) || isset(getallheaders()[$this->config['authProxyHeaderNameEmail']])) {
 				$this->coookieSeconds('set', 'organizrOAuth', 'true', 20000, false);
 			}
 		}
@@ -677,25 +699,26 @@ class Organizr
 		if (!in_array($route, $GLOBALS['bypass'])) {
 			if ($this->isApprovedRequest($method, $data) === false) {
 				$this->setAPIResponse('error', 'Not authorized for current Route: ' . $route, 401);
-				$this->writeLog('success', 'Killed Attack From [' . (isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : 'No Referer') . ']', $this->user['username']);
+				$this->setLoggerChannel('API Security');
+				$this->logger->notice('Killed Attack From [' . ($_SERVER['HTTP_REFERER'] ?? 'No Referer') . ']');
 				return false;
 			}
 		}
 		return true;
 	}
 
-	public function apiData($request)
+	public function apiData($request, $decode = true)
 	{
 		switch ($request->getMethod()) {
 			case 'POST':
 				if (stripos($request->getHeaderLine('Content-Type'), 'application/json') !== false) {
-					return json_decode(file_get_contents('php://input', 'r'), true);
+					return $decode ? json_decode(file_get_contents('php://input', 'r'), true) : file_get_contents('php://input', 'r');
 				} else {
 					return $request->getParsedBody();
 				}
 			default:
 				if (stripos($request->getHeaderLine('Content-Type'), 'application/json') !== false) {
-					return json_decode(file_get_contents('php://input', 'r'), true);
+					return $decode ? json_decode(file_get_contents('php://input', 'r'), true) : file_get_contents('php://input', 'r');
 				} else {
 					return null;
 				}
@@ -754,7 +777,7 @@ class Organizr
 			<meta name="theme-color" content="#ffffff">
 		';
 		if ($this->config['favIcon'] !== '' && $rootPath !== '') {
-			$this->config['favIcon'] = str_replace('plugins/images/faviconCustom', $rootPath . 'plugins/images/faviconCustom', $this->config['favIcon']);
+			$this->config['favIcon'] = str_replace('data/favicon', $rootPath . 'data/favicon', $this->config['favIcon']);
 		}
 		return ($this->config['favIcon'] == '') ? $favicon : $this->config['favIcon'];
 	}
@@ -1096,13 +1119,62 @@ class Organizr
 		return $this->config;
 	}
 
-	public function status()
+	public function status($action = false)
+	{
+		$status = [];
+		$dependenciesActive = [];
+		$dependenciesInactive = [];
+		$extensions = ['PDO_SQLITE', 'PDO', 'SQLITE3', 'zip', 'cURL', 'openssl', 'simplexml', 'json', 'session', 'filter'];
+		$functions = ['hash', 'fopen', 'fsockopen', 'fwrite', 'fclose', 'readfile'];
+		foreach ($extensions as $check) {
+			if (extension_loaded($check)) {
+				array_push($dependenciesActive, $check);
+			} else {
+				array_push($dependenciesInactive, $check);
+			}
+		}
+		foreach ($functions as $check) {
+			if (function_exists($check)) {
+				array_push($dependenciesActive, $check);
+			} else {
+				array_push($dependenciesInactive, $check);
+			}
+		}
+		$status['writable'] = is_writable(dirname(__DIR__, 2));
+		$status['minVersion'] = (version_compare(PHP_VERSION, $this->minimumPHP) >= 0);
+		$status['os'] = $this->getOS();
+		$status['php'] = phpversion();
+		$status['userConfigPathExists'] = file_exists($this->userConfigPath);
+		if (!($status['minVersion'])) {
+			$status['action'] = 'php';
+			if ($action) {
+				header($this->getServerPath() . 'api/v2/organizr/error');
+				exit;
+			}
+		} elseif (count($dependenciesInactive) > 0) {
+			$status['action'] = 'dependencies';
+		} elseif (!$status['writable']) {
+			$status['action'] = 'permission';
+		} elseif (!$status['userConfigPathExists']) {
+			$status['action'] = 'wizard';
+		} else {
+			$status['action'] = 'launch';
+			if ($action) {
+				echo '<script type="text/javascript"> window.location.href="' . $this->getServerPath() . 'api/v2/organizr/error' . '";</script>';
+				die(header($this->getServerPath() . 'api/v2/organizr/error'));
+				exit;
+			}
+		}
+		return $status;
+	}
+
+	public function launch()
 	{
 		$status = array();
 		$dependenciesActive = array();
 		$dependenciesInactive = array();
-		$extensions = array("PDO_SQLITE", "PDO", "SQLITE3", "zip", "cURL", "openssl", "simplexml", "json", "session", "filter");
-		$functions = array("hash", "fopen", "fsockopen", "fwrite", "fclose", "readfile");
+		$extensions = array('PDO_SQLITE', 'PDO', 'SQLITE3', 'zip', 'cURL', 'openssl', 'simplexml', 'json', 'session', 'filter');
+		$functions = array('hash', 'fopen', 'fsockopen', 'fwrite', 'fclose', 'readfile');
 		foreach ($extensions as $check) {
 			if (extension_loaded($check)) {
 				array_push($dependenciesActive, $check);
@@ -1118,12 +1190,12 @@ class Organizr
 			}
 		}
 		if (!file_exists($this->userConfigPath)) {
-			$status['status'] = "wizard";//wizard - ok for test
+			$status['status'] = 'wizard';//wizard - ok for test
 		}
 		if (count($dependenciesInactive) > 0 || !is_writable(dirname(__DIR__, 2)) || !(version_compare(PHP_VERSION, $this->minimumPHP) >= 0)) {
-			$status['status'] = "dependencies";
+			$status['status'] = 'dependencies';
 		}
-		$status['status'] = ($status['status']) ?? "ok";
+		$status['status'] = ($status['status']) ?? 'ok';
 		$status['writable'] = is_writable(dirname(__DIR__, 2)) ? 'yes' : 'no';
 		$status['minVersion'] = (version_compare(PHP_VERSION, $this->minimumPHP) >= 0) ? 'yes' : 'no';
 		$status['dependenciesActive'] = $dependenciesActive;
@@ -1532,8 +1604,8 @@ class Organizr
 				);
 			}
 		}
-		$dirname = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . 'images' . DIRECTORY_SEPARATOR . 'userTabs' . DIRECTORY_SEPARATOR;
-		$path = 'plugins/images/userTabs/';
+		$dirname = $this->root . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR . 'userTabs' . DIRECTORY_SEPARATOR;
+		$path = 'data/userTabs/';
 		$images = scandir($dirname);
 		foreach ($images as $image) {
 			if (!in_array($image, $ignore)) {
@@ -1586,11 +1658,12 @@ class Organizr
 			$this->setAPIResponse('error', 'No image supplied', 422);
 			return false;
 		}
-		$approvedPath = 'plugins/images/userTabs/';
+		$approvedPath = 'data/userTabs/';
 		$removeImage = $approvedPath . pathinfo($image, PATHINFO_BASENAME);
 		if ($this->approvedFileExtension($removeImage, 'image')) {
 			if (file_exists(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . $removeImage)) {
-				$this->writeLog('success', 'Image Manager Function -  Deleted Image [' . pathinfo($image, PATHINFO_BASENAME) . ']', $this->user['username']);
+				$this->setLoggerChannel('Image Manager');
+				$this->logger->info('Image Manager Function -  Deleted Image [' . pathinfo($image, PATHINFO_BASENAME) . ']');
 				$this->setAPIResponse(null, pathinfo($image, PATHINFO_BASENAME) . ' has been deleted', null);
 				return (unlink(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . $removeImage));
 			} else {
@@ -1610,7 +1683,7 @@ class Organizr
 			ini_set('upload_max_filesize', '10M');
 			ini_set('post_max_size', '10M');
 			$tempFile = $_FILES['file']['tmp_name'];
-			$targetPath = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . 'images' . DIRECTORY_SEPARATOR . 'userTabs' . DIRECTORY_SEPARATOR;
+			$targetPath = $this->root . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR . 'userTabs' . DIRECTORY_SEPARATOR;
 			$targetFile = $targetPath . $_FILES['file']['name'];
 			$this->setAPIResponse(null, pathinfo($_FILES['file']['name'], PATHINFO_BASENAME) . ' has been uploaded', null);
 			return move_uploaded_file($tempFile, $targetFile);
@@ -1768,9 +1841,9 @@ class Organizr
 									<li lang="en"><i class="fa fa-caret-right text-info"></i> Choose your image to use</li>
 									<li lang="en"><i class="fa fa-caret-right text-info"></i> Edit settings to your liking</li>
 									<li lang="en"><i class="fa fa-caret-right text-info"></i> At bottom of page on [Favicon Generator Options] under [Path] choose [I cannot or I do not want to place favicon files at the root of my web site.]</li>
-									<li lang="en"><i class="fa fa-caret-right text-info"></i> Enter this path <code>plugins/images/faviconCustom</code></li>
+									<li lang="en"><i class="fa fa-caret-right text-info"></i> Enter this path <code>data/favicon</code></li>
 									<li lang="en"><i class="fa fa-caret-right text-info"></i> Click [Generate your Favicons and HTML code]</li>
-									<li lang="en"><i class="fa fa-caret-right text-info"></i> Download and unzip file and place in <code>plugins/images/faviconCustom</code></li>
+									<li lang="en"><i class="fa fa-caret-right text-info"></i> Download and unzip file and place in <code>data/favicon</code></li>
 									<li lang="en"><i class="fa fa-caret-right text-info"></i> Copy code and paste inside left box</li>
 								</ul>
 							</div>
@@ -1888,6 +1961,7 @@ class Organizr
 				$this->settingsOption('code-editor', 'blacklistedMessage', ['mode' => 'html']),
 			],
 			'Logs' => [
+				$this->settingsOption('folder', 'logLocation', ['label' => 'Log Save Path', 'help' => 'Folder path to save Organizr Logs - Please test before saving', 'value' => $this->logLocation()]),
 				$this->settingsOption('select', 'logLevel', ['label' => 'Log Level', 'options' => $this->logLevels()]),
 				$this->settingsOption('switch', 'includeDatabaseQueriesInDebug', ['label' => 'Include Database Queries', 'help' => 'Include Database queries in debug logs']),
 				$this->settingsOption('number', 'maxLogFiles', ['label' => 'Maximum Log Files', 'help' => 'Number of log files to preserve', 'attr' => 'min="1"']),
@@ -2050,6 +2124,9 @@ class Organizr
 				$this->settingsOption('url', 'komgaURL'),
 				$this->settingsOption('auth', 'ssoKomgaAuth'),
 				$this->settingsOption('enable', 'ssoKomga'),
+				$this->settingsOption('blank'),
+				$this->settingsOption('username', 'komgaFallbackUser', ['label' => 'Komga Fallback Email', 'help' => 'DO NOT SET THIS TO YOUR ADMIN ACCOUNT. We recommend you create a local account as a "catch all" for when Organizr is unable to perform SSO.  Organizr will request a User Token based off of this user credentials']),
+				$this->settingsOption('password', 'komgaFallbackPassword', ['label' => 'Komga Fallback Password']),
 			],
 		];
 	}
@@ -2226,12 +2303,24 @@ class Organizr
 					}
 				}
 			}
+			switch ($k) {
+				case 'logLocation':
+				case 'dbLocation':
+					if (!empty($v)) {
+						$v = $this->cleanDirectory($v);
+					}
+					break;
+				default:
+					break;
+			}
 			if (strtolower($k) !== 'formkey') {
 				$newItem[$k] = $v;
 				$this->config[$k] = $v;
 			}
 		}
 		$this->setAPIResponse('success', 'Config items updated', 200);
+		$this->setLoggerChannel('Config');
+		$this->logger->info('Config items updated', array_keys($array));
 		return (bool)$this->updateConfig($newItem);
 	}
 
@@ -2753,15 +2842,16 @@ class Organizr
 			return false;
 		}
 		// Check if Auth Proxy is enabled
-		if ($this->config['authProxyEnabled'] && $this->config['authProxyHeaderName'] !== '' && $this->config['authProxyWhitelist'] !== '') {
-			if (isset($this->getallheaders()[$this->config['authProxyHeaderName']])) {
-				$usernameHeader = $this->getallheaders()[$this->config['authProxyHeaderName']] ?? $username;
+		if ($this->config['authProxyEnabled'] && ($this->config['authProxyHeaderName'] !== '' || $this->config['authProxyHeaderNameEmail'] !== '') && $this->config['authProxyWhitelist'] !== '') {
+			if (isset($this->getallheaders()[$this->config['authProxyHeaderName']]) || isset($this->getallheaders()[$this->config['authProxyHeaderNameEmail']])) {
+				$usernameHeader = $this->getallheaders()[$this->config['authProxyHeaderName']] ?? null;
 				$emailHeader = $this->getallheaders()[$this->config['authProxyHeaderNameEmail']] ?? null;
-				$this->setLoggerChannel('Authentication', $usernameHeader);
+				$headerForLogin = $usernameHeader ?: ($emailHeader ?: null);
+				$this->setLoggerChannel('Authentication', $headerForLogin);
 				$this->logger->debug('Starting Auth Proxy verification');
 				$whitelistRange = $this->analyzeIP($this->config['authProxyWhitelist']);
 				$authProxy = $this->authProxyRangeCheck($whitelistRange['from'], $whitelistRange['to']);
-				$username = ($authProxy) ? $usernameHeader : $username;
+				$username = ($authProxy) ? $headerForLogin : $username;
 				$password = ($password == null) ? $this->random_ascii_string(10) : $password;
 				$addEmailToAuthProxy = ($authProxy && $emailHeader) ? ['email' => $emailHeader] : true;
 				if ($authProxy) {
@@ -2958,7 +3048,8 @@ class Organizr
 		if ($isUser) {
 			$this->updateUserPassword($newPassword, $isUser['id']);
 			$this->setAPIResponse('success', 'User password has been reset', 200);
-			$this->writeLog('success', 'User Management Function - User: ' . $isUser['username'] . '\'s password was reset', $isUser['username']);
+			$this->setLoggerChannel('User Management');
+			$this->logger->info('User Management Function - User: ' . $isUser['username'] . '\'s password was reset');
 			if ($this->config['PHPMAILER-enabled']) {
 				$PhpMailer = new PhpMailer();
 				$emailTemplate = array(
@@ -3008,10 +3099,11 @@ class Organizr
 			$this->setAPIResponse('error', 'Registration Password was not supplied', 422);
 			return false;
 		}
+		$this->setLoggerChannel('User Registration');
 		if ($registrationPassword == $this->decrypt($this->config['registrationPassword'])) {
-			$this->writeLog('success', 'Registration Function - Registration Password Verified', $username);
+			$this->logger->debug('Registration Password Verified');
 			if ($this->createUser($username, $password, $email)) {
-				$this->writeLog('success', 'Registration Function - A User has registered', $username);
+				$this->logger->info('A User has registered');
 				if ($this->createToken($username, $email, $this->config['rememberMeDays'])) {
 					$this->setLoggerChannel('Authentication', $username);
 					$this->logger->info('User has logged in');
@@ -3021,7 +3113,7 @@ class Organizr
 				return false;
 			}
 		} else {
-			$this->writeLog('warning', 'Registration Function - Wrong Password', $username);
+			$this->logger->warning('Wrong Password');
 			$this->setAPIResponse('error', 'Registration Password was incorrect', 401);
 			return false;
 		}
@@ -3038,7 +3130,7 @@ class Organizr
 			$password = $this->random_ascii_string(10);
 		}
 		if ($this->createUser($username, $password, $email)) {
-			$this->writeLog('success', 'Registration Function - A User has registered', $username);
+			$this->logger->info('A User has registered');
 			if ($this->config['PHPMAILER-enabled'] && $email !== '') {
 				$PhpMailer = new PhpMailer();
 				$emailTemplate = array(
@@ -3059,14 +3151,13 @@ class Organizr
 				$PhpMailer->_phpMailerPluginSendEmail($sendEmail);
 			}
 			if ($this->createToken($username, $email, $this->config['rememberMeDays'])) {
-				$this->setLoggerChannel('Authentication', $username);
 				$this->logger->info('User has logged in');
 				return true;
 			} else {
 				return false;
 			}
 		} else {
-			$this->writeLog('error', 'Registration Function - An error occurred', $username);
+			$this->logger->warning('Registration error occurred');
 			return false;
 		}
 	}
@@ -3195,6 +3286,8 @@ class Organizr
 		$this->applyTabVariables($queries['tabs']);
 		$all['tabs'] = $queries['tabs'];
 		foreach ($queries['tabs'] as $k => $v) {
+			$v['url_local'] = $v['type'] !== 0 ? $this->checkTabURL($v['url_local']) : $v['url_local'];
+			$v['url'] = $v['type'] !== 0 ? $this->checkTabURL($v['url']) : $v['url'];
 			$v['access_url'] = (!empty($v['url_local']) && ($v['url_local'] !== null) && ($v['url_local'] !== 'null') && $this->isLocal() && $v['type'] !== 0) ? $v['url_local'] : $v['url'];
 		}
 		$count = array_map(function ($element) {
@@ -3202,7 +3295,7 @@ class Organizr
 		}, $queries['tabs']);
 		$count = (array_count_values($count));
 		foreach ($queries['categories'] as $k => $v) {
-			$v['count'] = isset($count[$v['category_id']]) ? $count[$v['category_id']] : 0;
+			$v['count'] = $count[$v['category_id']] ?? 0;
 		}
 		$all['categories'] = $queries['categories'];
 		switch ($type) {
@@ -3213,6 +3306,11 @@ class Organizr
 			default:
 				return $all;
 		}
+	}
+
+	public function checkTabURL($url = null)
+	{
+		return $url !== '' && $url !== null & $url !== 'null' ? $this->qualifyURL($url) : '';
 	}
 
 	public function refreshList()
@@ -3484,7 +3582,8 @@ class Organizr
 			if ($this->checkFormKey($formKey)) {
 				return true;
 			} else {
-				$this->writeLog('error', 'API ERROR: Unable to authenticate Form Key: ' . $formKey, $this->user['username']);
+				$this->setLoggerChannel('Authentication');
+				$this->logger->warning('Unable to authenticate Form Key: ' . $formKey);
 				return false;
 			}
 		} else {
@@ -3635,6 +3734,13 @@ class Organizr
 						$class .= ' faded';
 					}
 					break;
+				case 'homepageOrderDonate':
+					$class = 'bg-primary';
+					$image = 'plugins/images/tabs/donate.png';
+					if (!$this->config['homepageDonateEnabled']) {
+						$class .= ' faded';
+					}
+					break;
 				case 'homepageOrdercalendar':
 					$class = 'bg-primary';
 					$image = 'plugins/images/tabs/calendar.png';
@@ -3730,6 +3836,13 @@ class Organizr
 					$class = 'bg-inverse';
 					$image = 'plugins/images/tabs/jackett.png';
 					if (!$this->config['homepageJackettEnabled']) {
+						$class .= ' faded';
+					}
+					break;
+				case 'homepageOrderBookmarks':
+					$class = 'bg-bookmarks';
+					$image = 'plugins/images/bookmark.png';
+					if (!$this->config['homepageBookmarksEnabled']) {
 						$class .= ' faded';
 					}
 					break;
@@ -4176,7 +4289,8 @@ class Organizr
 		];
 		$tabInfo = $this->getTabById($id);
 		if ($tabInfo) {
-			$this->writeLog('success', 'Tab Delete Function -  Deleted Tab [' . $tabInfo['name'] . ']', $this->user['username']);
+			$this->setLoggerChannel('Tab Management');
+			$this->logger->debug('Deleted Tab [' . $tabInfo['name'] . ']');
 			$this->setAPIResponse('success', 'Tab deleted', 204);
 			return $this->processQueries($response);
 		} else {
@@ -4225,7 +4339,8 @@ class Organizr
 			),
 		];
 		$this->setAPIResponse(null, 'Tab added');
-		$this->writeLog('success', 'Tab Editor Function -  Added Tab for [' . $array['name'] . ']', $this->user['username']);
+		$this->setLoggerChannel('Tab Management');
+		$this->logger->debug('Added Tab for [' . $array['name'] . ']');
 		return $this->processQueries($response);
 	}
 
@@ -4269,7 +4384,8 @@ class Organizr
 			),
 		];
 		$this->setAPIResponse(null, 'Tab info updated');
-		$this->writeLog('success', 'Tab Editor Function -  Edited Tab Info for [' . $tabInfo['name'] . ']', $this->user['username']);
+		$this->setLoggerChannel('Tab Management');
+		$this->logger->debug('Edited Tab Info for [' . $tabInfo['name'] . ']');
 		return $this->processQueries($response);
 	}
 
@@ -4338,7 +4454,8 @@ class Organizr
 			),
 		];
 		$this->setAPIResponse(null, 'Category added');
-		$this->writeLog('success', 'Category Editor Function -  Added Category for [' . $array['category'] . ']', $this->user['username']);
+		$this->setLoggerChannel('Category Management');
+		$this->logger->debug('Added Category for [' . $array['category'] . ']');
 		return $this->processQueries($response);
 	}
 
@@ -4382,7 +4499,8 @@ class Organizr
 			),
 		];
 		$this->setAPIResponse(null, 'Category info updated');
-		$this->writeLog('success', 'Category Editor Function -  Edited Category Info for [' . $categoryInfo['category'] . ']', $this->user['username']);
+		$this->setLoggerChannel('Category Management');
+		$this->logger->debug('Edited Category [' . $categoryInfo['category'] . ']');
 		return $this->processQueries($response);
 	}
 
@@ -4432,7 +4550,8 @@ class Organizr
 		];
 		$categoryInfo = $this->getCategoryById($id);
 		if ($categoryInfo) {
-			$this->writeLog('success', 'Category Delete Function -  Deleted Category [' . $categoryInfo['category'] . ']', $this->user['username']);
+			$this->setLoggerChannel('Category Management');
+			$this->logger->debug('Deleted Category [' . $categoryInfo['category'] . ']');
 			$this->setAPIResponse('success', 'Category deleted', 204);
 			return $this->processQueries($response);
 		} else {
@@ -4514,7 +4633,8 @@ class Organizr
 				'path' => str_replace(array('/', '\\'), DIRECTORY_SEPARATOR, $this->root . $v['path'])
 			);
 			if (!$this->rrmdir($file['to'])) {
-				$this->writeLog('error', 'Theme Function -  Remove File Failed  for: ' . $v['githubPath'], $this->user['username']);
+				$this->setLoggerChannel('Theme Management');
+				$this->logger->warning('Remove File Failed  for: ' . $v['githubPath']);
 				return false;
 			}
 		}
@@ -4572,7 +4692,8 @@ class Organizr
 				'path' => str_replace(array('/', '\\'), DIRECTORY_SEPARATOR, $this->root . $v['path'])
 			);
 			if (!$this->downloadFileToPath($file['from'], $file['to'], $file['path'])) {
-				$this->writeLog('error', 'Theme Function -  Downloaded File Failed  for: ' . $v['githubPath'], $this->user['username']);
+				$this->setLoggerChannel('Theme Management');
+				$this->logger->warning('Downloaded File Failed  for: ' . $v['githubPath']);
 				$this->setAPIResponse('error', 'Theme download failed', 500);
 				return false;
 			}
@@ -4611,11 +4732,12 @@ class Organizr
 			if ($v['type'] !== 'dir') {
 				$filesList[] = array(
 					'fileName' => $v['name'],
-					'path' => DIRECTORY_SEPARATOR . 'api' . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . $folder . DIRECTORY_SEPARATOR . str_replace($v['name'], '', $v['path']),
+					'path' => $this->root . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . $folder . DIRECTORY_SEPARATOR . str_replace($v['name'], '', $v['path']),
 					'githubPath' => $v['download_url']
 				);
 			}
 		}
+		$this->makeDir($this->root . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . $folder);
 		return $filesList;
 	}
 
@@ -4757,9 +4879,10 @@ class Organizr
 		foreach ($downloadList as $k => $v) {
 			$file = array(
 				'from' => $v['githubPath'],
-				'to' => str_replace(array('/', '\\'), DIRECTORY_SEPARATOR, $this->root . $v['path'] . $v['fileName']),
-				'path' => str_replace(array('/', '\\'), DIRECTORY_SEPARATOR, $this->root . $v['path'])
+				'to' => str_replace(array('/', '\\'), DIRECTORY_SEPARATOR, $v['path'] . $v['fileName']),
+				'path' => str_replace(array('/', '\\'), DIRECTORY_SEPARATOR, $v['path'])
 			);
+			$this->makeDir($this->root . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR . 'plugins');
 			if (!$this->downloadFileToPath($file['from'], $file['to'], $file['path'])) {
 				$this->setLoggerChannel('Plugin Marketplace');
 				$this->logger->warning('Downloaded File Failed  for: ' . $v['githubPath']);
@@ -4790,7 +4913,7 @@ class Organizr
 			$plugin = array_keys($array)[$key];
 		}
 		$array = $array[$plugin];
-		$pluginDir = $this->root . DIRECTORY_SEPARATOR . 'api' . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . $array['project_folder'] . DIRECTORY_SEPARATOR;
+		$pluginDir = $this->root . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . $array['project_folder'] . DIRECTORY_SEPARATOR;
 		$dirExists = file_exists($pluginDir);
 		if ($dirExists) {
 			if (!$this->rrmdir($pluginDir)) {
@@ -5109,10 +5232,11 @@ class Organizr
 		set_time_limit(0);
 		$zip = new ZipArchive;
 		$extractPath = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . "upgrade/";
+		$this->setLoggerChannel('File Management');
 		if ($zip->open($extractPath . $zipFile) != "true") {
-			$this->writeLog("error", "organizr could not unzip upgrade.zip");
+			$this->logger->warning('organizr could not unzip upgrade.zip');
 		} else {
-			$this->writeLog("success", "organizr unzipped upgrade.zip");
+			$this->logger->debug('organizr unzipped upgrade.zip');
 		}
 		/* Extract Zip File */
 		$zip->extractTo($extractPath);
@@ -5125,9 +5249,10 @@ class Organizr
 		ini_set('max_execution_time', 0);
 		set_time_limit(0);
 		$folderPath = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . "upgrade" . DIRECTORY_SEPARATOR;
+		$this->setLoggerChannel('File Management');
 		if (!file_exists($folderPath)) {
 			if (@!mkdir($folderPath)) {
-				$this->writeLog('error', 'Update Function -  Folder Creation failed', $this->user['username']);
+				$this->logger->warning('Folder Creation failed');
 				return false;
 			}
 		}
@@ -5149,21 +5274,21 @@ class Organizr
 				}
 			}
 		} else {
-			$this->writeLog("error", "organizr could not download $url");
+			$this->logger->warning('Organizr could not download ' . $url);
 			return false;
 		}
 		if ($file) {
 			fclose($file);
-			$this->writeLog("success", "organizr finished downloading the github zip file");
+			$this->logger->debug('Organizr finished downloading the github zip file');
 		} else {
-			$this->writeLog("error", "organizr could not download the github zip file");
+			$this->logger->warning('Organizr could not download the github zip file');
 			return false;
 		}
 		if ($newf) {
 			fclose($newf);
-			$this->writeLog("success", "organizr created upgrade zip file from github zip file");
+			$this->logger->debug('Organizr created upgrade zip file from github zip file');
 		} else {
-			$this->writeLog("error", "organizr could not create upgrade zip file from github zip file");
+			$this->logger->warning('Organizr could not create upgrade zip file from github zip file');
 			return false;
 		}
 		return true;
@@ -5189,9 +5314,8 @@ class Organizr
 		}
 		ini_set('max_execution_time', 0);
 		set_time_limit(0);
-		if (@!mkdir($path, 0777, true)) {
-			$this->writeLog("error", "organizr could not create folder or folder already exists", 'SYSTEM');
-		}
+
+		$this->makeDir($path);
 		$file = fopen($from, 'rb', false, $context);
 		if ($file) {
 			$newf = fopen($to, 'wb', false, $context);
@@ -5201,19 +5325,19 @@ class Organizr
 				}
 			}
 		} else {
-			$this->writeLog("error", "organizr could not download file", 'SYSTEM');
+			$this->logger->warning('Organizr could not download file');
 		}
 		if ($file) {
 			fclose($file);
-			$this->writeLog("success", "organizr finished downloading the file", 'SYSTEM');
+			$this->logger->debug('Organizr finished downloading the file');
 		} else {
-			$this->writeLog("error", "organizr could not download the file", 'SYSTEM');
+			$this->logger->warning('Organizr could not download file');
 		}
 		if ($newf) {
 			fclose($newf);
-			$this->writeLog("success", "organizr saved/moved the file", 'SYSTEM');
+			$this->logger->debug('Organizr saved and/or moved the file');
 		} else {
-			$this->writeLog("error", "organizr could not saved/moved the file", 'SYSTEM');
+			$this->logger->warning('Organizr could not save and/or move the file');
 		}
 		return true;
 	}
@@ -5271,14 +5395,17 @@ class Organizr
 	public function importUsers($array)
 	{
 		$imported = 0;
-		foreach ($array as $user) {
-			$password = $this->random_ascii_string(30);
-			if ($user['username'] !== '' && $user['email'] !== '' && $password !== '') {
-				$newUser = $this->createUser($user['username'], $password, $user['email']);
-				if (!$newUser) {
-					$this->writeLog('error', 'Import Function - Error', $user['username']);
-				} else {
-					$imported++;
+		if ($array) {
+			foreach ($array as $user) {
+				$password = $this->random_ascii_string(30);
+				if ($user['username'] !== '' && $user['email'] !== '' && $password !== '') {
+					$newUser = $this->createUser($user['username'], $password, $user['email']);
+					if (!$newUser) {
+						$this->setLoggerChannel('User Management');
+						$this->logger->warning('An error occurred during user import');
+					} else {
+						$imported++;
+					}
 				}
 			}
 		}
@@ -5359,7 +5486,8 @@ class Organizr
 			}
 			return false;
 		} catch (Requests_Exception $e) {
-			$this->writeLog('success', 'Plex Import User Function - Error: ' . $e->getMessage(), 'SYSTEM');
+			$this->setLoggerChannel('User Management');
+			$this->logger->error($e);
 		}
 		return false;
 	}
@@ -5399,7 +5527,8 @@ class Organizr
 			}
 			return false;
 		} catch (Requests_Exception $e) {
-			$this->writeLog('success', 'Jellyfin Import User Function - Error: ' . $e->getMessage(), 'SYSTEM');
+			$this->setLoggerChannel('User Management');
+			$this->logger->error($e);
 		}
 		return false;
 	}
@@ -5439,7 +5568,8 @@ class Organizr
 			}
 			return false;
 		} catch (Requests_Exception $e) {
-			$this->writeLog('success', 'Emby Import User Function - Error: ' . $e->getMessage(), 'SYSTEM');
+			$this->setLoggerChannel('User Management');
+			$this->logger->error($e);
 		}
 		return false;
 	}
@@ -5536,7 +5666,8 @@ class Organizr
 			),
 		];
 		$this->setAPIResponse(null, 'User info updated');
-		$this->writeLog('success', 'User Editor Function -  Updated User Info for [' . $user['username'] . ']', $this->user['username']);
+		$this->setLoggerChannel('User Management');
+		$this->logger->info('Updated User Info for [' . $user['username'] . ']');
 		return $this->processQueries($response);
 	}
 
@@ -5557,7 +5688,8 @@ class Organizr
 			return false;
 		}
 		if ($userInfo) {
-			$this->writeLog('success', 'User Delete Function -  Deleted User [' . $userInfo['username'] . ']', $this->user['username']);
+			$this->setLoggerChannel('User Management');
+			$this->logger->info('Deleted User [' . $userInfo['username'] . ']');
 			$this->setAPIResponse('success', 'User deleted', 204);
 			return $this->processQueries($response);
 		} else {
@@ -5579,11 +5711,12 @@ class Organizr
 			$this->setAPIResponse('error', 'Password was not supplied', 409);
 			return false;
 		}
+		$this->setLoggerChannel('User Management');
 		if ($this->createUser($username, $password, $email)) {
-			$this->writeLog('success', 'Create User Function - Account created for [' . $username . ']', $this->user['username']);
+			$this->logger->info('Account created for [' . $username . ']');
 			return true;
 		} else {
-			$this->writeLog('error', 'Create User Function - An error occurred', $this->user['username']);
+			$this->logger->warning('An error occurred');
 			return false;
 		}
 	}
@@ -5687,7 +5820,8 @@ class Organizr
 			),
 		];
 		$this->setAPIResponse(null, 'Group info updated');
-		$this->writeLog('success', 'Group Editor Function -  Edited Group Info for [' . $groupInfo['group'] . ']', $this->user['username']);
+		$this->setLoggerChannel('Group Management');
+		$this->logger->info('Edited Group Info for [' . $groupInfo['group'] . ']');
 		return $this->processQueries($response);
 	}
 
@@ -5712,7 +5846,8 @@ class Organizr
 			return false;
 		}
 		if ($groupInfo) {
-			$this->writeLog('success', 'Group Delete Function -  Deleted Group [' . $groupInfo['group'] . ']', $this->user['username']);
+			$this->setLoggerChannel('Group Management');
+			$this->logger->info('Deleted Group [' . $groupInfo['group'] . ']');
 			$this->setAPIResponse('success', 'Group deleted', 204);
 			return $this->processQueries($response);
 		} else {
@@ -5758,7 +5893,8 @@ class Organizr
 			),
 		];
 		$this->setAPIResponse(null, 'Group added');
-		$this->writeLog('success', 'Group Editor Function -  Added Group for [' . $array['group'] . ']', $this->user['username']);
+		$this->setLoggerChannel('Group Management');
+		$this->logger->info('Added Group for [' . $array['group'] . ']');
 		return $this->processQueries($response);
 	}
 
@@ -5791,7 +5927,8 @@ class Organizr
 							return $libraryList;
 						}
 					} catch (Requests_Exception $e) {
-						$this->writeLog('error', 'Plex Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
+						$this->setLoggerChannel('User Management');
+						$this->logger->error($e);
 					}
 				}
 				break;
@@ -5854,12 +5991,12 @@ class Organizr
 
 	public function hasCustomCert()
 	{
-		return file_exists(dirname(__DIR__, 1) . DIRECTORY_SEPARATOR . 'functions' . DIRECTORY_SEPARATOR . 'cert' . DIRECTORY_SEPARATOR . 'custom.pem');
+		return file_exists($this->root . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR . 'cert' . DIRECTORY_SEPARATOR . 'custom.pem');
 	}
 
 	public function getCustomCert()
 	{
-		return ($this->hasCustomCert()) ? dirname(__DIR__, 1) . DIRECTORY_SEPARATOR . 'functions' . DIRECTORY_SEPARATOR . 'cert' . DIRECTORY_SEPARATOR . 'custom.pem' : false;
+		return ($this->hasCustomCert()) ? $this->root . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR . 'cert' . DIRECTORY_SEPARATOR . 'custom.pem' : false;
 	}
 
 	public function uploadCert()
@@ -5869,9 +6006,10 @@ class Organizr
 			ini_set('upload_max_filesize', '10M');
 			ini_set('post_max_size', '10M');
 			$tempFile = $_FILES['file']['tmp_name'];
-			$targetPath = dirname(__DIR__, 1) . DIRECTORY_SEPARATOR . 'functions' . DIRECTORY_SEPARATOR . 'cert' . DIRECTORY_SEPARATOR;
+			$targetPath = $this->root . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR . 'cert' . DIRECTORY_SEPARATOR;
 			$targetFile = $targetPath . 'custom.pem';
 			$this->setAPIResponse(null, pathinfo($_FILES['file']['name'], PATHINFO_BASENAME) . ' has been uploaded', null);
+			$this->makeDir($this->root . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR . 'cert');
 			return move_uploaded_file($tempFile, $targetFile);
 		} else {
 			$this->setAPIResponse('error', pathinfo($_FILES['file']['name'], PATHINFO_BASENAME) . ' is not approved to be uploaded', 403);
@@ -5947,7 +6085,8 @@ class Organizr
 			$this->setAPIResponse($status, $msg, $code);
 			return (!empty($success) && empty($errors));
 		} catch (Requests_Exception $e) {
-			$this->writeLog('error', 'Plex.TV Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
+			$this->setLoggerChannel('User Management');
+			$this->logger->error($e);
 			$this->setAPIResponse('error', 'An Error Occurred', 409);
 			return false;
 		}
@@ -5982,7 +6121,8 @@ class Organizr
 				)
 			),
 		];
-		$this->writeLog('success', 'User Lockout Function - User: ' . $user['username'] . ' account locked', $this->user['username']);
+		$this->setLoggerChannel('User Management');
+		$this->logger->info('User: ' . $user['username'] . ' account locked');
 		$this->setAPIResponse('success', 'User account locked', 200);
 		return $this->processQueries($response);
 	}
@@ -6019,7 +6159,8 @@ class Organizr
 				)
 			),
 		];
-		$this->writeLog('success', 'User Lockout Function - User: ' . $user['username'] . ' account unlocked', $this->user['username']);
+		$this->setLoggerChannel('User Management');
+		$this->logger->info('User: ' . $user['username'] . ' account unlocked');
 		$this->setAPIResponse('success', 'User account unlocked', 200);
 		return $this->processQueries($response);
 	}
@@ -6333,7 +6474,7 @@ class Organizr
 			$url = $this->cleanPath($url);
 			$options = ($this->localURL($appURL)) ? array('verify' => false, 'timeout' => 120) : array('timeout' => 120);
 			$headers = [];
-			$apiData = $this->json_validator($this->apiData($requestObject)) ? json_encode($this->apiData($requestObject)) : $this->apiData($requestObject);
+			$apiData = $this->apiData($requestObject, false);
 			if ($header) {
 				if ($requestObject->hasHeader($header)) {
 					$headerKey = $requestObject->getHeaderLine($header);
@@ -6351,7 +6492,7 @@ class Organizr
 				'headers' => $headers,
 				'url' => $url,
 				'options' => $options,
-				'data' => $apiData
+				'data' => $apiData,
 			];
 			$this->setLoggerChannel('Socks');
 			$this->logger->debug('Sending Socks request', $debugInformation);
@@ -6429,7 +6570,8 @@ class Organizr
 				return $items;
 			}
 		} catch (Requests_Exception $e) {
-			$this->writeLog('success', 'Plex Get Servers Function - Error: ' . $e->getMessage(), 'SYSTEM');
+			$this->setLoggerChannel('Plex Connection');
+			$this->logger->error($e);
 			$this->setAPIResponse('error', $e->getMessage(), 500);
 		}
 	}
@@ -6525,6 +6667,23 @@ class Organizr
 			return true;
 		} catch (InvalidArgumentException $e) {
 			$this->setResponse(500, $e->getMessage());
+			return false;
+		}
+	}
+
+	public function testFolder($folder = null)
+	{
+		$folder = $folder['folder'] ?? null;
+		if (!$folder) {
+			$this->setResponse(409, 'Folder was not supplied');
+			return false;
+		}
+		$testFolder = $this->makeDir($folder);
+		if ($testFolder) {
+			$this->setResponse(200, 'Folder approved for logs');
+			return true;
+		} else {
+			$this->setResponse(409, 'Folder path is not valid or permissions insufficient');
 			return false;
 		}
 	}

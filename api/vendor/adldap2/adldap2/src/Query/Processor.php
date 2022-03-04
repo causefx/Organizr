@@ -54,7 +54,7 @@ class Processor
 
         $models = [];
 
-        if (array_key_exists('count', $entries)) {
+	if (is_array($entries) && array_key_exists('count', $entries)) {
             for ($i = 0; $i < $entries['count']; $i++) {
                 // We'll go through each entry and construct a new
                 // model instance with the raw LDAP attributes.
@@ -153,7 +153,7 @@ class Processor
      */
     public function newModel($attributes = [], $model = null)
     {
-        $model = (class_exists($model) ? $model : $this->schema->entryModel());
+        $model = ($model !== null && class_exists($model) ? $model : $this->schema->entryModel());
 
         if (!is_subclass_of($model, $base = Model::class)) {
             throw new InvalidArgumentException("The given model class '{$model}' must extend the base model class '{$base}'");
@@ -200,7 +200,7 @@ class Processor
     {
         $field = $this->builder->getSortByField();
 
-        $flags = $this->builder->getSortByFlags();
+        $flags = $this->builder->getSortByFlags() ?? \SORT_REGULAR;
 
         $direction = $this->builder->getSortByDirection();
 

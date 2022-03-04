@@ -14,7 +14,7 @@ trait OptionsFunction
 		}
 		return $settings;
 	}
-	
+
 	public function settingsOption($type, $name = null, $extras = null)
 	{
 		$type = strtolower(str_replace('-', '', $type));
@@ -98,6 +98,14 @@ trait OptionsFunction
 					'label' => 'Cron Schedule',
 					'help' => 'You may use either Cron format or - @hourly, @daily, @monthly',
 					'placeholder' => '* * * * *'
+				];
+				break;
+			case 'folder':
+				$settingMerge = [
+					'type' => 'folder',
+					'label' => 'Save Path',
+					'help' => 'Folder path',
+					'placeholder' => '/path/to/folder'
 				];
 				break;
 			case 'cronfile':
@@ -279,6 +287,12 @@ trait OptionsFunction
 					'label' => 'Hide Completed',
 				];
 				break;
+			case 'hidestatus':
+				$settingMerge = [
+					'type' => 'switch',
+					'label' => 'Hide Status',
+				];
+				break;
 			case 'limit':
 				$settingMerge = [
 					'type' => 'number',
@@ -376,7 +390,7 @@ trait OptionsFunction
 						' . $name . '.session.setMode(new mode());
 						' . $name . '.setTheme("ace/theme/idle_fingers");
 						' . $name . '.setShowPrintMargin(false);
-						' . $name . '.session.on("change", function(delta) { $(".' . $name . 'Textarea").val(' . $name . '.getValue()) });
+						' . $name . '.session.on("change", function(delta) { $(".' . $name . 'Textarea").val(' . $name . '.getValue()); $(".' . $name . 'Textarea").trigger("change") });
 					</script>
 					'
 				];
@@ -439,6 +453,22 @@ trait OptionsFunction
 					'attr' => 'data-original="' . $this->config[$name] . '"'
 				];
 				break;
+			case 'calendarlinkurl':
+				$settingMerge = [
+					'type' => 'select',
+					'label' => 'Target URL',
+					'help' => 'Set the primary URL used when clicking on calendar icon.',
+					'options' => $this->makeOptionsFromValues($this->config[str_replace('CalendarLink','',$name).'URL'], true, 'Use Default'),
+				];
+				break;
+			case 'calendarframetarget':
+				$settingMerge = [
+					'type' => 'select',
+					'label' => 'Target Tab',
+					'help' => 'Set the tab used when clicking on calendar icon. If not set, link will open in new window.',
+					'options' => $this->getIframeTabs($this->config[str_replace('FrameTarget','CalendarLink',$name)])
+				];
+				break;
 			default:
 				$settingMerge = [
 					'type' => strtolower($type),
@@ -455,9 +485,52 @@ trait OptionsFunction
 		return $setting;
 	}
 	
-	public function makeOptionsFromValues($values = null)
+	public function getIframeTabs($url = "")
+	{	
+		if (!empty($url)){
+			$response = [
+				array(
+					'function' => 'fetchAll',
+					'query' => array(
+						"SELECT * FROM tabs WHERE `enabled`='1' AND `type`='1' AND `group_id`>=? AND (`url` = '" . $url . "' OR `url_local` = '" . $url . "') ORDER BY `order` ASC",
+						$this->getUserLevel(),
+					)
+				)
+			];
+		} else {
+			$response = [
+				array(
+					'function' => 'fetchAll',
+					'query' => array(
+						"SELECT * FROM tabs WHERE `enabled`='1' AND `type`='1' AND `group_id`>=? ORDER BY `order` ASC",
+						$this->getUserLevel()
+					)
+				)
+			];
+		}
+		$formattedValues[] = [
+			'name' => 'Open in New Window',
+			'value' => ''
+		];
+		foreach($this->processQueries($response) as $result) {
+			$formattedValues[] = [
+				'name' => $result['name'],
+				'value' => $result['name']
+			];
+		}
+		return $formattedValues;
+	}
+
+	public function makeOptionsFromValues($values = null, $appendBlank = null, $blankLabel = null)
 	{
-		$formattedValues = [];
+		if ($appendBlank === true){
+			$formattedValues[] = [
+				'name' => (!empty($blankLabel)) ? $blankLabel : 'Select option...',
+				'value' => ''
+			];
+		} else {
+			$formattedValues = [];
+		}
 		if (strpos($values, ',') !== false) {
 			$explode = explode(',', $values);
 			foreach ($explode as $item) {
@@ -476,7 +549,7 @@ trait OptionsFunction
 		}
 		return $formattedValues;
 	}
-	
+
 	public function logLevels()
 	{
 		return [
@@ -514,7 +587,7 @@ trait OptionsFunction
 			]
 		];
 	}
-	
+
 	public function sandboxOptions()
 	{
 		return [
@@ -568,7 +641,7 @@ trait OptionsFunction
 			],
 		];
 	}
-	
+
 	public function calendarLocaleOptions()
 	{
 		return [
@@ -765,9 +838,8 @@ trait OptionsFunction
 				'name' => 'Chinese (Taiwan)'
 			]
 		];
-		
 	}
-	
+
 	public function daysOptions()
 	{
 		return array(
@@ -801,7 +873,7 @@ trait OptionsFunction
 			)
 		);
 	}
-	
+
 	public function mediaServerOptions()
 	{
 		return array(
@@ -819,7 +891,7 @@ trait OptionsFunction
 			)
 		);
 	}
-	
+
 	public function requestTvOptions($includeUserOption = false)
 	{
 		$options = [
@@ -845,7 +917,7 @@ trait OptionsFunction
 		}
 		return $options;
 	}
-	
+
 	public function requestServiceOptions()
 	{
 		return [
@@ -859,7 +931,7 @@ trait OptionsFunction
 			]
 		];
 	}
-	
+
 	public function limitOptions()
 	{
 		return array(
@@ -901,7 +973,7 @@ trait OptionsFunction
 			),
 		);
 	}
-	
+
 	public function notificationTypesOptions()
 	{
 		return array(
@@ -923,7 +995,7 @@ trait OptionsFunction
 			),
 		);
 	}
-	
+
 	public function notificationPositionsOptions()
 	{
 		return array(
@@ -957,7 +1029,7 @@ trait OptionsFunction
 			),
 		);
 	}
-	
+
 	public function timeOptions()
 	{
 		return array(
@@ -1006,9 +1078,8 @@ trait OptionsFunction
 				'value' => '3600000'
 			),
 		);
-		
 	}
-	
+
 	public function netdataOptions()
 	{
 		return [
@@ -1054,7 +1125,7 @@ trait OptionsFunction
 			]
 		];
 	}
-	
+
 	public function netdataChartOptions()
 	{
 		return [
@@ -1068,7 +1139,7 @@ trait OptionsFunction
 			]
 		];
 	}
-	
+
 	public function netdataColourOptions()
 	{
 		return [
@@ -1098,7 +1169,7 @@ trait OptionsFunction
 			]
 		];
 	}
-	
+
 	public function netdataSizeOptions()
 	{
 		return [
@@ -1116,7 +1187,7 @@ trait OptionsFunction
 			]
 		];
 	}
-	
+
 	public function timeFormatOptions()
 	{
 		return array(
@@ -1150,7 +1221,7 @@ trait OptionsFunction
 			)
 		);
 	}
-	
+
 	public function rTorrentSortOptions()
 	{
 		return array(
@@ -1204,7 +1275,7 @@ trait OptionsFunction
 			),
 		);
 	}
-	
+
 	public function qBittorrentApiOptions()
 	{
 		return array(
@@ -1218,7 +1289,7 @@ trait OptionsFunction
 			),
 		);
 	}
-	
+
 	public function qBittorrentSortOptions()
 	{
 		return array(
@@ -1284,7 +1355,7 @@ trait OptionsFunction
 			)
 		);
 	}
-	
+
 	public function calendarDefaultOptions()
 	{
 		return array(

@@ -86,7 +86,7 @@ let sortable = new Sortable(el, {
 	</div>
 	<div class="table-responsive">
 		<form id="submit-categories-form" onsubmit="return false;">
-			<table class="table table-hover manage-u-table">
+			<table class="table table-hover manage-u-table m-b-0">
 				<thead>
 					<tr>
 						<th width="70" class="text-center">#</th>

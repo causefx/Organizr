@@ -15,7 +15,7 @@ class ClassValidator extends Validator
      */
     public function validate()
     {
-        if (!class_exists($this->value)) {
+        if (!is_string($this->value) || !class_exists($this->value)) {
             throw new ConfigurationException("Option {$this->key} must be a valid class.");
         }
 

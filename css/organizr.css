@@ -86,7 +86,7 @@ span.jsgrid-pager-page.jsgrid-pager-current-page.btn.btn-primary{
 }
 @media screen and (max-width: 767px) {
     body {
-        height: 100vh;
+        height: 100%;
     }
 }
 @media screen and (max-width: 767px) {
@@ -1079,6 +1079,10 @@ input#inviteCodeInput {
 
 .bg-nzbget {
     background: #3e8c25;
+}
+
+.bg-bookmarks {
+    background: #d90101;
 }
 
 .bg-transmission {
@@ -4904,4 +4908,22 @@ td.mouse-grab.sort-tabs-handle {
 .orgLogDiv select, .orgLogDiv input {
     padding: 8px;
     border-radius: 4px;
+}
+#managePluginTable img:before {
+    content: "loading";
+    height: 45px;
+    width: 45px;
+    display: block;
+}
+#managePluginTable img:after {
+    content: "";
+    display: block;
+    position: absolute;
+    z-index: 2;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: url("../../plugins/images/organizr/logo-purple-square.png") no-repeat center center;
+    background-size: auto 100%;
 }

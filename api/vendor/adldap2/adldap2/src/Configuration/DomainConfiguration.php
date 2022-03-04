@@ -150,7 +150,7 @@ class DomainConfiguration
             $validator = new Validators\IntegerValidator($key, $value);
         } elseif (is_bool($default)) {
             $validator = new Validators\BooleanValidator($key, $value);
-        } elseif (class_exists($default)) {
+        } elseif (is_string($default) && class_exists($default)) {
             $validator = new Validators\ClassValidator($key, $value);
         } else {
             $validator = new Validators\StringOrNullValidator($key, $value);

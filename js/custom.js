@@ -1963,3 +1963,49 @@ $(document).on('click', '.test-cron', function() {
 	let cron = $(this).parent().parent().find('input').val();
 	testAPIConnection('cron',cron);
 });
+
+// Test Folder
+$(document).on('click', '.test-folder', function() {
+    let folder = $(this).parent().parent().find('input').val();
+    testAPIConnection('folder',{'folder':folder});
+});
+
+// Toggle Homepage Donation History
+$(document).on('click', '.toggle-donation-history', function() {
+    let status = $(this).attr('data-status');
+    if(status === 'hidden'){
+        $(this).attr('data-status', 'show');
+        $('.donation-history').removeClass('hidden');
+        let info = '';
+        let el = $(this);
+        el.find('i').toggleClass('fa-lg fa-spin ti-reload');
+        organizrAPI2('GET','api/v2/homepage/donate').success(function(data) {
+            try {
+                let response = data.response;
+                if(response.data){
+                    $.each(response.data, function(i,v) {
+                        let m = moment.tz(v.date, activeInfo.timezone);
+                        v.date = moment(m).format('LLL');
+                        let user = activeInfo.user.groupID  == 0 ? '&nbsp; <code>'+v.email+'</code>' : '';
+                        info += '<li><div class="bg-primary"><i class="fa fa-usd text-white"></i></div> '+v.date+user+'<span class="text-muted">$'+v.amount+'</span></li>'
+                    })
+                    info = '<ul class="feeds fc-scroller" style="height: 250px">' + info + '</ul>';
+                }else{
+                    info = 'No history...';
+                }
+            }catch(e) {
+                info = 'An error occurred';
+                organizrCatchError(e,data);
+            }
+            let html = '<div class="white-box"><h3 class="box-title" lang="en">Recent Donations</h3>'+info+'</div>';
+            $('.donation-history').html(html);
+            el.find('i').toggleClass('fa-lg fa-spin ti-reload');
+        }).fail(function(xhr) {
+            OrganizrApiError(xhr, 'API Error');
+            el.find('i').toggleClass('fa-lg fa-spin ti-reload');
+        })
+    }else{
+        $(this).attr('data-status', 'hidden');
+        $('.donation-history').addClass('hidden');
+    }
+});
