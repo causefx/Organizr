@@ -307,6 +307,7 @@ return [
 	'homepageDonateCustomizeHeading' => 'Donate Please',
 	'homepageDonateCustomizeDescription' => 'Hi!  Help me out with a donation...',
 	'homepageDonateMinimum' => '100',
+	'homepageDonateShowUserHistory' => false,
 	'homepageOrdercustomhtml01' => '1',
 	'homepageOrdercustomhtml02' => '2',
 	'homepageOrdertransmission' => '3',

@@ -78,6 +78,7 @@ trait DonateHomepageItem
 								['name' => '100 USD', 'value' => '10000'],
 							]
 						]),
+					$this->settingsOption('switch', 'homepageDonateShowUserHistory', ['label' => 'Show User Donate History']),
 				]
 			]
 		];
@@ -101,9 +102,54 @@ trait DonateHomepageItem
 					'homepageDonateSecretToken',
 					'homepageDonateProductID',
 				]
+			],
+			'history' => [
+				'enabled' => [
+					'homepageDonateEnabled',
+					'homepageDonateShowUserHistory'
+				],
+				'auth' => [
+					'homepageDonateAuth'
+				],
+				'not_empty' => [
+					'homepageDonateMinimum',
+					'homepageDonatePublicToken',
+					'homepageDonateSecretToken',
+					'homepageDonateProductID',
+				]
 			]
 		];
 		return $this->homepageCheckKeyPermissions($key, $permissions);
+	}
+
+	public function homepageDonateUserHistory()
+	{
+		$items = [];
+		if ($this->homepageItemPermissions($this->donateHomepagePermissions('history'))) {
+			try {
+				$stripe = new \Stripe\StripeClient(
+					trim($this->config['homepageDonateSecretToken'])
+				);
+				$history = $stripe->charges->all(['limit' => 100]);
+				if (count($history) > 0) {
+					if ($this->user['email']) {
+						foreach ($history as $charge) {
+							if (($this->qualifyRequest(0) || (strtolower($charge['billing_details']['email']) == strtolower($this->user['email']))) && $charge['amount_captured'] > 0) {
+								$items[] = [
+									'date' => date('Y-m-d\TH:i:s\Z', $charge['created']),
+									'email' => $charge['billing_details']['email'],
+									'amount' => $charge['amount_captured'] / 100
+								];
+							}
+						}
+					}
+				}
+			} catch (\Stripe\Exception\ApiErrorException $e) {
+				die($this->showHTML('Error', $e->getMessage()));
+			}
+		}
+		$this->setResponse(200, null, $items);
+		return $items;
 	}
 
 	public function homepageDonateCreateSession($amount = null)
@@ -129,7 +175,7 @@ trait DonateHomepageItem
 				]],
 				'mode' => 'payment',
 				'success_url' => $this->getServerPath() . 'api/v2/homepage/donate/success',
-				'cancel_url' => $this->getServerPath() . 'api/v2/homepage/donate/error',
+				'cancel_url' => $this->getServerPath() . 'api/v2/homepage/donate/cancel',
 			];
 			if ($this->user['email'] && stripos($this->user['email'], 'placeholder') == false) {
 				$sessionInfo = array_merge($sessionInfo, ['customer_email' => $this->user['email']]);
@@ -138,7 +184,8 @@ trait DonateHomepageItem
 			header('HTTP/1.1 303 See Other');
 			header('Location: ' . $session->url);
 		} catch (\Stripe\Exception\ApiErrorException $e) {
-			die($this->showHTML('Error', $e->getMessage()));
+			$this->setResponse(500, $e->getMessage());
+			return false;
 		}
 	}
 
@@ -146,6 +193,7 @@ trait DonateHomepageItem
 	{
 		if ($this->homepageItemPermissions($this->donateHomepagePermissions('main'))) {
 			$minimum = $this->config['homepageDonateMinimum'] / 100;
+			$history = $this->config['homepageDonateShowUserHistory'] ? '<div class="pull-right"><a href="javascript:void(0)" class="toggle-donation-history" data-status="hidden"><i class="fa fa-clock-o"></i></a> </div>' : '';
 			return '
 			<script>
 				$(document).on("keyup", "#custom-donation-amount", function () {
@@ -154,7 +202,7 @@ trait DonateHomepageItem
 			</script>
 				<div id="' . __FUNCTION__ . '">
 					<div class="panel panel-primary" style="position: static; zoom: 1;">
-						<div class="panel-heading"> ' . $this->config['homepageDonateCustomizeHeading'] . '</div>
+						<div class="panel-heading"> ' . $this->config['homepageDonateCustomizeHeading'] . $history . '</div>
 						<div class="panel-wrapper collapse in" aria-expanded="true">
 							<div class="panel-body">
 								<p>' . $this->config['homepageDonateCustomizeDescription'] . '</p>
@@ -169,6 +217,7 @@ trait DonateHomepageItem
 										</span>
 									</div>
 								</form>
+								<div class="donation-history hidden"></div>
 							</div>
 						</div>
 					</div>

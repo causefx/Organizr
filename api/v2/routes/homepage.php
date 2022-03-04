@@ -525,19 +525,32 @@ $app->get('/homepage/trakt/calendar', function ($request, $response, $args) {
 });
 $app->get('/homepage/donate/success', function ($request, $response, $args) {
 	$Organizr = ($request->getAttribute('Organizr')) ?? new Organizr();
-	$Organizr->getTraktCalendar();
 	$response->getBody()->write($Organizr->showHTML('Donation Success', 'Thank you for donating!', true));
+	return $response
+		->withHeader('Content-Type', 'text/html;charset=UTF-8')
+		->withStatus(200);
+});
+$app->get('/homepage/donate/cancel', function ($request, $response, $args) {
+	$Organizr = ($request->getAttribute('Organizr')) ?? new Organizr();
+	$response->getBody()->write($Organizr->showHTML('Donation Cancelled', 'Taking you back...', true));
 	return $response
 		->withHeader('Content-Type', 'text/html;charset=UTF-8')
 		->withStatus(200);
 });
 $app->get('/homepage/donate/error', function ($request, $response, $args) {
 	$Organizr = ($request->getAttribute('Organizr')) ?? new Organizr();
-	$Organizr->getTraktCalendar();
 	$response->getBody()->write($Organizr->showHTML('Donation Error', 'An error has occurred!', true));
 	return $response
 		->withHeader('Content-Type', 'text/html;charset=UTF-8')
 		->withStatus(500);
+});
+$app->get('/homepage/donate', function ($request, $response, $args) {
+	$Organizr = ($request->getAttribute('Organizr')) ?? new Organizr();
+	$Organizr->homepageDonateUserHistory();
+	$response->getBody()->write(jsonE($GLOBALS['api']));
+	return $response
+		->withHeader('Content-Type', 'application/json;charset=UTF-8')
+		->withStatus($GLOBALS['responseCode']);
 });
 $app->post('/homepage/donate', function ($request, $response, $args) {
 	$Organizr = ($request->getAttribute('Organizr')) ?? new Organizr();
