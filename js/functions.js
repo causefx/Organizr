@@ -3924,6 +3924,11 @@ function sponsorDetails(id){
 		        <p><span class="label label-rouded label-info pull-right">${response[id].coupon}</span>
 		        <span class=" pull-left">${response[id].coupon_about}</span></p>
 		    ` : '';
+            if(typeof response[id].logo_dark !== 'undefined'){
+                if(activeInfo.style == 'dark'){
+                    response[id].logo = response[id].logo_dark;
+                }
+            }
 			let html = `
 		        <div class="panel panel-default">
                     <div class="panel-heading">${response[id].company_name}</div>
@@ -3956,15 +3961,18 @@ function sponsorDetails(id){
 	});
 }
 function sponsorAbout(id,array){
-
-
-    var coupon = (array.coupon == null) ? false : true;
-    var couponAbout = (array.coupon_about == null) ? false : true;
+    var coupon = (array.coupon != null);
+    var couponAbout = (array.coupon_about != null);
     var extraInfo = (coupon && couponAbout) ? `
         <h3>Coupon Code:</h3>
         <p><span class="label label-rouded label-info pull-right">`+array.coupon+`</span>
         <span class=" pull-left">`+array.coupon_about+`</span></p>
     ` : '';
+    if(typeof array.logo_dark !== 'undefined'){
+        if(activeInfo.style == 'dark'){
+            array.logo = array.logo_dark;
+        }
+    }
     return `
         <!--  modal content -->
         <div id="sponsor-`+id+`-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel-`+id+`" aria-hidden="true" style="display: none;">
@@ -4009,6 +4017,11 @@ function buildSponsor(array){
             }
         }
         var sponsorAboutModal = (v.about) ? 'onclick="sponsorDetails(\''+i+'\');sponsorAnalytics(\''+v.company_name+'\');"' : 'onclick="window.open(\''+ v.website +'\', \'_blank\');sponsorAnalytics(\''+v.company_name+'\');"';
+        if(typeof v.logo_dark !== 'undefined'){
+            if(activeInfo.style == 'dark'){
+                v.logo = v.logo_dark;
+            }
+        }
         sponsors += `
             <!-- /.usercard -->
             <div class="item lazyload recent-sponsor mouse imageSource mouse" ${sponsorAboutModal} data-src="${v.logo}" data-id="${i}">
@@ -5130,8 +5143,8 @@ function buildStreamItem(array,source){
 		switch (v.type) {
 			case 'music':
 				icon = 'icon-music-tone-alt';
-				width = (v.nowPlayingImageURL !== 'plugins/images/cache/no-np.png') ? 56 : 100;
-				bg = (v.nowPlayingImageURL !== 'plugins/images/cache/no-np.png') ? `
+				width = (v.nowPlayingImageURL !== 'plugins/images/homepage/no-np.png') ? 56 : 100;
+				bg = (v.nowPlayingImageURL !== 'plugins/images/homepage/no-np.png') ? `
 				<img class="imageSource imageSourceLeft" src="`+v.nowPlayingImageURL+`">
 				<img class="imageSource imageSourceRight" src="`+v.nowPlayingImageURL+`">
 				` : '';
@@ -5368,7 +5381,7 @@ function buildRequestItem(array, extra=null){
                 var iconType = (v.type == 'tv') ? 'fa-tv ' : 'fa-film';
 				var badge = '';
 				var badge2 = '';
-				var bg = (v.background.includes('.')) ? v.background : 'plugins/images/cache/no-np.png';
+				var bg = (v.background.includes('.')) ? v.background : 'plugins/images/homepage/no-np.png';
 				v.user = (activeInfo.settings.homepage.ombi.alias && service === 'ombi') || (activeInfo.settings.homepage.overseerr.enabled && service === 'overseerr') ? v.userAlias : v.user;
 				//Set Status
 				var status = (v.approved) ? '<span class="badge bg-org m-r-10" lang="en">Approved</span>' : '<span class="badge bg-danger m-r-10" lang="en">Unapproved</span>';
@@ -5797,7 +5810,7 @@ function buildRequestResult(array,media_type=null,list=null,page=null,search=fal
 			total = total + 1;
 			tv = (media_type == 'tv') ? tv + 1 : tv;
 			movie = (media_type == 'movie') ? movie + 1 : movie;
-			var bg = (v.poster_path !== null) ? `https://image.tmdb.org/t/p/w300/`+v.poster_path : 'plugins/images/cache/no-list.png';
+			var bg = (v.poster_path !== null) ? `https://image.tmdb.org/t/p/w300/`+v.poster_path : 'plugins/images/homepage/no-list.png';
 			var top = (v.title) ? v.title : (v.original_title) ? v.original_title : (v.original_name) ? v.original_name : '';
 			var bottom = (v.release_date) ? v.release_date : (v.first_air_date) ? v.first_air_date : '';
 			if(comments){
@@ -6661,7 +6674,9 @@ function buildDownloaderItem(array, source, type='none'){
                 var actionIcon = (v.Status == "Downloading") ? 'pause' : 'play';
                 queue += `
                 <tr>
-                    <td class="max-texts">`+v.name+`</td>
+                    <td class="max-texts">`+v.name;
+		    if (v.tracker_status != "") queue += `<i class="fa fa-caret-down ml-2" style="cursor:pointer" onclick="$(this).toggleClass('fa-caret-down');$(this).toggleClass('fa-caret-up');$('#status-`+v.hash+`').toggleClass('d-none');" aria-hidden="true"></i><br /><div class="well mb-0 mt-2 p-3 d-none" id="status-`+v.hash+`">`+v.tracker_status+`</div>`;
+		    queue +=`</td>
                     <td class="hidden-xs deluge-`+cleanClass(v.state)+`">`+v.state+`</td>
                     <td class="hidden-xs">`+size+`</td>
                     <td class="hidden-xs"><i class="fa fa-download"></i>&nbsp;`+download+`</td>
@@ -7842,7 +7857,7 @@ function buildTautulliItem(array){
                     <div class="card-body h-100 bg-org-alt">
                         <table class="h-100 w-100">
                             <tr>
-                                <td rowspan='2' class="poster-td text-center"><img src="plugins/images/cache/tautulli-`+type+`.svg" class="lib-icon" alt="library icon"></td>
+                                <td rowspan='2' class="poster-td text-center"><img src="data/cache/tautulli-`+type+`.svg" class="lib-icon" alt="library icon"></td>
                                 ${cardTitle}
                             </tr>
                             <tr>
@@ -7913,7 +7928,7 @@ function buildTautulliItem(array){
                                     if(stat == 'top_users') {
                                         card += `<td rowspan="2" class="poster-td text-center"><img src="`+e['rows'][0]['user_thumb']+`" class="poster avatar" alt="user avatar"></td>`;
                                     } else if(stat == 'top_platforms') {
-                                        card += `<td rowspan="2" class="poster-td text-center"><img src="plugins/images/cache/tautulli-`+e['rows'][0]['platform_name']+`.svg" class="poster" alt="platform icon"></td>`;
+                                        card += `<td rowspan="2" class="poster-td text-center"><img src="data/cache/tautulli-`+e['rows'][0]['platform_name']+`.svg" class="poster" alt="platform icon"></td>`;
                                     } else {
                                         card += `<td rowspan="2" class="poster-td"><img src="`+e['rows'][0]['thumb']+`" class="poster" alt="movie poster"></td>`;
                                     }
@@ -10020,7 +10035,7 @@ function buildMediaResults(array,source,term){
 		<div class="col-lg-3 col-md-4 col-sm-6 col-xs-12 m-t-20 request-result-item request-result-movie mouse"  onclick="forceSearch('`+term+`')">
 			<div class="white-box m-b-10">
 				<div class="el-card-item p-b-0">
-					<div class="el-card-avatar el-overlay-1 m-b-5"> <img class="lazyload resultImages mouse" data-src="plugins/images/cache/no-request.png">
+					<div class="el-card-avatar el-overlay-1 m-b-5"> <img class="lazyload resultImages mouse" data-src="plugins/images/homepage/no-request.png">
 						<div class="customPoster">
 							<a href="javascript:void(0);">`+splitPoster(term)+`</a>
 						</div>

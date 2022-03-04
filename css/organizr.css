@@ -86,7 +86,7 @@ span.jsgrid-pager-page.jsgrid-pager-current-page.btn.btn-primary{
 }
 @media screen and (max-width: 767px) {
     body {
-        height: 100vh;
+        height: 100%;
     }
 }
 @media screen and (max-width: 767px) {

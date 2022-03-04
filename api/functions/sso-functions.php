@@ -103,7 +103,8 @@ trait SSOFunctions
 		}
 		if ($this->config['ssoKomga'] && $this->qualifyRequest($this->config['ssoKomgaAuth'])) {
 			$this->logger->debug('Starting Komga SSO check function');
-			$komga = $this->getKomgaToken($this->getSSOUserFor('komga', $userobj), $password);
+			$fallback = ($this->config['komgaFallbackUser'] !== '' && $this->config['komgaFallbackPassword'] !== '');
+			$komga = $this->getKomgaToken($this->getSSOUserFor('komga', $userobj), $password, $fallback);
 			if ($komga) {
 				$this->logger->debug('Setting Komga SSO cookie');
 				$this->coookie('set', 'komga_token', $komga, $this->config['rememberMeDays'], false);
@@ -114,8 +115,9 @@ trait SSOFunctions
 		return true;
 	}
 
-	public function getKomgaToken($email, $password)
+	public function getKomgaToken($email, $password, $fallback = false)
 	{
+		$token = null;
 		try {
 			$credentials = array('auth' => new Requests_Auth_Digest(array($email, $password)));
 			$url = $this->qualifyURL($this->config['komgaURL']);
@@ -124,17 +126,27 @@ trait SSOFunctions
 			if ($response->success) {
 				if ($response->headers['x-auth-token']) {
 					$this->writeLog('success', 'Komga Token Function - Grabbed token.', $email);
-					return $response->headers['x-auth-token'];
+					$token = $response->headers['x-auth-token'];
 				} else {
 					$this->writeLog('error', 'Komga Token Function - Komga did not return Token', $email);
 				}
 			} else {
-				$this->writeLog('error', 'Komga Token Function - Komga did not return Token', $email);
+				if ($fallback) {
+					$this->writeLog('error', 'Komga Token Function - Komga did not return Token - Will retry using fallback credentials', $email);
+				} else {
+					$this->writeLog('error', 'Komga Token Function - Komga did not return Token', $email);
+				}
 			}
 		} catch (Requests_Exception $e) {
 			$this->writeLog('error', 'Komga Token Function - Error: ' . $e->getMessage(), $email);
 		}
-		return false;
+		if ($token) {
+			return $token;
+		} elseif ($fallback) {
+			return $this->getKomgaToken($this->config['komgaFallbackUser'], $this->decrypt($this->config['komgaFallbackPassword']), false);
+		} else {
+			return false;
+		}
 	}
 
 	public function getJellyfinToken($username, $password)

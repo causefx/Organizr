@@ -2,7 +2,7 @@
 
 trait OmbiHomepageItem
 {
-	
+
 	public function ombiSettingsArray($infoOnly = false)
 	{
 		$homepageInformation = [
@@ -53,7 +53,7 @@ trait OmbiHomepageItem
 		];
 		return array_merge($homepageInformation, $homepageSettings);
 	}
-	
+
 	public function testConnectionOmbi()
 	{
 		if (empty($this->config['ombiURL'])) {
@@ -85,7 +85,7 @@ trait OmbiHomepageItem
 			return false;
 		}
 	}
-	
+
 	public function ombiHomepagePermissions($key = null)
 	{
 		$permissions = [
@@ -104,7 +104,7 @@ trait OmbiHomepageItem
 		];
 		return $this->homepageCheckKeyPermissions($key, $permissions);
 	}
-	
+
 	public function homepageOrderombi()
 	{
 		if ($this->homepageItemPermissions($this->ombiHomepagePermissions('main'))) {
@@ -120,8 +120,8 @@ trait OmbiHomepageItem
 				';
 		}
 	}
-	
-	
+
+
 	public function getOmbiRequests($type = "both", $limit = 50, $offset = 0)
 	{
 		if (!$this->homepageItemPermissions($this->ombiHomepagePermissions('main'), true)) {
@@ -165,7 +165,7 @@ trait OmbiHomepageItem
 								'id' => $value['theMovieDbId'],
 								'title' => $value['title'],
 								'overview' => $value['overview'],
-								'poster' => (isset($value['posterPath']) && $value['posterPath'] !== '') ? 'https://image.tmdb.org/t/p/w300/' . $value['posterPath'] : 'plugins/images/cache/no-list.png',
+								'poster' => (isset($value['posterPath']) && $value['posterPath'] !== '') ? 'https://image.tmdb.org/t/p/w300/' . $value['posterPath'] : 'plugins/images/homepage/no-list.png',
 								'background' => (isset($value['background']) && $value['background'] !== '') ? 'https://image.tmdb.org/t/p/w1280/' . $value['background'] : '',
 								'approved' => $value['approved'],
 								'available' => $value['available'],
@@ -194,7 +194,7 @@ trait OmbiHomepageItem
 									'id' => $value['tvDbId'],
 									'title' => $value['title'],
 									'overview' => $value['overview'],
-									'poster' => (isset($value['posterPath']) && $value['posterPath'] !== '') ? (str_starts_with($value['posterPath'], '/') ? 'https://image.tmdb.org/t/p/w300/' . $value['posterPath'] : $value['posterPath']) : 'plugins/images/cache/no-list.png',
+									'poster' => (isset($value['posterPath']) && $value['posterPath'] !== '') ? (str_starts_with($value['posterPath'], '/') ? 'https://image.tmdb.org/t/p/w300/' . $value['posterPath'] : $value['posterPath']) : 'plugins/images/homepage/no-list.png',
 									'background' => (isset($value['background']) && $value['background'] !== '') ? 'https://image.tmdb.org/t/p/w1280/' . $value['background'] : '',
 									'approved' => $value['childRequests'][0]['approved'],
 									'available' => $value['childRequests'][0]['available'],
@@ -230,7 +230,7 @@ trait OmbiHomepageItem
 		$this->setAPIResponse('success', null, 200, $api);
 		return $api;
 	}
-	
+
 	public function addOmbiRequest($id, $type)
 	{
 		$id = ($id) ?? null;
@@ -347,14 +347,13 @@ trait OmbiHomepageItem
 				$this->setAPIResponse('error', 'Ombi Error Occurred', 500);
 				return false;
 			}
-			
 		} catch (Requests_Exception $e) {
 			$this->writeLog('error', 'OMBI Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
 			$this->setAPIResponse('error', $e->getMessage(), 500);
 			return false;
 		}
 	}
-	
+
 	public function actionOmbiRequest($id, $type, $action)
 	{
 		$id = ($id) ?? null;
@@ -432,7 +431,7 @@ trait OmbiHomepageItem
 			return false;
 		};
 	}
-	
+
 	public function ombiTVDefault($type)
 	{
 		return $type == $this->config['ombiTvDefault'];

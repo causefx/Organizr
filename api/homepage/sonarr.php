@@ -278,17 +278,17 @@ trait SonarrHomepageItem
 			} else {
 				$downloaded = "text-danger";
 			}
-			$fanart = "/plugins/images/cache/no-np.png";
+			$fanart = "/plugins/images/homepage/no-np.png";
 			foreach ($child['series']['images'] as $image) {
 				if ($image['coverType'] == "fanart") {
 					$fanart = $image['url'];
 				}
 			}
-			if ($fanart !== "/plugins/images/cache/no-np.png" || (strpos($fanart, '://') === false)) {
-				$cacheDirectory = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . 'images' . DIRECTORY_SEPARATOR . 'cache' . DIRECTORY_SEPARATOR;
+			if ($fanart !== "/plugins/images/homepage/no-np.png" || (strpos($fanart, '://') === false)) {
+				$cacheDirectory = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR . 'cache' . DIRECTORY_SEPARATOR;
 				$imageURL = $fanart;
 				$cacheFile = $cacheDirectory . $seriesID . '.jpg';
-				$fanart = 'plugins/images/cache/' . $seriesID . '.jpg';
+				$fanart = 'data/cache/' . $seriesID . '.jpg';
 				if (!file_exists($cacheFile)) {
 					$this->cacheImage($imageURL, $seriesID);
 					unset($imageURL);
@@ -297,8 +297,8 @@ trait SonarrHomepageItem
 			}
 			$bottomTitle = 'S' . sprintf("%02d", $child['seasonNumber']) . 'E' . sprintf("%02d", $child['episodeNumber']) . ' - ' . $child['title'];
 			$href = $this->config['sonarrCalendarLink'] ?? '';
-			if (empty($href) && !empty($this->config['sonarrURL'])){
-				$href_arr = explode(',',$this->config['sonarrURL']);
+			if (empty($href) && !empty($this->config['sonarrURL'])) {
+				$href_arr = explode(',', $this->config['sonarrURL']);
 				$href = reset($href_arr);
 			}
 			if (!empty($href)){

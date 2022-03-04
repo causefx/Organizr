@@ -54,7 +54,7 @@ trait EmbyHomepageItem
 		];
 		return array_merge($homepageInformation, $homepageSettings);
 	}
-	
+
 	public function testConnectionEmby()
 	{
 		if (!$this->homepageItemPermissions($this->embyHomepagePermissions('test'), true)) {
@@ -77,7 +77,7 @@ trait EmbyHomepageItem
 			return false;
 		}
 	}
-	
+
 	public function embyHomepagePermissions($key = null)
 	{
 		$permissions = [
@@ -136,7 +136,7 @@ trait EmbyHomepageItem
 		];
 		return $this->homepageCheckKeyPermissions($key, $permissions);
 	}
-	
+
 	public function homepageOrderembynowplaying()
 	{
 		if ($this->homepageItemPermissions($this->embyHomepagePermissions('streams'))) {
@@ -152,7 +152,7 @@ trait EmbyHomepageItem
 				';
 		}
 	}
-	
+
 	public function homepageOrderembyrecent()
 	{
 		if ($this->homepageItemPermissions($this->embyHomepagePermissions('recent'))) {
@@ -168,7 +168,7 @@ trait EmbyHomepageItem
 				';
 		}
 	}
-	
+
 	public function getEmbyHomepageStreams()
 	{
 		if (!$this->homepageItemPermissions($this->embyHomepagePermissions('streams'), true)) {
@@ -200,7 +200,7 @@ trait EmbyHomepageItem
 			return false;
 		}
 	}
-	
+
 	public function getEmbyHomepageRecent()
 	{
 		if (!$this->homepageItemPermissions($this->embyHomepagePermissions('recent'), true)) {
@@ -212,8 +212,7 @@ trait EmbyHomepageItem
 		$showPlayed = false;
 		$userId = 0;
 		try {
-			
-			
+
 			if (isset($this->user['username'])) {
 				$username = strtolower($this->user['username']);
 			}
@@ -259,7 +258,7 @@ trait EmbyHomepageItem
 			return false;
 		}
 	}
-	
+
 	public function getEmbyHomepageMetadata($array)
 	{
 		if (!$this->homepageItemPermissions($this->embyHomepagePermissions('metadata'), true)) {
@@ -319,7 +318,7 @@ trait EmbyHomepageItem
 			return false;
 		}
 	}
-	
+
 	public function resolveEmbyItem($itemDetails)
 	{
 		$item = isset($itemDetails['NowPlayingItem']['Id']) ? $itemDetails['NowPlayingItem'] : $itemDetails;
@@ -331,8 +330,8 @@ trait EmbyHomepageItem
 		$actorHeight = 450;
 		$actorWidth = 300;
 		// Cache Directories
-		$cacheDirectory = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . 'images' . DIRECTORY_SEPARATOR . 'cache' . DIRECTORY_SEPARATOR;
-		$cacheDirectoryWeb = 'plugins/images/cache/';
+		$cacheDirectory = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR . 'cache' . DIRECTORY_SEPARATOR;
+		$cacheDirectoryWeb = 'data/cache/';
 		// Types
 		//$embyItem['array-item'] = $item;
 		//$embyItem['array-itemdetails'] = $itemDetails;
@@ -508,11 +507,11 @@ trait EmbyHomepageItem
 			$embyItem['imageURL'] = 'api/v2/homepage/image?source=emby&type=' . $embyItem['imageType'] . '&img=' . $embyItem['thumb'] . '&height=' . $height . '&width=' . $width . '&key=' . $embyItem['key'] . '';
 		}
 		if (!$embyItem['nowPlayingThumb']) {
-			$embyItem['nowPlayingOriginalImage'] = $embyItem['nowPlayingImageURL'] = "plugins/images/cache/no-np.png";
+			$embyItem['nowPlayingOriginalImage'] = $embyItem['nowPlayingImageURL'] = "plugins/images/homepage/no-np.png";
 			$embyItem['nowPlayingKey'] = "no-np";
 		}
 		if (!$embyItem['thumb']) {
-			$embyItem['originalImage'] = $embyItem['imageURL'] = "plugins/images/cache/no-list.png";
+			$embyItem['originalImage'] = $embyItem['imageURL'] = "plugins/images/homepage/no-list.png";
 			$embyItem['key'] = "no-list";
 		}
 		if (isset($useImage)) {
@@ -520,5 +519,5 @@ trait EmbyHomepageItem
 		}
 		return $embyItem;
 	}
-	
+
 }

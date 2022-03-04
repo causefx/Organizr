@@ -2,7 +2,7 @@
 
 trait CouchPotatoHomepageItem
 {
-	
+
 	public function couchPotatoSettingsArray($infoOnly = false)
 	{
 		$homepageInformation = [
@@ -42,7 +42,7 @@ trait CouchPotatoHomepageItem
 		];
 		return array_merge($homepageInformation, $homepageSettings);
 	}
-	
+
 	public function couchPotatoHomepagePermissions($key = null)
 	{
 		$permissions = [
@@ -61,7 +61,7 @@ trait CouchPotatoHomepageItem
 		];
 		return $this->homepageCheckKeyPermissions($key, $permissions);
 	}
-	
+
 	public function getCouchPotatoCalendar()
 	{
 		if (!$this->homepageItemPermissions($this->couchPotatoHomepagePermissions('calendar'), true)) {
@@ -84,7 +84,7 @@ trait CouchPotatoHomepageItem
 		$this->setAPIResponse('success', null, 200, $calendarItems);
 		return $calendarItems;
 	}
-	
+
 	public function formatCouchCalendar($array, $number)
 	{
 		$api = json_decode($array, true);
@@ -130,13 +130,13 @@ trait CouchPotatoHomepageItem
 			} elseif (!empty($child['info']['images']['backdrop'])) {
 				$banner = $child['info']['images']['backdrop_original'][0];
 			} else {
-				$banner = "/plugins/images/cache/no-np.png";
+				$banner = "/plugins/images/homepage/no-np.png";
 			}
-			if ($banner !== "/plugins/images/cache/no-np.png") {
-				$cacheDirectory = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . 'images' . DIRECTORY_SEPARATOR . 'cache' . DIRECTORY_SEPARATOR;
+			if ($banner !== "/plugins/images/homepage/no-np.png") {
+				$cacheDirectory = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR . 'cache' . DIRECTORY_SEPARATOR;
 				$imageURL = $banner;
 				$cacheFile = $cacheDirectory . $movieID . '.jpg';
-				$banner = 'plugins/images/cache/' . $movieID . '.jpg';
+				$banner = 'data/cache/' . $movieID . '.jpg';
 				if (!file_exists($cacheFile)) {
 					$this->cacheImage($imageURL, $movieID);
 					unset($imageURL);
@@ -171,7 +171,6 @@ trait CouchPotatoHomepageItem
 				"bgColor" => str_replace('text', 'bg', $downloaded),
 				"details" => $details
 			));
-			
 		}
 		if ($i != 0) {
 			return $gotCalendar;

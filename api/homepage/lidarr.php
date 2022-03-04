@@ -57,7 +57,7 @@ trait LidarrHomepageItem
 		];
 		return array_merge($homepageInformation, $homepageSettings);
 	}
-	
+
 	public function testConnectionLidarr()
 	{
 		if (empty($this->config['lidarrURL'])) {
@@ -89,7 +89,6 @@ trait LidarrHomepageItem
 					$errors .= $ip . ': Response was not JSON';
 					$failed = true;
 				}
-				
 			} catch (Exception $e) {
 				$failed = true;
 				$ip = $value['url'];
@@ -105,7 +104,7 @@ trait LidarrHomepageItem
 			return true;
 		}
 	}
-	
+
 	public function lidarrHomepagePermissions($key = null)
 	{
 		$permissions = [
@@ -138,7 +137,7 @@ trait LidarrHomepageItem
 		];
 		return $this->homepageCheckKeyPermissions($key, $permissions);
 	}
-	
+
 	public function getLidarrQueue()
 	{
 		if (!$this->homepageItemPermissions($this->lidarrHomepagePermissions('queue'), true)) {
@@ -170,7 +169,7 @@ trait LidarrHomepageItem
 		$this->setAPIResponse('success', null, 200, $api);
 		return $api;;
 	}
-	
+
 	public function getLidarrCalendar($startDate = null, $endDate = null)
 	{
 		$startDate = ($startDate) ?? $_GET['start'] ?? date('Y-m-d', strtotime('-' . $this->config['calendarStart'] . ' days'));
@@ -204,7 +203,7 @@ trait LidarrHomepageItem
 		$this->setAPIResponse('success', null, 200, $calendarItems);
 		return $calendarItems;
 	}
-	
+
 	public function formatLidarrCalendar($array, $number)
 	{
 		$array = json_decode($array, true);
@@ -237,20 +236,20 @@ trait LidarrHomepageItem
 			} else {
 				$downloaded = "text-danger";
 			}
-			$fanart = "/plugins/images/cache/no-np.png";
+			$fanart = "/plugins/images/homepage/no-np.png";
 			foreach ($child['artist']['images'] as $image) {
 				if ($image['coverType'] == "fanart") {
 					$fanart = str_replace('http://', 'https://', $image['url']);
 				}
 			}
 			$href = $this->config['lidarrCalendarLink'] ?? '';
-			if (empty($href) && !empty($this->config['lidarrURL'])){
-				$href_arr = explode(',',$this->config['lidarrURL']);
+			if (empty($href) && !empty($this->config['lidarrURL'])) {
+				$href_arr = explode(',', $this->config['lidarrURL']);
 				$href = reset($href_arr);
 			}
-			if (!empty($href)){
+			if (!empty($href)) {
 				$href = $href . '/artist/' . $child['artist']['foreignArtistId'];
-				$href = str_replace("//artist/","/artist/",$href);
+				$href = str_replace("//artist/", "/artist/", $href);
 			}
 			$details = array(
 				"seasonCount" => '',
@@ -290,5 +289,5 @@ trait LidarrHomepageItem
 		}
 		return false;
 	}
-	
+
 }

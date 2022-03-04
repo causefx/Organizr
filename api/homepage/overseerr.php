@@ -2,7 +2,7 @@
 
 trait OverseerrHomepageItem
 {
-	
+
 	public function overseerrSettingsArray($infoOnly = false)
 	{
 		$homepageInformation = [
@@ -55,7 +55,7 @@ trait OverseerrHomepageItem
 		];
 		return array_merge($homepageInformation, $homepageSettings);
 	}
-	
+
 	public function testConnectionOverseerr()
 	{
 		if (!$this->homepageItemPermissions($this->overseerrHomepagePermissions('test'), true)) {
@@ -76,14 +76,13 @@ trait OverseerrHomepageItem
 				$this->setResponse(401, 'API Connection failed');
 				return false;
 			}
-			
 		} catch (Requests_Exception $e) {
 			$this->writeLog('error', 'Overseerr Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
 			$this->setResponse(500, $e->getMessage());
 			return false;
 		}
 	}
-	
+
 	public function overseerrHomepagePermissions($key = null)
 	{
 		$permissions = [
@@ -121,7 +120,7 @@ trait OverseerrHomepageItem
 		];
 		return $this->homepageCheckKeyPermissions($key, $permissions);
 	}
-	
+
 	public function homepageOrderoverseerr()
 	{
 		if ($this->homepageItemPermissions($this->overseerrHomepagePermissions('main'))) {
@@ -137,8 +136,8 @@ trait OverseerrHomepageItem
 				';
 		}
 	}
-	
-	
+
+
 	public function getOverseerrRequests($limit = 50, $offset = 0)
 	{
 		if (!$this->homepageItemPermissions($this->overseerrHomepagePermissions('main'), true)) {
@@ -176,7 +175,7 @@ trait OverseerrHomepageItem
 								'id' => $value['media']['tmdbId'],
 								'title' => ($value['type'] == 'movie') ? $requestsItemData['title'] : $requestsItemData['name'],
 								'overview' => $requestsItemData['overview'],
-								'poster' => (isset($requestsItemData['posterPath']) && $requestsItemData['posterPath'] !== '') ? 'https://image.tmdb.org/t/p/w300/' . $requestsItemData['posterPath'] : 'plugins/images/cache/no-list.png',
+								'poster' => (isset($requestsItemData['posterPath']) && $requestsItemData['posterPath'] !== '') ? 'https://image.tmdb.org/t/p/w300/' . $requestsItemData['posterPath'] : 'plugins/images/homepage/no-list.png',
 								'background' => (isset($requestsItemData['backdropPath']) && $requestsItemData['backdropPath'] !== '') ? 'https://image.tmdb.org/t/p/w1280/' . $requestsItemData['backdropPath'] : '',
 								'approved' => $value['status'] == 2,
 								'available' => $value['media']['status'] == 5,
@@ -211,7 +210,7 @@ trait OverseerrHomepageItem
 		$this->setResponse(200, null, $api);
 		return $api;
 	}
-	
+
 	public function getDefaultService($services)
 	{
 		if (empty($services)) {
@@ -234,7 +233,7 @@ trait OverseerrHomepageItem
 			return ($default) ? $services[$default] : $services[0];
 		}
 	}
-	
+
 	public function addOverseerrRequest($id, $type, $seasons = null)
 	{
 		$id = ($id) ?? null;
@@ -401,7 +400,7 @@ trait OverseerrHomepageItem
 			return false;
 		}
 	}
-	
+
 	public function actionOverseerrRequest($id, $type, $action)
 	{
 		$id = ($id) ?? null;
@@ -492,7 +491,7 @@ trait OverseerrHomepageItem
 			return false;
 		}
 	}
-	
+
 	public function getOverseerrMetadata($id, $type)
 	{
 		if (!$id) {
@@ -529,7 +528,7 @@ trait OverseerrHomepageItem
 			return false;
 		}
 	}
-	
+
 	public function overseerrTVDefault($type)
 	{
 		return $type == $this->config['overseerrTvDefault'];

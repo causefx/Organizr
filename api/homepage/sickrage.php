@@ -43,7 +43,7 @@ trait SickRageHomepageItem
 		];
 		return array_merge($homepageInformation, $homepageSettings);
 	}
-	
+
 	public function testConnectionSickRage()
 	{
 		if (empty($this->config['sickrageURL'])) {
@@ -75,7 +75,6 @@ trait SickRageHomepageItem
 					$errors .= $ip . ': Response was not JSON';
 					$failed = true;
 				}
-				
 			} catch (Exception $e) {
 				$failed = true;
 				$ip = $value['url'];
@@ -91,7 +90,7 @@ trait SickRageHomepageItem
 			return true;
 		}
 	}
-	
+
 	public function sickrageHomepagePermissions($key = null)
 	{
 		$permissions = [
@@ -110,7 +109,7 @@ trait SickRageHomepageItem
 		];
 		return $this->homepageCheckKeyPermissions($key, $permissions);
 	}
-	
+
 	public function getSickRageCalendar($startDate = null, $endDate = null)
 	{
 		if (!$this->homepageItemPermissions($this->sickrageHomepagePermissions('calendar'), true)) {
@@ -137,7 +136,7 @@ trait SickRageHomepageItem
 		$this->setAPIResponse('success', null, 200, $calendarItems);
 		return $calendarItems;
 	}
-	
+
 	public function formatSickrageCalendarWanted($array, $number)
 	{
 		$array = json_decode($array, true);
@@ -165,11 +164,11 @@ trait SickRageHomepageItem
 				$downloaded = "text-danger";
 			}
 			$bottomTitle = 'S' . sprintf("%02d", $child['season']) . 'E' . sprintf("%02d", $child['episode']) . ' - ' . $child['ep_name'];
-			$cacheDirectory = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . 'images' . DIRECTORY_SEPARATOR . 'cache' . DIRECTORY_SEPARATOR;
+			$cacheDirectory = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR . 'cache' . DIRECTORY_SEPARATOR;
 			$cacheFile = $cacheDirectory . $seriesID . '.jpg';
-			$fanart = "/plugins/images/cache/no-np.png";
+			$fanart = "/plugins/images/homepage/no-np.png";
 			if (file_exists($cacheFile)) {
-				$fanart = 'plugins/images/cache/' . $seriesID . '.jpg';
+				$fanart = 'data/cache/' . $seriesID . '.jpg';
 				unset($cacheFile);
 			}
 			$details = array(
@@ -222,11 +221,11 @@ trait SickRageHomepageItem
 				$downloaded = "text-danger";
 			}
 			$bottomTitle = 'S' . sprintf("%02d", $child['season']) . 'E' . sprintf("%02d", $child['episode']) . ' - ' . $child['ep_name'];
-			$cacheDirectory = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . 'images' . DIRECTORY_SEPARATOR . 'cache' . DIRECTORY_SEPARATOR;
+			$cacheDirectory = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR . 'cache' . DIRECTORY_SEPARATOR;
 			$cacheFile = $cacheDirectory . $seriesID . '.jpg';
-			$fanart = "/plugins/images/cache/no-np.png";
+			$fanart = "/plugins/images/homepage/no-np.png";
 			if (file_exists($cacheFile)) {
-				$fanart = 'plugins/images/cache/' . $seriesID . '.jpg';
+				$fanart = 'data/cache/' . $seriesID . '.jpg';
 				unset($cacheFile);
 			}
 			$details = array(
@@ -279,11 +278,11 @@ trait SickRageHomepageItem
 				$downloaded = "text-danger";
 			}
 			$bottomTitle = 'S' . sprintf("%02d", $child['season']) . 'E' . sprintf("%02d", $child['episode']) . ' - ' . $child['ep_name'];
-			$cacheDirectory = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . 'images' . DIRECTORY_SEPARATOR . 'cache' . DIRECTORY_SEPARATOR;
+			$cacheDirectory = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR . 'cache' . DIRECTORY_SEPARATOR;
 			$cacheFile = $cacheDirectory . $seriesID . '.jpg';
-			$fanart = "/plugins/images/cache/no-np.png";
+			$fanart = "/plugins/images/homepage/no-np.png";
 			if (file_exists($cacheFile)) {
-				$fanart = 'plugins/images/cache/' . $seriesID . '.jpg';
+				$fanart = 'data/cache/' . $seriesID . '.jpg';
 				unset($cacheFile);
 			}
 			$details = array(
@@ -336,11 +335,11 @@ trait SickRageHomepageItem
 				$downloaded = "text-danger";
 			}
 			$bottomTitle = 'S' . sprintf("%02d", $child['season']) . 'E' . sprintf("%02d", $child['episode']) . ' - ' . $child['ep_name'];
-			$cacheDirectory = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . 'images' . DIRECTORY_SEPARATOR . 'cache' . DIRECTORY_SEPARATOR;
+			$cacheDirectory = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR . 'cache' . DIRECTORY_SEPARATOR;
 			$cacheFile = $cacheDirectory . $seriesID . '.jpg';
-			$fanart = "/plugins/images/cache/no-np.png";
+			$fanart = "/plugins/images/homepage/no-np.png";
 			if (file_exists($cacheFile)) {
-				$fanart = 'plugins/images/cache/' . $seriesID . '.jpg';
+				$fanart = 'data/cache/' . $seriesID . '.jpg';
 				unset($cacheFile);
 			}
 			$details = array(
@@ -376,7 +375,7 @@ trait SickRageHomepageItem
 		}
 		return false;
 	}
-	
+
 	public function formatSickrageCalendarHistory($array, $number)
 	{
 		$array = json_decode($array, true);
@@ -390,11 +389,11 @@ trait SickRageHomepageItem
 			$episodeAirDate = $child['date'];
 			$downloaded = "text-success";
 			$bottomTitle = 'S' . sprintf("%02d", $child['season']) . 'E' . sprintf("%02d", $child['episode']);
-			$cacheDirectory = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . 'images' . DIRECTORY_SEPARATOR . 'cache' . DIRECTORY_SEPARATOR;
+			$cacheDirectory = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR . 'cache' . DIRECTORY_SEPARATOR;
 			$cacheFile = $cacheDirectory . $seriesID . '.jpg';
-			$fanart = "/plugins/images/cache/no-np.png";
+			$fanart = "/plugins/images/homepage/no-np.png";
 			if (file_exists($cacheFile)) {
-				$fanart = 'plugins/images/cache/' . $seriesID . '.jpg';
+				$fanart = 'data/cache/' . $seriesID . '.jpg';
 				unset($cacheFile);
 			}
 			$details = array(

@@ -31,6 +31,7 @@ class Organizr
 	use CalendarHomepageItem;
 	use CouchPotatoHomepageItem;
 	use DelugeHomepageItem;
+	use DonateHomepageItem;
 	use EmbyHomepageItem;
 	use HealthChecksHomepageItem;
 	use HTMLHomepageItem;
@@ -64,7 +65,7 @@ class Organizr
 
 	// ===================================
 	// Organizr Version
-	public $version = '2.1.1400';
+	public $version = '2.1.1500';
 	// ===================================
 	// Quick php Version check
 	public $minimumPHP = '7.3';
@@ -139,7 +140,7 @@ class Organizr
 		// Set Paths
 		$this->paths = array(
 			'Root Folder' => dirname(__DIR__, 2) . DIRECTORY_SEPARATOR,
-			'Cache Folder' => dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . 'images' . DIRECTORY_SEPARATOR . 'cache' . DIRECTORY_SEPARATOR,
+			'Cache Folder' => dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR . 'cache' . DIRECTORY_SEPARATOR,
 			'Tab Folder' => $this->root . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR . 'userTabs' . DIRECTORY_SEPARATOR,
 			'API Folder' => dirname(__DIR__, 1) . DIRECTORY_SEPARATOR,
 			'DB Folder' => ($this->hasDB()) ? $this->config['dbLocation'] : false
@@ -706,18 +707,18 @@ class Organizr
 		return true;
 	}
 
-	public function apiData($request)
+	public function apiData($request, $decode = true)
 	{
 		switch ($request->getMethod()) {
 			case 'POST':
 				if (stripos($request->getHeaderLine('Content-Type'), 'application/json') !== false) {
-					return json_decode(file_get_contents('php://input', 'r'), true);
+					return $decode ? json_decode(file_get_contents('php://input', 'r'), true) : file_get_contents('php://input', 'r');
 				} else {
 					return $request->getParsedBody();
 				}
 			default:
 				if (stripos($request->getHeaderLine('Content-Type'), 'application/json') !== false) {
-					return json_decode(file_get_contents('php://input', 'r'), true);
+					return $decode ? json_decode(file_get_contents('php://input', 'r'), true) : file_get_contents('php://input', 'r');
 				} else {
 					return null;
 				}
@@ -1118,13 +1119,62 @@ class Organizr
 		return $this->config;
 	}
 
-	public function status()
+	public function status($action = false)
+	{
+		$status = [];
+		$dependenciesActive = [];
+		$dependenciesInactive = [];
+		$extensions = ['PDO_SQLITE', 'PDO', 'SQLITE3', 'zip', 'cURL', 'openssl', 'simplexml', 'json', 'session', 'filter'];
+		$functions = ['hash', 'fopen', 'fsockopen', 'fwrite', 'fclose', 'readfile'];
+		foreach ($extensions as $check) {
+			if (extension_loaded($check)) {
+				array_push($dependenciesActive, $check);
+			} else {
+				array_push($dependenciesInactive, $check);
+			}
+		}
+		foreach ($functions as $check) {
+			if (function_exists($check)) {
+				array_push($dependenciesActive, $check);
+			} else {
+				array_push($dependenciesInactive, $check);
+			}
+		}
+		$status['writable'] = is_writable(dirname(__DIR__, 2));
+		$status['minVersion'] = (version_compare(PHP_VERSION, $this->minimumPHP) >= 0);
+		$status['os'] = $this->getOS();
+		$status['php'] = phpversion();
+		$status['userConfigPathExists'] = file_exists($this->userConfigPath);
+		if (!($status['minVersion'])) {
+			$status['action'] = 'php';
+			if ($action) {
+				header($this->getServerPath() . 'api/v2/organizr/error');
+				exit;
+			}
+		} elseif (count($dependenciesInactive) > 0) {
+			$status['action'] = 'dependencies';
+		} elseif (!$status['writable']) {
+			$status['action'] = 'permission';
+		} elseif (!$status['userConfigPathExists']) {
+			$status['action'] = 'wizard';
+		} else {
+			$status['action'] = 'launch';
+			if ($action) {
+				echo '<script type="text/javascript"> window.location.href="' . $this->getServerPath() . 'api/v2/organizr/error' . '";</script>';
+				die(header($this->getServerPath() . 'api/v2/organizr/error'));
+				exit;
+			}
+		}
+		return $status;
+	}
+
+	public function launch()
 	{
 		$status = array();
 		$dependenciesActive = array();
 		$dependenciesInactive = array();
-		$extensions = array("PDO_SQLITE", "PDO", "SQLITE3", "zip", "cURL", "openssl", "simplexml", "json", "session", "filter");
-		$functions = array("hash", "fopen", "fsockopen", "fwrite", "fclose", "readfile");
+		$extensions = array('PDO_SQLITE', 'PDO', 'SQLITE3', 'zip', 'cURL', 'openssl', 'simplexml', 'json', 'session', 'filter');
+		$functions = array('hash', 'fopen', 'fsockopen', 'fwrite', 'fclose', 'readfile');
 		foreach ($extensions as $check) {
 			if (extension_loaded($check)) {
 				array_push($dependenciesActive, $check);
@@ -1140,12 +1190,12 @@ class Organizr
 			}
 		}
 		if (!file_exists($this->userConfigPath)) {
-			$status['status'] = "wizard";//wizard - ok for test
+			$status['status'] = 'wizard';//wizard - ok for test
 		}
 		if (count($dependenciesInactive) > 0 || !is_writable(dirname(__DIR__, 2)) || !(version_compare(PHP_VERSION, $this->minimumPHP) >= 0)) {
-			$status['status'] = "dependencies";
+			$status['status'] = 'dependencies';
 		}
-		$status['status'] = ($status['status']) ?? "ok";
+		$status['status'] = ($status['status']) ?? 'ok';
 		$status['writable'] = is_writable(dirname(__DIR__, 2)) ? 'yes' : 'no';
 		$status['minVersion'] = (version_compare(PHP_VERSION, $this->minimumPHP) >= 0) ? 'yes' : 'no';
 		$status['dependenciesActive'] = $dependenciesActive;
@@ -2074,6 +2124,9 @@ class Organizr
 				$this->settingsOption('url', 'komgaURL'),
 				$this->settingsOption('auth', 'ssoKomgaAuth'),
 				$this->settingsOption('enable', 'ssoKomga'),
+				$this->settingsOption('blank'),
+				$this->settingsOption('username', 'komgaFallbackUser', ['label' => 'Komga Fallback Email', 'help' => 'DO NOT SET THIS TO YOUR ADMIN ACCOUNT. We recommend you create a local account as a "catch all" for when Organizr is unable to perform SSO.  Organizr will request a User Token based off of this user credentials']),
+				$this->settingsOption('password', 'komgaFallbackPassword', ['label' => 'Komga Fallback Password']),
 			],
 		];
 	}
@@ -2791,9 +2844,9 @@ class Organizr
 		// Check if Auth Proxy is enabled
 		if ($this->config['authProxyEnabled'] && ($this->config['authProxyHeaderName'] !== '' || $this->config['authProxyHeaderNameEmail'] !== '') && $this->config['authProxyWhitelist'] !== '') {
 			if (isset($this->getallheaders()[$this->config['authProxyHeaderName']]) || isset($this->getallheaders()[$this->config['authProxyHeaderNameEmail']])) {
-				$usernameHeader = $this->getallheaders()[$this->config['authProxyHeaderName']] ?? $username;
+				$usernameHeader = $this->getallheaders()[$this->config['authProxyHeaderName']] ?? null;
 				$emailHeader = $this->getallheaders()[$this->config['authProxyHeaderNameEmail']] ?? null;
-				$headerForLogin = $emailHeader ?: $usernameHeader;
+				$headerForLogin = $usernameHeader ?: ($emailHeader ?: null);
 				$this->setLoggerChannel('Authentication', $headerForLogin);
 				$this->logger->debug('Starting Auth Proxy verification');
 				$whitelistRange = $this->analyzeIP($this->config['authProxyWhitelist']);
@@ -3678,6 +3731,13 @@ class Organizr
 					$class = 'bg-inverse';
 					$image = 'plugins/images/tabs/overseerr.png';
 					if (!$this->config['homepageOverseerrEnabled']) {
+						$class .= ' faded';
+					}
+					break;
+				case 'homepageOrderDonate':
+					$class = 'bg-primary';
+					$image = 'plugins/images/tabs/donate.png';
+					if (!$this->config['homepageDonateEnabled']) {
 						$class .= ' faded';
 					}
 					break;
@@ -6414,7 +6474,7 @@ class Organizr
 			$url = $this->cleanPath($url);
 			$options = ($this->localURL($appURL)) ? array('verify' => false, 'timeout' => 120) : array('timeout' => 120);
 			$headers = [];
-			$apiData = $this->json_validator($this->apiData($requestObject)) ? json_encode($this->apiData($requestObject)) : $this->apiData($requestObject);
+			$apiData = $this->apiData($requestObject, false);
 			if ($header) {
 				if ($requestObject->hasHeader($header)) {
 					$headerKey = $requestObject->getHeaderLine($header);
@@ -6432,7 +6492,7 @@ class Organizr
 				'headers' => $headers,
 				'url' => $url,
 				'options' => $options,
-				'data' => $apiData
+				'data' => $apiData,
 			];
 			$this->setLoggerChannel('Socks');
 			$this->logger->debug('Sending Socks request', $debugInformation);

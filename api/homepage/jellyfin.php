@@ -2,7 +2,7 @@
 
 trait JellyfinHomepageItem
 {
-	
+
 	public function jellyfinSettingsArray($infoOnly = false)
 	{
 		$homepageInformation = [
@@ -54,7 +54,7 @@ trait JellyfinHomepageItem
 		];
 		return array_merge($homepageInformation, $homepageSettings);
 	}
-	
+
 	public function testConnectionJellyfin()
 	{
 		if (empty($this->config['jellyfinURL'])) {
@@ -88,7 +88,7 @@ trait JellyfinHomepageItem
 			return false;
 		}
 	}
-	
+
 	public function jellyfinHomepagePermissions($key = null)
 	{
 		$permissions = [
@@ -135,7 +135,7 @@ trait JellyfinHomepageItem
 		];
 		return $this->homepageCheckKeyPermissions($key, $permissions);
 	}
-	
+
 	public function homepageOrderjellyfinnowplaying()
 	{
 		if ($this->homepageItemPermissions($this->jellyfinHomepagePermissions('streams'))) {
@@ -151,7 +151,7 @@ trait JellyfinHomepageItem
 				';
 		}
 	}
-	
+
 	public function homepageOrderjellyfinrecent()
 	{
 		if ($this->homepageItemPermissions($this->jellyfinHomepagePermissions('recent'))) {
@@ -167,7 +167,7 @@ trait JellyfinHomepageItem
 				';
 		}
 	}
-	
+
 	public function getJellyfinHomepageStreams()
 	{
 		if (!$this->homepageItemPermissions($this->jellyfinHomepagePermissions('streams'), true)) {
@@ -199,7 +199,7 @@ trait JellyfinHomepageItem
 			return false;
 		}
 	}
-	
+
 	public function getJellyfinHomepageRecent()
 	{
 		if (!$this->homepageItemPermissions($this->jellyfinHomepagePermissions('recent'), true)) {
@@ -256,7 +256,7 @@ trait JellyfinHomepageItem
 			return false;
 		}
 	}
-	
+
 	public function getJellyfinHomepageMetadata($array)
 	{
 		if (!$this->homepageItemPermissions($this->jellyfinHomepagePermissions('metadata'), true)) {
@@ -316,7 +316,7 @@ trait JellyfinHomepageItem
 			return false;
 		}
 	}
-	
+
 	public function resolveJellyfinItem($itemDetails)
 	{
 		$item = isset($itemDetails['NowPlayingItem']['Id']) ? $itemDetails['NowPlayingItem'] : $itemDetails;
@@ -328,8 +328,8 @@ trait JellyfinHomepageItem
 		$actorHeight = 450;
 		$actorWidth = 300;
 		// Cache Directories
-		$cacheDirectory = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . 'images' . DIRECTORY_SEPARATOR . 'cache' . DIRECTORY_SEPARATOR;
-		$cacheDirectoryWeb = 'plugins/images/cache/';
+		$cacheDirectory = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR . 'cache' . DIRECTORY_SEPARATOR;
+		$cacheDirectoryWeb = 'data/cache/';
 		// Types
 		switch (@$item['Type']) {
 			case 'Series':
@@ -503,11 +503,11 @@ trait JellyfinHomepageItem
 			$jellyfinItem['imageURL'] = 'api/v2/homepage/image?source=jellyfin&type=' . $jellyfinItem['imageType'] . '&img=' . $jellyfinItem['thumb'] . '&height=' . $height . '&width=' . $width . '&key=' . $jellyfinItem['key'] . '';
 		}
 		if (!$jellyfinItem['nowPlayingThumb']) {
-			$jellyfinItem['nowPlayingOriginalImage'] = $jellyfinItem['nowPlayingImageURL'] = "plugins/images/cache/no-np.png";
+			$jellyfinItem['nowPlayingOriginalImage'] = $jellyfinItem['nowPlayingImageURL'] = "plugins/images/homepage/no-np.png";
 			$jellyfinItem['nowPlayingKey'] = "no-np";
 		}
 		if (!$jellyfinItem['thumb']) {
-			$jellyfinItem['originalImage'] = $jellyfinItem['imageURL'] = "plugins/images/cache/no-list.png";
+			$jellyfinItem['originalImage'] = $jellyfinItem['imageURL'] = "plugins/images/homepage/no-list.png";
 			$jellyfinItem['key'] = "no-list";
 		}
 		if (isset($useImage)) {
@@ -515,5 +515,5 @@ trait JellyfinHomepageItem
 		}
 		return $jellyfinItem;
 	}
-	
+
 }

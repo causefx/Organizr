@@ -60,7 +60,7 @@ trait TraktHomepageItem
 		];
 		return array_merge($homepageInformation, $homepageSettings);
 	}
-	
+
 	public function traktHomepagePermissions($key = null)
 	{
 		$permissions = [
@@ -79,7 +79,7 @@ trait TraktHomepageItem
 		];
 		return $this->homepageCheckKeyPermissions($key, $permissions);
 	}
-	
+
 	public function getTraktCalendar($startDate = null)
 	{
 		$startDate = date('Y-m-d', strtotime('-' . $this->config['calendarStartTrakt'] . ' days'));
@@ -106,7 +106,6 @@ trait TraktHomepageItem
 					$calendarItems = array_merge($calendarItems, $traktTv);
 				}
 			}
-			
 		} catch (Requests_Exception $e) {
 			$this->writeLog('error', 'Trakt Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
 			$this->setAPIResponse('error', $e->getMessage(), 500);
@@ -135,7 +134,7 @@ trait TraktHomepageItem
 		$this->traktOAuthRefresh();
 		return $calendarItems;
 	}
-	
+
 	public function formatTraktCalendarTv($array)
 	{
 		$gotCalendar = array();
@@ -177,7 +176,7 @@ trait TraktHomepageItem
 			} else {
 				$downloaded = "text-danger";
 			}
-			$fanart = "/plugins/images/cache/no-np.png";
+			$fanart = "/plugins/images/homepage/no-np.png";
 			$bottomTitle = 'S' . sprintf("%02d", $child['episode']['season']) . 'E' . sprintf("%02d", $child['episode']['number']) . ' - ' . $child['episode']['title'];
 			$details = array(
 				"seasonCount" => $child['episode']['season'],
@@ -212,7 +211,7 @@ trait TraktHomepageItem
 		}
 		return false;
 	}
-	
+
 	public function formatTraktCalendarMovies($array)
 	{
 		$gotCalendar = array();
@@ -240,7 +239,7 @@ trait TraktHomepageItem
 				$notReleased = 'false';
 			}
 			$downloaded = 'text-dark';
-			$banner = '/plugins/images/cache/no-np.png';
+			$banner = '/plugins/images/homepage/no-np.png';
 			$details = array(
 				'topTitle' => $movieName,
 				'bottomTitle' => $child['movie']['tagline'],

@@ -289,7 +289,7 @@ trait RadarrHomepageItem
 				} else {
 					$downloaded = "text-danger";
 				}
-				$banner = "/plugins/images/cache/no-np.png";
+				$banner = "/plugins/images/homepage/no-np.png";
 				foreach ($child['images'] as $image) {
 					if ($image['coverType'] == "banner" || $image['coverType'] == "fanart") {
 						if (strpos($image['url'], '://') === false) {
@@ -306,11 +306,11 @@ trait RadarrHomepageItem
 						}
 					}
 				}
-				if ($banner !== "/plugins/images/cache/no-np.png" || (strpos($banner, 'apikey') !== false)) {
-					$cacheDirectory = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . 'images' . DIRECTORY_SEPARATOR . 'cache' . DIRECTORY_SEPARATOR;
+				if ($banner !== "/plugins/images/homepage/no-np.png" || (strpos($banner, 'apikey') !== false)) {
+					$cacheDirectory = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR . 'cache' . DIRECTORY_SEPARATOR;
 					$imageURL = $banner;
 					$cacheFile = $cacheDirectory . $movieID . '.jpg';
-					$banner = 'plugins/images/cache/' . $movieID . '.jpg';
+					$banner = 'data/cache/' . $movieID . '.jpg';
 					if (!file_exists($cacheFile)) {
 						$this->cacheImage($imageURL, $movieID);
 						unset($imageURL);
@@ -329,13 +329,13 @@ trait RadarrHomepageItem
 				}
 				$alternativeTitles = empty($alternativeTitles) ? "" : substr($alternativeTitles, 0, -2);
 				$href = $this->config['radarrCalendarLink'] ?? '';
-				if (empty($href) && !empty($this->config['radarrURL'])){
-					$href_arr = explode(',',$this->config['radarrURL']);
+				if (empty($href) && !empty($this->config['radarrURL'])) {
+					$href_arr = explode(',', $this->config['radarrURL']);
 					$href = reset($href_arr);
 				}
-				if (!empty($href)){
+				if (!empty($href)) {
 					$href = $href . '/movie/' . $movieID;
-					$href = str_replace("//movie/","/movie/",$href);
+					$href = str_replace("//movie/", "/movie/", $href);
 				}
 				$details = array(
 					"topTitle" => $movieName,

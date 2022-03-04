@@ -99,6 +99,10 @@ The optional parameters and GID and UID are described in the [readme](https://gi
 
 ![OrganizrSponsor](https://user-images.githubusercontent.com/16184466/53614287-a9b73480-3b96-11e9-9c8e-e32b4ae20c0d.png)
 
+### Seedboxes.cc 
+
+[![Seedboxes.cc](https://user-images.githubusercontent.com/16184466/154811062-201be154-6868-4a24-ade6-a26278935415.png)](https://www.seedboxes.cc)
+
 ### BrowserStack for allowing us to use their platform for testing
 
 [![BrowserStack](https://avatars2.githubusercontent.com/u/1119453?s=200&v=4g)](https://www.browserstack.com)
