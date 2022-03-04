@@ -56,10 +56,10 @@ trait SonarrHomepageItem
 					$this->settingsOption('switch', 'sonarrUnmonitored', ['label' => 'Show Unmonitored']),
 					$this->settingsOption('blank', '', ['type' => 'html', 'html' => '<hr />']),
 					$this->settingsOption('blank', '', ['type' => 'html', 'html' => '<hr />']),
-					$this->settingsOption('enable', 'sonarrIcon', ['label' => 'Show Sonarr Icon'),
+					$this->settingsOption('enable', 'sonarrIcon', ['label' => 'Show Sonarr Icon']),
 					$this->settingsOption('calendar-link-url', 'sonarrCalendarLink'),
 					$this->settingsOption('blank'),
-					$this->settingsOption('calendar-frame-target', 'sonarrFrameTarget')									
+					$this->settingsOption('calendar-frame-target', 'sonarrFrameTarget')
 				],
 				'Test Connection' => [
 					$this->settingsOption('blank', null, ['label' => 'Please Save before Testing']),
@@ -301,9 +301,9 @@ trait SonarrHomepageItem
 				$href_arr = explode(',', $this->config['sonarrURL']);
 				$href = reset($href_arr);
 			}
-			if (!empty($href)){
+			if (!empty($href)) {
 				$href = $href . '/series/' . preg_replace('/[^A-Za-z0-9 -]/', '', str_replace('&', 'and', preg_replace('/[[:space:]]+/', '-', $seriesName)));
-				$href = str_replace("//series/","/series/",$href);
+				$href = str_replace("//series/", "/series/", $href);
 			}
 			$details = array(
 				"seasonCount" => $child['series']['seasonCount'] ?? isset($child['series']['seasons']) ? count($child['series']['seasons']) : 0,

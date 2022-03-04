@@ -54,7 +54,7 @@ trait RadarrHomepageItem
 					$this->settingsOption('switch', 'radarrCinemaRelease', ['label' => 'Show Cinema Releases']),
 					$this->settingsOption('blank', '', ['type' => 'html', 'html' => '<hr />']),
 					$this->settingsOption('blank', '', ['type' => 'html', 'html' => '<hr />']),
-					$this->settingsOption('enable', 'radarrIcon', ['label' => 'Show Radarr Icon'),
+					$this->settingsOption('enable', 'radarrIcon', ['label' => 'Show Radarr Icon']),
 					$this->settingsOption('calendar-link-url', 'radarrCalendarLink'),
 					$this->settingsOption('blank'),
 					$this->settingsOption('calendar-frame-target', 'radarrFrameTarget')
