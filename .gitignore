@@ -95,7 +95,6 @@ images/cache/*
 backups/*
 backups/
 backups
-test*.php
 tracy/
 logs/
 debug.php

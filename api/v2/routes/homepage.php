@@ -552,6 +552,17 @@ $app->get('/homepage/donate', function ($request, $response, $args) {
 		->withHeader('Content-Type', 'application/json;charset=UTF-8')
 		->withStatus($GLOBALS['responseCode']);
 });
+$app->get('/homepage/donate/[{amount}]', function ($request, $response, $args) {
+	$Organizr = ($request->getAttribute('Organizr')) ?? new Organizr();
+	$amount = $args['amount'] ?: $Organizr->config['homepageDonateMinimum'] / 100;
+	$amount = (int)$amount;
+	$amount = ($amount > 0) ? $amount : $Organizr->config['homepageDonateMinimum'] / 100;
+	$Organizr->homepageDonateCreateSession($amount);
+	$response->getBody()->write(jsonE($GLOBALS['api']));
+	return $response
+		->withHeader('Content-Type', 'application/json;charset=UTF-8')
+		->withStatus($GLOBALS['responseCode']);
+});
 $app->post('/homepage/donate', function ($request, $response, $args) {
 	$Organizr = ($request->getAttribute('Organizr')) ?? new Organizr();
 	$amount = $_GET['amount'] ?? 1000;
