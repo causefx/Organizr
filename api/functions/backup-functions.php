@@ -2,7 +2,7 @@
 
 trait BackupFunctions
 {
-	
+
 	public function fileArray($files)
 	{
 		foreach ($files as $file) {
@@ -14,7 +14,7 @@ trait BackupFunctions
 			return $list;
 		}
 	}
-	
+
 	public function deleteBackup($filename)
 	{
 		$ext = strtolower(pathinfo($filename, PATHINFO_EXTENSION));
@@ -34,7 +34,7 @@ trait BackupFunctions
 			return false;
 		}
 	}
-	
+
 	public function downloadBackup($filename)
 	{
 		$path = $this->config['dbLocation'] . 'backups' . DIRECTORY_SEPARATOR;
@@ -51,7 +51,7 @@ trait BackupFunctions
 			return false;
 		}
 	}
-	
+
 	public function backupOrganizr($type = 'config')
 	{
 		$directory = $this->config['dbLocation'] . 'backups' . DIRECTORY_SEPARATOR;
@@ -62,34 +62,36 @@ trait BackupFunctions
 			case 'full':
 				break;
 			default:
-			
 		}
-		$orgFiles = array(
-			'orgLog' => $this->organizrLog,
-			'loginLog' => $this->organizrLoginLog,
-			'config' => $this->userConfigPath,
-			'database' => $this->config['dbLocation'] . $this->config['dbName']
-		);
-		$files = $this->fileArray($orgFiles);
-		if (!empty($files)) {
-			$this->writeLog('success', 'BACKUP: backup process started', 'SYSTEM');
-			$zipname = $directory . 'backup[' . date('Y-m-d_H-i') . '][' . $this->version . '].zip';
-			$zip = new ZipArchive;
-			$zip->open($zipname, ZipArchive::CREATE);
-			foreach ($files as $file) {
-				$zip->addFile($file);
+
+		$this->writeLog('success', 'BACKUP: backup process started', 'SYSTEM');
+		$zipname = $directory . 'backup[' . date('Y-m-d_H-i') . ' - ' . $this->random_ascii_string(2) . '][' . $this->version . '].zip';
+		$zip = new ZipArchive;
+		$zip->open($zipname, ZipArchive::CREATE);
+		$zip->addFile($this->config['dbLocation'] . $this->config['dbName'], basename($this->config['dbLocation'] . $this->config['dbName']));
+		$rootPath = $this->root . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR;
+		$files = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($rootPath), RecursiveIteratorIterator::LEAVES_ONLY);
+
+		foreach ($files as $name => $file) {
+			// Skip directories (they would be added automatically)
+			if (!$file->isDir()) {
+				if (stripos($name, 'data' . DIRECTORY_SEPARATOR . 'cache') == false) {
+					// Get real and relative path for current file
+					$filePath = $file->getRealPath();
+					$relativePath = substr($filePath, strlen($rootPath));
+					// Add current file to archive
+					$zip->addFile($filePath, $relativePath);
+				}
 			}
-			$zip->close();
-			$this->writeLog('success', 'BACKUP: backup process finished', 'SYSTEM');
-			$this->setAPIResponse('success', 'Backup has been created', 200);
-			return true;
-		} else {
-			$this->setAPIResponse('error', 'Backup creation failed', 409);
-			return false;
 		}
-		
+
+
+		$zip->close();
+		$this->writeLog('success', 'BACKUP: backup process finished', 'SYSTEM');
+		$this->setAPIResponse('success', 'Backup has been created', 200);
+		return true;
 	}
-	
+
 	public function getBackups()
 	{
 		$path = $this->config['dbLocation'] . 'backups' . DIRECTORY_SEPARATOR;
@@ -118,9 +120,9 @@ trait BackupFunctions
 		}
 		$fileList['total_files'] = $totalFiles;
 		$fileList['total_size'] = $this->human_filesize($totalFileSize, 2);
-		$fileList['files'] = array_reverse($fileList['files']);
+		$fileList['files'] = $totalFiles > 0 ? array_reverse($fileList['files']) : null;
 		$this->setAPIResponse('success', null, 200, array_reverse($fileList));
 		return array_reverse($fileList);
 	}
-	
+
 }
