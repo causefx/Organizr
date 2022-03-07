@@ -360,6 +360,8 @@ return [
 	'homepageOrderDonate' => '41',
 	'homepageShowStreamNames' => false,
 	'homepageShowStreamNamesAuth' => '1',
+	'homepageShowStreamNamesWithoutIp' => false,
+	'homepageShowStreamNamesWithoutIpAuth' => '1',
 	'homepageUseCustomStreamNames' => false,
 	'homepageCustomStreamNames' => '',
 	'homepageStreamRefresh' => '60000',

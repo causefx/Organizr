@@ -45,8 +45,10 @@ trait PlexHomepageItem
 				'Active Streams' => [
 					$this->settingsOption('enable', 'homepagePlexStreams'),
 					$this->settingsOption('auth', 'homepagePlexStreamsAuth'),
-					$this->settingsOption('switch', 'homepageShowStreamNames', ['label' => 'User Information']),
+					$this->settingsOption('switch', 'homepageShowStreamNames', ['label' => 'User Information', 'help' => 'Show user and IP information']),
 					$this->settingsOption('auth', 'homepageShowStreamNamesAuth'),
+					$this->settingsOption('switch', 'homepageShowStreamNamesWithoutIp', ['label' => 'User Information Without IP', 'help' => 'Only shows username and no IP information']),
+					$this->settingsOption('auth', 'homepageShowStreamNamesWithoutIpAuth'),
 					$this->settingsOption('refresh', 'homepageStreamRefresh'),
 					$this->settingsOption('plex-library-exclude', 'homepagePlexStreamsExclude', ['options' => $libraryList]),
 				],
@@ -566,7 +568,7 @@ trait PlexHomepageItem
 		$plexItem['sessionType'] = isset($item->TranscodeSession['progress']) ? 'Transcoding' : 'Direct Playing';
 		$plexItem['state'] = (((string)$item->Player['state'] == "paused") ? "pause" : "play");
 		$plexItem['user'] = $this->formatPlexUserName($item);
-		$plexItem['userThumb'] = ($this->config['homepageShowStreamNames'] && $this->qualifyRequest($this->config['homepageShowStreamNamesAuth'])) ? (string)$item->User['thumb'] : "";
+		$plexItem['userThumb'] = (($this->config['homepageShowStreamNames'] && $this->qualifyRequest($this->config['homepageShowStreamNamesAuth'])) || ($this->config['homepageShowStreamNamesWithoutIp'] && $this->qualifyRequest($this->config['homepageShowStreamNamesWithoutIpAuth']))) ? (string)$item->User['thumb'] : "";
 		$plexItem['userAddress'] = ($this->config['homepageShowStreamNames'] && $this->qualifyRequest($this->config['homepageShowStreamNamesAuth'])) ? (string)$item->Player['address'] : "x.x.x.x";
 		$plexItem['address'] = $this->config['plexTabURL'] ? $this->config['plexTabURL'] . "/web/index.html#!/server/" . $this->config['plexID'] . "/details?key=/library/metadata/" . $item['ratingKey'] : "https://app.plex.tv/web/app#!/server/" . $this->config['plexID'] . "/details?key=/library/metadata/" . $item['ratingKey'];
 		$plexItem['nowPlayingOriginalImage'] = 'api/v2/homepage/image?source=plex&img=' . $plexItem['nowPlayingThumb'] . '&height=' . $nowPlayingHeight . '&width=' . $nowPlayingWidth . '&key=' . $plexItem['nowPlayingKey'] . '$' . $this->randString();
@@ -690,7 +692,7 @@ trait PlexHomepageItem
 
 	private function formatPlexUserName($item)
 	{
-		$name = ($this->config['homepageShowStreamNames'] && $this->qualifyRequest($this->config['homepageShowStreamNamesAuth'])) ? (string)$item->User['title'] : "";
+		$name = (($this->config['homepageShowStreamNames'] && $this->qualifyRequest($this->config['homepageShowStreamNamesAuth'])) || ($this->config['homepageShowStreamNamesWithoutIp'] && $this->qualifyRequest($this->config['homepageShowStreamNamesWithoutIpAuth']))) ? (string)$item->User['title'] : "";
 		try {
 			if ($this->config['homepageUseCustomStreamNames']) {
 				$customNames = json_decode($this->config['homepageCustomStreamNames'], true);
