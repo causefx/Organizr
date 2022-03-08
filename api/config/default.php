@@ -197,6 +197,7 @@ return [
 	'rTorrentSortOrder' => 'datea',
 	'rTorrentReverseSorting' => false,
 	'rTorrentCombine' => false,
+	'rTorrentIgnoreLabel' => '',
 	'rTorrentDisableCertCheck' => false,
 	'rTorrentUseCustomCertificate' => false,
 	'rTorrentLimit' => '200',

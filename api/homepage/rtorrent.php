@@ -66,6 +66,7 @@ trait RTorrentHomepageItem
 					$this->settingsOption('hide-completed', 'rTorrentHideCompleted'),
 					$this->settingsOption('select', 'rTorrentSortOrder', ['label' => 'Order', 'options' => $this->rTorrentSortOptions()]),
 					$this->settingsOption('limit', 'rTorrentLimit'),
+					$this->settingsOption('multiple', 'rTorrentIgnoreLabel', ['label' => 'Ignore Torrent with Label(s)']),
 					$this->settingsOption('refresh', 'rTorrentRefresh'),
 					$this->settingsOption('combine', 'rTorrentCombine'),
 				],
@@ -233,6 +234,8 @@ trait RTorrentHomepageItem
 							//do nothing
 						} elseif ($tempStatus == 'Finished' && $this->config['rTorrentHideCompleted']) {
 							//do nothing
+						} elseif (stripos($this->config['rTorrentIgnoreLabel'], $value[20]) !== false) {
+							//do nothing
 						} else {
 							$torrents[$key] = array(
 								'name' => $value[0],
@@ -266,10 +269,8 @@ trait RTorrentHomepageItem
 						switch ($direction) {
 							case 'a':
 								return $a[$sort] <=> $b[$sort];
-								break;
 							case 'd':
 								return $b[$sort] <=> $a[$sort];
-								break;
 							default:
 								return $b['date'] <=> $a['date'];
 						}
@@ -285,7 +286,7 @@ trait RTorrentHomepageItem
 			$this->setAPIResponse('error', $e->getMessage(), 500);
 			return false;
 		};
-		$api['content'] = isset($api['content']) ? $api['content'] : false;
+		$api['content'] = $api['content'] ?? false;
 		$this->setAPIResponse('success', null, 200, $api);
 		return $api;
 	}
