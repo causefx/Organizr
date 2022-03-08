@@ -4,7 +4,6 @@ trait RTorrentHomepageItem
 {
 	public function rTorrentSettingsArray($infoOnly = false)
 	{
-
 		$homepageInformation = [
 			'name' => 'rTorrent',
 			'enabled' => strpos('personal', $this->config['license']) !== false,
@@ -165,8 +164,10 @@ trait RTorrentHomepageItem
 			$state = 'Downloading';
 		} elseif ($completed && !$state && $status == 'seed') {
 			$state = 'Finished';
+		} elseif ($completed && !$state && $status == 'leech') {
+			$state = 'Finished';
 		}
-		return ($state) ? $state : $status;
+		return ($state) ?: $status;
 	}
 
 	public function getRTorrentHomepageQueue()
