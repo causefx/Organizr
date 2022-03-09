@@ -127,6 +127,7 @@ $app->get('/launch', function ($request, $response, $args) {
 	$GLOBALS['api']['response']['data']['branch'] = $Organizr->config['branch'];
 	$GLOBALS['api']['response']['data']['theme'] = $Organizr->config['theme'];
 	$GLOBALS['api']['response']['data']['style'] = $Organizr->config['style'];
+	$GLOBALS['api']['response']['data']['darkmode'] = $Organizr->config['autoDarkMode'];
 	$GLOBALS['api']['response']['data']['version'] = $Organizr->version;
 	$GLOBALS['api']['response']['data']['settings'] = $Organizr->organizrSpecialSettings();
 	$GLOBALS['api']['response']['data']['plugins'] = $Organizr->pluginGlobalList();
