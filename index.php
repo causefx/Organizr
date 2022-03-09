@@ -254,6 +254,7 @@ echo $Organizr->pluginFiles('js');
 echo $Organizr->formKey();
 echo $Organizr->loadCalendarJS();
 echo $Organizr->CBPFWTabs();
+echo $Organizr->setScheme();	
 ?>
 </body>
 
