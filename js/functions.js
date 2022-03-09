@@ -11558,6 +11558,7 @@ function launch(){
 		        appearance:json.data.appearance,
 		        theme:json.data.theme,
 		        style:json.data.style,
+			darkMode:json.data.darkmode,
 		        version:json.data.version
 	        };
 	        // Add element to signal activeInfo Ready
@@ -11570,7 +11571,7 @@ function launch(){
 	        checkMessage();
 	        errorPage();
 	        uriRedirect();
-	        changeStyle(activeInfo.style);
+	        changeStyle((activeInfo.darkMode) ? $color_scheme : activeInfo.style);
 	        changeTheme(activeInfo.theme);
 	        setSSO();
 	        checkToken();
