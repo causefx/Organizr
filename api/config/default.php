@@ -33,6 +33,7 @@ return [
 	'lockScreen' => false,
 	'theme' => 'Organizr',
 	'style' => 'dark',
+	'autoDarkMode' => false,
 	'plexURL' => '',
 	'plexTabURL' => '',
 	'plexToken' => '',
