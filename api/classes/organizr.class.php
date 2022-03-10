@@ -865,29 +865,28 @@ class Organizr
 	
 	public function setScheme()
 	{
-		if ($this->config['autoDarkMode'] == true) {
-			return '
-				<script src="https://cdn.jsdelivr.net/npm/js-cookie/dist/js.cookie.min.js"></script>
-				<script>
-				// code to set the `color_scheme` cookie
-				let $color_scheme = Cookies.get("color_scheme");
-				function get_color_scheme() {
-				  return (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) ? "dark" : "light";
-				}
-				function update_color_scheme() {
-				  Cookies.set("color_scheme", get_color_scheme());
-				  changeStyle(get_color_scheme());
-				}
-				// read & compare cookie `color-scheme`
-				if ((typeof $color_scheme === "undefined") || (get_color_scheme() != $color_scheme))
-				  update_color_scheme();
-				// detect changes and change the cookie
-				if (window.matchMedia)
-				  window.matchMedia("(prefers-color-scheme: dark)").addListener( update_color_scheme );
-				</script>
-			';
-		}
-		return null;
+		return '
+			<script src="https://cdn.jsdelivr.net/npm/js-cookie/dist/js.cookie.min.js"></script>
+			<script>
+			// code to set the `color_scheme` cookie
+			let $color_scheme = Cookies.get("color_scheme"), $auto_dark_mode = ' . (($this->config['autoDarkMode']) ? 'true' : 'false') . ';
+			function get_color_scheme() {
+			  return (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) ? "dark" : "light";
+			}
+			function update_color_scheme(override) {
+			  if (typeof override == "undefined") override = "";
+			  Cookies.set("color_scheme", get_color_scheme());
+			  if ($auto_dark_mode) changeStyle(get_color_scheme());
+			  if (override != "") changeStyle(override);
+			}
+			// read & compare cookie `color-scheme`
+			if ((typeof $color_scheme === "undefined") || (get_color_scheme() != $color_scheme))
+			  update_color_scheme();
+			// detect changes and change the cookie
+			if (window.matchMedia)
+			  window.matchMedia("(prefers-color-scheme: dark)").addListener( update_color_scheme );
+			</script>
+		';
 	}
 
 	public function pluginFiles($type, $settings = false, $rootPath = '')
@@ -1836,7 +1835,7 @@ class Organizr
 				$this->settingsOption('select', 'theme', ['label' => 'Theme', 'class' => 'themeChanger', 'options' => $this->getThemes()]),
 				$this->settingsOption('select', 'style', ['label' => 'Style', 'class' => 'styleChanger', 'attr' => $this->config['autoDarkMode'] ? 'disabled' : '','options' => [['name' => 'Light', 'value' => 'light'], ['name' => 'Dark', 'value' => 'dark'], ['name' => 'Horizontal', 'value' => 'horizontal']]]),
 				$this->settingsOption('blank'),
-				$this->settingsOption('switch', 'autoDarkMode', ['label' => 'Automatic Dark Mode','class' => $this->config['autoDarkMode'] ? 'on' : '','help' => 'Follows system settings. Style setting will be ignored.', 'attr' => 'onchange="$(this).toggleClass(\'on\');($(this).hasClass(\'on\')) ? $(\'.styleChanger[name=style]\').prop(\'disabled\',true) :  $(\'.styleChanger[name=style]\').prop(\'disabled\',false)"']),
+				$this->settingsOption('switch', 'autoDarkMode', ['label' => 'Automatic Dark Mode','class' => $this->config['autoDarkMode'] ? 'on' : '','help' => 'Follows system settings. Style setting will be ignored.', 'attr' => 'onchange="$(this).toggleClass(\'on\'); if ($(this).hasClass(\'on\')){ $auto_dark_mode = true; update_color_scheme(); $(\'.styleChanger[name=style]\').prop(\'disabled\',true); } else { $auto_dark_mode = false; update_color_scheme(\''.$this->config['style'].'\'); $(\'.styleChanger[name=style]\').prop(\'disabled\',false);}"']),
 			],
 			'Notifications' => [
 				$this->settingsOption('select', 'notificationBackbone', ['label' => 'Type', 'class' => 'notifyChanger', 'options' => $this->notificationTypesOptions()]),
