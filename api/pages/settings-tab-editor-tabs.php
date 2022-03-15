@@ -135,7 +135,7 @@ function get_page_settings_tab_editor_tabs($Organizr)
 				<div class="form-group col-lg-6">
 					<label class="control-label" for="new-tab-form-inputTabActionTypeNew" lang="en">Tab Auto Action</label>
 						<select class="form-control" id="new-tab-form-inputTabActionTypeNew" name="timeout">
-							<option value="null">None</option>
+							<option value="0">None</option>
 							<option value="1">Auto Close</option>
 							<option value="2">Auto Reload</option>
 						</select>
@@ -203,7 +203,7 @@ function get_page_settings_tab_editor_tabs($Organizr)
 				<div class="form-group col-lg-6">
 					<label class="control-label" for="edit-tab-form-inputTabActionTypeNew" lang="en">Tab Auto Action</label>
 						<select class="form-control" id="edit-tab-form-inputTabActionTypeNew" name="timeout">
-							<option value="null">None</option>
+							<option value="0">None</option>
 							<option value="1">Auto Close</option>
 							<option value="2">Auto Reload</option>
 						</select>

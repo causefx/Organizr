@@ -1097,7 +1097,18 @@ $(document).on('change keydown', '.addFormTick :input', function(e) {
             var value = $(this).val();
     }
     if($(this).hasClass('themeChanger')){
-        changeTheme(value);
+        organizrAPI2('GET','api/v2/themes').success(function(data) {
+            try {
+                let response = data.response;
+                let path = response.data[value]['path'];
+                changeTheme(path + '/' + value);
+            }catch(e) {
+                organizrCatchError(e,data);
+            }
+        }).fail(function(xhr) {
+            OrganizrApiError(xhr, 'Theme Preview Error');
+        });
+
     }
     if($(this).hasClass('styleChanger')){
         changeStyle(value);

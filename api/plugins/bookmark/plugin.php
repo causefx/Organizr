@@ -24,7 +24,7 @@ class Bookmark extends Organizr
 	{
 		parent::writeLog($type, "Plugin 'Bookmark': " . $message, $username);
 	}
-	
+
 	public function _bookmarkGetOrganizrTabInfo()
 	{
 		$response = [
@@ -39,7 +39,7 @@ class Bookmark extends Organizr
 		];
 		return $this->processQueries($response);
 	}
-	
+
 	public function _bookmarkGetOrganizrTabGroupId()
 	{
 		$tab = $this->_bookmarkGetOrganizrTabInfo();
@@ -49,7 +49,7 @@ class Bookmark extends Organizr
 			return 999;
 		}
 	}
-	
+
 	public function _checkRequest($request)
 	{
 		$result = false;
@@ -61,29 +61,32 @@ class Bookmark extends Organizr
 		}
 		return $result;
 	}
-	
-	protected function _checkDatabaseTablesExist()
+
+	public function _checkDatabaseTablesExist()
 	{
+		if ($this->config['driver'] == 'sqlite3') {
+			$queryCategories = ["SELECT `name` FROM `sqlite_master` WHERE `type` = 'table' AND `name` = 'BOOKMARK-categories'"];
+			$queryTabs = ["SELECT `name` FROM `sqlite_master` WHERE `type` = 'table' AND `name` = 'BOOKMARK-tabs'"];
+		} else {
+			$queryCategories = ['SELECT TABLE_NAME FROM information_schema.TABLES WHERE TABLE_SCHEMA = %s AND TABLE_TYPE LIKE "BASE TABLE" AND TABLE_NAME = %s', (string)$this->config['dbName'], 'BOOKMARK-categories'];
+			$queryTabs = ['SELECT TABLE_NAME FROM information_schema.TABLES WHERE TABLE_SCHEMA = %s AND TABLE_TYPE LIKE "BASE TABLE" AND TABLE_NAME = %s', (string)$this->config['dbName'], 'BOOKMARK-categories'];
+		}
 		$response = [
 			array(
 				'function' => 'fetchSingle',
-				'query' => array(
-					"SELECT `name` FROM `sqlite_master` WHERE `type` = 'table' AND `name` = 'BOOKMARK-categories'"
-				),
+				'query' => $queryCategories,
 				'key' => 'BOOKMARK-categories'
 			),
 			array(
 				'function' => 'fetchSingle',
-				'query' => array(
-					"SELECT `name` FROM `sqlite_master` WHERE `type` = 'table' AND `name` = 'BOOKMARK-tabs'"
-				),
+				'query' => $queryTabs,
 				'key' => 'BOOKMARK-tabs'
 			),
 		];
 		$data = $this->processQueries($response);
 		return ($data["BOOKMARK-categories"] != false && $data["BOOKMARK-tabs"] != false);
 	}
-	
+
 	protected function _createDatabaseTables()
 	{
 		$response = [
@@ -115,7 +118,7 @@ class Bookmark extends Organizr
 		];
 		$this->processQueries($response);
 	}
-	
+
 	public function _getSettings()
 	{
 		return array(
@@ -163,7 +166,7 @@ class Bookmark extends Organizr
 			'
 		);
 	}
-	
+
 	public function _getPage()
 	{
 		$bookmarks = '<div id="BOOKMARK-wrapper">';
@@ -189,7 +192,7 @@ class Bookmark extends Organizr
 		$bookmarks .= '</div>';
 		return $bookmarks;
 	}
-	
+
 	protected function _iconPrefix($source)
 	{
 		$tabIcon = explode("::", $source);
@@ -213,7 +216,7 @@ class Bookmark extends Organizr
 			return '<img src="' . $source . '" alt="tabIcon" />';
 		}
 	}
-	
+
 	protected function _getAllCategories()
 	{
 		$response = [
@@ -224,7 +227,7 @@ class Bookmark extends Organizr
 		];
 		return $this->processQueries($response);
 	}
-	
+
 	protected function _getRelevantTabsForCategory($category_id)
 	{
 		$response = [
@@ -239,7 +242,7 @@ class Bookmark extends Organizr
 		];
 		return $this->processQueries($response);
 	}
-	
+
 	public function _getTabs()
 	{
 		$response = [
@@ -261,7 +264,7 @@ class Bookmark extends Organizr
 		];
 		return $this->processQueries($response);
 	}
-	
+
 	// Tabs
 	public function _getSettingsTabEditorBookmarkTabsPage()
 	{
@@ -465,7 +468,7 @@ class Bookmark extends Organizr
 		</form>
 		';
 	}
-	
+
 	public function _isBookmarkTabNameTaken($name, $id = null)
 	{
 		if ($id) {
@@ -492,7 +495,7 @@ class Bookmark extends Organizr
 		}
 		return $this->processQueries($response);
 	}
-	
+
 	public function _getNextBookmarkTabOrder()
 	{
 		$response = [
@@ -505,7 +508,7 @@ class Bookmark extends Organizr
 		];
 		return $this->processQueries($response);
 	}
-	
+
 	public function _getBookmarkTabById($id)
 	{
 		$response = [
@@ -519,7 +522,7 @@ class Bookmark extends Organizr
 		];
 		return $this->processQueries($response);
 	}
-	
+
 	public function _getTabByIdCheckUser($id)
 	{
 		$tabInfo = $this->_getBookmarkTabById($id);
@@ -532,7 +535,7 @@ class Bookmark extends Organizr
 			return false;
 		}
 	}
-	
+
 	public function _deleteTab($id)
 	{
 		$response = [
@@ -554,7 +557,7 @@ class Bookmark extends Organizr
 			return false;
 		}
 	}
-	
+
 	public function _addTab($array)
 	{
 		if (!$array) {
@@ -614,7 +617,7 @@ class Bookmark extends Organizr
 		$this->writeLog('success', 'Tab Editor Function -  Added Tab for [' . $array['name'] . ']', $this->user['username']);
 		return $this->processQueries($response);
 	}
-	
+
 	public function _updateTab($id, $array)
 	{
 		if (!$id || $id == '') {
@@ -665,7 +668,7 @@ class Bookmark extends Organizr
 		$this->writeLog('success', 'Tab Editor Function -  Edited Tab Info for [' . $tabInfo['name'] . ']', $this->user['username']);
 		return $this->processQueries($response);
 	}
-	
+
 	public function _updateTabOrder($array)
 	{
 		if (count($array) >= 1) {
@@ -698,7 +701,7 @@ class Bookmark extends Organizr
 			return false;
 		}
 	}
-	
+
 	// Categories
 	public function _getSettingsTabEditorBookmarkCategoriesPage()
 	{
@@ -763,7 +766,7 @@ class Bookmark extends Organizr
 	</form>
 	';
 	}
-	
+
 	public function _getDefaultBookmarkCategoryId()
 	{
 		$response = [
@@ -776,7 +779,7 @@ class Bookmark extends Organizr
 		];
 		return $this->processQueries($response);
 	}
-	
+
 	public function _getNextBookmarkCategoryOrder()
 	{
 		$response = [
@@ -789,7 +792,7 @@ class Bookmark extends Organizr
 		];
 		return $this->processQueries($response);
 	}
-	
+
 	public function _getNextBookmarkCategoryId()
 	{
 		$response = [
@@ -802,7 +805,7 @@ class Bookmark extends Organizr
 		];
 		return $this->processQueries($response);
 	}
-	
+
 	public function _isBookmarkCategoryNameTaken($name, $id = null)
 	{
 		if ($id) {
@@ -829,7 +832,7 @@ class Bookmark extends Organizr
 		}
 		return $this->processQueries($response);
 	}
-	
+
 	public function _getBookmarkCategoryById($id)
 	{
 		$response = [
@@ -843,7 +846,7 @@ class Bookmark extends Organizr
 		];
 		return $this->processQueries($response);
 	}
-	
+
 	public function _clearBookmarkCategoryDefault()
 	{
 		$response = [
@@ -856,7 +859,7 @@ class Bookmark extends Organizr
 		];
 		return $this->processQueries($response);
 	}
-	
+
 	public function _addCategory($array)
 	{
 		if (!$array) {
@@ -891,7 +894,7 @@ class Bookmark extends Organizr
 		$this->_correctDefaultCategory();
 		return $result;
 	}
-	
+
 	public function _updateCategory($id, $array)
 	{
 		if (!$id || $id == '') {
@@ -937,7 +940,7 @@ class Bookmark extends Organizr
 		$this->_correctDefaultCategory();
 		return $result;
 	}
-	
+
 	public function _updateCategoryOrder($array)
 	{
 		if (count($array) >= 1) {
@@ -970,7 +973,7 @@ class Bookmark extends Organizr
 			return false;
 		}
 	}
-	
+
 	public function _deleteCategory($id)
 	{
 		$response = [
@@ -994,7 +997,7 @@ class Bookmark extends Organizr
 			return false;
 		}
 	}
-	
+
 	protected function _correctDefaultCategory()
 	{
 		if ($this->_getDefaultBookmarkCategoryId() == null) {
@@ -1007,17 +1010,17 @@ class Bookmark extends Organizr
 			return $this->processQueries($response);
 		}
 	}
-	
+
 	protected function _checkColorHexCode($hex)
 	{
 		return preg_match('/^\#([0-9a-fA-F]{3}){1,2}$/', $hex);
 	}
-	
+
 	/**
 	 * Increases or decreases the brightness of a color by a percentage of the current brightness.
 	 *
-	 * @param string $hexCode       Supported formats: `#FFF`, `#FFFFFF`, `FFF`, `FFFFFF`
-	 * @param float  $adjustPercent A number between -1 and 1. E.g. 0.3 = 30% lighter; -0.4 = 40% darker.
+	 * @param string $hexCode Supported formats: `#FFF`, `#FFFFFF`, `FFF`, `FFFFFF`
+	 * @param float $adjustPercent A number between -1 and 1. E.g. 0.3 = 30% lighter; -0.4 = 40% darker.
 	 *
 	 * @return  string
 	 *
@@ -1038,7 +1041,7 @@ class Bookmark extends Organizr
 		}
 		return '#' . implode($hexCode);
 	}
-	
+
 	public function _checkForBookmarkTab()
 	{
 		$response = [
@@ -1066,7 +1069,7 @@ class Bookmark extends Organizr
 			}
 		}
 	}
-	
+
 	public function _createBookmarkTab()
 	{
 		$tabInfo = [
@@ -1091,7 +1094,7 @@ class Bookmark extends Organizr
 		];
 		return $this->processQueries($response);
 	}
-	
+
 	public function _checkForBookmarkCategories()
 	{
 		$categories = $this->_getAllCategories();

@@ -291,6 +291,9 @@ function buildInvites(array){
 		v.dateused = (v.dateused) ? v.dateused : '-';
 		v.usedby = (v.usedby) ? v.usedby : '-';
 		v.ip = (v.ip) ? v.ip : '-';
+		v.date = typeof v.date == 'object' ? v.date.date : v.date;
+		let m = moment.tz(v.date, activeInfo.timezone);
+		v.date = moment(m).format('LLL');
 		invites += `
 		<tr id="inviteItem-`+v.id+`">
 			<td class="text-center">`+v.id+`</td>

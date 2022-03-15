@@ -1412,6 +1412,19 @@ function loadMarketplace(type){
 	    OrganizrApiError(xhr);
     });
 }
+function loadThemeMarketplace(){
+    $('#manageThemeTable').html('<td class="text-center" colspan="12"><i class="fa fa-spin fa-spinner"></i></td>');
+    organizrAPI2('GET','api/v2/themes/marketplace').success(function(data) {
+        try {
+            let response = data.response;
+            loadMarketplaceThemesItems(response.data);
+        }catch(e) {
+            organizrCatchError(e,data);
+        }
+    }).fail(function(xhr) {
+        OrganizrApiError(xhr, 'Copy JSON Failed');
+    });
+}
 function loadPluginMarketplace(){
 	$('#managePluginTable').html('<td class="text-center" colspan="12"><i class="fa fa-spin fa-spinner"></i></td>');
 	organizrAPI2('GET','api/v2/plugins/marketplace').success(function(data) {
@@ -1456,14 +1469,27 @@ function loadMarketplacePluginsItems(plugins){
     });
     $('#managePluginTable').html(pluginList);
 }
+
+function getRepoUsernameAndRepoName(repo){
+    let parts = repo.split('/');
+    if(parts.length){
+        return parts[parts.length - 2] + '/' + parts[parts.length - 1];
+    }else{
+        return repo;
+    }
+}
+
 function loadMarketplaceThemesItems(themes){
     var themeList = '';
     $.each(themes, function(i,v) {
         if(v.icon == null || v.icon == ''){ v.icon = 'test.png'; }
-        v.status = themeStatus(i,v.version);
+        //v.status = themeStatus(i,v.version);
         var installButton = (v.status == 'Update Available') ? 'fa fa-download' : 'fa fa-plus';
         var removeButton = (v.status == 'Not Installed') ? 'disabled' : '';
+        let category = (v.repo == 'https://github.com/Organizr/Organizr-Themes') ? 'Official' : '3rd Party';
+        let categoryTooltip = getRepoUsernameAndRepoName(v.repo);
         v.name = i;
+        let cleanName = i.replace(/_/gi, ' ');
         themeList += `
             <tr class="themeManagement" data-name="${i}" data-version="${v.version}">
                 <td class="text-center el-element-overlay">
@@ -1473,11 +1499,11 @@ function loadMarketplaceThemesItems(themes){
                         </div>
                     </div>
                 </td>
-                <td>${i}
+                <td>${cleanName}
                     <br><span class="text-muted">${v.version}</span>
                     <br><span class="text-muted">${v.author}</span>
                 </td>
-                <td>${v.category}</td>
+                <td><span data-toggle="tooltip" title="${categoryTooltip}" data-placement="bottom">${category}</span></td>
                 <td lang="en">${v.status}</td>
                 <td style="text-align:center"><button type="button" onclick='aboutTheme(${JSON.stringify(v)});' class="btn btn-success btn-outline btn-circle btn-lg popup-with-form" href="#about-theme-form" data-effect="mfp-3d-unfold"><i class="fa fa-info"></i></button></td>
                 <td style="text-align:center"><button type="button" onclick='installTheme("${cleanClass(i)}");themeAnalytics("${v.name}");' class="btn btn-info btn-outline btn-circle btn-lg"><i class="${installButton}"></i></button></td>
@@ -1709,14 +1735,12 @@ function removeTheme(theme=null){
 	message('Removing Theme',theme,activeInfo.settings.notifications.position,"#FFF","success","5000");
 	organizrAPI2('DELETE','api/v2/themes/manage/' + theme, {}).success(function(data) {
 		try {
-			var html = data.response;
+			let html = data.response;
+            loadThemeMarketplace();
+            message(theme+' Removed','',activeInfo.settings.notifications.position,"#FFF","success","5000");
 		}catch(e) {
 			organizrCatchError(e,data);
 		}
-		activeInfo.settings.misc.installedThemes = (html.data == null) ? '' : html.data;
-		loadMarketplace('themes');
-		message(theme+' Removed','',activeInfo.settings.notifications.position,"#FFF","success","5000");
-
 	}).fail(function(xhr) {
 		OrganizrApiError(xhr, 'Removal Failed');
 	});
@@ -1746,13 +1770,11 @@ function installTheme(theme=null){
     organizrAPI2('POST','api/v2/themes/manage/' + theme, {}).success(function(data) {
         try {
             var html = data.response;
+            loadThemeMarketplace();
+            message(theme+' Installed','',activeInfo.settings.notifications.position,"#FFF","success","5000");
         }catch(e) {
 	        organizrCatchError(e,data);
         }
-        activeInfo.settings.misc.installedThemes = html.data;
-        loadMarketplace('themes');
-        message(theme+' Installed','',activeInfo.settings.notifications.position,"#FFF","success","5000");
-
     }).fail(function(xhr) {
 	    OrganizrApiError(xhr, 'Install Failed');
     });
@@ -2136,6 +2158,18 @@ function buildPluginsSettings(){
 	}).fail(function(xhr) {
 		OrganizrApiError(xhr);
 	});
+}
+function buildThemeSettings(){
+    organizrAPI2('GET','api/v2/settings/theme').success(function(data) {
+        try {
+            let response = data.response;
+            $('#theme-settings-form').html(buildFormGroup(response.data));
+        }catch(e) {
+            organizrCatchError(e,data);
+        }
+    }).fail(function(xhr) {
+        OrganizrApiError(xhr);
+    });
 }
 function buildCustomizeAppearance(){
 	organizrAPI2('GET','api/v2/settings/appearance').success(function(data) {
@@ -5088,7 +5122,7 @@ function uriRedirect(uri=null){
 function changeTheme(theme){
 	//$("#preloader").fadeIn();
 	$('#theme').attr({
-        href: 'css/themes/' + theme + '.css?v='+activeInfo.version
+        href: theme + '.css?v='+activeInfo.version
     });
 	//$("#preloader").fadeOut();
 	console.info("%c Theme %c ".concat(theme, " "), "color: white; background: #AD80FD; font-weight: 700;", "color: #AD80FD; background: white; font-weight: 700;");
@@ -7089,6 +7123,17 @@ function buildUnifi(array){
     var items = (typeof array.content.unifi.data !== 'undefined') ? array.content.unifi.data.length : false;
     return (items) ? `
 	<div id="allUnifi">
+	    
+	    <!-- <div class="row">
+            <div class="col-md-12">
+                <div class="white-box">
+                    <h3 class="box-title">Unifi</h3>
+                    `+buildUnifiItemNew(array.content.unifi.data)+`
+                </div>
+            </div>
+        </div>  -->      
+         
+                
 		<div class="row">
 		    <div class="col-md-12">
 		        <h4 class="pull-left homepage-element-title"><span lang="en">UniFi</span> : </h4><h4 class="pull-left">&nbsp;</h4>
@@ -7104,6 +7149,76 @@ function buildUnifi(array){
 	</div>
 	<div class="clearfix"></div>
 	` : '';
+}
+function buildUnifiItemNew(array){
+    let items = '';
+    let count = 0;
+    let navTabItems = '';
+    $.each(array, function(i,v) {
+        let name = (typeof v.subsystem !== 'undefined') ? v.subsystem : '';
+        let stats = {};
+        let panelColor = '';
+        let proceed = (v.status == 'ok');
+        let active = count <= 0 ? 'active in' : '';
+        let icon = 'ti-home';
+        count++;
+        switch (name) {
+            case 'wlan':
+                panelColor = 'info';
+                stats['clients'] = v.num_user;
+                stats['tx'] = v['tx_bytes-r'];
+                stats['rx'] = v['rx_bytes-r'];
+                break;
+            case 'wan':
+                panelColor = 'success';
+                stats['IP'] = v.wan_ip;
+                stats['tx'] = v['tx_bytes-r'];
+                stats['rx'] = v['rx_bytes-r'];
+                break;
+            case 'lan':
+                panelColor = 'primary';
+                stats['clients'] = v.num_user;
+                stats['tx'] = v['tx_bytes-r'];
+                stats['rx'] = v['rx_bytes-r'];
+                break;
+            case 'www':
+                panelColor = 'warning';
+                stats['drops'] = v.drops;
+                stats['latency'] = v.latency;
+                stats['uptime'] = v.uptime;
+                stats['tx'] = v['tx_bytes-r'];
+                stats['rx'] = v['rx_bytes-r'];
+                break;
+            case 'vpn':
+                panelColor = 'inverse';
+                stats['clients'] = v.remote_user_num_active;
+                stats['tx'] = v.remote_user_tx_bytes;
+                stats['rx'] = v.remote_user_rx_bytes;
+                break;
+            default:
+        }
+        var statItems = '';
+        if(proceed) {
+            navTabItems += `<li role="presentation" class="${active}"><a href="#unifi-${name}" aria-controls="unifi-${name}" role="tab" data-toggle="tab" aria-expanded="false"><span class="visible-xs"><i class="${icon}"></i></span><span class="hidden-xs text-uppercase"> ${name}</span></a></li>`;
+            $.each(stats, function (istat, vstat) {
+                statItems += `
+                    <div class="stat-item">
+                        <h6 class="text-uppercase">${istat}</h6>
+                        <b>${vstat}</b>
+                    </div>
+                    `;
+            });
+            items += `
+                <div role="tabpanel" class="tab-pane fade ${active}" id="unifi-${name}">
+                    <div class="col-md-12">${statItems}</div>
+                    <div class="clearfix"></div>
+                </div>
+            `;
+        }
+    });
+    let navTabs = `<ul class="nav customtab nav-tabs" role="tablist">${navTabItems}</ul>`;
+    items = `<div class="tab-content">${items}</div>`;
+    return navTabs+items;
 }
 function buildUnifiItem(array){
     var items = '';
@@ -11253,9 +11368,9 @@ function objDiff(obj1, obj2) {
 
 		// If an object, compare recursively
 		if (type1 === '[object Object]') {
-			var objDiff = diff(item1, item2);
-			if (Object.keys(objDiff).length > 1) {
-				diffs[key] = objDiff;
+			var objDifference = objDiff(item1, item2);
+			if (Object.keys(objDifference).length > 1) {
+				diffs[key] = objDifference;
 			}
 			return;
 		}
@@ -11571,7 +11686,7 @@ function launch(){
 	        errorPage();
 	        uriRedirect();
 	        changeStyle(activeInfo.style);
-	        changeTheme(activeInfo.theme);
+	        //changeTheme(activeInfo.theme);
 	        setSSO();
 	        checkToken();
 	        switch (json.data.status.status) {

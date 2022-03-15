@@ -116,6 +116,9 @@ function get_page_settings_user_manage_users($Organizr)
 				{ name: "email", type: "text", title: window.lang.translate("Email"), validate: "required", width: 200},
 				{ name: "register_date", type: "text", title: window.lang.translate("Date Registered"),editing: false, css: "hidden-xs",
 					itemTemplate: function(value) {
+					if(typeof value == \'object\'){
+						value = value.date;
+					}
 						return moment(value).format(\'ll\') + \' \' + moment(value).format(\'LT\') },
 				},
 				{ name: "group_id", type: "select", title: window.lang.translate("Group"), validate: "required",
@@ -183,7 +186,7 @@ function get_page_settings_user_manage_users($Organizr)
 					args.cancel = true;
 					alert("Could not get ID");
 				}
-				let diff = objDiff(args.previousItem,args.item);
+				var diff = objDiff(args.previousItem,args.item);
 				if(typeof diff.password !== "undefined"){
 					if(diff.password === ""){
 						delete diff["password"];

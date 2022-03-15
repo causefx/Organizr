@@ -1,5 +1,9 @@
 <?php
 return [
+	'driver' => 'sqlite3',
+	'dbHost' => '',
+	'dbUsername' => '',
+	'dbPassword' => '',
 	'branch' => 'v2-master',
 	'authType' => 'internal',
 	'authBackend' => '',
@@ -647,8 +651,10 @@ return [
 	'logPageSize' => '50',
 	'includeDatabaseQueriesInDebug' => false,
 	'externalPluginMarketplaceRepos' => '',
+	'externalThemeMarketplaceRepos' => '',
 	'githubAccessToken' => '',
 	'checkForPluginUpdate' => true,
+	'checkForThemeUpdate' => true,
 	'autoUpdateCronEnabled' => false,
 	'autoUpdateCronSchedule' => '@weekly'
 ];

@@ -23,7 +23,7 @@ class Invites extends Organizr
 		parent::__construct();
 		$this->_pluginUpgradeCheck();
 	}
-	
+
 	public function _pluginUpgradeCheck()
 	{
 		if ($this->hasDB()) {
@@ -45,7 +45,7 @@ class Invites extends Organizr
 			return true;
 		}
 	}
-	
+
 	public function _pluginUpgradeToVersion($version = '1.1.0')
 	{
 		switch ($version) {
@@ -56,7 +56,7 @@ class Invites extends Organizr
 		$this->setResponse(200, 'Ran plugin update function for version: ' . $version);
 		return true;
 	}
-	
+
 	public function _addInvitedByColumnToDatabase()
 	{
 		$addColumn = $this->addColumnToDatabase('invites', 'invitedby', 'TEXT');
@@ -67,7 +67,7 @@ class Invites extends Organizr
 			$this->logger->warning('Could not update Invites Database');
 		}
 	}
-	
+
 	public function _invitesPluginGetCodes()
 	{
 		if ($this->qualifyRequest(1, false)) {
@@ -81,7 +81,7 @@ class Invites extends Organizr
 			$response = [
 				array(
 					'function' => 'fetchAll',
-					'query' => array (
+					'query' => array(
 						'SELECT * FROM invites WHERE invitedby = ?',
 						$this->user['username']
 					)
@@ -91,7 +91,7 @@ class Invites extends Organizr
 
 		return $this->processQueries($response);
 	}
-	
+
 	public function _invitesPluginCreateCode($array)
 	{
 		$code = ($array['code']) ?? null;
@@ -101,8 +101,8 @@ class Invites extends Organizr
 		$inviteCount = count($invites);
 		if (!$this->qualifyRequest(1, false)) {
 			if ($this->config['INVITES-maximum-invites'] != 0 && $inviteCount >= $this->config['INVITES-maximum-invites']) {
-			$this->setAPIResponse('error', 'Maximum number of invites reached', 409);
-			return false;
+				$this->setAPIResponse('error', 'Maximum number of invites reached', 409);
+				return false;
 			}
 		}
 		if (!$code) {
@@ -124,6 +124,7 @@ class Invites extends Organizr
 			'valid' => 'Yes',
 			'type' => $this->config['INVITES-type-include'],
 			'invitedby' => $this->user['username'],
+			'date' => gmdate('Y-m-d H:i:s')
 		];
 		$response = [
 			array(
@@ -160,9 +161,8 @@ class Invites extends Organizr
 		} else {
 			return false;
 		}
-		
 	}
-	
+
 	public function _invitesPluginVerifyCode($code)
 	{
 		$response = [
@@ -182,7 +182,7 @@ class Invites extends Organizr
 			return false;
 		}
 	}
-	
+
 	public function _invitesPluginDeleteCode($code)
 	{
 		if ($this->qualifyRequest(1, false)) {
@@ -228,9 +228,8 @@ class Invites extends Organizr
 		];
 		$this->setAPIResponse('success', 'Code has been deleted', 200);
 		return $this->processQueries($response);
-		
 	}
-	
+
 	public function _invitesPluginUseCode($code, $array)
 	{
 		$code = ($code) ?? null;
@@ -262,7 +261,7 @@ class Invites extends Organizr
 			return false;
 		}
 	}
-	
+
 	public function _invitesPluginLibraryList($type = null)
 	{
 		switch ($type) {
@@ -307,7 +306,7 @@ class Invites extends Organizr
 		}
 		return false;
 	}
-	
+
 	public function _invitesPluginGetSettings()
 	{
 		if ($this->config['plexID'] !== '' && $this->config['plexToken'] !== '' && $this->config['INVITES-type-include'] == 'plex') {
@@ -464,7 +463,7 @@ class Invites extends Organizr
 			)
 		);
 	}
-	
+
 	public function _invitesPluginAction($username, $action = null, $type = null)
 	{
 		if ($action == null) {
@@ -576,7 +575,7 @@ class Invites extends Organizr
 		}
 		return false;
 	}
-	
+
 	public function _invitesPluginConvertPlexName($user, $type)
 	{
 		$array = $this->userList('plex');
