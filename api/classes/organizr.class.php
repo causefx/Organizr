@@ -1023,62 +1023,73 @@ class Organizr
 		return $themes;
 	}
 
+	public function pluginFilesFromDirectory($directory, $webDirectory, $type, $settings = false, $rootPath = '')
+	{
+		$files = '';
+		if (file_exists($directory)) {
+			$directoryIterator = new RecursiveDirectoryIterator($directory, FilesystemIterator::SKIP_DOTS);
+			$iteratorIterator = new RecursiveIteratorIterator($directoryIterator);
+			switch ($type) {
+				case 'js':
+					foreach ($iteratorIterator as $info) {
+						if (pathinfo($info->getPathname(), PATHINFO_EXTENSION) == 'js') {
+							$pluginEnabled = false;
+							$keyOriginal = strtoupper(basename(dirname($info->getPathname())));
+							$key = str_replace('-SETTINGS', '', $keyOriginal);
+							$continue = false;
+							if ($settings) {
+								if ($info->getFilename() == 'settings.js') {
+									$continue = true;
+								}
+							} else {
+								if ($info->getFilename() !== 'settings.js') {
+									$continue = true;
+								}
+							}
+							switch ($key) {
+								case 'PHP-MAILER':
+									$key = 'PHPMAILER';
+									break;
+								case 'NGXC':
+									$key = 'ngxc';
+									break;
+								default:
+									$key = $key;
+							}
+							if (isset($this->config[$key . '-enabled'])) {
+								if ($this->config[$key . '-enabled']) {
+									$pluginEnabled = true;
+								}
+							}
+							if ($pluginEnabled || $settings) {
+								if ($continue) {
+									$files .= '<script src="' . $rootPath . $webDirectory . basename(dirname($info->getPathname())) . '/' . basename($info->getFilename()) . '?v=' . $this->fileHash . '" defer="true"></script>';
+								}
+							}
+						}
+					}
+					break;
+				case 'css':
+					foreach ($iteratorIterator as $info) {
+						if (pathinfo($info->getPathname(), PATHINFO_EXTENSION) == 'css') {
+							$files .= '<link href="' . $rootPath . $webDirectory . basename(dirname($info->getPathname())) . '/' . basename($info->getFilename()) . '?v=' . $this->fileHash . '" rel="stylesheet">';
+						}
+					}
+					break;
+				default:
+					break;
+			}
+		}
+		return $files;
+	}
+
 	public function pluginFiles($type, $settings = false, $rootPath = '')
 	{
 		$files = '';
-		$folder = dirname(__DIR__, 1) . DIRECTORY_SEPARATOR . 'plugins';
-		$directoryIterator = new RecursiveDirectoryIterator($folder, FilesystemIterator::SKIP_DOTS);
-		$iteratorIterator = new RecursiveIteratorIterator($directoryIterator);
-		switch ($type) {
-			case 'js':
-				foreach ($iteratorIterator as $info) {
-					if (pathinfo($info->getPathname(), PATHINFO_EXTENSION) == 'js') {
-						$pluginEnabled = false;
-						$keyOriginal = strtoupper(basename(dirname($info->getPathname())));
-						$key = str_replace('-SETTINGS', '', $keyOriginal);
-						$continue = false;
-						if ($settings) {
-							if ($info->getFilename() == 'settings.js') {
-								$continue = true;
-							}
-						} else {
-							if ($info->getFilename() !== 'settings.js') {
-								$continue = true;
-							}
-						}
-						switch ($key) {
-							case 'PHP-MAILER':
-								$key = 'PHPMAILER';
-								break;
-							case 'NGXC':
-								$key = 'ngxc';
-								break;
-							default:
-								$key = $key;
-						}
-						if (isset($this->config[$key . '-enabled'])) {
-							if ($this->config[$key . '-enabled']) {
-								$pluginEnabled = true;
-							}
-						}
-						if ($pluginEnabled || $settings) {
-							if ($continue) {
-								$files .= '<script src="' . $rootPath . 'api/plugins/' . basename(dirname($info->getPathname())) . '/' . basename($info->getFilename()) . '?v=' . $this->fileHash . '" defer="true"></script>';
-							}
-						}
-					}
-				}
-				break;
-			case 'css':
-				foreach ($iteratorIterator as $info) {
-					if (pathinfo($info->getPathname(), PATHINFO_EXTENSION) == 'css') {
-						$files .= '<link href="' . $rootPath . 'api/plugins/' . basename(dirname($info->getPathname())) . '/' . basename($info->getFilename()) . '?v=' . $this->fileHash . '" rel="stylesheet">';
-					}
-				}
-				break;
-			default:
-				break;
-		}
+		$organizrPlugins = $this->root . DIRECTORY_SEPARATOR . 'api' . DIRECTORY_SEPARATOR . 'plugins';
+		$files .= $this->pluginFilesFromDirectory($organizrPlugins, 'api/plugins/', $type, $settings);
+		$userPlugins = $this->root . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR . 'plugins';
+		$files .= $this->pluginFilesFromDirectory($userPlugins, 'data/plugins/', $type, $settings);
 		return $files;
 	}
 
