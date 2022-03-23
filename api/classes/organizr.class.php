@@ -177,6 +177,7 @@ class Organizr
 			$this->makeDir(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR . 'config' . DIRECTORY_SEPARATOR);
 			if ($this->rcopy($oldUserConfigPath, $userConfigPath)) {
 				$this->userConfigPath = $userConfigPath;
+				@unlink($oldUserConfigPath);
 			} else {
 				$this->userConfigPath = $oldUserConfigPath;
 			}
