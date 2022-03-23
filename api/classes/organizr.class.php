@@ -2581,17 +2581,19 @@ class Organizr
 			if (is_writable($path)) {
 				$this->setAPIResponse('success', 'Path exists and is writable', 200);
 				return true;
+			} else {
+				$this->setAPIResponse('error', 'Path exists but is not writable', 403);
+				return false;
 			}
 		} else {
-			if (is_writable(dirname($path, 1))) {
-				if (mkdir($path, 0760, true)) {
-					$this->setAPIResponse('success', 'Path is writable - Creating now', 200);
-					return true;
-				}
+			if (mkdir($path, 0760, true)) {
+				$this->setAPIResponse('success', 'Path is writable - Creating now', 200);
+				return true;
+			} else {
+				$this->setAPIResponse('error', 'Failed making directory - Check permissions', 403);
+				return false;
 			}
 		}
-		$this->setAPIResponse('error', 'Path is not writable', 401);
-		return false;
 	}
 
 	public function formatDatabaseDriver($driver)
@@ -2664,12 +2666,7 @@ class Organizr
 					return false;
 				}
 			} else {
-				if (is_writable(dirname($path, 1))) {
-					if (!mkdir($path, 0760, true)) {
-						$this->setAPIResponse('error', '[' . $path . ']  is not writable', 422);
-						return false;
-					}
-				} else {
+				if (!mkdir($path, 0760, true)) {
 					$this->setAPIResponse('error', '[' . $path . ']  is not writable', 422);
 					return false;
 				}
