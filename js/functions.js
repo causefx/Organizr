@@ -7722,6 +7722,7 @@ function homepageRecent(type, timeout){
         try {
 	        let response = data.response;
 	        document.getElementById('homepageOrder'+type+'recent').innerHTML = '';
+            $('.'+type+'-recent').trigger('destroy.owl.carousel');
 	        $('#homepageOrder'+type+'recent').html(buildRecent(response.data, type));
 	        $('.recent-items').owlCarousel({
 		        nav:false,
