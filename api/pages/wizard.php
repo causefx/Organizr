@@ -171,6 +171,7 @@ function get_page_wizard($Organizr)
 			$("#form-dbPath").val(path);
 			$("#form-dbPath").focusout();
 			$("#verify-dbPath").text(path);
+			$("#verify-driver").text($(this).val());
 			$("#form-dbHost").focus();
 			message("Using MySQLi","Database Path becomes path for logs etc.. (Still configurable)",activeInfo.settings.notifications.position,"#FFF","info","10000");
 		});
@@ -321,7 +322,7 @@ function get_page_wizard($Organizr)
                                         <div class="panel-body">
                                             <p lang="en">The Database will contain sensitive information.  Please place in directory outside of root Web Directory.</p>
                                             <p lang="en">Suggested Directory: <code class="wizard-suggested-path">' . $suggestedDirectory . '</code> <a class="btn default btn-outline clipboard copy-dbPath p-a-5" data-clipboard-text="' . $suggestedDirectory . '" href="javascript:void(0);"><i class="ti-clipboard"></i></a></p>
-                                            <p lang="en">Current Directory: <code>' . dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR . '</code> <a class="btn default btn-outline clipboard copy-dbPath p-a-5" data-clipboard-text="' . dirname(__DIR__, 2) . '" href="javascript:void(0);"><i class="ti-clipboard"></i></a></p>
+                                            <p lang="en">Current Directory: <code>' . dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR . '</code> <a class="btn default btn-outline clipboard copy-dbPath p-a-5" data-clipboard-text="' . dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR . '" href="javascript:void(0);"><i class="ti-clipboard"></i></a></p>
                                             <p lang="en">Parent Directory: <code>' . dirname(__DIR__, 3) . '</code> <a class="btn default btn-outline clipboard copy-dbPath p-a-5" data-clipboard-text="' . dirname(__DIR__, 3) . '" href="javascript:void(0);"><i class="ti-clipboard"></i></a></p>
                                         </div>
                                     </div>
@@ -460,20 +461,20 @@ function get_page_wizard($Organizr)
                                         <div class="form-group">
                                             <label class="control-label col-md-3" lang="en">Database Host:</label>
                                             <div class="col-md-9">
-                                                <p class="form-control-static" id="verify-dbHost">  </p>
+                                                <p class="form-control-static" id="verify-dbHost">Not used...</p>
                                             </div>
                                         </div>
                                         <div class="form-group">
                                             <label class="control-label col-md-3" lang="en">Database Username:</label>
                                             <div class="col-md-9">
-                                                <p class="form-control-static" id="verify-dbUsername">  </p>
+                                                <p class="form-control-static" id="verify-dbUsername">Not used...</p>
                                             </div>
                                         </div>
                                         <div class="form-group">
                                             <label class="control-label col-md-3" lang="en">Database Password:</label>
                                             <div class="col-md-9">
                                                 <p class="form-control-static">
-                                                    <a class="mytooltip" href="javascript:void(0)"> <span lang="en">Hover to show </span><span class="tooltip-content5"><span class="tooltip-text3"><span class="tooltip-inner2" id="verify-dbPassword">pass</span></span></span></a>
+                                                    <a class="mytooltip" href="javascript:void(0)"> <span lang="en">Hover to show </span><span class="tooltip-content5"><span class="tooltip-text3"><span class="tooltip-inner2" id="verify-dbPassword">Not used...</span></span></span></a>
                                                 </p>
                                             </div>
                                         </div>
