@@ -111,7 +111,7 @@ class Chat extends Organizr
 			)
 		);
 	}
-	
+
 	public function _chatPluginSendChatMessage($array)
 	{
 		$message = isset($array['message']) ? $array['message'] : null;
@@ -162,15 +162,15 @@ class Chat extends Organizr
 		$this->setAPIResponse('error', 'Chat error occurred', 409);
 		return false;
 	}
-	
+
 	public function _chatPluginGetChatMessages()
 	{
 		$response = [
 			array(
 				'function' => 'fetchAll',
 				'query' => array(
-					'SELECT `username`, `gravatar`, `uid`, `date`, `message` FROM (SELECT `username`, `gravatar`, `uid`, `date`, `message` FROM chatroom ORDER BY date DESC LIMIT ?) ORDER BY date ASC',
-					$this->config['CHAT-messageLoadLimit']
+					'SELECT `username`, `gravatar`, `uid`, `date`, `message` FROM chatroom ORDER BY date DESC LIMIT ?',
+					(int)$this->config['CHAT-messageLoadLimit']
 				)
 			),
 		];

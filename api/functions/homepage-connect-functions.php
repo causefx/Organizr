@@ -18,7 +18,7 @@ trait HomepageConnectFunctions
 		}
 		return $list;
 	}
-	
+
 	public function streamType($value)
 	{
 		if ($value == "transcode" || $value == "Transcode") {
@@ -31,26 +31,25 @@ trait HomepageConnectFunctions
 			return "Direct Play";
 		}
 	}
-	
+
 	public function getCacheImageSize($type)
 	{
 		switch ($type) {
 			case 'height':
 			case 'h':
-				return 300 * $this->config['cacheImageSize'];
+				return round(300 * $this->config['cacheImageSize']);
 			case 'width':
 			case 'w':
-				return 200 * $this->config['cacheImageSize'];
+				return round(200 * $this->config['cacheImageSize']);
 			case 'nowPlayingHeight':
 			case 'nph':
-				return 675 * $this->config['cacheImageSize'];
+				return round(675 * $this->config['cacheImageSize']);
 			case 'nowPlayingWidth':
 			case 'npw':
-				return 1200 * $this->config['cacheImageSize'];
-			
+				return round(1200 * $this->config['cacheImageSize']);
 		}
 	}
-	
+
 	public function ombiImport($type = null)
 	{
 		if (!empty($this->config['ombiURL']) && !empty($this->config['ombiToken']) && !empty($type)) {

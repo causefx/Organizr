@@ -104,13 +104,18 @@ trait UpgradeFunctions
 			return false;
 		}
 		if ($this->hasDB()) {
+			if ($this->config['driver'] === 'sqlite3') {
+				$term = 'SELECT COUNT(*) AS has_column FROM pragma_table_info(?) WHERE name=?';
+			} else {
+				$term = 'SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = "' . $this->config['dbName'] . '" AND TABLE_NAME=? AND COLUMN_NAME=?';
+			}
 			$tableInfo = [
 				array(
 					'function' => 'fetchSingle',
 					'query' => array(
-						'SELECT COUNT(*) AS has_column FROM pragma_table_info(?) WHERE name=?',
-						$table,
-						$columnName
+						$term,
+						(string)$table,
+						(string)$columnName
 					)
 				)
 			];
@@ -119,9 +124,9 @@ trait UpgradeFunctions
 				$columnAlter = [
 					array(
 						'function' => 'query',
-						'query' => ['ALTER TABLE ? ADD ? ' . $definition,
-							$table,
-							$columnName,
+						'query' => ['ALTER TABLE %n ADD %n ' . (string)$definition,
+							(string)$table,
+							(string)$columnName,
 						]
 					)
 				];
@@ -139,6 +144,27 @@ trait UpgradeFunctions
 		return false;
 	}
 
+	public function createMysqliDatabase($database, $migration = false)
+	{
+		$query = [
+			array(
+				'function' => 'fetchAll',
+				'query' => array(
+					'DROP DATABASE IF EXISTS tempMigration'
+				)
+			),
+			array(
+				'function' => 'fetchAll',
+				'query' => array(
+					'CREATE DATABASE IF NOT EXISTS %n',
+					$database
+				)
+			),
+		];
+		//$query = ['CREATE DB %n', $database];
+		return $this->processQueries($query, $migration);
+	}
+
 	public function updateDB($oldVerNum = false)
 	{
 		$tempLock = $this->config['dbLocation'] . 'DBLOCK.txt';
@@ -146,74 +172,148 @@ trait UpgradeFunctions
 			touch($tempLock);
 			$migrationDB = 'tempMigration.db';
 			$pathDigest = pathinfo($this->config['dbLocation'] . $this->config['dbName']);
+			// Delete old backup sqlite db if exists
 			if (file_exists($this->config['dbLocation'] . $migrationDB)) {
 				unlink($this->config['dbLocation'] . $migrationDB);
 			}
 			// Create Temp DB First
+			$this->createNewDB('tempMigration', true);
 			$this->connectOtherDB();
-			$backupDB = $pathDigest['dirname'] . '/' . $pathDigest['filename'] . '[' . date('Y-m-d_H-i-s') . ']' . ($oldVerNum ? '[' . $oldVerNum . ']' : '') . '.bak.db';
-			copy($this->config['dbLocation'] . $this->config['dbName'], $backupDB);
+			if ($this->config['driver'] == 'sqlite3') {
+				// Backup sqlite database
+				$backupDB = $pathDigest['dirname'] . '/' . $pathDigest['filename'] . '[' . date('Y-m-d_H-i-s') . ']' . ($oldVerNum ? '[' . $oldVerNum . ']' : '') . '.bak.db';
+				copy($this->config['dbLocation'] . $this->config['dbName'], $backupDB);
+			}
 			$success = $this->createDB($this->config['dbLocation'], true);
 			if ($success) {
+				switch ($this->config['driver']) {
+					case 'sqlite3':
+						$query = 'SELECT name FROM sqlite_master WHERE type="table"';
+						break;
+					case 'mysqli':
+						$query = 'SELECT Table_name as name from information_schema.tables where table_schema = "tempMigration"';
+						break;
+				}
 				$response = [
 					array(
 						'function' => 'fetchAll',
 						'query' => array(
-							'SELECT name FROM sqlite_master WHERE type="table"'
+							$query
 						)
 					),
 				];
 				$tables = $this->processQueries($response);
+				$defaultTables = $this->getDefaultTablesFormatted();
 				foreach ($tables as $table) {
+					if (in_array($table['name'], $defaultTables)) {
+						$response = [
+							array(
+								'function' => 'fetchAll',
+								'query' => array(
+									'SELECT * FROM %n', $table['name']
+								)
+							),
+						];
+						$data = $this->processQueries($response);
+						$this->setLoggerChannel('Migration')->info('Obtained Table data', ['table' => $table['name']]);
+						foreach ($data as $row) {
+							$response = [
+								array(
+									'function' => 'query',
+									'query' => array(
+										'INSERT into %n', $table['name'],
+										$row
+									)
+								),
+							];
+							$this->processQueries($response, true);
+						}
+						$this->setLoggerChannel('Migration')->info('Wrote Table data', ['table' => $table['name']]);
+					}
+				}
+				if ($this->config['driver'] == 'mysqli') {
 					$response = [
 						array(
-							'function' => 'fetchAll',
+							'function' => 'query',
 							'query' => array(
-								'SELECT * FROM ' . $table['name']
+								'DROP DATABASE IF EXISTS %n', $this->config['dbName']
 							)
 						),
 					];
 					$data = $this->processQueries($response);
-					$this->writeLog('success', 'Update Function -  Grabbed Table data for Table: ' . $table['name'], 'Database');
-					foreach ($data as $row) {
-						$response = [
-							array(
-								'function' => 'query',
-								'query' => array(
-									'INSERT into ' . $table['name'],
-									$row
-								)
-							),
-						];
-						$this->processQueries($response, true);
-					}
-					$this->writeLog('success', 'Update Function -  Wrote Table data for Table: ' . $table['name'], 'Database');
-				}
-				$this->writeLog('success', 'Update Function -  All Table data converted - Starting Movement', 'Database');
-				$this->db->disconnect();
-				$this->otherDb->disconnect();
-				// Remove Current Database
-				if (file_exists($this->config['dbLocation'] . $migrationDB)) {
-					$oldFileSize = filesize($this->config['dbLocation'] . $this->config['dbName']);
-					$newFileSize = filesize($this->config['dbLocation'] . $migrationDB);
-					if ($newFileSize > 0) {
-						$this->writeLog('success', 'Update Function -  Table Size of new DB ok..', 'Database');
-						@unlink($this->config['dbLocation'] . $this->config['dbName']);
-						copy($this->config['dbLocation'] . $migrationDB, $this->config['dbLocation'] . $this->config['dbName']);
-						@unlink($this->config['dbLocation'] . $migrationDB);
-						$this->writeLog('success', 'Update Function -  Migrated Old Info to new Database', 'Database');
-						@unlink($tempLock);
-						return true;
+					if ($data) {
+						$create = $this->createNewDB($this->config['dbName']);
+						if ($create) {
+							$structure = $this->createDB($this->config['dbLocation']);
+							if ($structure) {
+								foreach ($tables as $table) {
+									if (in_array($table['name'], $defaultTables)) {
+										$response = [
+											array(
+												'function' => 'fetchAll',
+												'query' => array(
+													'SELECT * FROM %n', $table['name']
+												)
+											),
+										];
+										$data = $this->processQueries($response, true);
+										$this->setLoggerChannel('Migration')->info('Obtained Table data', ['table' => $table['name']]);
+										foreach ($data as $row) {
+											$response = [
+												array(
+													'function' => 'query',
+													'query' => array(
+														'INSERT into %n', $table['name'],
+														$row
+													)
+												),
+											];
+											$this->processQueries($response);
+										}
+										$this->setLoggerChannel('Migration')->info('Wrote Table data', ['table' => $table['name']]);
+									}
+								}
+							} else {
+								$this->setLoggerChannel('Migration')->warning('Could not recreate Database structure');
+							}
+						} else {
+							$this->setLoggerChannel('Migration')->warning('Could not recreate Database');
+						}
 					} else {
-						$this->writeLog('error', 'Update Function -  Filesize is zero', 'Database');
+						$this->setLoggerChannel('Migration')->warning('Could not drop old tempMigration Database');
 					}
-				} else {
-					$this->writeLog('error', 'Update Function -  Migration DB does not exist', 'Database');
+					$this->setLoggerChannel('Migration')->info('All Table data converted');
+					@unlink($tempLock);
+					return true;
+				}
+				//$this->db->disconnect();
+				//$this->otherDb->disconnect();
+				// Remove Current Database
+				if ($this->config['driver'] == 'sqlite3') {
+					$this->setLoggerChannel('Migration')->info('All Table data converted');
+					$this->setLoggerChannel('Migration')->info('Starting Database movement for sqlite3');
+					if (file_exists($this->config['dbLocation'] . $migrationDB)) {
+						$oldFileSize = filesize($this->config['dbLocation'] . $this->config['dbName']);
+						$newFileSize = filesize($this->config['dbLocation'] . $migrationDB);
+						if ($newFileSize > 0) {
+							$this->setLoggerChannel('Migration')->info('New Table size has been verified');
+							@unlink($this->config['dbLocation'] . $this->config['dbName']);
+							copy($this->config['dbLocation'] . $migrationDB, $this->config['dbLocation'] . $this->config['dbName']);
+							@unlink($this->config['dbLocation'] . $migrationDB);
+							$this->setLoggerChannel('Migration')->info('Migrated Old Info to new Database');
+							@unlink($tempLock);
+							return true;
+						} else {
+							$this->setLoggerChannel('Migration')->warning('Database filesize is zero');
+						}
+					} else {
+						$this->setLoggerChannel('Migration')->warning('Migration Database does not exist');
+					}
 				}
 				@unlink($tempLock);
 				return false;
 			} else {
-				$this->writeLog('error', 'Update Function -  Could not create migration DB', 'Database');
+				$this->setLoggerChannel('Migration')->warning('Could not create migration Database');
 			}
 			@unlink($tempLock);
 			return false;

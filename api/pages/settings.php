@@ -86,6 +86,10 @@ function get_page_settings($Organizr)
 								<h2 lang="en">Loading...</h2>
 								<div class="clearfix"></div>
 							</div>
+							<div role="tabpanel" class="tab-pane fade" id="settings-customize-settings">
+								<h2 lang="en">Loading...</h2>
+								<div class="clearfix"></div>
+							</div>
 							<div role="tabpanel" class="tab-pane fade" id="settings-customize-marketplace">
 								<div class="panel bg-org panel-info">
 									<div class="panel-heading">
@@ -262,7 +266,7 @@ function get_page_settings($Organizr)
 											<ul class="feeds">
 												<li><div class="bg-info"><i class="mdi mdi-webpack mdi-24px text-white"></i></div><span class="text-muted hidden-xs m-t-10" lang="en">Organizr Version</span> ' . $Organizr->version . '</li>
 												<li><div class="bg-info"><i class="mdi mdi-github-box mdi-24px text-white"></i></div><span class="text-muted hidden-xs m-t-10" lang="en">Organizr Branch</span><a href="https://github.com/causefx/Organizr/commits/' . $Organizr->config['branch'] . '" target="_blank"> ' . $Organizr->config['branch'] . '</a></li>
-												<li><div class="bg-info"><i class="mdi mdi-database mdi-24px text-white"></i></div><span class="text-muted hidden-xs m-t-10" lang="en">Database Location</span> ' . $Organizr->config['dbLocation'] . $Organizr->config['dbName'] . '</li>
+												<li><div class="bg-info"><i class="mdi mdi-database mdi-24px text-white"></i></div><span class="text-muted hidden-xs m-t-10" lang="en">Database Driver</span> ' . $Organizr->config['driver'] . '&nbsp;<code><i class="fa fa-arrow-right"></i></code>&nbsp;<small>' . $Organizr->config['dbName'] . '</small></li>
 												' . $Organizr->settingsDocker() . $Organizr->settingsPathChecks() . '
 												<hr class="m-t-10">
 												<li><div class="bg-info"><i class="mdi mdi-language-php mdi-24px text-white"></i></div><span class="text-muted hidden-xs m-t-10" lang="en">PHP Version</span> ' . phpversion() . '</li>

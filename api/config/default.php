@@ -1,5 +1,9 @@
 <?php
 return [
+	'driver' => 'sqlite3',
+	'dbHost' => '',
+	'dbUsername' => '',
+	'dbPassword' => '',
 	'branch' => 'v2-master',
 	'authType' => 'internal',
 	'authBackend' => '',
@@ -197,6 +201,7 @@ return [
 	'rTorrentSortOrder' => 'datea',
 	'rTorrentReverseSorting' => false,
 	'rTorrentCombine' => false,
+	'rTorrentIgnoreLabel' => '',
 	'rTorrentDisableCertCheck' => false,
 	'rTorrentUseCustomCertificate' => false,
 	'rTorrentLimit' => '200',
@@ -360,6 +365,8 @@ return [
 	'homepageOrderDonate' => '41',
 	'homepageShowStreamNames' => false,
 	'homepageShowStreamNamesAuth' => '1',
+	'homepageShowStreamNamesWithoutIp' => false,
+	'homepageShowStreamNamesWithoutIpAuth' => '1',
 	'homepageUseCustomStreamNames' => false,
 	'homepageCustomStreamNames' => '',
 	'homepageStreamRefresh' => '60000',
@@ -644,8 +651,10 @@ return [
 	'logPageSize' => '50',
 	'includeDatabaseQueriesInDebug' => false,
 	'externalPluginMarketplaceRepos' => '',
+	'externalThemeMarketplaceRepos' => '',
 	'githubAccessToken' => '',
 	'checkForPluginUpdate' => true,
+	'checkForThemeUpdate' => true,
 	'autoUpdateCronEnabled' => false,
 	'autoUpdateCronSchedule' => '@weekly'
 ];

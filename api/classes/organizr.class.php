@@ -65,7 +65,7 @@ class Organizr
 
 	// ===================================
 	// Organizr Version
-	public $version = '2.1.1690';
+	public $version = '2.1.1750';
 	// ===================================
 	// Quick php Version check
 	public $minimumPHP = '7.3';
@@ -177,6 +177,7 @@ class Organizr
 			$this->makeDir(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR . 'config' . DIRECTORY_SEPARATOR);
 			if ($this->rcopy($oldUserConfigPath, $userConfigPath)) {
 				$this->userConfigPath = $userConfigPath;
+				@unlink($oldUserConfigPath);
 			} else {
 				$this->userConfigPath = $oldUserConfigPath;
 			}
@@ -185,15 +186,69 @@ class Organizr
 		}
 	}
 
+	public function hasConfig()
+	{
+		return (file_exists($this->userConfigPath)) ?? false;
+	}
+
+	public function hasDatabase($file = null)
+	{
+		$databaseType = $this->config['driver'];
+		if (!$this->hasConfig()) {
+			return false;
+		}
+		switch (strtolower($databaseType)) {
+			case 'sqlite3':
+				$file = $file ? $this->config['dbLocation'] . $file : $this->config['dbLocation'] . $this->config['dbName'];
+				return [
+					'driver' => 'sqlite3',
+					'database' => $file
+				];
+			case 'mysql':
+			case 'mysqli':
+				$db = $file ? 'tempMigration' : $this->config['dbName'];
+				return [
+					'driver' => 'mysqli',
+					'host' => $this->config['dbHost'],
+					'username' => $this->config['dbUsername'],
+					'password' => $this->decrypt($this->config['dbPassword']),
+					'database' => $db,
+					'options' => [
+						MYSQLI_OPT_CONNECT_TIMEOUT => 60,
+					],
+					'flags' => MYSQLI_CLIENT_COMPRESS,
+				];
+			case 'postgre':
+				$config = [
+					'driver' => 'postgre',
+					'username' => $this->config['dbUsername'],
+					'password' => $this->decrypt($this->config['dbPassword']),
+					'persistent' => true,
+				];
+				$host = $this->qualifyURL($this->config['dbHost'], true);
+				if ($host['port']) {
+					$config = array_merge($config, ['port' => ltrim($host['port'], ':')]);
+				}
+				if ($host['host']) {
+					$config = array_merge($config, ['host' => $host['host']]);
+				}
+				if (!$host['host'] && $host['path']) {
+					$config = array_merge($config, ['host' => $host['path']]);
+				}
+				return $config;
+			default:
+				return false;
+		}
+	}
+
 	protected function connectDB()
 	{
-		if ($this->hasDB()) {
+
+		$databaseConnection = $this->hasDatabase();
+		//$this->prettyPrint($databaseConnection);
+		if ($databaseConnection) {
 			try {
-				$connect = [
-					'driver' => 'sqlite3',
-					'database' => $this->config['dbLocation'] . $this->config['dbName']
-				];
-				$this->db = new Connection($connect);
+				$this->db = new Connection($databaseConnection);
 			} catch (Dibi\Exception $e) {
 				$this->db = null;
 			}
@@ -204,7 +259,7 @@ class Organizr
 
 	public function disconnectDB()
 	{
-		if ($this->hasDB()) {
+		if ($this->db) {
 			$this->db->disconnect();
 			$this->db = null;
 			unset($this->db);
@@ -213,13 +268,15 @@ class Organizr
 
 	public function connectOtherDB($file = null)
 	{
-		$file = $file ?? $this->config['dbLocation'] . 'tempMigration.db';
-		try {
-			$this->otherDb = new Connection([
-				'driver' => 'sqlite3',
-				'database' => $file,
-			]);
-		} catch (Dibi\Exception $e) {
+		$databaseConnection = $this->hasDatabase('tempMigration.db');
+		if ($databaseConnection) {
+			try {
+				$this->otherDb = new Connection($databaseConnection);
+			} catch (Dibi\Exception $e) {
+				$this->prettyPrint($e->getMessage());
+				$this->otherDb = null;
+			}
+		} else {
 			$this->otherDb = null;
 		}
 	}
@@ -741,12 +798,12 @@ class Organizr
 			$pluginList = [];
 			foreach ($GLOBALS['plugins'] as $key => $value) {
 				if (strpos($value['license'], $this->config['license']) !== false) {
-					$GLOBALS['plugins'][$key]['enabled'] = $this->config[$value['configPrefix'] . '-enabled'];
+					$GLOBALS['plugins'][$key]['enabled'] = $this->config[$value['configPrefix'] . '-enabled'] ?? false;
 					if ($returnType == 'all') {
 						$pluginList[$key] = $GLOBALS['plugins'][$key];
-					} elseif ($returnType == 'enabled' && $this->config[$value['configPrefix'] . '-enabled'] == true) {
+					} elseif ($returnType == 'enabled' && $GLOBALS['plugins'][$key]['enabled'] == true) {
 						$pluginList[$key] = $GLOBALS['plugins'][$key];
-					} elseif ($returnType == 'disabled' && $this->config[$value['configPrefix'] . '-enabled'] == false) {
+					} elseif ($returnType == 'disabled' && $GLOBALS['plugins'][$key]['enabled'] == false) {
 						$pluginList[$key] = $GLOBALS['plugins'][$key];
 					}
 				}
@@ -860,65 +917,180 @@ class Organizr
 	public function setTheme($theme = null, $rootPath = '')
 	{
 		$theme = $theme ?? $this->config['theme'];
-		return '<link id="theme" href="' . $rootPath . 'css/themes/' . $theme . '.css?v=' . $this->fileHash . '" rel="stylesheet">';
+		$themeInformation = $this->validateTheme($theme);
+		if (!$themeInformation) {
+			$themeInformation = $this->defaultThemeInformation()['information']['Organizr'];
+		}
+		return '<link id="theme" href="' . $rootPath . $themeInformation['path'] . '/' . $themeInformation['name'] . '.css?v=' . $this->fileHash . '" rel="stylesheet">';
+	}
+
+	public function validateTheme($theme = null)
+	{
+		$theme = $theme ?? $this->config['theme'];
+		$information = $this->getAllThemesInformation();
+		if (isset($information[$theme])) {
+			return $information[$theme];
+		} else {
+			return null;
+		}
+	}
+
+	public function getAllThemesInformation()
+	{
+		$organizrThemes = $this->defaultThemeInformation();
+		$userThemes = $this->userThemeInformation();
+		if ($userThemes) {
+			return array_merge($organizrThemes['information'], $userThemes);
+		}
+		return $organizrThemes['information'];
+	}
+
+	public function userThemeInformation()
+	{
+		$themes = $this->config['installedThemes'];
+		if (is_array($themes)) {
+			return $themes;
+		} else {
+			return [];
+		}
+	}
+
+	public function defaultThemeInformation()
+	{
+		return [
+			'files' => ['Blue', 'Organizr'],
+			'information' => [
+				'Blue' => [
+					'name' => 'Blue',
+					'repo' => null,
+					'version' => '1.0.0',
+					'path' => 'css/themes'
+				],
+				'Organizr' => [
+					'name' => 'Organizr',
+					'repo' => null,
+					'version' => '1.0.0',
+					'path' => 'css/themes'
+				]
+			]
+		];
+	}
+
+	public function getAllThemes()
+	{
+		$organizrThemes = $this->getOrganizrThemes();
+		$userThemes = $this->getUserThemes();
+		if ($userThemes) {
+			return array_merge($organizrThemes, $userThemes);
+		}
+		return $organizrThemes;
+	}
+
+	public function getOrganizrThemes()
+	{
+		$themes = [];
+		$themeFolder = $this->root . DIRECTORY_SEPARATOR . 'css' . DIRECTORY_SEPARATOR . 'themes';
+		$originalThemes = $this->defaultThemeInformation();
+		foreach (glob($themeFolder . DIRECTORY_SEPARATOR . '*.css') as $filename) {
+			$file = preg_replace('/\\.[^.\\s]{3,4}$/', '', basename($filename));
+			if (in_array($file, $originalThemes['files'])) {
+				$themes[] = array(
+					'name' => $file,
+					'value' => $file,
+				);
+			}
+		}
+		return $themes;
+	}
+
+	public function getUserThemes()
+	{
+		$themes = [];
+		$themeFolder = $this->root . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR . 'themes';
+		$userThemesInformation = $this->userThemeInformation();
+		if (file_exists($themeFolder)) {
+			$directoryIterator = new RecursiveDirectoryIterator($themeFolder, FilesystemIterator::SKIP_DOTS);
+			$iteratorIterator = new RecursiveIteratorIterator($directoryIterator);
+			foreach ($iteratorIterator as $info) {
+				if (stripos($info->getFilename(), '.css') !== false) {
+					$file = preg_replace('/\\.[^.\\s]{3,4}$/', '', basename($info->getFilename()));
+					$themes[] = [
+						'name' => ucwords(str_replace('_', ' ', $file)),
+						'value' => $file,
+					];
+				}
+			}
+		}
+		return $themes;
+	}
+
+	public function pluginFilesFromDirectory($directory, $webDirectory, $type, $settings = false, $rootPath = '')
+	{
+		$files = '';
+		if (file_exists($directory)) {
+			$directoryIterator = new RecursiveDirectoryIterator($directory, FilesystemIterator::SKIP_DOTS);
+			$iteratorIterator = new RecursiveIteratorIterator($directoryIterator);
+			switch ($type) {
+				case 'js':
+					foreach ($iteratorIterator as $info) {
+						if (pathinfo($info->getPathname(), PATHINFO_EXTENSION) == 'js') {
+							$pluginEnabled = false;
+							$keyOriginal = strtoupper(basename(dirname($info->getPathname())));
+							$key = str_replace('-SETTINGS', '', $keyOriginal);
+							$continue = false;
+							if ($settings) {
+								if ($info->getFilename() == 'settings.js') {
+									$continue = true;
+								}
+							} else {
+								if ($info->getFilename() !== 'settings.js') {
+									$continue = true;
+								}
+							}
+							switch ($key) {
+								case 'PHP-MAILER':
+									$key = 'PHPMAILER';
+									break;
+								case 'NGXC':
+									$key = 'ngxc';
+									break;
+								default:
+									$key = $key;
+							}
+							if (isset($this->config[$key . '-enabled'])) {
+								if ($this->config[$key . '-enabled']) {
+									$pluginEnabled = true;
+								}
+							}
+							if ($pluginEnabled || $settings) {
+								if ($continue) {
+									$files .= '<script src="' . $rootPath . $webDirectory . basename(dirname($info->getPathname())) . '/' . basename($info->getFilename()) . '?v=' . $this->fileHash . '" defer="true"></script>';
+								}
+							}
+						}
+					}
+					break;
+				case 'css':
+					foreach ($iteratorIterator as $info) {
+						if (pathinfo($info->getPathname(), PATHINFO_EXTENSION) == 'css') {
+							$files .= '<link href="' . $rootPath . $webDirectory . basename(dirname($info->getPathname())) . '/' . basename($info->getFilename()) . '?v=' . $this->fileHash . '" rel="stylesheet">';
+						}
+					}
+					break;
+				default:
+					break;
+			}
+		}
+		return $files;
 	}
 
 	public function pluginFiles($type, $settings = false, $rootPath = '')
 	{
 		$files = '';
-		$folder = dirname(__DIR__, 1) . DIRECTORY_SEPARATOR . 'plugins';
-		$directoryIterator = new RecursiveDirectoryIterator($folder, FilesystemIterator::SKIP_DOTS);
-		$iteratorIterator = new RecursiveIteratorIterator($directoryIterator);
-		switch ($type) {
-			case 'js':
-				foreach ($iteratorIterator as $info) {
-					if (pathinfo($info->getPathname(), PATHINFO_EXTENSION) == 'js') {
-						$pluginEnabled = false;
-						$keyOriginal = strtoupper(basename(dirname($info->getPathname())));
-						$key = str_replace('-SETTINGS', '', $keyOriginal);
-						$continue = false;
-						if ($settings) {
-							if ($info->getFilename() == 'settings.js') {
-								$continue = true;
-							}
-						} else {
-							if ($info->getFilename() !== 'settings.js') {
-								$continue = true;
-							}
-						}
-						switch ($key) {
-							case 'PHP-MAILER':
-								$key = 'PHPMAILER';
-								break;
-							case 'NGXC':
-								$key = 'ngxc';
-								break;
-							default:
-								$key = $key;
-						}
-						if (isset($this->config[$key . '-enabled'])) {
-							if ($this->config[$key . '-enabled']) {
-								$pluginEnabled = true;
-							}
-						}
-						if ($pluginEnabled || $settings) {
-							if ($continue) {
-								$files .= '<script src="' . $rootPath . 'api/plugins/' . basename(dirname($info->getPathname())) . '/' . basename($info->getFilename()) . '?v=' . $this->fileHash . '" defer="true"></script>';
-							}
-						}
-					}
-				}
-				break;
-			case 'css':
-				foreach ($iteratorIterator as $info) {
-					if (pathinfo($info->getPathname(), PATHINFO_EXTENSION) == 'css') {
-						$files .= '<link href="' . $rootPath . 'api/plugins/' . basename(dirname($info->getPathname())) . '/' . basename($info->getFilename()) . '?v=' . $this->fileHash . '" rel="stylesheet">';
-					}
-				}
-				break;
-			default:
-				break;
-		}
+		$organizrPlugins = $this->root . DIRECTORY_SEPARATOR . 'api' . DIRECTORY_SEPARATOR . 'plugins';
+		$files .= $this->pluginFilesFromDirectory($organizrPlugins, 'api/plugins/', $type, $settings);
+		$userPlugins = $this->root . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR . 'plugins';
+		$files .= $this->pluginFilesFromDirectory($userPlugins, 'data/plugins/', $type, $settings);
 		return $files;
 	}
 
@@ -945,7 +1117,7 @@ class Organizr
 			if (isset($this->config['dbLocation']) && isset($this->config['dbName'])) {
 				$db = is_writable($this->config['dbLocation'] . $this->config['dbName']);
 				if (!$db) {
-					die($this->showHTML('Organizr DB is not writable!', 'Please check permissions and/or disk space'));
+					//die($this->showHTML('Organizr DB is not writable!', 'Please check permissions and/or disk space'));
 				}
 			} else {
 				die($this->showHTML('Config File Malformed', 'dbLocation and/or dbName is not listed in config.php'));
@@ -1236,13 +1408,17 @@ class Organizr
 
 	public function getSchema()
 	{
-		$response = [
-			array(
-				'function' => 'fetchAll',
-				'query' => 'SELECT name, sql FROM sqlite_master WHERE type=\'table\' ORDER BY name'
-			),
-		];
-		return $this->hasDB() ? $this->processQueries($response) : 'Database not setup yet';
+		if ($this->config['driver'] == 'sqlite3') {
+			$response = [
+				array(
+					'function' => 'fetchAll',
+					'query' => 'SELECT name, sql FROM sqlite_master WHERE type=\'table\' ORDER BY name'
+				),
+			];
+			return $this->hasDB() ? $this->processQueries($response) : 'Database not setup yet';
+		} else {
+			return false;
+		}
 	}
 
 	public function guestUser()
@@ -1606,13 +1782,15 @@ class Organizr
 		}
 		$dirname = $this->root . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR . 'userTabs' . DIRECTORY_SEPARATOR;
 		$path = 'data/userTabs/';
-		$images = scandir($dirname);
-		foreach ($images as $image) {
-			if (!in_array($image, $ignore)) {
-				$allIconsPrep[$image] = array(
-					'path' => $path,
-					'name' => $image
-				);
+		if (file_exists($dirname)) {
+			$images = scandir($dirname);
+			foreach ($images as $image) {
+				if (!in_array($image, $ignore)) {
+					$allIconsPrep[$image] = array(
+						'path' => $path,
+						'name' => $image
+					);
+				}
 			}
 		}
 		uksort($allIconsPrep, 'strcasecmp');
@@ -1684,6 +1862,7 @@ class Organizr
 			ini_set('post_max_size', '10M');
 			$tempFile = $_FILES['file']['tmp_name'];
 			$targetPath = $this->root . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR . 'userTabs' . DIRECTORY_SEPARATOR;
+			$this->makeDir($targetPath);
 			$targetFile = $targetPath . $_FILES['file']['name'];
 			$this->setAPIResponse(null, pathinfo($_FILES['file']['name'], PATHINFO_BASENAME) . ' has been uploaded', null);
 			return move_uploaded_file($tempFile, $targetFile);
@@ -1758,6 +1937,18 @@ class Organizr
 		];
 	}
 
+	public function getThemeSettings()
+	{
+		return [
+			'Marketplace' => [
+				$this->settingsOption('notice', null, ['notice' => 'danger', 'body' => '3rd Party Repositories are not affiliated with Organizr and therefore the themes on these repositories are not inspected.  Use at your own risk.']),
+				$this->settingsOption('multiple-url', 'externalThemeMarketplaceRepos', ['override' => 12, 'label' => 'External Marketplace Repo', 'help' => 'Only supports Github repos']),
+				$this->settingsOption('token', 'githubAccessToken', ['label' => 'Github Person Access Token', 'help' => 'The Github Person Access Token will help with API rate limiting as well as let you access your own Private Repos']),
+				$this->settingsOption('switch', 'checkForThemeUpdate', ['label' => 'Check for Plugin Updates', ['help' => 'Check for updates on page load']])
+			]
+		];
+	}
+
 	public function getCustomizeAppearance()
 	{
 		return [
@@ -1806,7 +1997,7 @@ class Organizr
 				$this->settingsOption('color', 'accentTextColor', ['label' => 'Accent Text Color']),
 				$this->settingsOption('color', 'buttonColor', ['label' => 'Button Color']),
 				$this->settingsOption('color', 'buttonTextColor', ['label' => 'Button Text Color']),
-				$this->settingsOption('select', 'theme', ['label' => 'Theme', 'class' => 'themeChanger', 'options' => $this->getThemes()]),
+				$this->settingsOption('select', 'theme', ['label' => 'Theme', 'class' => 'themeChanger', 'options' => $this->getAllThemes()]),
 				$this->settingsOption('select', 'style', ['label' => 'Style', 'class' => 'styleChanger', 'options' => [['name' => 'Light', 'value' => 'light'], ['name' => 'Dark', 'value' => 'dark'], ['name' => 'Horizontal', 'value' => 'horizontal']]]),
 			],
 			'Notifications' => [
@@ -1897,15 +2088,9 @@ class Organizr
 	public function getSettingsMain()
 	{
 		$certificateStatus = $this->hasCustomCert() ? '<span lang="en">Custom Certificate Loaded</span><br />Located at <span>' . $this->getCustomCert() . '</span>' : '<span lang="en">Custom Certificate not found - please upload below</span>';
-		return [
+		$settings = [
 			'Settings Page' => [
 				$this->settingsOption('select', 'defaultSettingsTab', ['label' => 'Default Settings Tab', 'options' => $this->getSettingsTabs(), 'help' => 'Choose which Settings Tab to be default when opening settings page']),
-			],
-			'Database' => [
-				$this->settingsOption('notice', '', ['notice' => 'danger', 'title' => 'Warning', 'body' => 'This feature is experimental - You may face unexpected database is locked errors in logs']),
-				$this->settingsOption('html', '', ['label' => 'Journal Mode Status', 'html' => '<script>getJournalMode();</script><h4 class="journal-mode font-bold text-uppercase"><i class="fa fa-spin fa-circle-o-notch"></i></h4>']),
-				$this->settingsOption('button', '', ['label' => 'Set DELETE Mode (Default)', 'icon' => 'icon-notebook', 'text' => 'Set', 'attr' => 'onclick="setJournalMode(\'DELETE\')"']),
-				$this->settingsOption('button', '', ['label' => 'Set WAL Mode', 'icon' => 'icon-notebook', 'text' => 'Set', 'attr' => 'onclick="setJournalMode(\'WAL\')"']),
 			],
 			'Github' => [
 				$this->settingsOption('select', 'branch', ['label' => 'Branch', 'value' => $this->config['branch'], 'options' => $this->getBranches(), 'disabled' => $this->docker, 'help' => ($this->docker) ? 'Since you are using the Official Docker image, Change the image to change the branch' : 'Choose which branch to download from']),
@@ -2048,6 +2233,19 @@ class Organizr
 				)
 			],
 		];
+		if ($this->config['driver'] == 'sqlite3') {
+			$database = [
+				'Database' => [
+					$this->settingsOption('notice', '', ['notice' => 'danger', 'title' => 'Warning', 'body' => 'This feature is experimental - You may face unexpected database is locked errors in logs']),
+					$this->settingsOption('html', '', ['label' => 'Journal Mode Status', 'html' => '<script>getJournalMode();</script><h4 class="journal-mode font-bold text-uppercase"><i class="fa fa-spin fa-circle-o-notch"></i></h4>']),
+					$this->settingsOption('button', '', ['label' => 'Set DELETE Mode (Default)', 'icon' => 'icon-notebook', 'text' => 'Set', 'attr' => 'onclick="setJournalMode(\'DELETE\')"']),
+					$this->settingsOption('button', '', ['label' => 'Set WAL Mode', 'icon' => 'icon-notebook', 'text' => 'Set', 'attr' => 'onclick="setJournalMode(\'WAL\')"']),
+				]
+			];
+			$settings = array_merge($settings, $database);
+		}
+		ksort($settings);
+		return $settings;
 	}
 
 	public function getSettingsSSO()
@@ -2189,10 +2387,16 @@ class Organizr
 			],
 			[
 				'active' => false,
+				'api' => 'api/v2/page/settings_customize_settings',
+				'anchor' => 'settings-customize-settings-anchor',
+				'name' => 'Marketplace Settings',
+			],
+			[
+				'active' => false,
 				'api' => false,
 				'anchor' => 'settings-customize-marketplace-anchor',
 				'name' => 'Marketplace',
-				'onclick' => 'loadMarketplace(\'themes\');'
+				'onclick' => 'loadThemeMarketplace();'
 			],
 		];
 		$tabEditorMenu = [
@@ -2378,23 +2582,46 @@ class Organizr
 			if (is_writable($path)) {
 				$this->setAPIResponse('success', 'Path exists and is writable', 200);
 				return true;
+			} else {
+				$this->setAPIResponse('error', 'Path exists but is not writable', 403);
+				return false;
 			}
 		} else {
-			if (is_writable(dirname($path, 1))) {
-				if (mkdir($path, 0760, true)) {
-					$this->setAPIResponse('success', 'Path is writable - Creating now', 200);
-					return true;
-				}
+			if (mkdir($path, 0760, true)) {
+				$this->setAPIResponse('success', 'Path is writable - Creating now', 200);
+				return true;
+			} else {
+				$this->setAPIResponse('error', 'Failed making directory - Check permissions', 403);
+				return false;
 			}
 		}
-		$this->setAPIResponse('error', 'Path is not writable', 401);
-		return false;
+	}
+
+	public function formatDatabaseDriver($driver)
+	{
+		$driver = strtolower($driver);
+		switch ($driver) {
+			case 'sqlite':
+			case 'sqlite3':
+				return 'sqlite3';
+			case 'mysql':
+			case 'mysqli':
+				return 'mysqli';
+			case 'postgre':
+			case 'postgres':
+			case 'postgresql':
+				return 'postgre';
+			default:
+				return $driver;
+		}
 	}
 
 	public function wizardConfig($array)
 	{
+		$array['driver'] = $array['driver'] ?? 'sqlite3';
+		$driver = $this->formatDatabaseDriver($array['driver']);
 		$dbName = $array['dbName'] ?? null;
-		$path = $array['dbPath'] ?? null;
+		$path = $array['dbPath'] ?? $this->root . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR . $this->random_ascii_string(10) . DIRECTORY_SEPARATOR;
 		$license = $array['license'] ?? null;
 		$hashKey = $array['hashKey'] ?? null;
 		$api = $array['api'] ?? null;
@@ -2402,9 +2629,12 @@ class Organizr
 		$username = $array['username'] ?? null;
 		$password = $array['password'] ?? null;
 		$email = $array['email'] ?? null;
-		$validation = array(
-			'dbName' => $dbName,
+		$dbHost = $array['dbHost'] ?? null;
+		$dbUsername = $array['dbUsername'] ?? null;
+		$dbPassword = $array['dbPassword'] ?? null;
+		$validation = [
 			'dbPath' => $path,
+			'dbName' => $dbName,
 			'license' => $license,
 			'hashKey' => $hashKey,
 			'api' => $api,
@@ -2412,47 +2642,71 @@ class Organizr
 			'username' => $username,
 			'password' => $password,
 			'email' => $email,
-		);
+			'driver' => $driver
+		];
+		$dbName = $this->dbExtension($dbName);
+		if ($driver == 'mysqli' || $driver == 'postgre') {
+			$dbName = $this->removeDbExtension($dbName);
+			$validation = array_merge($validation, [
+				'dbHost' => $dbHost,
+				'dbUsername' => $dbUsername,
+				'dbPassword' => $dbPassword,
+			]);
+		}
 		foreach ($validation as $k => $v) {
 			if ($v == null) {
 				$this->setAPIResponse('error', '[' . $k . '] cannot be empty', 422);
 				return false;
 			}
 		}
-		$path = $this->cleanDirectory($path);
-		if (file_exists($path)) {
-			if (!is_writable($path)) {
-				$this->setAPIResponse('error', '[' . $path . ']  is not writable', 422);
-				return false;
-			}
-		} else {
-			if (is_writable(dirname($path, 1))) {
-				if (!mkdir($path, 0760, true)) {
+		if ($path) {
+			$path = $this->cleanDirectory($path);
+			if (file_exists($path)) {
+				if (!is_writable($path)) {
 					$this->setAPIResponse('error', '[' . $path . ']  is not writable', 422);
 					return false;
 				}
 			} else {
-				$this->setAPIResponse('error', '[' . $path . ']  is not writable', 422);
-				return false;
+				if (!mkdir($path, 0760, true)) {
+					$this->setAPIResponse('error', '[' . $path . ']  is not writable', 422);
+					return false;
+				}
 			}
 		}
-		$dbName = $this->dbExtension($dbName);
 		$configVersion = $this->version;
 		$configArray = array(
-			'dbName' => $dbName,
 			'dbLocation' => $path,
+			'driver' => $driver,
+			'dbName' => $dbName,
 			'license' => $license,
 			'organizrHash' => $hashKey,
 			'organizrAPI' => $api,
 			'registrationPassword' => $registrationPassword,
 			'uuid' => $this->gen_uuid()
 		);
+		if ($driver == 'mysqli' || $driver == 'postgre') {
+			$configArray = array_merge($configArray, [
+				'dbHost' => $dbHost,
+				'dbUsername' => $dbUsername,
+				'dbPassword' => $this->encrypt($dbPassword, $hashKey),
+			]);
+		}
+		//Test Database Connection before saving config
+		$testDatabaseConnection = $this->testDatabaseConnection($array);
+		if (!$testDatabaseConnection) {
+			// setResponse already defined
+			return false;
+		}
 		// Create Config
 		if ($this->createConfig($configArray)) {
 			$this->config = $this->config();
 			$this->refreshCookieName();
 			$this->connectDB();
 			// Call DB Create
+			if (!$this->createNewDB($dbName, false)) {
+				$this->setAPIResponse('error', 'error creating database using driver: ' . $driver, 500);
+				return false;
+			}
 			if ($this->createDB($path)) {
 				// Add in first user
 				if ($this->createFirstAdmin($username, $password, $email)) {
@@ -2473,28 +2727,242 @@ class Organizr
 		return false;
 	}
 
-	public function createDB($path, $migration = false)
+	public function testDatabaseConnection($array)
 	{
+		$driver = $array['driver'] ?? 'sqlite3';
+		$driver = $this->formatDatabaseDriver($driver);
 
-		if (!file_exists($path)) {
-			mkdir($path, 0777, true);
+		$dbName = $array['dbName'] ?? null;
+		$dbHost = $array['dbHost'] ?? null;
+		$dbUsername = $array['dbUsername'] ?? null;
+		$dbPassword = $array['dbPassword'] ?? null;
+		$path = $array['dbPath'] ?? $this->root . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR . $this->random_ascii_string(10) . DIRECTORY_SEPARATOR;
+		switch ($driver) {
+			case 'mysqli':
+				if (!extension_loaded('mysqli')) {
+					$this->setResponse(500, 'PHP Extension `mysqli` is not loaded');
+					return false;
+				}
+				$config = [
+					'driver' => 'mysqli',
+					'host' => $dbHost,
+					'username' => $dbUsername,
+					'password' => $dbPassword,
+					'options' => [
+						MYSQLI_OPT_CONNECT_TIMEOUT => 60,
+					],
+					'flags' => MYSQLI_CLIENT_COMPRESS,
+				];
+				$validation = [
+					'dbHost' => $dbHost,
+					'dbUsername' => $dbUsername,
+					'dbPassword' => $dbPassword,
+				];
+				break;
+			case 'postgre':
+				// DISABLE FOR NOW
+				$this->setResponse(409, 'Database connection test not available for driver: ' . $driver);
+				return false;
+				$config = [
+					//host, hostaddr, port, dbname, user, password, connect_timeout, options, sslmode, service => see PostgreSQL API
+					'driver' => 'postgre',
+					'username' => $dbUsername,
+					'password' => $dbPassword,
+					'persistent' => true,
+				];
+				$host = $this->qualifyURL($dbHost, true);
+				if ($host['port']) {
+					$config = array_merge($config, ['port' => ltrim($host['port'], ':')]);
+				}
+				if (($host['host'])) {
+					$config = array_merge($config, ['host' => $host['host']]);
+				}
+				if (!$host['host'] && $host['path']) {
+					$config = array_merge($config, ['host' => $host['path']]);
+				}
+				$validation = [
+					'dbHost' => $dbHost,
+					'dbUsername' => $dbUsername,
+					'dbPassword' => $dbPassword,
+				];
+				break;
+			case 'sqlite3':
+				$path = $this->cleanDirectory($path);
+				if (file_exists($path)) {
+					if (!is_writable($path)) {
+						$this->setAPIResponse('error', '[' . $path . ']  is not writable', 422);
+						return false;
+					}
+				} else {
+					if (is_writable(dirname($path, 1))) {
+						if (!mkdir($path, 0760, true)) {
+							$this->setAPIResponse('error', '[' . $path . ']  is not writable', 422);
+							return false;
+						}
+					} else {
+						$this->setAPIResponse('error', '[' . $path . ']  is not writable', 422);
+						return false;
+					}
+				}
+				return true;
+			default:
+				$this->setResponse(409, 'Database connection test not available for driver: ' . $driver);
+				return false;
 		}
-		$response = [
+		foreach ($validation as $k => $v) {
+			if ($v == null) {
+				$this->setAPIResponse('error', '[' . $k . '] cannot be empty', 422);
+				return false;
+			}
+		}
+		try {
+			$connection = new Connection($config);
+			$testConnection = $connection->isConnected();
+			if ($testConnection) {
+				$this->setResponse(200, 'Database connection successful');
+				return true;
+			} else {
+				$this->setResponse(409, 'Database connection unsuccessful');
+				return false;
+			}
+		} catch (Dibi\Exception $e) {
+			$this->setResponse(500, $e->getMessage());
+			return false;
+		}
+	}
+
+	public function createNewDB($dbName, $migration = false)
+	{
+		if ($this->config['driver'] == 'mysqli') {
+			$config = [
+				'driver' => 'mysqli',
+				'host' => $this->config['dbHost'],
+				'username' => $this->config['dbUsername'],
+				'password' => $this->decrypt($this->config['dbPassword']),
+				'options' => [
+					MYSQLI_OPT_CONNECT_TIMEOUT => 60,
+				],
+				'flags' => MYSQLI_CLIENT_COMPRESS,
+			];
+			if ($migration) {
+				try {
+					$this->otherDb = new Connection($config);
+				} catch (Dibi\Exception $e) {
+					$this->otherDb = null;
+				}
+			} else {
+				try {
+					$this->db = new Connection($config);
+				} catch (Dibi\Exception $e) {
+					$this->db = null;
+				}
+			}
+			if ($dbName == 'tempMigration') {
+				$response = [
+					array(
+						'function' => 'query',
+						'query' => [
+							'DROP DATABASE IF EXISTS tempMigration'
+						]
+					),
+				];
+				$drop = $this->processQueries($response, $migration);
+			}
+			$response = [
+				array(
+					'function' => 'query',
+					'query' => ['CREATE DATABASE IF NOT EXISTS %n',
+						$dbName
+					]
+				)
+			];
+			$results = $this->processQueries($response, $migration);
+			if ($results) {
+				if ($migration) {
+					$this->connectOtherDB();
+				} else {
+					$this->connectDB();
+				}
+				return true;
+			} else {
+				return false;
+			}
+		} elseif ($this->config['driver'] == 'postgre') {
+			$config = [
+				'driver' => 'postgre',
+				'username' => $this->config['dbUsername'],
+				'password' => $this->decrypt($this->config['dbPassword']),
+				'persistent' => true,
+			];
+			$host = $this->qualifyURL($this->config['dbHost'], true);
+			if ($host['port']) {
+				$config = array_merge($config, ['port' => ltrim($host['port'], ':')]);
+			}
+			if ($host['host']) {
+				$config = array_merge($config, ['host' => $host['host']]);
+			}
+			if (!$host['host'] && $host['path']) {
+				$config = array_merge($config, ['host' => $host['path']]);
+			}
+			try {
+				$this->db = new Connection($config);
+			} catch (Dibi\Exception $e) {
+				$this->db = null;
+			}
+			$response = [
+				array(
+					'function' => 'query',
+					'query' => ['CREATE DATABASE %n',
+						$dbName
+					]
+				)
+			];
+			$results = $this->processQueries($response, $migration);
+			if ($results) {
+				$this->connectDB();
+				return true;
+			} else {
+				return false;
+			}
+		} else {
+			return true;
+		}
+	}
+
+	public function getDefaultTablesFormatted()
+	{
+		$list = [];
+		$tables = $this->defaultTables();
+		foreach ($tables as $table) {
+			$string = trim($table['query']);
+			preg_match('/CREATE TABLE `(.*?)`/', $string, $output_array);
+			if (count($output_array) > 1) {
+				$list[] = $output_array[1];
+			}
+		}
+		return $list;
+	}
+
+	public function defaultTables()
+	{
+		return [
 			array(
 				'function' => 'query',
-				'query' => 'CREATE TABLE `users` (
-				`id`	INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE,
-				`username`	TEXT UNIQUE,
-				`password`	TEXT,
-				`email`	TEXT,
-				`plex_token`	TEXT,
-				`group`	TEXT,
-				`group_id`	INTEGER,
-				`locked`	INTEGER,
-				`image`	TEXT,
-				`register_date`	DATE,
-				`auth_service`	TEXT DEFAULT \'internal\'
-				);'
+				'query' => '
+					CREATE TABLE `users` (
+						`id`	INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE,
+						`username`	TEXT UNIQUE,
+						`password`	TEXT,
+						`email`	TEXT,
+						`plex_token`	TEXT,
+						`group`	TEXT,
+						`group_id`	INTEGER,
+						`locked`	INTEGER,
+						`image`	TEXT,
+						`register_date`	DATETIME,
+						`auth_service`	TEXT DEFAULT \'internal\'
+					);
+				'
 			),
 			array(
 				'function' => 'query',
@@ -2503,7 +2971,7 @@ class Organizr
 					`username`	TEXT,
 					`gravatar`	TEXT,
 					`uid`	TEXT,
-					`date` DATE,
+					`date` DATETIME,
 					`ip` TEXT,
 					`message` TEXT
 				);'
@@ -2516,8 +2984,8 @@ class Organizr
 					`user_id`	INTEGER,
 					`browser`	TEXT,
 					`ip`	TEXT,
-					`created` DATE,
-					`expires` DATE
+					`created` DATETIME,
+					`expires` DATETIME
 				);'
 			),
 			array(
@@ -2576,18 +3044,52 @@ class Organizr
 				'query' => 'CREATE TABLE `invites` (
 					`id`	INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE,
 					`code`	TEXT UNIQUE,
-					`date`	TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+					`date`	DATETIME,
 					`email`	TEXT,
 					`username`	TEXT,
 					`dateused`	TIMESTAMP,
 					`usedby`	TEXT,
 					`ip`	TEXT,
 					`valid`	TEXT,
-					`type` TEXT
+					`type` TEXT,
+					`invitedby` TEXT
 				);'
 			),
+			array(
+				'function' => 'query',
+				'query' => 'CREATE TABLE `BOOKMARK-categories` (
+					`id`	INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE,
+					`order`	INTEGER,
+					`category`	TEXT UNIQUE,
+					`category_id`	INTEGER,
+					`default` INTEGER
+				);'
+			),
+			array(
+				'function' => 'query',
+				'query' => 'CREATE TABLE `BOOKMARK-tabs` (
+					`id`	INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE,
+					`order`	INTEGER,
+					`category_id`	INTEGER,
+					`name`	TEXT,
+					`url`	TEXT,
+					`enabled`	INTEGER,
+					`group_id`	INTEGER,
+					`image`	TEXT,
+					`background_color` TEXT,
+					`text_color` TEXT
+				);'
+			)
 		];
-		return $this->processQueries($response, $migration);
+	}
+
+	public function createDB($path, $migration = false)
+	{
+		if (!file_exists($path)) {
+			mkdir($path, 0777, true);
+		}
+		$tables = $this->defaultTables();
+		return $this->processQueries($tables, $migration);
 	}
 
 	public function createFirstAdmin($username, $password, $email)
@@ -2600,42 +3102,42 @@ class Organizr
 			'group' => 'Admin',
 			'group_id' => 0,
 			'image' => $this->gravatar($email),
-			'register_date' => $this->currentTime,
+			'register_date' => gmdate('Y-m-d H:i:s'),
 		];
 		$groupInfo0 = [
 			'group' => 'Admin',
 			'group_id' => 0,
-			'default' => false,
+			'default' => 0,
 			'image' => 'plugins/images/groups/admin.png',
 		];
 		$groupInfo1 = [
 			'group' => 'Co-Admin',
 			'group_id' => 1,
-			'default' => false,
+			'default' => 0,
 			'image' => 'plugins/images/groups/coadmin.png',
 		];
 		$groupInfo2 = [
 			'group' => 'Super User',
 			'group_id' => 2,
-			'default' => false,
+			'default' => 0,
 			'image' => 'plugins/images/groups/superuser.png',
 		];
 		$groupInfo3 = [
 			'group' => 'Power User',
 			'group_id' => 3,
-			'default' => false,
+			'default' => 0,
 			'image' => 'plugins/images/groups/poweruser.png',
 		];
 		$groupInfo4 = [
 			'group' => 'User',
 			'group_id' => 4,
-			'default' => true,
+			'default' => 1,
 			'image' => 'plugins/images/groups/user.png',
 		];
 		$groupInfoGuest = [
 			'group' => 'Guest',
 			'group_id' => 999,
-			'default' => false,
+			'default' => 0,
 			'image' => 'plugins/images/groups/guest.png',
 		];
 		$settingsInfo = [
@@ -2643,8 +3145,8 @@ class Organizr
 			'category_id' => 0,
 			'name' => 'Settings',
 			'url' => 'api/v2/page/settings',
-			'default' => false,
-			'enabled' => true,
+			'default' => 0,
+			'enabled' => 1,
 			'group_id' => 1,
 			'image' => 'fontawesome::cog',
 			'type' => 0
@@ -2654,8 +3156,8 @@ class Organizr
 			'category_id' => 0,
 			'name' => 'Homepage',
 			'url' => 'api/v2/page/homepage',
-			'default' => false,
-			'enabled' => false,
+			'default' => 0,
+			'enabled' => 0,
 			'group_id' => 4,
 			'image' => 'fontawesome::home',
 			'type' => 0
@@ -2665,7 +3167,7 @@ class Organizr
 			'category' => 'Unsorted',
 			'category_id' => 0,
 			'image' => 'fontawesome::question',
-			'default' => true
+			'default' => 1
 		];
 		$response = [
 			array(
@@ -2789,10 +3291,10 @@ class Organizr
 		$addToken = [
 			'token' => (string)$jwttoken,
 			'user_id' => $result['id'],
-			'created' => $this->currentTime,
-			'browser' => isset($_SERVER ['HTTP_USER_AGENT']) ? $_SERVER ['HTTP_USER_AGENT'] : null,
+			'created' => gmdate('Y-m-d H:i:s'),
+			'browser' => $_SERVER ['HTTP_USER_AGENT'] ?? null,
 			'ip' => $this->userIP(),
-			'expires' => gmdate("Y-m-d\TH:i:s\Z", time() + (86400 * $days))
+			'expires' => gmdate('Y-m-d H:i:s', time() + (86400 * $days))
 		];
 		$response = [
 			array(
@@ -3310,7 +3812,7 @@ class Organizr
 
 	public function checkTabURL($url = null)
 	{
-		return $url !== '' && $url !== null & $url !== 'null' ? $this->qualifyURL($url) : '';
+		return $url !== '' && $url !== null & $url !== 'null' ? $this->qualifyURL($url, false, true) : '';
 	}
 
 	public function refreshList()
@@ -3999,13 +4501,17 @@ class Organizr
 
 	public function getTableColumns($table)
 	{
+		if ($this->config['driver'] == 'sqlite3') {
+			$query = 'PRAGMA table_info(?)';
+		} else {
+			$query = 'DESCRIBE %n';
+		}
 		$response = [
 			array(
 				'function' => 'fetchAll',
-				'query' => array(
-					'PRAGMA table_info(?)',
-					$table
-				)
+				'query' => [
+					$query, $table
+				]
 			),
 		];
 		return $this->processQueries($response);
@@ -4013,11 +4519,16 @@ class Organizr
 
 	public function getTableColumnsFormatted($table)
 	{
+		if ($this->config['driver'] == 'sqlite3') {
+			$name = 'name';
+		} else {
+			$name = 'Field';
+		}
 		$columns = $this->getTableColumns($table);
 		if ($columns) {
 			$columnsFormatted = [];
 			foreach ($columns as $k => $v) {
-				$columnsFormatted[$v['name']] = $v;
+				$columnsFormatted[$v[$name]] = $v;
 			}
 			return $columnsFormatted;
 		} else {
@@ -4603,8 +5114,9 @@ class Organizr
 
 	public function removeTheme($theme)
 	{
+		$this->setLoggerChannel('Theme Marketplace');
 		$theme = $this->reverseCleanClassName($theme);
-		$array = $this->getThemesGithub();
+		$array = $this->getThemesMarketplace();
 		$arrayLower = array_change_key_case($array);
 		if (!$array) {
 			$this->setAPIResponse('error', 'Could not access theme marketplace', 409);
@@ -4618,53 +5130,27 @@ class Organizr
 			$theme = array_keys($array)[$key];
 		}
 		$array = $array[$theme];
-		$downloadList = $this->marketplaceFileListFormat($array['files'], $array['github_folder'], 'themes');
-		if (!$downloadList) {
-			$this->setAPIResponse('error', 'Could not get download list for theme', 409);
-			return false;
-		}
-		$name = $theme;
-		$version = $array['version'];
-		$installedThemesNew = '';
-		foreach ($downloadList as $k => $v) {
-			$file = array(
-				'from' => $v['githubPath'],
-				'to' => str_replace(array('/', '\\'), DIRECTORY_SEPARATOR, $this->root . $v['path'] . $v['fileName']),
-				'path' => str_replace(array('/', '\\'), DIRECTORY_SEPARATOR, $this->root . $v['path'])
-			);
-			if (!$this->rrmdir($file['to'])) {
-				$this->setLoggerChannel('Theme Management');
-				$this->logger->warning('Remove File Failed  for: ' . $v['githubPath']);
+		$themeDir = $this->root . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR . 'themes' . DIRECTORY_SEPARATOR . $array['project_folder'] . DIRECTORY_SEPARATOR;
+		$dirExists = file_exists($themeDir);
+		if ($dirExists) {
+			if (!$this->rrmdir($themeDir)) {
+				$this->logger->info('Remove File Failed  for: ' . $array['project_folder']);
 				return false;
 			}
+		} else {
+			$this->setAPIResponse('error', 'Theme is not installed', 404);
+			return false;
 		}
-		if ($this->config['installedThemes'] !== '') {
-			$installedThemes = explode('|', $this->config['installedThemes']);
-			foreach ($installedThemes as $k => $v) {
-				$themes = explode(':', $v);
-				$installedThemesList[$themes[0]] = $themes[1];
-			}
-			if (isset($installedThemesList[$name])) {
-				foreach ($installedThemesList as $k => $v) {
-					if ($k !== $name) {
-						if ($installedThemesNew == '') {
-							$installedThemesNew .= $k . ':' . $v;
-						} else {
-							$installedThemesNew .= '|' . $k . ':' . $v;
-						}
-					}
-				}
-			}
-		}
-		$this->updateConfig(array('installedThemes' => $installedThemesNew));
-		$this->setAPIResponse('success', 'Theme removed', 200, $installedThemesNew);
+		$this->updateInstalledThemes('uninstall', $theme, $array);
+		$this->setAPIResponse('success', 'Theme removed', 200, $array);
 		return true;
 	}
 
 	public function installTheme($theme)
 	{
+		$this->setLoggerChannel('Theme Marketplace');
 		$theme = $this->reverseCleanClassName($theme);
-		$array = $this->getThemesGithub();
+		$array = $this->getThemesMarketplace();
 		$arrayLower = array_change_key_case($array);
 		if (!$array) {
 			$this->setAPIResponse('error', 'Could not access theme marketplace', 409);
@@ -4678,51 +5164,60 @@ class Organizr
 			$theme = array_keys($array)[$key];
 		}
 		$array = $array[$theme];
-		$downloadList = $this->marketplaceFileListFormat($array['files'], $array['github_folder'], 'themes');
-		if (!$downloadList) {
+		// Check Version of Organizr against minimum version needed
+		$compare = new Composer\Semver\Comparator;
+		if ($compare->lessThan($this->version, $array['minimum_organizr_version'])) {
+			$this->logger->warning('Minimum Organizr version needed: ' . $array['minimum_organizr_version']);
+			$this->setResponse(500, 'Minimum Organizr version needed: ' . $array['minimum_organizr_version'] . ' | Current Version: ' . $this->version);
+			return true;
+		}
+		// It is okay to user Plugin function - we should rename it so it is universal
+		$files = $this->getPluginFilesFromRepo($theme, $array);
+		if ($files) {
+			$downloadList = $this->themeFileListFormat($files, $array['project_folder']);
+		} else {
+			$this->logger->warning('File list failed for: ' . $array['github_folder']);
 			$this->setAPIResponse('error', 'Could not get download list for theme', 409);
 			return false;
 		}
-		$name = $theme;
-		$version = $array['version'];
+		if (!$downloadList) {
+			$this->logger->warning('Setting download list failed for: ' . $array['github_folder']);
+			$this->setAPIResponse('error', 'Could not get download list for theme', 409);
+			return false;
+		}
 		foreach ($downloadList as $k => $v) {
 			$file = array(
 				'from' => $v['githubPath'],
-				'to' => str_replace(array('/', '\\'), DIRECTORY_SEPARATOR, $this->root . $v['path'] . $v['fileName']),
-				'path' => str_replace(array('/', '\\'), DIRECTORY_SEPARATOR, $this->root . $v['path'])
+				'to' => str_replace(array('/', '\\'), DIRECTORY_SEPARATOR, $v['path'] . $v['fileName']),
+				'path' => str_replace(array('/', '\\'), DIRECTORY_SEPARATOR, $v['path'])
 			);
+			$this->makeDir($this->root . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR . 'themes');
 			if (!$this->downloadFileToPath($file['from'], $file['to'], $file['path'])) {
-				$this->setLoggerChannel('Theme Management');
+				$this->setLoggerChannel('Theme Marketplace');
 				$this->logger->warning('Downloaded File Failed  for: ' . $v['githubPath']);
 				$this->setAPIResponse('error', 'Theme download failed', 500);
 				return false;
 			}
 		}
-		if ($this->config['installedThemes'] !== '') {
-			$installedThemes = explode('|', $this->config['installedThemes']);
-			foreach ($installedThemes as $k => $v) {
-				$themes = explode(':', $v);
-				$installedThemesList[$themes[0]] = $themes[1];
-			}
-			if (isset($installedThemesList[$name])) {
-				$installedThemesList[$name] = $version;
-				$installedThemesNew = '';
-				foreach ($installedThemesList as $k => $v) {
-					if ($installedThemesNew == '') {
-						$installedThemesNew .= $k . ':' . $v;
-					} else {
-						$installedThemesNew .= '|' . $k . ':' . $v;
-					}
-				}
-			} else {
-				$installedThemesNew = $this->config['installedThemes'] . '|' . $name . ':' . $version;
-			}
-		} else {
-			$installedThemesNew = $name . ':' . $version;
-		}
-		$this->updateConfig(array('installedThemes' => $installedThemesNew));
-		$this->setAPIResponse('success', 'Theme installed', 200, $installedThemesNew);
+		$this->updateInstalledThemes('install', $theme, $array);
+		$this->setAPIResponse('success', 'Theme installed', 200, $array);
 		return true;
+	}
+
+	public function themeFileListFormat($files, $folder)
+	{
+		$filesList = false;
+		foreach ($files as $k => $v) {
+			if ($v['type'] !== 'dir') {
+				$filesList[] = array(
+					'fileName' => $v['name'],
+					'path' => $this->root . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR . 'themes' . DIRECTORY_SEPARATOR . $folder . DIRECTORY_SEPARATOR . str_replace($v['name'], '', $v['path']),
+					'githubPath' => $v['download_url']
+				);
+			}
+		}
+		$this->makeDir($this->root . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR . 'themes' . DIRECTORY_SEPARATOR . $folder);
+		return $filesList;
 	}
 
 	public function pluginFileListFormat($files, $folder)
@@ -4935,6 +5430,7 @@ class Organizr
 			return false;
 		}
 		$config = $this->config['installedPlugins'];
+		$config = is_array($config) ? $config : [];
 		switch ($action) {
 			case 'install':
 			case 'update':
@@ -4950,6 +5446,31 @@ class Organizr
 				break;
 		}
 		$this->updateConfig(['installedPlugins' => $config]);
+	}
+
+	public function updateInstalledThemes($action, $theme, $themeDetails)
+	{
+		if (!$action || !$theme || !$themeDetails) {
+			return false;
+		}
+		$config = $this->config['installedThemes'];
+		$config = is_array($config) ? $config : [];
+		switch ($action) {
+			case 'install':
+			case 'update':
+				$update[$theme] = [
+					'name' => $theme,
+					'version' => $themeDetails['version'],
+					'repo' => $themeDetails['repo'],
+					'path' => 'data/themes/' . $themeDetails['project_folder']
+				];
+				$config = array_merge($config, $update);
+				break;
+			default:
+				unset($config[$theme]);
+				break;
+		}
+		$this->updateConfig(['installedThemes' => $config]);
 	}
 
 	public function getThemesGithub()
@@ -4988,6 +5509,44 @@ class Organizr
 			$plugins[$pluginName]['status'] = $this->getPluginStatus($plugins[$pluginName]);
 		}
 		return $plugins;
+	}
+
+	public function getThemesMarketplace()
+	{
+		$themes = $this->getThemesGithubCombined();
+		foreach ($themes as $themeName => $themeDetails) {
+			$themes[$themeName]['installed'] = (isset($this->config['installedThemes'][$themeName]));
+			$themes[$themeName]['installed_version'] = $this->config['installedThemes'][$themeName]['version'] ?? null;
+			$themes[$themeName]['needs_update'] = ($themes[$themeName]['installed'] && ($themes[$themeName]['installed_version'] !== $themes[$themeName]['version']));
+			$themes[$themeName]['status'] = $this->getPluginStatus($themes[$themeName]);
+		}
+		return $themes;
+	}
+
+	public function getThemesGithubCombined()
+	{
+		// Organizr Repo
+		$urls = [$this->getMarketplaceJSONFromRepo('https://github.com/Organizr/Organizr-Themes')];
+		foreach (explode(',', $this->config['externalThemeMarketplaceRepos']) as $repo) {
+			$urls[] = $this->getMarketplaceJSONFromRepo($repo);
+		}
+		$themes = [];
+		foreach ($urls as $repo) {
+			$options = ($this->localURL($repo)) ? array('verify' => false) : array();
+			try {
+				$response = Requests::get($repo, array(), $options);
+				if ($response->success) {
+					$themes = array_merge($themes, json_decode($response->body, true));
+				} else {
+					$this->setLoggerChannel('Themes');
+					$this->logger->warning('Getting Marketplace items from Github', $this->apiResponseFormatter($response->body));
+					return false;
+				}
+			} catch (Requests_Exception $e) {
+				//return false;
+			}
+		}
+		return $themes;
 	}
 
 	public function getPluginStatus($pluginDetails)
@@ -5746,7 +6305,7 @@ class Organizr
 			'group' => $defaults['group'],
 			'group_id' => $defaults['group_id'],
 			'image' => $this->gravatar($email),
-			'register_date' => $this->currentTime,
+			'register_date' => gmdate('Y-m-d H:i:s'),
 		];
 		$response = [
 			array(
@@ -6688,6 +7247,52 @@ class Organizr
 		}
 	}
 
+	public function replaceStringInDatabase($string)
+	{
+		$databaseStringList = [
+			'AUTOINCREMENT' => [
+				'sqlite3' => 'AUTOINCREMENT',
+				'mysqli' => 'AUTO_INCREMENT',
+				'postgre' => 'AUTOINCREMENT'
+			],
+			'COLLATE NOCASE' => [
+				'sqlite3' => 'COLLATE NOCASE',
+				'mysqli' => '',
+				'postgre' => ''
+			],
+			'INTEGER PRIMARY KEY AUTOINCREMENT' => [
+				'sqlite3' => 'INTEGER PRIMARY KEY AUTOINCREMENT',
+				'mysqli' => 'INTEGER PRIMARY KEY AUTOINCREMENT',
+				'postgre' => 'SERIAL PRIMARY KEY'
+			],
+			'DATETIME' => [
+				'sqlite3' => 'DATETIME',
+				'mysqli' => 'DATETIME',
+				'postgre' => 'TIMESTAMP'
+			],
+		];
+		if (gettype($string) == 'string') {
+			foreach ($databaseStringList as $item => $value) {
+				if (stripos($string, $item) !== false) {
+					$string = str_ireplace($item, $databaseStringList[$item][$this->config['driver']], $string);
+				}
+			}
+		}
+		return $string;
+	}
+
+	public function cleanDatabaseQuery($query)
+	{
+		if (is_array($query)) {
+			foreach ($query as $key => $value) {
+				$query[$key] = $this->cleanDatabaseQuery($value);
+			}
+			return $query;
+		} else {
+			return $this->replaceStringInDatabase($query);
+		}
+	}
+
 	protected function processQueries(array $request, $migration = false)
 	{
 		$results = array();
@@ -6696,8 +7301,9 @@ class Organizr
 			$this->setLoggerChannel('Database');
 			$this->logger->debug('Query to database', $request);
 		}
-		try {
-			foreach ($request as $k => $v) {
+		foreach ($request as $k => $v) {
+			try {
+				$v['query'] = $this->cleanDatabaseQuery($v['query']);
 				$query = ($migration) ? $this->otherDb->query($v['query']) : $this->db->query($v['query']);
 				$keyName = (isset($v['key'])) ? $v['key'] : $k;
 				$firstKey = (isset($v['key']) && $k == 0) ? $v['key'] : $k;
@@ -6727,11 +7333,11 @@ class Organizr
 					default:
 						return false;
 				}
+			} catch (Exception $e) {
+				$this->setLoggerChannel('Database');
+				$this->logger->critical($e, $v['query']);
+				return false;
 			}
-		} catch (Exception $e) {
-			$this->setLoggerChannel('Database');
-			$this->logger->critical($e, $request);
-			return false;
 		}
 		if ($this->config['includeDatabaseQueriesInDebug']) {
 			$this->logger->debug('Results from database', $results);

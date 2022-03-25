@@ -4,7 +4,6 @@ trait RTorrentHomepageItem
 {
 	public function rTorrentSettingsArray($infoOnly = false)
 	{
-
 		$homepageInformation = [
 			'name' => 'rTorrent',
 			'enabled' => strpos('personal', $this->config['license']) !== false,
@@ -66,6 +65,7 @@ trait RTorrentHomepageItem
 					$this->settingsOption('hide-completed', 'rTorrentHideCompleted'),
 					$this->settingsOption('select', 'rTorrentSortOrder', ['label' => 'Order', 'options' => $this->rTorrentSortOptions()]),
 					$this->settingsOption('limit', 'rTorrentLimit'),
+					$this->settingsOption('multiple', 'rTorrentIgnoreLabel', ['label' => 'Ignore Torrent with Label(s)']),
 					$this->settingsOption('refresh', 'rTorrentRefresh'),
 					$this->settingsOption('combine', 'rTorrentCombine'),
 				],
@@ -85,10 +85,7 @@ trait RTorrentHomepageItem
 			return false;
 		}
 		try {
-			$digest = (empty($this->config['rTorrentURLOverride'])) ? $this->qualifyURL($this->config['rTorrentURL'], true) : $this->qualifyURL($this->checkOverrideURL($this->config['rTorrentURL'], $this->config['rTorrentURLOverride']), true);
-			$extraPath = (strpos($this->config['rTorrentURL'], '.php') !== false) ? '' : '/RPC2';
-			$extraPath = (empty($this->config['rTorrentURLOverride'])) ? $extraPath : '';
-			$url = $digest['scheme'] . '://' . $digest['host'] . $digest['port'] . $digest['path'] . $extraPath;
+			$url = $this->rTorrentURL();
 			$options = $this->requestOptions($url, null, $this->config['rTorrentDisableCertCheck'], $this->config['rTorrentUseCustomCertificate']);
 			if ($this->config['rTorrentUsername'] !== '' && $this->decrypt($this->config['rTorrentPassword']) !== '') {
 				$credentials = array('auth' => new Requests_Auth_Digest(array($this->config['rTorrentUsername'], $this->decrypt($this->config['rTorrentPassword']))));
@@ -167,8 +164,10 @@ trait RTorrentHomepageItem
 			$state = 'Downloading';
 		} elseif ($completed && !$state && $status == 'seed') {
 			$state = 'Finished';
+		} elseif ($completed && !$state && $status == 'leech') {
+			$state = 'Finished';
 		}
-		return ($state) ? $state : $status;
+		return ($state) ?: $status;
 	}
 
 	public function getRTorrentHomepageQueue()
@@ -185,10 +184,7 @@ trait RTorrentHomepageItem
 				$this->config['rTorrentLimit'] = '1000';
 			}
 			$torrents = array();
-			$digest = (empty($this->config['rTorrentURLOverride'])) ? $this->qualifyURL($this->config['rTorrentURL'], true) : $this->qualifyURL($this->checkOverrideURL($this->config['rTorrentURL'], $this->config['rTorrentURLOverride']), true);
-			$extraPath = (strpos($this->config['rTorrentURL'], '.php') !== false) ? '' : '/RPC2';
-			$extraPath = (empty($this->config['rTorrentURLOverride'])) ? $extraPath : '';
-			$url = $digest['scheme'] . '://' . $digest['host'] . $digest['port'] . $digest['path'] . $extraPath;
+			$url = $this->rTorrentURL();
 			$options = $this->requestOptions($url, $this->config['rTorrentRefresh'], $this->config['rTorrentDisableCertCheck'], $this->config['rTorrentUseCustomCertificate']);
 			if ($this->config['rTorrentUsername'] !== '' && $this->decrypt($this->config['rTorrentPassword']) !== '') {
 				$credentials = array('auth' => new Requests_Auth_Digest(array($this->config['rTorrentUsername'], $this->decrypt($this->config['rTorrentPassword']))));
@@ -233,6 +229,8 @@ trait RTorrentHomepageItem
 							//do nothing
 						} elseif ($tempStatus == 'Finished' && $this->config['rTorrentHideCompleted']) {
 							//do nothing
+						} elseif (stripos($this->config['rTorrentIgnoreLabel'], $value[20]) !== false) {
+							//do nothing
 						} else {
 							$torrents[$key] = array(
 								'name' => $value[0],
@@ -266,10 +264,8 @@ trait RTorrentHomepageItem
 						switch ($direction) {
 							case 'a':
 								return $a[$sort] <=> $b[$sort];
-								break;
 							case 'd':
 								return $b[$sort] <=> $a[$sort];
-								break;
 							default:
 								return $b['date'] <=> $a['date'];
 						}
@@ -285,8 +281,19 @@ trait RTorrentHomepageItem
 			$this->setAPIResponse('error', $e->getMessage(), 500);
 			return false;
 		};
-		$api['content'] = isset($api['content']) ? $api['content'] : false;
+		$api['content'] = $api['content'] ?? false;
 		$this->setAPIResponse('success', null, 200, $api);
 		return $api;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function rTorrentURL(): string
+	{
+		$digest = (empty($this->config['rTorrentURLOverride'])) ? $this->qualifyURL($this->config['rTorrentURL'], true) : $this->qualifyURL($this->checkOverrideURL($this->config['rTorrentURL'], $this->config['rTorrentURLOverride']), true);
+		$extraPath = (strpos($this->config['rTorrentURL'], '.php') !== false) ? '' : '/RPC2';
+		$extraPath = (empty($this->config['rTorrentURLOverride'])) ? $extraPath : '';
+		return $digest['scheme'] . '://' . $digest['host'] . $digest['port'] . $digest['path'] . $extraPath;
 	}
 }

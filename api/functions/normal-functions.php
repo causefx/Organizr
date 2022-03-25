@@ -118,6 +118,11 @@ trait NormalFunctions
 		return (substr($string, -3) == '.db') ? $string : $string . '.db';
 	}
 
+	public function removeDbExtension($string)
+	{
+		return substr($string, 0, -3);
+	}
+
 	public function cleanPath($path)
 	{
 		$path = preg_replace('/([^:])(\/{2,})/', '$1/', $path);
@@ -411,7 +416,7 @@ trait NormalFunctions
 	}
 
 	// Qualify URL
-	public function qualifyURL($url, $return = false)
+	public function qualifyURL($url, $return = false, $includeTrailing = false)
 	{
 		//local address?
 		if (substr($url, 0, 1) == "/") {
@@ -423,7 +428,7 @@ trait NormalFunctions
 			$url = $protocol . $this->getServer() . $url;
 		}
 		// Get Digest
-		$digest = parse_url(rtrim(preg_replace('/\s+/', '', $url), '/'));
+		$digest = $includeTrailing ? parse_url($url) : parse_url(rtrim(preg_replace('/\s+/', '', $url), '/'));
 		// http/https
 		if (!isset($digest['scheme'])) {
 			$scheme = 'http';

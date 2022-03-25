@@ -524,7 +524,7 @@ trait OrganizrFunctions
 
 	public function cacheImage($url, $name, $extension = 'jpg')
 	{
-		$cacheDirectory = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR . 'cache' . DIRECTORY_SEPARATOR;
+		$cacheDirectory = $this->root . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR . 'cache' . DIRECTORY_SEPARATOR;
 		if (!file_exists($cacheDirectory)) {
 			mkdir($cacheDirectory, 0777, true);
 		}
@@ -752,7 +752,7 @@ trait OrganizrFunctions
 		if ($userIP <= $high && $low <= $userIP) {
 			$approved = true;
 		}
-		$this->logger->debug('authProxy range check', ['server_ip' => $userIP, 'range_from' => $from, 'range_to' => $to, 'approved' => $approved]);
+		$this->logger->debug('authProxy range check', ['server_ip' => ['long' => $userIP, 'short' => long2ip($userIP)], 'range_from' => ['long' => $from, 'short' => long2ip($from)], 'range_to' => ['long' => $to, 'short' => long2ip($to)], 'approved' => $approved]);
 		return $approved;
 	}
 
