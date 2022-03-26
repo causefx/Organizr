@@ -1705,9 +1705,9 @@ class Organizr
 		return ($page) ? strtolower(str_replace(array('%20', ' ', '-', '_'), '_', $page)) : '';
 	}
 
-	public function cleanClassName($name)
+	public function cleanClassName($name, $char = '-')
 	{
-		return ($name) ? (str_replace(array('%20', ' ', '-', '_'), '-', $name)) : '';
+		return ($name) ? (str_replace(array('%20', ' ', '-', '_'), $char, strtolower($name))) : '';
 	}
 
 	public function reverseCleanClassName($name)
@@ -1944,7 +1944,7 @@ class Organizr
 				$this->settingsOption('notice', null, ['notice' => 'danger', 'body' => '3rd Party Repositories are not affiliated with Organizr and therefore the themes on these repositories are not inspected.  Use at your own risk.']),
 				$this->settingsOption('multiple-url', 'externalThemeMarketplaceRepos', ['override' => 12, 'label' => 'External Marketplace Repo', 'help' => 'Only supports Github repos']),
 				$this->settingsOption('token', 'githubAccessToken', ['label' => 'Github Person Access Token', 'help' => 'The Github Person Access Token will help with API rate limiting as well as let you access your own Private Repos']),
-				$this->settingsOption('switch', 'checkForThemeUpdate', ['label' => 'Check for Plugin Updates', ['help' => 'Check for updates on page load']])
+				$this->settingsOption('switch', 'checkForThemeUpdate', ['label' => 'Check for Theme Updates', ['help' => 'Check for updates on page load']])
 			]
 		];
 	}
@@ -5115,14 +5115,14 @@ class Organizr
 	public function removeTheme($theme)
 	{
 		$this->setLoggerChannel('Theme Marketplace');
-		$theme = $this->reverseCleanClassName($theme);
+		$theme = $this->cleanClassName($theme, '_');
 		$array = $this->getThemesMarketplace();
 		$arrayLower = array_change_key_case($array);
 		if (!$array) {
 			$this->setAPIResponse('error', 'Could not access theme marketplace', 409);
 			return false;
 		}
-		if (!$arrayLower[$theme]) {
+		if (!isset($arrayLower[$theme])) {
 			$this->setAPIResponse('error', 'Theme does not exist in marketplace', 404);
 			return false;
 		} else {
@@ -5149,15 +5149,15 @@ class Organizr
 	public function installTheme($theme)
 	{
 		$this->setLoggerChannel('Theme Marketplace');
-		$theme = $this->reverseCleanClassName($theme);
+		$theme = $this->cleanClassName($theme, '_');
 		$array = $this->getThemesMarketplace();
 		$arrayLower = array_change_key_case($array);
 		if (!$array) {
 			$this->setAPIResponse('error', 'Could not access theme marketplace', 409);
 			return false;
 		}
-		if (!$arrayLower[$theme]) {
-			$this->setAPIResponse('error', 'Theme does not exist in marketplace', 404);
+		if (!isset($arrayLower[$theme])) {
+			$this->setAPIResponse('error', 'Theme [' . $theme . '] does not exist in marketplace', 404, $arrayLower);
 			return false;
 		} else {
 			$key = array_search($theme, array_keys($arrayLower));
