@@ -93,7 +93,7 @@ trait TautulliHomepageItem
 		$apiURL = $url . '/api/v2?apikey=' . $this->config['tautulliApikey'];
 		try {
 			$homestatsUrl = $apiURL . '&cmd=get_home_stats&grouping=1';
-			$options = $this->requestOptions($this->config['tautulliURL'], $this->config['homepageTautulliRefresh'], $this->config['tautulliDisableCertCheck'], $this->config['tautulliUseCustomCertificate']);
+			$options = $this->requestOptions($this->config['tautulliURL'], $this->config['homepageTautulliRefresh'], $this->config['tautulliDisableCertCheck'], $this->config['tautulliUseCustomCertificate'], ['follow_redirects' => false]);
 			$homestats = Requests::get($homestatsUrl, [], $options);
 			if ($homestats->success) {
 				$this->setAPIResponse('success', 'API Connection succeeded', 200);
