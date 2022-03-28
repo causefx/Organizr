@@ -87,6 +87,8 @@ $app->add(function ($request, $handler) {
 	// add the organizr to your request as [READ-ONLY]
 	$Organizr = new Organizr();
 	$request = $request->withAttribute('Organizr', $Organizr);
+	// set custom error handler
+	set_error_handler([$Organizr, 'setAPIErrorResponse']);
 	return $handler->handle($request);
 });
 //$app->add(new Lowercase());

@@ -858,6 +858,8 @@ function convertMinutesToMs(minutes){
 $(document).on("click", ".editTab", function () {
     var originalTabName = $('#originalTabName').html();
     var tabInfo = $('#edit-tab-form').serializeToJSON();
+    let tabNameLower = tabInfo.name.toLowerCase();
+    let originalTabNameLower = originalTabName.toLowerCase();
     if (typeof tabInfo.id == 'undefined' || tabInfo.id == '') {
         message('Edit Tab Error',' Could not get Tab ID',activeInfo.settings.notifications.position,'#FFF','error','5000');
 	    return false;
@@ -874,7 +876,7 @@ $(document).on("click", ".editTab", function () {
         message('Edit Tab Error',' Please set a Tab URL or Local URL',activeInfo.settings.notifications.position,'#FFF','warning','5000');
 	    return false;
     }
-    if(checkIfTabNameExists(tabInfo.name) && originalTabName !== tabInfo.name){
+    if(checkIfTabNameExists(tabInfo.name) && originalTabNameLower !== tabNameLower){
         message('Edit Tab Error',' Tab name already used',activeInfo.settings.notifications.position,'#FFF','warning','5000');
         return false;
     }

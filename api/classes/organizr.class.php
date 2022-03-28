@@ -97,7 +97,9 @@ class Organizr
 
 	public function __construct($updating = false)
 	{
-		// First Check PHP Version
+		// Set custom Error handler
+		set_error_handler([$this, 'setErrorResponse']);
+		// Next Check PHP Version
 		$this->checkPHP();
 		// Check Disk Space
 		$this->checkDiskSpace();
@@ -746,6 +748,34 @@ class Organizr
 		if ($data) {
 			$GLOBALS['api']['response']['data'] = $data;
 		}
+	}
+
+	public function setAPIErrorResponse($number, $message, $file, $line)
+	{
+		$GLOBALS['api']['response']['errors'][] = [
+			'error' => $number,
+			'message' => $message,
+			'file' => $file,
+			'line' => $line
+		];
+		$this->handleError($number, $message, $file, $line);
+	}
+
+	public function setErrorResponse($number, $message, $file, $line)
+	{
+		$error = [
+			'error' => $number,
+			'message' => $message,
+			'file' => $file,
+			'line' => $line
+		];
+		$this->handleError($number, $message, $file, $line);
+		$this->prettyPrint($error, true);
+	}
+
+	public function handleError($number, $message, $file, $line)
+	{
+		error_log(sprintf('PHP %s:  %s in %s on line %d', $number, $message, $file, $line));
 	}
 
 	public function checkRoute($request)
@@ -1869,6 +1899,22 @@ class Organizr
 		}
 	}
 
+	public function formatPingHost($host)
+	{
+		$host = $this->qualifyURL($host, true);
+		if ($host['port'] !== '') {
+			$host['port'] = str_replace(':', '', $host['port']);
+		}
+		if ($host['host'] == '' && $host['path'] !== '') {
+			$host['host'] = $host['path'];
+			$host['path'] = '';
+			if (strpos($host['host'], '/') !== false) {
+				$host['host'] = explode('/', $host['host'])[0];
+			}
+		}
+		return $host;
+	}
+
 	public function ping($pings)
 	{
 		if ($this->qualifyRequest($this->config['pingAuth'], true)) {
@@ -1885,14 +1931,12 @@ class Organizr
 				case "array":
 					$results = [];
 					foreach ($pings as $k => $v) {
-						if (strpos($v, ':') !== false) {
-							$domain = explode(':', $v)[0];
-							$port = explode(':', $v)[1];
-							$ping->setHost($domain);
-							$ping->setPort($port);
+						$pingFormatted = $this->formatPingHost($v);
+						$ping->setHost($pingFormatted['host']);
+						if ($pingFormatted['port'] !== '') {
+							$ping->setPort($pingFormatted['port']);
 							$latency = $ping->ping('fsockopen');
 						} else {
-							$ping->setHost($v);
 							$latency = $ping->ping();
 						}
 						if ($latency || $latency === 0) {
@@ -1903,14 +1947,12 @@ class Organizr
 					}
 					break;
 				case "string":
-					if (strpos($pings, ':') !== false) {
-						$domain = explode(':', $pings)[0];
-						$port = explode(':', $pings)[1];
-						$ping->setHost($domain);
-						$ping->setPort($port);
+					$pingFormatted = $this->formatPingHost($pings);
+					$ping->setHost($pingFormatted['host']);
+					if ($pingFormatted['port'] !== '') {
+						$ping->setPort($pingFormatted['port']);
 						$latency = $ping->ping('fsockopen');
 					} else {
-						$ping->setHost($pings);
 						$latency = $ping->ping();
 					}
 					if ($latency || $latency === 0) {
