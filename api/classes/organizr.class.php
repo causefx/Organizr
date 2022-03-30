@@ -2220,6 +2220,8 @@ class Organizr
 				$this->settingsOption('input', 'authProxyWhitelist', ['label' => 'Auth Proxy Whitelist', 'placeholder' => 'i.e. 10.0.0.0/24 or 10.0.0.20', 'help' => 'IPv4 only at the moment - This must be set to work, will accept subnet or IP address']),
 				$this->settingsOption('input', 'authProxyHeaderName', ['label' => 'Auth Proxy Header Name', 'placeholder' => 'i.e. X-Forwarded-User', 'help' => 'Please choose a unique value for added security']),
 				$this->settingsOption('input', 'authProxyHeaderNameEmail', ['label' => 'Auth Proxy Header Name for Email', 'placeholder' => 'i.e. X-Forwarded-Email', 'help' => 'Please choose a unique value for added security']),
+				$this->settingsOption('switch', 'authProxyOverrideLogout', ['label' => 'Override Logout', 'help' => 'Enable option to set custom Logout URL for Auth Proxy']),
+				$this->settingsOption('input', 'authProxyLogoutURL', ['label' => 'Logout URL', 'help' => 'Logout URL to redirect user for Auth Proxy']),
 			],
 			'Ping' => [
 				$this->settingsOption('auth', 'pingAuth'),
@@ -3901,18 +3903,18 @@ class Organizr
 	public function organizrSpecialSettings()
 	{
 		// js activeInfo
-		return array(
-			'homepage' => array(
+		return [
+			'homepage' => [
 				'refresh' => $this->refreshList(),
 				'order' => $this->homepageOrderList(),
-				'search' => array(
+				'search' => [
 					'enabled' => $this->qualifyRequest($this->config['mediaSearchAuth']) && $this->config['mediaSearch'] == true && $this->config['plexToken'],
 					'type' => $this->config['mediaSearchType'],
-				),
+				],
 				'requests' => [
 					'service' => $this->config['defaultRequestService'],
 				],
-				'ombi' => array(
+				'ombi' => [
 					'enabled' => $this->qualifyRequest($this->config['homepageOmbiAuth']) && $this->qualifyRequest($this->config['homepageOmbiRequestAuth']) && $this->config['homepageOmbiEnabled'] == true && $this->config['ssoOmbi'] && isset($_COOKIE['Auth']),
 					'authView' => $this->qualifyRequest($this->config['homepageOmbiAuth']),
 					'authRequest' => $this->qualifyRequest($this->config['homepageOmbiRequestAuth']),
@@ -3924,8 +3926,8 @@ class Organizr
 					'ombiDefaultFilterApproved' => (bool)$this->config['ombiDefaultFilterApproved'],
 					'ombiDefaultFilterUnapproved' => (bool)$this->config['ombiDefaultFilterUnapproved'],
 					'ombiDefaultFilterDenied' => (bool)$this->config['ombiDefaultFilterDenied']
-				),
-				'overseerr' => array(
+				],
+				'overseerr' => [
 					'enabled' => $this->qualifyRequest($this->config['homepageOverseerrAuth']) && $this->qualifyRequest($this->config['homepageOverseerrRequestAuth']) && $this->config['homepageOverseerrEnabled'] == true && $this->config['ssoOverseerr'] && isset($_COOKIE['connect_sid']),
 					'authView' => $this->qualifyRequest($this->config['homepageOverseerrAuth']),
 					'authRequest' => $this->qualifyRequest($this->config['homepageOverseerrRequestAuth']),
@@ -3937,28 +3939,28 @@ class Organizr
 					'overseerrDefaultFilterApproved' => (bool)$this->config['overseerrDefaultFilterApproved'],
 					'overseerrDefaultFilterUnapproved' => (bool)$this->config['overseerrDefaultFilterUnapproved'],
 					'overseerrDefaultFilterDenied' => (bool)$this->config['overseerrDefaultFilterDenied']
-				),
-				'jackett' => array(
+				],
+				'jackett' => [
 					'homepageJackettBackholeDownload' => $this->config['homepageJackettBackholeDownload'] ? true : false
-				),
-				'options' => array(
+				],
+				'options' => [
 					'alternateHomepageHeaders' => $this->config['alternateHomepageHeaders'],
 					'healthChecksTags' => $this->config['healthChecksTags'],
-					'titles' => array(
+					'titles' => [
 						'tautulli' => $this->config['tautulliHeader']
-					)
-				),
-				'media' => array(
+					]
+				],
+				'media' => [
 					'jellyfin' => $this->config['homepageJellyfinInstead']
-				)
-			),
-			'sso' => array(
-				'misc' => array(
+				]
+			],
+			'sso' => [
+				'misc' => [
 					'oAuthLogin' => isset($_COOKIE['oAuth']),
 					'rememberMe' => $this->config['rememberMe'],
 					'rememberMeDays' => $this->config['rememberMeDays']
-				),
-				'plex' => array(
+				],
+				'plex' => [
 					'enabled' => (bool)$this->config['ssoPlex'],
 					'cookie' => isset($_COOKIE['mpt']),
 					'machineID' => strlen($this->config['plexID']) == 40,
@@ -3967,42 +3969,42 @@ class Organizr
 					'strict' => (bool)$this->config['plexStrictFriends'],
 					'oAuthEnabled' => (bool)$this->config['plexoAuth'],
 					'backend' => $this->config['authBackend'] == 'plex',
-				),
-				'tautulli' => array(
+				],
+				'tautulli' => [
 					'enabled' => (bool)$this->config['ssoTautulli'],
 					'cookie' => !empty($this->tautulliList()),
 					'url' => ($this->config['tautulliURL'] !== '') ? $this->config['tautulliURL'] : false,
-				),
-				'overseerr' => array(
+				],
+				'overseerr' => [
 					'enabled' => (bool)$this->config['ssoOverseerr'],
 					'cookie' => isset($_COOKIE['connect.sid']),
 					'url' => ($this->config['overseerrURL'] !== '') ? $this->config['overseerrURL'] : false,
 					'api' => $this->config['overseerrToken'] !== '',
-				),
-				'petio' => array(
+				],
+				'petio' => [
 					'enabled' => (bool)$this->config['ssoPetio'],
 					'cookie' => isset($_COOKIE['petio_jwt']),
 					'url' => ($this->config['petioURL'] !== '') ? $this->config['petioURL'] : false,
 					'api' => $this->config['petioToken'] !== '',
-				),
-				'ombi' => array(
+				],
+				'ombi' => [
 					'enabled' => (bool)$this->config['ssoOmbi'],
 					'cookie' => isset($_COOKIE['Auth']),
 					'url' => ($this->config['ombiURL'] !== '') ? $this->config['ombiURL'] : false,
 					'api' => $this->config['ombiToken'] !== '',
-				),
-				'jellyfin' => array(
+				],
+				'jellyfin' => [
 					'enabled' => (bool)$this->config['ssoJellyfin'],
 					'url' => ($this->config['jellyfinURL'] !== '') ? $this->config['jellyfinURL'] : false,
 					'ssoUrl' => ($this->config['jellyfinSSOURL'] !== '') ? $this->config['jellyfinSSOURL'] : false,
-				),
+				],
 				'komga' => [
 					'enabled' => (bool)$this->config['ssoKomga'],
 					'cookie' => isset($_COOKIE['komga_token']),
 					'url' => ($this->config['komgaURL'] !== '') ? $this->config['komgaURL'] : false,
 				]
-			),
-			'ping' => array(
+			],
+			'ping' => [
 				'onlineSound' => $this->config['pingOnlineSound'],
 				'offlineSound' => $this->config['pingOfflineSound'],
 				'statusSounds' => $this->config['statusSounds'],
@@ -4012,34 +4014,34 @@ class Organizr
 				'ms' => $this->config['pingMs'],
 				'adminRefresh' => $this->config['adminPingRefresh'],
 				'everyoneRefresh' => $this->config['otherPingRefresh'],
-			),
-			'notifications' => array(
+			],
+			'notifications' => [
 				'backbone' => $this->config['notificationBackbone'],
 				'position' => $this->config['notificationPosition']
-			),
-			'lockout' => array(
+			],
+			'lockout' => [
 				'enabled' => $this->config['lockoutSystem'],
 				'timer' => $this->config['lockoutTimeout'],
 				'minGroup' => $this->config['lockoutMinAuth'],
 				'maxGroup' => $this->config['lockoutMaxAuth']
-			),
-			'user' => array(
+			],
+			'user' => [
 				'agent' => isset($_SERVER ['HTTP_USER_AGENT']) ? $_SERVER ['HTTP_USER_AGENT'] : null,
 				'oAuthLogin' => isset($_COOKIE['oAuth']),
 				'local' => $this->isLocal(),
 				'ip' => $this->userIP()
-			),
-			'login' => array(
+			],
+			'login' => [
 				'rememberMe' => $this->config['rememberMe'],
 				'rememberMeDays' => $this->config['rememberMeDays'],
 				'wanDomain' => $this->config['wanDomain'],
 				'localAddress' => $this->config['localAddress'],
 				'enableLocalAddressForward' => $this->config['enableLocalAddressForward'],
-			),
-			'misc' => array(
+			],
+			'misc' => [
 				'installedPlugins' => $this->qualifyRequest(1) ? $this->config['installedPlugins'] : '',
 				'installedThemes' => $this->qualifyRequest(1) ? $this->config['installedThemes'] : '',
-				'return' => isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : false,
+				'return' => $_SERVER['HTTP_REFERER'] ?? false,
 				'authDebug' => $this->config['authDebug'],
 				'minimalLoginScreen' => $this->config['minimalLoginScreen'],
 				'unsortedTabs' => $this->config['unsortedTabs'],
@@ -4057,16 +4059,18 @@ class Organizr
 				'autoCollapseCategories' => $this->config['autoCollapseCategories'],
 				'autoExpandNavBar' => $this->config['autoExpandNavBar'],
 				'sideMenuCollapsed' => $this->config['allowCollapsableSideMenu'] && $this->config['sideMenuCollapsed'],
-				'collapseSideMenuOnClick' => $this->config['allowCollapsableSideMenu'] && $this->config['collapseSideMenuOnClick']
-			),
-			'menuLink' => array(
+				'collapseSideMenuOnClick' => $this->config['allowCollapsableSideMenu'] && $this->config['collapseSideMenuOnClick'],
+				'authProxyOverrideLogout' => $this->config['authProxyOverrideLogout'],
+				'authProxyLogoutURL' => $this->config['authProxyLogoutURL'],
+			],
+			'menuLink' => [
 				'githubMenuLink' => $this->config['githubMenuLink'],
 				'organizrSupportMenuLink' => $this->config['organizrSupportMenuLink'],
 				'organizrDocsMenuLink' => $this->config['organizrDocsMenuLink'],
 				'organizrSignoutMenuLink' => $this->config['organizrSignoutMenuLink'],
 				'organizrFeatureRequestLink' => $this->config['organizrFeatureRequestLink']
-			)
-		);
+			]
+		];
 	}
 
 	public function checkLog($path)

@@ -543,16 +543,13 @@ function formatIcon (icon) {
 function logout(){
 	message('',' Goodbye!',activeInfo.settings.notifications.position,'#FFF','success','10000');
 	organizrAPI2('GET','api/v2/logout').success(function(data) {
-        try {
-            var html = data.response;
-        }catch(e) {
-	        organizrCatchError(e,data);
+        local('set','message','Goodbye|Logout Successful|success');
+        history.replaceState(null, null, ' ');
+        if(activeInfo.settings.misc.authProxyOverrideLogout && activeInfo.settings.misc.authProxyLogoutURL !== ''){
+            location.href=activeInfo.settings.misc.authProxyLogoutURL;
+        }else{
+            location.reload();
         }
-
-            local('set','message','Goodbye|Logout Successful|success');
-            history.replaceState(null, null, ' ');
-			location.reload();
-
 	}).fail(function(xhr) {
 		OrganizrApiError(xhr, 'Logout Failed');
 	});
@@ -1143,7 +1140,7 @@ function buildFormItem(item){
 			break;
 		case 'switch':
 		case 'checkbox':
-			return smallLabel+'<input data-changed="false" type="checkbox" class="js-switch'+extraClass+'" data-size="small" data-color="#99d683" data-secondary-color="#f96262"'+name+value+tof(item.value,'c')+id+disabled+type+label+attr+' /><input data-changed="false" type="hidden"'+name+'value="false">';
+			return smallLabel+'<input data-changed="false" type="checkbox" class="js-switch'+extraClass+'" data-size="medium" data-color="#99d683" data-secondary-color="#f96262"'+name+value+tof(item.value,'c')+id+disabled+type+label+attr+' /><input data-changed="false" type="hidden"'+name+'value="false">';
 			break;
 		case 'button':
 			return smallLabel+'<button class="btn btn-sm btn-success btn-rounded waves-effect waves-light b-none'+extraClass+'" '+href+attr+' type="button"><span class="btn-label"><i class="'+icon+'"></i></span><span lang="en">'+text+'</span></button>';

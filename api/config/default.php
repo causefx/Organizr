@@ -472,6 +472,8 @@ return [
 	'authProxyHeaderName' => '',
 	'authProxyHeaderNameEmail' => '',
 	'authProxyWhitelist' => '',
+	'authProxyOverrideLogout' => false,
+	'authProxyLogoutURL' => '',
 	'ignoreTFALocal' => false,
 	'unifiURL' => '',
 	'unifiUsername' => '',
