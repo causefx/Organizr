@@ -1044,10 +1044,12 @@ class Organizr
 			foreach ($iteratorIterator as $info) {
 				if (stripos($info->getFilename(), '.css') !== false) {
 					$file = preg_replace('/\\.[^.\\s]{3,4}$/', '', basename($info->getFilename()));
-					$themes[] = [
-						'name' => ucwords(str_replace('_', ' ', $file)),
-						'value' => $file,
-					];
+					if (key_exists($file, $userThemesInformation)) {
+						$themes[] = [
+							'name' => ucwords(str_replace('_', ' ', $file)),
+							'value' => $file,
+						];
+					}
 				}
 			}
 		}
