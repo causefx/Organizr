@@ -770,7 +770,7 @@ class Organizr
 			'line' => $line
 		];
 		$this->handleError($number, $message, $file, $line);
-		$this->prettyPrint($error, true);
+		//$this->prettyPrint($error, true);
 	}
 
 	public function handleError($number, $message, $file, $line)
