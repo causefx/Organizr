@@ -3155,7 +3155,7 @@ function tabProcess(arrayItems) {
                         if(v.preload){
                             var newTab = $('#internal-'+v.id);
 	                        organizrConsole('Tab Function','Preloading new tab for: '+cleanClass(v.name));
-                            $('#menu-'+id+' a').children().addClass('tabLoaded');
+                            $('#menu-'+v.id+' a').children().addClass('tabLoaded');
                             newTab.addClass("loaded");
                             loadInternal(v.id);
                         }
@@ -3172,7 +3172,7 @@ function tabProcess(arrayItems) {
 	                        organizrConsole('Tab Function','Preloading new tab for: '+cleanClass(v.name));
                             $('#menu-'+v.id+' a').children().addClass('tabLoaded');
                             newTab.addClass("loaded");
-                            $(buildFrame(v.id).appendTo(newTab));
+                            $(buildFrame(v.id)).appendTo(newTab);
                         }
 						break;
 					case 2:
