@@ -3034,7 +3034,9 @@ function menuExtras(active){
 	let adminMenu = '<li class="devider"></li>';
 	let extraOrganizrLinks = menuExtraTabs();
     activeInfo.tabs = [].concat(activeInfo.tabs, menuExtraTabs());
+
 	$.each(extraOrganizrLinks, function(i,v) {
+        tabInformation[v.id] = {"id":v.id,"name":cleanClass(v.name),"active":false,"loaded":false,"increments":0,"tabInfo":v};
 		if(v.type == 1){
 			let frame = buildFrameContainer(v.id);
 			$(frame).appendTo($('.iFrame-listing'));
@@ -5117,6 +5119,7 @@ function randomCSV(values){
 }
 function loadCustomJava(appearance){
     if(appearance.customThemeJava !== ''){
+        console.log(appearance.customThemeJava)
         $('#custom-theme-javascript').html(appearance.customThemeJava);
     }
     if(appearance.customJava !== ''){
