@@ -495,30 +495,44 @@ trait OrganizrFunctions
 				# code...
 				break;
 		}
+		if (strpos($key, '-') !== false) {
+			$noImage = 'no-' . explode('-', $key)[1] . '.png';
+		} else {
+			$noImage = 'no-np.png';
+		}
+		$noImage = $this->root . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . 'images' . DIRECTORY_SEPARATOR . 'homepage' . DIRECTORY_SEPARATOR . $noImage;
 		if (isset($image_url) && isset($image_height) && isset($image_width) && isset($image_src)) {
 			$cachefile = $cacheDirectory . $key . '.jpg';
 			$cachetime = 604800;
 			// Serve from the cache if it is younger than $cachetime
-			if (file_exists($cachefile) && time() - $cachetime < filemtime($cachefile) && $refresh == false) {
-				header("Content-type: image/jpeg");
-				@readfile($cachefile);
+			if (file_exists($cachefile) && (time() - $cachetime < filemtime($cachefile)) && $refresh == false) {
+				header('Content-type: image/jpeg');
+				if (filesize($cachefile) > 0) {
+					@readfile($cachefile);
+				} else {
+					@readfile($noImage);
+				}
 				exit;
 			}
-			ob_start(); // Start the output buffer
-			header('Content-type: image/jpeg');
 			$options = array('verify' => false);
 			$response = Requests::get($image_src, array(), $options);
 			if ($response->success) {
+				ob_start(); // Start the output buffer
+				header('Content-type: image/jpeg');
 				echo $response->body;
+				// Cache the output to a file
+				$fp = fopen($cachefile, 'wb');
+				fwrite($fp, ob_get_contents());
+				fclose($fp);
+				ob_end_flush(); // Send the output to the browser
+				die();
+			} else {
+				header('Content-type: image/jpeg');
+				@readfile($noImage);
 			}
-			// Cache the output to a file
-			$fp = fopen($cachefile, 'wb');
-			fwrite($fp, ob_get_contents());
-			fclose($fp);
-			ob_end_flush(); // Send the output to the browser
-			die();
 		} else {
-			die($this->showHTML('Invalid Request', 'No image returned'));
+			header('Content-type: image/jpeg');
+			@readfile($noImage);
 		}
 	}
 
