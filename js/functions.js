@@ -7959,7 +7959,7 @@ function homepageRequests(service, timeout){
 	delete timeout;
 }
 function testAPIConnection(service, data = ''){
-    messageSingle('',' Testing now...',activeInfo.settings.notifications.position,'#FFF','info','10000');
+    messageSingle('',' Testing now...',activeInfo.settings.notifications.position,'#FFF','info','60000');
     organizrAPI2('POST','api/v2/test/' + service,data).success(function(data) {
         try {
             let response = data.response;
