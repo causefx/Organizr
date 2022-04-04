@@ -3,7 +3,6 @@
 namespace Kryptonit3\Sonarr;
 
 use GuzzleHttp\Client;
-use Composer\Semver\Comparator;
 
 class Sonarr
 {
@@ -595,7 +594,7 @@ class Sonarr
             'data' => []
         ];
 
-        return $this->preProcessRequest($response);
+        return $this->processRequest($response);
     }
 
     /**
@@ -660,10 +659,6 @@ class Sonarr
     protected function processRequest(array $request)
     {
 	    try {
-		    $versionCheck = $this->getSystemStatus();
-		    $versionCheck = json_decode($versionCheck, true);
-		    $versionCheck = (is_array($versionCheck) && array_key_exists('version', $versionCheck)) ? $versionCheck['version'] : '1.0';
-		    $compare = new Comparator;
 		    switch ($this->type){
 			    case 'sonarr':
 				    $versionCheck = 'v3/';
@@ -706,28 +701,6 @@ class Sonarr
         }
 
         return $response->getBody()->getContents();
-    }
-    protected function preProcessRequest(array $request)
-    {
-	    try {
-		    $response = $this->_request(
-			    [
-				    'uri' => $request['uri'],
-				    'type' => $request['type'],
-				    'data' => $request['data']
-			    ]
-		    );
-	    } catch ( \Exception $e ) {
-		    return json_encode(array(
-			    'error' => array(
-				    'msg' => $e->getMessage(),
-				    'code' => $e->getCode(),
-			    ),
-		    ));
-		
-		    exit();
-	    }
-	    return $response->getBody()->getContents();
     }
 
     /**
