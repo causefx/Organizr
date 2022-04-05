@@ -980,6 +980,11 @@ function closeCurrentTab(event){
 			split = true;
 		}
 	}
+    if($('.plugin-listing').hasClass('show')){
+        hideFrames(split)
+        loadNextTab();
+        return false;
+    }
     let id = $('body').attr('data-active-tab-id');
     let tabInfo = findTab(id);
     if(!tabInfo){
