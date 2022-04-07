@@ -3444,13 +3444,13 @@ class Organizr
 						$this->logger->debug('Starting Plex oAuth verification');
 						$tokenInfo = $this->checkPlexToken($oAuth);
 						if ($tokenInfo) {
-							$authSuccess = array(
+							$authSuccess = [
 								'username' => $tokenInfo['user']['username'],
 								'email' => $tokenInfo['user']['email'],
 								'image' => $tokenInfo['user']['thumb'],
 								'token' => $tokenInfo['user']['authToken'],
 								'oauth' => 'plex'
-							);
+							];
 							$this->logger->debug('User\'s Plex Token has been verified');
 							$this->coookie('set', 'oAuth', 'true', $this->config['rememberMeDays']);
 							$authSuccess = ((!empty($this->config['plexAdmin']) && strtolower($this->config['plexAdmin']) == strtolower($tokenInfo['user']['username'])) || (!empty($this->config['plexAdmin']) && strtolower($this->config['plexAdmin']) == strtolower($tokenInfo['user']['email'])) || $this->checkPlexUser($tokenInfo['user']['username'])) ? $authSuccess : false;
@@ -3534,7 +3534,8 @@ class Organizr
 				$createToken = $this->createToken($result['username'], $result['email'], $days);
 				if ($createToken) {
 					$this->logger->info('User has logged in');
-					$this->ssoCheck($result, $password, $token); //need to work on this
+					$ssoUserObject = ($token !== '') ? $token : $authSuccess;
+					$this->ssoCheck($ssoUserObject, $password, $token); //need to work on this
 					return ($output) ? array('name' => $this->cookieName, 'token' => (string)$createToken) : true;
 				} else {
 					$this->setAPIResponse('error', 'Token creation error', 500);
