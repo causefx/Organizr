@@ -108,7 +108,7 @@ trait TraktHomepageItem
 			}
 		} catch (Requests_Exception $e) {
 			$this->writeLog('error', 'Trakt Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
-			$this->setAPIResponse('error', $e->getMessage(), 500);
+			$this->setResponse(500, $e->getMessage());
 			$errors = true;
 		}
 		$url = $this->qualifyURL('https://api.trakt.tv/calendars/my/movies/' . $startDate . '/' . $totalDays . '?extended=full');
@@ -123,7 +123,7 @@ trait TraktHomepageItem
 			}
 		} catch (Requests_Exception $e) {
 			$this->writeLog('error', 'Trakt Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
-			$this->setAPIResponse('error', $e->getMessage(), 500);
+			$this->setResponse(500, $e->getMessage());
 			$errors = true;
 		}
 		if ($errors) {

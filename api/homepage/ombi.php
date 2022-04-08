@@ -81,7 +81,7 @@ trait OmbiHomepageItem
 			}
 		} catch (Requests_Exception $e) {
 			$this->writeLog('error', 'OMBI Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
-			$this->setAPIResponse('error', $e->getMessage(), 500);
+			$this->setResponse(500, $e->getMessage());
 			return false;
 		}
 	}
@@ -223,7 +223,7 @@ trait OmbiHomepageItem
 			}
 		} catch (Requests_Exception $e) {
 			$this->writeLog('error', 'OMBI Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
-			$this->setAPIResponse('error', $e->getMessage(), 500);
+			$this->setResponse(500, $e->getMessage());
 			return false;
 		};
 		$api['content'] = isset($requests) ? array_slice($requests, $offset, $limit) : false;
@@ -349,7 +349,7 @@ trait OmbiHomepageItem
 			}
 		} catch (Requests_Exception $e) {
 			$this->writeLog('error', 'OMBI Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
-			$this->setAPIResponse('error', $e->getMessage(), 500);
+			$this->setResponse(500, $e->getMessage());
 			return false;
 		}
 	}
@@ -427,7 +427,7 @@ trait OmbiHomepageItem
 			}
 		} catch (Requests_Exception $e) {
 			$this->writeLog('error', 'OMBI Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
-			$this->setAPIResponse('error', $e->getMessage(), 500);
+			$this->setResponse(500, $e->getMessage());
 			return false;
 		};
 	}

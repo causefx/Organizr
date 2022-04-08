@@ -151,14 +151,14 @@ trait OrganizrFunctions
 				Requests::Post($url, $headers, json_encode($data), array());
 			} catch (Requests_Exception $e) {
 				$this->writeLog('error', 'Emby Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
-				$this->setAPIResponse('error', $e->getMessage(), 500);
+				$this->setResponse(500, $e->getMessage());
 				return false;
 			}
 			$this->setAPIResponse('success', 'User has joined Emby', 200);
 			return true;
 		} catch (Requests_Exception $e) {
 			$this->writeLog('error', 'Emby create Function - Error: ' . $e->getMessage(), 'SYSTEM');
-			$this->setAPIResponse('error', $e->getMessage(), 500);
+			$this->setResponse(500, $e->getMessage());
 			return false;
 		}
 	}

@@ -36,7 +36,7 @@ trait PiHoleHomepageItem
 		];
 		return array_merge($homepageInformation, $homepageSettings);
 	}
-	
+
 	public function testConnectionPihole()
 	{
 		if (empty($this->config['piholeURL'])) {
@@ -79,7 +79,7 @@ trait PiHoleHomepageItem
 			return true;
 		}
 	}
-	
+
 	public function piholeHomepagePermissions($key = null)
 	{
 		$permissions = [
@@ -97,7 +97,7 @@ trait PiHoleHomepageItem
 		];
 		return $this->homepageCheckKeyPermissions($key, $permissions);
 	}
-	
+
 	public function homepageOrderPihole()
 	{
 		if ($this->homepageItemPermissions($this->piholeHomepagePermissions('main'))) {
@@ -113,7 +113,7 @@ trait PiHoleHomepageItem
 				';
 		}
 	}
-	
+
 	public function getPiholeHomepageStats()
 	{
 		if (!$this->homepageItemPermissions($this->piholeHomepagePermissions('main'), true)) {
@@ -133,7 +133,7 @@ trait PiHoleHomepageItem
 					}
 				}
 			} catch (Requests_Exception $e) {
-				$this->setAPIResponse('error', $e->getMessage(), 500);
+				$this->setResponse(500, $e->getMessage());
 				$this->writeLog('error', 'Pi-hole Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
 				return false;
 			};

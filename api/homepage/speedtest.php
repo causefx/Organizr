@@ -35,7 +35,7 @@ trait SpeedTestHomepageItem
 		];
 		return array_merge($homepageInformation, $homepageSettings);
 	}
-	
+
 	public function speedTestHomepagePermissions($key = null)
 	{
 		$permissions = [
@@ -53,7 +53,7 @@ trait SpeedTestHomepageItem
 		];
 		return $this->homepageCheckKeyPermissions($key, $permissions);
 	}
-	
+
 	public function homepageOrderSpeedtest()
 	{
 		if ($this->homepageItemPermissions($this->speedTestHomepagePermissions('main'))) {
@@ -69,7 +69,7 @@ trait SpeedTestHomepageItem
 				';
 		}
 	}
-	
+
 	public function getSpeedtestHomepageData()
 	{
 		if (!$this->homepageItemPermissions($this->speedTestHomepagePermissions('main'), true)) {
@@ -111,7 +111,7 @@ trait SpeedTestHomepageItem
 			}
 		} catch (Requests_Exception $e) {
 			$this->writeLog('error', 'Speedtest Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
-			$this->setAPIResponse('error', $e->getMessage(), 500);
+			$this->setResponse(500, $e->getMessage());
 			return false;
 		};
 		$api = isset($api) ? $api : false;

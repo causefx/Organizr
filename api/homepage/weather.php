@@ -40,7 +40,7 @@ trait WeatherHomepageItem
 		];
 		return array_merge($homepageInformation, $homepageSettings);
 	}
-	
+
 	public function weatherHomepagePermissions($key = null)
 	{
 		$permissions = [
@@ -59,7 +59,7 @@ trait WeatherHomepageItem
 		];
 		return $this->homepageCheckKeyPermissions($key, $permissions);
 	}
-	
+
 	public function homepageOrderWeatherAndAir()
 	{
 		if ($this->homepageItemPermissions($this->weatherHomepagePermissions('main'))) {
@@ -75,7 +75,7 @@ trait WeatherHomepageItem
 				';
 		}
 	}
-	
+
 	public function searchCityForCoordinates($query)
 	{
 		try {
@@ -91,11 +91,11 @@ trait WeatherHomepageItem
 				return json_decode($response->body);
 			}
 		} catch (Requests_Exception $e) {
-			$this->setAPIResponse('error', $e->getMessage(), 500);
+			$this->setResponse(500, $e->getMessage());
 			return false;
 		};
 	}
-	
+
 	public function getWeatherAndAirData()
 	{
 		if (!$this->homepageItemPermissions($this->weatherHomepagePermissions('main'), true)) {
@@ -138,7 +138,7 @@ trait WeatherHomepageItem
 			}
 		} catch (Requests_Exception $e) {
 			$this->writeLog('error', 'Weather And Air Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
-			$this->setAPIResponse('error', $e->getMessage(), 500);
+			$this->setResponse(500, $e->getMessage());
 			return false;
 		};
 		$api['content'] = isset($api['content']) ? $api['content'] : false;

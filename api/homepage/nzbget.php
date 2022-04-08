@@ -47,7 +47,7 @@ trait NZBGetHomepageItem
 		];
 		return array_merge($homepageInformation, $homepageSettings);
 	}
-	
+
 	public function testConnectionNZBGet()
 	{
 		if (empty($this->config['nzbgetURL'])) {
@@ -72,11 +72,11 @@ trait NZBGetHomepageItem
 			}
 		} catch (Requests_Exception $e) {
 			$this->writeLog('error', 'NZBGet Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
-			$this->setAPIResponse('error', $e->getMessage(), 500);
+			$this->setResponse(500, $e->getMessage());
 			return false;
 		}
 	}
-	
+
 	public function nzbgetHomepagePermissions($key = null)
 	{
 		$permissions = [
@@ -94,7 +94,7 @@ trait NZBGetHomepageItem
 		];
 		return $this->homepageCheckKeyPermissions($key, $permissions);
 	}
-	
+
 	public function homepageOrdernzbget()
 	{
 		if ($this->homepageItemPermissions($this->nzbgetHomepagePermissions('main'))) {
@@ -113,7 +113,7 @@ trait NZBGetHomepageItem
 				';
 		}
 	}
-	
+
 	public function getNzbgetHomepageQueue()
 	{
 		if (!$this->homepageItemPermissions($this->nzbgetHomepagePermissions('main'), true)) {
@@ -141,7 +141,7 @@ trait NZBGetHomepageItem
 			return $api;
 		} catch (Requests_Exception $e) {
 			$this->writeLog('error', 'NZBGet Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
-			$this->setAPIResponse('error', $e->getMessage(), 500);
+			$this->setResponse(500, $e->getMessage());
 			return false;
 		}
 	}

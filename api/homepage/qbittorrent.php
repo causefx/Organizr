@@ -51,7 +51,7 @@ trait QBitTorrentHomepageItem
 		];
 		return array_merge($homepageInformation, $homepageSettings);
 	}
-	
+
 	public function testConnectionQBittorrent()
 	{
 		if (empty($this->config['qBittorrentURL'])) {
@@ -97,11 +97,11 @@ trait QBitTorrentHomepageItem
 			}
 		} catch (Requests_Exception $e) {
 			$this->writeLog('error', 'qBittorrent Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
-			$this->setAPIResponse('error', $e->getMessage(), 500);
+			$this->setResponse(500, $e->getMessage());
 			return false;
 		}
 	}
-	
+
 	public function qBittorrentHomepagePermissions($key = null)
 	{
 		$permissions = [
@@ -119,7 +119,7 @@ trait QBitTorrentHomepageItem
 		];
 		return $this->homepageCheckKeyPermissions($key, $permissions);
 	}
-	
+
 	public function homepageOrderqBittorrent()
 	{
 		if ($this->homepageItemPermissions($this->qBittorrentHomepagePermissions('main'))) {
@@ -138,7 +138,7 @@ trait QBitTorrentHomepageItem
 				';
 		}
 	}
-	
+
 	public function getQBittorrentHomepageQueue()
 	{
 		if (!$this->homepageItemPermissions($this->qBittorrentHomepagePermissions('main'), true)) {
@@ -195,7 +195,7 @@ trait QBitTorrentHomepageItem
 			}
 		} catch (Requests_Exception $e) {
 			$this->writeLog('error', 'qBittorrent Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
-			$this->setAPIResponse('error', $e->getMessage(), 500);
+			$this->setResponse(500, $e->getMessage());
 			return false;
 		}
 	}

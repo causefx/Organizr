@@ -60,7 +60,7 @@ trait JDownloaderHomepageItem
 		];
 		return array_merge($homepageInformation, $homepageSettings);
 	}
-	
+
 	public function testConnectionJDownloader()
 	{
 		if (empty($this->config['jdownloaderURL'])) {
@@ -80,11 +80,11 @@ trait JDownloaderHomepageItem
 			}
 		} catch (Requests_Exception $e) {
 			$this->writeLog('error', 'JDownloader Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
-			$this->setAPIResponse('error', $e->getMessage(), 500);
+			$this->setResponse(500, $e->getMessage());
 			return false;
 		};
 	}
-	
+
 	public function jDownloaderHomepagePermissions($key = null)
 	{
 		$permissions = [
@@ -102,7 +102,7 @@ trait JDownloaderHomepageItem
 		];
 		return $this->homepageCheckKeyPermissions($key, $permissions);
 	}
-	
+
 	public function homepageOrderjdownloader()
 	{
 		if ($this->homepageItemPermissions($this->jDownloaderHomepagePermissions('main'))) {
@@ -121,7 +121,7 @@ trait JDownloaderHomepageItem
 				';
 		}
 	}
-	
+
 	public function getJdownloaderHomepageQueue()
 	{
 		if (!$this->homepageItemPermissions($this->jDownloaderHomepagePermissions('main'), true)) {
@@ -158,7 +158,7 @@ trait JDownloaderHomepageItem
 			}
 		} catch (Requests_Exception $e) {
 			$this->writeLog('error', 'JDownloader Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
-			$this->setAPIResponse('error', $e->getMessage(), 500);
+			$this->setResponse(500, $e->getMessage());
 			return false;
 		};
 		$api['content'] = isset($api['content']) ? $api['content'] : false;

@@ -43,7 +43,7 @@ trait uTorrentHomepageItem
 		];
 		return array_merge($homepageInformation, $homepageSettings);
 	}
-	
+
 	public function uTorrentHomepagePermissions($key = null)
 	{
 		$permissions = [
@@ -67,7 +67,7 @@ trait uTorrentHomepageItem
 			return [];
 		}
 	}
-	
+
 	public function testConnectionuTorrent()
 	{
 		if (empty($this->config['uTorrentURL'])) {
@@ -75,16 +75,15 @@ trait uTorrentHomepageItem
 			return false;
 		}
 		try {
-			
+
 			$response = $this->getuTorrentToken();
-			
 		} catch (Requests_Exception $e) {
 			$this->writeLog('error', 'uTorrent Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
-			$this->setAPIResponse('error', $e->getMessage(), 500);
+			$this->setResponse(500, $e->getMessage());
 			return false;
 		}
 	}
-	
+
 	public function homepageOrderuTorrent()
 	{
 		if ($this->homepageItemPermissions($this->uTorrentHomepagePermissions('main'))) {
@@ -103,7 +102,7 @@ trait uTorrentHomepageItem
                                 ';
 		}
 	}
-	
+
 	public function getuTorrentToken()
 	{
 		try {
@@ -120,7 +119,7 @@ trait uTorrentHomepageItem
 			$dom = new PHPHtmlParser\Dom;
 			$dom->loadStr($response->body);
 			$id = $dom->getElementById('token')->text;
-			$uTorrentConfig = array (
+			$uTorrentConfig = array(
 				"uTorrentToken" => $id,
 				"uTorrentCookie" => "",
 			);
@@ -134,15 +133,13 @@ trait uTorrentHomepageItem
 			if ($uTorrentConfig['uTorrentToken'] || $uTorrentConfig['uTorrentCookie']) {
 				$this->updateConfigItems($uTorrentConfig);
 			}
-			
 		} catch (Requests_Exception $e) {
 			$this->writeLog('error', 'uTorrent Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
-			$this->setAPIResponse('error', $e->getMessage(), 500);
+			$this->setResponse(500, $e->getMessage());
 			return false;
 		}
-		
 	}
-	
+
 	public function getuTorrentHomepageQueue()
 	{
 		if (!$this->homepageItemPermissions($this->uTorrentHomepagePermissions('main'), true)) {
@@ -227,10 +224,10 @@ trait uTorrentHomepageItem
 			}
 		} catch (Requests_Exception $e) {
 			$this->writeLog('error', 'uTorrent Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
-			$this->setAPIResponse('error', $e->getMessage(), 500);
+			$this->setResponse(500, $e->getMessage());
 			return false;
 		}
 	}
-	
-	
+
+
 }

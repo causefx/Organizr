@@ -35,7 +35,7 @@ class PhpMailer extends Organizr
 		}
 		return $emails;
 	}
-	
+
 	public function _phpMailerPluginGetOrgUsers()
 	{
 		$return = null;
@@ -47,7 +47,7 @@ class PhpMailer extends Organizr
 			return ($return) ?? false;
 		}
 	}
-	
+
 	public function _phpMailerPluginGetTemplates()
 	{
 		foreach (glob(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . 'php-mailer' . DIRECTORY_SEPARATOR . 'misc' . DIRECTORY_SEPARATOR . 'emailTemplates' . DIRECTORY_SEPARATOR . "*.php") as $filename) {
@@ -58,7 +58,7 @@ class PhpMailer extends Organizr
 		}
 		return $templates;
 	}
-	
+
 	public function _phpMailerPluginEmailTemplate($emailTemplate)
 	{
 		$variables = [
@@ -73,7 +73,7 @@ class PhpMailer extends Organizr
 		$emailTemplate['subject'] = strtr($emailTemplate['subject'], $variables);
 		return $emailTemplate;
 	}
-	
+
 	public function _phpMailerPluginBuildEmail($email)
 	{
 		/** @noinspection PhpUnusedLocalVariableInspection */
@@ -94,7 +94,7 @@ class PhpMailer extends Organizr
 		include('misc/emailTemplates/' . $this->config['PHPMAILER-template'] . '.php');
 		return $email;
 	}
-	
+
 	public function _phpMailerPluginAdminSendEmail($array)
 	{
 		if ($this->config['PHPMAILER-enabled']) {
@@ -127,13 +127,13 @@ class PhpMailer extends Organizr
 		}
 		return false;
 	}
-	
+
 	public function _phpMailerPluginGetDebug($str, $level)
 	{
 		$this->config['phpmOriginalDebug'] = $this->config['phpmOriginalDebug'] . $str;
 		return $this->config['phpmOriginalDebug'];
 	}
-	
+
 	public function _phpMailerPluginSendTestEmail()
 	{
 		$emailTemplate = array(
@@ -183,12 +183,12 @@ class PhpMailer extends Organizr
 			return true;
 		} catch (PHPMailer\PHPMailer\Exception $e) {
 			$this->writeLog('error', 'Mail Function -  E-Mail Test Failed[' . $mail->ErrorInfo . ']', $this->user['username']);
-			$this->setAPIResponse('error', $e->getMessage(), 500);
+			$this->setResponse(500, $e->getMessage());
 			return false;
 		}
 		return false;
 	}
-	
+
 	public function _phpMailerPluginSendEmail($emailInfo)
 	{
 		$to = isset($emailInfo['to']) ? $emailInfo['to'] : null;
@@ -246,7 +246,7 @@ class PhpMailer extends Organizr
 			return $e->errorMessage();
 		}
 	}
-	
+
 	/* GET PHPMAILER SETTINGS */
 	public function _phpMailerPluginGetSettings()
 	{

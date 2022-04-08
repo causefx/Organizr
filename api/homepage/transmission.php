@@ -43,7 +43,7 @@ trait TransmissionHomepageItem
 		];
 		return array_merge($homepageInformation, $homepageSettings);
 	}
-	
+
 	public function testConnectionTransmission()
 	{
 		if (empty($this->config['transmissionURL'])) {
@@ -85,11 +85,11 @@ trait TransmissionHomepageItem
 			}
 		} catch (Requests_Exception $e) {
 			$this->writeLog('error', 'Transmission Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
-			$this->setAPIResponse('error', $e->getMessage(), 500);
+			$this->setResponse(500, $e->getMessage());
 			return false;
 		}
 	}
-	
+
 	public function transmissionHomepagePermissions($key = null)
 	{
 		$permissions = [
@@ -107,7 +107,7 @@ trait TransmissionHomepageItem
 		];
 		return $this->homepageCheckKeyPermissions($key, $permissions);
 	}
-	
+
 	public function homepageOrdertransmission()
 	{
 		if ($this->homepageItemPermissions($this->transmissionHomepagePermissions('main'))) {
@@ -126,7 +126,7 @@ trait TransmissionHomepageItem
 				';
 		}
 	}
-	
+
 	public function getTransmissionHomepageQueue()
 	{
 		if (!$this->homepageItemPermissions($this->transmissionHomepagePermissions('main'), true)) {
@@ -185,7 +185,7 @@ trait TransmissionHomepageItem
 			}
 		} catch (Requests_Exception $e) {
 			$this->writeLog('error', 'Transmission Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
-			$this->setAPIResponse('error', $e->getMessage(), 500);
+			$this->setResponse(500, $e->getMessage());
 			return false;
 		};
 		$api['content'] = $api['content'] ?? false;
