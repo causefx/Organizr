@@ -159,14 +159,36 @@ trait OverseerrHomepageItem
 		$url = $this->qualifyURL($this->config['overseerrURL']);
 		try {
 			$options = $this->requestOptions($url, $this->config['overseerrRefresh'], $this->config['overseerrDisableCertCheck'], $this->config['overseerrUseCustomCertificate']);
-			$request = Requests::get($url . "/api/v1/request?take=" . $limit, $headers, $options);
+			$request = Requests::get($url . "/api/v1/request?take=" . $limit . '&skip=' . $offset, $headers, $options);
 			if ($request->success) {
+				$requestAll = [];
 				$requestsData = json_decode($request->body, true);
 				foreach ($requestsData['results'] as $key => $value) {
 					$requester = ($value['requestedBy']['username'] !== '') ? $value['requestedBy']['username'] : $value['requestedBy']['plexUsername'];
 					$requesterEmail = $value['requestedBy']['email'];
 					$proceed = (($this->config['overseerrLimitUser']) && strtolower($this->user['username']) == strtolower($requester)) || (strtolower($requester) == strtolower($this->config['overseerrFallbackUser'])) || (!$this->config['overseerrLimitUser']) || $this->qualifyRequest(1);
 					if ($proceed) {
+						$requestAll[$value['media']['tmdbId']] = [
+							'url' => $url . '/api/v1/' . $value['type'] . '/' . $value['media']['tmdbId'],
+							'headers' => $headers,
+							'type' => Requests::GET,
+						];
+						$api['count'][$value['type']]++;
+						$requests[$value['media']['tmdbId']] = [
+							'id' => $value['media']['tmdbId'],
+							'approved' => $value['status'] == 2,
+							'available' => $value['media']['status'] == 5,
+							'denied' => $value['status'] == 3,
+							'deniedReason' => 'n/a',
+							'user' => $requester,
+							'userAlias' => $value['requestedBy']['displayName'],
+							'request_id' => $value['id'],
+							'request_date' => $value['createdAt'],
+							'type' => $value['type'],
+							'icon' => 'mdi mdi-' . ($value['type'] == 'movie') ? 'filmstrip' : 'television',
+							'color' => ($value['type'] == 'movie') ? 'palette-Deep-Purple-900 bg white' : 'grayish-blue-bg',
+						];
+						/* OLD WAY
 						$requestItem = Requests::get($url . '/api/v1/' . $value['type'] . '/' . $value['media']['tmdbId'], $headers, $options);
 						$requestsItemData = json_decode($requestItem->body, true);
 						if ($requestItem->success) {
@@ -190,7 +212,20 @@ trait OverseerrHomepageItem
 								'icon' => 'mdi mdi-' . ($value['type'] == 'movie') ? 'filmstrip' : 'television',
 								'color' => ($value['type'] == 'movie') ? 'palette-Deep-Purple-900 bg white' : 'grayish-blue-bg',
 							);
-						}
+						}*/
+					}
+				}
+				$requestItems = Requests::request_multiple($requestAll, $options);
+				foreach ($requestItems as $key => $requestedItem) {
+					if ($requestedItem->success) {
+						$requestsItemData = json_decode($requestedItem->body, true);
+						$requests[$key]['title'] = $requestsItemData['title'] ?? $requestsItemData['name'];
+						$requests[$key]['release_date'] = $requestsItemData['releaseDate'] ?? $requestsItemData['firstAirDate'];
+						$requests[$key]['background'] = (isset($requestsItemData['backdropPath']) && $requestsItemData['backdropPath'] !== '') ? 'https://image.tmdb.org/t/p/w1280/' . $requestsItemData['backdropPath'] : '';
+						$requests[$key]['poster'] = (isset($requestsItemData['posterPath']) && $requestsItemData['posterPath'] !== '') ? 'https://image.tmdb.org/t/p/w300/' . $requestsItemData['posterPath'] : 'plugins/images/homepage/no-list.png';
+						$requests[$key]['overview'] = $requestsItemData['overview'];
+					} else {
+						unset($requests[$key]);
 					}
 				}
 				//sort here
@@ -206,7 +241,7 @@ trait OverseerrHomepageItem
 			$this->setResponse(500, $e->getMessage());
 			return false;
 		}
-		$api['content'] = isset($requests) ? array_slice($requests, $offset, $limit) : false;
+		$api['content'] = $requests ?? false;
 		$this->setResponse(200, null, $api);
 		return $api;
 	}

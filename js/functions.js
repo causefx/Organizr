@@ -285,7 +285,13 @@ function isNumberKey(evt) {
         return false;
     return true;
 }
-function setTabInfo(tab,action,value){
+function setTabInfo(id,action,value){
+    let tabInfo = findTab(id);
+    if(!tabInfo){
+        organizrConsole('Set Tab Info', 'No Tab Info Found...', 'error');
+        return false;
+    }
+    let tab = cleanClass(tabInfo.name);
     if(tab == 'Organizr-Support' || tab == 'Organizr-Docs' || tab == 'Feature-Request'){
         return false;
     }
@@ -299,7 +305,7 @@ function setTabInfo(tab,action,value){
             default:
             //nada
         }
-        tabInformation[tab][action] = value;
+        tabInformation[id][action] = value;
     }else{
         return false;
     }
@@ -308,21 +314,21 @@ function tabTimerAction(){
     if(tabActionsList.close.length > 0){
         $.each(tabActionsList.close, function(i,v) {
             var tab = v.tab;
-            var minutes = (tabInformation[tab]['tabInfo']['timeout_ms'] / 1000) /60;
+            var minutes = (tabInformation[v.id]['tabInfo']['timeout_ms'] / 1000) /60;
             var process = false;
-            if(tabInformation[tab]['loaded']){
-                if(tabInformation[tab]['active'] && idleTime >= 1){
+            if(tabInformation[v.id]['loaded']){
+                if(tabInformation[v.id]['active'] && idleTime >= 1){
                     process = true;
                 }
-                if(tabInformation[tab]['active'] === false){
+                if(tabInformation[v.id]['active'] === false){
                     process = true;
                 }
                 if(process){
-                    tabInformation[tab]['increments'] = tabInformation[tab]['increments'] + 1;
-                    if(tabInformation[tab]['increments'] >= minutes){
-                        tabInformation[tab]['increments'] = 0;
+                    tabInformation[v.id]['increments'] = tabInformation[v.id]['increments'] + 1;
+                    if(tabInformation[v.id]['increments'] >= minutes){
+                        tabInformation[v.id]['increments'] = 0;
 	                    organizrConsole('Tab Function','Auto Closing tab: '+tab);
-                        closeTab(tab);
+                        closeTab(v.id);
                     }
                 }
 
@@ -332,14 +338,14 @@ function tabTimerAction(){
     if(tabActionsList.refresh.length > 0){
         $.each(tabActionsList.refresh, function(i,v) {
             var tab = v.tab;
-            var minutes = (tabInformation[tab]['tabInfo']['timeout_ms'] / 1000) /60;
+            var minutes = (tabInformation[v.id]['tabInfo']['timeout_ms'] / 1000) /60;
             var process = false;
-            if(tabInformation[tab]['loaded']){
-                tabInformation[tab]['increments'] = tabInformation[tab]['increments'] + 1;
-                if(tabInformation[tab]['increments'] >= minutes){
-                    tabInformation[tab]['increments'] = 0;
+            if(tabInformation[v.id]['loaded']){
+                tabInformation[v.id]['increments'] = tabInformation[v.id]['increments'] + 1;
+                if(tabInformation[v.id]['increments'] >= minutes){
+                    tabInformation[v.id]['increments'] = 0;
 	                organizrConsole('Tab Function','Auto Reloading tab: '+tab);
-                    reloadTab(tab, tabInformation[tab]['tabInfo']['type']);
+                    reloadTab(v.id);
                 }
             }
         });
@@ -410,40 +416,53 @@ function ajaxloader(element=null, action='out'){
 			$('.ajaxloader').remove();
 	}
 }
-function getDefault(tabName,tabType){
+function getDefault(id){
+    let tabInfo = findTab(id);
+    if(!tabInfo){
+        organizrConsole('Get Default', 'No Tab Info Found... Id: '+id, 'error');
+        return false;
+    }
 	if(getHash() === false || getHash() == 'OrganizrLogin'){
-		if(tabName !== null && tabType !== null){
-			switchTab(tabName,tabType);
+		if(tabInfo.name !== null && tabInfo.type !== null){
+			switchTab(id);
 		}else{
 			$('#side-menu').children().first().children().click()
 		}
 	}else{
-		var hashTab = getHash();
-		var hashType = getTabType(hashTab);
-		if (typeof hashTab !== 'undefined' && typeof hashType !== 'undefined') {
+		let hashTab = getHash();
+        let hashType = isNaN(hashTab) ? 'name' : 'id';
+        let tabInfo = findTab(hashTab, hashType);
+        if(!tabInfo){
+            organizrConsole('Get Hash', 'No Tab Info Found... Hash: '+hashTab, 'error');
+            switchTab(id);
+            return false;
+        }
+		let type = tabInfo.type;
+		if (typeof hashTab !== 'undefined' && typeof type !== 'undefined') {
 			directToHash = true;
-			switchTab(hashTab,hashType);
+			switchTab(tabInfo.id);
 		}else{
 			console.warn("Tab Function: "+hashTab+" is not a defined tab");
+            switchTab(id);
 		}
 	}
 }
-function getTabType(tabName){
-	var tabType = $('#menu-'+tabName);
-	if (typeof tabType !== 'undefined') {
-		return tabType.attr('type');
-	}else{
-		return false;
-	}
+function getTabType(id){
+    let tabInfo = findTab(id);
+    if(!tabInfo){
+        organizrConsole('Tab Type Function', 'No Tab Info Found... Id: '+id, 'error');
+        return false;
+    }
+    return tabInfo.type;
 }
 function getHash(){
 	if ($(location).attr('hash')){
-		return $(location).attr('hash').substr(1);
+		return dirtyHash($(location).attr('hash').substr(1));
 	}
 	return false;
 }
 function setHash(hash){
-	window.location.hash = '#'+hash;
+	window.location.hash = '#'+cleanHash(hash);
 }
 function getQueryVariable(variable){
    var query = window.location.search.substring(1);
@@ -501,6 +520,14 @@ function iconPrefixSplash(source){
 function cleanClass(string){
 	return string.replace(/ +/g, "-").replace(/\W+/g, "-");
 }
+function cleanHash(hash){
+    hash = encodeURI(hash);
+    return hash.replace('%20','-');
+}
+function dirtyHash(hash){
+    hash = hash.replace('-','%20');
+    return decodeURI(hash);
+}
 // What the hell is this?  I don't remember this lol
 function noTabs(arrayItems){
 	if (arrayItems.data.user.loggedin === true) {
@@ -543,16 +570,13 @@ function formatIcon (icon) {
 function logout(){
 	message('',' Goodbye!',activeInfo.settings.notifications.position,'#FFF','success','10000');
 	organizrAPI2('GET','api/v2/logout').success(function(data) {
-        try {
-            var html = data.response;
-        }catch(e) {
-	        organizrCatchError(e,data);
+        local('set','message','Goodbye|Logout Successful|success');
+        history.replaceState(null, null, ' ');
+        if(activeInfo.settings.misc.authProxyOverrideLogout && activeInfo.settings.misc.authProxyLogoutURL !== ''){
+            location.href=activeInfo.settings.misc.authProxyLogoutURL;
+        }else{
+            location.reload();
         }
-
-            local('set','message','Goodbye|Logout Successful|success');
-            history.replaceState(null, null, ' ');
-			location.reload();
-
 	}).fail(function(xhr) {
 		OrganizrApiError(xhr, 'Logout Failed');
 	});
@@ -628,8 +652,8 @@ function swapDisplay(type, split){
 		default:
 	}
 }
-function toggleParentActive(tab){
-	var childTab = $('#menu-'+tab);
+function toggleParentActive(id){
+	var childTab = $('#menu-'+id);
 	if(childTab.parent().hasClass('nav-second-level')){
 		if(!childTab.parent().hasClass('in')){
 			childTab.parent().addClass('collapse in');
@@ -637,56 +661,76 @@ function toggleParentActive(tab){
 		}
 	}
 }
-function swapBodyClass(tab){
-    var prior = $('body').attr('data-active-tab');
+function swapBodyClass(id){
+    let tabInfo = findTab(id);
+    if(!tabInfo){
+        organizrConsole('Switch Tab', 'No Tab Info Found...', 'error');
+        return false;
+    }
+    let prior = $('body').attr('data-active-tab');
+    let priorId = $('body').attr('data-active-tab-id');
     if(prior !== ''){
         $('body').removeClass('active-tab-'+prior);
+        $('body').removeClass('active-tab-'+priorId);
     }
-    $('body').attr('data-active-tab', tab);
-    $('body').addClass('active-tab-'+tab);
+    $('body').attr('data-active-tab', tabInfo.name);
+    $('body').attr('data-active-tab-id', tabInfo.id);
+    $('body').addClass('active-tab-'+tabInfo.name);
+    $('body').addClass('active-tab-'+tabInfo.id);
 }
 function editPageTitle(title){
     document.title =  title + ' - ' + activeInfo.appearance.title;
 }
-function switchTab(tab, type, split = null){
+function switchToPlugin(plugin){
+    closeSideMenu();
+    removeMenuActive();
+    swapDisplay('plugin');
+    $('#container-plugin-'+plugin).addClass("show").removeClass('hidden');
+}
+function switchTab(id, split = null){
+    let tabInfo = findTab(id);
+    if(!tabInfo){
+        organizrConsole('Switch Tab', 'No Tab Info Found...', 'error');
+        return false;
+    }
 	if(activeInfo.settings.misc.collapseSideMenuOnClick){
 		if(!$('.navbar ').hasClass('sidebar-hidden')){
 			toggleSideMenu();
 		}
 	}
 	let extra = split ? 'right-' : '';
+    let type = tabInfo.type;
 	// need to rework for split
     if(type !== 2){
         hideFrames(split);
         closeSideMenu();
         removeMenuActive();
-        toggleParentActive(tab);
-        swapBodyClass(tab);
+        toggleParentActive(id);
+        swapBodyClass(id);
     }
     if(type !== 2 && type !== 'plugin'){
-        setHash(tab);
+        setHash(tabInfo.name);
     }
 	switch (type) {
 		case 0:
 		case '0':
 		case 'internal':
 			swapDisplay('internal', split);
-			var newTab = $('#internal-'+extra+tab);
-			var tabURL = newTab.attr('data-url');
-			$('#menu-'+cleanClass(tab)).find('a').addClass("active");
-            editPageTitle(tab);
+			var newTab = $('#internal-'+extra+id);
+			$('#menu-'+id).find('a').addClass("active");
+            editPageTitle(tabInfo.name);
 			if(newTab.hasClass('loaded')){
-				organizrConsole('Tab Function','Switching to tab: '+tab);
+				organizrConsole('Tab Function','Switching to tab: '+tabInfo.name);
 				newTab.addClass("show").removeClass('hidden');
-                setTabInfo(cleanClass(tab),'active',true);
+                setTabInfo(id,'active',true);
 			}else{
 				//$("#preloader").fadeIn();
-				organizrConsole('Tab Function','Loading new tab for: '+tab);
-				$('#menu-'+tab+' a').children().addClass('tabLoaded');
+				organizrConsole('Tab Function','Loading new tab for: '+tabInfo.name);
+				$('#menu-'+id+' a').children().addClass('tabLoaded');
 				newTab.addClass("show loaded").removeClass('hidden');
-				loadInternal(tabURL,cleanClass(tab), split);
-                setTabInfo(cleanClass(tab),'active',true);
-                setTabInfo(cleanClass(tab),'loaded',true);
+				loadInternal(id, split);
+                setTabInfo(id,'active',true);
+                setTabInfo(id,'loaded',true);
 				//$("#preloader").fadeOut();
 			}
 			break;
@@ -694,25 +738,25 @@ function switchTab(tab, type, split = null){
 		case '1':
 		case 'iframe':
 			swapDisplay('iframe', split);
-			var newTab = $('#container-'+extra+tab);
+			var newTab = $('#container-'+extra+id);
 			var tabURL = newTab.attr('data-url');
-			$('#menu-'+cleanClass(tab)).find('a').addClass("active");
-            editPageTitle(tab);
+			$('#menu-'+id).find('a').addClass("active");
+            editPageTitle(tabInfo.name);
 			if(newTab.hasClass('loaded')){
-				organizrConsole('Tab Function','Switching to tab: '+tab);
+				organizrConsole('Tab Function','Switching to tab: '+tabInfo.name);
 				newTab.addClass("show").removeClass('hidden');
-                setTabInfo(cleanClass(tab),'active',true);
+                setTabInfo(id,'active',true);
 			}else{
 				$("#preloader").fadeIn();
-				organizrConsole('Tab Function','Loading new tab for: '+tab);
-				$('#menu-'+tab+' a').children().addClass('tabLoaded');
+				organizrConsole('Tab Function','Loading new tab for: '+tabInfo.name);
+				$('#menu-'+id+' a').children().addClass('tabLoaded');
 				newTab.addClass("show loaded").removeClass('hidden');
-				$(buildFrame(tab,tabURL, extra)).appendTo(newTab);
-                setTabInfo(cleanClass(tab),'active',true);
-                setTabInfo(cleanClass(tab),'loaded',true);
+				$(buildFrame(id, extra)).appendTo(newTab);
+                setTabInfo(id,'active',true);
+                setTabInfo(id,'loaded',true);
 				$("#preloader").fadeOut();
 			}
-            $('#frame-'+tab).focus();
+            $('#frame-'+id).focus();
 			break;
 		case 2:
 		case 3:
@@ -720,23 +764,29 @@ function switchTab(tab, type, split = null){
 		case '3':
 		case '_blank':
 		case 'popout':
-			popTab(cleanClass(tab), type);
+			popTab(id);
 			break;
         case 'plugin':
             swapDisplay('plugin');
-            $('#container-plugin-'+tab).addClass("show").removeClass('hidden');
+            $('#container-plugin-'+id).addClass("show").removeClass('hidden');
             break;
 		default:
 			organizrConsole('Tab Function','Action not set', 'error');
 	}
 
 }
-function popTab(tab, type){
-	switch (type) {
+function popTab(id){
+    let tabInfo = findTab(id);
+    if(!tabInfo){
+        organizrConsole('Pop Tab Function', 'No Tab Info Found... Id: '+id, 'error');
+        return false;
+    }
+    let name = tabInfo.name;
+	switch (tabInfo.type) {
 		case 0:
 		case '0':
 		case 'internal':
-			console.warn('Tab Function: New window not supported for tab: '+tab);
+			console.warn('Tab Function: New window not supported for tab id: '+id+ ' | ' + name);
 			break;
 		case 1:
 		case '1':
@@ -747,49 +797,51 @@ function popTab(tab, type){
 		case '3':
 		case '_blank':
 		case 'popout':
-			organizrConsole('Tab Function','Creating New Window for tab: '+tab);
-			var url = $('#menu-'+cleanClass(tab)).attr('data-url');
-			window.open(url, '_blank');
+			organizrConsole('Tab Function','Creating New Window for tab id: '+id+ ' | ' + name);
+			window.open(tabInfo.access_url, '_blank');
 			break;
 		default:
 			organizrConsole('Tab Function','Action not set', 'error');
 	}
 }
-function closeTab(tab){
-    tab = cleanClass(tab);
+function closeTab(id){
+    let tabInfo = findTab(id);
+    if(!tabInfo){
+        organizrConsole('Close Tab Function', 'No Tab Info Found... Id: '+id, 'error');
+        return false;
+    }
     // check if current tab?
-    if($('.active-tab-'+tab).length > 0){
+    if($('.active-tab-'+id).length > 0){
         closeCurrentTab(event);
     }else{
-        if($('.frame-'+tab).hasClass('loaded')){
-            var type = $('#menu-'+tab).attr('type');
-           switch (type) {
+        if($('.frame-'+id).hasClass('loaded')){
+           switch (tabInfo.type) {
                case 0:
                case '0':
                case 'internal':
                    // quick check if homepage
-                   if($('#menu-'+tab).attr('data-url') == 'api/v2/page/homepage'){
+                   if(tabInfo.access_url == 'api/v2/page/homepage'){
 	                   organizrConsole('Organizr Function','Clearing All Homepage AJAX calls');
                        clearAJAX('homepage');
 	                   $.xhrPool.abortAll();
                    }
-	               organizrConsole('Tab Function','Closing tab: '+tab);
-                   $('#internal-'+cleanClass(tab)).html('');
-                   $('#menu-'+cleanClass(tab)+' a').removeClass("active");
-                   $('#menu-'+tab+' a').children().removeClass('tabLoaded');
-                   $('#internal-'+cleanClass(tab)).removeClass("loaded show");
-                   $('#menu-'+cleanClass(tab)).removeClass("active");
-                   setTabInfo(cleanClass(tab),'loaded',false);
+	               organizrConsole('Tab Function','Closing tab: '+tabInfo.name);
+                   $('#internal-'+id).html('');
+                   $('#menu-'+id+' a').removeClass("active");
+                   $('#menu-'+id+' a').children().removeClass('tabLoaded');
+                   $('#internal-'+id).removeClass("loaded show");
+                   $('#menu-'+id).removeClass("active");
+                   setTabInfo(id,'loaded',false);
                    break;
                case 1:
                case '1':
                case 'iframe':
 	               organizrConsole('Tab Function','Closing tab: '+tab);
-                   $('#menu-'+cleanClass(tab)+' a').removeClass("active");
-                   $('#menu-'+tab+' a').children().removeClass('tabLoaded');
-                   $('#container-'+cleanClass(tab)).removeClass("loaded show");
-                   $('#frame-'+cleanClass(tab)).remove();
-                   setTabInfo(cleanClass(tab),'loaded',false);
+                   $('#menu-'+id+' a').removeClass("active");
+                   $('#menu-'+id+' a').children().removeClass('tabLoaded');
+                   $('#container-'+id).removeClass("loaded show");
+                   $('#frame-'+id).remove();
+                   setTabInfo(id,'loaded',false);
                    break;
                case 2:
                case 3:
@@ -805,27 +857,30 @@ function closeTab(tab){
         }
     }
 }
-function reloadTab(tab, type){
+function reloadTab(id){
+    let tabInfo = findTab(id);
+    if(!tabInfo){
+        organizrConsole('Reload Tab Function', 'No Tab Info Found... Id: '+id, 'error');
+        return false;
+    }
 	$("#preloader").fadeIn();
-	organizrConsole('Tab Function','Reloading tab: '+tab);
-	switch (type) {
+	organizrConsole('Tab Function','Reloading tab: '+tabInfo.name);
+	switch (tabInfo.type) {
 		case 0:
 		case '0':
 		case 'internal':
-			if($('#menu-'+cleanClass(tab)).attr('data-url') == 'api/v2/page/homepage'){
+			if(tabInfo.access_url == 'api/v2/page/homepage'){
 				organizrConsole('Organizr Function','Clearing All Homepage AJAX calls');
 				clearAJAX('homepage');
 				$.xhrPool.abortAll();
 			}
-		    var dataURL = $('.frame-'+cleanClass(tab)).attr('data-url');
-		    var dataName = $('.frame-'+cleanClass(tab)).attr('data-name');
-            $('#frame-'+cleanClass(tab)).html('');
-            loadInternal(dataURL,dataName);
+            $('#frame-'+id).html('');
+            loadInternal(id);
 			break;
 		case 1:
 		case '1':
 		case 'iframe':
-			$('#frame-'+cleanClass(tab)).attr('src', $('#frame-'+cleanClass(tab)).attr('src'));
+			$('#frame-'+id).attr('src', $('#frame-'+id).attr('src'));
 			break;
 		case 2:
 		case 3:
@@ -833,7 +888,6 @@ function reloadTab(tab, type){
 		case '3':
 		case '_blank':
 		case 'popout':
-
 			break;
 		default:
 			organizrConsole('Tab Function','Action not set', 'error');
@@ -843,8 +897,9 @@ function reloadTab(tab, type){
 function reloadCurrentTab(){
 	//$("#preloader").fadeIn();
 	organizrConsole('Tab Function','Reloading Current tab');
-	var iframe = $('.iFrame-listing').find('.show');
-	var internal = $('.internal-listing').find('.show');
+    let id = null;
+    let iframe = $('.iFrame-listing').find('.show');
+    let internal = $('.internal-listing').find('.show');
 	if(iframe.length > 0){
 		var type = 'iframe';
 	}else if(internal.length > 0){
@@ -856,19 +911,32 @@ function reloadCurrentTab(){
 		case 0:
 		case '0':
 		case 'internal':
-			var activeInternal = $('.internal-listing').find('.show');
-			if($(activeInternal).attr('data-url') == 'api/v2/page/homepage'){
+			let activeInternal = $('.internal-listing').find('.show');
+            if(activeInternal){
+                id = activeInternal.attr('id');
+                id = id.split('-')[1];
+            }
+            if(id){
+                var tabInfo = findTab(id);
+                if(!tabInfo){
+                    organizrConsole('Reload Current Tab Function', 'No Tab Info Found... Id: '+id, 'error');
+                    return false;
+                }
+            }else{
+                return false;
+            }
+			if(tabInfo.access_url == 'api/v2/page/homepage'){
 				organizrConsole('Organizr Function','Clearing All Homepage AJAX calls');
 				clearAJAX('homepage');
 				$.xhrPool.abortAll();
 			}
 			$(activeInternal).html('');
-			loadInternal(activeInternal.attr('data-url'),activeInternal.attr('data-name'));
+			loadInternal(id);
 			break;
 		case 1:
 		case '1':
 		case 'iframe':
-			var activeFrame = $('.iFrame-listing').find('.show').children('iframe');
+			let activeFrame = $('.iFrame-listing').find('.show').children('iframe');
 			if(RegExp('^\/.*').test(activeFrame.attr('src'))) {
 				activeFrame.attr('src', activeFrame[0].contentWindow.location.pathname);
 			} else {
@@ -881,7 +949,6 @@ function reloadCurrentTab(){
 		case '3':
 		case '_blank':
 		case 'popout':
-
 			break;
 		default:
 			console.error('Tab Function: Action not set');
@@ -889,19 +956,22 @@ function reloadCurrentTab(){
 	//$("#preloader").fadeOut();
 }
 function loadNextTab(){
-	var next = $('#page-wrapper').find('.loaded').attr('data-name');
+	let next = $('#page-wrapper').find('.loaded').attr('id');
+    if(next){
+        next = next.split('-')[1];
+    }
 	if (typeof next !== 'undefined') {
-		var type = $('#page-wrapper').find('.loaded').attr('data-type');
-        var parent = $('#menu-'+next).parent();
+        let parent = $('#menu-'+next).parent();
         if(parent.hasClass('in') === false && parent.hasClass('nav-second-level')){
             parent.parent().find('a').first().trigger('click')
         }
-		switchTab(next,type);
+		switchTab(next);
 	}else{
 		organizrConsole('Tab Function','No Available Tab to open', 'error');
 	}
 }
 function closeCurrentTab(event){
+
 	let extra = '';
 	let split = '';
 	if(typeof event !== 'undefined'){
@@ -910,7 +980,17 @@ function closeCurrentTab(event){
 			split = true;
 		}
 	}
-
+    if($('.plugin-listing').hasClass('show')){
+        hideFrames(split)
+        loadNextTab();
+        return false;
+    }
+    let id = $('body').attr('data-active-tab-id');
+    let tabInfo = findTab(id);
+    if(!tabInfo){
+        organizrConsole('Close Current Tab Function', 'No Tab Info Found... Id: '+id, 'error');
+        return false;
+    }
 	var iframe = $('.iFrame-listing'+extra).find('.show');
 	var internal = $('.internal-listing'+extra).find('.show');
 	if(iframe.length > 0){
@@ -924,35 +1004,32 @@ function closeCurrentTab(event){
 		case 0:
 		case '0':
 		case 'internal':
-			var tab = $('.internal-listing'+extra).find('.show').attr('data-name');
             // quick check if homepage
-            if($('#menu-'+cleanClass(tab)).attr('data-url') == 'api/v2/page/homepage'){
+            if(tabInfo.access_url == 'api/v2/page/homepage'){
 	            organizrConsole('Organizr Function','Clearing All Homepage AJAX calls');
                 clearAJAX('homepage');
 	            $.xhrPool.abortAll();
             }
-			organizrConsole('Organizr Function','Closing tab: '+tab);
-			$('#internal'+extra+'-'+cleanClass(tab)).html('');
-			$('#menu-'+cleanClass(tab)+' a').removeClass("active");
-			$('#menu-'+tab+' a').children().removeClass('tabLoaded');
-			$('#internal'+extra+'-'+cleanClass(tab)).removeClass("loaded show");
-			$('#menu-'+cleanClass(tab)).removeClass("active");
-            setTabInfo(cleanClass(tab),'loaded',false);
-            setTabInfo(cleanClass(tab),'active',false);
+			organizrConsole('Organizr Function','Closing tab: '+tabInfo.name);
+			$('#internal'+extra+'-'+id).html('');
+			$('#menu-'+id+' a').removeClass("active");
+			$('#menu-'+id+' a').children().removeClass('tabLoaded');
+			$('#internal'+extra+'-'+id).removeClass("loaded show");
+			$('#menu-'+id).removeClass("active");
+            setTabInfo(id,'loaded',false);
+            setTabInfo(id,'active',false);
 			loadNextTab();
 			break;
 		case 1:
 		case '1':
 		case 'iframe':
-			var tab = $('.iFrame-listing'+extra).find('.show').children('iframe').attr('data-name');
-			console.log(tab);
-			organizrConsole('Organizr Function','Closing tab: '+tab);
-			$('#menu-'+cleanClass(tab)+' a').removeClass("active");
-			$('#menu-'+tab+' a').children().removeClass('tabLoaded');
-			$('#container'+extra+'-'+cleanClass(tab)).removeClass("loaded show").addClass("hidden");
-			$('#frame'+extra+'-'+cleanClass(tab)).remove();
-            setTabInfo(cleanClass(tab),'loaded',false);
-            setTabInfo(cleanClass(tab),'active',false);
+			organizrConsole('Organizr Function','Closing tab: '+tabInfo.name);
+			$('#menu-'+id+' a').removeClass("active");
+			$('#menu-'+id+' a').children().removeClass('tabLoaded');
+			$('#container'+extra+'-'+id).removeClass("loaded show").addClass("hidden");
+			$('#frame'+extra+'-'+id).remove();
+            setTabInfo(id,'loaded',false);
+            setTabInfo(id,'active',false);
 			loadNextTab();
 			break;
 		case 2:
@@ -967,31 +1044,42 @@ function closeCurrentTab(event){
 			organizrConsole('Tab Function','No Available Tab to open', 'error');
 	}
 }
-function tabActions(event, name, type, redirectURL = ""){
+function findTab(query, term = 'id'){
+    let tabInfo = activeInfo.tabs.filter(tab => tab[term] == query );
+    return tabInfo.length >= 1 ? tabInfo[0] : false;
+}
+function tabActions(event, id, redirectURL = ""){
 	if(event.which == 3){
 		return false;
 	}
+    let tabInfo = findTab(id);
+    if(!tabInfo){
+        organizrConsole('Tab Action Function', 'No Tab Info Found... Id: '+id, 'error');
+        return false;
+    }
+    let type = tabInfo.type;
+    let name = tabInfo.name;
 	if((event.ctrlKey && !event.shiftKey && !event.altKey)  || event.which == 2){
-		popTab(cleanClass(name), type);
+		popTab(id);
 	}else if(event.altKey && !event.shiftKey && !event.ctrlKey){
-        closeTab(name);
+        closeTab(id);
 	}else if(event.shiftKey && !event.ctrlKey && !event.altKey){
-		reloadTab(cleanClass(name), type);
+		reloadTab(id);
 	}else if(event.ctrlKey && event.shiftKey && !event.altKey){
 		organizrConsole('Tab Function','Action not defined yet', 'info');
     }else if(event.ctrlKey && event.altKey && !event.shiftKey){
 		organizrConsole('Tab Function','Action not defined yet', 'info');
-		switchTab(cleanClass(name), type, true);
+		switchTab(id, true);
 	}else if(event.shiftKey && event.altKey && !event.ctrlKey){
 		organizrConsole('Tab Function','Action not defined yet', 'info');
 	}else{
-		switchTab(cleanClass(name), type);
+		switchTab(id);
 		if(type !== 2){
 			$('.splash-screen').removeClass('in').addClass('hidden');
 		}
 		if (redirectURL){
 			$('.close-popup').trigger('click');
-			$('#frame-'+cleanClass(name)).attr('src',redirectURL);
+			$('#frame-'+id).attr('src',redirectURL);
 		}
 	}
 }
@@ -1143,7 +1231,7 @@ function buildFormItem(item){
 			break;
 		case 'switch':
 		case 'checkbox':
-			return smallLabel+'<input data-changed="false" type="checkbox" class="js-switch'+extraClass+'" data-size="small" data-color="#99d683" data-secondary-color="#f96262"'+name+value+tof(item.value,'c')+id+disabled+type+label+attr+' /><input data-changed="false" type="hidden"'+name+'value="false">';
+			return smallLabel+'<input data-changed="false" type="checkbox" class="js-switch'+extraClass+'" data-size="medium" data-color="#99d683" data-secondary-color="#f96262"'+name+value+tof(item.value,'c')+id+disabled+type+label+attr+' /><input data-changed="false" type="hidden"'+name+'value="false">';
 			break;
 		case 'button':
 			return smallLabel+'<button class="btn btn-sm btn-success btn-rounded waves-effect waves-light b-none'+extraClass+'" '+href+attr+' type="button"><span class="btn-label"><i class="'+icon+'"></i></span><span lang="en">'+text+'</span></button>';
@@ -2899,48 +2987,66 @@ function userMenu(user){
 	//message("",window.lang.translate('Welcome')+" "+user.data.user.username,activeInfo.settings.notifications.position,"#FFF","success","3500");
 	console.info("%c "+window.lang.translate('Welcome')+" %c ".concat(user.data.user.username, " "), "color: white; background: #AD80FD; font-weight: 700;", "color: #AD80FD; background: white; font-weight: 700;");
 }
+function menuExtraTabs(){
+    return [
+        {
+            'id':99999991,
+            'type':2,
+            'group_id':1,
+            'name':'Github Repo',
+            'access_url':'https://github.com/causefx/organizr',
+            'url':'https://github.com/causefx/organizr',
+            'image':'fontawesome::github',
+            'active':activeInfo.settings.menuLink.githubMenuLink,
+            'ping_url':null
+        },
+        {
+            'id':99999992,
+            'type':1,
+            'group_id':1,
+            'name':'Organizr Support',
+            'access_url':'https://organizr.app/support',
+            'url':'https://organizr.app/support',
+            'image':'fontawesome::life-ring',
+            'active':activeInfo.settings.menuLink.organizrSupportMenuLink,
+            'ping_url':null
+        },
+        {
+            'id':99999993,
+            'type':2,
+            'group_id':1,
+            'name':'Organizr Docs',
+            'access_url':'https://docs.organizr.app',
+            'url':'https://docs.organizr.app',
+            'image':'simpleline::docs',
+            'active':activeInfo.settings.menuLink.organizrDocsMenuLink,
+            'ping_url':null
+        },
+        {
+            'id':99999994,
+            'type':1,
+            'group_id':1,
+            'name':'Feature Request',
+            'access_url':'https://feature.organizr.app',
+            'url':'https://feature.organizr.app',
+            'image':'simpleline::arrow-up-circle',
+            'active':activeInfo.settings.menuLink.organizrFeatureRequestLink,
+            'ping_url':null
+        }
+    ];
+}
 function menuExtras(active){
 	let adminMenu = '<li class="devider"></li>';
-	let extraOrganizrLinks = [
-		{
-			'type':2,
-			'group_id':1,
-			'name':'Github Repo',
-			'url':'https://github.com/causefx/organizr',
-			'icon':'fontawesome::github',
-			'active':activeInfo.settings.menuLink.githubMenuLink
-		},
-		{
-			'type':1,
-			'group_id':1,
-			'name':'Organizr Support',
-			'url':'https://organizr.app/support',
-			'icon':'fontawesome::life-ring',
-			'active':activeInfo.settings.menuLink.organizrSupportMenuLink
-		},
-		{
-			'type':2,
-			'group_id':1,
-			'name':'Organizr Docs',
-			'url':'https://docs.organizr.app',
-			'icon':'simpleline::docs',
-			'active':activeInfo.settings.menuLink.organizrDocsMenuLink
-		},
-		{
-			'type':1,
-			'group_id':1,
-			'name':'Feature Request',
-			'url':'https://feature.organizr.app',
-			'icon':'simpleline::arrow-up-circle',
-			'active':activeInfo.settings.menuLink.organizrFeatureRequestLink
-		}
-	];
+	let extraOrganizrLinks = menuExtraTabs();
+    activeInfo.tabs = [].concat(activeInfo.tabs, menuExtraTabs());
+
 	$.each(extraOrganizrLinks, function(i,v) {
+        tabInformation[v.id] = {"id":v.id,"name":cleanClass(v.name),"active":false,"loaded":false,"increments":0,"tabInfo":v};
 		if(v.type == 1){
-			let frame = buildFrameContainer(v.name,v.url,v.type);
+			let frame = buildFrameContainer(v.id);
 			$(frame).appendTo($('.iFrame-listing'));
 		}
-		adminMenu += (activeInfo.user.groupID <= v.group_id && v.active) ? buildMenuList(v.name,v.url,v.type,v.icon) : '';
+		adminMenu += (activeInfo.user.groupID <= v.group_id && v.active) ? buildMenuList(v.id) : '';
 	});
 	if(active === true){
 		return (activeInfo.settings.menuLink.organizrSignoutMenuLink) ? `
@@ -2973,54 +3079,65 @@ function categoryProcess(arrayItems){
 		$(menuList).appendTo($('#side-menu'));
 	}
 }
-function buildFrame(name,url, split = null){
+function buildFrame(id, split = null){
 	let extra = split ? 'right-' : '';
+    let tabInfo = findTab(id);
+    if(!tabInfo){
+        organizrConsole('Build Frame', 'No Tab Info Found...', 'error');
+        return false;
+    }
     var sandbox = activeInfo.settings.misc.sandbox;
     sandbox = sandbox.replace(/,/gi, ' ');
     sandbox = (sandbox) ? ' sandbox="' + sandbox + '"' : '';
 	return `
-		<iframe allow="clipboard-read; clipboard-write" allowfullscreen="true" frameborder="0" id="frame-`+extra+cleanClass(name)+`" data-name="`+cleanClass(name)+`" `+sandbox+` scrolling="auto" src="`+url+`" class="iframe"></iframe>
+		<iframe allow="clipboard-read; clipboard-write" allowfullscreen="true" frameborder="0" id="frame-`+extra+id+`" `+sandbox+` scrolling="auto" src="`+tabInfo.access_url+`" class="iframe"></iframe>
 	`;
 }
-function buildFrameContainer(name,url,type, split = null){
+function buildFrameContainer(id, split = null){
 	let extra = split ? 'right-' : '';
-	return `<div id="container-`+extra+cleanClass(name)+`" data-type="`+type+`" class="frame-container frame-`+cleanClass(name)+` hidden" data-url="`+url+`" data-name="`+cleanClass(name)+`"></div>`;
+	return `<div id="container-`+extra+id+`" class="frame-container frame-${id} hidden" ></div>`;
 }
-function buildInternalContainer(name,url,type, split = null){
+function buildInternalContainer(id, split = null){
 	let extra = split ? 'right-' : '';
-	return `<div id="internal-`+extra+cleanClass(name)+`" data-type="`+type+`" class="internal-container frame-`+cleanClass(name)+` hidden" data-url="`+url+`" data-name="`+cleanClass(name)+`"></div>`;
+	return `<div id="internal-`+extra+id+`" class="internal-container frame-${id} hidden"></div>`;
 }
-function buildMenuList(name,url,type,icon,ping=null,category_id = null,group_id = null){
-    var ping = (ping !== null) ? `<small class="menu-`+cleanClass(ping)+`-ping-ms hidden-xs label label-rouded label-inverse pull-right pingTime hidden">
+function buildMenuList(id){
+    let tabInfo = findTab(id);
+    if(!tabInfo){
+        organizrConsole('Build Menu List', 'No Tab Info Found...', 'error');
+        return false;
+    }
+    let name = tabInfo.name;
+    let icon = tabInfo.image;
+    let ping = (typeof tabInfo.ping_url !== 'undefined') ? tabInfo.ping_url : null;
+    ping = (ping !== null && ping !== '') ? `<small class="menu-`+cleanClass(ping)+`-ping-ms hidden-xs label label-rouded label-inverse pull-right pingTime hidden">
 </small><div class="menu-`+cleanClass(ping)+`-ping" data-tab-name="`+name+`" data-previous-state=""></div>` : '';
-	return `<li class="allTabsList" id="menu-`+cleanClass(name)+`" data-tab-name="`+cleanClass(name)+`" type="`+type+`" data-group-id="`+group_id+`" data-category-id="`+category_id+`" data-url="`+url+`"><a class="waves-effect"  href="javascript:void(0)" onclick="tabActions(event,'`+cleanClass(name)+`',`+type+`);" onauxclick="tabActions(event,'`+cleanClass(name)+`',`+type+`);">`+iconPrefix(icon)+`<span class="hide-menu elip sidebar-tabName">`+name+`</span>`+ping+`</a></li>`;
+	return `<li class="allTabsList" id="menu-${id}" data-tab-id="${id}"><a class="waves-effect"  href="javascript:void(0)" onclick="tabActions(event,'${id}');" onauxclick="tabActions(event,'${id}');">`+iconPrefix(icon)+`<span class="hide-menu elip sidebar-tabName">`+name+`</span>`+ping+`</a></li>`;
 }
 function tabProcess(arrayItems) {
 	var iFrameList = '';
 	var internalList = '';
-	var defaultTabName = null;
-	var defaultTabType = null;
+	var defaultTabId = null;
 	if (Array.isArray(arrayItems['data']['tabs']) && arrayItems['data']['tabs'].length > 0) {
 		$.each(arrayItems['data']['tabs'], function(i,v) {
 			if(v.enabled === 1 && v.access_url){
-                tabInformation[cleanClass(v.name)] = {"active":false,"loaded":false,"increments":0,"tabInfo":v};
+                tabInformation[v.id] = {"id":v.id,"name":cleanClass(v.name),"active":false,"loaded":false,"increments":0,"tabInfo":v};
                 switch(v.timeout){
                     case 1:
                     case '1':
-                        tabActionsList['close'].push({"tab":cleanClass(v.name),"action_ms":v.timeout_ms});
+                        tabActionsList['close'].push({"id":v.id,"tab":cleanClass(v.name),"action_ms":v.timeout_ms});
                         break;
                     case 2:
                     case '2':
-                        tabActionsList['refresh'].push({"tab":cleanClass(v.name),"action_ms":v.timeout_ms});
+                        tabActionsList['refresh'].push({"id":v.id,"tab":cleanClass(v.name),"action_ms":v.timeout_ms});
                         break;
                     default:
                         //nada
                 }
                 if(v.default === 1){
-                    defaultTabName = cleanClass(v.name);
-                    defaultTabType = v.type;
+                    defaultTabId = v.id;
                 }
-                var menuList = buildMenuList(v.name,v.access_url,v.type,v.image,v.ping_url, v.category_id, v.group_id);
+                var menuList = buildMenuList(v.id);
                 if(v.category_id === 0){
                     if(activeInfo.settings.misc.unsortedTabs === 'top'){
                         $(menuList).prependTo($('#side-menu'));
@@ -3038,32 +3155,31 @@ function tabProcess(arrayItems) {
 					case 0:
 					case '0':
 					case 'internal':
-						internalList = buildInternalContainer(v.name,v.access_url,v.type);
+						internalList = buildInternalContainer(v.id);
 						$(internalList).appendTo($('.internal-listing'));
-						internalList = buildInternalContainer(v.name,v.access_url,v.type, true);
+						internalList = buildInternalContainer(v.id, true);
 						$(internalList).appendTo($('.internal-listing-right'));
                         if(v.preload){
-                            var newTab = $('#internal-'+cleanClass(v.name));
+                            var newTab = $('#internal-'+v.id);
 	                        organizrConsole('Tab Function','Preloading new tab for: '+cleanClass(v.name));
-                            $('#menu-'+cleanClass(v.name)+' a').children().addClass('tabLoaded');
+                            $('#menu-'+v.id+' a').children().addClass('tabLoaded');
                             newTab.addClass("loaded");
-                            loadInternal(v.access_url,cleanClass(v.name));
+                            loadInternal(v.id);
                         }
 						break;
 					case 1:
 					case '1':
                     case 'iframe':
-						iFrameList = buildFrameContainer(v.name,v.access_url,v.type);
+						iFrameList = buildFrameContainer(v.id);
 						$(iFrameList).appendTo($('.iFrame-listing'));
-	                    iFrameList = buildFrameContainer(v.name,v.access_url,v.type, true);
+	                    iFrameList = buildFrameContainer(v.id, true);
 	                    $(iFrameList).appendTo($('.iFrame-listing-right'));
                         if(v.preload){
-                            var newTab = $('#container-'+cleanClass(v.name));
-                            var tabURL = newTab.attr('data-url');
+                            var newTab = $('#container-'+v.id);
 	                        organizrConsole('Tab Function','Preloading new tab for: '+cleanClass(v.name));
-                            $('#menu-'+cleanClass(v.name)+' a').children().addClass('tabLoaded');
+                            $('#menu-'+v.id+' a').children().addClass('tabLoaded');
                             newTab.addClass("loaded");
-                            $(buildFrame(cleanClass(v.name),tabURL)).appendTo(newTab);
+                            $(buildFrame(v.id)).appendTo(newTab);
                         }
 						break;
 					case 2:
@@ -3079,7 +3195,7 @@ function tabProcess(arrayItems) {
 			}
 		});
 		$('#side-menu').metisMenu({ toggle: activeInfo.settings.misc.autoCollapseCategories });
-		getDefault(defaultTabName,defaultTabType);
+		getDefault(defaultTabId);
 	}else{
 		noTabs(arrayItems);
 	}
@@ -3135,7 +3251,7 @@ function buildSplashScreenItem(arrayItems){
                     var nonImage = '<span class="text-uppercase badge bg-org splash-badge">'+image+'</span>';
                 }
                 splashList += `
-                <div class="col-xs-12 col-sm-3 col-md-3 col-lg-3 col-xl-2 mouse hvr-grow m-b-20" id="menu-${cleanClass(v.name)}" type="${v.type}" data-url="${v.access_url}" onclick="tabActions(event,'${cleanClass(v.name)}',${v.type});">
+                <div class="col-xs-12 col-sm-3 col-md-3 col-lg-3 col-xl-2 mouse hvr-grow m-b-20" id="menu-${cleanClass(v.name)}" type="${v.type}" data-url="${v.access_url}" onclick="tabActions(event,'${v.id}');">
                     <div class="homepage-drag fc-event bg-org lazyload" ${dataSrc}>
                         ${nonImage}
                         <span class="homepage-text">&nbsp; ${v.name}</span>
@@ -3369,7 +3485,7 @@ function buildTabEditorItem(array){
 			</td>
 			<td style="text-align:center" class="text-center el-element-overlay">
 				<div class="el-card-item p-0">
-					<div class="el-card-avatar el-overlay-1 m-0">
+					<div class="el-card-avatar el-overlay-1 m-0 tooltip-info" data-toggle="tooltip" data-placement="top" title="" data-original-title="${v.id}">
 						<div class="tabEditorIcon">`+iconPrefix(v.image)+`</div>
 					</div>
 				</div>
@@ -3759,7 +3875,10 @@ function updateCheck(){
 		if(latest !== currentVersion) {
 			organizrConsole('Update Function','Update to ' + latest + ' is available', 'warning');
             if (activeInfo.settings.misc.docker === false) {
-                messageSingle(window.lang.translate('Update Available'), latest + ' ' + window.lang.translate('is available, goto') + ' <a href="javascript:void(0)" onclick="tabActions(event,\'Settings\',0);clickPath(\'update\')"><span lang="en">Update Tab</span></a>', activeInfo.settings.notifications.position, '#FFF', 'update', '60000');
+                let tabInfo = findTab('api/v2/page/settings', 'access_url');
+                if(tabInfo){
+                    messageSingle(window.lang.translate('Update Available'), latest + ' ' + window.lang.translate('is available, goto') + ' <a href="javascript:void(0)" onclick="tabActions(event,\''+tabInfo.id+'\');clickPath(\'update\')"><span lang="en">Update Tab</span></a>', activeInfo.settings.notifications.position, '#FFF', 'update', '60000');
+                }
             }
         }else{
 			organizrConsole('Update Function','Already running latest version: ' + latest, 'info');
@@ -4420,12 +4539,18 @@ function loadSettingsPage2(api,element,organizrFn){
 		OrganizrApiError(xhr);
 	});
 }
-function loadInternal(url,tabName, split = null){
+function loadInternal(id, split = null){
 	let extra = split ? 'right-' : '';
+    let tabInfo = findTab(id);
+    if(!tabInfo){
+        organizrConsole('Load Internal', 'No Tab Info Found...', 'error');
+        return false;
+    }
+    let url = tabInfo.access_url;
 	organizrAPI2('get',url).success(function(data) {
 		try {
 			var html = data.response;
-			$('#internal-'+extra+tabName).html(html.data);
+			$('#internal-'+extra+id).html(html.data);
 		}catch(e) {
 			organizrCatchError(e,data);
 		}
@@ -4999,6 +5124,7 @@ function randomCSV(values){
 }
 function loadCustomJava(appearance){
     if(appearance.customThemeJava !== ''){
+        console.log(appearance.customThemeJava)
         $('#custom-theme-javascript').html(appearance.customThemeJava);
     }
     if(appearance.customJava !== ''){
@@ -7018,7 +7144,7 @@ function buildPVRLink(href, ico = "", frame = "", showLink = true){
 		var styleOverride = `width:55px;height:44px;background-image: url(${ico});background-repeat:no-repeat;background-size:25px;background-position:center;`;
 		if (frame){
 			return `
-			<div class="btn btn-inverse waves-effect waves-light" type="button" onclick="tabActions(0,'${frame}',1,'${href}');" style="${styleOverride}"></div>
+			<div class="btn btn-inverse waves-effect waves-light" type="button" onclick="tabActions(event,'${frame}','${href}');" style="${styleOverride}"></div>
 			`;
 		} else {
 			return `
@@ -7838,7 +7964,7 @@ function homepageRequests(service, timeout){
 	delete timeout;
 }
 function testAPIConnection(service, data = ''){
-    messageSingle('',' Testing now...',activeInfo.settings.notifications.position,'#FFF','info','10000');
+    messageSingle('',' Testing now...',activeInfo.settings.notifications.position,'#FFF','info','60000');
     organizrAPI2('POST','api/v2/test/' + service,data).success(function(data) {
         try {
             let response = data.response;
@@ -8505,6 +8631,7 @@ function buildMonitorrItem(array){
     var services = array['services'];
     var tabName = '';
 
+
     var buildCard = function(name, data) {
         if(data.status == true) {
             var statusColor = 'success'; var imageText = 'fa fa-check-circle text-success'
@@ -8515,6 +8642,8 @@ function buildMonitorrItem(array){
         }
         if(typeof data.link !== 'undefined' && data.link.includes('#')) {
             tabName = data.link.substring(data.link.indexOf('#')+1);
+            console.log(tabName);
+            // Need to rework tabActions
             monitorrLink = '<a href="javascript:void(0)" onclick="tabActions(event,\''+tabName+'\',1)">';
         } else if(typeof data.link !== 'undefined') {
             monitorrLink = '<a href="'+data.link+'" target="_blank">'
@@ -10062,22 +10191,20 @@ function checkLocalForwardStatus(array){
 }
 function forceSearch(term){
     $.magnificPopup.close();
-    var tabName = $("li[data-url^='api/v2/page/homepage']").find('span').html();
-    if($("li[data-url^='api/v2/page/homepage']").find('i').hasClass('tabLoaded')){
-        if($("li[data-url^='api/v2/page/homepage']").find('a').hasClass('active')){
+    let tabInfo = findTab('api/v2/page/homepage', 'access_url');
+    if(tabInformation[tabInfo.id]['loaded']){
+        if(tabInformation[tabInfo.id]['active']){
             setTimeout(
                 function(){
                     $('#newRequestButton').trigger('click');
                     $('#request-input').val(term);
                     doneTyping();
                 },
-            1000);
+            500);
         }else{
-            tabActions('click',tabName,0);
+            tabActions('click',tabInfo.id);
             setTimeout(
                 function(){
-
-
                     $('#newRequestButton').trigger('click');
                     $('#request-input').val(term);
                     doneTyping();
@@ -10085,11 +10212,9 @@ function forceSearch(term){
             1000);
         }
     }else{
-        tabActions('click',tabName,0);
+        tabActions('click',tabInfo.id);
         setTimeout(
             function(){
-
-
                 $('#newRequestButton').trigger('click');
                 $('#request-input').val(term);
                 doneTyping();
@@ -10607,12 +10732,12 @@ function lock(){
     });
 }
 function openSettings(){
-    var tab = $("li[data-url='api/v2/page/settings']").find('span').text();
-    tabActions('click',tab,0);
+    let tabInfo = findTab('api/v2/page/settings', 'access_url');
+    tabActions('click',tabInfo.id);
 }
 function openHomepage(){
-    var tab = $("li[data-url='api/v2/page/homepage']").find('span').text();
-    tabActions('click',tab,0);
+    let tabInfo = findTab('api/v2/page/homepage', 'access_url');
+    tabActions('click',tabInfo.id);
 }
 function toggleFullScreenIcon(){
 	$('.fullscreen-icon').toggleClass('ti-fullscreen').toggleClass('mdi mdi-fullscreen-exit');
@@ -11654,6 +11779,8 @@ function launch(){
 	        if(json.data.user == false){ location.reload(); }
 	        currentVersion = json.data.version;
 	        activeInfo = {
+                tabs:json.data.tabs,
+                categories:json.data.categories,
 		        timezone:Intl.DateTimeFormat().resolvedOptions().timeZone,
 		        offest:new Date().getTimezoneOffset(),
 		        language:language(moment.locale(navigator.languages[0])),
@@ -11739,6 +11866,8 @@ function launch(){
             orgErrorCode(data);
             defineNotification();
             message('FATAL ERROR',data,'br','#FFF','error','60000');
+            console.warn(data);
+            console.warn(e);
             return false;
         }
 	}).fail(function(xhr) {

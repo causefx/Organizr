@@ -358,7 +358,7 @@ $app->get('/homepage/overseerr/metadata/{type}/{id}', function ($request, $respo
 });
 $app->get('/homepage/overseerr/requests[/{type}[/{limit}[/{offset}]]]', function ($request, $response, $args) {
 	$Organizr = ($request->getAttribute('Organizr')) ?? new Organizr();
-	$args['limit'] = $args['limit'] ?? $Organizr->config['ombiLimit'];
+	$args['limit'] = $args['limit'] ?? $Organizr->config['overseerrLimit'];
 	$args['offset'] = $args['offset'] ?? 0;
 	$Organizr->getOverseerrRequests($args['limit'], $args['offset']);
 	$response->getBody()->write(jsonE($GLOBALS['api']));

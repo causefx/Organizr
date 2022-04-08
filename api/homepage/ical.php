@@ -75,7 +75,7 @@ trait ICalHomepageItem
 				$timezone = 'Europe/Lisbon';
 				break;
 		}
-		return $timezone;
+		return in_array($timezone, timezone_identifiers_list()) ? $timezone : 'UTC';
 	}
 
 	public function getCalendarExtraDates($start, $rule, $timezone)

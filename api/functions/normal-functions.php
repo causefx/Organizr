@@ -88,10 +88,19 @@ trait NormalFunctions
 	}
 
 	// Print output all purrty
-	public function prettyPrint($v)
+	public function prettyPrint($v, $error = false)
 	{
+		if ($error) {
+			$background = 'red';
+			$border = 'black';
+			$text = 'white';
+		} else {
+			$background = '#f2f2f2';
+			$border = 'black';
+			$text = 'black';
+		}
 		$trace = debug_backtrace()[0];
-		echo '<pre style="white-space: pre; text-overflow: ellipsis; overflow: hidden; background-color: #f2f2f2; border: 2px solid black; border-radius: 5px; padding: 5px; margin: 5px;">' . $trace['file'] . ':' . $trace['line'] . ' ' . gettype($v) . "\n\n" . print_r($v, 1) . '</pre><br/>';
+		echo '<pre style="white-space: pre; text-overflow: ellipsis; overflow: hidden; color: ' . $text . '; background-color: ' . $background . '; border: 2px solid ' . $border . '; border-radius: 5px; padding: 5px; margin: 5px;">' . $trace['file'] . ':' . $trace['line'] . ' ' . gettype($v) . "\n\n" . print_r($v, 1) . '</pre><br/>';
 	}
 
 	public function gen_uuid()

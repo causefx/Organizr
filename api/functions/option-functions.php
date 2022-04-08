@@ -458,7 +458,7 @@ trait OptionsFunction
 					'type' => 'select',
 					'label' => 'Target URL',
 					'help' => 'Set the primary URL used when clicking on calendar icon.',
-					'options' => $this->makeOptionsFromValues($this->config[str_replace('CalendarLink','',$name).'URL'], true, 'Use Default'),
+					'options' => $this->makeOptionsFromValues($this->config[str_replace('CalendarLink', '', $name) . 'URL'], true, 'Use Default'),
 				];
 				break;
 			case 'calendarframetarget':
@@ -466,7 +466,7 @@ trait OptionsFunction
 					'type' => 'select',
 					'label' => 'Target Tab',
 					'help' => 'Set the tab used when clicking on calendar icon. If not set, link will open in new window.',
-					'options' => $this->getIframeTabs($this->config[str_replace('FrameTarget','CalendarLink',$name)])
+					'options' => $this->getIframeTabs($this->config[str_replace('FrameTarget', 'CalendarLink', $name)])
 				];
 				break;
 			default:
@@ -484,10 +484,10 @@ trait OptionsFunction
 		}
 		return $setting;
 	}
-	
+
 	public function getIframeTabs($url = "")
-	{	
-		if (!empty($url)){
+	{
+		if (!empty($url)) {
 			$response = [
 				array(
 					'function' => 'fetchAll',
@@ -512,10 +512,10 @@ trait OptionsFunction
 			'name' => 'Open in New Window',
 			'value' => ''
 		];
-		foreach($this->processQueries($response) as $result) {
+		foreach ($this->processQueries($response) as $result) {
 			$formattedValues[] = [
 				'name' => $result['name'],
-				'value' => $result['name']
+				'value' => $result['id']
 			];
 		}
 		return $formattedValues;
@@ -523,7 +523,7 @@ trait OptionsFunction
 
 	public function makeOptionsFromValues($values = null, $appendBlank = null, $blankLabel = null)
 	{
-		if ($appendBlank === true){
+		if ($appendBlank === true) {
 			$formattedValues[] = [
 				'name' => (!empty($blankLabel)) ? $blankLabel : 'Select option...',
 				'value' => ''

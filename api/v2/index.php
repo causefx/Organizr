@@ -52,7 +52,7 @@ $GLOBALS['bypass'] = array(
 $GLOBALS['responseCode'] = 200;
 function jsonE($json)
 {
-	return safe_json_encode($json, JSON_HEX_QUOT | JSON_HEX_TAG | JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+	return safe_json_encode($json, JSON_HEX_QUOT | JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES); // JSON_HEX_TAG
 }
 
 function getBasePath()
@@ -87,6 +87,8 @@ $app->add(function ($request, $handler) {
 	// add the organizr to your request as [READ-ONLY]
 	$Organizr = new Organizr();
 	$request = $request->withAttribute('Organizr', $Organizr);
+	// set custom error handler
+	set_error_handler([$Organizr, 'setAPIErrorResponse']);
 	return $handler->handle($request);
 });
 //$app->add(new Lowercase());
