@@ -523,5 +523,12 @@
     "new": "",
     "fixed": "fixed theme marketplace downloading of themes with spaces",
     "notes": ""
+  },
+  "2.1.1790": {
+    "date": "2022-04-08 16:22",
+    "title": "Weekly Update",
+    "new": "added a check to see if theme in user theme folder is actually installed|added custom authProxy logout url (#1771)|added default config values authProxyOverrideLogout and authProxyLogoutURL|added menuExtras to tabInformation|added setAPIErrorResponse to api response|added setErrorResponse to organizr class|added test connection to jackett (#1800)",
+    "fixed": "added formatPingHost function to fix incorrectly saved ping URLs|fixed chat plugin not closing with close tab button (#1816)|fixed checking of tab name if changing casing only|fixed chinese tradition not being set (#1813)|fixed issue with catchall for ical timezones (#1772)|fixed overseerr limit variable being incorrect|fixed ping URLs that were incorrect|fixed tautulli connection tester|fix preloading issue with new tabActions",
+    "notes": "changed getHomepageMediaImage slightly to use default image if error|changed js-switch to default size medium|changed overseerr from a foreach call to request_multiple method|changed tabActions to use tab id instead of tab name|comment out prettyprint for errors for now|removed semver from sonarr/radarr/lidarr class|renamed tabActions for plugins to switchToPlugin|replace organizr user object if token set with token object for sso|restored old getSystemStatus method from sonarr/radarr/lidarr class|switched value of name to id for getIframeTabs function|update api.json file|updated prettyPrint function to include red error|Updated the following languages: [Russian]"
   }
 }
