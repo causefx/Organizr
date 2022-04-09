@@ -431,7 +431,7 @@ trait OverseerrHomepageItem
 			}
 		} catch (Requests_Exception $e) {
 			$this->writeLog('error', 'Overseerr Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
-			$this->setAPIResponse('error', $e->getMessage(), 500);
+			$this->setResponse(500, $e->getMessage());
 			return false;
 		}
 	}
@@ -522,7 +522,7 @@ trait OverseerrHomepageItem
 			}
 		} catch (Requests_Exception $e) {
 			$this->writeLog('error', 'Overseerr Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
-			$this->setAPIResponse('error', $e->getMessage(), 500);
+			$this->setResponse(500, $e->getMessage());
 			return false;
 		}
 	}
@@ -559,7 +559,7 @@ trait OverseerrHomepageItem
 			}
 		} catch (Requests_Exception $e) {
 			$this->writeLog('error', 'Overseerr Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
-			$this->setAPIResponse('error', $e->getMessage(), 500);
+			$this->setResponse(500, $e->getMessage());
 			return false;
 		}
 	}

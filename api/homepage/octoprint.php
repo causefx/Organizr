@@ -35,7 +35,7 @@ trait OctoPrintHomepageItem
 		];
 		return array_merge($homepageInformation, $homepageSettings);
 	}
-	
+
 	public function octoprintHomepagePermissions($key = null)
 	{
 		$permissions = [
@@ -54,7 +54,7 @@ trait OctoPrintHomepageItem
 		];
 		return $this->homepageCheckKeyPermissions($key, $permissions);
 	}
-	
+
 	public function homepageOrderOctoprint()
 	{
 		if ($this->homepageItemPermissions($this->octoprintHomepagePermissions('main'))) {
@@ -70,7 +70,7 @@ trait OctoPrintHomepageItem
 				';
 		}
 	}
-	
+
 	public function getOctoprintHomepageData()
 	{
 		if (!$this->homepageItemPermissions($this->octoprintHomepagePermissions('main'), true)) {
@@ -99,7 +99,7 @@ trait OctoPrintHomepageItem
 				}
 			} catch (Requests_Exception $e) {
 				$this->writeLog('error', 'Octoprint Function - Error: ' . $e->getMessage(), 'SYSTEM');
-				$this->setAPIResponse('error', $e->getMessage(), 500);
+				$this->setResponse(500, $e->getMessage());
 				return false;
 			};
 		}

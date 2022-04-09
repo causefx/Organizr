@@ -2,7 +2,7 @@
 
 trait SabNZBdHomepageItem
 {
-	
+
 	public function sabNZBdSettingsArray($infoOnly = false)
 	{
 		$homepageInformation = [
@@ -46,7 +46,7 @@ trait SabNZBdHomepageItem
 		];
 		return array_merge($homepageInformation, $homepageSettings);
 	}
-	
+
 	public function testConnectionSabNZBd()
 	{
 		$this->setLoggerChannel('Sabnzbd Homepage');
@@ -77,7 +77,7 @@ trait SabNZBdHomepageItem
 				}
 			} catch (Requests_Exception $e) {
 				$this->logger->critical($e, [$url]);
-				$this->setAPIResponse('error', $e->getMessage(), 500);
+				$this->setResponse(500, $e->getMessage());
 				return false;
 			}
 		} else {
@@ -86,7 +86,7 @@ trait SabNZBdHomepageItem
 			return 'URL and/or Token not setup';
 		}
 	}
-	
+
 	public function sabNZBdHomepagePermissions($key = null)
 	{
 		$permissions = [
@@ -105,7 +105,7 @@ trait SabNZBdHomepageItem
 		];
 		return $this->homepageCheckKeyPermissions($key, $permissions);
 	}
-	
+
 	public function homepageOrdersabnzbd()
 	{
 		if ($this->homepageItemPermissions($this->sabNZBdHomepagePermissions('main'))) {
@@ -124,7 +124,7 @@ trait SabNZBdHomepageItem
 				';
 		}
 	}
-	
+
 	public function getSabNZBdHomepageQueue()
 	{
 		$this->setLoggerChannel('Sabnzbd Homepage');
@@ -141,7 +141,7 @@ trait SabNZBdHomepageItem
 			}
 		} catch (Requests_Exception $e) {
 			$this->logger->critical($e, [$url]);
-			$this->setAPIResponse('error', $e->getMessage(), 500);
+			$this->setResponse(500, $e->getMessage());
 			return false;
 		};
 		$url = $this->qualifyURL($this->config['sabnzbdURL']);
@@ -154,14 +154,14 @@ trait SabNZBdHomepageItem
 			}
 		} catch (Requests_Exception $e) {
 			$this->logger->critical($e, [$url]);
-			$this->setAPIResponse('error', $e->getMessage(), 500);
+			$this->setResponse(500, $e->getMessage());
 			return false;
 		};
 		$api['content'] = isset($api['content']) ? $api['content'] : false;
 		$this->setAPIResponse('success', null, 200, $api);
 		return $api;
 	}
-	
+
 	public function pauseSabNZBdQueue($target = null)
 	{
 		$this->setLoggerChannel('Sabnzbd Homepage');
@@ -179,14 +179,14 @@ trait SabNZBdHomepageItem
 			}
 		} catch (Requests_Exception $e) {
 			$this->logger->critical($e, [$url]);
-			$this->setAPIResponse('error', $e->getMessage(), 500);
+			$this->setResponse(500, $e->getMessage());
 			return false;
 		};
 		$api['content'] = isset($api['content']) ? $api['content'] : false;
 		$this->setAPIResponse('success', null, 200, $api);
 		return $api;
 	}
-	
+
 	public function resumeSabNZBdQueue($target = null)
 	{
 		$this->setLoggerChannel('Sabnzbd Homepage');
@@ -204,7 +204,7 @@ trait SabNZBdHomepageItem
 			}
 		} catch (Requests_Exception $e) {
 			$this->logger->critical($e, [$url]);
-			$this->setAPIResponse('error', $e->getMessage(), 500);
+			$this->setResponse(500, $e->getMessage());
 			return false;
 		};
 		$api['content'] = isset($api['content']) ? $api['content'] : false;

@@ -104,7 +104,7 @@ trait TautulliHomepageItem
 			}
 		} catch (Requests_Exception $e) {
 			$this->logger->critical($e, [$url]);
-			$this->setAPIResponse('error', $e->getMessage(), 500);
+			$this->setResponse(500, $e->getMessage());
 			return false;
 		}
 	}
@@ -256,7 +256,7 @@ trait TautulliHomepageItem
 			}
 		} catch (Requests_Exception $e) {
 			$this->logger->critical($e, [$url]);
-			$this->setAPIResponse('error', $e->getMessage(), 500);
+			$this->setResponse(500, $e->getMessage());
 			return false;
 		};
 		$api = isset($api) ? $api : false;

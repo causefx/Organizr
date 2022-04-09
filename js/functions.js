@@ -419,8 +419,12 @@ function ajaxloader(element=null, action='out'){
 function getDefault(id){
     let tabInfo = findTab(id);
     if(!tabInfo){
-        organizrConsole('Get Default', 'No Tab Info Found... Id: '+id, 'error');
-        return false;
+        if(getHash() === false){
+            organizrConsole('Get Default', 'No Tab Info Found... Id: '+id, 'error');
+            organizrConsole('Get Default', 'Trying to load next tab in cycle', 'error');
+            loadNextTab();
+            return false;
+        }
     }
 	if(getHash() === false || getHash() == 'OrganizrLogin'){
 		if(tabInfo.name !== null && tabInfo.type !== null){

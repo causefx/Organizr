@@ -84,7 +84,7 @@ trait JellyfinHomepageItem
 				return true;
 			}
 		} catch (Requests_Exception $e) {
-			$this->setAPIResponse('error', $e->getMessage(), 500);
+			$this->setResponse(500, $e->getMessage());
 			return false;
 		}
 	}
@@ -195,7 +195,7 @@ trait JellyfinHomepageItem
 			}
 		} catch (Requests_Exception $e) {
 			$this->writeLog('error', 'Jellyfin Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
-			$this->setAPIResponse('error', $e->getMessage(), 500);
+			$this->setResponse(500, $e->getMessage());
 			return false;
 		}
 	}
@@ -252,7 +252,7 @@ trait JellyfinHomepageItem
 			}
 		} catch (Requests_Exception $e) {
 			$this->writeLog('error', 'Jellyfin Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
-			$this->setAPIResponse('error', $e->getMessage(), 500);
+			$this->setResponse(500, $e->getMessage());
 			return false;
 		}
 	}
@@ -312,7 +312,7 @@ trait JellyfinHomepageItem
 			}
 		} catch (Requests_Exception $e) {
 			$this->writeLog('error', 'Jellyfin Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
-			$this->setAPIResponse('error', $e->getMessage(), 500);
+			$this->setResponse(500, $e->getMessage());
 			return false;
 		}
 	}

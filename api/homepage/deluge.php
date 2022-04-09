@@ -64,7 +64,7 @@ trait DelugeHomepageItem
 		];
 		return array_merge($homepageInformation, $homepageSettings);
 	}
-	
+
 	public function testConnectionDeluge()
 	{
 		if (!$this->homepageItemPermissions($this->delugeHomepagePermissions('main'), true)) {
@@ -78,12 +78,11 @@ trait DelugeHomepageItem
 			return true;
 		} catch (Exception $e) {
 			$this->writeLog('error', 'NZBGet Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
-			$this->setAPIResponse('error', $e->getMessage(), 500);
+			$this->setResponse(500, $e->getMessage());
 			return false;
 		}
-		
 	}
-	
+
 	public function delugeHomepagePermissions($key = null)
 	{
 		$permissions = [
@@ -101,7 +100,7 @@ trait DelugeHomepageItem
 		];
 		return $this->homepageCheckKeyPermissions($key, $permissions);
 	}
-	
+
 	public function homepageOrderdeluge()
 	{
 		if ($this->homepageItemPermissions($this->delugeHomepagePermissions('main'))) {
@@ -120,7 +119,7 @@ trait DelugeHomepageItem
 				';
 		}
 	}
-	
+
 	public function getDelugeHomepageQueue()
 	{
 		if (!$this->homepageItemPermissions($this->delugeHomepagePermissions('main'), true)) {
@@ -128,7 +127,7 @@ trait DelugeHomepageItem
 		}
 		try {
 			$options = $this->requestOptions($this->config['delugeURL'], $this->config['delugeRefresh'], $this->config['delugeDisableCertCheck'], $this->config['delugeUseCustomCertificate'], ['organizr_cert' => $this->getCert(), 'custom_cert' => $this->getCustomCert()]);
-			$deluge = new deluge($this->config['delugeURL'], $this->decrypt($this->config['delugePassword']),$options);
+			$deluge = new deluge($this->config['delugeURL'], $this->decrypt($this->config['delugePassword']), $options);
 			$torrents = $deluge->getTorrents(null, 'comment, download_payload_rate, eta, hash, is_finished, is_seed, message, name, paused, progress, queue, state, total_size, upload_payload_rate, tracker_status');
 			foreach ($torrents as $key => $value) {
 				$tempStatus = $this->delugeStatus($value->queue, $value->state, $value->progress);
@@ -137,7 +136,7 @@ trait DelugeHomepageItem
 				} elseif ($tempStatus == 'Finished' && $this->config['delugeHideCompleted']) {
 					//do nothing
 				} else {
-					if ($this->config['delugeHideStatus']){
+					if ($this->config['delugeHideStatus']) {
 						$value->tracker_status = "";
 					}
 					$api['content']['queueItems'][] = $value;
@@ -147,14 +146,14 @@ trait DelugeHomepageItem
 			$api['content']['historyItems'] = false;
 		} catch (Excecption $e) {
 			$this->writeLog('error', 'Deluge Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
-			$this->setAPIResponse('error', $e->getMessage(), 500);
+			$this->setResponse(500, $e->getMessage());
 			return false;
 		}
 		$api['content'] = isset($api['content']) ? $api['content'] : false;
 		$this->setAPIResponse('success', null, 200, $api);
 		return $api;
 	}
-	
+
 	public function delugeStatus($queued, $status, $state)
 	{
 		if ($queued == '-1' && $state == '100' && ($status == 'Seeding' || $status == 'Queued' || $status == 'Paused')) {

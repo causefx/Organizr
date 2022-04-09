@@ -65,7 +65,7 @@ class Organizr
 
 	// ===================================
 	// Organizr Version
-	public $version = '2.1.1790';
+	public $version = '2.1.1800';
 	// ===================================
 	// Quick php Version check
 	public $minimumPHP = '7.3';
@@ -3534,7 +3534,7 @@ class Organizr
 				$createToken = $this->createToken($result['username'], $result['email'], $days);
 				if ($createToken) {
 					$this->logger->info('User has logged in');
-					$ssoUserObject = ($token !== '') ? $token : $authSuccess;
+					$ssoUserObject = ($token !== '') ? $authSuccess : $result;
 					$this->ssoCheck($ssoUserObject, $password, $token); //need to work on this
 					return ($output) ? array('name' => $this->cookieName, 'token' => (string)$createToken) : true;
 				} else {
@@ -5695,7 +5695,7 @@ class Organizr
 				return $api;
 			}
 		} catch (Requests_Exception $e) {
-			$this->setAPIResponse('error', $e->getMessage(), 500);
+			$this->setResponse(500, $e->getMessage());
 			return false;
 		}
 		$this->setAPIResponse('error', 'Error connecting to Open Collective', 409);
@@ -5770,7 +5770,7 @@ class Organizr
 				return json_decode($response->body, true);
 			}
 		} catch (Requests_Exception $e) {
-			$this->setAPIResponse('error', $e->getMessage(), 500);
+			$this->setResponse(500, $e->getMessage());
 			return false;
 		}
 		return false;
@@ -6837,7 +6837,7 @@ class Organizr
 				return false;
 			}
 		} catch (Requests_Exception $e) {
-			$this->setAPIResponse('error', $e->getMessage(), 500);
+			$this->setResponse(500, $e->getMessage());
 			return false;
 		}
 	}
@@ -7124,7 +7124,7 @@ class Organizr
 				$this->logger->debug('Socks Response', $this->json_validator($call->body) ? json_decode($call->body, true) : $call->body);
 				return $call->body;
 			} catch (Requests_Exception $e) {
-				$this->setAPIResponse('error', $e->getMessage(), 500);
+				$this->setResponse(500, $e->getMessage());
 				$this->setLoggerChannel('Socks');
 				$this->logger->critical($e, $debugInformation);
 				return null;
@@ -7180,7 +7180,7 @@ class Organizr
 		} catch (Requests_Exception $e) {
 			$this->setLoggerChannel('Plex Connection');
 			$this->logger->error($e);
-			$this->setAPIResponse('error', $e->getMessage(), 500);
+			$this->setResponse(500, $e->getMessage());
 		}
 	}
 

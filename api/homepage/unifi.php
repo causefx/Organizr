@@ -42,7 +42,7 @@ trait UnifiHomepageItem
 		];
 		return array_merge($homepageInformation, $homepageSettings);
 	}
-	
+
 	public function unifiHomepagePermissions($key = null)
 	{
 		$permissions = [
@@ -72,7 +72,7 @@ trait UnifiHomepageItem
 		];
 		return $this->homepageCheckKeyPermissions($key, $permissions);
 	}
-	
+
 	public function homepageOrderunifi()
 	{
 		if ($this->homepageItemPermissions($this->unifiHomepagePermissions('main'))) {
@@ -88,7 +88,7 @@ trait UnifiHomepageItem
 				';
 		}
 	}
-	
+
 	public function getUnifiSiteName()
 	{
 		if (!$this->homepageItemPermissions($this->unifiHomepagePermissions('test'), true)) {
@@ -117,11 +117,11 @@ trait UnifiHomepageItem
 			}
 		} catch (Requests_Exception $e) {
 			$this->writeLog('error', 'Unifi Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
-			$this->setAPIResponse('error', $e->getMessage(), 500);
+			$this->setResponse(500, $e->getMessage());
 			return false;
 		}
 	}
-	
+
 	public function isUnifiOS()
 	{
 		try {
@@ -137,11 +137,11 @@ trait UnifiHomepageItem
 			}
 		} catch (Requests_Exception $e) {
 			$this->writeLog('error', 'Unifi Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
-			$this->setAPIResponse('error', $e->getMessage(), 500);
+			$this->setResponse(500, $e->getMessage());
 			return false;
 		}
 	}
-	
+
 	public function unifiLogin()
 	{
 		$csrfToken = $this->isUnifiOS();
@@ -170,11 +170,11 @@ trait UnifiHomepageItem
 			}
 		} catch (Requests_Exception $e) {
 			$this->writeLog('error', 'Unifi Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
-			$this->setAPIResponse('error', $e->getMessage(), 500);
+			$this->setResponse(500, $e->getMessage());
 			return false;
 		}
 	}
-	
+
 	public function testConnectionUnifi()
 	{
 		if (!$this->homepageItemPermissions($this->unifiHomepagePermissions('test'), true)) {
@@ -199,14 +199,14 @@ trait UnifiHomepageItem
 			}
 		} catch (Requests_Exception $e) {
 			$this->writeLog('error', 'Unifi Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
-			$this->setAPIResponse('error', $e->getMessage(), 500);
+			$this->setResponse(500, $e->getMessage());
 			return false;
 		}
 		$api['content']['unifi'] = $api['content']['unifi'] ?? false;
 		$this->setAPIResponse('success', 'API Connection succeeded', 200);
 		return true;
 	}
-	
+
 	public function getUnifiHomepageData()
 	{
 		if (!$this->homepageItemPermissions($this->unifiHomepagePermissions('main'), true)) {
@@ -230,7 +230,7 @@ trait UnifiHomepageItem
 			}
 		} catch (Requests_Exception $e) {
 			$this->writeLog('error', 'Unifi Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
-			$this->setAPIResponse('error', $e->getMessage(), 500);
+			$this->setResponse(500, $e->getMessage());
 			return false;
 		}
 		$api['content']['unifi'] = $api['content']['unifi'] ?? false;
