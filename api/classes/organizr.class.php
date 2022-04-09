@@ -3534,7 +3534,7 @@ class Organizr
 				$createToken = $this->createToken($result['username'], $result['email'], $days);
 				if ($createToken) {
 					$this->logger->info('User has logged in');
-					$ssoUserObject = ($token !== '') ? $token : $authSuccess;
+					$ssoUserObject = ($token !== '') ? $authSuccess : $result;
 					$this->ssoCheck($ssoUserObject, $password, $token); //need to work on this
 					return ($output) ? array('name' => $this->cookieName, 'token' => (string)$createToken) : true;
 				} else {

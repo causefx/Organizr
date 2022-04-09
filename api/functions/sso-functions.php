@@ -45,7 +45,7 @@ trait SSOFunctions
 			$this->coookie('set', 'mpt', $token, $this->config['rememberMeDays'], false);
 		}
 		if ($this->config['ssoOmbi']) {
-			$this->logger->debug('Starting Ombi SSO check function', $userobj);
+			$this->logger->debug('Starting Ombi SSO check function');
 			$fallback = ($this->config['ombiFallbackUser'] !== '' && $this->config['ombiFallbackPassword'] !== '');
 			$ombiToken = $this->getOmbiToken($this->getSSOUserFor('ombi', $userobj), $password, $token, $fallback);
 			if ($ombiToken) {
