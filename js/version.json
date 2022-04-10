@@ -537,5 +537,12 @@
     "new": "",
     "fixed": "fixed issue where if no default tab was set nothing would load|fixed sso bug that didnt pass user object correctly",
     "notes": "replace old setAPIResponse on some items to setResponse"
+  },
+  "2.1.1810": {
+    "date": "2022-04-10 03:19",
+    "title": "Small Update",
+    "new": "added id to logging for tab actions",
+    "fixed": "",
+    "notes": "sanitized username for logging functions"
   }
 }
