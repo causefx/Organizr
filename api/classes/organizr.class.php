@@ -4873,6 +4873,7 @@ class Organizr
 		$array['type'] = ($array['type']) ?? 1;
 		$array['order'] = ($array['order']) ?? $this->getNextTabOrder() + 1;
 		if (array_key_exists('name', $array)) {
+			$array['name'] = filter_var($array['name'], FILTER_SANITIZE_STRING);
 			if ($this->isTabNameTaken($array['name'])) {
 				$this->setAPIResponse('error', 'Tab name: ' . $array['name'] . ' is already taken', 409);
 				return false;
@@ -4922,6 +4923,7 @@ class Organizr
 			return false;
 		}
 		if (array_key_exists('name', $array)) {
+			$array['name'] = filter_var($array['name'], FILTER_SANITIZE_STRING);
 			if ($this->isTabNameTaken($array['name'], $id)) {
 				$this->setAPIResponse('error', 'Tab name: ' . $array['name'] . ' is already taken', 409);
 				return false;
