@@ -211,6 +211,9 @@ trait LogFunctions
 	{
 		if ($this->hasDB()) {
 			$setLogger = false;
+			if ($username) {
+				$username = filter_var($username, FILTER_SANITIZE_STRING);
+			}
 			if ($this->logger) {
 				if ($channel) {
 					if (strtolower($this->logger->getChannel()) !== strtolower($channel)) {

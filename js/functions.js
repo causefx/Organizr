@@ -288,7 +288,7 @@ function isNumberKey(evt) {
 function setTabInfo(id,action,value){
     let tabInfo = findTab(id);
     if(!tabInfo){
-        organizrConsole('Set Tab Info', 'No Tab Info Found...', 'error');
+        organizrConsole('Set Tab Info', 'No Tab Info Found... Id: '+id, 'error');
         return false;
     }
     let tab = cleanClass(tabInfo.name);
@@ -668,7 +668,7 @@ function toggleParentActive(id){
 function swapBodyClass(id){
     let tabInfo = findTab(id);
     if(!tabInfo){
-        organizrConsole('Switch Tab', 'No Tab Info Found...', 'error');
+        organizrConsole('Swap Body', 'No Tab Info Found... Id: '+id, 'error');
         return false;
     }
     let prior = $('body').attr('data-active-tab');
@@ -694,7 +694,7 @@ function switchToPlugin(plugin){
 function switchTab(id, split = null){
     let tabInfo = findTab(id);
     if(!tabInfo){
-        organizrConsole('Switch Tab', 'No Tab Info Found...', 'error');
+        organizrConsole('Switch Tab', 'No Tab Info Found... Id: '+id, 'error');
         return false;
     }
 	if(activeInfo.settings.misc.collapseSideMenuOnClick){
@@ -3087,7 +3087,7 @@ function buildFrame(id, split = null){
 	let extra = split ? 'right-' : '';
     let tabInfo = findTab(id);
     if(!tabInfo){
-        organizrConsole('Build Frame', 'No Tab Info Found...', 'error');
+        organizrConsole('Build Frame', 'No Tab Info Found... Id: '+id, 'error');
         return false;
     }
     var sandbox = activeInfo.settings.misc.sandbox;
@@ -3108,7 +3108,7 @@ function buildInternalContainer(id, split = null){
 function buildMenuList(id){
     let tabInfo = findTab(id);
     if(!tabInfo){
-        organizrConsole('Build Menu List', 'No Tab Info Found...', 'error');
+        organizrConsole('Build Menu List', 'No Tab Info Found... Id: '+id, 'error');
         return false;
     }
     let name = tabInfo.name;
@@ -4547,7 +4547,7 @@ function loadInternal(id, split = null){
 	let extra = split ? 'right-' : '';
     let tabInfo = findTab(id);
     if(!tabInfo){
-        organizrConsole('Load Internal', 'No Tab Info Found...', 'error');
+        organizrConsole('Load Internal', 'No Tab Info Found... Id: '+id, 'error');
         return false;
     }
     let url = tabInfo.access_url;
