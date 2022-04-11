@@ -221,7 +221,8 @@ trait LogFunctions
 					}
 				}
 				if ($username) {
-					if (strtolower($this->logger->getTraceId()) !== strtolower($channel)) {
+					$currentUsername = $this->logger->getTraceId() !== '' ? strtolower($this->logger->getTraceId()) : '';
+					if ($currentUsername !== strtolower($username)) {
 						$setLogger = true;
 					}
 				}
