@@ -44,6 +44,7 @@ class OracleReflector implements Dibi\Reflector
 				];
 			}
 		}
+
 		return $tables;
 	}
 
@@ -66,6 +67,7 @@ class OracleReflector implements Dibi\Reflector
 				'vendor' => $row,
 			];
 		}
+
 		return $columns;
 	}
 

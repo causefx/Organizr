@@ -60,7 +60,6 @@ class PdoDriver implements Dibi\Driver
 			if ($this->connection->getAttribute(PDO::ATTR_ERRMODE) !== PDO::ERRMODE_SILENT) {
 				throw new Dibi\DriverException('PDO connection in exception or warning error mode is not supported.');
 			}
-
 		} else {
 			try {
 				$this->connection = new PDO($config['dsn'], $config['username'], $config['password'], $config['options']);
@@ -69,6 +68,7 @@ class PdoDriver implements Dibi\Driver
 				if ($e->getMessage() === 'could not find driver') {
 					throw new Dibi\NotSupportedException('PHP extension for PDO is not loaded.');
 				}
+
 				throw new Dibi\DriverException($e->getMessage(), $e->getCode());
 			}
 		}
@@ -144,7 +144,7 @@ class PdoDriver implements Dibi\Driver
 	 * Begins a transaction (if supported).
 	 * @throws Dibi\DriverException
 	 */
-	public function begin(string $savepoint = null): void
+	public function begin(?string $savepoint = null): void
 	{
 		if (!$this->connection->beginTransaction()) {
 			$err = $this->connection->errorInfo();
@@ -157,7 +157,7 @@ class PdoDriver implements Dibi\Driver
 	 * Commits statements in a transaction.
 	 * @throws Dibi\DriverException
 	 */
-	public function commit(string $savepoint = null): void
+	public function commit(?string $savepoint = null): void
 	{
 		if (!$this->connection->commit()) {
 			$err = $this->connection->errorInfo();
@@ -170,7 +170,7 @@ class PdoDriver implements Dibi\Driver
 	 * Rollback changes in a transaction.
 	 * @throws Dibi\DriverException
 	 */
-	public function rollback(string $savepoint = null): void
+	public function rollback(?string $savepoint = null): void
 	{
 		if (!$this->connection->rollBack()) {
 			$err = $this->connection->errorInfo();
@@ -366,15 +366,18 @@ class PdoDriver implements Dibi\Driver
 					$sql .= ' LIMIT ' . ($limit ?? '18446744073709551615')
 						. ($offset ? ' OFFSET ' . $offset : '');
 				}
+
 				break;
 
 			case 'pgsql':
 				if ($limit !== null) {
 					$sql .= ' LIMIT ' . $limit;
 				}
+
 				if ($offset) {
 					$sql .= ' OFFSET ' . $offset;
 				}
+
 				break;
 
 			case 'sqlite':
@@ -382,6 +385,7 @@ class PdoDriver implements Dibi\Driver
 					$sql .= ' LIMIT ' . ($limit ?? '-1')
 						. ($offset ? ' OFFSET ' . $offset : '');
 				}
+
 				break;
 
 			case 'oci':
@@ -394,6 +398,7 @@ class PdoDriver implements Dibi\Driver
 				} elseif ($limit !== null) {
 					$sql = 'SELECT * FROM (' . $sql . ') WHERE ROWNUM <= ' . $limit;
 				}
+
 				break;
 
 			case 'mssql':
@@ -406,10 +411,10 @@ class PdoDriver implements Dibi\Driver
 					} elseif ($offset) {
 						$sql = sprintf('%s OFFSET %d ROWS', rtrim($sql), $offset);
 					}
+
 					break;
 				}
 				// break omitted
-
 			case 'odbc':
 				if ($offset) {
 					throw new Dibi\NotSupportedException('Offset is not supported by this database.');
@@ -419,7 +424,6 @@ class PdoDriver implements Dibi\Driver
 					break;
 				}
 				// break omitted
-
 			default:
 				throw new Dibi\NotSupportedException('PDO or driver does not support applying limit or offset.');
 		}

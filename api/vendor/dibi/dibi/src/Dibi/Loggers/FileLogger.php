@@ -29,7 +29,7 @@ class FileLogger
 	private $errorsOnly;
 
 
-	public function __construct(string $file, int $filter = null, bool $errorsOnly = false)
+	public function __construct(string $file, ?int $filter = null, bool $errorsOnly = false)
 	{
 		$this->file = $file;
 		$this->filter = $filter ?: Dibi\Event::QUERY;
@@ -54,6 +54,7 @@ class FileLogger
 			if ($code = $event->result->getCode()) {
 				$message = "[$code] $message";
 			}
+
 			$this->writeToFile(
 				$event,
 				"ERROR: $message"

@@ -41,6 +41,7 @@ class Helpers
 					$spaces = $maxLen - mb_strlen($col) + 2;
 					echo "$col" . str_repeat(' ', $spaces) . "$val\n";
 				}
+
 				echo "\n";
 			}
 
@@ -53,6 +54,7 @@ class Helpers
 					foreach ($row as $col => $foo) {
 						echo "\t\t<th>" . htmlspecialchars((string) $col) . "</th>\n";
 					}
+
 					echo "\t</tr>\n</thead>\n<tbody>\n";
 				}
 
@@ -60,6 +62,7 @@ class Helpers
 				foreach ($row as $col) {
 					echo "\t\t<td>", htmlspecialchars((string) $col), "</td>\n";
 				}
+
 				echo "\t</tr>\n";
 			}
 
@@ -104,6 +107,7 @@ class Helpers
 						}
 					}, $sql);
 				}
+
 				echo trim($sql) . "\n\n";
 
 			} else {
@@ -150,6 +154,7 @@ class Helpers
 				$best = $item;
 			}
 		}
+
 		return $best;
 	}
 
@@ -181,6 +186,7 @@ class Helpers
 	{
 		static $patterns = [
 			'^_' => Type::TEXT, // PostgreSQL arrays
+			'RANGE$' => Type::TEXT, // PostgreSQL range types
 			'BYTEA|BLOB|BIN' => Type::BINARY,
 			'TEXT|CHAR|POINT|INTERVAL|STRING' => Type::TEXT,
 			'YEAR|BYTE|COUNTER|SERIAL|INT|LONG|SHORT|^TINY$' => Type::INTEGER,
@@ -197,6 +203,7 @@ class Helpers
 				return $val;
 			}
 		}
+
 		return null;
 	}
 
@@ -207,6 +214,7 @@ class Helpers
 		if (self::$types === null) {
 			self::$types = new HashMap([self::class, 'detectType']);
 		}
+
 		return self::$types;
 	}
 
@@ -232,7 +240,7 @@ class Helpers
 	 * Import SQL dump from file.
 	 * @return int  count of sql commands
 	 */
-	public static function loadFromFile(Connection $connection, string $file, callable $onProgress = null): int
+	public static function loadFromFile(Connection $connection, string $file, ?callable $onProgress = null): int
 	{
 		@set_time_limit(0); // intentionally @
 
@@ -259,7 +267,6 @@ class Helpers
 				if ($onProgress) {
 					$onProgress($count, isset($stat['size']) ? $size * 100 / $stat['size'] : null);
 				}
-
 			} else {
 				$sql .= $s;
 			}
@@ -272,6 +279,7 @@ class Helpers
 				$onProgress($count, isset($stat['size']) ? 100 : null);
 			}
 		}
+
 		fclose($handle);
 		return $count;
 	}
@@ -293,6 +301,7 @@ class Helpers
 			if (is_float($value * 1)) {
 				throw new Exception("Number $value is greater than integer.");
 			}
+
 			return (int) $value;
 		} else {
 			throw new Exception("Expected number, '$value' given.");

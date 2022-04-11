@@ -44,6 +44,7 @@ class OdbcReflector implements Dibi\Reflector
 				];
 			}
 		}
+
 		odbc_free_result($res);
 		return $tables;
 	}
@@ -68,6 +69,7 @@ class OdbcReflector implements Dibi\Reflector
 				];
 			}
 		}
+
 		odbc_free_result($res);
 		return $columns;
 	}

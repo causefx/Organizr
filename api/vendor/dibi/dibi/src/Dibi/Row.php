@@ -33,15 +33,17 @@ class Row implements \ArrayAccess, \IteratorAggregate, \Countable
 	 * Converts value to DateTime object.
 	 * @return DateTime|string|null
 	 */
-	public function asDateTime(string $key, string $format = null)
+	public function asDateTime(string $key, ?string $format = null)
 	{
 		$time = $this[$key];
 		if (!$time instanceof DateTime) {
-			if (!$time || substr((string) $time, 0, 3) === '000') { // '', null, false, '0000-00-00', ...
+			if (!$time || substr((string) $time, 0, 7) === '0000-00') { // '', null, false, '0000-00-00', ...
 				return null;
 			}
+
 			$time = new DateTime($time);
 		}
+
 		return $format === null ? $time : $time->format($format);
 	}
 
@@ -62,37 +64,38 @@ class Row implements \ArrayAccess, \IteratorAggregate, \Countable
 	/********************* interfaces ArrayAccess, Countable & IteratorAggregate ****************d*g**/
 
 
-	final public function count()
+	final public function count(): int
 	{
 		return count((array) $this);
 	}
 
 
-	final public function getIterator()
+	final public function getIterator(): \ArrayIterator
 	{
 		return new \ArrayIterator($this);
 	}
 
 
-	final public function offsetSet($nm, $val)
+	final public function offsetSet($nm, $val): void
 	{
 		$this->$nm = $val;
 	}
 
 
+	#[\ReturnTypeWillChange]
 	final public function offsetGet($nm)
 	{
 		return $this->$nm;
 	}
 
 
-	final public function offsetExists($nm)
+	final public function offsetExists($nm): bool
 	{
 		return isset($this->$nm);
 	}
 
 
-	final public function offsetUnset($nm)
+	final public function offsetUnset($nm): void
 	{
 		unset($this->$nm);
 	}

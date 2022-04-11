@@ -22,7 +22,7 @@ class Exception extends \Exception
 	/**
 	 * @param  int|string  $code
 	 */
-	public function __construct(string $message = '', $code = 0, string $sql = null, \Throwable $previous = null)
+	public function __construct(string $message = '', $code = 0, ?string $sql = null, ?\Throwable $previous = null)
 	{
 		parent::__construct($message, 0, $previous);
 		$this->code = $code;
@@ -93,7 +93,7 @@ class ProcedureException extends Exception
 	/**
 	 * Construct the exception.
 	 */
-	public function __construct(string $message = '', int $code = 0, string $severity = '', string $sql = null)
+	public function __construct(string $message = '', int $code = 0, string $severity = '', ?string $sql = null)
 	{
 		parent::__construct($message, $code, $sql);
 		$this->severity = $severity;

@@ -54,6 +54,7 @@ class Result
 		foreach ($this->columns as $column) {
 			$res[] = $fullNames ? $column->getFullName() : $column->getName();
 		}
+
 		return $res;
 	}
 

@@ -44,6 +44,7 @@ class ResultIterator implements \Iterator, \Countable
 	}
 
 
+	#[\ReturnTypeWillChange]
 	/**
 	 * Returns the key of the current element.
 	 * @return mixed
@@ -54,6 +55,7 @@ class ResultIterator implements \Iterator, \Countable
 	}
 
 
+	#[\ReturnTypeWillChange]
 	/**
 	 * Returns the current element.
 	 * @return mixed

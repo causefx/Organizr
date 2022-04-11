@@ -100,6 +100,7 @@ class OracleResult implements Dibi\ResultDriver
 				'nativetype' => $type === 'NUMBER' && oci_field_scale($this->resultSet, $i) === 0 ? 'INTEGER' : $type,
 			];
 		}
+
 		return $columns;
 	}
 

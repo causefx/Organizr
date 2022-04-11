@@ -126,6 +126,7 @@ class FirebirdResult implements Dibi\ResultDriver
 				'nativetype' => $row['type'],
 			];
 		}
+
 		return $columns;
 	}
 

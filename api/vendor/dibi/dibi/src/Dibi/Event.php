@@ -53,7 +53,7 @@ class Event
 	public $source;
 
 
-	public function __construct(Connection $connection, int $type, string $sql = null)
+	public function __construct(Connection $connection, int $type, ?string $sql = null)
 	{
 		$this->connection = $connection;
 		$this->type = $type;

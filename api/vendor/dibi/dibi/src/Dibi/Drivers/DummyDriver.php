@@ -42,17 +42,17 @@ class DummyDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 	}
 
 
-	public function begin(string $savepoint = null): void
+	public function begin(?string $savepoint = null): void
 	{
 	}
 
 
-	public function commit(string $savepoint = null): void
+	public function commit(?string $savepoint = null): void
 	{
 	}
 
 
-	public function rollback(string $savepoint = null): void
+	public function rollback(?string $savepoint = null): void
 	{
 	}
 

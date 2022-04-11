@@ -67,6 +67,7 @@ trait Strict
 			$ret = $this->$m();
 			return $ret;
 		}
+
 		$rc = new ReflectionClass($this);
 		$items = array_filter($rc->getProperties(ReflectionProperty::IS_PUBLIC), function ($p) { return !$p->isStatic(); });
 		$items = array_map(function ($item) { return $item->getName(); }, $items);
