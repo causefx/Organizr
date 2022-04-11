@@ -98,7 +98,7 @@ class Organizr
 	public function __construct($updating = false)
 	{
 		// Set custom Error handler
-		set_error_handler([$this, 'setErrorResponse']);
+		set_error_handler([$this, 'setAPIErrorResponse']);
 		// Next Check PHP Version
 		$this->checkPHP();
 		// Check Disk Space
@@ -750,14 +750,50 @@ class Organizr
 		}
 	}
 
+	public function printWarningsAndErrors()
+	{
+		if (isset($GLOBALS['api']['response']['exceptions'])) {
+			$this->prettyPrint($GLOBALS['api']['response']['exceptions'], true);
+		} else {
+			$this->prettyPrint('No Errors');
+		}
+	}
+
 	public function setAPIErrorResponse($number, $message, $file, $line)
 	{
-		$GLOBALS['api']['response']['errors'][] = [
-			'error' => $number,
-			'message' => $message,
-			'file' => $file,
-			'line' => $line
-		];
+		switch ($number) {
+			case E_USER_ERROR:
+			case E_ERROR:
+			case E_CORE_ERROR:
+			case E_COMPILE_ERROR:
+			case E_RECOVERABLE_ERROR:
+				$type = 'errors';
+				break;
+			case E_USER_WARNING:
+			case E_WARNING:
+			case E_CORE_WARNING:
+			case E_COMPILE_WARNING:
+				$type = 'warnings';
+				break;
+			case E_USER_NOTICE:
+			case E_NOTICE:
+			case E_PARSE:
+			case E_DEPRECATED:
+			case E_USER_DEPRECATED:
+				$type = 'notice';
+				break;
+			default:
+				$type = 'other';
+				break;
+		}
+		if ($this->qualifyRequest(1)) {
+			$GLOBALS['api']['response']['exceptions'][$type][] = [
+				'error' => $number,
+				'message' => $message,
+				'file' => $file,
+				'line' => $line
+			];
+		}
 		$this->handleError($number, $message, $file, $line);
 	}
 
