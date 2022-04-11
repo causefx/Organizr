@@ -212,7 +212,7 @@ trait LogFunctions
 		if ($this->hasDB()) {
 			$setLogger = false;
 			if ($username) {
-				$username = htmlspecialchars($username);
+				$username = $this->sanitizeUserString($username);
 			}
 			if ($this->logger) {
 				if ($channel) {

@@ -1895,7 +1895,7 @@ class Organizr
 			$tempFile = $_FILES['file']['tmp_name'];
 			$targetPath = $this->root . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR . 'userTabs' . DIRECTORY_SEPARATOR;
 			$this->makeDir($targetPath);
-			$targetFile = $targetPath . $_FILES['file']['name'];
+			$targetFile = $targetPath . $this->sanitizeUserString($_FILES['file']['name']);
 			$this->setAPIResponse(null, pathinfo($_FILES['file']['name'], PATHINFO_BASENAME) . ' has been uploaded', null);
 			return move_uploaded_file($tempFile, $targetFile);
 		}
@@ -4873,7 +4873,7 @@ class Organizr
 		$array['type'] = ($array['type']) ?? 1;
 		$array['order'] = ($array['order']) ?? $this->getNextTabOrder() + 1;
 		if (array_key_exists('name', $array)) {
-			$array['name'] = htmlspecialchars($array['name']);
+			$array['name'] = $this->sanitizeUserString($array['name']);
 			if ($this->isTabNameTaken($array['name'])) {
 				$this->setAPIResponse('error', 'Tab name: ' . $array['name'] . ' is already taken', 409);
 				return false;
@@ -4923,7 +4923,7 @@ class Organizr
 			return false;
 		}
 		if (array_key_exists('name', $array)) {
-			$array['name'] = htmlspecialchars($array['name']);
+			$array['name'] = $this->sanitizeUserString($array['name']);
 			if ($this->isTabNameTaken($array['name'], $id)) {
 				$this->setAPIResponse('error', 'Tab name: ' . $array['name'] . ' is already taken', 409);
 				return false;
@@ -4995,6 +4995,7 @@ class Organizr
 		$array['order'] = ($array['order']) ?? $this->getNextCategoryOrder() + 1;
 		$array['category_id'] = ($array['category_id']) ?? $this->getNextCategoryId() + 1;
 		if (array_key_exists('category', $array)) {
+			$array['category'] = $this->sanitizeUserString($array['category']);
 			if ($this->isCategoryNameTaken($array['category'])) {
 				$this->setAPIResponse('error', 'Category name: ' . $array['category'] . ' is already taken', 409);
 				return false;
@@ -5005,6 +5006,9 @@ class Organizr
 		}
 		if (!array_key_exists('image', $array)) {
 			$this->setAPIResponse('error', 'Category image was not supplied', 422);
+			return false;
+		} else {
+			$array['image'] = $this->sanitizeUserString($array['image']);
 		}
 		$response = [
 			array(
@@ -5039,10 +5043,14 @@ class Organizr
 			return false;
 		}
 		if (array_key_exists('category', $array)) {
+			$array['category'] = $this->sanitizeUserString($array['category']);
 			if ($this->isCategoryNameTaken($array['category'], $id)) {
 				$this->setAPIResponse('error', 'Category name: ' . $array['category'] . ' is already taken', 409);
 				return false;
 			}
+		}
+		if (array_key_exists('image', $array)) {
+			$array['image'] = $this->sanitizeUserString($array['image']);
 		}
 		if (array_key_exists('default', $array)) {
 			if ($array['default']) {
@@ -6184,6 +6192,21 @@ class Organizr
 		return false;
 	}
 
+	public function validateEmail($email)
+	{
+		return filter_var(trim($email), FILTER_VALIDATE_EMAIL);
+	}
+
+	public function sanitizeEmail($email)
+	{
+		return filter_var(trim($email), FILTER_SANITIZE_EMAIL);
+	}
+
+	public function sanitizeUserString($string)
+	{
+		return htmlspecialchars(trim($string));
+	}
+
 	public function updateUser($id, $array)
 	{
 		if (!$id) {
@@ -6211,6 +6234,7 @@ class Organizr
 				$this->setAPIResponse('error', 'Username was set but empty', 409);
 				return false;
 			}
+			$array['username'] = $this->sanitizeUserString($array['username']);
 			if ($this->usernameTaken($array['username'], $array['username'], $id)) {
 				$this->setAPIResponse('error', 'Username: ' . $array['username'] . ' is already taken', 409);
 				return false;
@@ -6219,6 +6243,12 @@ class Organizr
 		if (array_key_exists('email', $array)) {
 			if ($array['email'] == '') {
 				$this->setAPIResponse('error', 'Email was set but empty', 409);
+				return false;
+			}
+			if ($this->validateEmail($array['email'])) {
+				$array['email'] = $this->sanitizeEmail($array['email']);
+			} else {
+				$this->setResponse(409, 'Email is not a valid email', ['email' => $array['email']]);
 				return false;
 			}
 			if ($this->usernameTaken($array['email'], $array['email'], $id)) {
@@ -6259,6 +6289,9 @@ class Organizr
 				return false;
 			}
 			$array['password'] = password_hash($array['password'], PASSWORD_BCRYPT);
+		}
+		if (array_key_exists('image', $array)) {
+			$array['image'] = $this->sanitizeUserString($array['image']);
 		}
 		if (array_key_exists('register_date', $array)) {
 			$this->setAPIResponse('error', 'Cannot update register date', 409);
@@ -6317,8 +6350,28 @@ class Organizr
 			$this->setAPIResponse('error', 'Username was not supplied', 409);
 			return false;
 		}
+		if ($username == '') {
+			$this->setResponse(409, 'Username was set but empty');
+			return false;
+		} else {
+			$username = $this->sanitizeUserString($username);
+		}
 		if (!$password) {
 			$this->setAPIResponse('error', 'Password was not supplied', 409);
+			return false;
+		}
+		if (!$email) {
+			$this->setAPIResponse('error', 'Email was set not supplied', 409);
+			return false;
+		}
+		if ($email == '') {
+			$this->setAPIResponse('error', 'Email was set but empty', 409);
+			return false;
+		}
+		if ($this->validateEmail($email)) {
+			$email = $this->sanitizeEmail($email);
+		} else {
+			$this->setResponse(409, 'Email is not a valid email', ['email' => $email]);
 			return false;
 		}
 		$this->setLoggerChannel('User Management');
@@ -6340,8 +6393,19 @@ class Organizr
 			$this->setAPIResponse('error', 'Username was set but empty', 409);
 			return false;
 		}
+		$username = $this->sanitizeUserString($username);
 		if (!$password) {
 			$this->setAPIResponse('error', 'Password was set but empty', 409);
+			return false;
+		}
+		if ($email == '') {
+			$this->setAPIResponse('error', 'Email was set but empty', 409);
+			return false;
+		}
+		if ($this->validateEmail($email)) {
+			$email = $this->sanitizeEmail($email);
+		} else {
+			$this->setResponse(409, 'Email is not a valid email', ['email' => $email]);
 			return false;
 		}
 		if ($this->usernameTaken($username, $email)) {
@@ -6397,6 +6461,7 @@ class Organizr
 				$this->setAPIResponse('error', 'Group was set but empty', 409);
 				return false;
 			}
+			$array['group'] = $this->sanitizeUserString($array['group']);
 			if ($this->isGroupNameTaken($array['group'], $id)) {
 				$this->setAPIResponse('error', 'Group name: ' . $array['group'] . ' is already taken', 409);
 				return false;
@@ -6476,6 +6541,7 @@ class Organizr
 		$array['default'] = ($array['default']) ?? 0;
 		$array['group_id'] = $this->getNextGroupOrder() + 1;
 		if (array_key_exists('group', $array)) {
+			$array['group'] = $this->sanitizeUserString($array['group']);
 			if ($this->isGroupNameTaken($array['group'])) {
 				$this->setAPIResponse('error', 'Group name: ' . $array['group'] . ' is already taken', 409);
 				return false;

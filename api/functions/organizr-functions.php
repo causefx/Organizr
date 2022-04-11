@@ -216,7 +216,6 @@ trait OrganizrFunctions
 				case 'png':
 				case 'jpeg':
 				case 'jpg':
-				case 'svg':
 					return true;
 				default:
 					return false;
