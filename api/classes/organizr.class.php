@@ -97,8 +97,9 @@ class Organizr
 
 	public function __construct($updating = false)
 	{
+		$this->errors = E_ALL;//E_ALL & ~E_NOTICE
 		// Set custom Error handler
-		set_error_handler([$this, 'setAPIErrorResponse']);
+		set_error_handler([$this, 'setAPIErrorResponse'], $this->errors);
 		// Next Check PHP Version
 		$this->checkPHP();
 		// Check Disk Space
@@ -326,9 +327,8 @@ class Organizr
 	{
 		$errorTypes = $this->dev ? E_ERROR | E_WARNING | E_PARSE | E_NOTICE : 0;
 		// Temp overwrite for now
-		$errorTypes = E_ERROR | E_WARNING | E_PARSE | E_NOTICE;
 		$displayErrors = $this->dev ? 1 : 0;
-		error_reporting($errorTypes);
+		error_reporting($this->errors);
 		ini_set('display_errors', $displayErrors);
 	}
 
@@ -761,6 +761,9 @@ class Organizr
 
 	public function setAPIErrorResponse($number, $message, $file, $line)
 	{
+		if (!(error_reporting() & $number)) {
+			return;
+		}
 		switch ($number) {
 			case E_USER_ERROR:
 			case E_ERROR:
@@ -776,10 +779,10 @@ class Organizr
 				$type = 'warnings';
 				break;
 			case E_USER_NOTICE:
-			case E_NOTICE:
 			case E_PARSE:
 			case E_DEPRECATED:
 			case E_USER_DEPRECATED:
+			case E_NOTICE:
 				$type = 'notice';
 				break;
 			default:
@@ -787,12 +790,15 @@ class Organizr
 				break;
 		}
 		if ($this->qualifyRequest(1)) {
-			$GLOBALS['api']['response']['exceptions'][$type][] = [
-				'error' => $number,
-				'message' => $message,
-				'file' => $file,
-				'line' => $line
-			];
+			$count = isset($GLOBALS['api']['response']['exceptions'][$type]) ? count($GLOBALS['api']['response']['exceptions'][$type]) : 0;
+			if ($count <= 10) {
+				$GLOBALS['api']['response']['exceptions'][$type][] = [
+					'error' => $number,
+					'message' => $message,
+					'file' => $file,
+					'line' => $line
+				];
+			}
 		}
 		$this->handleError($number, $message, $file, $line);
 	}
