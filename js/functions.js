@@ -422,7 +422,7 @@ function getDefault(id){
         if(getHash() === false){
             organizrConsole('Get Default', 'No Tab Info Found... Id: '+id, 'error');
             organizrConsole('Get Default', 'Trying to load next tab in cycle', 'error');
-            loadNextTab();
+            loadNextTab(true);
             return false;
         }
     }
@@ -959,7 +959,7 @@ function reloadCurrentTab(){
 	}
 	//$("#preloader").fadeOut();
 }
-function loadNextTab(){
+function loadNextTab(loadNextTabIfNotLoaded = false){
 	let next = $('#page-wrapper').find('.loaded').attr('id');
     if(next){
         next = next.split('-')[1];
@@ -971,7 +971,16 @@ function loadNextTab(){
         }
 		switchTab(next);
 	}else{
-		organizrConsole('Tab Function','No Available Tab to open', 'error');
+        if(loadNextTabIfNotLoaded){
+            if(findTab(0,'type')){
+                var id = findTab(0,'type')['id'];
+            }else{
+                var id = findTab(1,'type')['id'];
+            }
+            tabActions(1,id);
+        }else{
+            organizrConsole('Tab Function','No Available Tab to open', 'error');
+        }
 	}
 }
 function closeCurrentTab(event){
