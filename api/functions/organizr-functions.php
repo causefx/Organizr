@@ -543,8 +543,15 @@ trait OrganizrFunctions
 		}
 		$cacheFile = $cacheDirectory . $name . '.' . $extension;
 		$cacheTime = 604800;
+		$ctx = stream_context_create(array(
+			'http' => array(
+				'timeout' =>5 ,
+				'protocol_version' => 1.1,
+				'header' => 'Connection: close'
+			)
+			));
 		if ((file_exists($cacheFile) && (time() - $cacheTime) > filemtime($cacheFile)) || !file_exists($cacheFile)) {
-			@copy($url, $cacheFile);
+			@copy($url, $cacheFile, $ctx);
 		}
 	}
 
