@@ -212,7 +212,7 @@ trait LogFunctions
 		if ($this->hasDB()) {
 			$setLogger = false;
 			if ($username) {
-				$username = filter_var($username, FILTER_SANITIZE_STRING);
+				$username = $this->sanitizeUserString($username);
 			}
 			if ($this->logger) {
 				if ($channel) {
@@ -221,7 +221,8 @@ trait LogFunctions
 					}
 				}
 				if ($username) {
-					if (strtolower($this->logger->getTraceId()) !== strtolower($channel)) {
+					$currentUsername = $this->logger->getTraceId() !== '' ? strtolower($this->logger->getTraceId()) : '';
+					if ($currentUsername !== strtolower($username)) {
 						$setLogger = true;
 					}
 				}

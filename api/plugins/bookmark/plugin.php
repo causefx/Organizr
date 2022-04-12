@@ -570,6 +570,7 @@ class Bookmark extends Organizr
 		$array['enabled'] = ($array['enabled']) ?? 0;
 		$array['order'] = ($array['order']) ?? $this->_getNextBookmarkTabOrder() + 1;
 		if (array_key_exists('name', $array)) {
+			$array['name'] = $this->sanitizeUserString($array['name']);
 			if ($this->_isBookmarkTabNameTaken($array['name'])) {
 				$this->setAPIResponse('error', 'Tab name: ' . $array['name'] . ' is already taken', 409);
 				return false;
@@ -585,8 +586,11 @@ class Bookmark extends Organizr
 		if (!array_key_exists('image', $array)) {
 			$this->setAPIResponse('error', 'Tab image was not supplied', 422);
 			return false;
+		} else {
+			$array['image'] = $this->sanitizeUserString($array['image']);
 		}
 		if (array_key_exists('background_color', $array)) {
+			$array['background_color'] = $this->sanitizeUserString($array['background_color']);
 			if (!$this->_checkColorHexCode($array['background_color'])) {
 				$this->setAPIResponse('error', 'Tab background color is invalid', 422);
 				return false;
@@ -596,6 +600,7 @@ class Bookmark extends Organizr
 			return false;
 		}
 		if (array_key_exists('text_color', $array)) {
+			$array['text_color'] = $this->sanitizeUserString($array['text_color']);
 			if (!$this->_checkColorHexCode($array['text_color'])) {
 				$this->setAPIResponse('error', 'Tab text color is invalid', 422);
 				return false;
@@ -636,22 +641,28 @@ class Bookmark extends Organizr
 			return false;
 		}
 		if (array_key_exists('name', $array)) {
+			$array['name'] = $this->sanitizeUserString($array['name']);
 			if ($this->_isBookmarkTabNameTaken($array['name'], $id)) {
 				$this->setAPIResponse('error', 'Tab name: ' . $array['name'] . ' is already taken', 409);
 				return false;
 			}
 		}
 		if (array_key_exists('background_color', $array)) {
+			$array['background_color'] = $this->sanitizeUserString($array['background_color']);
 			if (!$this->_checkColorHexCode($array['background_color'])) {
 				$this->setAPIResponse('error', 'Tab background color is invalid', 422);
 				return false;
 			}
 		}
 		if (array_key_exists('text_color', $array)) {
+			$array['text_color'] = $this->sanitizeUserString($array['text_color']);
 			if (!$this->_checkColorHexCode($array['text_color'])) {
 				$this->setAPIResponse('error', 'Tab text color is invalid', 422);
 				return false;
 			}
+		}
+		if (array_key_exists('image', $array)) {
+			$array['image'] = $this->sanitizeUserString($array['image']);
 		}
 		$response = [
 			array(
@@ -871,6 +882,7 @@ class Bookmark extends Organizr
 		$array['order'] = ($array['order']) ?? $this->_getNextBookmarkCategoryOrder() + 1;
 		$array['category_id'] = ($array['category_id']) ?? $this->_getNextBookmarkCategoryId() + 1;
 		if (array_key_exists('category', $array)) {
+			$array['category'] = $this->sanitizeUserString($array['category']);
 			if ($this->_isBookmarkCategoryNameTaken($array['category'])) {
 				$this->setAPIResponse('error', 'Category name: ' . $array['category'] . ' is already taken', 409);
 				return false;
@@ -913,6 +925,7 @@ class Bookmark extends Organizr
 			return false;
 		}
 		if (array_key_exists('category', $array)) {
+			$array['category'] = $this->sanitizeUserString($array['category']);
 			if ($this->_isBookmarkCategoryNameTaken($array['category'], $id)) {
 				$this->setAPIResponse('error', 'Category name: ' . $array['category'] . ' is already taken', 409);
 				return false;

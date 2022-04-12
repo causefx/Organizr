@@ -258,17 +258,17 @@
         },
         {
             "name": "dibi/dibi",
-            "version": "v4.2.3",
-            "version_normalized": "4.2.3.0",
+            "version": "v4.2.6",
+            "version_normalized": "4.2.6.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/dg/dibi.git",
-                "reference": "73e16eb1a322599e8cdf350adcfdbc15eaf16577"
+                "reference": "9d5d430d3d04ad8aff0e1570390e9cfbb7f3c538"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/dg/dibi/zipball/73e16eb1a322599e8cdf350adcfdbc15eaf16577",
-                "reference": "73e16eb1a322599e8cdf350adcfdbc15eaf16577",
+                "url": "https://api.github.com/repos/dg/dibi/zipball/9d5d430d3d04ad8aff0e1570390e9cfbb7f3c538",
+                "reference": "9d5d430d3d04ad8aff0e1570390e9cfbb7f3c538",
                 "shasum": ""
             },
             "require": {
@@ -283,7 +283,7 @@
                 "phpstan/phpstan": "^0.12",
                 "tracy/tracy": "~2.2"
             },
-            "time": "2021-07-23T08:49:27+00:00",
+            "time": "2022-01-19T17:38:15+00:00",
             "type": "library",
             "extra": {
                 "branch-alias": {
@@ -325,7 +325,7 @@
             ],
             "support": {
                 "issues": "https://github.com/dg/dibi/issues",
-                "source": "https://github.com/dg/dibi/tree/v4.2.3"
+                "source": "https://github.com/dg/dibi/tree/v4.2.6"
             },
             "install-path": "../dibi/dibi"
         },

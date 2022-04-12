@@ -85,6 +85,7 @@ class Table
 		foreach ($this->columns as $column) {
 			$res[] = $column->getName();
 		}
+
 		return $res;
 	}
 
@@ -152,6 +153,7 @@ class Table
 				foreach ($info['columns'] as $key => $name) {
 					$info['columns'][$key] = $this->columns[strtolower($name)];
 				}
+
 				$this->indexes[strtolower($info['name'])] = new Index($info);
 				if (!empty($info['primary'])) {
 					$this->primaryKey = $this->indexes[strtolower($info['name'])];

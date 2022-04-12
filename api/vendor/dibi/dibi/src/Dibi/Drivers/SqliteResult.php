@@ -99,6 +99,7 @@ class SqliteResult implements Dibi\ResultDriver
 				'nativetype' => $types[$this->resultSet->columnType($i)] ?? null, // buggy in PHP 7.4.4 & 7.3.16, bug 79414
 			];
 		}
+
 		return $columns;
 	}
 

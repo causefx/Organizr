@@ -85,6 +85,7 @@ class PdoResult implements Dibi\ResultDriver
 			if ($row === false) {
 				throw new Dibi\NotSupportedException('Driver does not support meta data.');
 			}
+
 			$row += [
 				'table' => null,
 				'native_type' => 'VAR_STRING',
@@ -99,6 +100,7 @@ class PdoResult implements Dibi\ResultDriver
 				'vendor' => $row,
 			];
 		}
+
 		return $columns;
 	}
 

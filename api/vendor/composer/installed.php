@@ -5,7 +5,7 @@
         'type' => 'library',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
-        'reference' => '25cfc0e03bca212cab4bcf9336d3fc8449b11e61',
+        'reference' => '3a141f74828baa2322d2a095494c4ddf646790d9',
         'name' => '__root__',
         'dev' => true,
     ),
@@ -16,7 +16,7 @@
             'type' => 'library',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
-            'reference' => '25cfc0e03bca212cab4bcf9336d3fc8449b11e61',
+            'reference' => '3a141f74828baa2322d2a095494c4ddf646790d9',
             'dev_requirement' => false,
         ),
         'adldap2/adldap2' => array(
@@ -62,12 +62,12 @@
             ),
         ),
         'dibi/dibi' => array(
-            'pretty_version' => 'v4.2.3',
-            'version' => '4.2.3.0',
+            'pretty_version' => 'v4.2.6',
+            'version' => '4.2.6.0',
             'type' => 'library',
             'install_path' => __DIR__ . '/../dibi/dibi',
             'aliases' => array(),
-            'reference' => '73e16eb1a322599e8cdf350adcfdbc15eaf16577',
+            'reference' => '9d5d430d3d04ad8aff0e1570390e9cfbb7f3c538',
             'dev_requirement' => false,
         ),
         'doctrine/annotations' => array(

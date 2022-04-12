@@ -69,6 +69,7 @@ final class Translator
 		while (count($args) === 1 && is_array($args[0])) { // implicit array expansion
 			$args = array_values($args[0]);
 		}
+
 		$this->args = $args;
 		$this->errors = [];
 
@@ -116,6 +117,7 @@ XX
 						throw new PcreException;
 					}
 				}
+
 				continue;
 			}
 
@@ -138,8 +140,10 @@ XX
 					if ($lastArr === $cursor - 1) {
 						$sql[] = ',';
 					}
+
 					$sql[] = $this->formatValue($arg, $commandIns ? 'l' : 'a');
 				}
+
 				$lastArr = $cursor;
 				continue;
 			}
@@ -147,7 +151,6 @@ XX
 			// default processing
 			$sql[] = $this->formatValue($arg, null);
 		} // while
-
 
 		if ($comment) {
 			$sql[] = '*/';
@@ -214,13 +217,14 @@ XX
 								} else {
 									$op = '= ';
 								}
+
 								$vx[] = $k . $op . $v;
 							}
-
 						} else {
 							$vx[] = $this->formatValue($v, 'ex');
 						}
 					}
+
 					return '(' . implode(') ' . strtoupper($modifier) . ' (', $vx) . ')';
 
 				case 'n':  // key, key, ... identifier names
@@ -232,6 +236,7 @@ XX
 							$vx[] = $this->identifiers->{$pair[0]};
 						}
 					}
+
 					return implode(', ', $vx);
 
 
@@ -241,6 +246,7 @@ XX
 						$vx[] = $this->identifiers->{$pair[0]} . '='
 							. $this->formatValue($v, $pair[1] ?? (is_array($v) ? 'ex!' : null));
 					}
+
 					return implode(', ', $vx);
 
 
@@ -250,6 +256,7 @@ XX
 						$pair = explode('%', (string) $k, 2); // split into identifier & modifier
 						$vx[] = $this->formatValue($v, $pair[1] ?? (is_array($v) ? 'ex!' : null));
 					}
+
 					return '(' . (($vx || $modifier === 'l') ? implode(', ', $vx) : 'NULL') . ')';
 
 
@@ -259,6 +266,7 @@ XX
 						$kx[] = $this->identifiers->{$pair[0]};
 						$vx[] = $this->formatValue($v, $pair[1] ?? (is_array($v) ? 'ex!' : null));
 					}
+
 					return '(' . implode(', ', $kx) . ') VALUES (' . implode(', ', $vx) . ')';
 
 				case 'm': // (key, key, ...) VALUES (val, val, ...), (val, val, ...), ...
@@ -281,9 +289,11 @@ XX
 							$vx[$k2][] = $this->formatValue($v2, $pair[1] ?? (is_array($v2) ? 'ex!' : null));
 						}
 					}
+
 					foreach ($vx as $k => $v) {
 						$vx[$k] = '(' . implode(', ', $v) . ')';
 					}
+
 					return '(' . implode(', ', $kx) . ') VALUES ' . implode(', ', $vx);
 
 				case 'by': // key ASC, key DESC
@@ -297,6 +307,7 @@ XX
 							$vx[] = $this->identifiers->$v;
 						}
 					}
+
 					return implode(', ', $vx);
 
 				case 'ex!':
@@ -310,10 +321,15 @@ XX
 					foreach ($value as $v) {
 						$vx[] = $this->formatValue($v, $modifier);
 					}
+
 					return implode(', ', $vx);
 			}
 		}
 
+		// object-to-scalar procession
+		if ($value instanceof \BackedEnum && is_scalar($value->value)) {
+			$value = $value->value;
+		}
 
 		// with modifier procession
 		if ($modifier) {
@@ -400,6 +416,7 @@ XX
 					} elseif (!$value instanceof \DateTimeInterface) {
 						$value = new DateTime($value);
 					}
+
 					return $modifier === 'd'
 						? $this->driver->escapeDate($value)
 						: $this->driver->escapeDateTime($value);
@@ -439,6 +456,7 @@ XX
 							throw new PcreException;
 						}
 					}
+
 					return $value;
 
 				case 'SQL': // preserve as real SQL (TODO: rename to %sql)
@@ -468,7 +486,6 @@ XX
 					return $this->errors[] = "**Unknown or unexpected modifier %$modifier**";
 			}
 		}
-
 
 		// without modifier procession
 		if (is_string($value)) {
@@ -551,6 +568,7 @@ XX
 					$this->comment = true;
 					return '/*';
 				}
+
 				return '';
 
 			} elseif ($mod === 'else') {
@@ -563,7 +581,6 @@ XX
 					$this->comment = true;
 					return '/*';
 				}
-
 			} elseif ($mod === 'end') {
 				$this->ifLevel--;
 				if ($this->ifLevelStart === $this->ifLevel + 1) {
@@ -572,6 +589,7 @@ XX
 					$this->comment = false;
 					return '*/';
 				}
+
 				return '';
 
 			} elseif ($mod === 'ex') { // array expansion
@@ -586,6 +604,7 @@ XX
 				} else {
 					$this->limit = Helpers::intVal($arg);
 				}
+
 				return '';
 
 			} elseif ($mod === 'ofs') { // apply offset
@@ -596,6 +615,7 @@ XX
 				} else {
 					$this->offset = Helpers::intVal($arg);
 				}
+
 				return '';
 
 			} else { // default processing
@@ -649,6 +669,7 @@ XX
 				$v = $this->driver->escapeIdentifier($v);
 			}
 		}
+
 		return implode('.', $parts);
 	}
 }

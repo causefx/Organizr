@@ -101,10 +101,10 @@ class FirebirdDriver implements Dibi\Driver
 			} else {
 				throw new Dibi\DriverException(ibase_errmsg(), ibase_errcode(), $sql);
 			}
-
 		} elseif (is_resource($res)) {
 			return $this->createResultDriver($res);
 		}
+
 		return null;
 	}
 
@@ -131,11 +131,12 @@ class FirebirdDriver implements Dibi\Driver
 	 * Begins a transaction (if supported).
 	 * @throws Dibi\DriverException
 	 */
-	public function begin(string $savepoint = null): void
+	public function begin(?string $savepoint = null): void
 	{
 		if ($savepoint !== null) {
 			throw new Dibi\NotSupportedException('Savepoints are not supported in Firebird/Interbase.');
 		}
+
 		$this->transaction = ibase_trans($this->getResource());
 		$this->inTransaction = true;
 	}
@@ -145,7 +146,7 @@ class FirebirdDriver implements Dibi\Driver
 	 * Commits statements in a transaction.
 	 * @throws Dibi\DriverException
 	 */
-	public function commit(string $savepoint = null): void
+	public function commit(?string $savepoint = null): void
 	{
 		if ($savepoint !== null) {
 			throw new Dibi\NotSupportedException('Savepoints are not supported in Firebird/Interbase.');
@@ -163,7 +164,7 @@ class FirebirdDriver implements Dibi\Driver
 	 * Rollback changes in a transaction.
 	 * @throws Dibi\DriverException
 	 */
-	public function rollback(string $savepoint = null): void
+	public function rollback(?string $savepoint = null): void
 	{
 		if ($savepoint !== null) {
 			throw new Dibi\NotSupportedException('Savepoints are not supported in Firebird/Interbase.');

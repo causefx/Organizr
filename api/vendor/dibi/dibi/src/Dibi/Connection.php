@@ -68,7 +68,7 @@ class Connection implements IConnection
 	 *   - onConnect (array) => list of SQL queries to execute (by Connection::query()) after connection is established
 	 * @throws Exception
 	 */
-	public function __construct(array $config, string $name = null)
+	public function __construct(array $config, ?string $name = null)
 	{
 		Helpers::alias($config, 'username', 'user');
 		Helpers::alias($config, 'password', 'pass');
@@ -150,16 +150,17 @@ class Connection implements IConnection
 			if ($event) {
 				$this->onEvent($event->done());
 			}
+
 			if (isset($this->config['onConnect'])) {
 				foreach ($this->config['onConnect'] as $sql) {
 					$this->query($sql);
 				}
 			}
-
 		} catch (DriverException $e) {
 			if ($event) {
 				$this->onEvent($event->done($e));
 			}
+
 			throw $e;
 		}
 	}
@@ -191,7 +192,7 @@ class Connection implements IConnection
 	 * @see self::__construct
 	 * @return mixed
 	 */
-	final public function getConfig(string $key = null, $default = null)
+	final public function getConfig(?string $key = null, $default = null)
 	{
 		return $key === null
 			? $this->config
@@ -207,6 +208,7 @@ class Connection implements IConnection
 		if (!$this->driver) {
 			$this->connect();
 		}
+
 		return $this->driver;
 	}
 
@@ -232,6 +234,7 @@ class Connection implements IConnection
 		if (!$this->driver) {
 			$this->connect();
 		}
+
 		return (clone $this->translator)->translate($args);
 	}
 
@@ -252,6 +255,7 @@ class Connection implements IConnection
 			} else {
 				echo get_class($e) . ': ' . $e->getMessage() . (PHP_SAPI === 'cli' ? "\n" : '<br>');
 			}
+
 			return false;
 		}
 	}
@@ -287,6 +291,7 @@ class Connection implements IConnection
 			if ($event) {
 				$this->onEvent($event->done($e));
 			}
+
 			throw $e;
 		}
 
@@ -294,6 +299,7 @@ class Connection implements IConnection
 		if ($event) {
 			$this->onEvent($event->done($res));
 		}
+
 		return $res;
 	}
 
@@ -307,10 +313,12 @@ class Connection implements IConnection
 		if (!$this->driver) {
 			$this->connect();
 		}
+
 		$rows = $this->driver->getAffectedRows();
 		if ($rows === null || $rows < 0) {
 			throw new Exception('Cannot retrieve number of affected rows.');
 		}
+
 		return $rows;
 	}
 
@@ -319,15 +327,17 @@ class Connection implements IConnection
 	 * Retrieves the ID generated for an AUTO_INCREMENT column by the previous INSERT query.
 	 * @throws Exception
 	 */
-	public function getInsertId(string $sequence = null): int
+	public function getInsertId(?string $sequence = null): int
 	{
 		if (!$this->driver) {
 			$this->connect();
 		}
+
 		$id = $this->driver->getInsertId($sequence);
 		if ($id === null) {
 			throw new Exception('Cannot retrieve last generated ID.');
 		}
+
 		return $id;
 	}
 
@@ -335,7 +345,7 @@ class Connection implements IConnection
 	/**
 	 * Begins a transaction (if supported).
 	 */
-	public function begin(string $savepoint = null): void
+	public function begin(?string $savepoint = null): void
 	{
 		if ($this->transactionDepth !== 0) {
 			throw new \LogicException(__METHOD__ . '() call is forbidden inside a transaction() callback');
@@ -344,17 +354,18 @@ class Connection implements IConnection
 		if (!$this->driver) {
 			$this->connect();
 		}
+
 		$event = $this->onEvent ? new Event($this, Event::BEGIN, $savepoint) : null;
 		try {
 			$this->driver->begin($savepoint);
 			if ($event) {
 				$this->onEvent($event->done());
 			}
-
 		} catch (DriverException $e) {
 			if ($event) {
 				$this->onEvent($event->done($e));
 			}
+
 			throw $e;
 		}
 	}
@@ -363,7 +374,7 @@ class Connection implements IConnection
 	/**
 	 * Commits statements in a transaction.
 	 */
-	public function commit(string $savepoint = null): void
+	public function commit(?string $savepoint = null): void
 	{
 		if ($this->transactionDepth !== 0) {
 			throw new \LogicException(__METHOD__ . '() call is forbidden inside a transaction() callback');
@@ -372,17 +383,18 @@ class Connection implements IConnection
 		if (!$this->driver) {
 			$this->connect();
 		}
+
 		$event = $this->onEvent ? new Event($this, Event::COMMIT, $savepoint) : null;
 		try {
 			$this->driver->commit($savepoint);
 			if ($event) {
 				$this->onEvent($event->done());
 			}
-
 		} catch (DriverException $e) {
 			if ($event) {
 				$this->onEvent($event->done($e));
 			}
+
 			throw $e;
 		}
 	}
@@ -391,7 +403,7 @@ class Connection implements IConnection
 	/**
 	 * Rollback changes in a transaction.
 	 */
-	public function rollback(string $savepoint = null): void
+	public function rollback(?string $savepoint = null): void
 	{
 		if ($this->transactionDepth !== 0) {
 			throw new \LogicException(__METHOD__ . '() call is forbidden inside a transaction() callback');
@@ -400,17 +412,18 @@ class Connection implements IConnection
 		if (!$this->driver) {
 			$this->connect();
 		}
+
 		$event = $this->onEvent ? new Event($this, Event::ROLLBACK, $savepoint) : null;
 		try {
 			$this->driver->rollback($savepoint);
 			if ($event) {
 				$this->onEvent($event->done());
 			}
-
 		} catch (DriverException $e) {
 			if ($event) {
 				$this->onEvent($event->done($e));
 			}
+
 			throw $e;
 		}
 	}
@@ -433,6 +446,7 @@ class Connection implements IConnection
 			if ($this->transactionDepth === 0) {
 				$this->rollback();
 			}
+
 			throw $e;
 		}
 
@@ -484,6 +498,7 @@ class Connection implements IConnection
 		if ($args instanceof Traversable) {
 			$args = iterator_to_array($args);
 		}
+
 		return $this->command()->insert()
 			->into('%n', $table, '(%n)', array_keys($args))->values('%l', $args);
 	}
@@ -587,7 +602,7 @@ class Connection implements IConnection
 	 * @param  callable  $onProgress  function (int $count, ?float $percent): void
 	 * @return int  count of sql commands
 	 */
-	public function loadFile(string $file, callable $onProgress = null): int
+	public function loadFile(string $file, ?callable $onProgress = null): int
 	{
 		return Helpers::loadFromFile($this, $file, $onProgress);
 	}
@@ -601,6 +616,7 @@ class Connection implements IConnection
 		if (!$this->driver) {
 			$this->connect();
 		}
+
 		return new Reflection\Database($this->driver->getReflector(), $this->config['database'] ?? null);
 	}
 

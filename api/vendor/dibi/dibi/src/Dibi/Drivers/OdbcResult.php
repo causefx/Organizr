@@ -72,11 +72,13 @@ class OdbcResult implements Dibi\ResultDriver
 			if (!odbc_fetch_row($set, ++$this->row)) {
 				return null;
 			}
+
 			$count = odbc_num_fields($set);
 			$cols = [];
 			for ($i = 1; $i <= $count; $i++) {
 				$cols[] = odbc_result($set, $i);
 			}
+
 			return $cols;
 		}
 	}
@@ -116,6 +118,7 @@ class OdbcResult implements Dibi\ResultDriver
 				'nativetype' => odbc_field_type($this->resultSet, $i),
 			];
 		}
+
 		return $columns;
 	}
 

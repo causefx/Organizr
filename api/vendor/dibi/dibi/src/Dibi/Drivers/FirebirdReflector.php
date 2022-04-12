@@ -47,6 +47,7 @@ class FirebirdReflector implements Dibi\Reflector
 				'view' => $row[1] === 'TRUE',
 			];
 		}
+
 		return $tables;
 	}
 
@@ -99,6 +100,7 @@ class FirebirdReflector implements Dibi\Reflector
 				'autoincrement' => false,
 			];
 		}
+
 		return $columns;
 	}
 
@@ -131,6 +133,7 @@ class FirebirdReflector implements Dibi\Reflector
 			$indexes[$key]['table'] = $table;
 			$indexes[$key]['columns'][$row['FIELD_POSITION']] = $row['FIELD_NAME'];
 		}
+
 		return $indexes;
 	}
 
@@ -159,6 +162,7 @@ class FirebirdReflector implements Dibi\Reflector
 				'table' => $table,
 			];
 		}
+
 		return $keys;
 	}
 
@@ -179,6 +183,7 @@ class FirebirdReflector implements Dibi\Reflector
 		while ($row = $res->fetch(false)) {
 			$indices[] = $row[0];
 		}
+
 		return $indices;
 	}
 
@@ -201,6 +206,7 @@ class FirebirdReflector implements Dibi\Reflector
 		while ($row = $res->fetch(false)) {
 			$constraints[] = $row[0];
 		}
+
 		return $constraints;
 	}
 
@@ -209,7 +215,7 @@ class FirebirdReflector implements Dibi\Reflector
 	 * Returns metadata for all triggers in a table or database.
 	 * (Only if user has permissions on ALTER TABLE, INSERT/UPDATE/DELETE record in table)
 	 */
-	public function getTriggersMeta(string $table = null): array
+	public function getTriggersMeta(?string $table = null): array
 	{
 		$res = $this->driver->query(
 			"
@@ -248,6 +254,7 @@ class FirebirdReflector implements Dibi\Reflector
 				'enabled' => trim($row['TRIGGER_ENABLED']) === 'TRUE',
 			];
 		}
+
 		return $triggers;
 	}
 
@@ -256,7 +263,7 @@ class FirebirdReflector implements Dibi\Reflector
 	 * Returns list of triggers for given table.
 	 * (Only if user has permissions on ALTER TABLE, INSERT/UPDATE/DELETE record in table)
 	 */
-	public function getTriggers(string $table = null): array
+	public function getTriggers(?string $table = null): array
 	{
 		$q = 'SELECT TRIM(RDB$TRIGGER_NAME)
 			FROM RDB$TRIGGERS
@@ -270,6 +277,7 @@ class FirebirdReflector implements Dibi\Reflector
 		while ($row = $res->fetch(false)) {
 			$triggers[] = $row[0];
 		}
+
 		return $triggers;
 	}
 
@@ -321,6 +329,7 @@ class FirebirdReflector implements Dibi\Reflector
 			$procedures[$key]['params'][$io][$num]['type'] = trim($row['FIELD_TYPE']);
 			$procedures[$key]['params'][$io][$num]['size'] = $row['FIELD_LENGTH'];
 		}
+
 		return $procedures;
 	}
 
@@ -338,6 +347,7 @@ class FirebirdReflector implements Dibi\Reflector
 		while ($row = $res->fetch(false)) {
 			$procedures[] = $row[0];
 		}
+
 		return $procedures;
 	}
 
@@ -356,6 +366,7 @@ class FirebirdReflector implements Dibi\Reflector
 		while ($row = $res->fetch(false)) {
 			$generators[] = $row[0];
 		}
+
 		return $generators;
 	}
 
@@ -374,6 +385,7 @@ class FirebirdReflector implements Dibi\Reflector
 		while ($row = $res->fetch(false)) {
 			$functions[] = $row[0];
 		}
+
 		return $functions;
 	}
 }

@@ -45,7 +45,7 @@ class dibi
 
 	/** version */
 	public const
-		VERSION = '4.2.3';
+		VERSION = '4.2.6';
 
 	/** sorting order */
 	public const
@@ -107,7 +107,7 @@ class dibi
 	 * Retrieve active connection.
 	 * @throws Dibi\Exception
 	 */
-	public static function getConnection(string $name = null): Dibi\Connection
+	public static function getConnection(?string $name = null): Dibi\Connection
 	{
 		if ($name === null) {
 			if (self::$connection === null) {
@@ -163,7 +163,7 @@ class dibi
 	/**
 	 * Strips microseconds part.
 	 */
-	public static function stripMicroseconds(\DateTimeInterface $dt): \DateTimeInterface
+	public static function stripMicroseconds(DateTimeInterface $dt): DateTimeInterface
 	{
 		$class = get_class($dt);
 		return new $class($dt->format('Y-m-d H:i:s'), $dt->getTimezone());

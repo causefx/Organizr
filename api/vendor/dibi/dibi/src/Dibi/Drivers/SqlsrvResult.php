@@ -96,6 +96,7 @@ class SqlsrvResult implements Dibi\ResultDriver
 				'nativetype' => $fieldMetadata['Type'],
 			];
 		}
+
 		return $columns;
 	}
 

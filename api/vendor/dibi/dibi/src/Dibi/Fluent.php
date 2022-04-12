@@ -136,6 +136,7 @@ class Fluent implements IDataSource
 			if (isset(self::$masks[$clause])) {
 				$this->clauses = array_fill_keys(self::$masks[$clause], null);
 			}
+
 			$this->cursor = &$this->clauses[$clause];
 			$this->cursor = [];
 			$this->command = $clause;
@@ -165,7 +166,6 @@ class Fluent implements IDataSource
 					$this->cursor[] = $sep;
 				}
 			}
-
 		} else {
 			// append to currect flow
 			if ($args === [self::REMOVE]) {
@@ -203,6 +203,7 @@ class Fluent implements IDataSource
 			if ($arg instanceof self) {
 				$arg = new Literal("($arg)");
 			}
+
 			$this->cursor[] = $arg;
 		}
 
@@ -245,6 +246,7 @@ class Fluent implements IDataSource
 		} else {
 			unset($this->flags[$flag]);
 		}
+
 		return $this;
 	}
 
@@ -291,7 +293,7 @@ class Fluent implements IDataSource
 	 * @return Result|int|null  result set or number of affected rows
 	 * @throws Exception
 	 */
-	public function execute(string $return = null)
+	public function execute(?string $return = null)
 	{
 		$res = $this->query($this->_export());
 		switch ($return) {
@@ -332,7 +334,7 @@ class Fluent implements IDataSource
 	/**
 	 * Fetches all records from table.
 	 */
-	public function fetchAll(int $offset = null, int $limit = null): array
+	public function fetchAll(?int $offset = null, ?int $limit = null): array
 	{
 		return $this->query($this->_export(null, ['%ofs %lmt', $offset, $limit]))->fetchAll();
 	}
@@ -351,7 +353,7 @@ class Fluent implements IDataSource
 	/**
 	 * Fetches all records from table like $key => $value pairs.
 	 */
-	public function fetchPairs(string $key = null, string $value = null): array
+	public function fetchPairs(?string $key = null, ?string $value = null): array
 	{
 		return $this->query($this->_export())->fetchPairs($key, $value);
 	}
@@ -360,7 +362,7 @@ class Fluent implements IDataSource
 	/**
 	 * Required by the IteratorAggregate interface.
 	 */
-	public function getIterator(int $offset = null, int $limit = null): ResultIterator
+	public function getIterator(?int $offset = null, ?int $limit = null): ResultIterator
 	{
 		return $this->query($this->_export(null, ['%ofs %lmt', $offset, $limit]))->getIterator();
 	}
@@ -369,7 +371,7 @@ class Fluent implements IDataSource
 	/**
 	 * Generates and prints SQL query or it's part.
 	 */
-	public function test(string $clause = null): bool
+	public function test(?string $clause = null): bool
 	{
 		return $this->connection->test($this->_export($clause));
 	}
@@ -390,6 +392,7 @@ class Fluent implements IDataSource
 			$method = array_shift($setup);
 			$res->$method(...$setup);
 		}
+
 		return $res;
 	}
 
@@ -420,7 +423,7 @@ class Fluent implements IDataSource
 	/**
 	 * Generates parameters for Translator.
 	 */
-	protected function _export(string $clause = null, array $args = []): array
+	protected function _export(?string $clause = null, array $args = []): array
 	{
 		if ($clause === null) {
 			$data = $this->clauses;
@@ -428,7 +431,6 @@ class Fluent implements IDataSource
 				$args = array_merge(['%lmt %ofs', $data['LIMIT'][0] ?? null, $data['OFFSET'][0] ?? null], $args);
 				unset($data['LIMIT'], $data['OFFSET']);
 			}
-
 		} else {
 			$clause = self::$normalizer->$clause;
 			if (array_key_exists($clause, $this->clauses)) {
@@ -444,6 +446,7 @@ class Fluent implements IDataSource
 				if ($clause === $this->command && $this->flags) {
 					$args[] = implode(' ', array_keys($this->flags));
 				}
+
 				foreach ($statement as $arg) {
 					$args[] = $arg;
 				}
@@ -464,6 +467,7 @@ class Fluent implements IDataSource
 			$s .= 'By';
 			trigger_error("Did you mean '$s'?", E_USER_NOTICE);
 		}
+
 		return strtoupper(preg_replace('#[a-z](?=[A-Z])#', '$0 ', $s));
 	}
 
@@ -475,6 +479,7 @@ class Fluent implements IDataSource
 			$this->clauses[$clause] = &$val;
 			unset($val);
 		}
+
 		$this->cursor = &$foo;
 	}
 }

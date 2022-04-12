@@ -11,6 +11,7 @@ namespace Dibi\Drivers;
 
 use Dibi;
 use Dibi\Helpers;
+use PgSql;
 
 
 /**
@@ -20,7 +21,7 @@ class PostgreResult implements Dibi\ResultDriver
 {
 	use Dibi\Strict;
 
-	/** @var resource */
+	/** @var resource|PgSql\Result */
 	private $resultSet;
 
 	/** @var bool */
@@ -28,7 +29,7 @@ class PostgreResult implements Dibi\ResultDriver
 
 
 	/**
-	 * @param  resource  $resultSet
+	 * @param  resource|PgSql\Result  $resultSet
 	 */
 	public function __construct($resultSet)
 	{
@@ -102,18 +103,21 @@ class PostgreResult implements Dibi\ResultDriver
 				: $row['name'];
 			$columns[] = $row;
 		}
+
 		return $columns;
 	}
 
 
 	/**
 	 * Returns the result set resource.
-	 * @return resource|null
+	 * @return resource|PgSql\Result|null
 	 */
 	public function getResultResource()
 	{
 		$this->autoFree = false;
-		return is_resource($this->resultSet) ? $this->resultSet : null;
+		return is_resource($this->resultSet) || $this->resultSet instanceof PgSql\Result
+			? $this->resultSet
+			: null;
 	}
 
 
