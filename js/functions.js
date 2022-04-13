@@ -426,13 +426,15 @@ function getDefault(id){
             return false;
         }
     }
-	if(getHash() === false || getHash() == 'OrganizrLogin'){
-		if(tabInfo.name !== null && tabInfo.type !== null){
-			switchTab(id);
-		}else{
-			$('#side-menu').children().first().children().click()
-		}
-	}else{
+    if(getHash() === false){
+        if(tabInfo.name !== null && tabInfo.type !== null){
+            switchTab(id);
+        } else {
+            $('#side-menu').children().first().children().click()
+        }
+    }else if(getHash() == 'OrganizrLogin'){
+        loadNextTab(true);
+    }else{
 		let hashTab = getHash();
         let hashType = isNaN(hashTab) ? 'name' : 'id';
         let tabInfo = findTab(hashTab, hashType);
@@ -442,7 +444,7 @@ function getDefault(id){
             return false;
         }
 		let type = tabInfo.type;
-		if (typeof hashTab !== 'undefined' && typeof type !== 'undefined') {
+		if(typeof hashTab !== 'undefined' && typeof type !== 'undefined'){
 			directToHash = true;
 			switchTab(tabInfo.id);
 		}else{
