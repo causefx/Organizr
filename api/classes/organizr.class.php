@@ -835,7 +835,7 @@ class Organizr
 
 	public function handleError($number, $message, $file, $line)
 	{
-		error_log(sprintf('PHP %s:  %s in %s on line %d', $number, $message, $file, $line));
+		error_log(sprintf('Organizr %s:  %s in %s on line %d', $number, $message, $file, $line));
 	}
 
 	public function checkRoute($request)
