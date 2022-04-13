@@ -5974,7 +5974,7 @@ class Organizr
 
 	public function downloadFileToPath($from, $to, $path)
 	{
-		if ((stripos($from, 'api.github.com') !== false) && $this->config['githubAccessToken'] !== '') {
+		if (((stripos($from, 'api.github.com') !== false) || (stripos($from, 'raw.githubusercontent.com') !== false)) && $this->config['githubAccessToken'] !== '') {
 			$context = stream_context_create(
 				array(
 					'ssl' => array(
