@@ -691,6 +691,9 @@ function switchToPlugin(plugin){
     closeSideMenu();
     removeMenuActive();
     swapDisplay('plugin');
+    $(".plugin-container").each(function(){
+        $(this).addClass("hidden").removeClass("show");
+    });
     $('#container-plugin-'+plugin).addClass("show").removeClass('hidden');
 }
 function switchTab(id, split = null){
