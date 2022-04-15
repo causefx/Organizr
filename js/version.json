@@ -551,5 +551,12 @@
     "new": "added check to see if username was blank before strtolower function called|added function printWarningsAndErrors for dev purposes|added php error message names to error handler|added sanitize tab name on added and edit|added sanitize to tabs, categories, users and bookmarks|added sanitize to uploaded image names|added sanitizeUserString and sanitizeEmail functions",
     "fixed": "fixed loading tab if no default is selected",
     "notes": "changed error_handler for organizr class to setAPIErrorResponse|changed the api response of warning and errors to admin and co-admin only|removed svg files from approved image lists|replaced FILTER_SANITIZE_STRING as it was being deprecated in php 8.1|tweak organizr error handler|updated cron file to include user plugins for advance cron jobs|updated dibi/dibi to 4.2.6"
+  },
+  "2.1.1840": {
+    "date": "2022-04-15 20:42",
+    "title": "Weekly Update",
+    "new": "",
+    "fixed": "fix defaultTab if organizrLogin hash is still set|fixed plugin container not hiding if clicking other plugin|fixed private repo for plugins|fix user plugin not loading default config file",
+    "notes": "renamed php error to organizr error"
   }
 }

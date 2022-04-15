@@ -65,7 +65,7 @@ class Organizr
 
 	// ===================================
 	// Organizr Version
-	public $version = '2.1.1830';
+	public $version = '2.1.1840';
 	// ===================================
 	// Quick php Version check
 	public $minimumPHP = '7.3';
@@ -835,7 +835,7 @@ class Organizr
 
 	public function handleError($number, $message, $file, $line)
 	{
-		error_log(sprintf('PHP %s:  %s in %s on line %d', $number, $message, $file, $line));
+		error_log(sprintf('Organizr %s:  %s in %s on line %d', $number, $message, $file, $line));
 	}
 
 	public function checkRoute($request)
@@ -1345,6 +1345,19 @@ class Organizr
 		foreach ($iteratorIterator as $info) {
 			if ($info->getFilename() == 'config.php') {
 				$loadedDefaults = array_merge($loadedDefaults, $this->loadConfig($info->getPathname()));
+			}
+		}
+		/*
+		 * Include all custom Plugin routes
+		 */
+		if (file_exists(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR . 'plugins')) {
+			$folder = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR . 'plugins';
+			$directoryIterator = new RecursiveDirectoryIterator($folder, FilesystemIterator::SKIP_DOTS);
+			$iteratorIterator = new RecursiveIteratorIterator($directoryIterator);
+			foreach ($iteratorIterator as $info) {
+				if ($info->getFilename() == 'config.php') {
+					$loadedDefaults = array_merge($loadedDefaults, $this->loadConfig($info->getPathname()));
+				}
 			}
 		}
 		return (is_array($loadedDefaults) ? $this->fillDefaultConfig_recurse($array, $loadedDefaults) : false);
@@ -5974,7 +5987,7 @@ class Organizr
 
 	public function downloadFileToPath($from, $to, $path)
 	{
-		if ((stripos($from, 'api.github.com') !== false) && $this->config['githubAccessToken'] !== '') {
+		if (((stripos($from, 'api.github.com') !== false) || (stripos($from, 'raw.githubusercontent.com') !== false)) && $this->config['githubAccessToken'] !== '') {
 			$context = stream_context_create(
 				array(
 					'ssl' => array(
