@@ -10,7 +10,7 @@ $app->get('/', function ($request, $response, $args) {
 		->withHeader('Location', '/api/v2/status')
 		->withStatus(302);
 });
-$app->get('/status', function ($request, $response, $args) {
+$app->get('/status[/]', function ($request, $response, $args) {
 	/**
 	 * @OA\Get(
 	 *     path="/api/v2/status",
@@ -25,78 +25,23 @@ $app->get('/status', function ($request, $response, $args) {
 	 */
 	$Organizr = ($request->getAttribute('Organizr')) ?? new Organizr();
 	if ($Organizr->checkRoute($request)) {
-		$GLOBALS['api']['response']['data'] = $Organizr->status(true);
+		$GLOBALS['api']['response']['data'] = $Organizr->status(false);
 	}
 	$response->getBody()->write(jsonE($GLOBALS['api']));
 	return $response
 		->withHeader('Content-Type', 'application/json;charset=UTF-8')
 		->withStatus($GLOBALS['responseCode']);
 });
-$app->any('/auth', function ($request, $response, $args) {
-	/**
-	 * @OA\Get(
-	 *     path="/api/v2/auth",
-	 *     summary="Nginx auth_request",
-	 * @OA\Parameter(
-	 *   name="group",
-	 *   description="The id of the group allowed",
-	 *   @OA\Schema(
-	 *     type="integer",
-	 *     format="int64",
-	 *   ),
-	 *   in="query",
-	 *   required=false
-	 * ),
-	 * @OA\Parameter(
-	 *   name="whitelist",
-	 *   description="Whitelisted Ip's",
-	 *   @OA\Schema(
-	 *     type="array",
-	 *     @OA\Items(
-	 *      type="string",
-	 *     ),
-	 *   ),
-	 *   in="query",
-	 *   explode=false,
-	 *   required=false
-	 * ),
-	 * @OA\Parameter(
-	 *   name="blacklist",
-	 *   description="Blacklisted Ip's",
-	 *   @OA\Schema(
-	 *     type="array",
-	 *     @OA\Items(
-	 *      type="string",
-	 *     ),
-	 *   ),
-	 *   in="query",
-	 *   explode=false,
-	 *   required=false
-	 * ),
-	 * @OA\Response(
-	 *  response="200",
-	 *  description="Success",
-	 *  ),
-	 *  @OA\Response(response="401",description="Unauthorized"),
-	 * )
-	 */
+$app->any('/auth-[{group}[/]]', function ($request, $response, $args) {
 	$Organizr = ($request->getAttribute('Organizr')) ?? new Organizr();
+	$_GET['group'] = $args['group'] ?? 0;
 	$Organizr->auth();
 	$response->getBody()->write(jsonE($GLOBALS['api']));
 	return $response
 		->withHeader('Content-Type', 'application/json;charset=UTF-8')
 		->withStatus($GLOBALS['responseCode']);
 });
-$app->any('/auth-{group}', function ($request, $response, $args) {
-	$Organizr = ($request->getAttribute('Organizr')) ?? new Organizr();
-	$_GET['group'] = $args['group'];
-	$Organizr->auth();
-	$response->getBody()->write(jsonE($GLOBALS['api']));
-	return $response
-		->withHeader('Content-Type', 'application/json;charset=UTF-8')
-		->withStatus($GLOBALS['responseCode']);
-});
-$app->any('/auth/[{group}[/{type}[/{ips}]]]', function ($request, $response, $args) {
+$app->any('/auth[/[{group}[/{type}[/{ips}]]]]', function ($request, $response, $args) {
 	$Organizr = ($request->getAttribute('Organizr')) ?? new Organizr();
 	$_GET['group'] = $args['group'] ?? 0;
 	$_GET['type'] = $args['type'] ?? 'deny';
@@ -107,7 +52,7 @@ $app->any('/auth/[{group}[/{type}[/{ips}]]]', function ($request, $response, $ar
 		->withHeader('Content-Type', 'application/json;charset=UTF-8')
 		->withStatus($GLOBALS['responseCode']);
 });
-$app->any('/organizr-auth/[{group}[/{type}[/{ips}]]]', function ($request, $response, $args) {
+$app->any('/organizr-auth[/[{group}[/{type}[/{ips}]]]]', function ($request, $response, $args) {
 	$Organizr = ($request->getAttribute('Organizr')) ?? new Organizr();
 	$_GET['group'] = $args['group'] ?? 0;
 	$_GET['type'] = $args['type'] ?? 'deny';
@@ -118,7 +63,7 @@ $app->any('/organizr-auth/[{group}[/{type}[/{ips}]]]', function ($request, $resp
 		->withHeader('Content-Type', 'application/json;charset=UTF-8')
 		->withStatus($GLOBALS['responseCode']);
 });
-$app->get('/launch', function ($request, $response, $args) {
+$app->get('/launch[/]', function ($request, $response, $args) {
 	$Organizr = ($request->getAttribute('Organizr')) ?? new Organizr();
 	$tabInfo = $Organizr->getUserTabsAndCategories();
 	$GLOBALS['api']['response']['data']['categories'] = ($tabInfo['categories']) ?? false;
