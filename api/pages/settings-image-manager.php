@@ -19,8 +19,12 @@ function get_page_settings_image_manager($Organizr)
       headers:{ "formKey": local("g","formKey") },
       init: function() {
         this.on("complete", function(file) {
-            buildImageManagerView();
-            //$.magnificPopup.close();
+            if(file["status"] === "success"){
+                buildImageManagerView();
+            }else{
+                let response = JSON.parse(file.xhr.responseText);
+            	message("Upload Error", response.response.message,activeInfo.settings.notifications.position,"#FFF","error","5000");
+            }
         });
       }
     });
