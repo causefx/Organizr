@@ -9778,7 +9778,7 @@ function PopupCenter(url, title, w, h) {
     return newWindow;
 }
 function getPlexHeaders(){
-    let plexTitle = activeInfo.appearance.title == '' ? 'Organizr' : activeInfo.appearance.title;
+    let plexTitle = activeInfo.appearance.title == '' ? 'Organizr' : cleanClass(activeInfo.appearance.title);
     return {
         'Accept': 'application/json',
         'X-Plex-Product': plexTitle,
