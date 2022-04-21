@@ -2232,9 +2232,16 @@ class Organizr
 			$images = [];
 			switch ($type) {
 				case 'np':
+					$i = 0;
 					foreach ($iteratorIterator as $info) {
 						if (stripos($info->getFilename(), 'np') !== false) {
-							$images[] = 'data/cache/' . $info->getFilename();
+							if ($i <= 200) {
+								$imageInfo = getimagesize($folder . DIRECTORY_SEPARATOR . $info->getFilename());
+								if ($imageInfo[0] >= 1200) {
+									$images[] = 'data/cache/' . $info->getFilename();
+								}
+								$i++;
+							}
 						}
 					}
 					if (count($images) > 0) {
