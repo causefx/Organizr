@@ -2230,7 +2230,7 @@ class Organizr
 			try {
 				$directoryIterator = new RecursiveDirectoryIterator($folder, FilesystemIterator::SKIP_DOTS);
 				$iteratorIterator = new RecursiveIteratorIterator($directoryIterator);
-				$images = [];
+				$image = null;
 				switch ($type) {
 					case 'np':
 						$i = 0;
@@ -2244,7 +2244,7 @@ class Organizr
 								if ($i < 1) {
 									$imageInfo = getimagesize($folder . DIRECTORY_SEPARATOR . $info->getFilename());
 									if ($imageInfo[0] >= $this->getCacheImageSize('npw')) {
-										$images[] = 'data/cache/' . $info->getFilename();
+										$image = 'data/cache/' . $info->getFilename();
 										$i++;
 									}
 								} else {
@@ -2252,11 +2252,7 @@ class Organizr
 								}
 							}
 						}
-						if (count($images) > 0) {
-							return $images[rand(0, count($images))];
-						} else {
-							return false;
-						}
+						return $image;
 					default:
 						return false;
 				}
