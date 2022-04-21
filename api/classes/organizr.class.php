@@ -2237,7 +2237,7 @@ class Organizr
 						if (stripos($info->getFilename(), 'np') !== false) {
 							if ($i <= 200) {
 								$imageInfo = getimagesize($folder . DIRECTORY_SEPARATOR . $info->getFilename());
-								if ($imageInfo[0] >= 1200) {
+								if ($imageInfo[0] >= $this->getCacheImageSize('npw')) {
 									$images[] = 'data/cache/' . $info->getFilename();
 								}
 								$i++;
