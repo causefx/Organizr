@@ -2110,6 +2110,7 @@ class Organizr
 				$this->settingsOption('multiple-url', 'loginWallpaper', ['label' => 'Login Wallpaper URL', 'help' => 'You may enter multiple URL\'s']),
 				$this->settingsOption('switch', 'useLogoLogin', ['label' => 'Use Logo instead of Title on Login Page']),
 				$this->settingsOption('switch', 'minimalLoginScreen', ['label' => 'Minimal Login Screen']),
+				$this->settingsOption('switch', 'useRandomMediaImage', ['label' => 'Use Random Media Wallpaper From Media Server']),
 			],
 			'Options' => [
 				$this->settingsOption('switch', 'alternateHomepageHeaders', ['label' => 'Alternate Homepage Titles']),
@@ -2210,12 +2211,43 @@ class Organizr
 		$appearance['buttonTextHoverColor'] = $this->config['buttonTextHoverColor'];
 		$appearance['buttonHoverColor'] = $this->config['buttonHoverColor'];
 		$appearance['loginWallpaper'] = $this->config['loginWallpaper'];
+		$appearance['randomMediaImage'] = $this->getRandomMediaImage('np');
 		$appearance['loginLogo'] = $this->config['loginLogo'];
 		$appearance['customCss'] = $this->config['customCss'];
 		$appearance['customThemeCss'] = $this->config['customThemeCss'];
 		$appearance['customJava'] = $this->config['customJava'];
 		$appearance['customThemeJava'] = $this->config['customThemeJava'];
 		return $appearance;
+	}
+
+	public function getRandomMediaImage($type = null)
+	{
+		if (!$this->config['useRandomMediaImage']) {
+			return false;
+		}
+		if (file_exists(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR . 'cache')) {
+			$folder = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR . 'cache';
+			$directoryIterator = new RecursiveDirectoryIterator($folder, FilesystemIterator::SKIP_DOTS);
+			$iteratorIterator = new RecursiveIteratorIterator($directoryIterator);
+			$images = [];
+			switch ($type) {
+				case 'np':
+					foreach ($iteratorIterator as $info) {
+						if (stripos($info->getFilename(), 'np') !== false) {
+							$images[] = 'data/cache/' . $info->getFilename();
+						}
+					}
+					if (count($images) > 0) {
+						return $images[rand(0, count($images))];
+					} else {
+						return false;
+					}
+				default:
+					return false;
+			}
+		} else {
+			return false;
+		}
 	}
 
 	public function getSettingsMain()

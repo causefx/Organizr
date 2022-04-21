@@ -658,5 +658,6 @@ return [
 	'checkForPluginUpdate' => true,
 	'checkForThemeUpdate' => true,
 	'autoUpdateCronEnabled' => false,
-	'autoUpdateCronSchedule' => '@weekly'
+	'autoUpdateCronSchedule' => '@weekly',
+	'useRandomMediaImage' => false
 ];

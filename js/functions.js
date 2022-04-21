@@ -5073,7 +5073,10 @@ function loadAppearance(appearance){
 			}
 		`;
 	}
-	if(appearance.loginWallpaper !== ''){
+	if(appearance.loginWallpaper !== '' || appearance.randomMediaImage){
+		if(appearance.randomMediaImage){
+			appearance.loginWallpaper = appearance.randomMediaImage;
+		}
 		cssSettings += `
 		    .login-register {
 			    background: url(`+randomCSV(appearance.loginWallpaper)+`) center center/cover no-repeat!important;
