@@ -2227,30 +2227,41 @@ class Organizr
 		}
 		if (file_exists(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR . 'cache')) {
 			$folder = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR . 'cache';
-			$directoryIterator = new RecursiveDirectoryIterator($folder, FilesystemIterator::SKIP_DOTS);
-			$iteratorIterator = new RecursiveIteratorIterator($directoryIterator);
-			$images = [];
-			switch ($type) {
-				case 'np':
-					$i = 0;
-					foreach ($iteratorIterator as $info) {
-						if (stripos($info->getFilename(), 'np') !== false) {
-							if ($i <= 200) {
-								$imageInfo = getimagesize($folder . DIRECTORY_SEPARATOR . $info->getFilename());
-								if ($imageInfo[0] >= $this->getCacheImageSize('npw')) {
-									$images[] = 'data/cache/' . $info->getFilename();
+			try {
+				$directoryIterator = new RecursiveDirectoryIterator($folder, FilesystemIterator::SKIP_DOTS);
+				$iteratorIterator = new RecursiveIteratorIterator($directoryIterator);
+				$images = [];
+				switch ($type) {
+					case 'np':
+						$i = 0;
+						$array = iterator_to_array($iteratorIterator);
+						if (count($array) > 0) {
+							shuffle($array);
+							$iteratorIterator = new ArrayIterator($array);
+						}
+						foreach ($iteratorIterator as $info) {
+							if (stripos($info->getFilename(), 'np') !== false) {
+								if ($i < 1) {
+									$imageInfo = getimagesize($folder . DIRECTORY_SEPARATOR . $info->getFilename());
+									if ($imageInfo[0] >= $this->getCacheImageSize('npw')) {
+										$images[] = 'data/cache/' . $info->getFilename();
+										$i++;
+									}
+								} else {
+									break;
 								}
-								$i++;
 							}
 						}
-					}
-					if (count($images) > 0) {
-						return $images[rand(0, count($images))];
-					} else {
+						if (count($images) > 0) {
+							return $images[rand(0, count($images))];
+						} else {
+							return false;
+						}
+					default:
 						return false;
-					}
-				default:
-					return false;
+				}
+			} catch (Exception $e) {
+				return false;
 			}
 		} else {
 			return false;
