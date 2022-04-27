@@ -558,5 +558,12 @@
     "new": "",
     "fixed": "fix defaultTab if organizrLogin hash is still set|fixed plugin container not hiding if clicking other plugin|fixed private repo for plugins|fix user plugin not loading default config file",
     "notes": "renamed php error to organizr error"
+  },
+  "2.1.1880": {
+    "date": "2022-04-27 15:13",
+    "title": "Plugin Fix",
+    "new": "added function getRandomMediaImage to changing media images|added new sponsor|added only wide images \u003E 1200 to getRandomMediaImage function|added useRandomMediaImage for changing media image on login",
+    "fixed": "fixed plugins not being migrated over|fixed isEncrypted function to work with any style of password (#1826)|fixed issue allowing non images to be uploaded|fixed Using Certain Characters for the Organizr Title breaks Plex oAuth (#1824)",
+    "notes": "changed getRandomMediaImage from array to string|change width from 1200 to getCacheImageSize|consolidated auth endpoints|tweak randomize result for getRandomMediaImage|updated root api routes to include optional slash"
   }
 }
