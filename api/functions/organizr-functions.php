@@ -230,6 +230,24 @@ trait OrganizrFunctions
 		}
 	}
 
+	public function approvedFileType($file, $type = 'image')
+	{
+		$finfo = new finfo(FILEINFO_MIME_TYPE);
+		$ext = $finfo->file($file);
+		if ($type == 'image') {
+			switch ($ext) {
+				case 'image/gif':
+				case 'image/png':
+				case 'image/jpeg':
+				case 'image/pjpeg':
+					return true;
+				default:
+					return false;
+			}
+		}
+		return false;
+	}
+
 	public function getImages()
 	{
 		$allIconsPrep = array();
@@ -545,11 +563,11 @@ trait OrganizrFunctions
 		$cacheTime = 604800;
 		$ctx = stream_context_create(array(
 			'http' => array(
-				'timeout' =>5 ,
+				'timeout' => 5,
 				'protocol_version' => 1.1,
 				'header' => 'Connection: close'
 			)
-			));
+		));
 		if ((file_exists($cacheFile) && (time() - $cacheTime) > filemtime($cacheFile)) || !file_exists($cacheFile)) {
 			@copy($url, $cacheFile, $ctx);
 		}

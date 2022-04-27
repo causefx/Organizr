@@ -3069,57 +3069,6 @@
                 }
             }
         },
-        "/api/v2/auth": {
-            "get": {
-                "summary": "Nginx auth_request",
-                "parameters": [
-                    {
-                        "name": "group",
-                        "in": "query",
-                        "description": "The id of the group allowed",
-                        "required": false,
-                        "schema": {
-                            "type": "integer",
-                            "format": "int64"
-                        }
-                    },
-                    {
-                        "name": "whitelist",
-                        "in": "query",
-                        "description": "Whitelisted Ip's",
-                        "required": false,
-                        "explode": false,
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "type": "string"
-                            }
-                        }
-                    },
-                    {
-                        "name": "blacklist",
-                        "in": "query",
-                        "description": "Blacklisted Ip's",
-                        "required": false,
-                        "explode": false,
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "type": "string"
-                            }
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Success"
-                    },
-                    "401": {
-                        "description": "Unauthorized"
-                    }
-                }
-            }
-        },
         "/api/v2/update": {
             "get": {
                 "tags": [

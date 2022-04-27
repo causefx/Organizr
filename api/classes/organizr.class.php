@@ -65,7 +65,7 @@ class Organizr
 
 	// ===================================
 	// Organizr Version
-	public $version = '2.1.1840';
+	public $version = '2.1.1860';
 	// ===================================
 	// Quick php Version check
 	public $minimumPHP = '7.3';
@@ -1962,15 +1962,31 @@ class Organizr
 	public function uploadImage()
 	{
 		$filesCheck = array_filter($_FILES);
-		if (!empty($filesCheck) && $this->approvedFileExtension($_FILES['file']['name'], 'image') && strpos($_FILES['file']['type'], 'image/') !== false) {
-			ini_set('upload_max_filesize', '10M');
-			ini_set('post_max_size', '10M');
-			$tempFile = $_FILES['file']['tmp_name'];
-			$targetPath = $this->root . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR . 'userTabs' . DIRECTORY_SEPARATOR;
-			$this->makeDir($targetPath);
-			$targetFile = $targetPath . $this->sanitizeUserString($_FILES['file']['name']);
-			$this->setAPIResponse(null, pathinfo($_FILES['file']['name'], PATHINFO_BASENAME) . ' has been uploaded', null);
-			return move_uploaded_file($tempFile, $targetFile);
+		if (!empty($filesCheck)) {
+			if (strpos($_FILES['file']['type'], 'image/') === false) {
+				$this->setResponse(403, 'File Type not approved', $_FILES['file']['type']);
+				return false;
+			}
+			if (!$this->approvedFileType($_FILES['file']['tmp_name'])) {
+				$this->setResponse(403, 'File Type not approved', $_FILES['file']['tmp_name']);
+				return false;
+			}
+			if ($this->approvedFileExtension($_FILES['file']['name'])) {
+				ini_set('upload_max_filesize', '10M');
+				ini_set('post_max_size', '10M');
+				$tempFile = $_FILES['file']['tmp_name'];
+				$targetPath = $this->root . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR . 'userTabs' . DIRECTORY_SEPARATOR;
+				$this->makeDir($targetPath);
+				$targetFile = $targetPath . $this->sanitizeUserString($_FILES['file']['name']);
+				$this->setAPIResponse(null, pathinfo($_FILES['file']['name'], PATHINFO_BASENAME) . ' has been uploaded', null);
+				return move_uploaded_file($tempFile, $targetFile);
+			} else {
+				$this->setResponse(403, 'File Extension not approved');
+				return false;
+			}
+		} else {
+			$this->setResponse(500, 'No File was uploaded');
+			return false;
 		}
 	}
 
@@ -2094,6 +2110,7 @@ class Organizr
 				$this->settingsOption('multiple-url', 'loginWallpaper', ['label' => 'Login Wallpaper URL', 'help' => 'You may enter multiple URL\'s']),
 				$this->settingsOption('switch', 'useLogoLogin', ['label' => 'Use Logo instead of Title on Login Page']),
 				$this->settingsOption('switch', 'minimalLoginScreen', ['label' => 'Minimal Login Screen']),
+				$this->settingsOption('switch', 'useRandomMediaImage', ['label' => 'Use Random Media Wallpaper From Media Server']),
 			],
 			'Options' => [
 				$this->settingsOption('switch', 'alternateHomepageHeaders', ['label' => 'Alternate Homepage Titles']),
@@ -2194,12 +2211,57 @@ class Organizr
 		$appearance['buttonTextHoverColor'] = $this->config['buttonTextHoverColor'];
 		$appearance['buttonHoverColor'] = $this->config['buttonHoverColor'];
 		$appearance['loginWallpaper'] = $this->config['loginWallpaper'];
+		$appearance['randomMediaImage'] = $this->getRandomMediaImage('np');
 		$appearance['loginLogo'] = $this->config['loginLogo'];
 		$appearance['customCss'] = $this->config['customCss'];
 		$appearance['customThemeCss'] = $this->config['customThemeCss'];
 		$appearance['customJava'] = $this->config['customJava'];
 		$appearance['customThemeJava'] = $this->config['customThemeJava'];
 		return $appearance;
+	}
+
+	public function getRandomMediaImage($type = null)
+	{
+		if (!$this->config['useRandomMediaImage']) {
+			return false;
+		}
+		if (file_exists(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR . 'cache')) {
+			$folder = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR . 'cache';
+			try {
+				$directoryIterator = new RecursiveDirectoryIterator($folder, FilesystemIterator::SKIP_DOTS);
+				$iteratorIterator = new RecursiveIteratorIterator($directoryIterator);
+				$image = null;
+				switch ($type) {
+					case 'np':
+						$i = 0;
+						$array = iterator_to_array($iteratorIterator);
+						if (count($array) > 0) {
+							shuffle($array);
+							$iteratorIterator = new ArrayIterator($array);
+						}
+						foreach ($iteratorIterator as $info) {
+							if (stripos($info->getFilename(), 'np') !== false) {
+								if ($i < 1) {
+									$imageInfo = getimagesize($folder . DIRECTORY_SEPARATOR . $info->getFilename());
+									if ($imageInfo[0] >= $this->getCacheImageSize('npw')) {
+										$image = 'data/cache/' . $info->getFilename();
+										$i++;
+									}
+								} else {
+									break;
+								}
+							}
+						}
+						return $image;
+					default:
+						return false;
+				}
+			} catch (Exception $e) {
+				return false;
+			}
+		} else {
+			return false;
+		}
 	}
 
 	public function getSettingsMain()

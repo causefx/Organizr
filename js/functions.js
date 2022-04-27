@@ -5073,7 +5073,10 @@ function loadAppearance(appearance){
 			}
 		`;
 	}
-	if(appearance.loginWallpaper !== ''){
+	if(appearance.loginWallpaper !== '' || appearance.randomMediaImage){
+		if(appearance.randomMediaImage){
+			appearance.loginWallpaper = appearance.randomMediaImage;
+		}
 		cssSettings += `
 		    .login-register {
 			    background: url(`+randomCSV(appearance.loginWallpaper)+`) center center/cover no-repeat!important;
@@ -9778,7 +9781,7 @@ function PopupCenter(url, title, w, h) {
     return newWindow;
 }
 function getPlexHeaders(){
-    let plexTitle = activeInfo.appearance.title == '' ? 'Organizr' : activeInfo.appearance.title;
+    let plexTitle = activeInfo.appearance.title == '' ? 'Organizr' : cleanClass(activeInfo.appearance.title);
     return {
         'Accept': 'application/json',
         'X-Plex-Product': plexTitle,

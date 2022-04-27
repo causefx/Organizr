@@ -386,11 +386,14 @@ trait OptionsFunction
 					<div id="' . $name . 'Editor" style="height:300px">' . htmlentities($this->config[$name]) . '</div>
 					<script>
 						let mode = ace.require("' . $mode . '").Mode;
-						' . $name . ' = ace.edit("' . $name . 'Editor");
-						' . $name . '.session.setMode(new mode());
-						' . $name . '.setTheme("ace/theme/idle_fingers");
-						' . $name . '.setShowPrintMargin(false);
-						' . $name . '.session.on("change", function(delta) { $(".' . $name . 'Textarea").val(' . $name . '.getValue()); $(".' . $name . 'Textarea").trigger("change") });
+						' . str_replace('-', '', $name) . ' = ace.edit("' . $name . 'Editor");
+						' . str_replace('-', '', $name) . '.session.setMode(new mode());
+						' . str_replace('-', '', $name) . '.setTheme("ace/theme/idle_fingers");
+						' . str_replace('-', '', $name) . '.setShowPrintMargin(false);
+						' . str_replace('-', '', $name) . '.session.on("change", function(delta) { 
+							$(".' . $name . 'Textarea").val(' . str_replace('-', '', $name) . '.getValue());
+							$(".' . $name . 'Textarea").trigger("change");
+                        });
 					</script>
 					'
 				];

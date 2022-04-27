@@ -222,20 +222,9 @@ trait NormalFunctions
 		return $tmp;
 	}
 
-	public function isEncrypted($password)
+	public function isEncrypted($password = null)
 	{
-		switch (strlen($password)) {
-			case '24':
-			case '88':
-				return strpos($password, '==') !== false;
-			case '44':
-			case '108':
-				return substr($password, -1, 1) == '=';
-			case '64':
-				return true;
-			default:
-				return false;
-		}
+		return ($password == null || $password == '') ? false : $this->decrypt($password);
 	}
 
 	public function fillString($string, $length)

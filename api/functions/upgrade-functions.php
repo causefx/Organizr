@@ -80,6 +80,14 @@ trait UpgradeFunctions
 				$this->upgradeToVersion($versionCheck);
 			}
 			// End Upgrade check start for version above
+			// Upgrade check start for version below
+			$versionCheck = '2.1.1860';
+			if ($compare->lessThan($oldVer, $versionCheck)) {
+				$updateDB = false;
+				$oldVer = $versionCheck;
+				$this->upgradeToVersion($versionCheck);
+			}
+			// End Upgrade check start for version above
 			if ($updateDB == true) {
 				//return 'Upgraded Needed - Current Version '.$oldVer.' - New Version: '.$versionCheck;
 				// Upgrade database to latest version
@@ -335,6 +343,8 @@ trait UpgradeFunctions
 				$this->upgradeInstalledPluginsConfigItem();
 			case '2.1.1500':
 				$this->upgradeDataToFolder();
+			case '2.1.1860':
+				$this->upgradePluginsToDataFolder();
 			default:
 				$this->setAPIResponse('success', 'Ran update function for version: ' . $version, 200);
 				return true;
@@ -435,6 +445,34 @@ trait UpgradeFunctions
 				}
 				// Migrate over cache folder
 				$this->removeOldCacheFolder();
+			}
+			return true;
+		}
+		return false;
+	}
+
+	public function upgradePluginsToDataFolder()
+	{
+		if ($this->hasDB()) {
+			// Make main data folder
+			$rootFolderMade = $this->makeDir($this->root . DIRECTORY_SEPARATOR . 'data');
+			if ($rootFolderMade) {
+				// Migrate over plugins folder
+				$this->makeDir($this->root . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR . 'plugins');
+				$plexLibraries = $this->root . DIRECTORY_SEPARATOR . 'api' . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . 'plexLibraries';
+				if (file_exists($plexLibraries)) {
+					if (rename($plexLibraries, $this->root . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . 'plexLibraries')) {
+						$this->setLoggerChannel('Migration');
+						$this->logger->info('The plugin folder "plexLibraries" was migrated to new data folder');
+					}
+				}
+				$test = $this->root . DIRECTORY_SEPARATOR . 'api' . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . 'test';
+				if (file_exists($test)) {
+					if (rename($test, $this->root . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . 'test')) {
+						$this->setLoggerChannel('Migration');
+						$this->logger->info('The plugin folder "test" was migrated to new data folder');
+					}
+				}
 			}
 			return true;
 		}

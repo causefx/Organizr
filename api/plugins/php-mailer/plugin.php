@@ -250,291 +250,291 @@ class PhpMailer extends Organizr
 	/* GET PHPMAILER SETTINGS */
 	public function _phpMailerPluginGetSettings()
 	{
-		return array(
-			'Host' => array(
-				array(
+		return [
+			'Host' => [
+				[
 					'type' => 'input',
 					'name' => 'PHPMAILER-smtpHost',
 					'label' => 'SMTP Host',
 					'value' => $this->config['PHPMAILER-smtpHost']
-				),
-				array(
+				],
+				[
 					'type' => 'input',
 					'name' => 'PHPMAILER-smtpHostPort',
 					'label' => 'SMTP Port',
 					'value' => $this->config['PHPMAILER-smtpHostPort']
-				)
-			),
-			'Authentication' => array(
-				array(
+				]
+			],
+			'Authentication' => [
+				[
 					'type' => 'input',
 					'name' => 'PHPMAILER-smtpHostUsername',
 					'label' => 'Username',
 					'value' => $this->config['PHPMAILER-smtpHostUsername']
-				),
-				array(
+				],
+				[
 					'type' => 'password',
 					'name' => 'PHPMAILER-smtpHostPassword',
 					'label' => 'Password',
 					'value' => $this->config['PHPMAILER-smtpHostPassword']
-				),
-				array(
+				],
+				[
 					'type' => 'switch',
 					'name' => 'PHPMAILER-smtpHostAuth',
 					'label' => 'Authentication',
 					'value' => $this->config['PHPMAILER-smtpHostAuth']
-				),
-				array(
+				],
+				[
 					'type' => 'select',
 					'name' => 'PHPMAILER-smtpHostType',
 					'label' => 'Authentication Type',
 					'value' => $this->config['PHPMAILER-smtpHostType'],
-					'options' => array(
-						array(
+					'options' => [
+						[
 							'name' => 'tls',
 							'value' => 'tls'
-						),
-						array(
+						],
+						[
 							'name' => 'ssl',
 							'value' => 'ssl'
-						),
-						array(
+						],
+						[
 							'name' => 'off',
 							'value' => 'n/a'
-						)
-					)
-				),
-				array(
+						]
+					]
+				],
+				[
 					'type' => 'switch',
 					'name' => 'PHPMAILER-verifyCert',
 					'label' => 'Verify Certificate',
 					'value' => $this->config['PHPMAILER-verifyCert']
-				),
-			),
-			'Sender Information' => array(
-				array(
+				],
+			],
+			'Sender Information' => [
+				[
 					'type' => 'input',
 					'name' => 'PHPMAILER-smtpHostSenderName',
 					'label' => 'Sender Name',
 					'value' => $this->config['PHPMAILER-smtpHostSenderName']
-				),
-				array(
+				],
+				[
 					'type' => 'input',
 					'name' => 'PHPMAILER-smtpHostSenderEmail',
 					'label' => 'Sender Email',
 					'value' => $this->config['PHPMAILER-smtpHostSenderEmail'],
 					'placeholder' => 'i.e. same as username'
-				)
-			),
-			'Test & Options' => array(
-				array(
+				]
+			],
+			'Test & Options' => [
+				[
 					'type' => 'button',
 					'label' => 'Send Test',
 					'class' => 'phpmSendTestEmail',
 					'icon' => 'fa fa-paper-plane',
 					'text' => 'Send'
-				),
-				array(
+				],
+				[
 					'type' => 'switch',
 					'name' => 'PHPMAILER-debugTesting',
 					'label' => 'Enable Debug Output on Email Test',
 					'value' => $this->config['PHPMAILER-debugTesting'],
-				),
-				array(
+				],
+				[
 					'type' => 'input',
 					'name' => 'PHPMAILER-domain',
 					'label' => 'Domain Link Override',
 					'value' => $this->config['PHPMAILER-domain'],
 					'placeholder' => 'https://domain.com/',
-				),
-				array(
+				],
+				[
 					'type' => 'select',
 					'name' => 'PHPMAILER-template',
 					'label' => 'Theme',
 					'value' => $this->config['PHPMAILER-template'],
 					'options' => $this->_phpMailerPluginGetTemplates()
-				),
-				array(
+				],
+				[
 					'type' => 'input',
 					'name' => 'PHPMAILER-logo',
 					'label' => 'WAN Logo URL',
 					'value' => $this->config['PHPMAILER-logo'],
 					'placeholder' => 'Full URL',
-				),
-				array(
+				],
+				[
 					'type' => 'switch',
 					'name' => 'PHPMAILER-emailTemplateRegisterUserEnabled',
 					'label' => 'Send Welcome E-Mail',
 					'value' => $this->config['PHPMAILER-emailTemplateRegisterUserEnabled'],
-				),
-			),
-			'Templates' => array(
-				array(
+				],
+			],
+			'Templates' => [
+				[
 					'type' => 'accordion',
 					'label' => 'Edit Template',
 					'id' => 'customEmailTemplates',
 					'override' => 12,
-					'options' => array(
-						array(
+					'options' => [
+						[
 							'id' => 'PHPMAILER-emailTemplateRegisterUserForm',
 							'header' => 'New Registration',
-							'body' => array(
-								array(
+							'body' => [
+								[
 									'type' => 'input',
 									'name' => 'PHPMAILER-emailTemplateRegisterUserSubject',
 									'smallLabel' => 'Subject',
 									'value' => $this->config['PHPMAILER-emailTemplateRegisterUserSubject'],
-								),
-								array(
+								],
+								[
 									'type' => 'textbox',
 									'name' => 'PHPMAILER-emailTemplateRegisterUser',
 									'smallLabel' => 'Body',
 									'value' => $this->config['PHPMAILER-emailTemplateRegisterUser'],
 									'attr' => 'rows="10"',
-								)
-							)
-						),
-						array(
+								]
+							]
+						],
+						[
 							'id' => 'PHPMAILER-emailTemplateResetPasswordForm',
 							'header' => 'Reset Password',
-							'body' => array(
-								array(
+							'body' => [
+								[
 									'type' => 'input',
 									'name' => 'PHPMAILER-emailTemplateResetSubject',
 									'smallLabel' => 'Subject',
 									'value' => $this->config['PHPMAILER-emailTemplateResetSubject'],
-								),
-								array(
+								],
+								[
 									'type' => 'textbox',
 									'name' => 'PHPMAILER-emailTemplateReset',
 									'smallLabel' => 'Body',
 									'value' => $this->config['PHPMAILER-emailTemplateReset'],
 									'attr' => 'rows="10"',
-								)
-							)
-						),
-						array(
+								]
+							]
+						],
+						[
 							'id' => 'PHPMAILER-emailTemplateInviteUserForm',
 							'header' => 'Invite User',
-							'body' => array(
-								array(
+							'body' => [
+								[
 									'type' => 'input',
 									'name' => 'PHPMAILER-emailTemplateInviteUserSubject',
 									'smallLabel' => 'Subject',
 									'value' => $this->config['PHPMAILER-emailTemplateInviteUserSubject'],
-								),
-								array(
+								],
+								[
 									'type' => 'textbox',
 									'name' => 'PHPMAILER-emailTemplateInviteUser',
 									'smallLabel' => 'Body',
 									'value' => $this->config['PHPMAILER-emailTemplateInviteUser'],
 									'attr' => 'rows="10"',
-								)
-							)
-						),
-						array(
+								]
+							]
+						],
+						[
 							'id' => 'PHPMAILER-emailTemplateCustom-include-OneForm',
 							'header' => $this->config['PHPMAILER-emailTemplateCustom-include-OneName'],
-							'body' => array(
-								array(
+							'body' => [
+								[
 									'type' => 'input',
 									'name' => 'PHPMAILER-emailTemplateCustom-include-OneName',
 									'smallLabel' => 'Name',
 									'value' => $this->config['PHPMAILER-emailTemplateCustom-include-OneName'],
-								),
-								array(
+								],
+								[
 									'type' => 'input',
 									'name' => 'PHPMAILER-emailTemplateCustom-include-OneSubject',
 									'smallLabel' => 'Subject',
 									'value' => $this->config['PHPMAILER-emailTemplateCustom-include-OneSubject'],
-								),
-								array(
+								],
+								[
 									'type' => 'textbox',
 									'name' => 'PHPMAILER-emailTemplateCustom-include-One',
 									'smallLabel' => 'Body',
 									'value' => $this->config['PHPMAILER-emailTemplateCustom-include-One'],
 									'attr' => 'rows="10"',
-								)
-							)
-						),
-						array(
+								]
+							]
+						],
+						[
 							'id' => 'PHPMAILER-emailTemplateCustom-include-TwoForm',
 							'header' => $this->config['PHPMAILER-emailTemplateCustom-include-TwoName'],
-							'body' => array(
-								array(
+							'body' => [
+								[
 									'type' => 'input',
 									'name' => 'PHPMAILER-emailTemplateCustom-include-TwoName',
 									'smallLabel' => 'Name',
 									'value' => $this->config['PHPMAILER-emailTemplateCustom-include-TwoName'],
-								),
-								array(
+								],
+								[
 									'type' => 'input',
 									'name' => 'PHPMAILER-emailTemplateCustom-include-TwoSubject',
 									'smallLabel' => 'Subject',
 									'value' => $this->config['PHPMAILER-emailTemplateCustom-include-TwoSubject'],
-								),
-								array(
+								],
+								[
 									'type' => 'textbox',
 									'name' => 'PHPMAILER-emailTemplateCustom-include-Two',
 									'smallLabel' => 'Body',
 									'value' => $this->config['PHPMAILER-emailTemplateCustom-include-Two'],
 									'attr' => 'rows="10"',
-								)
-							)
-						),
-						array(
+								]
+							]
+						],
+						[
 							'id' => 'PHPMAILER-emailTemplateCustom-include-ThreeForm',
 							'header' => $this->config['PHPMAILER-emailTemplateCustom-include-ThreeName'],
-							'body' => array(
-								array(
+							'body' => [
+								[
 									'type' => 'input',
 									'name' => 'PHPMAILER-emailTemplateCustom-include-ThreeName',
 									'smallLabel' => 'Name',
 									'value' => $this->config['PHPMAILER-emailTemplateCustom-include-ThreeName'],
-								),
-								array(
+								],
+								[
 									'type' => 'input',
 									'name' => 'PHPMAILER-emailTemplateCustom-include-ThreeSubject',
 									'smallLabel' => 'Subject',
 									'value' => $this->config['PHPMAILER-emailTemplateCustom-include-ThreeSubject'],
-								),
-								array(
+								],
+								[
 									'type' => 'textbox',
 									'name' => 'PHPMAILER-emailTemplateCustom-include-Three',
 									'smallLabel' => 'Body',
 									'value' => $this->config['PHPMAILER-emailTemplateCustom-include-Three'],
 									'attr' => 'rows="10"',
-								)
-							)
-						),
-						array(
+								]
+							]
+						],
+						[
 							'id' => 'PHPMAILER-emailTemplateCustom-include-FourForm',
 							'header' => $this->config['PHPMAILER-emailTemplateCustom-include-FourName'],
-							'body' => array(
-								array(
+							'body' => [
+								[
 									'type' => 'input',
 									'name' => 'PHPMAILER-emailTemplateCustom-include-FourName',
 									'smallLabel' => 'Name',
 									'value' => $this->config['PHPMAILER-emailTemplateCustom-include-FourName'],
-								),
-								array(
+								],
+								[
 									'type' => 'input',
 									'name' => 'PHPMAILER-emailTemplateCustom-include-FourSubject',
 									'smallLabel' => 'Subject',
 									'value' => $this->config['PHPMAILER-emailTemplateCustom-include-FourSubject'],
-								),
-								array(
+								],
+								[
 									'type' => 'textbox',
 									'name' => 'PHPMAILER-emailTemplateCustom-include-Four',
 									'smallLabel' => 'Body',
 									'value' => $this->config['PHPMAILER-emailTemplateCustom-include-Four'],
 									'attr' => 'rows="10"',
-								)
-							)
-						),
-					)
-				)
-			)
-		);
+								]
+							]
+						],
+					]
+				]
+			]
+		];
 	}
 }

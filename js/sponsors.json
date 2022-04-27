@@ -13,5 +13,14 @@
     "logo": "https://user-images.githubusercontent.com/16184466/49177230-e6f6f680-f309-11e8-9d6a-67be65109d14.png",
     "logo_dark": "https://user-images.githubusercontent.com/16184466/49177230-e6f6f680-f309-11e8-9d6a-67be65109d14.png",
     "website": "https://unraid.net/"
+  },
+  {
+    "company_name": "Ultra.cc",
+    "logo": "https://user-images.githubusercontent.com/16184466/165360431-7324ecac-2c4d-4dc0-aa70-f582f197eb1f.png",
+    "logo_dark": "https://user-images.githubusercontent.com/16184466/165360431-7324ecac-2c4d-4dc0-aa70-f582f197eb1f.png",
+    "website": "https://ultra.cc/",
+    "about": "<b>Premium apps hosting that just works<\/b><br\/>",
+    "coupon": "FLASH20",
+    "coupon_about": "20% off recurring"
   }
 ]
