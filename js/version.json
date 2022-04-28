@@ -565,5 +565,12 @@
     "new": "added function getRandomMediaImage to changing media images|added new sponsor|added only wide images \u003E 1200 to getRandomMediaImage function|added useRandomMediaImage for changing media image on login",
     "fixed": "fixed plugins not being migrated over|fixed isEncrypted function to work with any style of password (#1826)|fixed issue allowing non images to be uploaded|fixed Using Certain Characters for the Organizr Title breaks Plex oAuth (#1824)",
     "notes": "changed getRandomMediaImage from array to string|change width from 1200 to getCacheImageSize|consolidated auth endpoints|tweak randomize result for getRandomMediaImage|updated root api routes to include optional slash"
+  },
+  "2.1.1890": {
+    "date": "2022-04-28 05:41",
+    "title": "Version number fix",
+    "new": "",
+    "fixed": "Version number not updating",
+    "notes": ""
   }
 }
