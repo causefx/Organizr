@@ -7377,13 +7377,18 @@ class Organizr
 						);
 					}
 				}
-				$this->setAPIResponse('success', null, 200, $items);
+				$this->setResponse(200, null, $items);
 				return $items;
+			} else {
+				$message = $this->testAndFormatString($response->body);
+				$this->setResponse(500, 'Plex Error occurred', $message['data']);
+				$this->setLoggerChannel('Plex Connection')->warning('Plex Error', $message);
+				return $message;
 			}
 		} catch (Requests_Exception $e) {
-			$this->setLoggerChannel('Plex Connection');
-			$this->logger->error($e);
+			$this->setLoggerChannel('Plex Connection')->error($e);
 			$this->setResponse(500, $e->getMessage());
+			return false;
 		}
 	}
 
