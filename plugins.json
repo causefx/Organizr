@@ -6,7 +6,7 @@
     "icon": "https://raw.githubusercontent.com/causefx/Organizr/v2-plugins/test/logo.png",
     "contact": "causefx@organizr.app",
     "website": "https://organizr.app",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "minimum_organizr_version": "2.1.0",
     "release_date": "2018-07-12",
     "last_updated": "2021-06-14",
