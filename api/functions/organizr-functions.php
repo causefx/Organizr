@@ -885,4 +885,22 @@ trait OrganizrFunctions
 	{
 		return is_string($string) && is_array(json_decode($string, true)) && (json_last_error() == JSON_ERROR_NONE);
 	}
+
+	public function isXML($string)
+	{
+		libxml_use_internal_errors(true);
+		return (bool)simplexml_load_string($string);
+	}
+
+	public function testAndFormatString($string)
+	{
+		if ($this->isJSON($string)) {
+			return ['type' => 'json', 'data' => json_decode($string, true)];
+		} elseif ($this->isXML($string)) {
+			libxml_use_internal_errors(true);
+			return ['type' => 'xml', 'data' => simplexml_load_string($string)];
+		} else {
+			return ['type' => 'string', 'data' => $string];
+		}
+	}
 }
