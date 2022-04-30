@@ -335,9 +335,23 @@ class Organizr
 	public function checkForOrganizrOAuth()
 	{
 		// Oauth?
-		if ($this->config['authProxyEnabled'] && ($this->config['authProxyHeaderName'] !== '' || $this->config['authProxyHeaderNameEmail'] !== '') && $this->config['authProxyWhitelist'] !== '') {
-			if (isset(getallheaders()[$this->config['authProxyHeaderName']]) || isset(getallheaders()[$this->config['authProxyHeaderNameEmail']])) {
-				$this->coookieSeconds('set', 'organizrOAuth', 'true', 20000, false);
+		if ($this->user['groupID'] == '999') {
+			$this->setLoggerChannel('OAuth')->debug('Starting OAuth login check');
+			$data = [
+				'enabled' => $this->config['authProxyEnabled'],
+				'header_name' => $this->config['authProxyHeaderName'],
+				'header_name_email' => $this->config['authProxyHeaderNameEmail'],
+				'whitelist' => $this->config['authProxyWhitelist'],
+			];
+			if ($this->config['authProxyEnabled'] && ($this->config['authProxyHeaderName'] !== '' || $this->config['authProxyHeaderNameEmail'] !== '') && $this->config['authProxyWhitelist'] !== '') {
+				if (isset(getallheaders()[$this->config['authProxyHeaderName']]) || isset(getallheaders()[$this->config['authProxyHeaderNameEmail']])) {
+					$this->coookieSeconds('set', 'organizrOAuth', 'true', 20000, false);
+					$this->setLoggerChannel('OAuth')->info('OAuth pre-check passed - adding organizrOAuth cookie', $data);
+				} else {
+					$this->setLoggerChannel('OAuth')->debug('Header not set', $data);
+				}
+			} else {
+				$this->setLoggerChannel('OAuth')->debug('OAuth not triggered', $data);
 			}
 		}
 	}
