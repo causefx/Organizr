@@ -201,6 +201,11 @@ trait NormalFunctions
 		}
 	}
 
+	public function getallheadersi()
+	{
+		return array_change_key_case($this->getallheaders(), CASE_LOWER);
+	}
+
 	public function random_ascii_string($length)
 	{
 		$characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';

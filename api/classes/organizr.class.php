@@ -344,11 +344,11 @@ class Organizr
 				'whitelist' => $this->config['authProxyWhitelist'],
 			];
 			if ($this->config['authProxyEnabled'] && ($this->config['authProxyHeaderName'] !== '' || $this->config['authProxyHeaderNameEmail'] !== '') && $this->config['authProxyWhitelist'] !== '') {
-				if (isset(getallheaders()[$this->config['authProxyHeaderName']]) || isset(getallheaders()[$this->config['authProxyHeaderNameEmail']])) {
+				if (isset($this->getallheadersi()[strtolower($this->config['authProxyHeaderName'])]) || isset($this->getallheadersi()[strtolower($this->config['authProxyHeaderNameEmail'])])) {
 					$this->coookieSeconds('set', 'organizrOAuth', 'true', 20000, false);
 					$this->setLoggerChannel('OAuth')->info('OAuth pre-check passed - adding organizrOAuth cookie', $data);
 				} else {
-					$data = array_merge($data, ['headers' => getallheaders()]);
+					$data = array_merge($data, ['headers' => $this->getallheadersi()]);
 					$this->setLoggerChannel('OAuth')->debug('Headers not set', $data);
 				}
 			} else {
@@ -1858,7 +1858,7 @@ class Organizr
 	public function getUserLevel()
 	{
 		// Grab token
-		$requesterToken = $this->getallheaders()['Token'] ?? ($_GET['apikey'] ?? false);
+		$requesterToken = $this->getallheadersi()['token'] ?? ($_GET['apikey'] ?? false);
 		$apiKey = ($this->config['organizrAPI']) ?? null;
 		// Check token or API key
 		// If API key, return 0 for admin
@@ -3541,9 +3541,9 @@ class Organizr
 		}
 		// Check if Auth Proxy is enabled
 		if ($this->config['authProxyEnabled'] && ($this->config['authProxyHeaderName'] !== '' || $this->config['authProxyHeaderNameEmail'] !== '') && $this->config['authProxyWhitelist'] !== '') {
-			if (isset($this->getallheaders()[$this->config['authProxyHeaderName']]) || isset($this->getallheaders()[$this->config['authProxyHeaderNameEmail']])) {
-				$usernameHeader = $this->getallheaders()[$this->config['authProxyHeaderName']] ?? null;
-				$emailHeader = $this->getallheaders()[$this->config['authProxyHeaderNameEmail']] ?? null;
+			if (isset($this->getallheadersi()[strtolower($this->config['authProxyHeaderName'])]) || isset($this->getallheadersi()[strtolower($this->config['authProxyHeaderNameEmail'])])) {
+				$usernameHeader = $this->getallheadersi()[strtolower($this->config['authProxyHeaderName'])] ?? null;
+				$emailHeader = $this->getallheadersi()[strtolower($this->config['authProxyHeaderNameEmail'])] ?? null;
 				$headerForLogin = $usernameHeader ?: ($emailHeader ?: null);
 				$this->setLoggerChannel('Authentication', $headerForLogin);
 				$this->logger->debug('Starting Auth Proxy verification');
@@ -4259,18 +4259,12 @@ class Organizr
 
 	public function isApprovedRequest($method, $data)
 	{
-		$requesterToken = $this->getallheaders()['Token'] ?? ($_GET['apikey'] ?? false);
+		$requesterToken = $this->getallheadersi()['token'] ?? ($_GET['apikey'] ?? false);
 		$apiKey = ($this->config['organizrAPI']) ?? null;
 		if (isset($data['formKey'])) {
 			$formKey = $data['formKey'];
-		} elseif (isset($this->getallheaders()['Formkey'])) {
-			$formKey = $this->getallheaders()['Formkey'];
-		} elseif (isset($this->getallheaders()['formkey'])) {
-			$formKey = $this->getallheaders()['formkey'];
-		} elseif (isset($this->getallheaders()['formKey'])) {
-			$formKey = $this->getallheaders()['formKey'];
-		} elseif (isset($this->getallheaders()['FormKey'])) {
-			$formKey = $this->getallheaders()['FormKey'];
+		} elseif (isset($this->getallheadersi()['formkey'])) {
+			$formKey = $this->getallheadersi()['formkey'];
 		} else {
 			$formKey = false;
 		}
