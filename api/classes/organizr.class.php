@@ -348,7 +348,8 @@ class Organizr
 					$this->coookieSeconds('set', 'organizrOAuth', 'true', 20000, false);
 					$this->setLoggerChannel('OAuth')->info('OAuth pre-check passed - adding organizrOAuth cookie', $data);
 				} else {
-					$this->setLoggerChannel('OAuth')->debug('Header not set', $data);
+					$data = array_merge($data, ['headers' => getallheaders()]);
+					$this->setLoggerChannel('OAuth')->debug('Headers not set', $data);
 				}
 			} else {
 				$this->setLoggerChannel('OAuth')->debug('OAuth not triggered', $data);
