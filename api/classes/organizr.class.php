@@ -2348,6 +2348,10 @@ class Organizr
 				$this->settingsOption('number', 'maxLogFiles', ['label' => 'Maximum Log Files', 'help' => 'Number of log files to preserve', 'attr' => 'min="1"']),
 				$this->settingsOption('select', 'logLiveUpdateRefresh', ['label' => 'Live Update Refresh', 'options' => $this->timeOptions()]),
 				$this->settingsOption('select', 'logPageSize', ['label' => 'Log Page Size', 'options' => [['name' => '10 Items', 'value' => '10'], ['name' => '25 Items', 'value' => '25'], ['name' => '50 Items', 'value' => '50'], ['name' => '100 Items', 'value' => '100']]]),
+				$this->settingsOption('switch', 'sendLogsToSlack', ['label' => 'Send Logs to Slack', 'help' => 'Send Logs to Slack as well']),
+				$this->settingsOption('select', 'slackLogLevel', ['label' => 'Slack Log Level', 'options' => $this->logLevels()]),
+				$this->settingsOption('url', 'slackLogWebhook', ['label' => 'Slack Webhook URL', 'help' => 'If using Discord make sure to end the URL with /slack']),
+				$this->settingsOption('input', 'slackLogWebHookChannel', ['label' => 'Slack Channel for Webhook', 'help' => 'Channel ID for webhook']),
 			],
 			'Cron' => [
 				$this->settingsOption('cron-file'),
