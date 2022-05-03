@@ -661,7 +661,7 @@ return [
 	'autoUpdateCronSchedule' => '@weekly',
 	'useRandomMediaImage' => false,
 	'sendLogsToSlack' => false,
-	'slackLogLevel' => 'ERROR',
+	'slackLogLevel' => 'WARNING',
 	'slackLogWebhook' => '',
 	'slackLogWebHookChannel' => ''
 ];

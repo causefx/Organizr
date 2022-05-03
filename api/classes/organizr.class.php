@@ -2351,7 +2351,9 @@ class Organizr
 				$this->settingsOption('switch', 'sendLogsToSlack', ['label' => 'Send Logs to Slack', 'help' => 'Send Logs to Slack as well']),
 				$this->settingsOption('select', 'slackLogLevel', ['label' => 'Slack Log Level', 'options' => $this->logLevels()]),
 				$this->settingsOption('url', 'slackLogWebhook', ['label' => 'Slack Webhook URL', 'help' => 'If using Discord make sure to end the URL with /slack']),
-				$this->settingsOption('input', 'slackLogWebHookChannel', ['label' => 'Slack Channel for Webhook', 'help' => 'Channel ID for webhook']),
+				$this->settingsOption('input', 'slackLogWebHookChannel', ['label' => 'Slack Channel for Webhook', 'help' => 'Channel ID for webhook - Not needed for Discord']),
+				$this->settingsOption('blank'),
+				$this->settingsOption('test', 'slack-logs', ['label' => 'Test Slack', 'text' => 'Test Slack', 'help' => 'Test only sends a warning message so make sure Slack Log Level is Warning when testing']),
 			],
 			'Cron' => [
 				$this->settingsOption('cron-file'),

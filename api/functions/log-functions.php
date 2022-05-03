@@ -210,30 +210,29 @@ trait LogFunctions
 	public function setLoggerChannel($channel = 'Organizr', $username = null)
 	{
 		if ($this->hasDB()) {
-			$setLogger = false;
+			$channel = $channel ?: 'Organizr';
+			//$setLogger = false;
 			if ($username) {
 				$username = $this->sanitizeUserString($username);
 			}
 			if ($this->logger) {
 				if ($channel) {
 					if (strtolower($this->logger->getChannel()) !== strtolower($channel)) {
-						$setLogger = true;
+						$this->logger->setChannel($channel);
+						//$setLogger = true;
 					}
 				}
 				if ($username) {
 					$currentUsername = $this->logger->getTraceId() !== '' ? strtolower($this->logger->getTraceId()) : '';
 					if ($currentUsername !== strtolower($username)) {
-						$setLogger = true;
+						$this->logger->setUsername($username);
+						//$setLogger = true;
 					}
 				}
-			} else {
-				$setLogger = true;
-			}
-			if ($setLogger) {
-				$channel = $channel ?: 'Organizr';
-				return $this->setupLogger($channel, $username);
-			} else {
 				return $this->logger;
+			} else {
+				//$setLogger = true;
+				return $this->setupLogger($channel, $username);
 			}
 		}
 	}
@@ -444,5 +443,27 @@ trait LogFunctions
 		$dropdownItems .= '<li><a href="javascript:toggleLogFilter(\'EMERGENCY\')"><span lang="en">Emergency</span></a></li>';
 		$dropdownItems .= '<li class="divider"></li><li><a href="javascript:toggleLogFilter(\'NONE\')"><span lang="en">None</span></a></li>';
 		return '<button aria-expanded="false" data-toggle="dropdown" class="btn btn-inverse dropdown-toggle waves-effect waves-light pull-right m-r-5 hidden-xs" type="button"> <span class="log-filter-text m-r-5" lang="en">NONE</span><i class="fa fa-filter m-r-5"></i></button><ul role="menu" class="dropdown-menu log-filter-dropdown pull-right">' . $dropdownItems . '</ul>';
+	}
+
+	public function testConnectionSlackLogs()
+	{
+		if (!$this->config['sendLogsToSlack']) {
+			$this->setResponse(409, 'sendLogsToSlack is disabled');
+			return false;
+		}
+		if ($this->config['slackLogWebhook'] == '') {
+			$this->setResponse(409, 'slackLogWebhook is empty');
+			return false;
+		}
+		if ($this->config['slackLogWebHookChannel'] == '' && stripos($this->config['slackLogWebhook'], 'discord') === false) {
+			$this->setResponse(409, 'slackLogWebhook is empty');
+			return false;
+		}
+		$context = [
+			'test' => 'success',
+		];
+		$this->setupLogger('Slack Tester', $this->user['username'])->warning('Warning Test', $context);
+		$this->setResponse(200, 'Slack test connection completed - Please check Slack/Discord Channel');
+		return true;
 	}
 }
