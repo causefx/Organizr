@@ -1,5 +1,5 @@
 <?php
-// Set UTC timeone
+// Set UTC timezone
 date_default_timezone_set("UTC");
 // Autoload frameworks
 require_once(__DIR__ . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPARATOR . 'autoload.php');
@@ -25,17 +25,8 @@ if (file_exists(dirname(__DIR__, 1) . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_S
 }
 
 // Include all plugin files
-$folder = __DIR__ . DIRECTORY_SEPARATOR . 'plugins';
-$directoryIterator = new RecursiveDirectoryIterator($folder, FilesystemIterator::SKIP_DOTS);
-$iteratorIterator = new RecursiveIteratorIterator($directoryIterator);
-foreach ($iteratorIterator as $info) {
-	if ($info->getFilename() == 'plugin.php' || strpos($info->getFilename(), 'page.php') !== false || $info->getFilename() == 'cron.php') {
-		require_once $info->getPathname();
-	}
-}
-// Include all custom plugin files
-if (file_exists(dirname(__DIR__, 1) . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR . 'plugins')) {
-	$folder = dirname(__DIR__, 1) . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR . 'plugins';
+try {
+	$folder = __DIR__ . DIRECTORY_SEPARATOR . 'plugins';
 	$directoryIterator = new RecursiveDirectoryIterator($folder, FilesystemIterator::SKIP_DOTS);
 	$iteratorIterator = new RecursiveIteratorIterator($directoryIterator);
 	foreach ($iteratorIterator as $info) {
@@ -43,4 +34,21 @@ if (file_exists(dirname(__DIR__, 1) . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_S
 			require_once $info->getPathname();
 		}
 	}
+} catch (UnexpectedValueException $e) {
+	// Folder doesn't exist or permission denied
+}
+// Include all custom plugin files
+try {
+	if (file_exists(dirname(__DIR__, 1) . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR . 'plugins')) {
+		$folder = dirname(__DIR__, 1) . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR . 'plugins';
+		$directoryIterator = new RecursiveDirectoryIterator($folder, FilesystemIterator::SKIP_DOTS);
+		$iteratorIterator = new RecursiveIteratorIterator($directoryIterator);
+		foreach ($iteratorIterator as $info) {
+			if ($info->getFilename() == 'plugin.php' || strpos($info->getFilename(), 'page.php') !== false || $info->getFilename() == 'cron.php') {
+				require_once $info->getPathname();
+			}
+		}
+	}
+} catch (UnexpectedValueException $e) {
+	// Permission denied
 }
