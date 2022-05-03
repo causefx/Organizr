@@ -659,5 +659,9 @@ return [
 	'checkForThemeUpdate' => true,
 	'autoUpdateCronEnabled' => false,
 	'autoUpdateCronSchedule' => '@weekly',
-	'useRandomMediaImage' => false
+	'useRandomMediaImage' => false,
+	'sendLogsToSlack' => false,
+	'slackLogLevel' => 'ERROR',
+	'slackLogWebhook' => '',
+	'slackLogWebHookChannel' => ''
 ];
