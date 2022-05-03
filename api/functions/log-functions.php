@@ -238,18 +238,9 @@ trait LogFunctions
 		}
 	}
 
-	public function setupLogger($channel = 'Organizr', $username = null)
+	public function getLogLevelClass($level, $slack = false)
 	{
-		if (!$username) {
-			$username = $this->user['username'] ?? 'System';
-		}
-		$loggerBuilder = new OrganizrLogger();
-		$loggerBuilder->setReadyStatus($this->hasDB() && $this->log);
-		$loggerBuilder->setMaxFiles($this->config['maxLogFiles']);
-		$loggerBuilder->setFileName($this->tempLogIfNeeded());
-		$loggerBuilder->setTraceId($username);
-		$loggerBuilder->setChannel(ucwords(strtolower($channel)));
-		switch ($this->config['logLevel']) {
+		switch ($level) {
 			case 'DEBUG':
 				$logLevel = Nekonomokochan\PhpJsonLogger\LoggerBuilder::DEBUG;
 				break;
@@ -275,8 +266,35 @@ trait LogFunctions
 				$logLevel = Nekonomokochan\PhpJsonLogger\LoggerBuilder::WARNING;
 				break;
 		}
-		$loggerBuilder->setLogLevel($logLevel);
+		if ($slack) {
+			$organizrLogLevel = $this->getLogLevelClass($this->config['logLevel']);
+			if ($logLevel < $organizrLogLevel) {
+				$logLevel = $organizrLogLevel;
+			}
+		}
+		return $logLevel;
+	}
+
+	public function setupLogger($channel = 'Organizr', $username = null)
+	{
+		if (!$username) {
+			$username = $this->user['username'] ?? 'System';
+		}
+		$loggerBuilder = new OrganizrLogger();
+		$loggerBuilder->setReadyStatus($this->hasDB() && $this->log);
+		$loggerBuilder->setMaxFiles($this->config['maxLogFiles']);
+		$loggerBuilder->setFileName($this->tempLogIfNeeded());
+		$loggerBuilder->setTraceId($username);
+		$loggerBuilder->setChannel(ucwords(strtolower($channel)));
+		$loggerBuilder->setLogLevel($this->getLogLevelClass($this->config['logLevel']));
 		try {
+			if ($this->config['sendLogsToSlack']) {
+				if ($this->config['slackLogWebhook'] !== '') {
+					$slackHandlerBuilder = new Nekonomokochan\PhpJsonLogger\SlackWebhookHandlerBuilder($this->config['slackLogWebhook'], $this->config['slackLogWebHookChannel']);
+					$slackHandlerBuilder->setLevel($this->getLogLevelClass($this->config['slackLogLevel'], true));
+					$loggerBuilder->setSlackWebhookHandler($slackHandlerBuilder->build());
+				}
+			}
 			$this->logger = $loggerBuilder->build();
 			return $this->logger;
 		} catch (Exception $e) {
