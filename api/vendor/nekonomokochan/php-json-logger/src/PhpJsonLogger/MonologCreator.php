@@ -3,6 +3,7 @@ namespace Nekonomokochan\PhpJsonLogger;
 
 use Monolog\Handler\RotatingFileHandler;
 use Monolog\Handler\SlackHandler;
+use Monolog\Handler\SlackWebhookHandler;
 use Monolog\Handler\StreamHandler;
 use Monolog\Processor\IntrospectionProcessor;
 use Monolog\Processor\WebProcessor;
@@ -78,6 +79,21 @@ trait MonologCreator
             $webProcessor->addExtraField('user_agent', 'HTTP_USER_AGENT');
             array_push($processors, $webProcessor);
         }
+
+	    if ($loggerBuilder->getSlackWebhookHandler() instanceof SlackWebhookHandler) {
+		    $slack = $loggerBuilder->getSlackWebhookHandler();
+		    $slack->setFormatter($formatter);
+
+		    array_push(
+			    $handlers,
+			    $slack
+		    );
+
+		    $webProcessor = new WebProcessor();
+		    $webProcessor->addExtraField('server_ip_address', 'SERVER_ADDR');
+		    $webProcessor->addExtraField('user_agent', 'HTTP_USER_AGENT');
+		    array_push($processors, $webProcessor);
+	    }
 
         return [
             'channel'    => $loggerBuilder->getChannel(),
