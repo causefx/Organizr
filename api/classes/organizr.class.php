@@ -106,6 +106,8 @@ class Organizr
 		$this->checkDiskSpace();
 		// Set UUID for device
 		$this->setDeviceUUID();
+		// Add Plugin prefix to plugin global
+		$this->setPluginListNameFromConfigPrefix();
 		// Constructed from Updater?
 		$this->updating = $updating;
 		// Set Project Root directory
@@ -1133,6 +1135,14 @@ class Organizr
 		return $themes;
 	}
 
+	public function setPluginListNameFromConfigPrefix()
+	{
+		foreach ($GLOBALS['plugins'] as $pluginName => $pluginInfo) {
+			$GLOBALS['pluginInfo'][strtolower($pluginInfo['configPrefix'])] = $pluginInfo;
+			$GLOBALS['pluginInfo'][strtolower($pluginName)] = $pluginInfo;
+		}
+	}
+
 	public function pluginFilesFromDirectory($directory, $webDirectory, $type, $settings = false, $rootPath = '')
 	{
 		$files = '';
@@ -1173,7 +1183,8 @@ class Organizr
 							}
 							if ($pluginEnabled || $settings) {
 								if ($continue) {
-									$files .= '<script src="' . $rootPath . $webDirectory . basename(dirname($info->getPathname())) . '/' . basename($info->getFilename()) . '?v=' . $this->fileHash . '" defer="true"></script>';
+									$version = $GLOBALS['pluginInfo'][strtolower($key)]['version'] ?? $this->fileHash;
+									$files .= '<script src="' . $rootPath . $webDirectory . basename(dirname($info->getPathname())) . '/' . basename($info->getFilename()) . '?v=' . $version . '" defer="true"></script>';
 								}
 							}
 						}
@@ -1182,7 +1193,8 @@ class Organizr
 				case 'css':
 					foreach ($iteratorIterator as $info) {
 						if (pathinfo($info->getPathname(), PATHINFO_EXTENSION) == 'css') {
-							$files .= '<link href="' . $rootPath . $webDirectory . basename(dirname($info->getPathname())) . '/' . basename($info->getFilename()) . '?v=' . $this->fileHash . '" rel="stylesheet">';
+							$version = $GLOBALS['pluginInfo'][strtolower($key)]['version'] ?? $this->fileHash;
+							$files .= '<link href="' . $rootPath . $webDirectory . basename(dirname($info->getPathname())) . '/' . basename($info->getFilename()) . '?v=' . $version . '" rel="stylesheet">';
 						}
 					}
 					break;
