@@ -1193,6 +1193,7 @@ class Organizr
 				case 'css':
 					foreach ($iteratorIterator as $info) {
 						if (pathinfo($info->getPathname(), PATHINFO_EXTENSION) == 'css') {
+							$key = basename(dirname($info->getPathname()));
 							$version = $GLOBALS['pluginInfo'][strtolower($key)]['version'] ?? $this->fileHash;
 							$files .= '<link href="' . $rootPath . $webDirectory . basename(dirname($info->getPathname())) . '/' . basename($info->getFilename()) . '?v=' . $version . '" rel="stylesheet">';
 						}
