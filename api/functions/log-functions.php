@@ -209,9 +209,10 @@ trait LogFunctions
 
 	public function setLoggerChannel($channel = 'Organizr', $username = null)
 	{
+
 		if ($this->hasDB()) {
 			$channel = $channel ?: 'Organizr';
-			//$setLogger = false;
+			$setLogger = false;
 			if ($username) {
 				$username = $this->sanitizeUserString($username);
 			}
@@ -219,19 +220,22 @@ trait LogFunctions
 				if ($channel) {
 					if (strtolower($this->logger->getChannel()) !== strtolower($channel)) {
 						$this->logger->setChannel($channel);
-						//$setLogger = true;
+						$setLogger = true;
 					}
 				}
 				if ($username) {
 					$currentUsername = $this->logger->getTraceId() !== '' ? strtolower($this->logger->getTraceId()) : '';
 					if ($currentUsername !== strtolower($username)) {
 						$this->logger->setUsername($username);
-						//$setLogger = true;
+						$setLogger = true;
 					}
 				}
-				return $this->logger;
+				if ($setLogger) {
+					return $this->setupLogger($channel, $username);
+				} else {
+					return $this->logger;
+				}
 			} else {
-				//$setLogger = true;
 				return $this->setupLogger($channel, $username);
 			}
 		}
