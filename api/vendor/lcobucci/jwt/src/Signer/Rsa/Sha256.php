@@ -1,34 +1,20 @@
 <?php
-/**
- * This file is part of Lcobucci\JWT, a simple library to handle JWT and JWS
- *
- * @license http://opensource.org/licenses/BSD-3-Clause BSD-3-Clause
- */
+declare(strict_types=1);
 
 namespace Lcobucci\JWT\Signer\Rsa;
 
 use Lcobucci\JWT\Signer\Rsa;
 
-/**
- * Signer for RSA SHA-256
- *
- * @author Luís Otávio Cobucci Oblonczyk <lcobucci@gmail.com>
- * @since 2.1.0
- */
-class Sha256 extends Rsa
+use const OPENSSL_ALGO_SHA256;
+
+final class Sha256 extends Rsa
 {
-    /**
-     * {@inheritdoc}
-     */
-    public function getAlgorithmId()
+    public function algorithmId(): string
     {
         return 'RS256';
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getAlgorithm()
+    public function algorithm(): int
     {
         return OPENSSL_ALGO_SHA256;
     }

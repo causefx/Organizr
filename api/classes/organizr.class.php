@@ -3483,30 +3483,39 @@ class Organizr
 		$days = ($days > 365) ? 365 : $days;
 		//Quick get user ID
 		$result = $this->getUserByUsernameAndEmail($username, $email);
-		// Create JWT
-		// Set key
-		// SHA256 Encryption
-		$signer = new Lcobucci\JWT\Signer\Hmac\Sha256();
-		// Start Builder
-		$jwttoken = (new Lcobucci\JWT\Builder())->issuedBy('Organizr')// Configures the issuer (iss claim)
-		->permittedFor('Organizr')// Configures the audience (aud claim)
-		->identifiedBy('4f1g23a12aa', true)// Configures the id (jti claim), replicating as a header item
-		->issuedAt(time())// Configures the time that the token was issue (iat claim)
-		->expiresAt(time() + (86400 * $days))// Configures the expiration time of the token (exp claim)
-		->withClaim('name', $result['username'])// Configures a new claim, called "name"
-		->withClaim('group', $result['group'])// Configures a new claim, called "group"
-		->withClaim('groupID', $result['group_id'])// Configures a new claim, called "groupID"
-		->withClaim('email', $result['email'])// Configures a new claim, called "email"
-		->withClaim('image', $result['image'])// Configures a new claim, called "image"
-		->withClaim('userID', $result['id'])// Configures a new claim, called "image"
-		->sign($signer, $this->config['organizrHash'])// creates a signature using "testing" as key
-		->getToken(); // Retrieves the generated token
-		$jwttoken->getHeaders(); // Retrieves the token headers
-		$jwttoken->getClaims(); // Retrieves the token claims
-		$this->coookie('set', $this->cookieName, $jwttoken, $days);
+		$config = $this->configToken();
+		assert($config instanceof Lcobucci\JWT\Configuration);
+		$now = new DateTimeImmutable();
+		$token = $config->builder()
+			// Configures the issuer (iss claim)
+			->issuedBy('Organizr')
+			// Configures the audience (aud claim)
+			->permittedFor('Organizr')
+			// Configures the id (jti claim)
+			->identifiedBy('4f1g23a12aa')
+			// Configures the time that the token was issue (iat claim)
+			->issuedAt($now)
+			// Configures the time that the token can be used (nbf claim)
+			->canOnlyBeUsedAfter($now)
+			// Configures the expiration time of the token (exp claim)
+			->expiresAt($now->modify('+' . $days . ' days'))
+			// Configures a new claim, called "uid"
+			->withClaim('name', $result['username'])// Configures a new claim, called "name"
+			->withClaim('group', $result['group'])// Configures a new claim, called "group"
+			->withClaim('groupID', $result['group_id'])// Configures a new claim, called "groupID"
+			->withClaim('email', $result['email'])// Configures a new claim, called "email"
+			->withClaim('image', $result['image'])// Configures a new claim, called "image"
+			->withClaim('userID', $result['id'])// Configures a new claim, called "image"
+			// Configures a new header, called "foo"
+			//->withHeader('foo', 'bar')
+			// Builds a new token
+			->getToken($config->signer(), $config->signingKey());
+		//$token->headers(); // Retrieves the token headers
+		//$token->claims(); // Retrieves the token claims
+		$this->coookie('set', $this->cookieName, $token->toString(), $days);
 		// Add token to DB
 		$addToken = [
-			'token' => (string)$jwttoken,
+			'token' => $token->toString(),
 			'user_id' => $result['id'],
 			'created' => gmdate('Y-m-d H:i:s'),
 			'browser' => $_SERVER ['HTTP_USER_AGENT'] ?? null,
@@ -3522,14 +3531,14 @@ class Organizr
 				)
 			),
 		];
-		$token = $this->processQueries($response);
-		if ($jwttoken) {
+		$this->processQueries($response);
+		if ($token) {
 			$this->logger->debug('Token has been created');
 		} else {
 			$this->logger->warning('Token creation error');
 		}
 		$this->logger->debug('Token creation function has finished');
-		return $jwttoken;
+		return $token->toString();
 	}
 
 	public function login($array)

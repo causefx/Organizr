@@ -1,7 +1,7 @@
 {
   "require": {
     "dibi/dibi": "^4.2",
-    "lcobucci/jwt": "3.3.1",
+    "lcobucci/jwt": "^4.1",
     "composer/semver": "^1.4",
     "phpmailer/phpmailer": "^6.2",
     "rmccue/requests": "^1.7",

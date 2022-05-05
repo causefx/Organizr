@@ -87,6 +87,7 @@ class ComposerStaticInitcbdc783d76f8e7563dcce7d8af053ecb
         array (
             'League\\OAuth2\\Client\\' => 21,
             'Lcobucci\\JWT\\' => 13,
+            'Lcobucci\\Clock\\' => 15,
         ),
         'K' => 
         array (
@@ -275,6 +276,10 @@ class ComposerStaticInitcbdc783d76f8e7563dcce7d8af053ecb
         'Lcobucci\\JWT\\' => 
         array (
             0 => __DIR__ . '/..' . '/lcobucci/jwt/src',
+        ),
+        'Lcobucci\\Clock\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/lcobucci/clock/src',
         ),
         'Kryptonit3\\Sonarr\\' => 
         array (
