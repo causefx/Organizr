@@ -337,24 +337,26 @@ class Organizr
 	public function checkForOrganizrOAuth()
 	{
 		// Oauth?
-		if ($this->user['groupID'] == '999') {
-			$this->setLoggerChannel('OAuth')->debug('Starting OAuth login check');
-			$data = [
-				'enabled' => $this->config['authProxyEnabled'],
-				'header_name' => $this->config['authProxyHeaderName'],
-				'header_name_email' => $this->config['authProxyHeaderNameEmail'],
-				'whitelist' => $this->config['authProxyWhitelist'],
-			];
-			if ($this->config['authProxyEnabled'] && ($this->config['authProxyHeaderName'] !== '' || $this->config['authProxyHeaderNameEmail'] !== '') && $this->config['authProxyWhitelist'] !== '') {
-				if (isset($this->getallheadersi()[strtolower($this->config['authProxyHeaderName'])]) || isset($this->getallheadersi()[strtolower($this->config['authProxyHeaderNameEmail'])])) {
-					$this->coookieSeconds('set', 'organizrOAuth', 'true', 20000, false);
-					$this->setLoggerChannel('OAuth')->info('OAuth pre-check passed - adding organizrOAuth cookie', $data);
+		if ($this->user) {
+			if ($this->user['groupID'] == '999') {
+				$this->setLoggerChannel('OAuth')->debug('Starting OAuth login check');
+				$data = [
+					'enabled' => $this->config['authProxyEnabled'],
+					'header_name' => $this->config['authProxyHeaderName'],
+					'header_name_email' => $this->config['authProxyHeaderNameEmail'],
+					'whitelist' => $this->config['authProxyWhitelist'],
+				];
+				if ($this->config['authProxyEnabled'] && ($this->config['authProxyHeaderName'] !== '' || $this->config['authProxyHeaderNameEmail'] !== '') && $this->config['authProxyWhitelist'] !== '') {
+					if (isset($this->getallheadersi()[strtolower($this->config['authProxyHeaderName'])]) || isset($this->getallheadersi()[strtolower($this->config['authProxyHeaderNameEmail'])])) {
+						$this->coookieSeconds('set', 'organizrOAuth', 'true', 20000, false);
+						$this->setLoggerChannel('OAuth')->info('OAuth pre-check passed - adding organizrOAuth cookie', $data);
+					} else {
+						$data = array_merge($data, ['headers' => $this->getallheadersi()]);
+						$this->setLoggerChannel('OAuth')->debug('Headers not set', $data);
+					}
 				} else {
-					$data = array_merge($data, ['headers' => $this->getallheadersi()]);
-					$this->setLoggerChannel('OAuth')->debug('Headers not set', $data);
+					$this->setLoggerChannel('OAuth')->debug('OAuth not triggered', $data);
 				}
-			} else {
-				$this->setLoggerChannel('OAuth')->debug('OAuth not triggered', $data);
 			}
 		}
 	}
@@ -1599,14 +1601,14 @@ class Organizr
 		return $guest;
 	}
 
-	public function getAllUserTokens($id)
+	public function getAllUserTokens($id, $includeAllFields = true)
 	{
-
+		$select = $includeAllFields ? '*' : 'token, ip, id, expires, created';
 		$response = [
 			array(
 				'function' => 'fetchAll',
 				'query' => array(
-					'SELECT * FROM `tokens` WHERE user_id = ? AND expires > ?',
+					'SELECT ' . $select . ' FROM `tokens` WHERE user_id = ? AND expires > ?',
 					[$id],
 					[$this->currentTime]
 				)
@@ -1663,7 +1665,8 @@ class Organizr
 		if ($validated == true) {
 			$allTokens = $this->getAllUserTokens($userInfo['userID']);
 			$user = $this->getUserById($userInfo['userID']);
-			$tokenCheck = ($this->searchArray($allTokens, 'token', $token) !== false);
+			$tokenKey = $this->searchArray($allTokens, 'token', $token);
+			$tokenCheck = ($tokenKey !== false);
 			if (!$tokenCheck) {
 				$this->setLoggerChannel('Authentication');
 				$this->logger->debug('Token failed check against all token listings', $allTokens);
@@ -1673,6 +1676,12 @@ class Organizr
 				}
 				return false;
 			} else {
+				// Check if user is on same brower as token
+				if ($allTokens[$tokenKey]['browser'] !== $_SERVER ['HTTP_USER_AGENT']) {
+					$this->setLoggerChannel('Authentication')->warning('Mismatch of useragent');
+					$this->invalidToken($token);
+					return false;
+				}
 				if ($api) {
 					$this->setResponse(200, 'Token is valid');
 				}
@@ -1714,7 +1723,7 @@ class Organizr
 		$validated = (bool)$userInfo;
 		if ($validated == true) {
 			$user = $this->getUserById($userInfo['userID']);
-			$allTokens = $this->getAllUserTokens($userInfo['userID']);
+			$allTokens = $this->getAllUserTokens($userInfo['userID'], false);
 			return array(
 				'token' => $token,
 				'tokenDate' => $userInfo['tokenDate'],
