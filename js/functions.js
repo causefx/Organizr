@@ -426,7 +426,7 @@ function getDefault(id){
             return false;
         }
     }
-    if(getHash() === false){
+    if(getHash() === false || (getHash() === 'OrganizrLogin' && activeInfo.user.loggedin)){
         if(tabInfo.name !== null && tabInfo.type !== null){
             switchTab(id);
         } else {
@@ -2747,38 +2747,18 @@ function buildActiveTokens(array) {
     $.each(array, function(i,v) {
         parser.setUA(v.browser);
         var result = parser.getResult();
-        var className = (activeInfo.user.token == v.token) ? 'bg-success text-inverse' : '';
-        var extraText = (activeInfo.user.token == v.token) ? '<span class="tooltip-info" data-toggle="tooltip" data-placement="right" title="" data-original-title="Current Token">...'+v.token.substr(-10, 10)+'</span>' : v.token.substr(-10, 10);
-        tokens += `
+        var className = (activeInfo.user.token === v.token) ? 'bg-success text-inverse' : '';
+        var extraText = (activeInfo.user.token === v.token) ? '<span class="tooltip-info" data-toggle="tooltip" data-placement="right" title="" data-original-title="Current Token">...'+v.token.substr(-10, 10)+'</span>' : v.token.substr(-10, 10);
+	    v.created = v.created.indexOf('Z') !== -1 ? v.created : v.created + 'Z';
+	    v.expires = v.expires.indexOf('Z') !== -1 ? v.expires : v.expires + 'Z';
+
+
+	    tokens += `
             <tr id="token-`+v.id+`" class="`+className+`">
                 <td>`+v.id+`</td>
                 <td>`+extraText+`</td>
                 <td>`+moment(v.created).format('LLL')+`</td>
                 <td>`+moment(v.expires).format('LLL')+`</td>
-                <td><a data-toggle="collapse" href="#token-`+v.id+`-info" aria-expanded="false" href="javascript:void(0)">`+(result.browser.name)+`</a>
-                    <div id="token-`+v.id+`-info" class="table-responsive collapse">
-                        <table class="table color-bordered-table purple-bordered-table">
-                            <tbody class="bg-org">
-                                <tr>
-                                    <td>Browser</td>
-                                    <td>`+result.browser.name+`</td>
-                                </tr>
-                                <tr>
-                                    <td>Version</td>
-                                    <td>`+result.browser.version+`</td>
-                                </tr>
-                                <tr>
-                                    <td>OS</td>
-                                    <td>`+result.os.name+`</td>
-                                </tr>
-                                <tr>
-                                    <td>Version</td>
-                                    <td>`+result.os.version+`</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-</td>
                 <td>`+(v.ip)+`</td>
                 <td>
                     <button class="btn btn-danger waves-effect waves-light" type="button" onclick="revokeToken('`+v.id+`');"><i class="fa fa-ban"></i></button>
@@ -2802,7 +2782,6 @@ function buildActiveTokens(array) {
                                         <th lang="en">Token</th>
                                         <th lang="en">Created</th>
                                         <th lang="en">Expires</th>
-                                        <th lang="en">Browser</th>
                                         <th lang="en">IP</th>
                                         <th lang="en">Action</th>
                                     </tr>
@@ -5145,7 +5124,6 @@ function randomCSV(values){
 }
 function loadCustomJava(appearance){
     if(appearance.customThemeJava !== ''){
-        console.log(appearance.customThemeJava)
         $('#custom-theme-javascript').html(appearance.customThemeJava);
     }
     if(appearance.customJava !== ''){
