@@ -1676,7 +1676,7 @@ class Organizr
 				}
 				return false;
 			} else {
-				// Check if user is on same brower as token
+				// Check if user is on same browser as token
 				if ($allTokens[$tokenKey]['browser'] !== $_SERVER ['HTTP_USER_AGENT']) {
 					$this->setLoggerChannel('Authentication')->warning('Mismatch of useragent');
 					$this->invalidToken($token);
@@ -1963,7 +1963,11 @@ class Organizr
 			];
 		}
 		foreach ($newImageListing as $k => $v) {
-			if (stripos($v['text'], $term) !== false || !$term) {
+			if ($term) {
+				if (stripos($v['text'], $term) !== false) {
+					$goodIcons['results'][] = $v;
+				}
+			} else {
 				$goodIcons['results'][] = $v;
 			}
 		}
