@@ -4048,6 +4048,15 @@ class Organizr
 				}
 			}
 			$all['tabs'] = $newArray;
+			if (count($all['tabs']) > 0) {
+				usort($all['tabs'], function ($a, $b) {
+					if ($this->config['unsortedTabs'] == 'top') {
+						return $b['order'] <=> $a['order'];
+					} else {
+						return $a['order'] <=> $b['order'];
+					}
+				});
+			}
 			$newArray = NULL;
 			$ids = NULL;
 		} else {
@@ -4066,11 +4075,6 @@ class Organizr
 			$v['count'] = $count[$v['category_id']] ?? 0;
 		}
 		$all['categories'] = $queries['categories'];
-		if (count($all['tabs']) > 0) {
-			usort($all['tabs'], function ($a, $b) {
-				return $a['order'] <=> $b['order'];
-			});
-		}
 		switch ($type) {
 			case 'categories':
 				return $all['categories'];
