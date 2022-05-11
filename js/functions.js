@@ -3303,6 +3303,7 @@ function buildUserGroupSelect(array, userID, groupID){
 function buildTabGroupSelect(array, tabID, groupID, type){
 	var groupSelect = '';
 	var selected = '';
+	let name = (type == 'tabGroupSelectMin') ? 'group_id_min' : 'group_id';
 	$.each(array, function(i,v) {
 		selected = '';
 		if(v.group_id == groupID){
@@ -3310,7 +3311,7 @@ function buildTabGroupSelect(array, tabID, groupID, type){
 		}
 		groupSelect += '<option '+selected+' value="'+v.group_id+'">'+v.group+'</option>';
 	});
-	return '<td><select name="tab['+tabID+'].group_id" class="form-control '+type+'">'+groupSelect+'</select></td>';
+	return '<td><select name="tab['+tabID+'].'+name+'" class="form-control '+type+'">'+groupSelect+'</select></td>';
 }
 function buildTabTypeSelect(tabID, typeID, disabled){
 	var array = [
