@@ -3300,7 +3300,7 @@ function buildUserGroupSelect(array, userID, groupID){
 	});
 	return '<td><select name="userGroupSelect" class="form-control userGroupSelect" '+disabled+'>'+groupSelect+'</select></td>';
 }
-function buildTabGroupSelect(array, tabID, groupID){
+function buildTabGroupSelect(array, tabID, groupID, type){
 	var groupSelect = '';
 	var selected = '';
 	$.each(array, function(i,v) {
@@ -3310,7 +3310,7 @@ function buildTabGroupSelect(array, tabID, groupID){
 		}
 		groupSelect += '<option '+selected+' value="'+v.group_id+'">'+v.group+'</option>';
 	});
-	return '<td><select name="tab['+tabID+'].group_id" class="form-control tabGroupSelect">'+groupSelect+'</select></td>';
+	return '<td><select name="tab['+tabID+'].group_id" class="form-control '+type+'">'+groupSelect+'</select></td>';
 }
 function buildTabTypeSelect(tabID, typeID, disabled){
 	var array = [
@@ -3489,7 +3489,8 @@ function buildTabEditorItem(array){
 			</td>
 			<td><span class="tooltip-info" data-toggle="tooltip" data-placement="right" title="" data-original-title="`+v.url+`">`+v.name+`</span><span id="checkTabHomepageItem-`+v.id+`" data-url="`+v.url+`" data-url-local="`+v.url_local+`" data-name="`+v.name+`" class="checkTabHomepageItem mouse label label-rouded label-inverse pull-right"></span></td>
 			`+buildTabCategorySelect(array.categories,v.id, v.category_id)+`
-			`+buildTabGroupSelect(array.groups,v.id, v.group_id)+`
+			`+buildTabGroupSelect(array.groups,v.id, v.group_id_min, 'tabGroupSelectMin')+`
+			`+buildTabGroupSelect(array.groups,v.id, v.group_id, 'tabGroupSelectMax')+`
 			`+buildTabTypeSelect(v.id, v.type, typeDisabled)+`
 			<td style="text-align:center"><div class="radio radio-purple"><input onclick="radioLoop(this);" type="radio" class="defaultSwitch" id="tab[`+v.id+`].default" name="tab[`+v.id+`].default" value="true" `+tof(v.default,'c')+`><label for="tab[`+v.id+`].default"></label></div></td>
 
@@ -3497,6 +3498,7 @@ function buildTabEditorItem(array){
 			<td style="text-align:center"><input type="checkbox" class="js-switch splashSwitch" data-size="small" data-color="#99d683" data-secondary-color="#f96262" name="tab[`+v.id+`].splash" value="true" `+tof(v.splash,'c')+`/><input type="hidden" class="form-control" name="tab[`+v.id+`].splash" value="false"></td>
 			<td style="text-align:center"><input type="checkbox" class="js-switch pingSwitch" data-size="small" data-color="#99d683" data-secondary-color="#f96262" name="tab[`+v.id+`].ping" value="true" `+tof(v.ping,'c')+`/><input type="hidden" class="form-control" name="tab[`+v.id+`].ping" value="false"></td>
 			<td style="text-align:center"><input type="checkbox" class="js-switch preloadSwitch" data-size="small" data-color="#99d683" data-secondary-color="#f96262" name="tab[`+v.id+`].preload" value="true" `+tof(v.preload,'c')+`/><input type="hidden" class="form-control" name="tab[`+v.id+`].preload" value="false"></td>
+			<td style="text-align:center"><input type="checkbox" class="js-switch addToAdminSwitch" data-size="small" data-color="#99d683" data-secondary-color="#f96262" name="tab[`+v.id+`].add_to_admin" value="true" `+tof(v.add_to_admin,'c')+`/><input type="hidden" class="form-control" name="tab[`+v.id+`].add_to_admin" value="false"></td>
 			<td style="text-align:center"><button type="button" class="btn btn-info btn-outline btn-circle btn-lg m-r-5 editTabButton popup-with-form" onclick="editTabForm('`+v.id+`')" href="#edit-tab-form" data-effect="mfp-3d-unfold"><i class="ti-pencil-alt"></i></button></td>
 			<td style="text-align:center"><button type="button" class="btn btn-danger btn-outline btn-circle btn-lg m-r-5 `+deleteDisabled+`"><i class="ti-trash"></i></button></td>
 		</tr>
