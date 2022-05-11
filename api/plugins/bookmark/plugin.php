@@ -575,6 +575,9 @@ class Bookmark extends Organizr
 				$this->setAPIResponse('error', 'Tab name: ' . $array['name'] . ' is already taken', 409);
 				return false;
 			}
+			if (!$this->qualifyLength($array['name'], 50, true)) {
+				return false;
+			}
 		} else {
 			$this->setAPIResponse('error', 'Tab name was not supplied', 422);
 			return false;
@@ -644,6 +647,9 @@ class Bookmark extends Organizr
 			$array['name'] = $this->sanitizeUserString($array['name']);
 			if ($this->_isBookmarkTabNameTaken($array['name'], $id)) {
 				$this->setAPIResponse('error', 'Tab name: ' . $array['name'] . ' is already taken', 409);
+				return false;
+			}
+			if (!$this->qualifyLength($array['name'], 50, true)) {
 				return false;
 			}
 		}
@@ -887,6 +893,9 @@ class Bookmark extends Organizr
 				$this->setAPIResponse('error', 'Category name: ' . $array['category'] . ' is already taken', 409);
 				return false;
 			}
+			if (!$this->qualifyLength($array['category'], 50, true)) {
+				return false;
+			}
 		} else {
 			$this->setAPIResponse('error', 'Category name was not supplied', 422);
 			return false;
@@ -928,6 +937,9 @@ class Bookmark extends Organizr
 			$array['category'] = $this->sanitizeUserString($array['category']);
 			if ($this->_isBookmarkCategoryNameTaken($array['category'], $id)) {
 				$this->setAPIResponse('error', 'Category name: ' . $array['category'] . ' is already taken', 409);
+				return false;
+			}
+			if (!$this->qualifyLength($array['category'], 50, true)) {
 				return false;
 			}
 		}
