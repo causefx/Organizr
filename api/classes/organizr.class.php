@@ -7561,7 +7561,11 @@ class Organizr
 		$iconListing = json_decode($allIcons, true);
 		foreach ($iconListing as $setKey => $set) {
 			foreach ($set['children'] as $k => $v) {
-				if (stripos($v['text'], $term) !== false || !$term) {
+				if ($term) {
+					if (stripos($v['text'], $term) !== false) {
+						$goodIcons['results'][] = $v;
+					}
+				} else {
 					$goodIcons['results'][] = $v;
 				}
 			}
