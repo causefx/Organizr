@@ -5112,6 +5112,9 @@ class Organizr
 				$this->setAPIResponse('error', 'Tab name: ' . $array['name'] . ' is already taken', 409);
 				return false;
 			}
+			if (!$this->qualifyLength($array['name'], 50, true)) {
+				return false;
+			}
 		} else {
 			$this->setAPIResponse('error', 'Tab name was not supplied', 422);
 			return false;
@@ -5160,6 +5163,9 @@ class Organizr
 			$array['name'] = $this->sanitizeUserString($array['name']);
 			if ($this->isTabNameTaken($array['name'], $id)) {
 				$this->setAPIResponse('error', 'Tab name: ' . $array['name'] . ' is already taken', 409);
+				return false;
+			}
+			if (!$this->qualifyLength($array['name'], 50, true)) {
 				return false;
 			}
 		}
@@ -5248,6 +5254,9 @@ class Organizr
 				$this->setAPIResponse('error', 'Category name: ' . $array['category'] . ' is already taken', 409);
 				return false;
 			}
+			if (!$this->qualifyLength($array['category'], 50, true)) {
+				return false;
+			}
 		} else {
 			$this->setAPIResponse('error', 'Category name was not supplied', 422);
 			return false;
@@ -5294,6 +5303,9 @@ class Organizr
 			$array['category'] = $this->sanitizeUserString($array['category']);
 			if ($this->isCategoryNameTaken($array['category'], $id)) {
 				$this->setAPIResponse('error', 'Category name: ' . $array['category'] . ' is already taken', 409);
+				return false;
+			}
+			if (!$this->qualifyLength($array['category'], 50, true)) {
 				return false;
 			}
 		}
@@ -6487,6 +6499,9 @@ class Organizr
 				$this->setAPIResponse('error', 'Username: ' . $array['username'] . ' is already taken', 409);
 				return false;
 			}
+			if (!$this->qualifyLength($array['username'], 50, true)) {
+				return false;
+			}
 		}
 		if (array_key_exists('email', $array)) {
 			if ($array['email'] == '') {
@@ -6501,6 +6516,9 @@ class Organizr
 			}
 			if ($this->usernameTaken($array['email'], $array['email'], $id)) {
 				$this->setAPIResponse('error', 'Email: ' . $array['email'] . ' is already taken', 409);
+				return false;
+			}
+			if (!$this->qualifyLength($array['email'], 50, true)) {
 				return false;
 			}
 		}
@@ -6622,6 +6640,15 @@ class Organizr
 			$this->setResponse(409, 'Email is not a valid email', ['email' => $email]);
 			return false;
 		}
+		if (!$this->qualifyLength($username, 50, true)) {
+			return false;
+		}
+		if (!$this->qualifyLength($email, 50, true)) {
+			return false;
+		}
+		if (!$this->qualifyLength($password, 200, true)) {
+			return false;
+		}
 		$this->setLoggerChannel('User Management');
 		if ($this->createUser($username, $password, $email)) {
 			$this->logger->info('Account created for [' . $username . ']');
@@ -6658,6 +6685,15 @@ class Organizr
 		}
 		if ($this->usernameTaken($username, $email)) {
 			$this->setAPIResponse('error', 'Username: ' . $username . ' or Email: ' . $email . ' is already taken', 409);
+			return false;
+		}
+		if (!$this->qualifyLength($username, 50, true)) {
+			return false;
+		}
+		if (!$this->qualifyLength($email, 50, true)) {
+			return false;
+		}
+		if (!$this->qualifyLength($password, 200, true)) {
 			return false;
 		}
 		$defaults = $this->getDefaultGroup();
@@ -6712,6 +6748,9 @@ class Organizr
 			$array['group'] = $this->sanitizeUserString($array['group']);
 			if ($this->isGroupNameTaken($array['group'], $id)) {
 				$this->setAPIResponse('error', 'Group name: ' . $array['group'] . ' is already taken', 409);
+				return false;
+			}
+			if (!$this->qualifyLength($array['group'], 50, true)) {
 				return false;
 			}
 		}
@@ -6792,6 +6831,9 @@ class Organizr
 			$array['group'] = $this->sanitizeUserString($array['group']);
 			if ($this->isGroupNameTaken($array['group'])) {
 				$this->setAPIResponse('error', 'Group name: ' . $array['group'] . ' is already taken', 409);
+				return false;
+			}
+			if (!$this->qualifyLength($array['group'], 50, true)) {
 				return false;
 			}
 		} else {
