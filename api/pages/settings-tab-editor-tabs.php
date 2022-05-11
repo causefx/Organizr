@@ -86,8 +86,8 @@ function get_page_settings_tab_editor_tabs($Organizr)
 							<th width="70" class="text-center"></th>
 							<th lang="en">NAME</th>
 							<th lang="en">CATEGORY</th>
-							<th lang="en">GROUP MIN</th>
-							<th lang="en">GROUP MAX</th>
+							<th lang="en">GROUP FROM</th>
+							<th lang="en">GROUP TO</th>
 							<th lang="en">TYPE</th>
 							<th lang="en" style="text-align:center">DEFAULT</th>
 							<th lang="en" style="text-align:center">ACTIVE</th>
