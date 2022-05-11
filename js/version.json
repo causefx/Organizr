@@ -572,5 +572,12 @@
     "new": "",
     "fixed": "Version number not updating",
     "notes": ""
+  },
+  "2.1.2000": {
+    "date": "2022-05-11 16:49",
+    "title": "New Group Min Max for Tabs",
+    "new": "added addGroupIdMinToDatabase and addAddToAdminToDatabase to upgrade functions|added configToken and validationConstraints function for new version of JWT|added config values for sendLogsToSlack, slackLogLevel, slackLogWebhook, slackLogWebHookChannel|added config values to organizr settings options for SlackWebhookHandler|added debug logging to OAuth pre-checks|added existing headers to oauth debug output|added functions isXML and testAndFormatString|added getLogLevelClass function|added GROUP MAX and GROUP MIN to tab settings headers|added group_id_min and add_to_admin to tabs database table|added group_id_min and add_to_admin to tab settings|added new handling for checking plex servers owned to catch error if not successful|added setChannel and setUsername functions to Logger|added slack-logs test connection to api and settings|added slack/discord webhook support for logs|added slackLogLevel config item|added slack logs to api docs|added SlackWebhookHandlerBuilder to PhpJsonLogger|added SlackWebhookHandler to MonologCreator|added SlackWebhookHandler to OrganizrLogger class|added tabGroupSelectMin - tabGroupSelectMax - addToAdminSwitch to tab settings ajax calls|added type to buildTabGroupSelect function",
+    "fixed": "fixed if webserver does not have access to plugin folder|fixed issue loading next tab if hash was still OrganizrLogin|fixed key missing from plugin css file|fixed stripos of getImagesSelect function|fixed time display issues with tokens",
+    "notes": "changed js and css for plugin files to use plugin version instead of organizr version|removed browser from api and token view page|removed left over console log from loadCustomJava|reworked getallheaders to return only lowercase array|temp return logger|tweaked convertIPToRange function|tweaked error handler to log errors as well|tweaked getAllUserTokens function to have option to not return browser field|tweaked validateToken function to match token browser with db token browser for extra security|updated createToken and jwtParse function to reflect new version of JWT|updated JWT to 4.1.5|wrapped user variable around function checkForOrganizrOAuth"
   }
 }
