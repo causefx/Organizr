@@ -635,7 +635,7 @@ trait UpgradeFunctions
 	public function addGroupIdMinToDatabase()
 	{
 		$this->setLoggerChannel('Database Migration')->info('Starting database update');
-		$addColumn = $this->addColumnToDatabase('tabs', 'group_id_min', 'INTEGER DEFAULT \'0\'');
+		$addColumn = $this->addColumnToDatabase('tabs', 'group_id_min', 'INTEGER DEFAULT \'1\'');
 		if ($addColumn) {
 			$this->setLoggerChannel('Database Migration')->notice('Added group_id_min to database');
 			return true;
