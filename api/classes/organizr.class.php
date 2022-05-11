@@ -3263,7 +3263,7 @@ class Organizr
 					`default`	INTEGER,
 					`enabled`	INTEGER,
 					`group_id`	INTEGER,
-					`group_id_min` INTEGER DEFAULT \'1\',
+					`group_id_min` INTEGER DEFAULT \'0\',
 					`add_to_admin`	INTEGER DEFAULT \'0\',
 					`image`	TEXT,
 					`type`	INTEGER,
