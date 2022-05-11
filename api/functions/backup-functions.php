@@ -63,12 +63,13 @@ trait BackupFunctions
 				break;
 			default:
 		}
-
-		$this->writeLog('success', 'BACKUP: backup process started', 'SYSTEM');
+		$this->setLoggerChannel('Backup')->notice('Backing up Organizr');
 		$zipname = $directory . 'backup[' . date('Y-m-d_H-i') . ' - ' . $this->random_ascii_string(2) . '][' . $this->version . '].zip';
 		$zip = new ZipArchive;
 		$zip->open($zipname, ZipArchive::CREATE);
-		$zip->addFile($this->config['dbLocation'] . $this->config['dbName'], basename($this->config['dbLocation'] . $this->config['dbName']));
+		if ($this->config['driver'] == 'sqlite3') {
+			$zip->addFile($this->config['dbLocation'] . $this->config['dbName'], basename($this->config['dbLocation'] . $this->config['dbName']));
+		}
 		$rootPath = $this->root . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR;
 		$files = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($rootPath), RecursiveIteratorIterator::LEAVES_ONLY);
 
@@ -87,7 +88,7 @@ trait BackupFunctions
 
 
 		$zip->close();
-		$this->writeLog('success', 'BACKUP: backup process finished', 'SYSTEM');
+		$this->setLoggerChannel('Backup')->notice('Backup process finished');
 		$this->setAPIResponse('success', 'Backup has been created', 200);
 		return true;
 	}
