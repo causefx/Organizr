@@ -3251,6 +3251,8 @@ class Organizr
 					`default`	INTEGER,
 					`enabled`	INTEGER,
 					`group_id`	INTEGER,
+					`group_id_min` INTEGER DEFAULT \'0\',
+					`add_to_admin`	INTEGER DEFAULT \'0\',
 					`image`	TEXT,
 					`type`	INTEGER,
 					`splash`	INTEGER,
@@ -4011,10 +4013,18 @@ class Organizr
 			array(
 				'function' => 'fetchAll',
 				'query' => array(
-					'SELECT * FROM tabs WHERE `group_id` >= ? AND `enabled` = 1 ORDER BY `order` ' . $sort,
-					$this->user['groupID']
+					'SELECT * FROM tabs WHERE `group_id` >= ? AND `group_id_min` <= ? AND `enabled` = 1 ORDER BY `order` ' . $sort,
+					$this->user['groupID'],
+					$this->user['groupID'],
 				),
 				'key' => 'tabs'
+			),
+			array(
+				'function' => 'fetchAll',
+				'query' => array(
+					'SELECT * FROM tabs WHERE `add_to_admin` = 1 AND `enabled` = 1 ORDER BY `order` ' . $sort
+				),
+				'key' => 'tabs-admin'
 			),
 			array(
 				'function' => 'fetchAll',
@@ -4026,20 +4036,41 @@ class Organizr
 		];
 		$queries = $this->processQueries($response);
 		$this->applyTabVariables($queries['tabs']);
-		$all['tabs'] = $queries['tabs'];
-		foreach ($queries['tabs'] as $k => $v) {
+		if ($this->qualifyRequest(1)) {
+			$this->applyTabVariables($queries['tabs-admin']);
+			$all['tabs'] = array_merge($queries['tabs'], $queries['tabs-admin']);
+			$newArray = [];
+			$ids = [];
+			foreach ($all['tabs'] as $key => $line) {
+				if (!in_array($line['id'], $ids)) {
+					$ids[] = $line['id'];
+					$newArray[$key] = $line;
+				}
+			}
+			$all['tabs'] = $newArray;
+			$newArray = NULL;
+			$ids = NULL;
+		} else {
+			$all['tabs'] = $queries['tabs'];
+		}
+		foreach ($all['tabs'] as $k => $v) {
 			$v['url_local'] = $v['type'] !== 0 ? $this->checkTabURL($v['url_local']) : $v['url_local'];
 			$v['url'] = $v['type'] !== 0 ? $this->checkTabURL($v['url']) : $v['url'];
 			$v['access_url'] = (!empty($v['url_local']) && ($v['url_local'] !== null) && ($v['url_local'] !== 'null') && $this->isLocal() && $v['type'] !== 0) ? $v['url_local'] : $v['url'];
 		}
 		$count = array_map(function ($element) {
 			return $element['category_id'];
-		}, $queries['tabs']);
+		}, $all['tabs']);
 		$count = (array_count_values($count));
 		foreach ($queries['categories'] as $k => $v) {
 			$v['count'] = $count[$v['category_id']] ?? 0;
 		}
 		$all['categories'] = $queries['categories'];
+		if (count($all['tabs']) > 0) {
+			usort($all['tabs'], function ($a, $b) {
+				return $a['order'] <=> $b['order'];
+			});
+		}
 		switch ($type) {
 			case 'categories':
 				return $all['categories'];
@@ -5119,6 +5150,20 @@ class Organizr
 		if (array_key_exists('default', $array)) {
 			if ($array['default']) {
 				$this->clearTabDefault();
+			}
+		}
+		if (array_key_exists('group_id', $array)) {
+			$groupCheck = (array_key_exists('group_id_min', $array)) ? $array['group_id_min'] : $tabInfo['group_id_min'];
+			if ($array['group_id'] < $groupCheck) {
+				$this->setAPIResponse('error', 'Tab name: ' . $tabInfo['name'] . ' cannot have a lower Group Id Max than Group Id Min', 409);
+				return false;
+			}
+		}
+		if (array_key_exists('group_id_min', $array)) {
+			$groupCheck = (array_key_exists('group_id', $array)) ? $array['group_id'] : $tabInfo['group_id'];
+			if ($array['group_id_min'] > $groupCheck) {
+				$this->setAPIResponse('error', 'Tab name: ' . $tabInfo['name'] . ' cannot have a higher Group Id Min than Group Id Max', 409);
+				return false;
 			}
 		}
 		$response = [
