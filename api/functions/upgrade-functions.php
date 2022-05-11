@@ -88,6 +88,14 @@ trait UpgradeFunctions
 				$this->upgradeToVersion($versionCheck);
 			}
 			// End Upgrade check start for version above
+			// Upgrade check start for version below
+			$versionCheck = '2.1.2000';
+			if ($compare->lessThan($oldVer, $versionCheck)) {
+				$updateDB = false;
+				$oldVer = $versionCheck;
+				$this->upgradeToVersion($versionCheck);
+			}
+			// End Upgrade check start for version above
 			if ($updateDB == true) {
 				//return 'Upgraded Needed - Current Version '.$oldVer.' - New Version: '.$versionCheck;
 				// Upgrade database to latest version
@@ -96,8 +104,7 @@ trait UpgradeFunctions
 			// Update config.php version if different to the installed version
 			if ($updateSuccess && $this->version !== $this->config['configVersion']) {
 				$this->updateConfig(array('apply_CONFIG_VERSION' => $this->version));
-				$this->setLoggerChannel('Update');
-				$this->logger->debug('Updated config version to ' . $this->version);
+				$this->setLoggerChannel('Update')->notice('Updated config version to ' . $this->version);
 			}
 			if ($updateSuccess == false) {
 				die($this->showHTML('Database update failed', 'Please manually check logs and fix - Then reload this page'));
@@ -335,16 +342,26 @@ trait UpgradeFunctions
 			case '2.1.0':
 				$this->upgradeSettingsTabURL();
 				$this->upgradeHomepageTabURL();
+				break;
 			case '2.1.400':
 				$this->removeOldPluginDirectoriesAndFiles();
+				break;
 			case '2.1.525':
 				$this->removeOldCustomHTML();
+				break;
 			case '2.1.860':
 				$this->upgradeInstalledPluginsConfigItem();
+				break;
 			case '2.1.1500':
 				$this->upgradeDataToFolder();
+				break;
 			case '2.1.1860':
 				$this->upgradePluginsToDataFolder();
+				break;
+			case '2.1.2000':
+				$this->addGroupIdMinToDatabase();
+				$this->addAddToAdminToDatabase();
+				break;
 			default:
 				$this->setAPIResponse('success', 'Ran update function for version: ' . $version, 200);
 				return true;
@@ -613,5 +630,31 @@ trait UpgradeFunctions
 			}
 		}
 		return false;
+	}
+
+	public function addGroupIdMinToDatabase()
+	{
+		$this->setLoggerChannel('Database Migration')->info('Starting database update');
+		$addColumn = $this->addColumnToDatabase('tabs', 'group_id_min', 'INTEGER DEFAULT \'0\'');
+		if ($addColumn) {
+			$this->setLoggerChannel('Database Migration')->notice('Added group_id_min to database');
+			return true;
+		} else {
+			$this->setLoggerChannel('Database Migration')->warning('Could not update database');
+			return false;
+		}
+	}
+
+	public function addAddToAdminToDatabase()
+	{
+		$this->setLoggerChannel('Database Migration')->info('Starting database update');
+		$addColumn = $this->addColumnToDatabase('tabs', 'add_to_admin', 'INTEGER DEFAULT \'0\'');
+		if ($addColumn) {
+			$this->setLoggerChannel('Database Migration')->notice('Added add_to_admin to database');
+			return true;
+		} else {
+			$this->setLoggerChannel('Database Migration')->warning('Could not update database');
+			return false;
+		}
 	}
 }
