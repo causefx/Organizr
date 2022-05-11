@@ -359,6 +359,7 @@ trait UpgradeFunctions
 				$this->upgradePluginsToDataFolder();
 				break;
 			case '2.1.2000':
+				$this->backupOrganizr();
 				$this->addGroupIdMinToDatabase();
 				$this->addAddToAdminToDatabase();
 				break;
