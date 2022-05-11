@@ -86,13 +86,15 @@ function get_page_settings_tab_editor_tabs($Organizr)
 							<th width="70" class="text-center"></th>
 							<th lang="en">NAME</th>
 							<th lang="en">CATEGORY</th>
-							<th lang="en">GROUP</th>
+							<th lang="en">GROUP MIN</th>
+							<th lang="en">GROUP MAX</th>
 							<th lang="en">TYPE</th>
 							<th lang="en" style="text-align:center">DEFAULT</th>
 							<th lang="en" style="text-align:center">ACTIVE</th>
 							<th lang="en" style="text-align:center">SPLASH</th>
 							<th lang="en" style="text-align:center">PING</th>
 							<th lang="en" style="text-align:center">PRELOAD</th>
+							<th lang="en" style="text-align:center">ADD TO ADMIN</th>
 							<th lang="en" style="text-align:center">EDIT</th>
 							<th lang="en" style="text-align:center">DELETE</th>
 						</tr>
