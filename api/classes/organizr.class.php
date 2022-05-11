@@ -1908,6 +1908,18 @@ class Organizr
 		}
 	}
 
+	public function qualifyLength($string, $length = 100, $api = false)
+	{
+		if (strlen($string) <= $length) {
+			return true;
+		} else {
+			if ($api) {
+				$this->setResponse(409, 'String is over limit of: ' . $length);
+			}
+			return false;
+		}
+	}
+
 	public function getImages()
 	{
 		$allIconsPrep = array();
