@@ -1678,7 +1678,7 @@ class Organizr
 			} else {
 				// Check if user is on same browser as token
 				if ($allTokens[$tokenKey]['browser'] !== $_SERVER ['HTTP_USER_AGENT']) {
-					$this->setLoggerChannel('Authentication')->warning('Mismatch of useragent');
+					$this->setLoggerChannel('Authentication')->warning('Mismatch of useragent', ['token' => $allTokens[$tokenKey]['browser'], 'browser' => $_SERVER ['HTTP_USER_AGENT']]);
 					$this->invalidToken($token);
 					return false;
 				}
