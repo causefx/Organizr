@@ -4108,9 +4108,15 @@ class Organizr
 	public function refreshList()
 	{
 		$searchTerm = "Refresh";
-		return array_filter($this->config, function ($k) use ($searchTerm) {
+		$list = array_filter($this->config, function ($k) use ($searchTerm) {
 			return stripos($k, $searchTerm) !== false;
 		}, ARRAY_FILTER_USE_KEY);
+		foreach ($list as $item => $value) {
+			if (!is_numeric($value)) {
+				unset($list[$item]);
+			}
+		}
+		return $list;
 	}
 
 	public function homepageOrderList()
