@@ -125,20 +125,20 @@ trait SSOFunctions
 			$response = Requests::get($url . '/api/v1/users/me', ['X-Auth-Token' => 'organizrSSO'], $options);
 			if ($response->success) {
 				if ($response->headers['x-auth-token']) {
-					$this->writeLog('success', 'Komga Token Function - Grabbed token.', $email);
+					$this->setLoggerChannel('Komga')->info('Grabbed token');
 					$token = $response->headers['x-auth-token'];
 				} else {
-					$this->writeLog('error', 'Komga Token Function - Komga did not return Token', $email);
+					$this->setLoggerChannel('Komga')->warning('Komga did not return Token');
 				}
 			} else {
 				if ($fallback) {
-					$this->writeLog('error', 'Komga Token Function - Komga did not return Token - Will retry using fallback credentials', $email);
+					$this->setLoggerChannel('Komga')->warning('Komga did not return Token - Will retry using fallback credentials');
 				} else {
-					$this->writeLog('error', 'Komga Token Function - Komga did not return Token', $email);
+					$this->setLoggerChannel('Komga')->warning('Komga did not return Token');
 				}
 			}
 		} catch (Requests_Exception $e) {
-			$this->writeLog('error', 'Komga Token Function - Error: ' . $e->getMessage(), $email);
+			$this->setLoggerChannel('Komga')->error($e);
 		}
 		if ($token) {
 			return $token;

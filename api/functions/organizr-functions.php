@@ -754,12 +754,12 @@ trait OrganizrFunctions
 				$options = $this->requestOptions($url, 60000, true, false);
 				$response = Requests::post($url . '/api/v1/users/logout', ['X-Auth-Token' => $_COOKIE['komga_token']], $options);
 				if ($response->success) {
-					$this->writeLog('success', 'Komga Token Function - Logged User out', 'SYSTEM');
+					$this->setLoggerChannel('Komga')->info('Logged User out');
 				} else {
-					$this->writeLog('error', 'Komga Token Function - Unable to Logged User out', 'SYSTEM');
+					$this->setLoggerChannel('Komga')->warning('Unable to Logged User out');
 				}
 			} catch (Requests_Exception $e) {
-				$this->writeLog('error', 'Komga Token Function - Error: ' . $e->getMessage(), 'SYSTEM');
+				$this->setLoggerChannel('Komga')->error($e);
 			}
 			$this->coookie('delete', 'komga_token');
 		}
