@@ -170,16 +170,16 @@ trait SSOFunctions
 			$response = Requests::post($url . $endpoint, $headers, json_encode($data), $options);
 			if ($response->success) {
 				$token = json_decode($response->body, true);
-				$this->writeLog('success', 'Jellyfin Token Function - Grabbed token.', $username);
+				$this->setLoggerChannel('JellyFin')->info('Grabbed token');
 				$key = 'user-' . $token['User']['Id'] . '-' . $token['ServerId'];
 				$jellyfin[$key] = json_encode($token['User']);
 				$jellyfin['jellyfin_credentials'] = '{"Servers":[{"ManualAddress":"' . $ssoUrl . '","Id":"' . $token['ServerId'] . '","UserId":"' . $token['User']['Id'] . '","AccessToken":"' . $token['AccessToken'] . '"}]}';
 				return $jellyfin;
 			} else {
-				$this->writeLog('error', 'Jellyfin Token Function - Jellyfin did not return Token', $username);
+				$this->setLoggerChannel('JellyFin')->warning('JellyFin did not return Token');
 			}
 		} catch (Requests_Exception $e) {
-			$this->writeLog('error', 'Jellyfin Token Function - Error: ' . $e->getMessage(), $username);
+			$this->setLoggerChannel('Jellyfin')->error($e);
 		}
 		return false;
 	}
@@ -205,16 +205,16 @@ trait SSOFunctions
 			$response = Requests::post($url . $endpoint, $headers, json_encode($data), $options);
 			if ($response->success) {
 				$token = json_decode($response->body, true)['access_token'];
-				$this->writeLog('success', 'Ombi Token Function - Grabbed token.', $username);
+				$this->setLoggerChannel('Ombi')->info('Grabbed token');
 			} else {
 				if ($fallback) {
-					$this->writeLog('error', 'Ombi Token Function - Ombi did not return Token - Will retry using fallback credentials', $username);
+					$this->setLoggerChannel('Ombi')->warning('Ombi did not return Token - Will retry using fallback credentials');
 				} else {
-					$this->writeLog('error', 'Ombi Token Function - Ombi did not return Token', $username);
+					$this->setLoggerChannel('Ombi')->warning('Ombi did not return Token');
 				}
 			}
 		} catch (Requests_Exception $e) {
-			$this->writeLog('error', 'Ombi Token Function - Error: ' . $e->getMessage(), $username);
+			$this->setLoggerChannel('Ombi')->error($e);
 		}
 		if ($token) {
 			return $token;
@@ -253,12 +253,12 @@ trait SSOFunctions
 						$token[$key]['token'] = json_decode($response->body, true)['token'];
 						$token[$key]['uuid'] = json_decode($response->body, true)['uuid'];
 						$token[$key]['path'] = $path;
-						$this->writeLog('success', 'Tautulli Token Function - Grabbed token from: ' . $url, $username);
+						$this->setLoggerChannel('Tautulli')->info('Grabbed token from: ' . $url);
 					} else {
-						$this->writeLog('error', 'Tautulli Token Function - Error on URL: ' . $url, $username);
+						$this->setLoggerChannel('Tautulli')->warning('Error on URL: ' . $url);
 					}
 				} catch (Requests_Exception $e) {
-					$this->writeLog('error', 'Tautulli Token Function - Error: [' . $url . ']' . $e->getMessage(), $username);
+					$this->setLoggerChannel('Tautulli')->error($e);
 				}
 			}
 		}
@@ -285,16 +285,16 @@ trait SSOFunctions
 			if ($response->success) {
 				$user = json_decode($response->body, true); // not really needed yet
 				$token = $response->cookies['connect.sid']->value;
-				$this->writeLog('success', 'Overseerr Token Function - Grabbed token', $user['plexUsername'] ?? $email);
+				$this->setLoggerChannel('Overseerr')->info('Grabbed token');
 			} else {
 				if ($fallback) {
-					$this->writeLog('error', 'Overseerr Token Function - Overseerr did not return Token - Will retry using fallback credentials', $email);
+					$this->setLoggerChannel('Overseerr')->warning('Overseerr did not return Token - Will retry using fallback credentials');
 				} else {
-					$this->writeLog('error', 'Overseerr Token Function - Overseerr did not return Token', $email);
+					$this->setLoggerChannel('Overseerr')->warning('Overseerr did not return Token');
 				}
 			}
 		} catch (Requests_Exception $e) {
-			$this->writeLog('error', 'Overseerr Token Function - Error: ' . $e->getMessage(), $email);
+			$this->setLoggerChannel('Overseerr')->error($e);
 		}
 		if ($token) {
 			return urldecode($token);
@@ -329,16 +329,16 @@ trait SSOFunctions
 			if ($response->success) {
 				$user = json_decode($response->body, true)['user'];
 				$token = json_decode($response->body, true)['token'];
-				$this->writeLog('success', 'Petio Token Function - Grabbed token', $user['username']);
+				$this->setLoggerChannel('Petio')->info('Grabbed token');
 			} else {
 				if ($fallback) {
-					$this->writeLog('error', 'Petio Token Function - Petio did not return Token - Will retry using fallback credentials', $username);
+					$this->setLoggerChannel('Petio')->warning('Petio did not return Token - Will retry using fallback credentials');
 				} else {
-					$this->writeLog('error', 'Petio Token Function - Petio did not return Token', $username);
+					$this->setLoggerChannel('Petio')->warning('Petio did not return Token');
 				}
 			}
 		} catch (Requests_Exception $e) {
-			$this->writeLog('error', 'Petio Token Function - Error: ' . $e->getMessage(), $username);
+			$this->setLoggerChannel('Petio')->error($e);
 		}
 		if ($token) {
 			return $token;

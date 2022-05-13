@@ -137,7 +137,7 @@ class Invites extends Organizr
 		];
 		$query = $this->processQueries($response);
 		if ($query) {
-			$this->writeLog('success', 'Invite Management Function -  Added Invite [' . $code . ']', $this->user['username']);
+			$this->setLoggerChannel('Invites')->info('Added Invite [' . $code . ']');
 			if ($this->config['PHPMAILER-enabled']) {
 				$PhpMailer = new PhpMailer();
 				$emailTemplate = array(
@@ -255,7 +255,7 @@ class Invites extends Organizr
 				)
 			];
 			$query = $this->processQueries($response);
-			$this->writeLog('success', 'Invite Management Function -  Invite Used [' . $code . ']', 'SYSTEM');
+			$this->setLoggerChannel('Invites')->info('Invite Used [' . $code . ']');
 			return $this->_invitesPluginAction($usedBy, 'share', $this->config['INVITES-type-include']);
 		} else {
 			return false;
@@ -295,7 +295,7 @@ class Invites extends Organizr
 							return $libraryList;
 						}
 					} catch (Requests_Exception $e) {
-						$this->writeLog('error', 'Plex Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
+						$this->setLoggerChannel('Plex')->error($e);
 						return false;
 					};
 				}
@@ -526,36 +526,36 @@ class Invites extends Organizr
 								return false;
 						}
 						if ($response->success) {
-							$this->writeLog('success', 'Plex Invite Function - Plex User now has access to system', $username);
+							$this->setLoggerChannel('Invites')->info('Plex User now has access to system');
 							$this->setAPIResponse('success', 'Plex User now has access to system', 200);
 							return true;
 						} else {
 							switch ($response->status_code) {
 								case 400:
-									$this->writeLog('error', 'Plex Invite Function - Plex User already has access', $username);
+									$this->setLoggerChannel('Plex')->warning('Plex User already has access');
 									$this->setAPIResponse('error', 'Plex User already has access', 409);
 									return false;
 								case 401:
-									$this->writeLog('error', 'Plex Invite Function - Incorrect Token', 'SYSTEM');
+									$this->setLoggerChannel('Plex')->warning('Incorrect Token');
 									$this->setAPIResponse('error', 'Incorrect Token', 409);
 									return false;
 								case 404:
-									$this->writeLog('error', 'Plex Invite Function - Libraries not setup correct [' . $this->config['INVITES-plexLibraries'] . ']', 'SYSTEM');
+									$this->setLoggerChannel('Plex')->warning('Libraries not setup correctly');
 									$this->setAPIResponse('error', 'Libraries not setup correct', 409);
 									return false;
 								default:
-									$this->writeLog('error', 'Plex Invite Function - An error occurred [' . $response->status_code . ']', $username);
+									$this->setLoggerChannel('Plex')->warning('An error occurred [' . $response->status_code . ']');
 									$this->setAPIResponse('error', 'An Error Occurred', 409);
 									return false;
 							}
 						}
 					} catch (Requests_Exception $e) {
-						$this->writeLog('error', 'Plex Invite Function - Error: ' . $e->getMessage(), 'SYSTEM');
+						$this->setLoggerChannel('Plex')->error($e);
 						$this->setAPIResponse('error', $e->getMessage(), 409);
 						return false;
-					};
+					}
 				} else {
-					$this->writeLog('error', 'Plex Invite Function - Plex Token/ID not set', 'SYSTEM');
+					$this->setLoggerChannel('Plex')->warning('Plex Token/ID not set');
 					$this->setAPIResponse('error', 'Plex Token/ID not set', 409);
 					return false;
 				}
@@ -566,7 +566,7 @@ class Invites extends Organizr
 					$this->setAPIResponse('success', 'User now has access to system', 200);
 					return true;
 				} catch (Requests_Exception $e) {
-					$this->writeLog('error', 'Emby Invite Function - Error: ' . $e->getMessage(), 'SYSTEM');
+					$this->setLoggerChannel('Emby')->error($e);
 					$this->setAPIResponse('error', $e->getMessage(), 409);
 					return false;
 				}

@@ -77,7 +77,7 @@ trait OverseerrHomepageItem
 				return false;
 			}
 		} catch (Requests_Exception $e) {
-			$this->writeLog('error', 'Overseerr Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
+			$this->setLoggerChannel('Overseerr')->error($e);
 			$this->setResponse(500, $e->getMessage());
 			return false;
 		}
@@ -237,7 +237,7 @@ trait OverseerrHomepageItem
 				});
 			}
 		} catch (Requests_Exception $e) {
-			$this->writeLog('error', 'Overseerr Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
+			$this->setLoggerChannel('Overseerr')->error($e);
 			$this->setResponse(500, $e->getMessage());
 			return false;
 		}
@@ -430,7 +430,7 @@ trait OverseerrHomepageItem
 				return false;
 			}
 		} catch (Requests_Exception $e) {
-			$this->writeLog('error', 'Overseerr Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
+			$this->setLoggerChannel('Overseerr')->error($e);
 			$this->setResponse(500, $e->getMessage());
 			return false;
 		}
@@ -521,7 +521,7 @@ trait OverseerrHomepageItem
 				return false;
 			}
 		} catch (Requests_Exception $e) {
-			$this->writeLog('error', 'Overseerr Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
+			$this->setLoggerChannel('Overseerr')->error($e);
 			$this->setResponse(500, $e->getMessage());
 			return false;
 		}
@@ -558,7 +558,7 @@ trait OverseerrHomepageItem
 				return false;
 			}
 		} catch (Requests_Exception $e) {
-			$this->writeLog('error', 'Overseerr Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
+			$this->setLoggerChannel('Overseerr')->error($e);
 			$this->setResponse(500, $e->getMessage());
 			return false;
 		}

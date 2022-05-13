@@ -150,14 +150,14 @@ trait OrganizrFunctions
 				$url = $this->config['embyURL'] . '/emby/Users/' . $userID . '/Connect/Link';
 				Requests::Post($url, $headers, json_encode($data), array());
 			} catch (Requests_Exception $e) {
-				$this->writeLog('error', 'Emby Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
+				$this->setLoggerChannel('Emby')->error($e);
 				$this->setResponse(500, $e->getMessage());
 				return false;
 			}
 			$this->setAPIResponse('success', 'User has joined Emby', 200);
 			return true;
 		} catch (Requests_Exception $e) {
-			$this->writeLog('error', 'Emby create Function - Error: ' . $e->getMessage(), 'SYSTEM');
+			$this->setLoggerChannel('Emby')->error($e);
 			$this->setResponse(500, $e->getMessage());
 			return false;
 		}
@@ -175,8 +175,6 @@ trait OrganizrFunctions
 		$response = Requests::Get($url, $headers, array());
 		$response = $response->body;
 		$response = json_decode($response, true);
-		//error_Log("response ".json_encode($response));
-		$this->writeLog('error', 'userList:' . json_encode($response), 'SYSTEM');
 		//$correct stores the template users object
 		$correct = null;
 		foreach ($response as $element) {
@@ -184,14 +182,12 @@ trait OrganizrFunctions
 				$correct = $element;
 			}
 		}
-		$this->writeLog('error', 'Correct user:' . json_encode($correct), 'SYSTEM');
 		if ($correct == null) {
 			//return empty JSON if user incorrectly configured template
 			return "{}";
 		}
 		//select policy section and remove possibly dangerous rows.
 		$policy = $correct['Policy'];
-		//writeLog('error', 'policy update'.$policy, 'SYSTEM');
 		unset($policy['AuthenticationProviderId']);
 		unset($policy['InvalidLoginAttemptCount']);
 		unset($policy['DisablePremiumFeatures']);

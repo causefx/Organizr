@@ -177,12 +177,12 @@ class PhpMailer extends Organizr
 			$mail->Subject = $emailTemplate['subject'];
 			$mail->Body = $this->_phpMailerPluginBuildEmail($emailTemplate);
 			$mail->send();
-			$this->writeLog('success', 'Mail Function -  E-Mail Test Sent', $this->user['username']);
+			$this->setLoggerChannel('Email')->info('E-Mail Test Sent');
 			$msg = ($this->config['PHPMAILER-debugTesting']) ? $this->config['phpmOriginalDebug'] : 'Email sent';
 			$this->setAPIResponse('success', $msg, 200);
 			return true;
 		} catch (PHPMailer\PHPMailer\Exception $e) {
-			$this->writeLog('error', 'Mail Function -  E-Mail Test Failed[' . $mail->ErrorInfo . ']', $this->user['username']);
+			$this->setLoggerChannel('Email')->error($e);
 			$this->setResponse(500, $e->getMessage());
 			return false;
 		}
@@ -242,7 +242,7 @@ class PhpMailer extends Organizr
 			$mail->send();
 			return true;
 		} catch (PHPMailer\PHPMailer\Exception $e) {
-			$this->writeLog('error', 'Mail Function -  E-Mail Test Failed[' . $mail->ErrorInfo . ']', $this->user['username']);
+			$this->setLoggerChannel('Email')->error($e);
 			return $e->errorMessage();
 		}
 	}

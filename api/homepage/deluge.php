@@ -77,7 +77,7 @@ trait DelugeHomepageItem
 			$this->setAPIResponse('success', 'API Connection succeeded', 200);
 			return true;
 		} catch (Exception $e) {
-			$this->writeLog('error', 'NZBGet Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
+			$this->setLoggerChannel('Deluge')->error($e);
 			$this->setResponse(500, $e->getMessage());
 			return false;
 		}
@@ -144,12 +144,12 @@ trait DelugeHomepageItem
 			}
 			$api['content']['queueItems'] = (empty($api['content']['queueItems'])) ? [] : $api['content']['queueItems'];
 			$api['content']['historyItems'] = false;
-		} catch (Excecption $e) {
-			$this->writeLog('error', 'Deluge Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
+		} catch (Exception $e) {
+			$this->setLoggerChannel('Deluge')->error($e);
 			$this->setResponse(500, $e->getMessage());
 			return false;
 		}
-		$api['content'] = isset($api['content']) ? $api['content'] : false;
+		$api['content'] = $api['content'] ?? false;
 		$this->setAPIResponse('success', null, 200, $api);
 		return $api;
 	}

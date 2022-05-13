@@ -283,7 +283,7 @@ trait TautulliHomepageItem
 					return $libraryList;
 				}
 			} catch (Requests_Exception $e) {
-				$this->writeLog('error', 'Tautulli Homepage Error - Unable to get list of libraries: ' . $e->getMessage(), 'SYSTEM');
+				$this->setLoggerChannel('Tautulli')->error($e);
 				return false;
 			}
 		}

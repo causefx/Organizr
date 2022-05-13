@@ -110,7 +110,7 @@ trait SpeedTestHomepageItem
 				return false;
 			}
 		} catch (Requests_Exception $e) {
-			$this->writeLog('error', 'Speedtest Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
+			$this->setLoggerChannel('Speedtest')->error($e);
 			$this->setResponse(500, $e->getMessage());
 			return false;
 		};

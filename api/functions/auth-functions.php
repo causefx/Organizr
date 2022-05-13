@@ -51,7 +51,7 @@ trait AuthFunctions
 				$provider = $ad->connect();
 			} catch (\Adldap\Auth\BindException $e) {
 				$detailedError = $e->getDetailedError();
-				$this->writeLog('error', 'LDAP Function - Error: ' . $detailedError->getErrorMessage(), 'SYSTEM');
+				$this->setLoggerChannel('LDAP')->error($e);
 				$this->setAPIResponse('error', $detailedError->getErrorMessage(), 409);
 				return $detailedError->getErrorMessage();
 				// There was an issue binding / connecting to the server.
@@ -69,7 +69,7 @@ trait AuthFunctions
 			return false;
 		}
 	}
-	
+
 	public function testConnectionLdapLogin($array)
 	{
 		$username = $array['username'] ?? null;
@@ -142,19 +142,19 @@ trait AuthFunctions
 				}
 			} catch (\Adldap\Auth\BindException $e) {
 				$detailedError = $e->getDetailedError();
-				$this->writeLog('error', 'LDAP Function - Error: ' . $detailedError->getErrorMessage(), $username);
+				$this->setLoggerChannel('LDAP')->error($e);
 				$this->setAPIResponse('error', $detailedError->getErrorMessage(), 500);
 				return $detailedError->getErrorMessage();
 				// There was an issue binding / connecting to the server.
 			} catch (Adldap\Auth\UsernameRequiredException $e) {
 				$detailedError = $e->getDetailedError();
-				$this->writeLog('error', 'LDAP Function - Error: ' . $detailedError->getErrorMessage(), $username);
+				$this->setLoggerChannel('LDAP')->error($e);
 				$this->setAPIResponse('error', $detailedError->getErrorMessage(), 422);
 				return $detailedError->getErrorMessage();
 				// The user didn't supply a username.
 			} catch (Adldap\Auth\PasswordRequiredException $e) {
 				$detailedError = $e->getDetailedError();
-				$this->writeLog('error', 'LDAP Function - Error: ' . $detailedError->getErrorMessage(), $username);
+				$this->setLoggerChannel('LDAP')->error($e);
 				$this->setAPIResponse('error', $detailedError->getErrorMessage(), 422);
 				return $detailedError->getErrorMessage();
 				// The user didn't supply a password.
@@ -164,7 +164,7 @@ trait AuthFunctions
 			return false;
 		}
 	}
-	
+
 	public function checkPlexToken($token = '')
 	{
 		try {
@@ -183,11 +183,11 @@ trait AuthFunctions
 				return false;
 			}
 		} catch (Requests_Exception $e) {
-			$this->writeLog('success', 'Plex Token Check Function - Error: ' . $e->getMessage(), 'SYSTEM');
+			$this->setLoggerChannel('Plex')->error($e);
 		}
 		return false;
 	}
-	
+
 	public function checkPlexUser($username)
 	{
 		try {
@@ -204,7 +204,7 @@ trait AuthFunctions
 						$usernameLower = strtolower($username);
 						foreach ($userXML as $child) {
 							if (isset($child['username']) && strtolower($child['username']) == $usernameLower || isset($child['email']) && strtolower($child['email']) == $usernameLower) {
-								$this->writeLog('success', 'Plex User Check - Found User on Friends List', $username);
+								$this->setLoggerChannel('Plex')->info('Found User on Friends List');
 								$machineMatches = false;
 								if ($this->config['plexStrictFriends']) {
 									foreach ($child->Server as $server) {
@@ -216,10 +216,10 @@ trait AuthFunctions
 									$machineMatches = true;
 								}
 								if ($machineMatches) {
-									$this->writeLog('success', 'Plex User Check - User Approved for Login', $username);
+									$this->setLoggerChannel('Plex')->info('User Approved for Login');
 									return true;
 								} else {
-									$this->writeLog('error', 'Plex User Check - User not Approved User', $username);
+									$this->setLoggerChannel('Plex')->warning('User not Approved User');
 								}
 							}
 						}
@@ -228,11 +228,11 @@ trait AuthFunctions
 			}
 			return false;
 		} catch (Requests_Exception $e) {
-			$this->writeLog('error', 'Plex User Check Function - Error: ' . $e->getMessage(), $username);
+			$this->setLoggerChannel('Plex')->error($e);
 		}
 		return false;
 	}
-	
+
 	public function plugin_auth_plex($username, $password)
 	{
 		try {
@@ -267,11 +267,11 @@ trait AuthFunctions
 			}
 			return false;
 		} catch (Requests_Exception $e) {
-			$this->writeLog('success', 'Plex Auth Function - Error: ' . $e->getMessage(), $username);
+			$this->setLoggerChannel('Plex')->error($e);
 		}
 		return false;
 	}
-	
+
 	// Pass credentials to LDAP backend
 	public function plugin_auth_ldap($username, $password)
 	{
@@ -341,25 +341,25 @@ trait AuthFunctions
 					return false;
 				}
 			} catch (\Adldap\Auth\BindException $e) {
-				$this->writeLog('error', 'LDAP Function - Error: ' . $e->getMessage(), $username);
+				$this->setLoggerChannel('LDAP')->error($e);
 				// There was an issue binding / connecting to the server.
 			} catch (Adldap\Auth\UsernameRequiredException $e) {
-				$this->writeLog('error', 'LDAP Function - Error: ' . $e->getMessage(), $username);
+				$this->setLoggerChannel('LDAP')->error($e);
 				// The user didn't supply a username.
 			} catch (Adldap\Auth\PasswordRequiredException $e) {
-				$this->writeLog('error', 'LDAP Function - Error: ' . $e->getMessage(), $username);
+				$this->setLoggerChannel('LDAP')->error($e);
 				// The user didn't supply a password.
 			}
 		}
 		return false;
 	}
-	
+
 	// Ldap Auth Missing Dependency
 	public function plugin_auth_ldap_disabled()
 	{
 		return 'LDAP - Disabled (Dependency: php-ldap missing!)';
 	}
-	
+
 	// Pass credentials to FTP backend
 	public function plugin_auth_ftp($username, $password)
 	{
@@ -391,7 +391,7 @@ trait AuthFunctions
 			return false;
 		}
 	}
-	
+
 	// Pass credentials to Emby Backend
 	public function plugin_auth_emby_local($username, $password)
 	{
@@ -424,11 +424,11 @@ trait AuthFunctions
 			}
 			return false;
 		} catch (Requests_Exception $e) {
-			$this->writeLog('error', 'Emby Local Auth Function - Error: ' . $e->getMessage(), $username);
+			$this->setLoggerChannel('Emby')->error($e);
 		}
 		return false;
 	}
-	
+
 	// Pass credentials to JellyFin Backend
 	public function plugin_auth_jellyfin($username, $password)
 	{
@@ -446,7 +446,7 @@ trait AuthFunctions
 			if ($response->success) {
 				$json = json_decode($response->body, true);
 				if (is_array($json) && isset($json['SessionInfo']) && isset($json['User']) && $json['User']['HasPassword'] == true) {
-					$this->writeLog('success', 'JellyFin Auth Function - Found User and Logged In', $username);
+					$this->setLoggerChannel('JellyFin')->info('Found User and Logged In');
 					// Login Success - Now Logout JellyFin Session As We No Longer Need It
 					$headers = array(
 						'X-Emby-Authorization' => 'MediaBrowser Client="Organizr Auth", Device="Organizr", DeviceId="orgv2", Version="2.0", Token="' . $json['AccessToken'] . '"',
@@ -460,11 +460,11 @@ trait AuthFunctions
 			}
 			return false;
 		} catch (Requests_Exception $e) {
-			$this->writeLog('error', 'JellyFin Auth Function - Error: ' . $e->getMessage(), $username);
+			$this->setLoggerChannel('JellyFin')->error($e);
 		}
 		return false;
 	}
-	
+
 	// Authenticate against emby connect
 	public function plugin_auth_emby_connect($username, $password)
 	{
@@ -483,13 +483,13 @@ trait AuthFunctions
 						if (isset($value['ConnectUserName']) && isset($value['ConnectLinkType'])) { // Qualify as connect account
 							if (strtolower($value['ConnectUserName']) == strtolower($username) || strtolower($value['Name']) == strtolower($username)) {
 								$connectUserName = $value['ConnectUserName'];
-								$this->writeLog('success', 'Emby Connect Auth Function - Found User', $username);
+								$this->setLoggerChannel('Emby')->info('Found User');
 								break;
 							}
 						}
 					}
 					if ($connectUserName) {
-						$this->writeLog('success', 'Emby Connect Auth Function - Attempting to Login with Emby ID: ' . $connectUserName, $username);
+						$this->setLoggerChannel('Emby')->info('Attempting to Login with Emby ID: ' . $connectUserName);
 						$connectURL = 'https://connect.emby.media/service/user/authenticate';
 						$headers = array(
 							'Accept' => 'application/json',
@@ -508,21 +508,21 @@ trait AuthFunctions
 									//'image' => $json['User']['ImageUrl'],
 								);
 							} else {
-								$this->writeLog('error', 'Emby Connect Auth Function - Bad Response', $username);
+								$this->setLoggerChannel('Emby')->warning('Bad Response');
 							}
 						} else {
-							$this->writeLog('error', 'Emby Connect Auth Function - 401 From Emby Connect', $username);
+							$this->setLoggerChannel('Emby')->warning('401 From Emby Connect');
 						}
 					}
 				}
 			}
 			return false;
 		} catch (Requests_Exception $e) {
-			$this->writeLog('error', 'Emby Connect Auth Function - Error: ' . $e->getMessage(), $username);
+			$this->setLoggerChannel('Emby')->error($e);
 			return false;
 		}
 	}
-	
+
 	// Authenticate Against Emby Local (first) and Emby Connect
 	public function plugin_auth_emby_all($username, $password)
 	{
@@ -536,5 +536,5 @@ trait AuthFunctions
 			return $this->plugin_auth_emby_connect($username, $password);
 		}
 	}
-	
+
 }

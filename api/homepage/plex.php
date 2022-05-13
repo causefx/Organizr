@@ -730,7 +730,7 @@ trait PlexHomepageItem
 					return $libraryList;
 				}
 			} catch (Requests_Exception $e) {
-				$this->writeLog('error', 'Plex Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
+				$this->setLoggerChannel('Plex')->error($e);
 				return false;
 			};
 		}

@@ -80,7 +80,7 @@ trait OmbiHomepageItem
 				return false;
 			}
 		} catch (Requests_Exception $e) {
-			$this->writeLog('error', 'OMBI Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
+			$this->setLoggerChannel('Ombi')->error($e);
 			$this->setResponse(500, $e->getMessage());
 			return false;
 		}
@@ -222,7 +222,7 @@ trait OmbiHomepageItem
 				});
 			}
 		} catch (Requests_Exception $e) {
-			$this->writeLog('error', 'OMBI Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
+			$this->setLoggerChannel('Ombi')->error($e);
 			$this->setResponse(500, $e->getMessage());
 			return false;
 		};
@@ -348,7 +348,7 @@ trait OmbiHomepageItem
 				return false;
 			}
 		} catch (Requests_Exception $e) {
-			$this->writeLog('error', 'OMBI Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
+			$this->setLoggerChannel('Ombi')->error($e);
 			$this->setResponse(500, $e->getMessage());
 			return false;
 		}
@@ -426,10 +426,10 @@ trait OmbiHomepageItem
 				return false;
 			}
 		} catch (Requests_Exception $e) {
-			$this->writeLog('error', 'OMBI Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
+			$this->setLoggerChannel('Ombi')->error($e);
 			$this->setResponse(500, $e->getMessage());
 			return false;
-		};
+		}
 	}
 
 	public function ombiTVDefault($type)

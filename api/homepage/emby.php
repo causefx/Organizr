@@ -195,7 +195,7 @@ trait EmbyHomepageItem
 				return false;
 			}
 		} catch (Requests_Exception $e) {
-			$this->writeLog('error', 'Emby Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
+			$this->setLoggerChannel('Emby')->error($e);
 			$this->setResponse(500, $e->getMessage());
 			return false;
 		}
@@ -253,7 +253,7 @@ trait EmbyHomepageItem
 				return false;
 			}
 		} catch (Requests_Exception $e) {
-			$this->writeLog('error', 'Emby Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
+			$this->setLoggerChannel('Emby')->error($e);
 			$this->setResponse(500, $e->getMessage());
 			return false;
 		}
@@ -313,7 +313,7 @@ trait EmbyHomepageItem
 				return false;
 			}
 		} catch (Requests_Exception $e) {
-			$this->writeLog('error', 'Emby Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
+			$this->setLoggerChannel('Emby')->error($e);
 			$this->setResponse(500, $e->getMessage());
 			return false;
 		}

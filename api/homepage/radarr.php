@@ -103,7 +103,7 @@ trait RadarrHomepageItem
 				$failed = true;
 				$ip = $value['url'];
 				$errors .= $ip . ': ' . $e->getMessage();
-				$this->writeLog('error', 'Radarr Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
+				$this->setLoggerChannel('Radarr')->error($e);
 			}
 		}
 		if ($failed) {
@@ -224,7 +224,7 @@ trait RadarrHomepageItem
 					$calendar = '';
 				}
 			} catch (Exception $e) {
-				$this->writeLog('error', 'Radarr Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
+				$this->setLoggerChannel('Radarr')->error($e);
 			}
 			if (!empty($calendar)) {
 				$calendarItems = array_merge($calendarItems, $calendar);

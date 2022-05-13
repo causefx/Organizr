@@ -12,7 +12,7 @@ trait UpdateFunctions
 			return $this->linuxUpdate();
 		}
 	}
-	
+
 	public function dockerUpdate()
 	{
 		if (!$this->docker) {
@@ -37,7 +37,7 @@ trait UpdateFunctions
 			return false;
 		}
 	}
-	
+
 	public function windowsUpdate()
 	{
 		if ($this->docker || $this->getOS() !== 'win') {
@@ -58,7 +58,7 @@ trait UpdateFunctions
 			return false;
 		}
 	}
-	
+
 	public function linuxUpdate()
 	{
 		if ($this->docker || $this->getOS() == 'win') {
@@ -79,7 +79,7 @@ trait UpdateFunctions
 			return false;
 		}
 	}
-	
+
 	public function upgradeInstall($branch = 'v2-master', $stage = '1')
 	{
 		// may kill this function in place for php script to run elsewhere
@@ -102,29 +102,29 @@ trait UpdateFunctions
 			$destination = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR;
 			switch ($stage) {
 				case '1':
-					$this->writeLog('success', 'Update Function -  Started Upgrade Process', $this->user['username']);
+					$this->setLoggerChannel('Update')->info('Started Upgrade Process');
 					if ($this->downloadFile($url, $file)) {
-						$this->writeLog('success', 'Update Function -  Downloaded Update File for Branch: ' . $branch, $this->user['username']);
+						$this->setLoggerChannel('Update')->info('Downloaded Update File for Branch: ' . $branch);
 						$this->setAPIResponse('success', 'Downloaded file successfully', 200);
 						return true;
 					} else {
-						$this->writeLog('error', 'Update Function -  Downloaded Update File Failed  for Branch: ' . $branch, $this->user['username']);
+						$this->setLoggerChannel('Update')->warning('Downloaded Update File Failed for Branch: ' . $branch);
 						$this->setAPIResponse('error', 'Download failed', 500);
 						return false;
 					}
 				case '2':
 					if ($this->unzipFile($file)) {
-						$this->writeLog('success', 'Update Function -  Unzipped Update File for Branch: ' . $branch, $this->user['username']);
+						$this->setLoggerChannel('Update')->info('Unzipped Update File for Branch: ' . $branch);
 						$this->setAPIResponse('success', 'Unzipped file successfully', 200);
 						return true;
 					} else {
-						$this->writeLog('error', 'Update Function -  Unzip Failed for Branch: ' . $branch, $this->user['username']);
+						$this->setLoggerChannel('Update')->warning('Unzip Failed for Branch: ' . $branch);
 						$this->setAPIResponse('error', 'Unzip failed', 500);
 						return false;
 					}
 				case '3':
 					if ($this->rcopy($source, $destination)) {
-						$this->writeLog('success', 'Update Function -  Files overwritten using Updated Files from Branch: ' . $branch, $this->user['username']);
+						$this->setLoggerChannel('Update')->info('Files overwritten using Updated Files from Branch: ' . $branch);
 						$updateComplete = $this->config['dbLocation'] . 'completed.txt';
 						if (!file_exists($updateComplete)) {
 							touch($updateComplete);
@@ -132,18 +132,18 @@ trait UpdateFunctions
 						$this->setAPIResponse('success', 'Files replaced successfully', 200);
 						return true;
 					} else {
-						$this->writeLog('error', 'Update Function -  Overwrite Failed for Branch: ' . $branch, $this->user['username']);
+						$this->setLoggerChannel('Update')->warning('Overwrite Failed for Branch: ' . $branch);
 						$this->setAPIResponse('error', 'File replacement failed', 500);
 						return false;
 					}
 				case '4':
 					if ($this->rrmdir($cleanup)) {
-						$this->writeLog('success', 'Update Function -  Deleted Update Files from Branch: ' . $branch, $this->user['username']);
-						$this->writeLog('success', 'Update Function -  Update Completed', $this->user['username']);
+						$this->setLoggerChannel('Update')->info('Deleted Update Files from Branch: ' . $branch);
+						$this->setLoggerChannel('Update')->info('Update Completed');
 						$this->setAPIResponse('success', 'Removed update files successfully', 200);
 						return true;
 					} else {
-						$this->writeLog('error', 'Update Function -  Removal of Update Files Failed for Branch: ' . $branch, $this->user['username']);
+						$this->setLoggerChannel('Update')->warning('Removal of Update Files Failed for Branch: ' . $branch);
 						$this->setAPIResponse('error', 'File removal failed', 500);
 						return false;
 					}
@@ -155,6 +155,5 @@ trait UpdateFunctions
 			$this->setAPIResponse('error', 'File permissions not set correctly', 500);
 			return false;
 		}
-		
 	}
 }

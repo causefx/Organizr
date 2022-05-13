@@ -20,11 +20,6 @@ $GLOBALS['plugins']['Bookmark'] = array( // Plugin Name
 // Logo image under Public Domain from https://openclipart.org/detail/182527/open-book
 class Bookmark extends Organizr
 {
-	public function writeLog($type = 'error', $message = null, $username = null)
-	{
-		parent::writeLog($type, "Plugin 'Bookmark': " . $message, $username);
-	}
-
 	public function _bookmarkGetOrganizrTabInfo()
 	{
 		$response = [
@@ -549,7 +544,8 @@ class Bookmark extends Organizr
 		];
 		$tabInfo = $this->_getBookmarkTabById($id);
 		if ($tabInfo) {
-			$this->writeLog('success', 'Tab Delete Function -  Deleted Tab [' . $tabInfo['name'] . ']', $this->user['username']);
+
+			$this->setLoggerChannel('Bookmark')->info('Deleted Bookmark [' . $tabInfo['name'] . ']');
 			$this->setAPIResponse('success', 'Tab deleted', 204);
 			return $this->processQueries($response);
 		} else {
@@ -622,7 +618,7 @@ class Bookmark extends Organizr
 			),
 		];
 		$this->setAPIResponse(null, 'Tab added');
-		$this->writeLog('success', 'Tab Editor Function -  Added Tab for [' . $array['name'] . ']', $this->user['username']);
+		$this->setLoggerChannel('Bookmark')->info('Added Bookmark [' . $array['name'] . ']');
 		return $this->processQueries($response);
 	}
 
@@ -682,7 +678,7 @@ class Bookmark extends Organizr
 			),
 		];
 		$this->setAPIResponse(null, 'Tab info updated');
-		$this->writeLog('success', 'Tab Editor Function -  Edited Tab Info for [' . $tabInfo['name'] . ']', $this->user['username']);
+		$this->setLoggerChannel('Bookmark')->info('Edited Bookmark [' . $tabInfo['name'] . ']');
 		return $this->processQueries($response);
 	}
 
@@ -910,7 +906,7 @@ class Bookmark extends Organizr
 			),
 		];
 		$this->setAPIResponse(null, 'Category added');
-		$this->writeLog('success', 'Category Editor Function -  Added Category for [' . $array['category'] . ']', $this->user['username']);
+		$this->setLoggerChannel('Bookmark')->info('Added Bookmark Category [' . $array['category'] . ']');
 		$result = $this->processQueries($response);
 		$this->_correctDefaultCategory();
 		return $result;
@@ -960,7 +956,7 @@ class Bookmark extends Organizr
 			),
 		];
 		$this->setAPIResponse(null, 'Category info updated');
-		$this->writeLog('success', 'Category Editor Function -  Edited Category Info for [' . $categoryInfo['category'] . ']', $this->user['username']);
+		$this->setLoggerChannel('Bookmark')->info('Edited Bookmark Category [' . $categoryInfo['category'] . ']');
 		$result = $this->processQueries($response);
 		$this->_correctDefaultCategory();
 		return $result;
@@ -1012,7 +1008,7 @@ class Bookmark extends Organizr
 		];
 		$categoryInfo = $this->_getBookmarkCategoryById($id);
 		if ($categoryInfo) {
-			$this->writeLog('success', 'Category Delete Function -  Deleted Category [' . $categoryInfo['category'] . ']', $this->user['username']);
+			$this->setLoggerChannel('Bookmark')->info('Deleted Bookmark Category [' . $categoryInfo['category'] . ']');
 			$this->setAPIResponse('success', 'Category deleted', 204);
 			$result = $this->processQueries($response);
 			$this->_correctDefaultCategory();

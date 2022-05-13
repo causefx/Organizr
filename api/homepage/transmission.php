@@ -79,12 +79,12 @@ trait TransmissionHomepageItem
 					return false;
 				}
 			} else {
-				$this->writeLog('error', 'Transmission Connect Function - Error: Could not get session ID', 'SYSTEM');
+				$this->setLoggerChannel('Transmission')->warning('Could not get session ID');
 				$this->setAPIResponse('error', 'Transmission Connect Function - Error: Could not get session ID', 500);
 				return false;
 			}
 		} catch (Requests_Exception $e) {
-			$this->writeLog('error', 'Transmission Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
+			$this->setLoggerChannel('Transmission')->error($e);
 			$this->setResponse(500, $e->getMessage());
 			return false;
 		}
@@ -179,12 +179,12 @@ trait TransmissionHomepageItem
 					$api['content']['historyItems'] = false;
 				}
 			} else {
-				$this->writeLog('error', 'Transmission Connect Function - Error: Could not get session ID', 'SYSTEM');
+				$this->setLoggerChannel('Transmission')->warning('Could not get session ID');
 				$this->setAPIResponse('error', 'Transmission Connect Function - Error: Could not get session ID', 500);
 				return false;
 			}
 		} catch (Requests_Exception $e) {
-			$this->writeLog('error', 'Transmission Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
+			$this->setLoggerChannel('Transmission')->error($e);
 			$this->setResponse(500, $e->getMessage());
 			return false;
 		};

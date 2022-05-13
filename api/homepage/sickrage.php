@@ -79,7 +79,7 @@ trait SickRageHomepageItem
 				$failed = true;
 				$ip = $value['url'];
 				$errors .= $ip . ': ' . $e->getMessage();
-				$this->writeLog('error', 'SickRage Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
+				$this->setLoggerChannel('SickRage')->error($e);
 			}
 		}
 		if ($failed) {
@@ -130,7 +130,7 @@ trait SickRageHomepageItem
 					$calendarItems = array_merge($calendarItems, $sickrageHistory);
 				}
 			} catch (Exception $e) {
-				$this->writeLog('error', 'SickRage Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
+				$this->setLoggerChannel('SickRage')->error($e);
 			}
 		}
 		$this->setAPIResponse('success', null, 200, $calendarItems);

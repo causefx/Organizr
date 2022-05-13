@@ -194,7 +194,7 @@ trait JellyfinHomepageItem
 				return false;
 			}
 		} catch (Requests_Exception $e) {
-			$this->writeLog('error', 'Jellyfin Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
+			$this->setLoggerChannel('Jellyfin')->error($e);
 			$this->setResponse(500, $e->getMessage());
 			return false;
 		}
@@ -251,7 +251,7 @@ trait JellyfinHomepageItem
 				return false;
 			}
 		} catch (Requests_Exception $e) {
-			$this->writeLog('error', 'Jellyfin Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
+			$this->setLoggerChannel('JellyFin')->error($e);
 			$this->setResponse(500, $e->getMessage());
 			return false;
 		}
@@ -311,7 +311,7 @@ trait JellyfinHomepageItem
 				return false;
 			}
 		} catch (Requests_Exception $e) {
-			$this->writeLog('error', 'Jellyfin Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
+			$this->setLoggerChannel('JellyFin')->error($e);
 			$this->setResponse(500, $e->getMessage());
 			return false;
 		}

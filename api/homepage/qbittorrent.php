@@ -91,12 +91,12 @@ trait QBitTorrentHomepageItem
 					return true;
 				}
 			} else {
-				$this->writeLog('error', 'qBittorrent Connect Function - Error: Could not get session ID', 'SYSTEM');
+				$this->setLoggerChannel('qBittorrent')->warning('Could not get session ID');
 				$this->setAPIResponse('error', 'qBittorrent Connect Function - Error: Could not get session ID', 409);
 				return false;
 			}
 		} catch (Requests_Exception $e) {
-			$this->writeLog('error', 'qBittorrent Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
+			$this->setLoggerChannel('qBittorrent')->error($e);
 			$this->setResponse(500, $e->getMessage());
 			return false;
 		}
@@ -189,12 +189,12 @@ trait QBitTorrentHomepageItem
 					return $api;
 				}
 			} else {
-				$this->writeLog('error', 'qBittorrent Connect Function - Error: Could not get session ID', 'SYSTEM');
+				$this->setLoggerChannel('qBittorrent')->warning('Could not get session ID');
 				$this->setAPIResponse('error', 'qBittorrent Connect Function - Error: Could not get session ID', 409);
 				return false;
 			}
 		} catch (Requests_Exception $e) {
-			$this->writeLog('error', 'qBittorrent Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
+			$this->setLoggerChannel('qBittorrent')->error($e);
 			$this->setResponse(500, $e->getMessage());
 			return false;
 		}

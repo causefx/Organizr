@@ -68,7 +68,7 @@ trait PiHoleHomepageItem
 				$failed = true;
 				$ip = $this->qualifyURL($url, true)['host'];
 				$errors .= $ip . ': ' . $e->getMessage();
-				$this->writeLog('error', 'Pi-hole Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
+				$this->setLoggerChannel('PiHole')->error($e);
 			};
 		}
 		if ($failed) {
@@ -134,7 +134,7 @@ trait PiHoleHomepageItem
 				}
 			} catch (Requests_Exception $e) {
 				$this->setResponse(500, $e->getMessage());
-				$this->writeLog('error', 'Pi-hole Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
+				$this->setLoggerChannel('PiHole')->error($e);
 				return false;
 			};
 		}

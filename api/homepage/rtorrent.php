@@ -104,7 +104,7 @@ trait RTorrentHomepageItem
 			return false;
 		} catch
 		(Requests_Exception $e) {
-			$this->writeLog('error', 'rTorrent Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
+			$this->setLoggerChannel('rTorrent')->error($e);
 			$this->setResponse(500, $e->getMessage());
 			return false;
 		}
@@ -277,7 +277,7 @@ trait RTorrentHomepageItem
 			}
 		} catch
 		(Requests_Exception $e) {
-			$this->writeLog('error', 'rTorrent Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
+			$this->setLoggerChannel('rTorrent')->error($e);
 			$this->setResponse(500, $e->getMessage());
 			return false;
 		};

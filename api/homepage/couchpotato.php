@@ -75,7 +75,7 @@ trait CouchPotatoHomepageItem
 				$downloader = new Kryptonit3\CouchPotato\CouchPotato($value['url'], $value['token'], null, null, $options);
 				$calendar = $this->formatCouchCalendar($downloader->getMediaList(array('status' => 'active,done')), $key);
 			} catch (Exception $e) {
-				$this->writeLog('error', 'Radarr Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
+				$this->setLoggerChannel('Radarr')->error($e);
 			}
 			if (!empty($calendar)) {
 				$calendarItems = array_merge($calendarItems, $calendar);

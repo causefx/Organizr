@@ -22,7 +22,7 @@ trait BackupFunctions
 		$filename = $path . $filename;
 		if ($ext == 'zip') {
 			if (file_exists($filename)) {
-				$this->writeLog('success', 'Backup Manager Function -  Deleted Backup [' . pathinfo($filename, PATHINFO_BASENAME) . ']', $this->user['username']);
+				$this->setLoggerChannel('Backup')->info('Deleted Backup [' . pathinfo($filename, PATHINFO_BASENAME) . ']');
 				$this->setAPIResponse(null, pathinfo($filename, PATHINFO_BASENAME) . ' has been deleted', null);
 				return (unlink($filename));
 			} else {

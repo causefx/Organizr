@@ -137,7 +137,7 @@ trait WeatherHomepageItem
 				}
 			}
 		} catch (Requests_Exception $e) {
-			$this->writeLog('error', 'Weather And Air Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
+			$this->setLoggerChannel('Weather & Air')->error($e);
 			$this->setResponse(500, $e->getMessage());
 			return false;
 		};

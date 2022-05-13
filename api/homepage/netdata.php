@@ -82,9 +82,8 @@ trait NetDataHomepageItem
 		$api = $api ?? false;
 		$this->setAPIResponse('success', null, 200, $api);
 		return $api;
-		
 	}
-	
+
 	public function netdataSettingsArray($infoOnly = false)
 	{
 		$homepageInformation = [
@@ -193,7 +192,7 @@ trait NetDataHomepageItem
 		);
 		return array_merge($homepageInformation, $homepageSettings);
 	}
-	
+
 	public function netdataHomepagePermissions($key = null)
 	{
 		$permissions = [
@@ -211,7 +210,7 @@ trait NetDataHomepageItem
 		];
 		return $this->homepageCheckKeyPermissions($key, $permissions);
 	}
-	
+
 	public function homepageOrderNetdata()
 	{
 		if ($this->homepageItemPermissions($this->netdataHomepagePermissions('main'))) {
@@ -227,7 +226,7 @@ trait NetDataHomepageItem
 				';
 		}
 	}
-	
+
 	public function disk($dimension, $url)
 	{
 		$data = [];
@@ -244,11 +243,11 @@ trait NetDataHomepageItem
 				$data['max'] = $json['max'];
 			}
 		} catch (Requests_Exception $e) {
-			$this->writeLog('error', 'Netdata Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
+			$this->setLoggerChannel('Netdata')->error($e);
 		};
 		return $data;
 	}
-	
+
 	public function diskSpace($dimension, $url)
 	{
 		$data = [];
@@ -265,11 +264,11 @@ trait NetDataHomepageItem
 				$data['max'] = 100;
 			}
 		} catch (Requests_Exception $e) {
-			$this->writeLog('error', 'Netdata Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
-		};
+			$this->setLoggerChannel('Netdata')->error($e);
+		}
 		return $data;
 	}
-	
+
 	public function net($dimension, $url)
 	{
 		$data = [];
@@ -286,11 +285,11 @@ trait NetDataHomepageItem
 				$data['max'] = $json['max'];
 			}
 		} catch (Requests_Exception $e) {
-			$this->writeLog('error', 'Netdata Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
-		};
+			$this->setLoggerChannel('Netdata')->error($e);
+		}
 		return $data;
 	}
-	
+
 	public function cpu($url)
 	{
 		$data = [];
@@ -306,11 +305,11 @@ trait NetDataHomepageItem
 				$data['units'] = '%';
 			}
 		} catch (Requests_Exception $e) {
-			$this->writeLog('error', 'Netdata Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
-		};
+			$this->setLoggerChannel('Netdata')->error($e);
+		}
 		return $data;
 	}
-	
+
 	public function ram($url)
 	{
 		$data = [];
@@ -326,11 +325,11 @@ trait NetDataHomepageItem
 				$data['units'] = '%';
 			}
 		} catch (Requests_Exception $e) {
-			$this->writeLog('error', 'Netdata Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
-		};
+			$this->setLoggerChannel('Netdata')->error($e);
+		}
 		return $data;
 	}
-	
+
 	public function swap($url)
 	{
 		$data = [];
@@ -346,11 +345,11 @@ trait NetDataHomepageItem
 				$data['units'] = '%';
 			}
 		} catch (Requests_Exception $e) {
-			$this->writeLog('error', 'Netdata Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
-		};
+			$this->setLoggerChannel('Netdata')->error($e);
+		}
 		return $data;
 	}
-	
+
 	public function getPercent($val, $max)
 	{
 		if ($max == 0) {
@@ -359,7 +358,7 @@ trait NetDataHomepageItem
 			return ($val / $max) * 100;
 		}
 	}
-	
+
 	public function customNetdata($url, $id)
 	{
 		try {
@@ -417,15 +416,15 @@ trait NetDataHomepageItem
 						}
 					}
 				} catch (Requests_Exception $e) {
-					$this->writeLog('error', 'Netdata Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
-				};
+					$this->setLoggerChannel('Netdata')->error($e);
+				}
 			} else {
 				$data['error'] = 'custom definition incomplete';
 			}
 			return $data;
 		}
 	}
-	
+
 	public function parseMutators($val, $mutators)
 	{
 		$mutators = explode(',', $mutators);
