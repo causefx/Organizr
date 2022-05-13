@@ -837,7 +837,7 @@ class Organizr
 				];
 			}
 		}
-		$this->handleError($exceptions[$number], $message, $file, $line);
+		$this->handleError($exceptions[$number], $message, $file, $line, $type);
 	}
 
 	public function setErrorResponse($number, $message, $file, $line)
@@ -852,11 +852,21 @@ class Organizr
 		//$this->prettyPrint($error, true);
 	}
 
-	public function handleError($number, $message, $file, $line)
+	public function handleError($number, $message, $file, $line, $type)
 	{
+		$log = false;
 		$error = sprintf('Organizr %s:  %s in %s on line %d', $number, $message, $file, $line);
 		error_log($error);
-		$this->setLoggerChannel('Server Error')->warning('PHP Error', $error);
+		if ($this->dev) {
+			$log = true;
+		} else {
+			if ($type == 'errors') {
+				$log = true;
+			}
+		}
+		if ($log) {
+			$this->setLoggerChannel('Server Error')->warning('PHP Error', $error);
+		}
 	}
 
 	public function checkRoute($request)
