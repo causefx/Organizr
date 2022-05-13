@@ -338,6 +338,7 @@ trait UpgradeFunctions
 
 	public function upgradeToVersion($version = '2.1.0')
 	{
+		$this->setLoggerChannel('Upgrade')->notice('Starting upgrade to version ' . $version);
 		switch ($version) {
 			case '2.1.0':
 				$this->upgradeSettingsTabURL();
@@ -363,10 +364,10 @@ trait UpgradeFunctions
 				$this->addGroupIdMinToDatabase();
 				$this->addAddToAdminToDatabase();
 				break;
-			default:
-				$this->setAPIResponse('success', 'Ran update function for version: ' . $version, 200);
-				return true;
 		}
+		$this->setLoggerChannel('Upgrade')->notice('Finished upgrade to version ' . $version);
+		$this->setAPIResponse('success', 'Ran update function for version: ' . $version, 200);
+		return true;
 	}
 
 	public function removeOldCacheFolder()
