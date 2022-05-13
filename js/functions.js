@@ -199,8 +199,8 @@ function getDebugPreInfo(){
         '<br/>Install Type: ' + ((activeInfo.settings.misc.docker) ? 'Official Docker' : 'Native') +
         '<br/>Auth Type: ' + activeInfo.settings.misc.authType +
         '<br/>Auth Backend: ' + activeInfo.settings.misc.authBackend +
-        '<br/>Installed Plugins: ' + activeInfo.settings.misc.installedPlugins +
-        '<br/>Installed Themes: ' + activeInfo.settings.misc.installedThemes +
+        '<br/>Installed Plugins: ' + formatDebug(activeInfo.settings.misc.installedPlugins) +
+        '<br/>Installed Themes: ' + formatDebug(activeInfo.settings.misc.installedThemes) +
         '<br/>Theme: ' + activeInfo.theme +
         '<br/>Local: ' + activeInfo.settings.user.local +
         '<br/>oAuth: ' + activeInfo.settings.user.oAuthLogin +
