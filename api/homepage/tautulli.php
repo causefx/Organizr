@@ -157,6 +157,18 @@ trait TautulliHomepageItem
 		$width = $this->getCacheImageSize('w');
 		$nowPlayingHeight = $this->getCacheImageSize('nph');
 		$nowPlayingWidth = $this->getCacheImageSize('npw');
+		$api['options'] = [
+			'url' => $url,
+			'libraries' => $this->config['tautulliLibraries'],
+			'topMovies' => $this->config['tautulliTopMovies'],
+			'topTV' => $this->config['tautulliTopTV'],
+			'topUsers' => $this->config['tautulliTopUsers'],
+			'topPlatforms' => $this->config['tautulliTopPlatforms'],
+			'popularMovies' => $this->config['tautulliPopularMovies'],
+			'popularTV' => $this->config['tautulliPopularTV'],
+			'title' => $this->config['tautulliHeaderToggle'],
+			'friendlyName' => $this->config['tautulliFriendlyName'],
+		];
 		try {
 			$homestatsUrl = $apiURL . '&cmd=get_home_stats&grouping=1';
 			$options = $this->requestOptions($this->config['tautulliURL'], $this->config['homepageTautulliRefresh'], $this->config['tautulliDisableCertCheck'], $this->config['tautulliUseCustomCertificate']);
@@ -194,72 +206,60 @@ trait TautulliHomepageItem
 					$platform = $api['homestats']['data'][$key]['rows'][0]['platform_name'];
 					$this->cacheImage($url . '/images/platforms/' . $platform . '.svg', 'tautulli-' . $platform, 'svg');
 				}
-			}
-			$libstatsUrl = $apiURL . '&cmd=get_libraries_table';
-			$options = $this->requestOptions($this->config['tautulliURL'], $this->config['homepageTautulliRefresh'], $this->config['tautulliDisableCertCheck'], $this->config['tautulliUseCustomCertificate']);
-			$libstats = Requests::get($libstatsUrl, [], $options);
-			if ($libstats->success) {
-				$homepageTautulliLibraryStatsExclude = explode(",", $this->config['homepageTautulliLibraryStatsExclude']);
-				$libstats = json_decode($libstats->body, true);
-				foreach ($libstats['response']['data']['data'] as $i => $v) {
-					if (array_key_exists('section_id', $v)) {
-						if (in_array($v['section_id'], $homepageTautulliLibraryStatsExclude)) {
-							unset($libstats['response']['data']['data'][$i]);
+				$libstatsUrl = $apiURL . '&cmd=get_libraries_table';
+				$options = $this->requestOptions($this->config['tautulliURL'], $this->config['homepageTautulliRefresh'], $this->config['tautulliDisableCertCheck'], $this->config['tautulliUseCustomCertificate']);
+				$libstats = Requests::get($libstatsUrl, [], $options);
+				if ($libstats->success) {
+					$homepageTautulliLibraryStatsExclude = explode(',', $this->config['homepageTautulliLibraryStatsExclude']);
+					$libstats = json_decode($libstats->body, true);
+					foreach ($libstats['response']['data']['data'] as $i => $v) {
+						if (array_key_exists('section_id', $v)) {
+							if (in_array($v['section_id'], $homepageTautulliLibraryStatsExclude)) {
+								unset($libstats['response']['data']['data'][$i]);
+							}
 						}
 					}
+					$libstats['response']['data']['data'] = array_values($libstats['response']['data']['data']);
+					$api['libstats'] = $libstats['response']['data'];
+					$categories = ['movie.svg', 'show.svg', 'artist.svg'];
+					foreach ($categories as $cat) {
+						$parts = explode('.', $cat);
+						$this->cacheImage($url . '/images/libraries/' . $cat, 'tautulli-' . $parts[0], $parts[1]);
+					}
 				}
-				$libstats['response']['data']['data'] = array_values($libstats['response']['data']['data']);
-				$api['libstats'] = $libstats['response']['data'];
-				$categories = ['movie.svg', 'show.svg', 'artist.svg'];
-				foreach ($categories as $cat) {
-					$parts = explode('.', $cat);
-					$this->cacheImage($url . '/images/libraries/' . $cat, 'tautulli-' . $parts[0], $parts[1]);
+				$ids = []; // Array of stat_ids to remove from the returned array
+				if (!$this->qualifyRequest($this->config['homepageTautulliLibraryAuth'])) {
+					$api['options']['libraries'] = false;
+					unset($api['libstats']);
 				}
-			}
-			$api['options'] = [
-				'url' => $url,
-				'libraries' => $this->config['tautulliLibraries'],
-				'topMovies' => $this->config['tautulliTopMovies'],
-				'topTV' => $this->config['tautulliTopTV'],
-				'topUsers' => $this->config['tautulliTopUsers'],
-				'topPlatforms' => $this->config['tautulliTopPlatforms'],
-				'popularMovies' => $this->config['tautulliPopularMovies'],
-				'popularTV' => $this->config['tautulliPopularTV'],
-				'title' => $this->config['tautulliHeaderToggle'],
-				'friendlyName' => $this->config['tautulliFriendlyName'],
-			];
-			$ids = []; // Array of stat_ids to remove from the returned array
-			if (!$this->qualifyRequest($this->config['homepageTautulliLibraryAuth'])) {
-				$api['options']['libraries'] = false;
-				unset($api['libstats']);
-			}
-			if (!$this->qualifyRequest($this->config['homepageTautulliViewsAuth'])) {
-				$api['options']['topMovies'] = false;
-				$api['options']['topTV'] = false;
-				$api['options']['popularMovies'] = false;
-				$api['options']['popularTV'] = false;
-				$ids = array_merge(['top_movies', 'popular_movies', 'popular_tv', 'top_tv'], $ids);
-				$api['homestats']['data'] = array_values($api['homestats']['data']);
-			}
-			if (!$this->qualifyRequest($this->config['homepageTautulliMiscAuth'])) {
-				$api['options']['topUsers'] = false;
-				$api['options']['topPlatforms'] = false;
-				$ids = array_merge(['top_platforms', 'top_users'], $ids);
-				$api['homestats']['data'] = array_values($api['homestats']['data']);
-			}
-			$ids = array_merge(['top_music', 'popular_music', 'last_watched', 'most_concurrent'], $ids);
-			foreach ($ids as $id) {
-				if ($key = array_search($id, array_column($api['homestats']['data'], 'stat_id'))) {
-					unset($api['homestats']['data'][$key]);
+				if (!$this->qualifyRequest($this->config['homepageTautulliViewsAuth'])) {
+					$api['options']['topMovies'] = false;
+					$api['options']['topTV'] = false;
+					$api['options']['popularMovies'] = false;
+					$api['options']['popularTV'] = false;
+					$ids = array_merge(['top_movies', 'popular_movies', 'popular_tv', 'top_tv'], $ids);
 					$api['homestats']['data'] = array_values($api['homestats']['data']);
+				}
+				if (!$this->qualifyRequest($this->config['homepageTautulliMiscAuth'])) {
+					$api['options']['topUsers'] = false;
+					$api['options']['topPlatforms'] = false;
+					$ids = array_merge(['top_platforms', 'top_users'], $ids);
+					$api['homestats']['data'] = array_values($api['homestats']['data']);
+				}
+				$ids = array_merge(['top_music', 'popular_music', 'last_watched', 'most_concurrent'], $ids);
+				foreach ($ids as $id) {
+					if ($key = array_search($id, array_column($api['homestats']['data'], 'stat_id'))) {
+						unset($api['homestats']['data'][$key]);
+						$api['homestats']['data'] = array_values($api['homestats']['data']);
+					}
 				}
 			}
 		} catch (Requests_Exception $e) {
 			$this->logger->critical($e, [$url]);
 			$this->setResponse(500, $e->getMessage());
 			return false;
-		};
-		$api = isset($api) ? $api : false;
+		}
+		$api = $api ?? false;
 		$this->setAPIResponse('success', null, 200, $api);
 		return $api;
 	}
