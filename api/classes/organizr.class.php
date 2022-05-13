@@ -2743,7 +2743,8 @@ class Organizr
 			$this->setAPIResponse('error', 'No data submitted', 409);
 			return false;
 		}
-		$newItem = array();
+		$newItems = [];
+		$updatedItems = [];
 		foreach ($array as $k => $v) {
 			$v = $v ?? '';
 			switch ($v) {
@@ -2773,14 +2774,16 @@ class Organizr
 					break;
 			}
 			if (strtolower($k) !== 'formkey') {
-				$newItem[$k] = $v;
+				if ($this->config[$k] !== $v) {
+					$updatedItems[$k] = $v;
+				}
+				$newItems[$k] = $v;
 				$this->config[$k] = $v;
 			}
 		}
 		$this->setAPIResponse('success', 'Config items updated', 200);
-		$this->setLoggerChannel('Config');
-		$this->logger->info('Config items updated', array_keys($array));
-		return (bool)$this->updateConfig($newItem);
+		$this->setLoggerChannel('Config')->notice('Config items updated', array_keys($updatedItems));
+		return (bool)$this->updateConfig($newItems);
 	}
 
 	public function updateConfigItem($array)
