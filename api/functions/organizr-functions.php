@@ -832,9 +832,9 @@ trait OrganizrFunctions
 			'<!DOCTYPE html>
 			<html lang="en">
 			<head>
-				<link rel="stylesheet" href="' . $this->getServerPath() . '/css/mvp.css">
+				<style>' . file_get_contents($this->root . DIRECTORY_SEPARATOR . 'css' . DIRECTORY_SEPARATOR . 'mvp.css') . '</style>
 				<meta charset="utf-8">
-				<meta name="description" content="Trakt OAuth">
+				<meta name="description" content="' . $title . '">
 				<meta name="viewport" content="width=device-width, initial-scale=1.0">
 				<title>' . $title . '</title>
 			</head>
@@ -847,11 +847,11 @@ trait OrganizrFunctions
 			<body ' . $close . '>
 				<main>
 					<section>
-						<aside>
+						<div>
 							<h3>' . $title . '</h3>
 							<p>' . $notice . '</p>
 							' . $closeMessage . '
-						</aside>
+						</div>
 					</section>
 				</main>
 			</body>
