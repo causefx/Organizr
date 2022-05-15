@@ -864,7 +864,7 @@ class Organizr
 				$log = true;
 			}
 		}
-		if ($log) {
+		if ($log && $this->hasDB()) {
 			$this->setLoggerChannel('Server Error')->warning('PHP Error', $error);
 		}
 	}
