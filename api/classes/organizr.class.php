@@ -337,7 +337,7 @@ class Organizr
 	public function checkForOrganizrOAuth()
 	{
 		// Oauth?
-		if ($this->user) {
+		if ($this->hasDB() && $this->user) {
 			if ($this->user['groupID'] == '999') {
 				$this->setLoggerChannel('OAuth')->debug('Starting OAuth login check');
 				$data = [
@@ -2782,7 +2782,7 @@ class Organizr
 			}
 		}
 		$this->setAPIResponse('success', 'Config items updated', 200);
-		$this->setLoggerChannel('Config')->notice('Config items updated', array_keys($updatedItems));
+		$this->setLoggerChannel('Config')->notice('Config items updated', ['items' => array_keys($updatedItems)]);
 		return (bool)$this->updateConfig($newItems);
 	}
 
