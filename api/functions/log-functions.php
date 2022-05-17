@@ -159,8 +159,8 @@ trait LogFunctions
 
 	public function getLatestLogFile()
 	{
-		if ($this->log) {
-			if (isset($this->log)) {
+		if ($this->logFile) {
+			if (isset($this->logFile)) {
 				$folder = $this->logLocation();
 				$directoryIterator = new RecursiveDirectoryIterator($folder, FilesystemIterator::SKIP_DOTS);
 				$iteratorIterator = new RecursiveIteratorIterator($directoryIterator);
@@ -185,8 +185,8 @@ trait LogFunctions
 
 	public function getLogFiles()
 	{
-		if ($this->log) {
-			if (isset($this->log)) {
+		if ($this->logFile) {
+			if (isset($this->logFile)) {
 				$folder = $this->logLocation();
 				$directoryIterator = new RecursiveDirectoryIterator($folder, FilesystemIterator::SKIP_DOTS);
 				$iteratorIterator = new RecursiveIteratorIterator($directoryIterator);
@@ -284,7 +284,7 @@ trait LogFunctions
 			$username = $this->user['username'] ?? 'System';
 		}
 		$loggerBuilder = new OrganizrLogger();
-		$loggerBuilder->setReadyStatus($this->hasDB() && $this->log);
+		$loggerBuilder->setReadyStatus($this->hasDB() && $this->logFile);
 		$loggerBuilder->setMaxFiles($this->config['maxLogFiles']);
 		$loggerBuilder->setFileName($this->tempLogIfNeeded());
 		$loggerBuilder->setTraceId($username);
@@ -319,17 +319,17 @@ trait LogFunctions
 
 	public function tempLogIfNeeded()
 	{
-		if (!$this->log) {
+		if (!$this->logFile) {
 			return $this->root . DIRECTORY_SEPARATOR . 'tmp' . DIRECTORY_SEPARATOR . 'organizr-' . $this->randString() . '.log';
 		} else {
-			return $this->log;
+			return $this->logFile;
 		}
 	}
 
 	public function getLog($pageSize = 10, $offset = 0, $filter = 'NONE', $number = 0, $trace_id = null)
 	{
-		if ($this->log) {
-			if (isset($this->log)) {
+		if ($this->logFile) {
+			if (isset($this->logFile)) {
 				if ($number !== 0) {
 					if ($number == 'all' || $number == 'combined-logs') {
 						$log = 'combined-logs';
@@ -358,7 +358,7 @@ trait LogFunctions
 	{
 		$this->setLoggerChannel('Logger');
 		$this->logger->debug('Starting log purge function');
-		if ($this->log) {
+		if ($this->logFile) {
 			$this->logger->debug('Checking if log id exists');
 			if ($number !== 0) {
 				if ($number == 'all' || $number == 'combined-logs') {

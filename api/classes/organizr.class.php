@@ -83,10 +83,8 @@ class Organizr
 	public $commit;
 	public $fileHash;
 	public $cookieName;
-	public $log;
+	public $logFile;
 	public $logger;
-	public $organizrLog;
-	public $organizrLoginLog;
 	public $timeExecution;
 	public $root;
 	public $paths;
@@ -97,7 +95,39 @@ class Organizr
 
 	public function __construct($updating = false)
 	{
+		// Constructed from Updater?
+		$this->updating = $updating;
+		// Set Project Root directory and paths
+		$this->root = dirname(__DIR__, 2);
+		$this->paths = [
+			'Root Folder' => $this->root . DIRECTORY_SEPARATOR,
+			'Cache Folder' => $this->root . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR . 'cache' . DIRECTORY_SEPARATOR,
+			'Tab Folder' => $this->root . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR . 'userTabs' . DIRECTORY_SEPARATOR,
+			'API Folder' => dirname(__DIR__, 1) . DIRECTORY_SEPARATOR
+		];
+		// Temp Set Errors
 		$this->errors = E_ALL;//E_ALL & ~E_NOTICE
+		// Set current time
+		$this->currentTime = gmdate('Y-m-d\TH:i:s\Z');
+		// Set variable if install is for official docker
+		$this->docker = (file_exists(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'Docker.txt'));
+		// Set variable if install is for develop and set php Error levels
+		$this->dev = (file_exists(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'Dev.txt'));
+		// Set variable if install is for demo
+		$this->demo = (file_exists(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'Demo.txt'));
+		// Set variable if install has commit hash and variable to be used as hash for files
+		$this->commit = ($this->docker && !$this->dev) ? file_get_contents(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'Github.txt') : null;
+		$this->fileHash = ($this->commit) ?? $this->version;
+		$this->fileHash = trim($this->fileHash);
+		// Set location path to user config path
+		$this->chooseConfigFile();
+		// Set location path to default config path
+		$this->defaultConfigPath = dirname(__DIR__, 1) . DIRECTORY_SEPARATOR . 'config' . DIRECTORY_SEPARATOR . 'default.php';
+		// Load Config file
+		$this->config = $this->config();
+		// Set cookie name for Organizr Instance
+		$this->cookieName = ($this->hasConfig()) ? $this->config['uuid'] !== '' ? 'organizr_token_' . $this->config['uuid'] : 'organizr_token_temp' : 'organizr_token_temp';
+
 		// Set custom Error handler
 		set_error_handler([$this, 'setAPIErrorResponse'], $this->errors);
 		// Next Check PHP Version
@@ -108,54 +138,24 @@ class Organizr
 		$this->setDeviceUUID();
 		// Add Plugin prefix to plugin global
 		$this->setPluginListNameFromConfigPrefix();
-		// Constructed from Updater?
-		$this->updating = $updating;
-		// Set Project Root directory
-		$this->root = dirname(__DIR__, 2);
+		// Add database path to paths
+		$this->addDatabaseToPaths();
 		// Set Start Execution Time
 		$this->timeExecution = $this->timeExecution();
-		// Set location path to user config path
-		$this->chooseConfigFile();
-		//$this->userConfigPath = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR . 'config' . DIRECTORY_SEPARATOR . 'config.php';
-		// Set location path to default config path
-		$this->defaultConfigPath = dirname(__DIR__, 1) . DIRECTORY_SEPARATOR . 'config' . DIRECTORY_SEPARATOR . 'default.php';
-		// Set current time
-		$this->currentTime = gmdate("Y-m-d\TH:i:s\Z");
-		// Set variable if install is for official docker
-		$this->docker = (file_exists(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'Docker.txt'));
-		// Set variable if install is for develop and set php Error levels
-		$this->dev = (file_exists(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'Dev.txt'));
+
+
 		$this->phpErrors();
-		// Set variable if install is for demo
-		$this->demo = (file_exists(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'Demo.txt'));
-		// Set variable if install has commit hash
-		$this->commit = ($this->docker && !$this->dev) ? file_get_contents(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'Github.txt') : null;
-		// Set variable to be used as hash for files
-		$this->fileHash = ($this->commit) ?? $this->version;
-		$this->fileHash = trim($this->fileHash);
-		// Load Config file
-		$this->config = $this->config();
+
+
 		// Set organizr Logs and logger
-		$this->log = $this->setOrganizrLog();
+		$this->logFile = $this->setOrganizrLog();
 		$this->setLoggerChannel();
-		// Set organizr Log file location - will deprecate soon
-		$this->organizrLog = ($this->hasDB()) ? $this->config['dbLocation'] . 'organizrLog.json' : false;
-		// Set organizr Login Log file location - will deprecate soon
-		$this->organizrLoginLog = ($this->hasDB()) ? $this->config['dbLocation'] . 'organizrLoginLog.json' : false;
-		// Set Paths
-		$this->paths = array(
-			'Root Folder' => dirname(__DIR__, 2) . DIRECTORY_SEPARATOR,
-			'Cache Folder' => dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR . 'cache' . DIRECTORY_SEPARATOR,
-			'Tab Folder' => $this->root . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR . 'userTabs' . DIRECTORY_SEPARATOR,
-			'API Folder' => dirname(__DIR__, 1) . DIRECTORY_SEPARATOR,
-			'DB Folder' => ($this->hasDB()) ? $this->config['dbLocation'] : false
-		);
+
 		// Connect to DB
 		$this->connectDB();
 		// Check DB Writable
 		$this->checkWritableDB();
-		// Set cookie name for Organizr Instance
-		$this->cookieName = ($this->hasDB()) ? $this->config['uuid'] !== '' ? 'organizr_token_' . $this->config['uuid'] : 'organizr_token_temp' : 'organizr_token_temp';
+
 		// Get token form cookie and validate
 		$this->setCurrentUser();
 		// might just run this at index
@@ -169,6 +169,13 @@ class Organizr
 	public function __destruct()
 	{
 		$this->disconnectDB();
+	}
+
+	public function addDatabaseToPaths()
+	{
+		if ($this->hasConfig()) {
+			$this->paths = array_merge($this->paths, ['DB Folder' => $this->config['dbLocation']]);
+		}
 	}
 
 	public function chooseConfigFile()
@@ -304,7 +311,7 @@ class Organizr
 	public function setCurrentUser($validate = true)
 	{
 		$user = false;
-		if ($this->hasDB()) {
+		if ($this->hasDatabase()) {
 			if ($this->hasCookie()) {
 				$user = $this->getUserFromToken($_COOKIE[$this->cookieName]);
 			}
@@ -363,7 +370,7 @@ class Organizr
 
 	public function checkIfUserIsBlacklisted()
 	{
-		if ($this->hasDB()) {
+		if ($this->hasConfig()) {
 			$currentIP = $this->userIP();
 			if ($this->config['blacklisted'] !== '') {
 				if (in_array($currentIP, $this->arrayIP($this->config['blacklisted']))) {
@@ -4347,26 +4354,6 @@ class Organizr
 		} else {
 			return false;
 		}
-	}
-
-	public function writeLog($type = 'error', $message = null, $username = null)
-	{
-		$this->timeExecution = $this->timeExecution($this->timeExecution);
-		$message = $message . ' [Execution Time: ' . $this->formatSeconds($this->timeExecution) . ']';
-		$username = ($username) ? htmlspecialchars($username, ENT_QUOTES) : $this->user['username'] ?? 'SYSTEM';
-		if ($this->checkLog($this->organizrLog)) {
-			$getLog = str_replace("\r\ndate", "date", file_get_contents($this->organizrLog));
-			$gotLog = json_decode($getLog, true);
-		}
-		$logEntryFirst = array('logType' => 'organizr_log', 'log_items' => array(array('date' => date("Y-m-d H:i:s"), 'utc_date' => $this->currentTime, 'type' => $type, 'username' => $username, 'ip' => $this->userIP(), 'message' => $message)));
-		$logEntry = array('date' => date("Y-m-d H:i:s"), 'utc_date' => $this->currentTime, 'type' => $type, 'username' => $username, 'ip' => $this->userIP(), 'message' => $message);
-		if (isset($gotLog)) {
-			array_push($gotLog["log_items"], $logEntry);
-			$writeFailLog = str_replace("date", "\r\ndate", json_encode($gotLog));
-		} else {
-			$writeFailLog = str_replace("date", "\r\ndate", json_encode($logEntryFirst));
-		}
-		file_put_contents($this->organizrLog, $writeFailLog);
 	}
 
 	public function isApprovedRequest($method, $data)
