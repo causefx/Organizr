@@ -430,7 +430,7 @@ function getDefault(id){
         if(tabInfo){
             switchTab(id);
         } else {
-	        $('.allTabsList').first().children().click()
+	        $('.allTabsList').first().children().click();
         }
     }else if(getHash() == 'OrganizrLogin'){
         loadNextTab(true);
