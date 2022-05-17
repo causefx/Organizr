@@ -10488,7 +10488,13 @@ function messagePositions(){
     };
 }
 function message(heading,text,position,color,icon,timeout, single = false){
-    var bb = (typeof activeInfo !== 'undefined') ? activeInfo.settings.notifications.backbone : 'izi';
+	let bb = (typeof activeInfo !== 'undefined') ? activeInfo.settings.notifications.backbone : 'izi';
+	let activePosition = (typeof activeInfo !== 'undefined') ? activeInfo.settings.notifications.position : 'bc';
+	position = (typeof position !== 'undefined') ? position : activePosition;
+	text = (typeof text !== 'undefined') ? text : '';
+	color = (typeof color !== 'undefined') ? color : '#FFF';
+	icon = (typeof icon !== 'undefined') ? icon : 'info';
+	timeout = (typeof timeout !== 'undefined') ? timeout : 10000;
     switch (bb) {
         case 'toastr':
 
@@ -10703,6 +10709,12 @@ function message(heading,text,position,color,icon,timeout, single = false){
 
 }
 function messageSingle(heading,text,position,color,icon,timeout){
+	let activePosition = (typeof activeInfo !== 'undefined') ? activeInfo.settings.notifications.position : 'bc';
+	position = (typeof position !== 'undefined') ? position : activePosition;
+	text = (typeof text !== 'undefined') ? text : '';
+	color = (typeof color !== 'undefined') ? color : '#FFF';
+	icon = (typeof icon !== 'undefined') ? icon : 'info';
+	timeout = (typeof timeout !== 'undefined') ? timeout : 10000;
 	message(heading,text,position,color,icon,timeout, true);
 }
 
