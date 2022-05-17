@@ -68,7 +68,7 @@ class Organizr
 	public $version = '2.1.2000';
 	// ===================================
 	// Quick php Version check
-	public $minimumPHP = '7.3';
+	public $minimumPHP = '7.4';
 	// ===================================
 	protected $db;
 	protected $otherDb;
@@ -84,7 +84,6 @@ class Organizr
 	public $fileHash;
 	public $cookieName;
 	public $logFile;
-	public $logger;
 	public $timeExecution;
 	public $root;
 	public $paths;
@@ -92,6 +91,8 @@ class Organizr
 	public $groupOptions;
 	public $warnings;
 	public $errors;
+	public bool $loggerSetup = false;
+	public \Nekonomokochan\PhpJsonLogger\Logger $logger;
 
 	public function __construct($updating = false)
 	{

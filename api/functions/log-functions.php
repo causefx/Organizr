@@ -207,6 +207,12 @@ trait LogFunctions
 		return false;
 	}
 
+	public function log(...$params)
+	{
+		// Alias of setLoggerChannel
+		return $this->setLoggerChannel(...$params);
+	}
+
 	public function setLoggerChannel($channel = 'Organizr', $username = null)
 	{
 
@@ -216,7 +222,7 @@ trait LogFunctions
 			if ($username) {
 				$username = $this->sanitizeUserString($username);
 			}
-			if ($this->logger) {
+			if ($this->loggerSetup) {
 				if ($channel) {
 					if (strtolower($this->logger->getChannel()) !== strtolower($channel)) {
 						$this->logger->setChannel($channel);
@@ -299,21 +305,21 @@ trait LogFunctions
 				}
 			}
 			$this->logger = $loggerBuilder->build();
+			$this->loggerSetup = true;
 			return $this->logger;
 		} catch (Exception $e) {
 			// nothing so far
-			$this->logger = null;
 			return $this->logger;
 		}
-		/* setup:
+		/*
+		Setup:
 		set the log channel before you send log (You can set an optional Username (2nd Variable) | If user is logged already logged in, it will use their username):
-		$this->setLoggerChannel('Plex Homepage');
 		normal log:
-		$this->logger->info('test');
+		$this->log('Plex Homepage')->info('test');
 		normal log with context ($context must be an array):
-		$this->logger->info('test', $context);
+		$this->log('Plex Homepage')->info('test', $context);
 		exception:
-		$this->logger->critical($exception, $context);
+		$this->log('Plex Homepage')->critical($exception, $context);
 		*/
 	}
 
