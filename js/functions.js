@@ -427,10 +427,10 @@ function getDefault(id){
         }
     }
     if(getHash() === false || (getHash() === 'OrganizrLogin' && activeInfo.user.loggedin)){
-        if(tabInfo.name !== null && tabInfo.type !== null){
+        if(tabInfo){
             switchTab(id);
         } else {
-            $('#side-menu').children().first().children().click()
+	        $('.allTabsList').first().children().click()
         }
     }else if(getHash() == 'OrganizrLogin'){
         loadNextTab(true);
