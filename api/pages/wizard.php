@@ -130,12 +130,24 @@ function get_page_wizard($Organizr)
                 return true;
             },
             onFinish: function() {
+                message("Submitting Wizard");
+                $(\'.white-box\').block({
+				    message: \'<h3><i class="fa fa-close"></i> Submitting Wizard Data...</h3>\',
+				    css: {
+					    color: \'#fff\',
+					    border: \'1px solid #1b1a1a\',
+					    backgroundColor: \'#2cabe3\'
+				    }
+				});
                 var post = $( \'#validation\' ).serializeToJSON();
                 organizrAPI2(\'POST\',\'api/v2/wizard\',post).success(function(data) {
             		var html = data.response;
+            		message("Wizard Data accepted");
+            		$(\'.white-box\').unblock({});
                     location.reload();
             	}).fail(function(xhr) {
             	    OrganizrApiError(xhr, \'API Error\');
+            	    $(\'.white-box\').unblock({});
             	});
             }
         });
