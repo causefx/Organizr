@@ -659,6 +659,8 @@ return [
 	'checkForThemeUpdate' => true,
 	'autoUpdateCronEnabled' => false,
 	'autoUpdateCronSchedule' => '@weekly',
+	'autoBackupCronEnabled' => false,
+	'autoBackupCronSchedule' => '@weekly',
 	'useRandomMediaImage' => false,
 	'sendLogsToSlack' => false,
 	'slackLogLevel' => 'WARNING',
