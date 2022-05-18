@@ -65,7 +65,7 @@ class Organizr
 
 	// ===================================
 	// Organizr Version
-	public $version = '2.1.2000';
+	public $version = '2.1.2200';
 	// ===================================
 	// Quick php Version check
 	public $minimumPHP = '7.4';
@@ -1702,6 +1702,13 @@ class Organizr
 						return false;
 					}
 				}
+				if ($allTokens[$tokenKey]['ip'] !== $this->userIP()) {
+					if ($this->config['matchUserIP']) {
+						$this->setLoggerChannel('Authentication')->warning('Mismatch of user IP', ['token' => $allTokens[$tokenKey]['ip'], 'user' => $this->userIP()]);
+						$this->invalidToken($token);
+						return false;
+					}
+				}
 				if ($api) {
 					$this->setResponse(200, 'Token is valid');
 				}
@@ -2393,6 +2400,7 @@ class Organizr
 				$this->settingsOption('select', 'lockoutMinAuth', ['label' => 'Lockout Groups From', 'options' => $this->groupSelect()]),
 				$this->settingsOption('select', 'lockoutMaxAuth', ['label' => 'Lockout Groups To', 'options' => $this->groupSelect()]),
 				$this->settingsOption('switch', 'matchUserAgents', ['label' => 'Match UserAgent', 'help' => 'Match Browser UserAgent to Token UserAgent - Can be very aggressive on matching']),
+				$this->settingsOption('switch', 'matchUserIP', ['label' => 'Match User IP', 'help' => 'Match User IP to Token IP']),
 				$this->settingsOption('switch', 'traefikAuthEnable', ['label' => 'Enable Traefik Auth Redirect', 'help' => 'This will enable the webserver to forward errors so traefik will accept them']),
 				$this->settingsOption('input', 'traefikDomainOverride', ['label' => 'Traefik Domain for Return Override', 'help' => 'Please use a FQDN on this URL Override', 'placeholder' => 'http(s)://domain']),
 				$this->settingsOption('select', 'debugAreaAuth', ['label' => 'Minimum Authentication for Debug Area', 'options' => $this->groupSelect(), 'settings' => '{}']),
@@ -3287,7 +3295,7 @@ class Organizr
 					`default`	INTEGER,
 					`enabled`	INTEGER,
 					`group_id`	INTEGER,
-					`group_id_min` INTEGER DEFAULT \'0\',
+					`group_id_max` INTEGER DEFAULT \'0\',
 					`add_to_admin`	INTEGER DEFAULT \'0\',
 					`image`	TEXT,
 					`type`	INTEGER,
@@ -4049,7 +4057,7 @@ class Organizr
 			array(
 				'function' => 'fetchAll',
 				'query' => array(
-					'SELECT * FROM tabs WHERE `group_id` >= ? AND `group_id_min` <= ? AND `enabled` = 1 ORDER BY `order` ' . $sort,
+					'SELECT * FROM tabs WHERE `group_id` >= ? AND `group_id_max` <= ? AND `enabled` = 1 ORDER BY `order` ' . $sort,
 					$this->user['groupID'],
 					$this->user['groupID'],
 				),
@@ -5185,15 +5193,15 @@ class Organizr
 			}
 		}
 		if (array_key_exists('group_id', $array)) {
-			$groupCheck = (array_key_exists('group_id_min', $array)) ? $array['group_id_min'] : $tabInfo['group_id_min'];
+			$groupCheck = (array_key_exists('group_id_max', $array)) ? $array['group_id_max'] : $tabInfo['group_id_max'];
 			if ($array['group_id'] < $groupCheck) {
 				$this->setAPIResponse('error', 'Tab name: ' . $tabInfo['name'] . ' cannot have a lower Group Id Max than Group Id Min', 409);
 				return false;
 			}
 		}
-		if (array_key_exists('group_id_min', $array)) {
+		if (array_key_exists('group_id_max', $array)) {
 			$groupCheck = (array_key_exists('group_id', $array)) ? $array['group_id'] : $tabInfo['group_id'];
-			if ($array['group_id_min'] > $groupCheck) {
+			if ($array['group_id_max'] > $groupCheck) {
 				$this->setAPIResponse('error', 'Tab name: ' . $tabInfo['name'] . ' cannot have a higher Group Id Min than Group Id Max', 409);
 				return false;
 			}

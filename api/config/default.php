@@ -664,5 +664,6 @@ return [
 	'slackLogLevel' => 'WARNING',
 	'slackLogWebhook' => '',
 	'slackLogWebHookChannel' => '',
-	'matchUserAgents' => false
+	'matchUserAgents' => false,
+	'matchUserIP' => true
 ];

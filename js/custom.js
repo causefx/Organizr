@@ -680,24 +680,24 @@ $(document).on("click", ".deleteUser", function () {
     });
 });
 // CHANGE TAB GROUP MIN
-$(document).on("change", ".tabGroupSelectMin", function (event) {
+$(document).on("change", ".tabGroupSelectMax", function (event) {
 	var id = $(this).parent().parent().attr("data-id");
 	var groupID = $(this).find("option:selected").val();
 	var callbacks = $.Callbacks();
-	organizrAPI2('PUT','api/v2/tabs/' + id, {"group_id_min":groupID},true).success(function(data) {
+	organizrAPI2('PUT','api/v2/tabs/' + id, {"group_id_max":groupID},true).success(function(data) {
 		try {
 			var response = data.response;
 		}catch(e) {
 			organizrCatchError(e,data);
 		}
-		message('Tab Group Min Updated',response.message,activeInfo.settings.notifications.position,"#FFF","success","5000");
+		message('Tab Group Max Updated',response.message,activeInfo.settings.notifications.position,"#FFF","success","5000");
 		if(callbacks){ callbacks.fire(); }
 	}).fail(function(xhr) {
 		OrganizrApiError(xhr, 'Tab Group Error');
 	});
 });
 // CHANGE TAB GROUP MAX
-$(document).on("change", ".tabGroupSelectMax", function (event) {
+$(document).on("change", ".tabGroupSelectMin", function (event) {
 	var id = $(this).parent().parent().attr("data-id");
 	var groupID = $(this).find("option:selected").val();
 	var callbacks = $.Callbacks();
@@ -707,7 +707,7 @@ $(document).on("change", ".tabGroupSelectMax", function (event) {
 		}catch(e) {
 			organizrCatchError(e,data);
 		}
-		message('Tab Group Max Updated',response.message,activeInfo.settings.notifications.position,"#FFF","success","5000");
+		message('Tab Group Min Updated',response.message,activeInfo.settings.notifications.position,"#FFF","success","5000");
 		if(callbacks){ callbacks.fire(); }
 	}).fail(function(xhr) {
 		OrganizrApiError(xhr, 'Tab Group Error');

@@ -1320,7 +1320,7 @@ function buildPluginsItem(array, type = 'enabled'){
 			var settings = '';
 		}
 		var plugin = `
-		<div class="col-lg-2 col-md-2 col-sm-4 col-xs-4">
+		<div class="col-lg-2 col-md-2 col-sm-6 col-xs-6 m-b-10">
 			<div class="white-box m-0">
 				<div class="el-card-item p-0">
 					<div class="el-card-avatar el-overlay-1 m-0"> <img class="lazyload" data-src="`+v.image+`">
@@ -3303,7 +3303,7 @@ function buildUserGroupSelect(array, userID, groupID){
 function buildTabGroupSelect(array, tabID, groupID, type){
 	var groupSelect = '';
 	var selected = '';
-	let name = (type == 'tabGroupSelectMin') ? 'group_id_min' : 'group_id';
+	let name = (type == 'tabGroupSelectMax') ? 'group_id_max' : 'group_id';
 	$.each(array, function(i,v) {
 		selected = '';
 		if(v.group_id == groupID){
@@ -3490,8 +3490,8 @@ function buildTabEditorItem(array){
 			</td>
 			<td><span class="tooltip-info" data-toggle="tooltip" data-placement="right" title="" data-original-title="`+v.url+`">`+v.name+`</span><span id="checkTabHomepageItem-`+v.id+`" data-url="`+v.url+`" data-url-local="`+v.url_local+`" data-name="`+v.name+`" class="checkTabHomepageItem mouse label label-rouded label-inverse pull-right"></span></td>
 			`+buildTabCategorySelect(array.categories,v.id, v.category_id)+`
-			`+buildTabGroupSelect(array.groups,v.id, v.group_id_min, 'tabGroupSelectMin')+`
-			`+buildTabGroupSelect(array.groups,v.id, v.group_id, 'tabGroupSelectMax')+`
+			`+buildTabGroupSelect(array.groups,v.id, v.group_id, 'tabGroupSelectMin')+`
+			`+buildTabGroupSelect(array.groups,v.id, v.group_id_max, 'tabGroupSelectMax')+`
 			`+buildTabTypeSelect(v.id, v.type, typeDisabled)+`
 			<td style="text-align:center"><div class="radio radio-purple"><input onclick="radioLoop(this);" type="radio" class="defaultSwitch" id="tab[`+v.id+`].default" name="tab[`+v.id+`].default" value="true" `+tof(v.default,'c')+`><label for="tab[`+v.id+`].default"></label></div></td>
 

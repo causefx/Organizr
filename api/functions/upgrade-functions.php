@@ -89,7 +89,7 @@ trait UpgradeFunctions
 			}
 			// End Upgrade check start for version above
 			// Upgrade check start for version below
-			$versionCheck = '2.1.2000';
+			$versionCheck = '2.1.2200';
 			if ($compare->lessThan($oldVer, $versionCheck)) {
 				$updateDB = false;
 				$oldVer = $versionCheck;
@@ -110,6 +110,56 @@ trait UpgradeFunctions
 				die($this->showHTML('Database update failed', 'Please manually check logs and fix - Then reload this page'));
 			}
 			return true;
+		}
+	}
+
+	public function dropColumnFromDatabase($table = '', $columnName = '')
+	{
+		if ($table == '' || $columnName == '') {
+			return false;
+		}
+		if ($this->hasDB()) {
+			$columnExists = $this->checkIfColumnExists($table, $columnName);
+			if ($columnExists) {
+				$columnAlter = [
+					array(
+						'function' => 'query',
+						'query' => ['ALTER TABLE %n DROP %n',
+							(string)$table,
+							(string)$columnName,
+						]
+					)
+				];
+				$AlterQuery = $this->processQueries($columnAlter);
+				return (boolean)($AlterQuery);
+			}
+		}
+		return false;
+	}
+
+	public function checkIfColumnExists($table = '', $columnName = '')
+	{
+		if ($table == '' || $columnName == '') {
+			return false;
+		}
+		if ($this->hasDB()) {
+			if ($this->config['driver'] === 'sqlite3') {
+				$term = 'SELECT COUNT(*) AS has_column FROM pragma_table_info(?) WHERE name=?';
+			} else {
+				$term = 'SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = "' . $this->config['dbName'] . '" AND TABLE_NAME=? AND COLUMN_NAME=?';
+			}
+			$tableInfo = [
+				array(
+					'function' => 'fetchSingle',
+					'query' => array(
+						$term,
+						(string)$table,
+						(string)$columnName
+					)
+				)
+			];
+			$query = $this->processQueries($tableInfo);
+			return (boolean)($query);
 		}
 	}
 
@@ -359,9 +409,9 @@ trait UpgradeFunctions
 			case '2.1.1860':
 				$this->upgradePluginsToDataFolder();
 				break;
-			case '2.1.2000':
+			case '2.1.2200':
 				$this->backupOrganizr();
-				$this->addGroupIdMinToDatabase();
+				$this->addGroupIdMaxToDatabase();
 				$this->addAddToAdminToDatabase();
 				break;
 		}
@@ -634,12 +684,22 @@ trait UpgradeFunctions
 		return false;
 	}
 
-	public function addGroupIdMinToDatabase()
+	public function addGroupIdMaxToDatabase()
 	{
 		$this->setLoggerChannel('Database Migration')->info('Starting database update');
-		$addColumn = $this->addColumnToDatabase('tabs', 'group_id_min', 'INTEGER DEFAULT \'0\'');
+		$hasOldColumn = $this->checkIfColumnExists('tabs', 'group_id_min');
+		if ($hasOldColumn) {
+			$this->setLoggerChannel('Database Migration')->info('Cleaning up database by removing old group_id_min');
+			$removeColumn = $this->dropColumnFromDatabase('tabs', 'group_id_min');
+			if ($removeColumn) {
+				$this->setLoggerChannel('Database Migration')->info('Removed group_id_min from database');
+			} else {
+				$this->setLoggerChannel('Database Migration')->warning('Error removing group_id_min from database');
+			}
+		}
+		$addColumn = $this->addColumnToDatabase('tabs', 'group_id_max', 'INTEGER DEFAULT \'0\'');
 		if ($addColumn) {
-			$this->setLoggerChannel('Database Migration')->notice('Added group_id_min to database');
+			$this->setLoggerChannel('Database Migration')->notice('Added group_id_max to database');
 			return true;
 		} else {
 			$this->setLoggerChannel('Database Migration')->warning('Could not update database');
