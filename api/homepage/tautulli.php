@@ -270,7 +270,7 @@ trait TautulliHomepageItem
 		$apiURL = $url . '/api/v2?apikey=' . $this->config['tautulliApikey'];
 		if (!empty($this->config['tautulliApikey']) && !empty($this->config['tautulliURL'])) {
 			$liblistUrl = $apiURL . '&cmd=get_libraries';
-			$options = $this->requestOptions($this->config['tautulliURL'], $this->config['homepageTautulliRefresh'], $this->config['tautulliDisableCertCheck'], $this->config['tautulliUseCustomCertificate']);
+			$options = $this->requestOptions($this->config['tautulliURL'], 10, $this->config['tautulliDisableCertCheck'], $this->config['tautulliUseCustomCertificate']);
 			try {
 				$liblist = Requests::get($liblistUrl, [], $options);
 				$libraryList = array();
