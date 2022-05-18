@@ -2429,6 +2429,9 @@ class Organizr
 				$this->settingsOption('cron', 'autoUpdateCronSchedule'),
 				$this->settingsOption('enable', 'autoBackupCronEnabled', ['label' => 'Auto-Backup Organizr']),
 				$this->settingsOption('cron', 'autoBackupCronSchedule'),
+				$this->settingsOption('number', 'keepBackupsCountCron', ['label' => '# Backups Keep', 'help' => 'Number of backups to keep', 'attr' => 'min="1"']),
+				$this->settingsOption('blank'),
+
 			],
 			'Login' => [
 				$this->settingsOption('password', 'registrationPassword', ['label' => 'Registration Password', 'help' => 'Sets the password for the Registration form on the login screen']),

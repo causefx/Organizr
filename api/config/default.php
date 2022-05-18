@@ -661,6 +661,7 @@ return [
 	'autoUpdateCronSchedule' => '@weekly',
 	'autoBackupCronEnabled' => false,
 	'autoBackupCronSchedule' => '@weekly',
+	'keepBackupsCountCron' => '20',
 	'useRandomMediaImage' => false,
 	'sendLogsToSlack' => false,
 	'slackLogLevel' => 'WARNING',

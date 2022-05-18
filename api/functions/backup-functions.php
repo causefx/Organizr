@@ -93,6 +93,25 @@ trait BackupFunctions
 		return true;
 	}
 
+	public function getBackupsToDelete()
+	{
+		$backups = $this->getBackups();
+		if ($backups) {
+			$list = array_reverse($backups['files']);
+			$killCount = count($list) - $this->config['keepBackupsCountCron'];
+			if ($killCount >= 1) {
+				foreach ($list as $count => $backup) {
+					$count++;
+					if ($count <= $killCount) {
+						$this->log('Cron')->notice('Deleting organizr backup file as it is over limit', ['file' => $backup['name']]);
+						$this->deleteBackup($backup['name']);
+					}
+				}
+			}
+		}
+		return true;
+	}
+
 	public function getBackups()
 	{
 		$path = $this->config['dbLocation'] . 'backups' . DIRECTORY_SEPARATOR;
