@@ -90,10 +90,11 @@ trait BackupFunctions
 		$zip->close();
 		$this->setLoggerChannel('Backup')->notice('Backup process finished');
 		$this->setAPIResponse('success', 'Backup has been created', 200);
+		$this->deleteBackupsLimit();
 		return true;
 	}
 
-	public function getBackupsToDelete()
+	public function deleteBackupsLimit()
 	{
 		$backups = $this->getBackups();
 		if ($backups) {
