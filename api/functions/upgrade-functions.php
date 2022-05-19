@@ -386,6 +386,42 @@ trait UpgradeFunctions
 		return false;
 	}
 
+	public function resetUpdateFeature($feature = null)
+	{
+		if (!$feature) {
+			$this->setResponse(409, 'Feature not supplied');
+			return false;
+		}
+		$feature = strtolower($feature);
+		switch ($feature) {
+			case 'groupmax':
+			case 'groupidmax':
+			case 'group-max':
+			case 'group-id-max':
+			case 'group_id':
+			case 'group_id_max':
+				$query = [
+					[
+						'function' => 'query',
+						'query' => [
+							'UPDATE tabs SET group_id_max=0'
+						]
+					],
+				];
+				$tabs = $this->processQueries($query);
+				if (!$tabs) {
+					$this->setResponse(500, 'An error occurred');
+					return false;
+				}
+				break;
+			default:
+				$this->setResponse(404, 'Feature not found in reset update');
+				return false;
+		}
+		$this->setResponse(200, 'Ran reset update feature for ' . $feature);
+		return true;
+	}
+
 	public function upgradeToVersion($version = '2.1.0')
 	{
 		$this->setLoggerChannel('Upgrade')->notice('Starting upgrade to version ' . $version);
