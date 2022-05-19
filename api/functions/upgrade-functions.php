@@ -400,19 +400,26 @@ trait UpgradeFunctions
 			case 'group-id-max':
 			case 'group_id':
 			case 'group_id_max':
-				$query = [
-					[
-						'function' => 'query',
-						'query' => [
-							'UPDATE tabs SET group_id_max=0'
-						]
-					],
-				];
-				$tabs = $this->processQueries($query);
-				if (!$tabs) {
-					$this->setResponse(500, 'An error occurred');
+				$columnExists = $this->checkIfColumnExists('tabs', 'group_id_max');
+				if ($columnExists) {
+					$query = [
+						[
+							'function' => 'query',
+							'query' => [
+								'UPDATE tabs SET group_id_max=0'
+							]
+						],
+					];
+					$tabs = $this->processQueries($query);
+					if (!$tabs) {
+						$this->setResponse(500, 'An error occurred');
+						return false;
+					}
+				} else {
+					$this->setResponse(500, 'group_id_max column does not exist');
 					return false;
 				}
+
 				break;
 			default:
 				$this->setResponse(404, 'Feature not found in reset update');
