@@ -1702,7 +1702,7 @@ class Organizr
 						return false;
 					}
 				}
-				if ($allTokens[$tokenKey]['ip'] !== $this->userIP()) {
+				if (($allTokens[$tokenKey]['ip'] !== $this->userIP()) && (!$this->isLocalOrServer())) {
 					if ($this->config['matchUserIP']) {
 						$this->setLoggerChannel('Authentication')->warning('Mismatch of user IP', ['token' => $allTokens[$tokenKey]['ip'], 'user' => $this->userIP()]);
 						$this->invalidToken($token);
