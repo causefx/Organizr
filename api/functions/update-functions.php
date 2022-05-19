@@ -13,11 +13,38 @@ trait UpdateFunctions
 		}
 	}
 
+	public function createUpdateStatusFile()
+	{
+		$file = $this->config['dbLocation'] . 'updateInProgress.txt';
+		touch($file);
+		return true;
+	}
+
+	public function removeUpdateStatusFile()
+	{
+		$file = $this->config['dbLocation'] . 'updateInProgress.txt';
+		if (file_exists($file)) {
+			@unlink($file);
+		}
+		return true;
+	}
+
+	public function hasUpdateStatusFile()
+	{
+		return file_exists($this->config['dbLocation'] . 'updateInProgress.txt');
+	}
+
 	public function dockerUpdate()
 	{
 		if (!$this->docker) {
 			$this->setResponse(409, 'Your install type is not Docker');
 			return false;
+		}
+		if ($this->hasUpdateStatusFile()) {
+			$this->setResponse(500, 'Already Update in progress');
+			return false;
+		} else {
+			$this->createUpdateStatusFile();
 		}
 		$dockerUpdate = null;
 		ini_set('max_execution_time', 0);
@@ -29,6 +56,7 @@ trait UpdateFunctions
 		} elseif (file_exists('./40-install')) {
 			$dockerUpdate = shell_exec('./40-install');
 		}
+		$this->removeUpdateStatusFile();
 		if ($dockerUpdate) {
 			$this->setAPIResponse('success', $dockerUpdate, 200);
 			return true;
@@ -44,12 +72,19 @@ trait UpdateFunctions
 			$this->setResponse(409, 'Your install type is not Windows');
 			return false;
 		}
+		if ($this->hasUpdateStatusFile()) {
+			$this->setResponse(500, 'Already Update in progress');
+			return false;
+		} else {
+			$this->createUpdateStatusFile();
+		}
 		$branch = ($this->config['branch'] == 'v2-master') ? '-m' : '-d';
 		ini_set('max_execution_time', 0);
 		set_time_limit(0);
 		$logFile = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'scripts' . DIRECTORY_SEPARATOR . 'log.txt';
 		$windowsScript = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'scripts' . DIRECTORY_SEPARATOR . 'windows-update.bat ' . $branch . ' > ' . $logFile . ' 2>&1';
 		$windowsUpdate = shell_exec($windowsScript);
+		$this->removeUpdateStatusFile();
 		if ($windowsUpdate) {
 			$this->setAPIResponse('success', $windowsUpdate, 200);
 			return true;
@@ -65,12 +100,19 @@ trait UpdateFunctions
 			$this->setResponse(409, 'Your install type is not Linux');
 			return false;
 		}
+		if ($this->hasUpdateStatusFile()) {
+			$this->setResponse(500, 'Already Update in progress');
+			return false;
+		} else {
+			$this->createUpdateStatusFile();
+		}
 		$branch = $this->config['branch'];
 		ini_set('max_execution_time', 0);
 		set_time_limit(0);
 		$logFile = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'scripts' . DIRECTORY_SEPARATOR . 'log.txt';
 		$script = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'scripts' . DIRECTORY_SEPARATOR . 'linux-update.sh ' . $branch . ' > ' . $logFile . ' 2>&1';
 		$update = shell_exec($script);
+		$this->removeUpdateStatusFile();
 		if ($update) {
 			$this->setAPIResponse('success', $update, 200);
 			return true;
