@@ -1487,8 +1487,7 @@ class Organizr
 		} else {
 			$status['action'] = 'launch';
 			if ($action) {
-				echo '<script type="text/javascript"> window.location.href="' . $this->getServerPath() . 'api/v2/organizr/error' . '";</script>';
-				die(header($this->getServerPath() . 'api/v2/organizr/error'));
+				echo '<script type="text/javascript"> window.location.href="' . $this->getServerPath() . 'api/v2/organizr/error/409' . '";</script>';
 				exit;
 			}
 		}
@@ -2400,7 +2399,7 @@ class Organizr
 				$this->settingsOption('select', 'lockoutMinAuth', ['label' => 'Lockout Groups From', 'options' => $this->groupSelect()]),
 				$this->settingsOption('select', 'lockoutMaxAuth', ['label' => 'Lockout Groups To', 'options' => $this->groupSelect()]),
 				$this->settingsOption('switch', 'matchUserAgents', ['label' => 'Match UserAgent', 'help' => 'Match Browser UserAgent to Token UserAgent - Can be very aggressive on matching']),
-				$this->settingsOption('switch', 'matchUserIP', ['label' => 'Match User IP', 'help' => 'Match User IP to Token IP']),
+				$this->settingsOption('switch', 'matchUserIP', ['label' => 'Match User IP', 'help' => 'Match User IP to Token IP - Also allows approval if user token is valid and is local to server']),
 				$this->settingsOption('switch', 'traefikAuthEnable', ['label' => 'Enable Traefik Auth Redirect', 'help' => 'This will enable the webserver to forward errors so traefik will accept them']),
 				$this->settingsOption('input', 'traefikDomainOverride', ['label' => 'Traefik Domain for Return Override', 'help' => 'Please use a FQDN on this URL Override', 'placeholder' => 'http(s)://domain']),
 				$this->settingsOption('select', 'debugAreaAuth', ['label' => 'Minimum Authentication for Debug Area', 'options' => $this->groupSelect(), 'settings' => '{}']),
