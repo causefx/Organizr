@@ -4371,6 +4371,19 @@ function windowsUpdate(){
         });
     }
 }
+function linuxUpdate(){
+	if(activeInfo.serverOS !== 'win' && !activeInfo.settings.misc.docker){
+		showUpdateBar();
+		updateUpdateBar('Starting Download','20%');
+		messageSingle(window.lang.translate('[DO NOT CLOSE WINDOW]'),window.lang.translate('Starting Update Process'),activeInfo.settings.notifications.position,'#FFF','success','60000');
+		organizrAPI2('GET','api/v2/update/linux').success(function(data) {
+			updateUpdateBar('Restarting Organizr in', '100%', true);
+			messageSingle(window.lang.translate('[DO NOT CLOSE WINDOW]'),'Update complete',activeInfo.settings.notifications.position,'#FFF','success','60000');
+		}).fail(function(xhr) {
+			OrganizrApiError(xhr, 'Update Error');
+		});
+	}
+}
 function updateNow(){
     clearAJAX();
     if(activeInfo.settings.misc.docker){
@@ -4381,6 +4394,10 @@ function updateNow(){
         windowsUpdate();
         return false;
     }
+	if(activeInfo.serverOS !== 'win' && !activeInfo.settings.misc.docker){
+		linuxUpdate();
+		return false;
+	}
 	organizrConsole('Update Function','Starting Update Process');
 	showUpdateBar();
 	updateUpdateBar('Starting Download','5%');
