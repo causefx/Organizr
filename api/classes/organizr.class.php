@@ -2600,6 +2600,7 @@ class Organizr
 				$this->settingsOption('blank'),
 				$this->settingsOption('username', 'komgaFallbackUser', ['label' => 'Komga Fallback Email', 'help' => 'DO NOT SET THIS TO YOUR ADMIN ACCOUNT. We recommend you create a local account as a "catch all" for when Organizr is unable to perform SSO.  Organizr will request a User Token based off of this user credentials']),
 				$this->settingsOption('password', 'komgaFallbackPassword', ['label' => 'Komga Fallback Password']),
+				$this->settingsOption('password', 'komgaSSOMasterPassword', ['label' => 'Komga Master Password', 'help' => 'Sets master password if using oAuth backend - This will set the password on the login form for logins using oAuth where no password is supplied.']),
 			],
 		];
 	}

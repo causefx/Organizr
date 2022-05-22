@@ -118,7 +118,20 @@ trait SSOFunctions
 	public function getKomgaToken($email, $password, $fallback = false)
 	{
 		$token = null;
+		$useMaster = false;
 		try {
+			if ($password) {
+				if ($password == '') {
+					$useMaster = true;
+				}
+			} else {
+				$useMaster = true;
+			}
+			if ($useMaster) {
+				if ($this->config['komgaSSOMasterPassword'] !== '') {
+					$password = $this->decrypt($this->config['komgaSSOMasterPassword']);
+				}
+			}
 			$credentials = array('auth' => new Requests_Auth_Digest(array($email, $password)));
 			$url = $this->qualifyURL($this->config['komgaURL']);
 			$options = $this->requestOptions($url, 60000, true, false, $credentials);

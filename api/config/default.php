@@ -87,6 +87,7 @@ return [
 	'komgaURL' => '',
 	'komgaFallbackUser' => '',
 	'komgaFallbackPassword' => '',
+	'komgaSSOMasterPassword' => '',
 	'sonarrURL' => '',
 	'sonarrUnmonitored' => false,
 	'sonarrIcon' => true,
