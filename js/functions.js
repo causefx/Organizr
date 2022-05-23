@@ -2224,7 +2224,7 @@ function buildImageManagerViewItem(array){
 			var clipboardText = v.replace(/ /g,"%20");
             var fileAndExt = filepath[(filepath.length) - 1];
             imageListing += `
-			<a class="imageManagerItem" href="javascript:void(0);" data-toggle="lightbox" data-gallery="multiimages" data-title="`+name[0]+`" data-clipboard-text="`+clipboardText+`" data-image-path="`+v+`" data-image-name="`+name[0]+`" data-image-name-ext="`+fileAndExt+`"><img data-src="`+v+`" alt="tabImage" class="all studio lazyload" /> </a>
+			<a class="imageManagerItem" href="javascript:void(0);" data-toggle="lightbox" data-gallery="multiimages" data-title="`+name[0]+`" data-clipboard-text="`+clipboardText+`" data-image-path="`+v+`" data-image-name="`+name[0]+`" data-image-name-ext="`+fileAndExt+`"><img data-toggle="tooltip" title="${name[0]}" data-placement="bottom"  data-src="`+v+`" alt="tabImage" class="all studio lazyload" /> </a>
 			`;
 		});
 	}
