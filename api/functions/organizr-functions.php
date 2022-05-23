@@ -817,7 +817,7 @@ trait OrganizrFunctions
 				$options = array_merge($options, $extras);
 			}
 		}
-		return $options;
+		return array_merge($options, array('useragent' => 'organizr/' . $this->version, 'connect_timeout' => 5));
 	}
 
 	public function showHTML(string $title = 'Organizr Alert', string $notice = '', bool $autoClose = false)
