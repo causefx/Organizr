@@ -56,9 +56,6 @@ $email = '
  					</tbody>
  				</table>
  			</div>
- 			<div style="text-align: center; font-size: 12px; color: #b2b2b5; margin-top: 20px">
- 				<p>Powered by Organizr<br></p>
- 			</div>
  		</div>
  	</div>
  </body>

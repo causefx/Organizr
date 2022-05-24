@@ -171,21 +171,6 @@ $email = '
 			</tr>
 		</tbody>
 	</table>
-	<table bgcolor="#3F4245" border="0" cellpadding="0" cellspacing="0" class="100p" style="background-color: #3f4245; min-width: 100%;" width="100%">
-		<tbody>
-			<tr>
-				<td align="center" class="container-mobile" style="padding: 60px 25px 60px 25px;" valign="top">
-					<table border="0" cellpadding="0" cellspacing="0" class="100p" style="width: 600px;" width="600">
-						<tbody>
-							<tr>
-								<td align="center" style="font-size: 14px; line-height: 20px; font-family: \'Roboto\', Helvetica, Arial, sans-serif; color: #65686a; font-weight: 400; padding-top: 30px;" valign="top">Powered By: Organizr</td>
-							</tr>
-						</tbody>
-					</table>
-				</td>
-			</tr>
-		</tbody>
-	</table>
 </body>
 </html>
 ';
