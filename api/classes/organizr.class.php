@@ -5149,6 +5149,8 @@ class Organizr
 		if (!array_key_exists('image', $array)) {
 			$this->setAPIResponse('error', 'Tab image was not supplied', 422);
 			return false;
+		} else {
+			$array['image'] = $this->sanitizeUserString($array['image']);
 		}
 		$response = [
 			array(
@@ -5196,6 +5198,9 @@ class Organizr
 			if ($array['default']) {
 				$this->clearTabDefault();
 			}
+		}
+		if (array_key_exists('image', $array)) {
+			$array['image'] = $this->sanitizeUserString($array['image']);
 		}
 		if (array_key_exists('group_id', $array)) {
 			$groupCheck = (array_key_exists('group_id_max', $array)) ? $array['group_id_max'] : $tabInfo['group_id_max'];
@@ -6782,6 +6787,7 @@ class Organizr
 				$this->setAPIResponse('error', 'Image was set but empty', 409);
 				return false;
 			}
+			$array['image'] = $this->sanitizeUserString($array['image']);
 		}
 		if (array_key_exists('default', $array)) {
 			if ($groupInfo['group_id'] == 0 || $groupInfo['group_id'] == 999) {
@@ -6868,6 +6874,7 @@ class Organizr
 				$this->setAPIResponse('error', 'Group image cannot be empty', 422);
 				return false;
 			}
+			$array['image'] = $this->sanitizeUserString($array['image']);
 		} else {
 			$this->setAPIResponse('error', 'Group image was not supplied', 422);
 			return false;
