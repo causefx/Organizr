@@ -1217,6 +1217,9 @@ function buildFormItem(item){
 	`;
 	//+tof(item.value,'c')+`
 	switch (item.type) {
+        case 'select-input':
+            return smallLabel + '<input list="'+item.name+'Options" data-changed="false" lang="en" type="text" class="form-control' + extraClass + '"' + placeholder + value + id + name + disabled + type + label + attr + ' autocomplete="new-password" /><datalist id="'+item.name+'Options">' + selectOptions(item.options, item.value) + '</datalist>';
+            break;
 		case 'input':
 		case 'text':
 			return smallLabel+'<input data-changed="false" lang="en" type="text" class="form-control'+extraClass+'"'+placeholder+value+id+name+disabled+type+label+attr+' autocomplete="new-password" />';
