@@ -1528,7 +1528,7 @@ function loadThemeMarketplace(){
             organizrCatchError(e,data);
         }
     }).fail(function(xhr) {
-        OrganizrApiError(xhr, 'Copy JSON Failed');
+        OrganizrApiError(xhr, 'loadThemeMarketplace Failed');
     });
 }
 function loadPluginMarketplace(){
@@ -1541,7 +1541,7 @@ function loadPluginMarketplace(){
 			organizrCatchError(e,data);
 		}
 	}).fail(function(xhr) {
-		OrganizrApiError(xhr, 'Copy JSON Failed');
+		OrganizrApiError(xhr, 'loadPluginMarketplace Failed');
 	});
 }
 function loadMarketplacePluginsItems(plugins){
@@ -3972,7 +3972,7 @@ function checkPluginUpdates(){
 			organizrCatchError(e,data);
 		}
 	}).fail(function(xhr) {
-		OrganizrApiError(xhr, 'News');
+		OrganizrApiError(xhr, 'Marketplace');
 	});
 }
 function checkCommitLoad(){
