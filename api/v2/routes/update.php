@@ -27,7 +27,6 @@ $app->get('/update', function ($request, $response, $args) {
 	return $response
 		->withHeader('Content-Type', 'application/json;charset=UTF-8')
 		->withStatus($GLOBALS['responseCode']);
-	
 });
 $app->get('/update/download/{branch}', function ($request, $response, $args) {
 	/**
@@ -51,7 +50,6 @@ $app->get('/update/download/{branch}', function ($request, $response, $args) {
 	return $response
 		->withHeader('Content-Type', 'application/json;charset=UTF-8')
 		->withStatus($GLOBALS['responseCode']);
-	
 });
 $app->get('/update/unzip/{branch}', function ($request, $response, $args) {
 	/**
@@ -75,7 +73,6 @@ $app->get('/update/unzip/{branch}', function ($request, $response, $args) {
 	return $response
 		->withHeader('Content-Type', 'application/json;charset=UTF-8')
 		->withStatus($GLOBALS['responseCode']);
-	
 });
 $app->get('/update/move/{branch}', function ($request, $response, $args) {
 	/**
@@ -99,7 +96,6 @@ $app->get('/update/move/{branch}', function ($request, $response, $args) {
 	return $response
 		->withHeader('Content-Type', 'application/json;charset=UTF-8')
 		->withStatus($GLOBALS['responseCode']);
-	
 });
 $app->get('/update/cleanup/{branch}', function ($request, $response, $args) {
 	/**
@@ -123,7 +119,6 @@ $app->get('/update/cleanup/{branch}', function ($request, $response, $args) {
 	return $response
 		->withHeader('Content-Type', 'application/json;charset=UTF-8')
 		->withStatus($GLOBALS['responseCode']);
-	
 });
 $app->get('/update/docker', function ($request, $response, $args) {
 	/**
@@ -147,7 +142,6 @@ $app->get('/update/docker', function ($request, $response, $args) {
 	return $response
 		->withHeader('Content-Type', 'application/json;charset=UTF-8')
 		->withStatus($GLOBALS['responseCode']);
-	
 });
 $app->get('/update/windows', function ($request, $response, $args) {
 	/**
@@ -171,7 +165,6 @@ $app->get('/update/windows', function ($request, $response, $args) {
 	return $response
 		->withHeader('Content-Type', 'application/json;charset=UTF-8')
 		->withStatus($GLOBALS['responseCode']);
-	
 });
 $app->get('/update/linux', function ($request, $response, $args) {
 	/**
@@ -195,7 +188,6 @@ $app->get('/update/linux', function ($request, $response, $args) {
 	return $response
 		->withHeader('Content-Type', 'application/json;charset=UTF-8')
 		->withStatus($GLOBALS['responseCode']);
-	
 });
 $app->get('/update/migrate/{version}', function ($request, $response, $args) {
 	/**
@@ -219,5 +211,27 @@ $app->get('/update/migrate/{version}', function ($request, $response, $args) {
 	return $response
 		->withHeader('Content-Type', 'application/json;charset=UTF-8')
 		->withStatus($GLOBALS['responseCode']);
-	
+});
+$app->get('/update/reset/{feature}', function ($request, $response, $args) {
+	/**
+	 * @OA\Get(
+	 *     security={{ "api_key":{} }},
+	 *     tags={"update"},
+	 *     path="/api/v2/update/reset/{feature}",
+	 *     summary="Reset an Organizr feature back to default values",
+	 *     @OA\Response(response="200",description="Success",@OA\JsonContent(ref="#/components/schemas/success-message")),
+	 *     @OA\Response(response="401",description="Unauthorized",@OA\JsonContent(ref="#/components/schemas/unauthorized-message")),
+	 *     @OA\Response(response="404",description="Error",@OA\JsonContent(ref="#/components/schemas/error-message")),
+	 *     @OA\Response(response="422",description="Error",@OA\JsonContent(ref="#/components/schemas/error-message")),
+	 *     @OA\Response(response="500",description="Error",@OA\JsonContent(ref="#/components/schemas/error-message")),
+	 * )
+	 */
+	$Organizr = ($request->getAttribute('Organizr')) ?? new Organizr();
+	if ($Organizr->qualifyRequest(1, true)) {
+		$Organizr->resetUpdateFeature($args['feature']);
+	}
+	$response->getBody()->write(jsonE($GLOBALS['api']));
+	return $response
+		->withHeader('Content-Type', 'application/json;charset=UTF-8')
+		->withStatus($GLOBALS['responseCode']);
 });

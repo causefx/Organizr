@@ -199,8 +199,8 @@ function getDebugPreInfo(){
         '<br/>Install Type: ' + ((activeInfo.settings.misc.docker) ? 'Official Docker' : 'Native') +
         '<br/>Auth Type: ' + activeInfo.settings.misc.authType +
         '<br/>Auth Backend: ' + activeInfo.settings.misc.authBackend +
-        '<br/>Installed Plugins: ' + activeInfo.settings.misc.installedPlugins +
-        '<br/>Installed Themes: ' + activeInfo.settings.misc.installedThemes +
+        '<br/>Installed Plugins: ' + formatDebug(activeInfo.settings.misc.installedPlugins) +
+        '<br/>Installed Themes: ' + formatDebug(activeInfo.settings.misc.installedThemes) +
         '<br/>Theme: ' + activeInfo.theme +
         '<br/>Local: ' + activeInfo.settings.user.local +
         '<br/>oAuth: ' + activeInfo.settings.user.oAuthLogin +
@@ -426,11 +426,11 @@ function getDefault(id){
             return false;
         }
     }
-    if(getHash() === false){
-        if(tabInfo.name !== null && tabInfo.type !== null){
+    if(getHash() === false || (getHash() === 'OrganizrLogin' && activeInfo.user.loggedin)){
+        if(tabInfo){
             switchTab(id);
         } else {
-            $('#side-menu').children().first().children().click()
+	        $('.allTabsList').first().children().click();
         }
     }else if(getHash() == 'OrganizrLogin'){
         loadNextTab(true);
@@ -1217,6 +1217,9 @@ function buildFormItem(item){
 	`;
 	//+tof(item.value,'c')+`
 	switch (item.type) {
+        case 'select-input':
+            return smallLabel + '<input list="'+item.name+'Options" data-changed="false" lang="en" type="text" class="form-control' + extraClass + '"' + placeholder + value + id + name + disabled + type + label + attr + ' autocomplete="new-password" /><datalist id="'+item.name+'Options">' + selectOptions(item.options, item.value) + '</datalist>';
+            break;
 		case 'input':
 		case 'text':
 			return smallLabel+'<input data-changed="false" lang="en" type="text" class="form-control'+extraClass+'"'+placeholder+value+id+name+disabled+type+label+attr+' autocomplete="new-password" />';
@@ -1320,7 +1323,7 @@ function buildPluginsItem(array, type = 'enabled'){
 			var settings = '';
 		}
 		var plugin = `
-		<div class="col-lg-2 col-md-2 col-sm-4 col-xs-4">
+		<div class="col-lg-2 col-md-2 col-sm-6 col-xs-6 m-b-10">
 			<div class="white-box m-0">
 				<div class="el-card-item p-0">
 					<div class="el-card-avatar el-overlay-1 m-0"> <img class="lazyload" data-src="`+v.image+`">
@@ -1528,7 +1531,7 @@ function loadThemeMarketplace(){
             organizrCatchError(e,data);
         }
     }).fail(function(xhr) {
-        OrganizrApiError(xhr, 'Copy JSON Failed');
+        OrganizrApiError(xhr, 'loadThemeMarketplace Failed');
     });
 }
 function loadPluginMarketplace(){
@@ -1541,7 +1544,7 @@ function loadPluginMarketplace(){
 			organizrCatchError(e,data);
 		}
 	}).fail(function(xhr) {
-		OrganizrApiError(xhr, 'Copy JSON Failed');
+		OrganizrApiError(xhr, 'loadPluginMarketplace Failed');
 	});
 }
 function loadMarketplacePluginsItems(plugins){
@@ -2224,7 +2227,7 @@ function buildImageManagerViewItem(array){
 			var clipboardText = v.replace(/ /g,"%20");
             var fileAndExt = filepath[(filepath.length) - 1];
             imageListing += `
-			<a class="imageManagerItem" href="javascript:void(0);" data-toggle="lightbox" data-gallery="multiimages" data-title="`+name[0]+`" data-clipboard-text="`+clipboardText+`" data-image-path="`+v+`" data-image-name="`+name[0]+`" data-image-name-ext="`+fileAndExt+`"><img data-src="`+v+`" alt="tabImage" class="all studio lazyload" /> </a>
+			<a class="imageManagerItem" href="javascript:void(0);" data-toggle="lightbox" data-gallery="multiimages" data-title="`+name[0]+`" data-clipboard-text="`+clipboardText+`" data-image-path="`+v+`" data-image-name="`+name[0]+`" data-image-name-ext="`+fileAndExt+`"><img data-toggle="tooltip" title="${name[0]}" data-placement="bottom"  data-src="`+v+`" alt="tabImage" class="all studio lazyload" /> </a>
 			`;
 		});
 	}
@@ -2747,38 +2750,18 @@ function buildActiveTokens(array) {
     $.each(array, function(i,v) {
         parser.setUA(v.browser);
         var result = parser.getResult();
-        var className = (activeInfo.user.token == v.token) ? 'bg-success text-inverse' : '';
-        var extraText = (activeInfo.user.token == v.token) ? '<span class="tooltip-info" data-toggle="tooltip" data-placement="right" title="" data-original-title="Current Token">...'+v.token.substr(-10, 10)+'</span>' : v.token.substr(-10, 10);
-        tokens += `
+        var className = (activeInfo.user.token === v.token) ? 'bg-success text-inverse' : '';
+        var extraText = (activeInfo.user.token === v.token) ? '<span class="tooltip-info" data-toggle="tooltip" data-placement="right" title="" data-original-title="Current Token">...'+v.token.substr(-10, 10)+'</span>' : v.token.substr(-10, 10);
+	    v.created = v.created.indexOf('Z') !== -1 ? v.created : v.created + 'Z';
+	    v.expires = v.expires.indexOf('Z') !== -1 ? v.expires : v.expires + 'Z';
+
+
+	    tokens += `
             <tr id="token-`+v.id+`" class="`+className+`">
                 <td>`+v.id+`</td>
                 <td>`+extraText+`</td>
                 <td>`+moment(v.created).format('LLL')+`</td>
                 <td>`+moment(v.expires).format('LLL')+`</td>
-                <td><a data-toggle="collapse" href="#token-`+v.id+`-info" aria-expanded="false" href="javascript:void(0)">`+(result.browser.name)+`</a>
-                    <div id="token-`+v.id+`-info" class="table-responsive collapse">
-                        <table class="table color-bordered-table purple-bordered-table">
-                            <tbody class="bg-org">
-                                <tr>
-                                    <td>Browser</td>
-                                    <td>`+result.browser.name+`</td>
-                                </tr>
-                                <tr>
-                                    <td>Version</td>
-                                    <td>`+result.browser.version+`</td>
-                                </tr>
-                                <tr>
-                                    <td>OS</td>
-                                    <td>`+result.os.name+`</td>
-                                </tr>
-                                <tr>
-                                    <td>Version</td>
-                                    <td>`+result.os.version+`</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-</td>
                 <td>`+(v.ip)+`</td>
                 <td>
                     <button class="btn btn-danger waves-effect waves-light" type="button" onclick="revokeToken('`+v.id+`');"><i class="fa fa-ban"></i></button>
@@ -2802,7 +2785,6 @@ function buildActiveTokens(array) {
                                         <th lang="en">Token</th>
                                         <th lang="en">Created</th>
                                         <th lang="en">Expires</th>
-                                        <th lang="en">Browser</th>
                                         <th lang="en">IP</th>
                                         <th lang="en">Action</th>
                                     </tr>
@@ -3321,9 +3303,10 @@ function buildUserGroupSelect(array, userID, groupID){
 	});
 	return '<td><select name="userGroupSelect" class="form-control userGroupSelect" '+disabled+'>'+groupSelect+'</select></td>';
 }
-function buildTabGroupSelect(array, tabID, groupID){
+function buildTabGroupSelect(array, tabID, groupID, type){
 	var groupSelect = '';
 	var selected = '';
+	let name = (type == 'tabGroupSelectMax') ? 'group_id_max' : 'group_id';
 	$.each(array, function(i,v) {
 		selected = '';
 		if(v.group_id == groupID){
@@ -3331,7 +3314,7 @@ function buildTabGroupSelect(array, tabID, groupID){
 		}
 		groupSelect += '<option '+selected+' value="'+v.group_id+'">'+v.group+'</option>';
 	});
-	return '<td><select name="tab['+tabID+'].group_id" class="form-control tabGroupSelect">'+groupSelect+'</select></td>';
+	return '<td><select name="tab['+tabID+'].'+name+'" class="form-control '+type+'">'+groupSelect+'</select></td>';
 }
 function buildTabTypeSelect(tabID, typeID, disabled){
 	var array = [
@@ -3510,7 +3493,8 @@ function buildTabEditorItem(array){
 			</td>
 			<td><span class="tooltip-info" data-toggle="tooltip" data-placement="right" title="" data-original-title="`+v.url+`">`+v.name+`</span><span id="checkTabHomepageItem-`+v.id+`" data-url="`+v.url+`" data-url-local="`+v.url_local+`" data-name="`+v.name+`" class="checkTabHomepageItem mouse label label-rouded label-inverse pull-right"></span></td>
 			`+buildTabCategorySelect(array.categories,v.id, v.category_id)+`
-			`+buildTabGroupSelect(array.groups,v.id, v.group_id)+`
+			`+buildTabGroupSelect(array.groups,v.id, v.group_id, 'tabGroupSelectMin')+`
+			`+buildTabGroupSelect(array.groups,v.id, v.group_id_max, 'tabGroupSelectMax')+`
 			`+buildTabTypeSelect(v.id, v.type, typeDisabled)+`
 			<td style="text-align:center"><div class="radio radio-purple"><input onclick="radioLoop(this);" type="radio" class="defaultSwitch" id="tab[`+v.id+`].default" name="tab[`+v.id+`].default" value="true" `+tof(v.default,'c')+`><label for="tab[`+v.id+`].default"></label></div></td>
 
@@ -3518,6 +3502,7 @@ function buildTabEditorItem(array){
 			<td style="text-align:center"><input type="checkbox" class="js-switch splashSwitch" data-size="small" data-color="#99d683" data-secondary-color="#f96262" name="tab[`+v.id+`].splash" value="true" `+tof(v.splash,'c')+`/><input type="hidden" class="form-control" name="tab[`+v.id+`].splash" value="false"></td>
 			<td style="text-align:center"><input type="checkbox" class="js-switch pingSwitch" data-size="small" data-color="#99d683" data-secondary-color="#f96262" name="tab[`+v.id+`].ping" value="true" `+tof(v.ping,'c')+`/><input type="hidden" class="form-control" name="tab[`+v.id+`].ping" value="false"></td>
 			<td style="text-align:center"><input type="checkbox" class="js-switch preloadSwitch" data-size="small" data-color="#99d683" data-secondary-color="#f96262" name="tab[`+v.id+`].preload" value="true" `+tof(v.preload,'c')+`/><input type="hidden" class="form-control" name="tab[`+v.id+`].preload" value="false"></td>
+			<td style="text-align:center"><input type="checkbox" class="js-switch addToAdminSwitch" data-size="small" data-color="#99d683" data-secondary-color="#f96262" name="tab[`+v.id+`].add_to_admin" value="true" `+tof(v.add_to_admin,'c')+`/><input type="hidden" class="form-control" name="tab[`+v.id+`].add_to_admin" value="false"></td>
 			<td style="text-align:center"><button type="button" class="btn btn-info btn-outline btn-circle btn-lg m-r-5 editTabButton popup-with-form" onclick="editTabForm('`+v.id+`')" href="#edit-tab-form" data-effect="mfp-3d-unfold"><i class="ti-pencil-alt"></i></button></td>
 			<td style="text-align:center"><button type="button" class="btn btn-danger btn-outline btn-circle btn-lg m-r-5 `+deleteDisabled+`"><i class="ti-trash"></i></button></td>
 		</tr>
@@ -3990,7 +3975,7 @@ function checkPluginUpdates(){
 			organizrCatchError(e,data);
 		}
 	}).fail(function(xhr) {
-		OrganizrApiError(xhr, 'News');
+		OrganizrApiError(xhr, 'Marketplace');
 	});
 }
 function checkCommitLoad(){
@@ -4389,6 +4374,19 @@ function windowsUpdate(){
         });
     }
 }
+function linuxUpdate(){
+	if(activeInfo.serverOS !== 'win' && !activeInfo.settings.misc.docker){
+		showUpdateBar();
+		updateUpdateBar('Starting Download','20%');
+		messageSingle(window.lang.translate('[DO NOT CLOSE WINDOW]'),window.lang.translate('Starting Update Process'),activeInfo.settings.notifications.position,'#FFF','success','60000');
+		organizrAPI2('GET','api/v2/update/linux').success(function(data) {
+			updateUpdateBar('Restarting Organizr in', '100%', true);
+			messageSingle(window.lang.translate('[DO NOT CLOSE WINDOW]'),'Update complete',activeInfo.settings.notifications.position,'#FFF','success','60000');
+		}).fail(function(xhr) {
+			OrganizrApiError(xhr, 'Update Error');
+		});
+	}
+}
 function updateNow(){
     clearAJAX();
     if(activeInfo.settings.misc.docker){
@@ -4399,6 +4397,10 @@ function updateNow(){
         windowsUpdate();
         return false;
     }
+	if(activeInfo.serverOS !== 'win' && !activeInfo.settings.misc.docker){
+		linuxUpdate();
+		return false;
+	}
 	organizrConsole('Update Function','Starting Update Process');
 	showUpdateBar();
 	updateUpdateBar('Starting Download','5%');
@@ -5145,7 +5147,6 @@ function randomCSV(values){
 }
 function loadCustomJava(appearance){
     if(appearance.customThemeJava !== ''){
-        console.log(appearance.customThemeJava)
         $('#custom-theme-javascript').html(appearance.customThemeJava);
     }
     if(appearance.customJava !== ''){
@@ -10507,7 +10508,13 @@ function messagePositions(){
     };
 }
 function message(heading,text,position,color,icon,timeout, single = false){
-    var bb = (typeof activeInfo !== 'undefined') ? activeInfo.settings.notifications.backbone : 'izi';
+	let bb = (typeof activeInfo !== 'undefined') ? activeInfo.settings.notifications.backbone : 'izi';
+	let activePosition = (typeof activeInfo !== 'undefined') ? activeInfo.settings.notifications.position : 'bc';
+	position = (typeof position !== 'undefined') ? position : activePosition;
+	text = (typeof text !== 'undefined') ? text : '';
+	color = (typeof color !== 'undefined') ? color : '#FFF';
+	icon = (typeof icon !== 'undefined') ? icon : 'info';
+	timeout = (typeof timeout !== 'undefined') ? timeout : 10000;
     switch (bb) {
         case 'toastr':
 
@@ -10722,6 +10729,12 @@ function message(heading,text,position,color,icon,timeout, single = false){
 
 }
 function messageSingle(heading,text,position,color,icon,timeout){
+	let activePosition = (typeof activeInfo !== 'undefined') ? activeInfo.settings.notifications.position : 'bc';
+	position = (typeof position !== 'undefined') ? position : activePosition;
+	text = (typeof text !== 'undefined') ? text : '';
+	color = (typeof color !== 'undefined') ? color : '#FFF';
+	icon = (typeof icon !== 'undefined') ? icon : 'info';
+	timeout = (typeof timeout !== 'undefined') ? timeout : 10000;
 	message(heading,text,position,color,icon,timeout, true);
 }
 

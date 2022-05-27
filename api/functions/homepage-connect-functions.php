@@ -8,8 +8,8 @@ trait HomepageConnectFunctions
 		$list = array();
 		$urlList = explode(',', $url);
 		$tokenList = explode(',', $token);
-		if (count($urlList) == count($tokenList)) {
-			foreach ($urlList as $key => $value) {
+		foreach ($urlList as $key => $value) {
+			if (isset($tokenList[$key])) {
 				$list[$key] = array(
 					'url' => $this->qualifyURL($value),
 					'token' => $tokenList[$key]
@@ -76,14 +76,14 @@ trait HomepageConnectFunctions
 						break;
 				}
 				if ($response->success) {
-					$this->writeLog('success', 'OMBI Connect Function - Ran User Import', 'SYSTEM');
+					$this->setLoggerChannel('Ombi')->info('Ran User Import');
 					return true;
 				} else {
-					$this->writeLog('error', 'OMBI Connect Function - Error: Connection Unsuccessful', 'SYSTEM');
+					$this->setLoggerChannel('Ombi')->warning('Unsuccessful connection');
 					return false;
 				}
 			} catch (Requests_Exception $e) {
-				$this->writeLog('error', 'OMBI Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
+				$this->setLoggerChannel('Ombi')->error($e);
 				return false;
 			}
 		}

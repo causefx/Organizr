@@ -71,7 +71,7 @@ trait NZBGetHomepageItem
 				return false;
 			}
 		} catch (Requests_Exception $e) {
-			$this->writeLog('error', 'NZBGet Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
+			$this->setLoggerChannel('NZBGet')->error($e);
 			$this->setResponse(500, $e->getMessage());
 			return false;
 		}
@@ -140,7 +140,7 @@ trait NZBGetHomepageItem
 			$this->setAPIResponse('success', null, 200, $api);
 			return $api;
 		} catch (Requests_Exception $e) {
-			$this->writeLog('error', 'NZBGet Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
+			$this->setLoggerChannel('NZBGet')->error($e);
 			$this->setResponse(500, $e->getMessage());
 			return false;
 		}

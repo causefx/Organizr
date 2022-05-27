@@ -201,6 +201,11 @@ trait NormalFunctions
 		}
 	}
 
+	public function getallheadersi()
+	{
+		return array_change_key_case($this->getallheaders(), CASE_LOWER);
+	}
+
 	public function random_ascii_string($length)
 	{
 		$characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
@@ -503,10 +508,16 @@ trait NormalFunctions
 
 	public function convertIPToRange($ip)
 	{
+		$ip = trim($ip);
 		if (strpos($ip, '/') !== false) {
 			$explodeIP = explode('/', $ip);
 			$prefix = $explodeIP[1];
 			$start_ip = $explodeIP[0];
+			$explodeStart = explode('.', $start_ip);
+			if (count($explodeStart) == 4) {
+				$explodeStart[3] = $prefix == 32 ? $explodeStart[3] : 0;
+				$start_ip = implode('.', $explodeStart);
+			}
 			$ip_count = 1 << (32 - $prefix);
 			$start_ip_long = long2ip(ip2long($start_ip));
 			$last_ip_long = long2ip(ip2long($start_ip) + $ip_count - 1);
@@ -522,26 +533,40 @@ trait NormalFunctions
 		];
 	}
 
+	public function convertIPStringToRange($string = null)
+	{
+		$ips = [];
+		if ($string) {
+			$ipListing = explode(',', $string);
+			if (count($ipListing) > 0) {
+				foreach ($ipListing as $ip) {
+					$ips[] = $this->convertIPToRange($ip);
+				}
+			}
+		}
+		return $ips;
+	}
+
 	public function localIPRanges()
 	{
-		$mainArray = array(
-			array(
+		$mainArray = [
+			[
 				'from' => '10.0.0.0',
 				'to' => '10.255.255.255'
-			),
-			array(
+			],
+			[
 				'from' => '172.16.0.0',
 				'to' => '172.31.255.255'
-			),
-			array(
+			],
+			[
 				'from' => '192.168.0.0',
 				'to' => '192.168.255.255'
-			),
-			array(
+			],
+			[
 				'from' => '127.0.0.1',
 				'to' => '127.255.255.255'
-			),
-		);
+			],
+		];
 		if (isset($this->config['localIPList'])) {
 			if ($this->config['localIPList'] !== '') {
 				$ipListing = explode(',', $this->config['localIPList']);

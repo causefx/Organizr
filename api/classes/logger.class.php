@@ -1,12 +1,17 @@
 <?php
 
+use Monolog\Handler\SlackWebhookHandler;
 use Nekonomokochan\PhpJsonLogger\Logger;
 use Nekonomokochan\PhpJsonLogger\LoggerBuilder;
 
 class OrganizrLogger extends LoggerBuilder
 {
 	public $isReady;
-	
+	/**
+	 * @var SlackWEbhookHandler
+	 */
+	private $slackWebhookHandler;
+
 	/**
 	 * @return boolean
 	 */
@@ -14,7 +19,7 @@ class OrganizrLogger extends LoggerBuilder
 	{
 		return $this->isReady;
 	}
-	
+
 	/**
 	 * @param boolean $readyStatus
 	 */
@@ -22,7 +27,7 @@ class OrganizrLogger extends LoggerBuilder
 	{
 		$this->isReady = $readyStatus;
 	}
-	
+
 	public function build(): Logger
 	{
 		if (!$this->isReady) {
@@ -31,5 +36,21 @@ class OrganizrLogger extends LoggerBuilder
 			$this->setMaxFiles(1);
 		}
 		return new Logger($this);
+	}
+
+	/**
+	 * @return SlackWebhookHandler
+	 */
+	public function getSlackWebhookHandler(): ?SlackWebhookHandler
+	{
+		return $this->slackWebhookHandler;
+	}
+
+	/**
+	 * @param SlackWebhookHandler $slackWebhookHandler
+	 */
+	public function setSlackWebhookHandler(SlackWebhookHandler $slackWebhookHandler)
+	{
+		$this->slackWebhookHandler = $slackWebhookHandler;
 	}
 }

@@ -150,14 +150,14 @@ trait OrganizrFunctions
 				$url = $this->config['embyURL'] . '/emby/Users/' . $userID . '/Connect/Link';
 				Requests::Post($url, $headers, json_encode($data), array());
 			} catch (Requests_Exception $e) {
-				$this->writeLog('error', 'Emby Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
+				$this->setLoggerChannel('Emby')->error($e);
 				$this->setResponse(500, $e->getMessage());
 				return false;
 			}
 			$this->setAPIResponse('success', 'User has joined Emby', 200);
 			return true;
 		} catch (Requests_Exception $e) {
-			$this->writeLog('error', 'Emby create Function - Error: ' . $e->getMessage(), 'SYSTEM');
+			$this->setLoggerChannel('Emby')->error($e);
 			$this->setResponse(500, $e->getMessage());
 			return false;
 		}
@@ -175,8 +175,6 @@ trait OrganizrFunctions
 		$response = Requests::Get($url, $headers, array());
 		$response = $response->body;
 		$response = json_decode($response, true);
-		//error_Log("response ".json_encode($response));
-		$this->writeLog('error', 'userList:' . json_encode($response), 'SYSTEM');
 		//$correct stores the template users object
 		$correct = null;
 		foreach ($response as $element) {
@@ -184,14 +182,12 @@ trait OrganizrFunctions
 				$correct = $element;
 			}
 		}
-		$this->writeLog('error', 'Correct user:' . json_encode($correct), 'SYSTEM');
 		if ($correct == null) {
 			//return empty JSON if user incorrectly configured template
 			return "{}";
 		}
 		//select policy section and remove possibly dangerous rows.
 		$policy = $correct['Policy'];
-		//writeLog('error', 'policy update'.$policy, 'SYSTEM');
 		unset($policy['AuthenticationProviderId']);
 		unset($policy['InvalidLoginAttemptCount']);
 		unset($policy['DisablePremiumFeatures']);
@@ -754,12 +750,12 @@ trait OrganizrFunctions
 				$options = $this->requestOptions($url, 60000, true, false);
 				$response = Requests::post($url . '/api/v1/users/logout', ['X-Auth-Token' => $_COOKIE['komga_token']], $options);
 				if ($response->success) {
-					$this->writeLog('success', 'Komga Token Function - Logged User out', 'SYSTEM');
+					$this->setLoggerChannel('Komga')->info('Logged User out');
 				} else {
-					$this->writeLog('error', 'Komga Token Function - Unable to Logged User out', 'SYSTEM');
+					$this->setLoggerChannel('Komga')->warning('Unable to Logged User out');
 				}
 			} catch (Requests_Exception $e) {
-				$this->writeLog('error', 'Komga Token Function - Error: ' . $e->getMessage(), 'SYSTEM');
+				$this->setLoggerChannel('Komga')->error($e);
 			}
 			$this->coookie('delete', 'komga_token');
 		}
@@ -821,7 +817,7 @@ trait OrganizrFunctions
 				$options = array_merge($options, $extras);
 			}
 		}
-		return $options;
+		return array_merge($options, array('useragent' => 'organizr/' . $this->version, 'connect_timeout' => 5));
 	}
 
 	public function showHTML(string $title = 'Organizr Alert', string $notice = '', bool $autoClose = false)
@@ -832,9 +828,9 @@ trait OrganizrFunctions
 			'<!DOCTYPE html>
 			<html lang="en">
 			<head>
-				<link rel="stylesheet" href="' . $this->getServerPath() . '/css/mvp.css">
+				<style>' . file_get_contents($this->root . DIRECTORY_SEPARATOR . 'css' . DIRECTORY_SEPARATOR . 'mvp.css') . '</style>
 				<meta charset="utf-8">
-				<meta name="description" content="Trakt OAuth">
+				<meta name="description" content="' . $title . '">
 				<meta name="viewport" content="width=device-width, initial-scale=1.0">
 				<title>' . $title . '</title>
 			</head>
@@ -847,11 +843,11 @@ trait OrganizrFunctions
 			<body ' . $close . '>
 				<main>
 					<section>
-						<aside>
+						<div>
 							<h3>' . $title . '</h3>
 							<p>' . $notice . '</p>
 							' . $closeMessage . '
-						</aside>
+						</div>
 					</section>
 				</main>
 			</body>
@@ -884,5 +880,23 @@ trait OrganizrFunctions
 	public function isJSON($string)
 	{
 		return is_string($string) && is_array(json_decode($string, true)) && (json_last_error() == JSON_ERROR_NONE);
+	}
+
+	public function isXML($string)
+	{
+		libxml_use_internal_errors(true);
+		return (bool)simplexml_load_string($string);
+	}
+
+	public function testAndFormatString($string)
+	{
+		if ($this->isJSON($string)) {
+			return ['type' => 'json', 'data' => json_decode($string, true)];
+		} elseif ($this->isXML($string)) {
+			libxml_use_internal_errors(true);
+			return ['type' => 'xml', 'data' => simplexml_load_string($string)];
+		} else {
+			return ['type' => 'string', 'data' => $string];
+		}
 	}
 }

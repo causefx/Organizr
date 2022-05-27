@@ -79,10 +79,10 @@ trait JDownloaderHomepageItem
 				return false;
 			}
 		} catch (Requests_Exception $e) {
-			$this->writeLog('error', 'JDownloader Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
+			$this->setLoggerChannel('JDownloader')->error($e);
 			$this->setResponse(500, $e->getMessage());
 			return false;
-		};
+		}
 	}
 
 	public function jDownloaderHomepagePermissions($key = null)
@@ -157,7 +157,7 @@ trait JDownloaderHomepageItem
 				$api['content']['$status'] = array($temp['downloader_state'], $temp['grabber_collecting'], $temp['update_ready']);
 			}
 		} catch (Requests_Exception $e) {
-			$this->writeLog('error', 'JDownloader Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
+			$this->setLoggerChannel('JDownloader')->error($e);
 			$this->setResponse(500, $e->getMessage());
 			return false;
 		};

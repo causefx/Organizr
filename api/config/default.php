@@ -87,6 +87,7 @@ return [
 	'komgaURL' => '',
 	'komgaFallbackUser' => '',
 	'komgaFallbackPassword' => '',
+	'komgaSSOMasterPassword' => '',
 	'sonarrURL' => '',
 	'sonarrUnmonitored' => false,
 	'sonarrIcon' => true,
@@ -659,5 +660,14 @@ return [
 	'checkForThemeUpdate' => true,
 	'autoUpdateCronEnabled' => false,
 	'autoUpdateCronSchedule' => '@weekly',
-	'useRandomMediaImage' => false
+	'autoBackupCronEnabled' => false,
+	'autoBackupCronSchedule' => '@weekly',
+	'keepBackupsCountCron' => '20',
+	'useRandomMediaImage' => false,
+	'sendLogsToSlack' => false,
+	'slackLogLevel' => 'WARNING',
+	'slackLogWebhook' => '',
+	'slackLogWebHookChannel' => '',
+	'matchUserAgents' => false,
+	'matchUserIP' => false
 ];

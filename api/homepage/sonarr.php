@@ -105,7 +105,7 @@ trait SonarrHomepageItem
 				$failed = true;
 				$ip = $value['url'];
 				$errors .= $ip . ': ' . $e->getMessage();
-				$this->writeLog('error', 'Sonarr Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
+				$this->setLoggerChannel('Sonarr')->error($e);
 			}
 		}
 		if ($failed) {
@@ -192,7 +192,7 @@ trait SonarrHomepageItem
 					$queueItems = array_merge($queueItems, $queue);
 				}
 			} catch (Exception $e) {
-				$this->writeLog('error', 'Sonarr Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
+				$this->setLoggerChannel('Sonarr')->error($e);
 			}
 		}
 		$api['content']['queueItems'] = $queueItems;
@@ -226,7 +226,7 @@ trait SonarrHomepageItem
 					$sonarrCalendar = '';
 				}
 			} catch (Exception $e) {
-				$this->writeLog('error', 'Sonarr Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
+				$this->setLoggerChannel('Sonarr')->error($e);
 			}
 			if (!empty($sonarrCalendar)) {
 				$calendarItems = array_merge($calendarItems, $sonarrCalendar);

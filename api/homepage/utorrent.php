@@ -78,7 +78,7 @@ trait uTorrentHomepageItem
 
 			$response = $this->getuTorrentToken();
 		} catch (Requests_Exception $e) {
-			$this->writeLog('error', 'uTorrent Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
+			$this->setLoggerChannel('uTorrent')->error($e);
 			$this->setResponse(500, $e->getMessage());
 			return false;
 		}
@@ -134,7 +134,7 @@ trait uTorrentHomepageItem
 				$this->updateConfigItems($uTorrentConfig);
 			}
 		} catch (Requests_Exception $e) {
-			$this->writeLog('error', 'uTorrent Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
+			$this->setLoggerChannel('uTorrent')->error($e);
 			$this->setResponse(500, $e->getMessage());
 			return false;
 		}
@@ -163,7 +163,7 @@ trait uTorrentHomepageItem
 			$response = Requests::get($url, $headers, $options);
 			$httpResponse = $response->status_code;
 			if ($httpResponse == 400) {
-				$this->writeLog('warn', 'uTorrent Token or Cookie Expired. Generating new session..', 'SYSTEM');
+				$this->setLoggerChannel('uTorrent')->warning('Token or Cookie Expired. Generating new session...');
 				$this->getuTorrentToken();
 				$response = Requests::get($url, $headers, $options);
 				$httpResponse = $response->status_code;
@@ -223,7 +223,7 @@ trait uTorrentHomepageItem
 				return $api;
 			}
 		} catch (Requests_Exception $e) {
-			$this->writeLog('error', 'uTorrent Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
+			$this->setLoggerChannel('uTorrent')->error($e);
 			$this->setResponse(500, $e->getMessage());
 			return false;
 		}

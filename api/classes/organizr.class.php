@@ -65,10 +65,10 @@ class Organizr
 
 	// ===================================
 	// Organizr Version
-	public $version = '2.1.1890';
+	public $version = '2.1.2320';
 	// ===================================
 	// Quick php Version check
-	public $minimumPHP = '7.3';
+	public $minimumPHP = '7.4';
 	// ===================================
 	protected $db;
 	protected $otherDb;
@@ -83,10 +83,7 @@ class Organizr
 	public $commit;
 	public $fileHash;
 	public $cookieName;
-	public $log;
-	public $logger;
-	public $organizrLog;
-	public $organizrLoginLog;
+	public $logFile;
 	public $timeExecution;
 	public $root;
 	public $paths;
@@ -94,10 +91,44 @@ class Organizr
 	public $groupOptions;
 	public $warnings;
 	public $errors;
+	public bool $loggerSetup = false;
+	public \Nekonomokochan\PhpJsonLogger\Logger $logger;
 
 	public function __construct($updating = false)
 	{
+		// Constructed from Updater?
+		$this->updating = $updating;
+		// Set Project Root directory and paths
+		$this->root = dirname(__DIR__, 2);
+		$this->paths = [
+			'Root Folder' => $this->root . DIRECTORY_SEPARATOR,
+			'Cache Folder' => $this->root . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR . 'cache' . DIRECTORY_SEPARATOR,
+			'Tab Folder' => $this->root . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR . 'userTabs' . DIRECTORY_SEPARATOR,
+			'API Folder' => dirname(__DIR__, 1) . DIRECTORY_SEPARATOR
+		];
+		// Temp Set Errors
 		$this->errors = E_ALL;//E_ALL & ~E_NOTICE
+		// Set current time
+		$this->currentTime = gmdate('Y-m-d\TH:i:s\Z');
+		// Set variable if install is for official docker
+		$this->docker = (file_exists(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'Docker.txt'));
+		// Set variable if install is for develop and set php Error levels
+		$this->dev = (file_exists(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'Dev.txt'));
+		// Set variable if install is for demo
+		$this->demo = (file_exists(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'Demo.txt'));
+		// Set variable if install has commit hash and variable to be used as hash for files
+		$this->commit = ($this->docker && !$this->dev) ? file_get_contents(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'Github.txt') : null;
+		$this->fileHash = ($this->commit) ?? $this->version;
+		$this->fileHash = trim($this->fileHash);
+		// Set location path to user config path
+		$this->chooseConfigFile();
+		// Set location path to default config path
+		$this->defaultConfigPath = dirname(__DIR__, 1) . DIRECTORY_SEPARATOR . 'config' . DIRECTORY_SEPARATOR . 'default.php';
+		// Load Config file
+		$this->config = $this->config();
+		// Set cookie name for Organizr Instance
+		$this->cookieName = ($this->hasConfig()) ? $this->config['uuid'] !== '' ? 'organizr_token_' . $this->config['uuid'] : 'organizr_token_temp' : 'organizr_token_temp';
+
 		// Set custom Error handler
 		set_error_handler([$this, 'setAPIErrorResponse'], $this->errors);
 		// Next Check PHP Version
@@ -106,54 +137,26 @@ class Organizr
 		$this->checkDiskSpace();
 		// Set UUID for device
 		$this->setDeviceUUID();
-		// Constructed from Updater?
-		$this->updating = $updating;
-		// Set Project Root directory
-		$this->root = dirname(__DIR__, 2);
+		// Add Plugin prefix to plugin global
+		$this->setPluginListNameFromConfigPrefix();
+		// Add database path to paths
+		$this->addDatabaseToPaths();
 		// Set Start Execution Time
 		$this->timeExecution = $this->timeExecution();
-		// Set location path to user config path
-		$this->chooseConfigFile();
-		//$this->userConfigPath = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR . 'config' . DIRECTORY_SEPARATOR . 'config.php';
-		// Set location path to default config path
-		$this->defaultConfigPath = dirname(__DIR__, 1) . DIRECTORY_SEPARATOR . 'config' . DIRECTORY_SEPARATOR . 'default.php';
-		// Set current time
-		$this->currentTime = gmdate("Y-m-d\TH:i:s\Z");
-		// Set variable if install is for official docker
-		$this->docker = (file_exists(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'Docker.txt'));
-		// Set variable if install is for develop and set php Error levels
-		$this->dev = (file_exists(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'Dev.txt'));
+
+
 		$this->phpErrors();
-		// Set variable if install is for demo
-		$this->demo = (file_exists(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'Demo.txt'));
-		// Set variable if install has commit hash
-		$this->commit = ($this->docker && !$this->dev) ? file_get_contents(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'Github.txt') : null;
-		// Set variable to be used as hash for files
-		$this->fileHash = ($this->commit) ?? $this->version;
-		$this->fileHash = trim($this->fileHash);
-		// Load Config file
-		$this->config = $this->config();
+
+
 		// Set organizr Logs and logger
-		$this->log = $this->setOrganizrLog();
+		$this->logFile = $this->setOrganizrLog();
 		$this->setLoggerChannel();
-		// Set organizr Log file location - will deprecate soon
-		$this->organizrLog = ($this->hasDB()) ? $this->config['dbLocation'] . 'organizrLog.json' : false;
-		// Set organizr Login Log file location - will deprecate soon
-		$this->organizrLoginLog = ($this->hasDB()) ? $this->config['dbLocation'] . 'organizrLoginLog.json' : false;
-		// Set Paths
-		$this->paths = array(
-			'Root Folder' => dirname(__DIR__, 2) . DIRECTORY_SEPARATOR,
-			'Cache Folder' => dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR . 'cache' . DIRECTORY_SEPARATOR,
-			'Tab Folder' => $this->root . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR . 'userTabs' . DIRECTORY_SEPARATOR,
-			'API Folder' => dirname(__DIR__, 1) . DIRECTORY_SEPARATOR,
-			'DB Folder' => ($this->hasDB()) ? $this->config['dbLocation'] : false
-		);
+
 		// Connect to DB
 		$this->connectDB();
 		// Check DB Writable
 		$this->checkWritableDB();
-		// Set cookie name for Organizr Instance
-		$this->cookieName = ($this->hasDB()) ? $this->config['uuid'] !== '' ? 'organizr_token_' . $this->config['uuid'] : 'organizr_token_temp' : 'organizr_token_temp';
+
 		// Get token form cookie and validate
 		$this->setCurrentUser();
 		// might just run this at index
@@ -167,6 +170,13 @@ class Organizr
 	public function __destruct()
 	{
 		$this->disconnectDB();
+	}
+
+	public function addDatabaseToPaths()
+	{
+		if ($this->hasConfig()) {
+			$this->paths = array_merge($this->paths, ['DB Folder' => $this->config['dbLocation']]);
+		}
 	}
 
 	public function chooseConfigFile()
@@ -302,7 +312,7 @@ class Organizr
 	public function setCurrentUser($validate = true)
 	{
 		$user = false;
-		if ($this->hasDB()) {
+		if ($this->hasDatabase()) {
 			if ($this->hasCookie()) {
 				$user = $this->getUserFromToken($_COOKIE[$this->cookieName]);
 			}
@@ -335,16 +345,33 @@ class Organizr
 	public function checkForOrganizrOAuth()
 	{
 		// Oauth?
-		if ($this->config['authProxyEnabled'] && ($this->config['authProxyHeaderName'] !== '' || $this->config['authProxyHeaderNameEmail'] !== '') && $this->config['authProxyWhitelist'] !== '') {
-			if (isset(getallheaders()[$this->config['authProxyHeaderName']]) || isset(getallheaders()[$this->config['authProxyHeaderNameEmail']])) {
-				$this->coookieSeconds('set', 'organizrOAuth', 'true', 20000, false);
+		if ($this->hasDB() && $this->user) {
+			if ($this->user['groupID'] == '999') {
+				$this->setLoggerChannel('OAuth')->debug('Starting OAuth login check');
+				$data = [
+					'enabled' => $this->config['authProxyEnabled'],
+					'header_name' => $this->config['authProxyHeaderName'],
+					'header_name_email' => $this->config['authProxyHeaderNameEmail'],
+					'whitelist' => $this->config['authProxyWhitelist'],
+				];
+				if ($this->config['authProxyEnabled'] && ($this->config['authProxyHeaderName'] !== '' || $this->config['authProxyHeaderNameEmail'] !== '') && $this->config['authProxyWhitelist'] !== '') {
+					if (isset($this->getallheadersi()[strtolower($this->config['authProxyHeaderName'])]) || isset($this->getallheadersi()[strtolower($this->config['authProxyHeaderNameEmail'])])) {
+						$this->coookieSeconds('set', 'organizrOAuth', 'true', 20000, false);
+						$this->setLoggerChannel('OAuth')->info('OAuth pre-check passed - adding organizrOAuth cookie', $data);
+					} else {
+						$data = array_merge($data, ['headers' => $this->getallheadersi()]);
+						$this->setLoggerChannel('OAuth')->debug('Headers not set', $data);
+					}
+				} else {
+					$this->setLoggerChannel('OAuth')->debug('OAuth not triggered', $data);
+				}
 			}
 		}
 	}
 
 	public function checkIfUserIsBlacklisted()
 	{
-		if ($this->hasDB()) {
+		if ($this->hasConfig()) {
 			$currentIP = $this->userIP();
 			if ($this->config['blacklisted'] !== '') {
 				if (in_array($currentIP, $this->arrayIP($this->config['blacklisted']))) {
@@ -818,7 +845,7 @@ class Organizr
 				];
 			}
 		}
-		$this->handleError($exceptions[$number], $message, $file, $line);
+		$this->handleError($exceptions[$number], $message, $file, $line, $type);
 	}
 
 	public function setErrorResponse($number, $message, $file, $line)
@@ -833,9 +860,21 @@ class Organizr
 		//$this->prettyPrint($error, true);
 	}
 
-	public function handleError($number, $message, $file, $line)
+	public function handleError($number, $message, $file, $line, $type)
 	{
-		error_log(sprintf('Organizr %s:  %s in %s on line %d', $number, $message, $file, $line));
+		$log = false;
+		$error = sprintf('Organizr %s:  %s in %s on line %d', $number, $message, $file, $line);
+		error_log($error);
+		if ($this->dev) {
+			$log = true;
+		} else {
+			if ($type == 'errors') {
+				$log = true;
+			}
+		}
+		if ($log && $this->hasDB()) {
+			$this->setLoggerChannel('Server Error')->warning('PHP Error', $error);
+		}
 	}
 
 	public function checkRoute($request)
@@ -1116,6 +1155,14 @@ class Organizr
 		return $themes;
 	}
 
+	public function setPluginListNameFromConfigPrefix()
+	{
+		foreach ($GLOBALS['plugins'] as $pluginName => $pluginInfo) {
+			$GLOBALS['pluginInfo'][strtolower($pluginInfo['configPrefix'])] = $pluginInfo;
+			$GLOBALS['pluginInfo'][strtolower($pluginName)] = $pluginInfo;
+		}
+	}
+
 	public function pluginFilesFromDirectory($directory, $webDirectory, $type, $settings = false, $rootPath = '')
 	{
 		$files = '';
@@ -1156,7 +1203,8 @@ class Organizr
 							}
 							if ($pluginEnabled || $settings) {
 								if ($continue) {
-									$files .= '<script src="' . $rootPath . $webDirectory . basename(dirname($info->getPathname())) . '/' . basename($info->getFilename()) . '?v=' . $this->fileHash . '" defer="true"></script>';
+									$version = $GLOBALS['pluginInfo'][strtolower($key)]['version'] ?? $this->fileHash;
+									$files .= '<script src="' . $rootPath . $webDirectory . basename(dirname($info->getPathname())) . '/' . basename($info->getFilename()) . '?v=' . $version . '" defer="true"></script>';
 								}
 							}
 						}
@@ -1165,7 +1213,9 @@ class Organizr
 				case 'css':
 					foreach ($iteratorIterator as $info) {
 						if (pathinfo($info->getPathname(), PATHINFO_EXTENSION) == 'css') {
-							$files .= '<link href="' . $rootPath . $webDirectory . basename(dirname($info->getPathname())) . '/' . basename($info->getFilename()) . '?v=' . $this->fileHash . '" rel="stylesheet">';
+							$key = basename(dirname($info->getPathname()));
+							$version = $GLOBALS['pluginInfo'][strtolower($key)]['version'] ?? $this->fileHash;
+							$files .= '<link href="' . $rootPath . $webDirectory . basename(dirname($info->getPathname())) . '/' . basename($info->getFilename()) . '?v=' . $version . '" rel="stylesheet">';
 						}
 					}
 					break;
@@ -1437,8 +1487,7 @@ class Organizr
 		} else {
 			$status['action'] = 'launch';
 			if ($action) {
-				echo '<script type="text/javascript"> window.location.href="' . $this->getServerPath() . 'api/v2/organizr/error' . '";</script>';
-				die(header($this->getServerPath() . 'api/v2/organizr/error'));
+				echo '<script type="text/javascript"> window.location.href="' . $this->getServerPath() . 'api/v2/organizr/error/409' . '";</script>';
 				exit;
 			}
 		}
@@ -1569,14 +1618,14 @@ class Organizr
 		return $guest;
 	}
 
-	public function getAllUserTokens($id)
+	public function getAllUserTokens($id, $includeAllFields = true)
 	{
-
+		$select = $includeAllFields ? '*' : 'token, ip, id, expires, created';
 		$response = [
 			array(
 				'function' => 'fetchAll',
 				'query' => array(
-					'SELECT * FROM `tokens` WHERE user_id = ? AND expires > ?',
+					'SELECT ' . $select . ' FROM `tokens` WHERE user_id = ? AND expires > ?',
 					[$id],
 					[$this->currentTime]
 				)
@@ -1633,7 +1682,8 @@ class Organizr
 		if ($validated == true) {
 			$allTokens = $this->getAllUserTokens($userInfo['userID']);
 			$user = $this->getUserById($userInfo['userID']);
-			$tokenCheck = ($this->searchArray($allTokens, 'token', $token) !== false);
+			$tokenKey = $this->searchArray($allTokens, 'token', $token);
+			$tokenCheck = ($tokenKey !== false);
 			if (!$tokenCheck) {
 				$this->setLoggerChannel('Authentication');
 				$this->logger->debug('Token failed check against all token listings', $allTokens);
@@ -1643,6 +1693,21 @@ class Organizr
 				}
 				return false;
 			} else {
+				// Check if user is on same browser as token
+				if ($allTokens[$tokenKey]['browser'] !== $_SERVER ['HTTP_USER_AGENT']) {
+					if ($this->config['matchUserAgents']) {
+						$this->setLoggerChannel('Authentication')->warning('Mismatch of useragent', ['token' => $allTokens[$tokenKey]['browser'], 'browser' => $_SERVER ['HTTP_USER_AGENT']]);
+						$this->invalidToken($token);
+						return false;
+					}
+				}
+				if (($allTokens[$tokenKey]['ip'] !== $this->userIP()) && (!$this->isLocalOrServer())) {
+					if ($this->config['matchUserIP']) {
+						$this->setLoggerChannel('Authentication')->warning('Mismatch of user IP', ['token' => $allTokens[$tokenKey]['ip'], 'user' => $this->userIP()]);
+						$this->invalidToken($token);
+						return false;
+					}
+				}
 				if ($api) {
 					$this->setResponse(200, 'Token is valid');
 				}
@@ -1684,7 +1749,7 @@ class Organizr
 		$validated = (bool)$userInfo;
 		if ($validated == true) {
 			$user = $this->getUserById($userInfo['userID']);
-			$allTokens = $this->getAllUserTokens($userInfo['userID']);
+			$allTokens = $this->getAllUserTokens($userInfo['userID'], false);
 			return array(
 				'token' => $token,
 				'tokenDate' => $userInfo['tokenDate'],
@@ -1843,7 +1908,7 @@ class Organizr
 	public function getUserLevel()
 	{
 		// Grab token
-		$requesterToken = $this->getallheaders()['Token'] ?? ($_GET['apikey'] ?? false);
+		$requesterToken = $this->getallheadersi()['token'] ?? ($_GET['apikey'] ?? false);
 		$apiKey = ($this->config['organizrAPI']) ?? null;
 		// Check token or API key
 		// If API key, return 0 for admin
@@ -1864,6 +1929,18 @@ class Organizr
 		} else {
 			if ($api) {
 				$this->setAPIResponse('error', 'Not Authorized', 401);
+			}
+			return false;
+		}
+	}
+
+	public function qualifyLength($string, $length = 100, $api = false)
+	{
+		if (strlen($string) <= $length) {
+			return true;
+		} else {
+			if ($api) {
+				$this->setResponse(409, 'String is over limit of: ' . $length);
 			}
 			return false;
 		}
@@ -1924,7 +2001,11 @@ class Organizr
 			];
 		}
 		foreach ($newImageListing as $k => $v) {
-			if (stripos($v['text'], $term) !== false || !$term) {
+			if ($term) {
+				if (stripos($v['text'], $term) !== false) {
+					$goodIcons['results'][] = $v;
+				}
+			} else {
 				$goodIcons['results'][] = $v;
 			}
 		}
@@ -2317,6 +2398,8 @@ class Organizr
 				$this->settingsOption('switch', 'lockoutSystem', ['label' => 'Inactivity Lock']),
 				$this->settingsOption('select', 'lockoutMinAuth', ['label' => 'Lockout Groups From', 'options' => $this->groupSelect()]),
 				$this->settingsOption('select', 'lockoutMaxAuth', ['label' => 'Lockout Groups To', 'options' => $this->groupSelect()]),
+				$this->settingsOption('switch', 'matchUserAgents', ['label' => 'Match UserAgent', 'help' => 'Match Browser UserAgent to Token UserAgent - Can be very aggressive on matching']),
+				$this->settingsOption('switch', 'matchUserIP', ['label' => 'Match User IP', 'help' => 'Match User IP to Token IP - Also allows approval if user token is valid and is local to server']),
 				$this->settingsOption('switch', 'traefikAuthEnable', ['label' => 'Enable Traefik Auth Redirect', 'help' => 'This will enable the webserver to forward errors so traefik will accept them']),
 				$this->settingsOption('input', 'traefikDomainOverride', ['label' => 'Traefik Domain for Return Override', 'help' => 'Please use a FQDN on this URL Override', 'placeholder' => 'http(s)://domain']),
 				$this->settingsOption('select', 'debugAreaAuth', ['label' => 'Minimum Authentication for Debug Area', 'options' => $this->groupSelect(), 'settings' => '{}']),
@@ -2331,12 +2414,23 @@ class Organizr
 				$this->settingsOption('number', 'maxLogFiles', ['label' => 'Maximum Log Files', 'help' => 'Number of log files to preserve', 'attr' => 'min="1"']),
 				$this->settingsOption('select', 'logLiveUpdateRefresh', ['label' => 'Live Update Refresh', 'options' => $this->timeOptions()]),
 				$this->settingsOption('select', 'logPageSize', ['label' => 'Log Page Size', 'options' => [['name' => '10 Items', 'value' => '10'], ['name' => '25 Items', 'value' => '25'], ['name' => '50 Items', 'value' => '50'], ['name' => '100 Items', 'value' => '100']]]),
+				$this->settingsOption('switch', 'sendLogsToSlack', ['label' => 'Send Logs to Slack', 'help' => 'Send Logs to Slack as well']),
+				$this->settingsOption('select', 'slackLogLevel', ['label' => 'Slack Log Level', 'options' => $this->logLevels()]),
+				$this->settingsOption('url', 'slackLogWebhook', ['label' => 'Slack Webhook URL', 'help' => 'If using Discord make sure to end the URL with /slack']),
+				$this->settingsOption('input', 'slackLogWebHookChannel', ['label' => 'Slack Channel for Webhook', 'help' => 'Channel ID for webhook - Not needed for Discord']),
+				$this->settingsOption('blank'),
+				$this->settingsOption('test', 'slack-logs', ['label' => 'Test Slack', 'text' => 'Test Slack', 'help' => 'Test only sends a warning message so make sure Slack Log Level is Warning when testing']),
 			],
 			'Cron' => [
 				$this->settingsOption('cron-file'),
 				$this->settingsOption('blank'),
 				$this->settingsOption('enable', 'autoUpdateCronEnabled', ['label' => 'Auto-Update Organizr']),
 				$this->settingsOption('cron', 'autoUpdateCronSchedule'),
+				$this->settingsOption('enable', 'autoBackupCronEnabled', ['label' => 'Auto-Backup Organizr']),
+				$this->settingsOption('cron', 'autoBackupCronSchedule'),
+				$this->settingsOption('number', 'keepBackupsCountCron', ['label' => '# Backups Keep', 'help' => 'Number of backups to keep', 'attr' => 'min="1"']),
+				$this->settingsOption('blank'),
+
 			],
 			'Login' => [
 				$this->settingsOption('password', 'registrationPassword', ['label' => 'Registration Password', 'help' => 'Sets the password for the Registration form on the login screen']),
@@ -2506,6 +2600,7 @@ class Organizr
 				$this->settingsOption('blank'),
 				$this->settingsOption('username', 'komgaFallbackUser', ['label' => 'Komga Fallback Email', 'help' => 'DO NOT SET THIS TO YOUR ADMIN ACCOUNT. We recommend you create a local account as a "catch all" for when Organizr is unable to perform SSO.  Organizr will request a User Token based off of this user credentials']),
 				$this->settingsOption('password', 'komgaFallbackPassword', ['label' => 'Komga Fallback Password']),
+				$this->settingsOption('password', 'komgaSSOMasterPassword', ['label' => 'Komga Master Password', 'help' => 'Sets master password if using oAuth backend - This will set the password on the login form for logins using oAuth where no password is supplied.']),
 			],
 		];
 	}
@@ -2669,7 +2764,8 @@ class Organizr
 			$this->setAPIResponse('error', 'No data submitted', 409);
 			return false;
 		}
-		$newItem = array();
+		$newItems = [];
+		$updatedItems = [];
 		foreach ($array as $k => $v) {
 			$v = $v ?? '';
 			switch ($v) {
@@ -2699,14 +2795,16 @@ class Organizr
 					break;
 			}
 			if (strtolower($k) !== 'formkey') {
-				$newItem[$k] = $v;
+				if ($this->config[$k] !== $v) {
+					$updatedItems[$k] = $v;
+				}
+				$newItems[$k] = $v;
 				$this->config[$k] = $v;
 			}
 		}
 		$this->setAPIResponse('success', 'Config items updated', 200);
-		$this->setLoggerChannel('Config');
-		$this->logger->info('Config items updated', array_keys($array));
-		return (bool)$this->updateConfig($newItem);
+		$this->setLoggerChannel('Config')->notice('Config items updated', ['items' => array_keys($updatedItems)]);
+		return (bool)$this->updateConfig($newItems);
 	}
 
 	public function updateConfigItem($array)
@@ -3202,6 +3300,8 @@ class Organizr
 					`default`	INTEGER,
 					`enabled`	INTEGER,
 					`group_id`	INTEGER,
+					`group_id_max` INTEGER DEFAULT \'0\',
+					`add_to_admin`	INTEGER DEFAULT \'0\',
 					`image`	TEXT,
 					`type`	INTEGER,
 					`splash`	INTEGER,
@@ -3447,30 +3547,39 @@ class Organizr
 		$days = ($days > 365) ? 365 : $days;
 		//Quick get user ID
 		$result = $this->getUserByUsernameAndEmail($username, $email);
-		// Create JWT
-		// Set key
-		// SHA256 Encryption
-		$signer = new Lcobucci\JWT\Signer\Hmac\Sha256();
-		// Start Builder
-		$jwttoken = (new Lcobucci\JWT\Builder())->issuedBy('Organizr')// Configures the issuer (iss claim)
-		->permittedFor('Organizr')// Configures the audience (aud claim)
-		->identifiedBy('4f1g23a12aa', true)// Configures the id (jti claim), replicating as a header item
-		->issuedAt(time())// Configures the time that the token was issue (iat claim)
-		->expiresAt(time() + (86400 * $days))// Configures the expiration time of the token (exp claim)
-		->withClaim('name', $result['username'])// Configures a new claim, called "name"
-		->withClaim('group', $result['group'])// Configures a new claim, called "group"
-		->withClaim('groupID', $result['group_id'])// Configures a new claim, called "groupID"
-		->withClaim('email', $result['email'])// Configures a new claim, called "email"
-		->withClaim('image', $result['image'])// Configures a new claim, called "image"
-		->withClaim('userID', $result['id'])// Configures a new claim, called "image"
-		->sign($signer, $this->config['organizrHash'])// creates a signature using "testing" as key
-		->getToken(); // Retrieves the generated token
-		$jwttoken->getHeaders(); // Retrieves the token headers
-		$jwttoken->getClaims(); // Retrieves the token claims
-		$this->coookie('set', $this->cookieName, $jwttoken, $days);
+		$config = $this->configToken();
+		assert($config instanceof Lcobucci\JWT\Configuration);
+		$now = new DateTimeImmutable();
+		$token = $config->builder()
+			// Configures the issuer (iss claim)
+			->issuedBy('Organizr')
+			// Configures the audience (aud claim)
+			->permittedFor('Organizr')
+			// Configures the id (jti claim)
+			->identifiedBy('4f1g23a12aa')
+			// Configures the time that the token was issue (iat claim)
+			->issuedAt($now)
+			// Configures the time that the token can be used (nbf claim)
+			->canOnlyBeUsedAfter($now)
+			// Configures the expiration time of the token (exp claim)
+			->expiresAt($now->modify('+' . $days . ' days'))
+			// Configures a new claim, called "uid"
+			->withClaim('name', $result['username'])// Configures a new claim, called "name"
+			->withClaim('group', $result['group'])// Configures a new claim, called "group"
+			->withClaim('groupID', $result['group_id'])// Configures a new claim, called "groupID"
+			->withClaim('email', $result['email'])// Configures a new claim, called "email"
+			->withClaim('image', $result['image'])// Configures a new claim, called "image"
+			->withClaim('userID', $result['id'])// Configures a new claim, called "image"
+			// Configures a new header, called "foo"
+			//->withHeader('foo', 'bar')
+			// Builds a new token
+			->getToken($config->signer(), $config->signingKey());
+		//$token->headers(); // Retrieves the token headers
+		//$token->claims(); // Retrieves the token claims
+		$this->coookie('set', $this->cookieName, $token->toString(), $days);
 		// Add token to DB
 		$addToken = [
-			'token' => (string)$jwttoken,
+			'token' => $token->toString(),
 			'user_id' => $result['id'],
 			'created' => gmdate('Y-m-d H:i:s'),
 			'browser' => $_SERVER ['HTTP_USER_AGENT'] ?? null,
@@ -3486,14 +3595,14 @@ class Organizr
 				)
 			),
 		];
-		$token = $this->processQueries($response);
-		if ($jwttoken) {
+		$this->processQueries($response);
+		if ($token) {
 			$this->logger->debug('Token has been created');
 		} else {
 			$this->logger->warning('Token creation error');
 		}
 		$this->logger->debug('Token creation function has finished');
-		return $jwttoken;
+		return $token->toString();
 	}
 
 	public function login($array)
@@ -3526,9 +3635,9 @@ class Organizr
 		}
 		// Check if Auth Proxy is enabled
 		if ($this->config['authProxyEnabled'] && ($this->config['authProxyHeaderName'] !== '' || $this->config['authProxyHeaderNameEmail'] !== '') && $this->config['authProxyWhitelist'] !== '') {
-			if (isset($this->getallheaders()[$this->config['authProxyHeaderName']]) || isset($this->getallheaders()[$this->config['authProxyHeaderNameEmail']])) {
-				$usernameHeader = $this->getallheaders()[$this->config['authProxyHeaderName']] ?? null;
-				$emailHeader = $this->getallheaders()[$this->config['authProxyHeaderNameEmail']] ?? null;
+			if (isset($this->getallheadersi()[strtolower($this->config['authProxyHeaderName'])]) || isset($this->getallheadersi()[strtolower($this->config['authProxyHeaderNameEmail'])])) {
+				$usernameHeader = $this->getallheadersi()[strtolower($this->config['authProxyHeaderName'])] ?? null;
+				$emailHeader = $this->getallheadersi()[strtolower($this->config['authProxyHeaderNameEmail'])] ?? null;
 				$headerForLogin = $usernameHeader ?: ($emailHeader ?: null);
 				$this->setLoggerChannel('Authentication', $headerForLogin);
 				$this->logger->debug('Starting Auth Proxy verification');
@@ -3953,10 +4062,18 @@ class Organizr
 			array(
 				'function' => 'fetchAll',
 				'query' => array(
-					'SELECT * FROM tabs WHERE `group_id` >= ? AND `enabled` = 1 ORDER BY `order` ' . $sort,
-					$this->user['groupID']
+					'SELECT * FROM tabs WHERE `group_id` >= ? AND `group_id_max` <= ? AND `enabled` = 1 ORDER BY `order` ' . $sort,
+					$this->user['groupID'],
+					$this->user['groupID'],
 				),
 				'key' => 'tabs'
+			),
+			array(
+				'function' => 'fetchAll',
+				'query' => array(
+					'SELECT * FROM tabs WHERE `add_to_admin` = 1 AND `enabled` = 1 ORDER BY `order` ' . $sort
+				),
+				'key' => 'tabs-admin'
 			),
 			array(
 				'function' => 'fetchAll',
@@ -3968,15 +4085,40 @@ class Organizr
 		];
 		$queries = $this->processQueries($response);
 		$this->applyTabVariables($queries['tabs']);
-		$all['tabs'] = $queries['tabs'];
-		foreach ($queries['tabs'] as $k => $v) {
+		if ($this->qualifyRequest(1)) {
+			$this->applyTabVariables($queries['tabs-admin']);
+			$all['tabs'] = array_merge($queries['tabs'], $queries['tabs-admin']);
+			$newArray = [];
+			$ids = [];
+			foreach ($all['tabs'] as $key => $line) {
+				if (!in_array($line['id'], $ids)) {
+					$ids[] = $line['id'];
+					$newArray[$key] = $line;
+				}
+			}
+			$all['tabs'] = $newArray;
+			if (count($all['tabs']) > 0) {
+				usort($all['tabs'], function ($a, $b) {
+					if ($this->config['unsortedTabs'] == 'top') {
+						return $b['order'] <=> $a['order'];
+					} else {
+						return $a['order'] <=> $b['order'];
+					}
+				});
+			}
+			$newArray = NULL;
+			$ids = NULL;
+		} else {
+			$all['tabs'] = $queries['tabs'];
+		}
+		foreach ($all['tabs'] as $k => $v) {
 			$v['url_local'] = $v['type'] !== 0 ? $this->checkTabURL($v['url_local']) : $v['url_local'];
 			$v['url'] = $v['type'] !== 0 ? $this->checkTabURL($v['url']) : $v['url'];
 			$v['access_url'] = (!empty($v['url_local']) && ($v['url_local'] !== null) && ($v['url_local'] !== 'null') && $this->isLocal() && $v['type'] !== 0) ? $v['url_local'] : $v['url'];
 		}
 		$count = array_map(function ($element) {
 			return $element['category_id'];
-		}, $queries['tabs']);
+		}, $all['tabs']);
 		$count = (array_count_values($count));
 		foreach ($queries['categories'] as $k => $v) {
 			$v['count'] = $count[$v['category_id']] ?? 0;
@@ -4000,9 +4142,15 @@ class Organizr
 	public function refreshList()
 	{
 		$searchTerm = "Refresh";
-		return array_filter($this->config, function ($k) use ($searchTerm) {
+		$list = array_filter($this->config, function ($k) use ($searchTerm) {
 			return stripos($k, $searchTerm) !== false;
 		}, ARRAY_FILTER_USE_KEY);
+		foreach ($list as $item => $value) {
+			if (!is_numeric($value)) {
+				unset($list[$item]);
+			}
+		}
+		return $list;
 	}
 
 	public function homepageOrderList()
@@ -4222,40 +4370,14 @@ class Organizr
 		}
 	}
 
-	public function writeLog($type = 'error', $message = null, $username = null)
-	{
-		$this->timeExecution = $this->timeExecution($this->timeExecution);
-		$message = $message . ' [Execution Time: ' . $this->formatSeconds($this->timeExecution) . ']';
-		$username = ($username) ? htmlspecialchars($username, ENT_QUOTES) : $this->user['username'] ?? 'SYSTEM';
-		if ($this->checkLog($this->organizrLog)) {
-			$getLog = str_replace("\r\ndate", "date", file_get_contents($this->organizrLog));
-			$gotLog = json_decode($getLog, true);
-		}
-		$logEntryFirst = array('logType' => 'organizr_log', 'log_items' => array(array('date' => date("Y-m-d H:i:s"), 'utc_date' => $this->currentTime, 'type' => $type, 'username' => $username, 'ip' => $this->userIP(), 'message' => $message)));
-		$logEntry = array('date' => date("Y-m-d H:i:s"), 'utc_date' => $this->currentTime, 'type' => $type, 'username' => $username, 'ip' => $this->userIP(), 'message' => $message);
-		if (isset($gotLog)) {
-			array_push($gotLog["log_items"], $logEntry);
-			$writeFailLog = str_replace("date", "\r\ndate", json_encode($gotLog));
-		} else {
-			$writeFailLog = str_replace("date", "\r\ndate", json_encode($logEntryFirst));
-		}
-		file_put_contents($this->organizrLog, $writeFailLog);
-	}
-
 	public function isApprovedRequest($method, $data)
 	{
-		$requesterToken = $this->getallheaders()['Token'] ?? ($_GET['apikey'] ?? false);
+		$requesterToken = $this->getallheadersi()['token'] ?? ($_GET['apikey'] ?? false);
 		$apiKey = ($this->config['organizrAPI']) ?? null;
 		if (isset($data['formKey'])) {
 			$formKey = $data['formKey'];
-		} elseif (isset($this->getallheaders()['Formkey'])) {
-			$formKey = $this->getallheaders()['Formkey'];
-		} elseif (isset($this->getallheaders()['formkey'])) {
-			$formKey = $this->getallheaders()['formkey'];
-		} elseif (isset($this->getallheaders()['formKey'])) {
-			$formKey = $this->getallheaders()['formKey'];
-		} elseif (isset($this->getallheaders()['FormKey'])) {
-			$formKey = $this->getallheaders()['FormKey'];
+		} elseif (isset($this->getallheadersi()['formkey'])) {
+			$formKey = $this->getallheadersi()['formkey'];
 		} else {
 			$formKey = false;
 		}
@@ -5013,6 +5135,9 @@ class Organizr
 				$this->setAPIResponse('error', 'Tab name: ' . $array['name'] . ' is already taken', 409);
 				return false;
 			}
+			if (!$this->qualifyLength($array['name'], 50, true)) {
+				return false;
+			}
 		} else {
 			$this->setAPIResponse('error', 'Tab name was not supplied', 422);
 			return false;
@@ -5024,6 +5149,8 @@ class Organizr
 		if (!array_key_exists('image', $array)) {
 			$this->setAPIResponse('error', 'Tab image was not supplied', 422);
 			return false;
+		} else {
+			$array['image'] = $this->sanitizeUserString($array['image']);
 		}
 		$response = [
 			array(
@@ -5063,10 +5190,30 @@ class Organizr
 				$this->setAPIResponse('error', 'Tab name: ' . $array['name'] . ' is already taken', 409);
 				return false;
 			}
+			if (!$this->qualifyLength($array['name'], 50, true)) {
+				return false;
+			}
 		}
 		if (array_key_exists('default', $array)) {
 			if ($array['default']) {
 				$this->clearTabDefault();
+			}
+		}
+		if (array_key_exists('image', $array)) {
+			$array['image'] = $this->sanitizeUserString($array['image']);
+		}
+		if (array_key_exists('group_id', $array)) {
+			$groupCheck = (array_key_exists('group_id_max', $array)) ? $array['group_id_max'] : $tabInfo['group_id_max'];
+			if ($array['group_id'] < $groupCheck) {
+				$this->setAPIResponse('error', 'Tab name: ' . $tabInfo['name'] . ' cannot have a lower Group Id Max than Group Id Min', 409);
+				return false;
+			}
+		}
+		if (array_key_exists('group_id_max', $array)) {
+			$groupCheck = (array_key_exists('group_id', $array)) ? $array['group_id'] : $tabInfo['group_id'];
+			if ($array['group_id_max'] > $groupCheck) {
+				$this->setAPIResponse('error', 'Tab name: ' . $tabInfo['name'] . ' cannot have a higher Group Id Min than Group Id Max', 409);
+				return false;
 			}
 		}
 		$response = [
@@ -5135,6 +5282,9 @@ class Organizr
 				$this->setAPIResponse('error', 'Category name: ' . $array['category'] . ' is already taken', 409);
 				return false;
 			}
+			if (!$this->qualifyLength($array['category'], 50, true)) {
+				return false;
+			}
 		} else {
 			$this->setAPIResponse('error', 'Category name was not supplied', 422);
 			return false;
@@ -5181,6 +5331,9 @@ class Organizr
 			$array['category'] = $this->sanitizeUserString($array['category']);
 			if ($this->isCategoryNameTaken($array['category'], $id)) {
 				$this->setAPIResponse('error', 'Category name: ' . $array['category'] . ' is already taken', 409);
+				return false;
+			}
+			if (!$this->qualifyLength($array['category'], 50, true)) {
 				return false;
 			}
 		}
@@ -6374,6 +6527,9 @@ class Organizr
 				$this->setAPIResponse('error', 'Username: ' . $array['username'] . ' is already taken', 409);
 				return false;
 			}
+			if (!$this->qualifyLength($array['username'], 50, true)) {
+				return false;
+			}
 		}
 		if (array_key_exists('email', $array)) {
 			if ($array['email'] == '') {
@@ -6388,6 +6544,9 @@ class Organizr
 			}
 			if ($this->usernameTaken($array['email'], $array['email'], $id)) {
 				$this->setAPIResponse('error', 'Email: ' . $array['email'] . ' is already taken', 409);
+				return false;
+			}
+			if (!$this->qualifyLength($array['email'], 50, true)) {
 				return false;
 			}
 		}
@@ -6509,6 +6668,15 @@ class Organizr
 			$this->setResponse(409, 'Email is not a valid email', ['email' => $email]);
 			return false;
 		}
+		if (!$this->qualifyLength($username, 50, true)) {
+			return false;
+		}
+		if (!$this->qualifyLength($email, 50, true)) {
+			return false;
+		}
+		if (!$this->qualifyLength($password, 200, true)) {
+			return false;
+		}
 		$this->setLoggerChannel('User Management');
 		if ($this->createUser($username, $password, $email)) {
 			$this->logger->info('Account created for [' . $username . ']');
@@ -6545,6 +6713,15 @@ class Organizr
 		}
 		if ($this->usernameTaken($username, $email)) {
 			$this->setAPIResponse('error', 'Username: ' . $username . ' or Email: ' . $email . ' is already taken', 409);
+			return false;
+		}
+		if (!$this->qualifyLength($username, 50, true)) {
+			return false;
+		}
+		if (!$this->qualifyLength($email, 50, true)) {
+			return false;
+		}
+		if (!$this->qualifyLength($password, 200, true)) {
 			return false;
 		}
 		$defaults = $this->getDefaultGroup();
@@ -6601,12 +6778,16 @@ class Organizr
 				$this->setAPIResponse('error', 'Group name: ' . $array['group'] . ' is already taken', 409);
 				return false;
 			}
+			if (!$this->qualifyLength($array['group'], 50, true)) {
+				return false;
+			}
 		}
 		if (array_key_exists('image', $array)) {
 			if ($array['image'] == '') {
 				$this->setAPIResponse('error', 'Image was set but empty', 409);
 				return false;
 			}
+			$array['image'] = $this->sanitizeUserString($array['image']);
 		}
 		if (array_key_exists('default', $array)) {
 			if ($groupInfo['group_id'] == 0 || $groupInfo['group_id'] == 999) {
@@ -6681,6 +6862,9 @@ class Organizr
 				$this->setAPIResponse('error', 'Group name: ' . $array['group'] . ' is already taken', 409);
 				return false;
 			}
+			if (!$this->qualifyLength($array['group'], 50, true)) {
+				return false;
+			}
 		} else {
 			$this->setAPIResponse('error', 'Group name was not supplied', 422);
 			return false;
@@ -6690,6 +6874,7 @@ class Organizr
 				$this->setAPIResponse('error', 'Group image cannot be empty', 422);
 				return false;
 			}
+			$array['image'] = $this->sanitizeUserString($array['image']);
 		} else {
 			$this->setAPIResponse('error', 'Group image was not supplied', 422);
 			return false;
@@ -7377,13 +7562,18 @@ class Organizr
 						);
 					}
 				}
-				$this->setAPIResponse('success', null, 200, $items);
+				$this->setResponse(200, null, $items);
 				return $items;
+			} else {
+				$message = $this->testAndFormatString($response->body);
+				$this->setResponse(500, 'Plex Error occurred', $message['data']);
+				$this->setLoggerChannel('Plex Connection')->warning('Plex Error', $message);
+				return $message;
 			}
 		} catch (Requests_Exception $e) {
-			$this->setLoggerChannel('Plex Connection');
-			$this->logger->error($e);
+			$this->setLoggerChannel('Plex Connection')->error($e);
 			$this->setResponse(500, $e->getMessage());
+			return false;
 		}
 	}
 
@@ -7401,7 +7591,11 @@ class Organizr
 		$iconListing = json_decode($allIcons, true);
 		foreach ($iconListing as $setKey => $set) {
 			foreach ($set['children'] as $k => $v) {
-				if (stripos($v['text'], $term) !== false || !$term) {
+				if ($term) {
+					if (stripos($v['text'], $term) !== false) {
+						$goodIcons['results'][] = $v;
+					}
+				} else {
 					$goodIcons['results'][] = $v;
 				}
 			}

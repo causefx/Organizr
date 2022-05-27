@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This file is part of the ramsey/uuid library
  *
@@ -7,33 +8,44 @@
  *
  * @copyright Copyright (c) Ben Ramsey <ben@benramsey.com>
  * @license http://opensource.org/licenses/MIT MIT
- * @link https://benramsey.com/projects/ramsey-uuid/ Documentation
- * @link https://packagist.org/packages/ramsey/uuid Packagist
- * @link https://github.com/ramsey/uuid GitHub
  */
+
+declare(strict_types=1);
 
 namespace Ramsey\Uuid\Provider\Node;
 
-use Exception;
+use Ramsey\Uuid\Exception\RandomSourceException;
 use Ramsey\Uuid\Provider\NodeProviderInterface;
+use Ramsey\Uuid\Type\Hexadecimal;
+use Throwable;
+
+use function bin2hex;
+use function dechex;
+use function hex2bin;
+use function hexdec;
+use function str_pad;
+use function substr;
+
+use const STR_PAD_LEFT;
 
 /**
- * RandomNodeProvider provides functionality to generate a random node ID, in
- * the event that the node ID could not be obtained from the host system
+ * RandomNodeProvider generates a random node ID
  *
- * @link http://tools.ietf.org/html/rfc4122#section-4.5
+ * @link http://tools.ietf.org/html/rfc4122#section-4.5 RFC 4122, § 4.5: Node IDs that Do Not Identify the Host
  */
 class RandomNodeProvider implements NodeProviderInterface
 {
-    /**
-     * Returns the system node ID
-     *
-     * @return string System node ID as a hexadecimal string
-     * @throws Exception if it was not possible to gather sufficient entropy
-     */
-    public function getNode()
+    public function getNode(): Hexadecimal
     {
-        $nodeBytes = random_bytes(6);
+        try {
+            $nodeBytes = random_bytes(6);
+        } catch (Throwable $exception) {
+            throw new RandomSourceException(
+                $exception->getMessage(),
+                (int) $exception->getCode(),
+                $exception
+            );
+        }
 
         // Split the node bytes for math on 32-bit systems.
         $nodeMsb = substr($nodeBytes, 0, 3);
@@ -52,6 +64,6 @@ class RandomNodeProvider implements NodeProviderInterface
         // Recombine the node bytes.
         $node = $nodeMsb . $nodeLsb;
 
-        return str_pad(bin2hex($node), 12, '0', STR_PAD_LEFT);
+        return new Hexadecimal(str_pad(bin2hex($node), 12, '0', STR_PAD_LEFT));
     }
 }

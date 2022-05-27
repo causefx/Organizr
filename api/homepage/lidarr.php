@@ -41,7 +41,7 @@ trait LidarrHomepageItem
 					$this->settingsOption('calendar-time-format', 'calendarTimeFormat'),
 					$this->settingsOption('calendar-locale', 'calendarLocale'),
 					$this->settingsOption('calendar-limit', 'calendarLimit'),
-					$this->settingsOption('refresh', 'calendarRefresh'),					
+					$this->settingsOption('refresh', 'calendarRefresh'),
 					$this->settingsOption('blank', '', ['type' => 'html', 'html' => '<hr />']),
 					$this->settingsOption('blank', '', ['type' => 'html', 'html' => '<hr />']),
 					$this->settingsOption('enable', 'lidarrIcon', ['label' => 'Show Lidarr Icon']),
@@ -93,7 +93,7 @@ trait LidarrHomepageItem
 				$failed = true;
 				$ip = $value['url'];
 				$errors .= $ip . ': ' . $e->getMessage();
-				$this->writeLog('error', 'Lidarr Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
+				$this->setLoggerChannel('Lidarr')->error($e);
 			}
 		}
 		if ($failed) {
@@ -160,7 +160,7 @@ trait LidarrHomepageItem
 					$queueItems = array_merge($queueItems, $queue);
 				}
 			} catch (Exception $e) {
-				$this->writeLog('error', 'Lidarr Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
+				$this->setLoggerChannel('Lidarr')->error($e);
 			}
 		}
 		$api['content']['queueItems'] = $queueItems;
@@ -194,7 +194,7 @@ trait LidarrHomepageItem
 					$calendar = '';
 				}
 			} catch (Exception $e) {
-				$this->writeLog('error', 'Lidarr Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
+				$this->setLoggerChannel('Lidarr')->error($e);
 			}
 			if (!empty($calendar)) {
 				$calendarItems = array_merge($calendarItems, $calendar);

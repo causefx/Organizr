@@ -38,7 +38,7 @@ trait HealthChecksHomepageItem
 		];
 		return array_merge($homepageInformation, $homepageSettings);
 	}
-	
+
 	public function healthChecksHomepagePermissions($key = null)
 	{
 		$permissions = [
@@ -57,7 +57,7 @@ trait HealthChecksHomepageItem
 		];
 		return $this->homepageCheckKeyPermissions($key, $permissions);
 	}
-	
+
 	public function homepageOrderhealthchecks()
 	{
 		if ($this->homepageItemPermissions($this->healthChecksHomepagePermissions('main'))) {
@@ -73,7 +73,7 @@ trait HealthChecksHomepageItem
 				';
 		}
 	}
-	
+
 	public function getHealthChecks($tags = null)
 	{
 		if (!$this->homepageItemPermissions($this->healthChecksHomepagePermissions('main'), true)) {
@@ -93,7 +93,7 @@ trait HealthChecksHomepageItem
 					$api['content']['checks'] = array_merge($api['content']['checks'], $healthResults['checks']);
 				}
 			} catch (Requests_Exception $e) {
-				$this->writeLog('error', 'HealthChecks Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
+				$this->setLoggerChannel('HealthChecks')->error($e);
 			};
 		}
 		usort($api['content']['checks'], function ($a, $b) {
@@ -107,7 +107,7 @@ trait HealthChecksHomepageItem
 		$this->setAPIResponse('success', null, 200, $api);
 		return $api;
 	}
-	
+
 	public function healthChecksTags($tags)
 	{
 		$return = '?tag=';

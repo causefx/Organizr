@@ -22,7 +22,7 @@ trait BackupFunctions
 		$filename = $path . $filename;
 		if ($ext == 'zip') {
 			if (file_exists($filename)) {
-				$this->writeLog('success', 'Backup Manager Function -  Deleted Backup [' . pathinfo($filename, PATHINFO_BASENAME) . ']', $this->user['username']);
+				$this->setLoggerChannel('Backup')->info('Deleted Backup [' . pathinfo($filename, PATHINFO_BASENAME) . ']');
 				$this->setAPIResponse(null, pathinfo($filename, PATHINFO_BASENAME) . ' has been deleted', null);
 				return (unlink($filename));
 			} else {
@@ -63,12 +63,13 @@ trait BackupFunctions
 				break;
 			default:
 		}
-
-		$this->writeLog('success', 'BACKUP: backup process started', 'SYSTEM');
+		$this->setLoggerChannel('Backup')->notice('Backing up Organizr');
 		$zipname = $directory . 'backup[' . date('Y-m-d_H-i') . ' - ' . $this->random_ascii_string(2) . '][' . $this->version . '].zip';
 		$zip = new ZipArchive;
 		$zip->open($zipname, ZipArchive::CREATE);
-		$zip->addFile($this->config['dbLocation'] . $this->config['dbName'], basename($this->config['dbLocation'] . $this->config['dbName']));
+		if ($this->config['driver'] == 'sqlite3') {
+			$zip->addFile($this->config['dbLocation'] . $this->config['dbName'], basename($this->config['dbLocation'] . $this->config['dbName']));
+		}
 		$rootPath = $this->root . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR;
 		$files = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($rootPath), RecursiveIteratorIterator::LEAVES_ONLY);
 
@@ -87,8 +88,28 @@ trait BackupFunctions
 
 
 		$zip->close();
-		$this->writeLog('success', 'BACKUP: backup process finished', 'SYSTEM');
+		$this->setLoggerChannel('Backup')->notice('Backup process finished');
 		$this->setAPIResponse('success', 'Backup has been created', 200);
+		$this->deleteBackupsLimit();
+		return true;
+	}
+
+	public function deleteBackupsLimit()
+	{
+		$backups = $this->getBackups();
+		if ($backups) {
+			$list = array_reverse($backups['files']);
+			$killCount = count($list) - $this->config['keepBackupsCountCron'];
+			if ($killCount >= 1) {
+				foreach ($list as $count => $backup) {
+					$count++;
+					if ($count <= $killCount) {
+						$this->log('Cron')->notice('Deleting organizr backup file as it is over limit', ['file' => $backup['name']]);
+						$this->deleteBackup($backup['name']);
+					}
+				}
+			}
+		}
 		return true;
 	}
 

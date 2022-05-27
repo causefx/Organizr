@@ -107,7 +107,7 @@ trait TraktHomepageItem
 				}
 			}
 		} catch (Requests_Exception $e) {
-			$this->writeLog('error', 'Trakt Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
+			$this->setLoggerChannel('Trakt')->error($e);
 			$this->setResponse(500, $e->getMessage());
 			$errors = true;
 		}
@@ -122,7 +122,7 @@ trait TraktHomepageItem
 				}
 			}
 		} catch (Requests_Exception $e) {
-			$this->writeLog('error', 'Trakt Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
+			$this->setLoggerChannel('Trakt')->error($e);
 			$this->setResponse(500, $e->getMessage());
 			$errors = true;
 		}

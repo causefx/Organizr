@@ -111,7 +111,8 @@ trait WeatherHomepageItem
 		try {
 			if ($this->config['homepageWeatherAndAirWeatherEnabled']) {
 				$endpoint = '/weather/v1/forecast/hourly?hours=120&metadata=true';
-				$response = Requests::get($apiURL . $endpoint . $info);
+				$options = $this->requestOptions($apiURL, $this->config['homepageWeatherAndAirRefresh']);
+				$response = Requests::get($apiURL . $endpoint . $info, [], $options);
 				if ($response->success) {
 					$apiData = json_decode($response->body, true);
 					$api['content']['weather'] = ($apiData['error'] === null) ? $apiData : false;
@@ -137,7 +138,7 @@ trait WeatherHomepageItem
 				}
 			}
 		} catch (Requests_Exception $e) {
-			$this->writeLog('error', 'Weather And Air Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
+			$this->setLoggerChannel('Weather & Air')->error($e);
 			$this->setResponse(500, $e->getMessage());
 			return false;
 		};

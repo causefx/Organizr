@@ -160,7 +160,7 @@ trait MonitorrHomepageItem
 				];
 			}
 		} catch (Requests_Exception $e) {
-			$this->writeLog('error', 'Monitorr Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
+			$this->setLoggerChannel('Monitorr')->error($e);
 			$this->setAPIResponse('error', $e->getMessage(), 401);
 			return false;
 		};

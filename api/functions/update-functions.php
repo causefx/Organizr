@@ -12,12 +12,39 @@ trait UpdateFunctions
 			return $this->linuxUpdate();
 		}
 	}
-	
+
+	public function createUpdateStatusFile()
+	{
+		$file = $this->config['dbLocation'] . 'updateInProgress.txt';
+		touch($file);
+		return true;
+	}
+
+	public function removeUpdateStatusFile()
+	{
+		$file = $this->config['dbLocation'] . 'updateInProgress.txt';
+		if (file_exists($file)) {
+			@unlink($file);
+		}
+		return true;
+	}
+
+	public function hasUpdateStatusFile()
+	{
+		return file_exists($this->config['dbLocation'] . 'updateInProgress.txt');
+	}
+
 	public function dockerUpdate()
 	{
 		if (!$this->docker) {
 			$this->setResponse(409, 'Your install type is not Docker');
 			return false;
+		}
+		if ($this->hasUpdateStatusFile()) {
+			$this->setResponse(500, 'Already Update in progress');
+			return false;
+		} else {
+			$this->createUpdateStatusFile();
 		}
 		$dockerUpdate = null;
 		ini_set('max_execution_time', 0);
@@ -29,6 +56,7 @@ trait UpdateFunctions
 		} elseif (file_exists('./40-install')) {
 			$dockerUpdate = shell_exec('./40-install');
 		}
+		$this->removeUpdateStatusFile();
 		if ($dockerUpdate) {
 			$this->setAPIResponse('success', $dockerUpdate, 200);
 			return true;
@@ -37,12 +65,18 @@ trait UpdateFunctions
 			return false;
 		}
 	}
-	
+
 	public function windowsUpdate()
 	{
 		if ($this->docker || $this->getOS() !== 'win') {
 			$this->setResponse(409, 'Your install type is not Windows');
 			return false;
+		}
+		if ($this->hasUpdateStatusFile()) {
+			$this->setResponse(500, 'Already Update in progress');
+			return false;
+		} else {
+			$this->createUpdateStatusFile();
 		}
 		$branch = ($this->config['branch'] == 'v2-master') ? '-m' : '-d';
 		ini_set('max_execution_time', 0);
@@ -50,6 +84,7 @@ trait UpdateFunctions
 		$logFile = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'scripts' . DIRECTORY_SEPARATOR . 'log.txt';
 		$windowsScript = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'scripts' . DIRECTORY_SEPARATOR . 'windows-update.bat ' . $branch . ' > ' . $logFile . ' 2>&1';
 		$windowsUpdate = shell_exec($windowsScript);
+		$this->removeUpdateStatusFile();
 		if ($windowsUpdate) {
 			$this->setAPIResponse('success', $windowsUpdate, 200);
 			return true;
@@ -58,12 +93,18 @@ trait UpdateFunctions
 			return false;
 		}
 	}
-	
+
 	public function linuxUpdate()
 	{
 		if ($this->docker || $this->getOS() == 'win') {
 			$this->setResponse(409, 'Your install type is not Linux');
 			return false;
+		}
+		if ($this->hasUpdateStatusFile()) {
+			$this->setResponse(500, 'Already Update in progress');
+			return false;
+		} else {
+			$this->createUpdateStatusFile();
 		}
 		$branch = $this->config['branch'];
 		ini_set('max_execution_time', 0);
@@ -71,6 +112,7 @@ trait UpdateFunctions
 		$logFile = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'scripts' . DIRECTORY_SEPARATOR . 'log.txt';
 		$script = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'scripts' . DIRECTORY_SEPARATOR . 'linux-update.sh ' . $branch . ' > ' . $logFile . ' 2>&1';
 		$update = shell_exec($script);
+		$this->removeUpdateStatusFile();
 		if ($update) {
 			$this->setAPIResponse('success', $update, 200);
 			return true;
@@ -79,7 +121,7 @@ trait UpdateFunctions
 			return false;
 		}
 	}
-	
+
 	public function upgradeInstall($branch = 'v2-master', $stage = '1')
 	{
 		// may kill this function in place for php script to run elsewhere
@@ -102,29 +144,29 @@ trait UpdateFunctions
 			$destination = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR;
 			switch ($stage) {
 				case '1':
-					$this->writeLog('success', 'Update Function -  Started Upgrade Process', $this->user['username']);
+					$this->setLoggerChannel('Update')->info('Started Upgrade Process');
 					if ($this->downloadFile($url, $file)) {
-						$this->writeLog('success', 'Update Function -  Downloaded Update File for Branch: ' . $branch, $this->user['username']);
+						$this->setLoggerChannel('Update')->info('Downloaded Update File for Branch: ' . $branch);
 						$this->setAPIResponse('success', 'Downloaded file successfully', 200);
 						return true;
 					} else {
-						$this->writeLog('error', 'Update Function -  Downloaded Update File Failed  for Branch: ' . $branch, $this->user['username']);
+						$this->setLoggerChannel('Update')->warning('Downloaded Update File Failed for Branch: ' . $branch);
 						$this->setAPIResponse('error', 'Download failed', 500);
 						return false;
 					}
 				case '2':
 					if ($this->unzipFile($file)) {
-						$this->writeLog('success', 'Update Function -  Unzipped Update File for Branch: ' . $branch, $this->user['username']);
+						$this->setLoggerChannel('Update')->info('Unzipped Update File for Branch: ' . $branch);
 						$this->setAPIResponse('success', 'Unzipped file successfully', 200);
 						return true;
 					} else {
-						$this->writeLog('error', 'Update Function -  Unzip Failed for Branch: ' . $branch, $this->user['username']);
+						$this->setLoggerChannel('Update')->warning('Unzip Failed for Branch: ' . $branch);
 						$this->setAPIResponse('error', 'Unzip failed', 500);
 						return false;
 					}
 				case '3':
 					if ($this->rcopy($source, $destination)) {
-						$this->writeLog('success', 'Update Function -  Files overwritten using Updated Files from Branch: ' . $branch, $this->user['username']);
+						$this->setLoggerChannel('Update')->info('Files overwritten using Updated Files from Branch: ' . $branch);
 						$updateComplete = $this->config['dbLocation'] . 'completed.txt';
 						if (!file_exists($updateComplete)) {
 							touch($updateComplete);
@@ -132,18 +174,18 @@ trait UpdateFunctions
 						$this->setAPIResponse('success', 'Files replaced successfully', 200);
 						return true;
 					} else {
-						$this->writeLog('error', 'Update Function -  Overwrite Failed for Branch: ' . $branch, $this->user['username']);
+						$this->setLoggerChannel('Update')->warning('Overwrite Failed for Branch: ' . $branch);
 						$this->setAPIResponse('error', 'File replacement failed', 500);
 						return false;
 					}
 				case '4':
 					if ($this->rrmdir($cleanup)) {
-						$this->writeLog('success', 'Update Function -  Deleted Update Files from Branch: ' . $branch, $this->user['username']);
-						$this->writeLog('success', 'Update Function -  Update Completed', $this->user['username']);
+						$this->setLoggerChannel('Update')->info('Deleted Update Files from Branch: ' . $branch);
+						$this->setLoggerChannel('Update')->info('Update Completed');
 						$this->setAPIResponse('success', 'Removed update files successfully', 200);
 						return true;
 					} else {
-						$this->writeLog('error', 'Update Function -  Removal of Update Files Failed for Branch: ' . $branch, $this->user['username']);
+						$this->setLoggerChannel('Update')->warning('Removal of Update Files Failed for Branch: ' . $branch);
 						$this->setAPIResponse('error', 'File removal failed', 500);
 						return false;
 					}
@@ -155,6 +197,5 @@ trait UpdateFunctions
 			$this->setAPIResponse('error', 'File permissions not set correctly', 500);
 			return false;
 		}
-		
 	}
 }

@@ -130,7 +130,7 @@ class HealthChecks extends Organizr
 			)
 		);
 	}
-	
+
 	public function _healthCheckPluginTest($url)
 	{
 		$success = false;
@@ -156,12 +156,12 @@ class HealthChecks extends Organizr
 				}
 			}
 		} catch (Requests_Exception $e) {
-			$this->writeLog('error', 'HealthChecks Plugin - Error: ' . $e->getMessage(), 'SYSTEM');
+			$this->setLoggerChannel('HealthChecks')->error($e);
 			return false;
 		}
 		return $success;
 	}
-	
+
 	public function _healthCheckSelfHostedURLValidation($url, $checkOnly = false)
 	{
 		$selfHosted = true;
@@ -175,7 +175,7 @@ class HealthChecks extends Organizr
 		}
 		return $checkOnly ? $selfHosted : $url;
 	}
-	
+
 	public function _healthCheckPluginStartUUID($uuid)
 	{
 		if (!$uuid || $this->config['HEALTHCHECKS-PingURL'] == '') {
@@ -186,7 +186,7 @@ class HealthChecks extends Organizr
 		$options = ($this->localURL($url)) ? array('verify' => false) : array('verify' => $this->getCert());
 		return Requests::get($url . $uuid . '/start', [], $options);
 	}
-	
+
 	public function _healthCheckPluginUUID($uuid, $pass = false)
 	{
 		if (!$uuid || $this->config['HEALTHCHECKS-PingURL'] == '') {
@@ -198,7 +198,7 @@ class HealthChecks extends Organizr
 		$options = ($this->localURL($url)) ? array('verify' => false) : array('verify' => $this->getCert());
 		return Requests::get($url . $uuid . $path, [], $options);
 	}
-	
+
 	public function _healthCheckPluginRun()
 	{
 		$continue = $this->config['HEALTHCHECKS-all-items'] !== '' ? $this->config['HEALTHCHECKS-all-items'] : false;
@@ -208,7 +208,7 @@ class HealthChecks extends Organizr
 		if ($continue && $this->config['HEALTHCHECKS-enabled'] && !empty($this->config['HEALTHCHECKS-PingURL']) && $this->qualifyRequest($this->config['HEALTHCHECKS-Auth-include'])) {
 			$allItems = [];
 			foreach ($this->config['HEALTHCHECKS-all-items'] as $k => $v) {
-				
+
 				if ($k !== false) {
 					foreach ($v as $item) {
 						$allItems[$k][$item['label']] = $item['value'];

@@ -663,10 +663,12 @@ trait PlexHomepageItem
 		$options = $this->requestOptions($url, null, $this->config['tautulliDisableCertCheck'], $this->config['tautulliUseCustomCertificate']);
 		try {
 			$response = Requests::get($url, [], $options);
-			$response = json_decode($response->body, true);
-			foreach ($response['response']['data'] as $user) {
-				if ($user['user_id'] != 0) {
-					$names[$user['username']] = $user['friendly_name'];
+			if ($response->success) {
+				$response = json_decode($response->body, true);
+				foreach ($response['response']['data'] as $user) {
+					if ($user['user_id'] != 0) {
+						$names[$user['username']] = $user['friendly_name'];
+					}
 				}
 			}
 		} catch (Exception $e) {
@@ -728,7 +730,7 @@ trait PlexHomepageItem
 					return $libraryList;
 				}
 			} catch (Requests_Exception $e) {
-				$this->writeLog('error', 'Plex Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
+				$this->setLoggerChannel('Plex')->error($e);
 				return false;
 			};
 		}

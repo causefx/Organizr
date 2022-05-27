@@ -95,25 +95,6 @@ $email = '
 												</td>
 											</tr>
 											' . $button . '
-											<tr>
-												<td class="very-bottom" style="font-family:\'Helvetica\', Arial, sans-serif;color:#73747C;padding:0;text-align:left;font-size:14px;">
-													<table border="0" cellspacing="0" class="full-width" style="width: 100%;">
-														<tbody>
-															<tr>
-																<td class="round-bottom" style="font-family:\'Helvetica\', Arial, sans-serif;color:#73747C;padding:32px;text-align:left;border:1px solid #e9e9e9;border-top:0;border-radius:0 0 10px 10px;background-color:#ffffff;">
-																	<table border="0" class="table-basic full-width" style="border-collapse:collapse;border:0px solid #000;width:100%;">
-																		<tbody>
-																			<tr>
-																				<td style="font-family: \'Helvetica\', Arial, sans-serif; color: #73747C; padding: 0; text-align: left;" width="50%"><b>Powered By:</b> Organizr</td>
-																			</tr>
-																		</tbody>
-																	</table>
-																</td>
-															</tr>
-														</tbody>
-													</table>
-												</td>
-											</tr>
 										</tbody>
 									</table>
 								</td>

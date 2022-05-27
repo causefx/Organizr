@@ -75,6 +75,7 @@ return array(
     'Dibi\\Translator' => $vendorDir . '/dibi/dibi/src/Dibi/Translator.php',
     'Dibi\\Type' => $vendorDir . '/dibi/dibi/src/Dibi/Type.php',
     'Dibi\\UniqueConstraintViolationException' => $vendorDir . '/dibi/dibi/src/Dibi/exceptions.php',
+    'ReturnTypeWillChange' => $vendorDir . '/symfony/polyfill-php81/Resources/stubs/ReturnTypeWillChange.php',
     'Stringable' => $vendorDir . '/symfony/polyfill-php80/Resources/stubs/Stringable.php',
     'UnhandledMatchError' => $vendorDir . '/symfony/polyfill-php80/Resources/stubs/UnhandledMatchError.php',
     'ValueError' => $vendorDir . '/symfony/polyfill-php80/Resources/stubs/ValueError.php',

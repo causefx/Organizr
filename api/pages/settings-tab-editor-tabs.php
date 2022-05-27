@@ -67,7 +67,6 @@ function get_page_settings_tab_editor_tabs($Organizr)
 	return '
 	<script>
 	buildTabEditor();
-	
 	' . $iconSelectors . '
 	</script>
 	<div class="panel bg-org panel-info">
@@ -85,20 +84,22 @@ function get_page_settings_tab_editor_tabs($Organizr)
 							<th width="20" class="text-center"></th>
 							<th width="70" class="text-center"></th>
 							<th lang="en">NAME</th>
-							<th lang="en">CATEGORY</th>
-							<th lang="en">GROUP</th>
-							<th lang="en">TYPE</th>
+							<th class="text-center" lang="en">CATEGORY</th>
+							<th class="text-center" lang="en">MIN GROUP</th>
+							<th class="text-center" lang="en">MAX GROUP</th>
+							<th class="text-center" lang="en">TYPE</th>
 							<th lang="en" style="text-align:center">DEFAULT</th>
 							<th lang="en" style="text-align:center">ACTIVE</th>
 							<th lang="en" style="text-align:center">SPLASH</th>
 							<th lang="en" style="text-align:center">PING</th>
 							<th lang="en" style="text-align:center">PRELOAD</th>
+							<th lang="en" style="text-align:center">ADD TO ADMIN</th>
 							<th lang="en" style="text-align:center">EDIT</th>
 							<th lang="en" style="text-align:center">DELETE</th>
 						</tr>
 					</thead>
 					<tbody id="tabEditorTable">
-						<td class="text-center" colspan="12"><i class="fa fa-spin fa-spinner"></i></td>
+						<td class="text-center" colspan="15"><i class="fa fa-spin fa-spinner"></i></td>
 					</tbody>
 				</table>
 			</form>

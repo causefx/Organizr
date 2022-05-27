@@ -159,8 +159,8 @@ trait LogFunctions
 
 	public function getLatestLogFile()
 	{
-		if ($this->log) {
-			if (isset($this->log)) {
+		if ($this->logFile) {
+			if (isset($this->logFile)) {
 				$folder = $this->logLocation();
 				$directoryIterator = new RecursiveDirectoryIterator($folder, FilesystemIterator::SKIP_DOTS);
 				$iteratorIterator = new RecursiveIteratorIterator($directoryIterator);
@@ -185,8 +185,8 @@ trait LogFunctions
 
 	public function getLogFiles()
 	{
-		if ($this->log) {
-			if (isset($this->log)) {
+		if ($this->logFile) {
+			if (isset($this->logFile)) {
 				$folder = $this->logLocation();
 				$directoryIterator = new RecursiveDirectoryIterator($folder, FilesystemIterator::SKIP_DOTS);
 				$iteratorIterator = new RecursiveIteratorIterator($directoryIterator);
@@ -207,49 +207,49 @@ trait LogFunctions
 		return false;
 	}
 
+	public function log(...$params)
+	{
+		// Alias of setLoggerChannel
+		return $this->setLoggerChannel(...$params);
+	}
+
 	public function setLoggerChannel($channel = 'Organizr', $username = null)
 	{
+
 		if ($this->hasDB()) {
+			$channel = $channel ?: 'Organizr';
 			$setLogger = false;
 			if ($username) {
 				$username = $this->sanitizeUserString($username);
 			}
-			if ($this->logger) {
+			if ($this->loggerSetup) {
 				if ($channel) {
 					if (strtolower($this->logger->getChannel()) !== strtolower($channel)) {
+						$this->logger->setChannel($channel);
 						$setLogger = true;
 					}
 				}
 				if ($username) {
 					$currentUsername = $this->logger->getTraceId() !== '' ? strtolower($this->logger->getTraceId()) : '';
 					if ($currentUsername !== strtolower($username)) {
+						$this->logger->setUsername($username);
 						$setLogger = true;
 					}
 				}
+				if ($setLogger) {
+					return $this->setupLogger($channel, $username);
+				} else {
+					return $this->logger;
+				}
 			} else {
-				$setLogger = true;
-			}
-			if ($setLogger) {
-				$channel = $channel ?: 'Organizr';
 				return $this->setupLogger($channel, $username);
-			} else {
-				return $this->logger;
 			}
 		}
 	}
 
-	public function setupLogger($channel = 'Organizr', $username = null)
+	public function getLogLevelClass($level, $slack = false)
 	{
-		if (!$username) {
-			$username = $this->user['username'] ?? 'System';
-		}
-		$loggerBuilder = new OrganizrLogger();
-		$loggerBuilder->setReadyStatus($this->hasDB() && $this->log);
-		$loggerBuilder->setMaxFiles($this->config['maxLogFiles']);
-		$loggerBuilder->setFileName($this->tempLogIfNeeded());
-		$loggerBuilder->setTraceId($username);
-		$loggerBuilder->setChannel(ucwords(strtolower($channel)));
-		switch ($this->config['logLevel']) {
+		switch ($level) {
 			case 'DEBUG':
 				$logLevel = Nekonomokochan\PhpJsonLogger\LoggerBuilder::DEBUG;
 				break;
@@ -275,40 +275,67 @@ trait LogFunctions
 				$logLevel = Nekonomokochan\PhpJsonLogger\LoggerBuilder::WARNING;
 				break;
 		}
-		$loggerBuilder->setLogLevel($logLevel);
+		if ($slack) {
+			$organizrLogLevel = $this->getLogLevelClass($this->config['logLevel']);
+			if ($logLevel < $organizrLogLevel) {
+				$logLevel = $organizrLogLevel;
+			}
+		}
+		return $logLevel;
+	}
+
+	public function setupLogger($channel = 'Organizr', $username = null)
+	{
+		if (!$username) {
+			$username = $this->user['username'] ?? 'System';
+		}
+		$loggerBuilder = new OrganizrLogger();
+		$loggerBuilder->setReadyStatus($this->hasDB() && $this->logFile);
+		$loggerBuilder->setMaxFiles($this->config['maxLogFiles']);
+		$loggerBuilder->setFileName($this->tempLogIfNeeded());
+		$loggerBuilder->setTraceId($username);
+		$loggerBuilder->setChannel(ucwords(strtolower($channel)));
+		$loggerBuilder->setLogLevel($this->getLogLevelClass($this->config['logLevel']));
 		try {
+			if ($this->config['sendLogsToSlack']) {
+				if ($this->config['slackLogWebhook'] !== '') {
+					$slackHandlerBuilder = new Nekonomokochan\PhpJsonLogger\SlackWebhookHandlerBuilder($this->config['slackLogWebhook'], $this->config['slackLogWebHookChannel']);
+					$slackHandlerBuilder->setLevel($this->getLogLevelClass($this->config['slackLogLevel'], true));
+					$loggerBuilder->setSlackWebhookHandler($slackHandlerBuilder->build());
+				}
+			}
 			$this->logger = $loggerBuilder->build();
+			$this->loggerSetup = true;
 			return $this->logger;
 		} catch (Exception $e) {
 			// nothing so far
-			$this->logger = null;
 			return $this->logger;
 		}
-		/* setup:
+		/*
+		Setup:
 		set the log channel before you send log (You can set an optional Username (2nd Variable) | If user is logged already logged in, it will use their username):
-		$this->setLoggerChannel('Plex Homepage');
 		normal log:
-		$this->logger->info('test');
+		$this->log('Plex Homepage')->info('test');
 		normal log with context ($context must be an array):
-		$this->logger->info('test', $context);
+		$this->log('Plex Homepage')->info('test', $context);
 		exception:
-		$this->logger->critical($exception, $context);
+		$this->log('Plex Homepage')->critical($exception, $context);
 		*/
 	}
 
 	public function tempLogIfNeeded()
 	{
-		if (!$this->log) {
+		if (!$this->logFile) {
 			return $this->root . DIRECTORY_SEPARATOR . 'tmp' . DIRECTORY_SEPARATOR . 'organizr-' . $this->randString() . '.log';
 		} else {
-			return $this->log;
+			return $this->logFile;
 		}
 	}
 
 	public function getLog($pageSize = 10, $offset = 0, $filter = 'NONE', $number = 0, $trace_id = null)
 	{
-		if ($this->log) {
-			if (isset($this->log)) {
+		if ($this->logFile) {
+			if (isset($this->logFile)) {
 				if ($number !== 0) {
 					if ($number == 'all' || $number == 'combined-logs') {
 						$log = 'combined-logs';
@@ -337,7 +364,7 @@ trait LogFunctions
 	{
 		$this->setLoggerChannel('Logger');
 		$this->logger->debug('Starting log purge function');
-		if ($this->log) {
+		if ($this->logFile) {
 			$this->logger->debug('Checking if log id exists');
 			if ($number !== 0) {
 				if ($number == 'all' || $number == 'combined-logs') {
@@ -426,5 +453,27 @@ trait LogFunctions
 		$dropdownItems .= '<li><a href="javascript:toggleLogFilter(\'EMERGENCY\')"><span lang="en">Emergency</span></a></li>';
 		$dropdownItems .= '<li class="divider"></li><li><a href="javascript:toggleLogFilter(\'NONE\')"><span lang="en">None</span></a></li>';
 		return '<button aria-expanded="false" data-toggle="dropdown" class="btn btn-inverse dropdown-toggle waves-effect waves-light pull-right m-r-5 hidden-xs" type="button"> <span class="log-filter-text m-r-5" lang="en">NONE</span><i class="fa fa-filter m-r-5"></i></button><ul role="menu" class="dropdown-menu log-filter-dropdown pull-right">' . $dropdownItems . '</ul>';
+	}
+
+	public function testConnectionSlackLogs()
+	{
+		if (!$this->config['sendLogsToSlack']) {
+			$this->setResponse(409, 'sendLogsToSlack is disabled');
+			return false;
+		}
+		if ($this->config['slackLogWebhook'] == '') {
+			$this->setResponse(409, 'slackLogWebhook is empty');
+			return false;
+		}
+		if ($this->config['slackLogWebHookChannel'] == '' && stripos($this->config['slackLogWebhook'], 'discord') === false) {
+			$this->setResponse(409, 'slackLogWebhook is empty');
+			return false;
+		}
+		$context = [
+			'test' => 'success',
+		];
+		$this->setupLogger('Slack Tester', $this->user['username'])->warning('Warning Test', $context);
+		$this->setResponse(200, 'Slack test connection completed - Please check Slack/Discord Channel');
+		return true;
 	}
 }

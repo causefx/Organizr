@@ -162,7 +162,7 @@ trait JackettHomepageItem
 				unset($apiData);
 			}
 		} catch (Requests_Exception $e) {
-			$this->writeLog('error', 'Jackett blackhole download failed ' . $e->getMessage(), 'SYSTEM');
+			$this->setLoggerChannel('Jackett')->error($e);
 			$this->setResponse(500, $e->getMessage());
 			return false;
 		};

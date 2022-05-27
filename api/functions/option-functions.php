@@ -458,7 +458,7 @@ trait OptionsFunction
 				break;
 			case 'calendarlinkurl':
 				$settingMerge = [
-					'type' => 'select',
+					'type' => 'select-input',
 					'label' => 'Target URL',
 					'help' => 'Set the primary URL used when clicking on calendar icon.',
 					'options' => $this->makeOptionsFromValues($this->config[str_replace('CalendarLink', '', $name) . 'URL'], true, 'Use Default'),

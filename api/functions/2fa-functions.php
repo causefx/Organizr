@@ -83,7 +83,7 @@ trait TwoFAFunctions
 				)
 			),
 		];
-		$this->writeLog('success', 'User Management Function - User added 2FA', $this->user['username']);
+		$this->setLoggerChannel('Users')->info('User added 2FA');
 		$this->setAPIResponse('success', '2FA Added', 200);
 		return $this->processQueries($response);
 	}
@@ -101,7 +101,7 @@ trait TwoFAFunctions
 				)
 			),
 		];
-		$this->writeLog('success', 'User Management Function - User removed 2FA', $this->user['username']);
+		$this->setLoggerChannel('Users')->info('User removed 2FA');
 		$this->setAPIResponse('success', '2FA deleted', 204);
 		return $this->processQueries($response);
 	}

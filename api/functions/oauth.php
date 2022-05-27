@@ -93,7 +93,7 @@ trait OAuthFunctions
 					return true;
 				}
 			} catch (Requests_Exception $e) {
-				$this->writeLog('error', 'Trakt Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
+				$this->setLoggerChannel('Trakt')->error($e);
 				$this->setResponse(500, $e->getMessage());
 				return false;
 			}

@@ -173,6 +173,11 @@ class Logger extends \Monolog\Logger
         return $this->traceId;
     }
 
+	public function setUsername(string $username)
+	{
+		$this->traceId = $username;
+	}
+
     /**
      * @return string
      */
@@ -180,6 +185,11 @@ class Logger extends \Monolog\Logger
     {
         return $this->channel;
     }
+
+	public function setChannel(string $channel)
+	{
+		$this->channel = $channel;
+	}
 
     /**
      * @return int

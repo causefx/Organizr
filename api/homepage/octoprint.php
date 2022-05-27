@@ -98,7 +98,7 @@ trait OctoPrintHomepageItem
 					return false;
 				}
 			} catch (Requests_Exception $e) {
-				$this->writeLog('error', 'Octoprint Function - Error: ' . $e->getMessage(), 'SYSTEM');
+				$this->setLoggerChannel('Octoprint')->error($e);
 				$this->setResponse(500, $e->getMessage());
 				return false;
 			};
