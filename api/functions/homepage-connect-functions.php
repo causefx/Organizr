@@ -8,14 +8,14 @@ trait HomepageConnectFunctions
 		$list = array();
 		$urlList = explode(',', $url);
 		$tokenList = explode(',', $token);
-        foreach ($urlList as $key => $value) {
-            if (isset($tokenList[$key])) {
-                $list[$key] = array(
-                    'url' => $this->qualifyURL($value),
-                    'token' => $tokenList[$key]
-                );
-            }
-        }
+		foreach ($urlList as $key => $value) {
+			if (isset($tokenList[$key])) {
+				$list[$key] = array(
+					'url' => $this->qualifyURL($value),
+					'token' => $tokenList[$key]
+				);
+			}
+		}
 		return $list;
 	}
 
