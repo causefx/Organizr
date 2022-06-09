@@ -1,6 +1,6 @@
 <?php
 include 'api/functions.php';
-$Organizr = new Organizr();
+$Organizr = new Organizr(true);
 ?>
 <!DOCTYPE html>
 <html lang="en" ontouchmove>
