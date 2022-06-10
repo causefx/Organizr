@@ -4,6 +4,9 @@ trait UpgradeFunctions
 {
 	public function upgradeCheck()
 	{
+		if (!$this->checkForUpdates) {
+			return true;
+		}
 		if ($this->hasDB()) {
 			$tempLock = $this->config['dbLocation'] . 'DBLOCK.txt';
 			$updateComplete = $this->config['dbLocation'] . 'completed.txt';

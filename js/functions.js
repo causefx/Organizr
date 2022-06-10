@@ -2752,7 +2752,13 @@ function buildActiveTokens(array) {
         var result = parser.getResult();
         var className = (activeInfo.user.token === v.token) ? 'bg-success text-inverse' : '';
         var extraText = (activeInfo.user.token === v.token) ? '<span class="tooltip-info" data-toggle="tooltip" data-placement="right" title="" data-original-title="Current Token">...'+v.token.substr(-10, 10)+'</span>' : v.token.substr(-10, 10);
-	    v.created = v.created.indexOf('Z') !== -1 ? v.created : v.created + 'Z';
+	    if(typeof v.created == 'object'){
+		    v.created = v.created.date;
+	    }
+	    if(typeof v.expires == 'object'){
+		    v.expires = v.expires.date;
+	    }
+		v.created = v.created.indexOf('Z') !== -1 ? v.created : v.created + 'Z';
 	    v.expires = v.expires.indexOf('Z') !== -1 ? v.expires : v.expires + 'Z';
 
 

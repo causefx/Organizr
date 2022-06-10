@@ -65,7 +65,7 @@ class Organizr
 
 	// ===================================
 	// Organizr Version
-	public $version = '2.1.2320';
+	public $version = '2.1.2330';
 	// ===================================
 	// Quick php Version check
 	public $minimumPHP = '7.4';
@@ -87,17 +87,17 @@ class Organizr
 	public $timeExecution;
 	public $root;
 	public $paths;
-	public $updating;
+	public $checkForUpdates;
 	public $groupOptions;
 	public $warnings;
 	public $errors;
 	public bool $loggerSetup = false;
 	public \Nekonomokochan\PhpJsonLogger\Logger $logger;
 
-	public function __construct($updating = false)
+	public function __construct($checkForUpdates = false)
 	{
 		// Constructed from Updater?
-		$this->updating = $updating;
+		$this->checkForUpdates = $checkForUpdates;
 		// Set Project Root directory and paths
 		$this->root = dirname(__DIR__, 2);
 		$this->paths = [
