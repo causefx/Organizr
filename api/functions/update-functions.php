@@ -2,6 +2,26 @@
 
 trait UpdateFunctions
 {
+	public function testScriptFilePermissions($script, $retest = false)
+	{
+		if (file_exists($script)) {
+			if (is_executable($script)) {
+				return true;
+			} elseif ($retest == false) {
+				$this->setLoggerChannel('Update')->notice('Attempting to set correct permissions', ['file' => $script]);
+				$permissions = shell_exec('chmod 677 ' . $script);
+				$permissions = shell_exec('chmod 777 ' . $script);
+				return $this->testScriptFilePermissions($script, true);
+			} else {
+				$this->setLoggerChannel('Update')->warning('Update script doesn\'t have the correct permissions', ['file' => $script]);
+				return false;
+			}
+		} else {
+			$this->setLoggerChannel('Update')->warning('Update script doesn\'t exist', ['file' => $script]);
+			return false;
+		}
+	}
+
 	public function updateOrganizr()
 	{
 		if ($this->docker) {
@@ -81,8 +101,8 @@ trait UpdateFunctions
 		$branch = ($this->config['branch'] == 'v2-master') ? '-m' : '-d';
 		ini_set('max_execution_time', 0);
 		set_time_limit(0);
-		$logFile = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'scripts' . DIRECTORY_SEPARATOR . 'log.txt';
-		$windowsScript = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'scripts' . DIRECTORY_SEPARATOR . 'windows-update.bat ' . $branch . ' > ' . $logFile . ' 2>&1';
+		$logFile = $this->root . DIRECTORY_SEPARATOR . 'scripts' . DIRECTORY_SEPARATOR . 'log.txt';
+		$windowsScript = $this->root . DIRECTORY_SEPARATOR . 'scripts' . DIRECTORY_SEPARATOR . 'windows-update.bat ' . $branch . ' > ' . $logFile . ' 2>&1';
 		$windowsUpdate = shell_exec($windowsScript);
 		$this->removeUpdateStatusFile();
 		if ($windowsUpdate) {
@@ -109,8 +129,14 @@ trait UpdateFunctions
 		$branch = $this->config['branch'];
 		ini_set('max_execution_time', 0);
 		set_time_limit(0);
-		$logFile = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'scripts' . DIRECTORY_SEPARATOR . 'log.txt';
-		$script = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'scripts' . DIRECTORY_SEPARATOR . 'linux-update.sh ' . $branch . ' > ' . $logFile . ' 2>&1';
+		$logFile = $this->root . DIRECTORY_SEPARATOR . 'scripts' . DIRECTORY_SEPARATOR . 'log.txt';
+		$script = $this->root . DIRECTORY_SEPARATOR . 'scripts' . DIRECTORY_SEPARATOR . 'linux-update.sh ' . $branch . ' > ' . $logFile . ' 2>&1';
+		$checkScript = $this->testScriptFilePermissions($script);
+		if (!$checkScript) {
+			$this->setResponse(500, 'Update script permissions error');
+			$this->removeUpdateStatusFile();
+			return false;
+		}
 		$update = shell_exec($script);
 		$this->removeUpdateStatusFile();
 		if ($update) {
