@@ -197,6 +197,14 @@ class PhpMailer extends Organizr
 		$subject = isset($emailInfo['subject']) ? $emailInfo['subject'] : null;
 		$body = isset($emailInfo['body']) ? $emailInfo['body'] : null;
 		$username = isset($emailInfo['user']) ? $emailInfo['user'] : 'Organizr User';
+		$data = [
+			'to' => $to,
+			'cc' => $cc,
+			'bcc' => $bcc,
+			'subject' => $subject,
+			'body' => $body,
+			'username' => $username,
+		];
 		try {
 			$mail = new PHPMailer\PHPMailer\PHPMailer(true);
 			$mail->isSMTP();
@@ -242,8 +250,8 @@ class PhpMailer extends Organizr
 			$mail->send();
 			return true;
 		} catch (PHPMailer\PHPMailer\Exception $e) {
-			$this->setLoggerChannel('Email')->error($e);
-			return $e->errorMessage();
+			$this->setLoggerChannel('Email')->error($e, $data);
+			return false;
 		}
 	}
 
