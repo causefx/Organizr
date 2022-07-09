@@ -7677,7 +7677,8 @@ function buildAdGuardItem(array){
 		        if (length > 1 && !combine) {
 			        card += `<p class="d-inline text-muted">(${key})</p>`;
 		        }
-		        card += `<h3 data-toggle="tooltip" data-placement="right" title="${key}">${e['avg_processing_time'].toString().substring(0,5)}</h3>`;
+                ms_time = parseFloat(e['avg_processing_time'])*1000
+		        card += `<h3 data-toggle="tooltip" data-placement="right" title="${key}">${ms_time.toFixed(2)} ms</h3>`;
         };
         card += `
                     </div>
