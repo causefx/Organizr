@@ -30,6 +30,13 @@ trait AdGuardHomepageItem
 					$this->settingsOption('toggle-title', 'adguardToggle'),
 					$this->settingsOption('switch', 'homepageAdGuardCombine', ['label' => 'Combine stat cards', 'help' => 'This controls whether to combine the stats for multiple adguard instances into 1 card.']),
 				],
+				'Stats' => [
+					$this->settingsOption('switch', 'adguardQueriesToggle', ['label' => 'Total Queries']),
+					$this->settingsOption('switch', 'adguardQueriesBlockedToggle', ['label' => 'Queries Blocked']),
+					$this->settingsOption('switch', 'adguardPercentToggle', ['label' => 'Percent Blocked']),
+					$this->settingsOption('switch', 'adguardProcessingToggle', ['label' => 'Processing Time']),
+					$this->settingsOption('switch', 'adguardDomainListToggle', ['label' => 'Domains on Blocklist']),
+				],
 				'Test Connection' => [
 					$this->settingsOption('blank', null, ['label' => 'Please Save before Testing']),
 					$this->settingsOption('test', 'adguard'),
@@ -141,6 +148,14 @@ trait AdGuardHomepageItem
 						$stats['data'][$ip] = $adguardResults;
 					}
 				}
+				$response = Requests::get($filter_url, [], $options);
+				if ($response->success) {
+					@$adguardFilterResults = json_decode($response->body, true);
+					if (is_array($adguardFilterResults)) {
+						$ip = $this->qualifyURL($filter_url, true)['host'];
+						$stats['filters'][$ip] = $adguardFilterResults;
+					}
+				}
 			} catch (Requests_Exception $e) {
 				$this->setResponse(500, $e->getMessage());
 				$this->setLoggerChannel('AdGuard')->error($e);
@@ -149,6 +164,11 @@ trait AdGuardHomepageItem
 		}
 		$stats['options']['combine'] = $this->config['homepageAdGuardCombine'];
 		$stats['options']['title'] = $this->config['adguardHeaderToggle'];
+		$stats['options']['queries'] = $this->config['adguardQueriesToggle'];
+		$stats['options']['blocked_count'] = $this->config['adguardQueriesBlockedToggle'];
+		$stats['options']['blocked_percent'] = $this->config['adguardPercentToggle'];
+		$stats['options']['processing_time'] = $this->config['adguardProcessingToggle'];
+		$stats['options']['domain_count'] = $this->config['adguardDomainListToggle'];
 		$stats = isset($stats) ? $stats : null;
 		$this->setAPIResponse('success', null, 200, $stats);
 		return $stats;

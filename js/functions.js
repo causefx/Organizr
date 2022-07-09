@@ -7625,7 +7625,7 @@ function buildAdGuardItem(array){
             <div class="card text-white mb-3 pihole-stat bg-green">
                 <div class="card-body">
                     <div class="inline-block">
-                        <p class="d-inline mr-1">Total queries</p>`;
+                        <p class="d-inline mr-1">Total Queries</p>`;
         for(var key in data) {
             var e = data[key];
 	        if(length > 1 && !combine) {
@@ -7668,7 +7668,7 @@ function buildAdGuardItem(array){
     var avgProcessingTime = function(data) {
         var card = `
         <div class="col-lg-3 col-md-6 col-sm-6 col-xs-12">
-            <div class="card bg-inverse text-white mb-3 pihole-stat bg-red">
+            <div class="card bg-inverse text-white mb-3 pihole-stat bg-purple">
                 <div class="card-body">
                     <div class="inline-block">
                         <p class="d-inline mr-1">Avg Processing Time</p>`;
@@ -7679,6 +7679,60 @@ function buildAdGuardItem(array){
 		        }
                 ms_time = parseFloat(e['avg_processing_time'])*1000
 		        card += `<h3 data-toggle="tooltip" data-placement="right" title="${key}">${ms_time.toFixed(2)} ms</h3>`;
+        };
+        card += `
+                    </div>
+                    <i class="fa fa-group inline-block" aria-hidden="true"></i>
+                </div>
+            </div>
+        </div>
+        `
+        return card;
+    };
+    var domainsBlocked = function(data) {
+        var card = `
+        <div class="col-lg-3 col-md-6 col-sm-6 col-xs-12">
+            <div class="card bg-inverse text-white mb-3 pihole-stat bg-red">
+                <div class="card-body">
+                    <div class="inline-block">
+                        <p class="d-inline mr-1">Domains on Blocklist</p>`;
+        for(var key in data) {
+            var e = data[key];
+		        if (length > 1 && !combine) {
+			        card += `<p class="d-inline text-muted">(${key})</p>`;
+		        }
+                var total_domains_blocked = 0
+                for(var key in e['filters']){
+                    total_domains_blocked += parseFloat(e['filters'][key]['rules_count'])
+                }
+		        card += `<h3 data-toggle="tooltip" data-placement="right" title="${key}">${total_domains_blocked.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}</h3>`;
+        };
+        card += `
+                    </div>
+                    <i class="fa fa-list inline-block" aria-hidden="true"></i>
+                </div>
+            </div>
+        </div>
+        `
+        return card;
+    };
+    var domainsBlocked = function(data) {
+        var card = `
+        <div class="col-lg-3 col-md-6 col-sm-6 col-xs-12">
+            <div class="card bg-inverse text-white mb-3 pihole-stat bg-red">
+                <div class="card-body">
+                    <div class="inline-block">
+                        <p class="d-inline mr-1">Domains on Blocklist</p>`;
+        for(var key in data) {
+            var e = data[key];
+		        if (length > 1 && !combine) {
+			        card += `<p class="d-inline text-muted">(${key})</p>`;
+		        }
+                var total_domains_blocked = 0
+                for(var key in e['filters']){
+                    total_domains_blocked += parseFloat(e['filters'][key]['rules_count'])
+                }
+		        card += `<h3 data-toggle="tooltip" data-placement="right" title="${key}">${total_domains_blocked.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}</h3>`;
         };
         card += `
                     </div>
@@ -7702,7 +7756,7 @@ function buildAdGuardItem(array){
 		        if (length > 1 && !combine) {
 			        card += `<p class="d-inline text-muted">(${key})</p>`;
 		        }
-                var percent = 100*(parseFloat(e['num_blocked_filtering'].toString())/parseFloat(e['num_dns_queries'].toString()))
+                var percent = 100*(parseFloat(e['num_blocked_filtering'])/parseFloat(e['num_dns_queries']))
 		        card += `<h3 data-toggle="tooltip" data-placement="right" title="${key}">${percent.toFixed(2)}%</h3>`
 	        }
         };
@@ -7717,10 +7771,21 @@ function buildAdGuardItem(array){
     };
         if(combine) {
             stats += '<div class="row">'
-            stats += totalQueries(array['data']);
-            stats += totalBlocked(array['data']);
-            stats += percentBlocked(array['data']);
-            stats += avgProcessingTime(array['data']);
+            if(array['options']['queries']){
+                stats += totalQueries(array['data']);
+            }
+            if(array['options']['blocked_count']){
+                stats += totalBlocked(array['data']);
+            }
+            if(array['options']['blocked_percent']){
+                stats += percentBlocked(array['data']);
+            }
+            if(array['options']['processing_time']){
+                stats += avgProcessingTime(array['data']);
+            }
+            if(array['options']['domain_count']){
+                stats += domainsBlocked(array['filters']);
+            }
             stats += '</div>';
         } else {
             for(var key in array['data']) {
@@ -7728,10 +7793,21 @@ function buildAdGuardItem(array){
                 obj = {};
                 obj[key] = data;
                 stats += '<div class="row">'
-                stats += totalQueries(array['data']);
-                stats += totalBlocked(array['data']);
-                stats += percentBlocked(array['data']);
-                stats += avgProcessingTime(array['data']);
+                if(array['options']['queries']){
+                    stats += totalQueries(array['data']);
+                }
+                if(array['options']['blocked_count']){
+                    stats += totalBlocked(array['data']);
+                }
+                if(array['options']['blocked_percent']){
+                    stats += percentBlocked(array['data']);
+                }
+                if(array['options']['processing_time']){
+                    stats += avgProcessingTime(array['data']);
+                }
+                if(array['options']['domain_count']){
+                    stats += domainsBlocked(array['filters']);
+                }
                 stats += '</div>';
             };
         };
@@ -7785,7 +7861,7 @@ function buildPiholeItem(array){
             <div class="card text-white mb-3 pihole-stat bg-green">
                 <div class="card-body">
                     <div class="inline-block">
-                        <p class="d-inline mr-1">Total queries</p>`;
+                        <p class="d-inline mr-1">Total Queries</p>`;
         for(var key in data) {
             var e = data[key];
             if(typeof e['FTLnotrunning'] == 'undefined'){
