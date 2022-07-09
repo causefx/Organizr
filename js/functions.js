@@ -7272,6 +7272,29 @@ function buildPihole(array){
     `;
     return (array) ? html : '';
 }
+function buildAdGuard(array){
+    if(array === false){ return ''; }
+    var html = `
+    <div id="allPihole">
+        <div class="el-element-overlay row">`;
+    if(array['options']['title']) {
+        html += `
+            <div class="col-md-12">
+                <h4 class="pull-left homepage-element-title"><span lang="en">AdGuard Home</span> : </h4><h4 class="pull-left">&nbsp;</h4>
+                <hr class="hidden-xs ml-2">
+            </div>
+            <div class="clearfix"></div>
+        `;
+    }
+    html += `
+		    <div class="piholeCards col-sm-12 my-3">
+			    `+buildAdGuardItem(array)+`
+			</div>
+		</div>
+	</div>
+    `;
+    return (array) ? html : '';
+}
 function buildUnifi(array){
     if(array === false){ return ''; }
     var items = (typeof array.content.unifi.data !== 'undefined') ? array.content.unifi.data.length : false;
@@ -7555,6 +7578,137 @@ function arrayRemove(arr, value) {
 		return ele != value;
 	});
 }
+function buildAdGuardItem(array){
+    var stats = `
+    <style>
+    .bg-green {
+        background-color: #00a65a !important;
+    }
+    
+    .bg-aqua {
+        background-color: #00c0ef!important;
+    }
+    
+    .bg-yellow {
+        background-color: #f39c12!important;
+    }
+    
+    .bg-red {
+        background-color: #dd4b39!important;
+    }
+    
+    .pihole-stat {
+        color: #fff !important;
+    }
+    
+    .pihole-stat .card-body h3 {
+        font-size: 38px;
+        font-weight: 700;
+    }
+
+    .pihole-stat .card-body i {
+        font-size: 5em;
+        float: right;
+        color: #ffffff6b;
+    }
+
+    .inline-block {
+        display: inline-block;
+    }
+    </style>
+    `;
+    var length = Object.keys(array['data']).length;
+    var combine = array['options']['combine'];
+    var totalQueries = function(data) {
+        var card = `
+        <div class="col-lg-3 col-md-6 col-sm-6 col-xs-12">
+            <div class="card text-white mb-3 pihole-stat bg-green">
+                <div class="card-body">
+                    <div class="inline-block">
+                        <p class="d-inline mr-1">Total queries</p>`;
+        for(var key in data) {
+            var e = data[key];
+	        if(length > 1 && !combine) {
+		        card += `<p class="d-inline text-muted">(`+key+`)</p>`;
+	        }
+	        card += `<h3 data-toggle="tooltip" data-placement="right" title="`+key+`">`+e['num_dns_queries'].toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")+`</h3>`;
+        };
+        card += `
+                    </div>
+                    <i class="fa fa-globe inline-block" aria-hidden="true"></i>
+                </div>
+            </div>
+        </div>
+        `
+        return card;
+    };
+    var totalBlocked = function(data) {
+        var card = `
+        <div class="col-lg-3 col-md-6 col-sm-6 col-xs-12">
+            <div class="card bg-inverse text-white mb-3 pihole-stat bg-aqua">
+                <div class="card-body">
+                    <div class="inline-block">
+                        <p class="d-inline mr-1">Queries Blocked</p>`;
+        for(var key in data) {
+            var e = data[key];
+		    if (length > 1 && !combine) {
+			    card += `<p class="d-inline text-muted">(${key})</p>`;
+		    }
+		    card += `<h3 data-toggle="tooltip" data-placement="right" title="${key}">${e['num_blocked_filtering'].toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}</h3>`;
+        };
+        card += `
+                    </div>
+                    <i class="fa fa-hand-paper-o inline-block" aria-hidden="true"></i>
+                </div>
+            </div>
+        </div>
+        `
+        return card;
+    };
+    var avgProcessingTime = function(data) {
+        var card = `
+        <div class="col-lg-3 col-md-6 col-sm-6 col-xs-12">
+            <div class="card bg-inverse text-white mb-3 pihole-stat bg-yellow">
+                <div class="card-body">
+                    <div class="inline-block">
+                        <p class="d-inline mr-1">Avg Processing Time</p>`;
+        for(var key in data) {
+            var e = data[key];
+		        if (length > 1 && !combine) {
+			        card += `<p class="d-inline text-muted">(${key})</p>`;
+		        }
+		        card += `<h3 data-toggle="tooltip" data-placement="right" title="${key}">${e['avg_processing_time'].toString().substring(0,5)}</h3>`;
+        };
+        card += `
+                    </div>
+                    <i class="fa fa-pie-chart inline-block" aria-hidden="true"></i>
+                </div>
+            </div>
+        </div>
+        `
+        return card;
+    };
+        if(combine) {
+            stats += '<div class="row">'
+            stats += totalQueries(array['data']);
+            stats += totalBlocked(array['data']);
+            stats += avgProcessingTime(array['data']);
+            stats += '</div>';
+        } else {
+            for(var key in array['data']) {
+                var data = array['data'][key];
+                obj = {};
+                obj[key] = data;
+                stats += '<div class="row">'
+                stats += totalQueries(array['data']);
+                stats += totalBlocked(array['data']);
+                stats += avgProcessingTime(array['data']);
+                stats += '</div>';
+            };
+        };
+        return stats
+}
+
 function buildPiholeItem(array){
     var stats = `
     <style>
@@ -7738,6 +7892,27 @@ function homepagePihole(timeout){
     let timeoutTitle = 'PiHole-Homepage';
     if(typeof timeouts[timeoutTitle] !== 'undefined'){ clearTimeout(timeouts[timeoutTitle]); }
     timeouts[timeoutTitle] = setTimeout(function(){ homepagePihole(timeout); }, timeout);
+    delete timeout;
+}
+function homepageAdGuard(timeout){
+    var timeout = (typeof timeout !== 'undefined') ? timeout : activeInfo.settings.homepage.refresh.homepagePiholeRefresh;
+    organizrAPI2('GET','api/v2/homepage/adguard/stats').success(function(data) {
+        try {
+            let response = data.response;
+	        document.getElementById('homepageOrderAdGuard').innerHTML = '';
+	        if(response.data !== null){
+		        buildAdGuard(response.data)
+		        $('#homepageOrderAdGuard').html(buildAdGuard(response.data));
+	        }
+        }catch(e) {
+	        organizrCatchError(e,data);
+        }
+    }).fail(function(xhr) {
+	    OrganizrApiError(xhr);
+    });
+    let timeoutTitle = 'AdGuard-Homepage';
+    if(typeof timeouts[timeoutTitle] !== 'undefined'){ clearTimeout(timeouts[timeoutTitle]); }
+    timeouts[timeoutTitle] = setTimeout(function(){ homepageAdGuard(timeout); }, timeout);
     delete timeout;
 }
 function homepageHealthChecks(tags, timeout){

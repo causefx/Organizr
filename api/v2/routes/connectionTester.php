@@ -200,6 +200,28 @@ $app->post('/test/pihole', function ($request, $response, $args) {
 		->withHeader('Content-Type', 'application/json;charset=UTF-8')
 		->withStatus($GLOBALS['responseCode']);
 });
+$app->post('/test/adguard', function ($request, $response, $args) {
+		/**
+	 * @OA\Post(
+	 *     security={{ "api_key":{} }},
+	 *     tags={"test connection"},
+	 *     path="/api/v2/test/adguard",
+	 *     summary="Test connection to AdGuard",
+	 *     @OA\Response(response="200",description="Success",@OA\JsonContent(ref="#/components/schemas/success-message")),
+	 *     @OA\Response(response="401",description="Unauthorized",@OA\JsonContent(ref="#/components/schemas/unauthorized-message")),
+	 *     @OA\Response(response="422",description="Error",@OA\JsonContent(ref="#/components/schemas/error-message")),
+	 *     @OA\Response(response="500",description="Error",@OA\JsonContent(ref="#/components/schemas/error-message")),
+	 * )
+	 */
+	$Organizr = ($request->getAttribute('Organizr')) ?? new Organizr();
+	if ($Organizr->qualifyRequest(1, true)) {
+		$Organizr->testConnectionAdGuard($Organizr->apiData($request));
+	}
+	$response->getBody()->write(jsonE($GLOBALS['api']));
+	return $response
+		->withHeader('Content-Type', 'application/json;charset=UTF-8')
+		->withStatus($GLOBALS['responseCode']);
+});
 $app->post('/test/rtorrent', function ($request, $response, $args) {
 	/**
 	 * @OA\Post(
