@@ -7668,7 +7668,7 @@ function buildAdGuardItem(array){
     var avgProcessingTime = function(data) {
         var card = `
         <div class="col-lg-3 col-md-6 col-sm-6 col-xs-12">
-            <div class="card bg-inverse text-white mb-3 pihole-stat bg-yellow">
+            <div class="card bg-inverse text-white mb-3 pihole-stat bg-red">
                 <div class="card-body">
                     <div class="inline-block">
                         <p class="d-inline mr-1">Avg Processing Time</p>`;
@@ -7678,6 +7678,32 @@ function buildAdGuardItem(array){
 			        card += `<p class="d-inline text-muted">(${key})</p>`;
 		        }
 		        card += `<h3 data-toggle="tooltip" data-placement="right" title="${key}">${e['avg_processing_time'].toString().substring(0,5)}</h3>`;
+        };
+        card += `
+                    </div>
+                    <i class="fa fa-list inline-block" aria-hidden="true"></i>
+                </div>
+            </div>
+        </div>
+        `
+        return card;
+    };
+    var percentBlocked = function(data) {
+        var card = `
+        <div class="col-lg-3 col-md-6 col-sm-6 col-xs-12">
+            <div class="card bg-inverse text-white mb-3 pihole-stat bg-yellow">
+                <div class="card-body">
+                    <div class="inline-block">
+                        <p class="d-inline mr-1">Percent Blocked</p>`;
+        for(var key in data) {
+            var e = data[key];
+	        if(typeof e['FTLnotrunning'] == 'undefined') {
+		        if (length > 1 && !combine) {
+			        card += `<p class="d-inline text-muted">(${key})</p>`;
+		        }
+                var percent = 100*(parseFloat(e['num_blocked_filtering'].toString())/parseFloat(e['num_dns_queries'].toString()))
+		        card += `<h3 data-toggle="tooltip" data-placement="right" title="${key}">${percent.toFixed(2)}%</h3>`
+	        }
         };
         card += `
                     </div>
@@ -7692,6 +7718,7 @@ function buildAdGuardItem(array){
             stats += '<div class="row">'
             stats += totalQueries(array['data']);
             stats += totalBlocked(array['data']);
+            stats += percentBlocked(array['data']);
             stats += avgProcessingTime(array['data']);
             stats += '</div>';
         } else {
@@ -7702,6 +7729,7 @@ function buildAdGuardItem(array){
                 stats += '<div class="row">'
                 stats += totalQueries(array['data']);
                 stats += totalBlocked(array['data']);
+                stats += percentBlocked(array['data']);
                 stats += avgProcessingTime(array['data']);
                 stats += '</div>';
             };
