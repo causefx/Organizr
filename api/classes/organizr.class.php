@@ -48,6 +48,7 @@ class Organizr
 	use OmbiHomepageItem;
 	use OverseerrHomepageItem;
 	use PiHoleHomepageItem;
+	use AdGuardHomepageItem;
 	use PlexHomepageItem;
 	use QBitTorrentHomepageItem;
 	use RadarrHomepageItem;
@@ -4588,6 +4589,13 @@ class Organizr
 					$class = 'bg-info';
 					$image = 'plugins/images/tabs/pihole.png';
 					if (!$this->config['homepagePiholeEnabled']) {
+						$class .= ' faded';
+					}
+					break;
+				case 'homepageOrderAdGuard':
+					$class = 'bg-info';
+					$image = 'plugins/images/tabs/AdGuardHomepageItem';
+					if (!$this->config['homepageAdGuardEnabled']) {
 						$class .= ' faded';
 					}
 					break;

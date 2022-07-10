@@ -263,6 +263,36 @@ trait OptionsFunction
 					'help' => 'Shows/hides the title of this homepage module'
 				];
 				break;
+			case 'total-queries':
+				$settingsMerge = [
+					'type' => 'switch',
+					'label' => 'Total Queries',
+					'help' => 'Shows/hides the total queries stat'
+				];
+			case 'queries-blocked':
+				$settingsMerge = [
+					'type' => 'switch',
+					'label' => 'Total Queries',
+					'help' => 'Shows/hides the queries blocked stat'
+				];
+			case 'percent-blocked':
+				$settingsMerge = [
+					'type' => 'switch',
+					'label' => 'Total Queries',
+					'help' => 'Shows/hides the percent blocked stat'
+				];
+			case 'processing-time':
+				$settingsMerge = [
+					'type' => 'switch',
+					'label' => 'Total Queries',
+					'help' => 'Shows/hides the processing time stat'
+				];
+			case 'domain-list':
+				$settingsMerge = [
+					'type' => 'switch',
+					'label' => 'Total Queries',
+					'help' => 'Shows/hides the domain list stat'
+				];
 			case 'disablecertcheck':
 				$settingMerge = [
 					'type' => 'switch',
