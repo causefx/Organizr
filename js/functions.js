@@ -7732,6 +7732,7 @@ function buildAdGuardItem(array){
                 for(var key in e['filters']){
                     total_domains_blocked += parseFloat(e['filters'][key]['rules_count'])
                 }
+                total_domains_blocked += Object.keys(e['user_rules']).length
 		        card += `<h3 data-toggle="tooltip" data-placement="right" title="${key}">${total_domains_blocked.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}</h3>`;
         };
         card += `
