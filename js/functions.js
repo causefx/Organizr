@@ -7275,7 +7275,7 @@ function buildPihole(array){
 function buildAdGuard(array){
     if(array === false){ return ''; }
     var html = `
-    <div id="allPihole">
+    <div id="allAdGuard">
         <div class="el-element-overlay row">`;
     if(array['options']['title']) {
         html += `
@@ -7287,7 +7287,7 @@ function buildAdGuard(array){
         `;
     }
     html += `
-		    <div class="piholeCards col-sm-12 my-3">
+		    <div class="adguardCards col-sm-12 my-3">
 			    `+buildAdGuardItem(array)+`
 			</div>
 		</div>
@@ -7597,16 +7597,16 @@ function buildAdGuardItem(array){
         background-color: #dd4b39!important;
     }
     
-    .pihole-stat {
+    .adguard-stat {
         color: #fff !important;
     }
     
-    .pihole-stat .card-body h3 {
+    .adguard-stat .card-body h3 {
         font-size: 38px;
         font-weight: 700;
     }
 
-    .pihole-stat .card-body i {
+    .adguard-stat .card-body i {
         font-size: 5em;
         float: right;
         color: #ffffff6b;
@@ -7622,7 +7622,7 @@ function buildAdGuardItem(array){
     var totalQueries = function(data) {
         var card = `
         <div class="col-lg-3 col-md-6 col-sm-6 col-xs-12">
-            <div class="card text-white mb-3 pihole-stat bg-green">
+            <div class="card text-white mb-3 adguard-stat bg-green">
                 <div class="card-body">
                     <div class="inline-block">
                         <p class="d-inline mr-1">Total Queries</p>`;
@@ -7645,7 +7645,7 @@ function buildAdGuardItem(array){
     var totalBlocked = function(data) {
         var card = `
         <div class="col-lg-3 col-md-6 col-sm-6 col-xs-12">
-            <div class="card bg-inverse text-white mb-3 pihole-stat bg-aqua">
+            <div class="card bg-inverse text-white mb-3 adguard-stat bg-aqua">
                 <div class="card-body">
                     <div class="inline-block">
                         <p class="d-inline mr-1">Queries Blocked</p>`;
@@ -7668,7 +7668,7 @@ function buildAdGuardItem(array){
     var avgProcessingTime = function(data) {
         var card = `
         <div class="col-lg-3 col-md-6 col-sm-6 col-xs-12">
-            <div class="card bg-inverse text-white mb-3 pihole-stat bg-purple">
+            <div class="card bg-inverse text-white mb-3 adguard-stat bg-purple">
                 <div class="card-body">
                     <div class="inline-block">
                         <p class="d-inline mr-1">Avg Processing Time</p>`;
@@ -7692,7 +7692,7 @@ function buildAdGuardItem(array){
     var domainsBlocked = function(data) {
         var card = `
         <div class="col-lg-3 col-md-6 col-sm-6 col-xs-12">
-            <div class="card bg-inverse text-white mb-3 pihole-stat bg-red">
+            <div class="card bg-inverse text-white mb-3 adguard-stat bg-red">
                 <div class="card-body">
                     <div class="inline-block">
                         <p class="d-inline mr-1">Domains on Blocklist</p>`;
@@ -7719,7 +7719,7 @@ function buildAdGuardItem(array){
     var domainsBlocked = function(data) {
         var card = `
         <div class="col-lg-3 col-md-6 col-sm-6 col-xs-12">
-            <div class="card bg-inverse text-white mb-3 pihole-stat bg-red">
+            <div class="card bg-inverse text-white mb-3 adguard-stat bg-red">
                 <div class="card-body">
                     <div class="inline-block">
                         <p class="d-inline mr-1">Domains on Blocklist</p>`;
@@ -7747,7 +7747,7 @@ function buildAdGuardItem(array){
     var percentBlocked = function(data) {
         var card = `
         <div class="col-lg-3 col-md-6 col-sm-6 col-xs-12">
-            <div class="card bg-inverse text-white mb-3 pihole-stat bg-yellow">
+            <div class="card bg-inverse text-white mb-3 adguard-stat bg-yellow">
                 <div class="card-body">
                     <div class="inline-block">
                         <p class="d-inline mr-1">Percent Blocked</p>`;
