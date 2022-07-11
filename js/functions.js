@@ -8001,7 +8001,7 @@ function homepagePihole(timeout){
     delete timeout;
 }
 function homepageAdGuard(timeout){
-    var timeout = (typeof timeout !== 'undefined') ? timeout : activeInfo.settings.homepage.refresh.homepagePiholeRefresh;
+    var timeout = (typeof timeout !== 'undefined') ? timeout : activeInfo.settings.homepage.refresh.homepageAdGuardRefresh;
     organizrAPI2('GET','api/v2/homepage/adguard/stats').success(function(data) {
         try {
             let response = data.response;
