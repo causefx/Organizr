@@ -27,9 +27,6 @@ trait ProwlarrHomepageItem
 					$this->settingsOption('disable-cert-check', 'prowlarrDisableCertCheck'),
 					$this->settingsOption('use-custom-certificate', 'prowlarrUseCustomCertificate'),
 				],
-				'Options' => [
-					$this->settingsOption('switch', 'homepageProwlarrBackholeDownload', ['label' => 'Prefer black hole download', 'help' => 'Prefer black hole download link instead of direct/magnet download']),
-				],
 				'Test Connection' => [
 					$this->settingsOption('blank', null, ['label' => 'Please Save before Testing']),
 					$this->settingsOption('test', 'prowlarr'),
