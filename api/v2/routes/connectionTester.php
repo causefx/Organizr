@@ -667,6 +667,28 @@ $app->post('/test/jackett', function ($request, $response, $args) {
 		->withHeader('Content-Type', 'application/json;charset=UTF-8')
 		->withStatus($GLOBALS['responseCode']);
 });
+$app->post('/test/prowlarr', function ($request, $response, $args) {
+	/**
+	 * @OA\Post(
+	 *     security={{ "api_key":{} }},
+	 *     tags={"test connection"},
+	 *     path="/api/v2/test/prowlarr",
+	 *     summary="Test connection to prowlarr",
+	 *     @OA\Response(response="200",description="Success",@OA\JsonContent(ref="#/components/schemas/success-message")),
+	 *     @OA\Response(response="401",description="Unauthorized",@OA\JsonContent(ref="#/components/schemas/unauthorized-message")),
+	 *     @OA\Response(response="422",description="Error",@OA\JsonContent(ref="#/components/schemas/error-message")),
+	 *     @OA\Response(response="500",description="Error",@OA\JsonContent(ref="#/components/schemas/error-message")),
+	 * )
+	 */
+	$Organizr = ($request->getAttribute('Organizr')) ?? new Organizr();
+	if ($Organizr->qualifyRequest(1, true)) {
+		$Organizr->testConnectionProwlarr();
+	}
+	$response->getBody()->write(jsonE($GLOBALS['api']));
+	return $response
+		->withHeader('Content-Type', 'application/json;charset=UTF-8')
+		->withStatus($GLOBALS['responseCode']);
+});
 $app->post('/test/slack-logs', function ($request, $response, $args) {
 	/**
 	 * @OA\Post(

@@ -37,6 +37,7 @@ class Organizr
 	use HTMLHomepageItem;
 	use ICalHomepageItem;
 	use JackettHomepageItem;
+	use ProwlarrHomepageItem;
 	use JDownloaderHomepageItem;
 	use JellyfinHomepageItem;
 	use LidarrHomepageItem;
@@ -4644,6 +4645,13 @@ class Organizr
 					$class = 'bg-inverse';
 					$image = 'plugins/images/tabs/jackett.png';
 					if (!$this->config['homepageJackettEnabled']) {
+						$class .= ' faded';
+					}
+					break;
+				case 'homepageOrderProwlarr':
+					$class = 'bg-inverse';
+					$image = 'plugins/images/tabs/prowlarr.png';
+					if (!$this->config['homepageProwlarrEnabled']) {
 						$class .= ' faded';
 					}
 					break;
