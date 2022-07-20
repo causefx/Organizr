@@ -9731,6 +9731,7 @@ function searchProwlarr(){
 	}
 	$.fn.dataTable.ext.errMode = 'none';
 	$('#prowlarrDataTable').DataTable().destroy();
+	let preferBlackholeDownload = activeInfo.settings.homepage.prowlarr.homepageProwlarrBackholeDownload
 	let prowlarrTable = $("#prowlarrDataTable")
 		.on( 'error.dt', function ( e, settings, techNote, message ) {
 			console.log( 'An error has been reported by DataTables: ', message );
@@ -9772,9 +9773,13 @@ function searchProwlarr(){
 				{ data: 'downloadUrl',
 					render: function ( data, type, row ) {
 						if ( type === 'display' || type === 'filter' ) {
-                            if(data !== null){
-								return '<a href="'+data+'" target="_blank"><i class="fa fa-download"></i></a>';
-							}else{
+            	if(data !== null){
+								if(preferBlackholeDownload === true && row.guid !== null){
+									return '<a onclick="prowlarrDownload(\''+row.guid+","+row.indexerId+'\');return false;" href="#"><i class="fa fa-cloud-download"></i></a>';
+								} else {
+									return '<a href="'+data+'" target="_blank"><i class="fa fa-download"></i></a>';
+								}
+							}	else{
 								return 'No Download Link';
 							}
 						}
@@ -9791,9 +9796,10 @@ function searchProwlarr(){
 		} );
 }
 function prowlarrDownload(url) {
-	let blackholeLink=url.substring(url.indexOf("/bh/"));
+	const args = url.split(",")
 	var post = {
-		url: blackholeLink
+		guid: args[0],
+		indexerId: args[1],
 	};
 	organizrAPI2('POST', 'api/v2/homepage/prowlarr/download/', post, true)
 		.success(function() {

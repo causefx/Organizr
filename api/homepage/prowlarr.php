@@ -27,6 +27,9 @@ trait ProwlarrHomepageItem
 					$this->settingsOption('disable-cert-check', 'prowlarrDisableCertCheck'),
 					$this->settingsOption('use-custom-certificate', 'prowlarrUseCustomCertificate'),
 				],
+				'Options' => [
+					$this->settingsOption('switch', 'homepageProwlarrBackholeDownload', ['label' => 'Prefer black hole download', 'help' => 'Prefer black hole download link instead of direct/magnet download']),
+				],
 				'Test Connection' => [
 					$this->settingsOption('blank', null, ['label' => 'Please Save before Testing']),
 					$this->settingsOption('test', 'prowlarr'),
@@ -137,26 +140,34 @@ trait ProwlarrHomepageItem
 		return $api;
 	}
 
-	public function performProwlarrBackHoleDownload($url = null)
+	public function performProwlarrBackHoleDownload($guid = null, $indexerId = null)
 	{
 		if (!$this->homepageItemPermissions($this->prowlarrHomepagePermissions('main'), true)) {
 			return false;
 		}
-		if (!$url) {
-			$this->setAPIResponse('error', 'URL was not supplied', 422);
+		if (!$guid) {
+			$this->setAPIResponse('error', 'guid was not supplied', 422);
+			return false;
+		}
+		if (!$indexerId) {
+			$this->setAPIResponse('error', 'indexerId was not supplied', 422);
 			return false;
 		}
 		$apiURL = $this->qualifyURL($this->config['prowlarrURL']);
-		$endpoint = $apiURL . $url;
-		error_log($endpoint);
+		$endpoint = $apiURL . '/api/v1/search?apikey=' . $this->config['prowlarrToken'];
 		try {
 			$headers = [];
+			$data = ['guid'=>$guid,'indexerId'=>$indexerId];
 			$options = $this->requestOptions($apiURL, 120, $this->config['prowlarrDisableCertCheck'], $this->config['prowlarrUseCustomCertificate']);
-			$response = Requests::get($endpoint, $headers, $options);
-			if ($response->success) {
-				$apiData = json_decode($response->body, true);
-				$api['content'] = $apiData;
-				unset($apiData);
+			$ch = curl_init($endpoint);
+			$payload = json_encode($data);
+			curl_setopt($ch, CURLOPT_POSTFIELDS, $payload);
+			curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type:application/json'));
+			curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+			$response = curl_exec($ch);
+			curl_close($ch);
+			if ($response) {
+				$api['content'] = $response;
 			}
 		} catch (Requests_Exception $e) {
 			$this->setLoggerChannel('Prowlarr')->error($e);
@@ -164,10 +175,8 @@ trait ProwlarrHomepageItem
 			return false;
 		};
 		$api['content'] = isset($api['content']) ? $api['content'] : false;
-		if ($api['content'] && $api['content']['result'] == 'success') {
+		if ($api['content']) {
 			$this->setAPIResponse('success', null, 200, $api);
-		} else if ($api['content']) {
-			$this->setAPIResponse('error', $api['content']['error'], 400, $api);
 		} else {
 			$this->setAPIResponse('error', 'Unknown error', 400, $api);
 		}

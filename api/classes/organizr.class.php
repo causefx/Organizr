@@ -4228,6 +4228,9 @@ class Organizr
 				'jackett' => [
 					'homepageJackettBackholeDownload' => $this->config['homepageJackettBackholeDownload'] ? true : false
 				],
+				'prowlarr' => [
+					'homepageProwlarrBackholeDownload' => $this->config['homepageProwlarrBackholeDownload'] ? true : false
+				],
 				'options' => [
 					'alternateHomepageHeaders' => $this->config['alternateHomepageHeaders'],
 					'healthChecksTags' => $this->config['healthChecksTags'],

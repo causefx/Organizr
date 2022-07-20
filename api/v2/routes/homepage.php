@@ -526,7 +526,7 @@ $app->get('/homepage/prowlarr/{query}', function ($request, $response, $args) {
 $app->post('/homepage/prowlarr/download/', function ($request, $response, $args) {
 	$Organizr = ($request->getAttribute('Organizr')) ?? new Organizr();
 	$postData = $request->getParsedBody();
-	$Organizr->performProwlarrBackHoleDownload($postData['url']);
+	$Organizr->performProwlarrBackHoleDownload($postData['guid'], $postData['indexerId']);
 	$response->getBody()->write(jsonE($GLOBALS['api']));
 	return $response
 		->withHeader('Content-Type', 'application/json;charset=UTF-8')
