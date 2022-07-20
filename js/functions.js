@@ -7604,7 +7604,7 @@ function buildPiholeItem(array){
             <div class="card text-white mb-3 pihole-stat bg-green">
                 <div class="card-body">
                     <div class="inline-block">
-                        <p class="d-inline mr-1">Total Queries</p>`;
+                        <p class="d-inline mr-1">Total queries</p>`;
         for(var key in data) {
             var e = data[key];
             if(typeof e['FTLnotrunning'] == 'undefined'){
