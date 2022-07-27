@@ -2464,6 +2464,8 @@ function checkTabHomepageItem(id, name, url, urlLocal){
         addEditHomepageItem(id,'HealthChecks');
     }else if(name.includes('jackett') || url.includes('jackett') || urlLocal.includes('jackett')){
 	    addEditHomepageItem(id,'Jackett');
+    }else if(name.includes('prowlarr') || url.includes('prowlarr') || urlLocal.includes('prowlarr')){
+	    addEditHomepageItem(id,'Prowlarr');
     }else if(name.includes('unifi') || url.includes('unifi') || urlLocal.includes('unifi')){
 	    addEditHomepageItem(id,'Unifi');
     }else if(name.includes('tautulli') || url.includes('tautulli') || urlLocal.includes('tautulli')){
@@ -9927,6 +9929,170 @@ function jackettDownload(url) {
 		url: blackholeLink
 	};
 	organizrAPI2('POST', 'api/v2/homepage/jackett/download/', post, true)
+		.success(function() {
+			message('Torrent downloaded','',activeInfo.settings.notifications.position,"#FFF","success","5000");
+		})
+		.fail(function(xhr) {
+			OrganizrApiError(xhr, 'Error downloading torrent');
+		});
+}
+/////////////////////////////////////////////////////////
+function homepageProwlarr(){
+	if(activeInfo.settings.homepage.options.alternateHomepageHeaders){
+		var header = `
+		<div class="col-md-12">
+			<h2 class="text-white m-0 pull-left text-uppercase"><img class="lazyload homepageImageTitle" data-src="plugins/images/tabs/prowlarr.png"> &nbsp; <span lang="en">Prowlarr</span>&nbsp;</h2>
+			<hr class="hidden-xs"><div class="clearfix"></div>
+		</div>
+		<div class="clearfix"></div>
+		<script>$('.prowlarr-panel').removeClass('panel panel-default');</script>
+		`;
+	}else{
+		var header = `
+		<div class="panel-heading bg-info p-t-10 p-b-10">
+			<span class="pull-left m-t-5 text-white"><img class="lazyload homepageImageTitle" data-src="plugins/images/tabs/prowlarr.png" > &nbsp; <span lang="en">Prowlarr</span></span>
+			<div class="clearfix"></div>
+		</div>
+		`;
+	}
+	let html = `
+	<div id="prowlarrSearch" class="row">
+		<div class="col-lg-12">
+			<div class="prowlarr-panel panel panel-default">
+				`+header+`
+				<div class="panel-wrapper p-b-0 collapse in">
+					<div class="white-box">
+	                    <h3 class="box-title m-b-0" lang="en">Search</h3>
+	                    
+	                    <form onsubmit="searchProwlarr();return false;">
+	                        <div class="input-group m-b-30">
+	                        	<span class="input-group-btn hidden">
+									<button type="button" class="btn waves-effect waves-light btn-primary clearProwlarr" onclick="clearProwlarr();"><i class="fa fa-eraser"></i></button>
+								</span>
+	                            <input id="prowlarr-search-query" class="form-control" placeholder="Search for..." lang="en">
+	                            <span class="input-group-btn">
+									<button type="submit" class="btn waves-effect waves-light btn-info"><i class="fa fa-search"></i></button>
+								</span>
+	                        </div>
+	
+	                    </form>
+	                    
+	                    <div class="prowlarrDataTable hidden">
+        					<h3 class="box-title m-b-0" lang="en">Results</h3>
+					        <div class="table-responsive">
+					            <table id="prowlarrDataTable" class="table table-striped">
+					                <thead>
+					                    <tr>
+					                        <th lang="en">Date</th>
+					                        <th lang="en">Indexer</th>
+					                        <th lang="en">Title</th>
+					                        <th lang="en">Size</th>
+					                        <th lang="en">Grabs</th>
+					                        <th lang="en">Seeders</th>
+					                        <th lang="en">Leechers</th>
+					                        <th lang="en">Download</th>
+					                    </tr>
+					                </thead>
+					                <tbody></tbody>
+					            </table>
+					        </div>
+    					</div>
+	                </div>
+					
+				</div>
+			</div>
+		</div>
+	</div>
+	`;
+	$('#homepageOrderProwlarr').html(html);
+}
+function clearProwlarr(){
+	$('#prowlarr-search-query').val('');
+	$('.clearProwlarr').parent().addClass('hidden');
+	$('#prowlarrDataTable').DataTable().destroy();
+	$('.prowlarrDataTable').addClass('hidden');
+}
+function searchProwlarr(){
+	let query = $('#prowlarr-search-query').val();
+	if(query !== ''){
+		$('.prowlarrDataTable').removeClass('hidden');
+		ajaxloader('#prowlarrSearch .panel-wrapper', 'in');
+	}else{
+		return false;
+	}
+	$.fn.dataTable.ext.errMode = 'none';
+	$('#prowlarrDataTable').DataTable().destroy();
+	let preferBlackholeDownload = activeInfo.settings.homepage.prowlarr.homepageProwlarrBackholeDownload
+	let prowlarrTable = $("#prowlarrDataTable")
+		.on( 'error.dt', function ( e, settings, techNote, message ) {
+			console.log( 'An error has been reported by DataTables: ', message );
+		} )
+		.DataTable( {
+			"ajax": {
+				"url": "api/v2/homepage/prowlarr/" + query,
+				"dataSrc": function ( json ) {
+					return json.response.data.content;
+				}
+			},
+			"columns": [
+				{ data: 'publishDate',
+					render: function ( data, type, row ) {
+						if ( type === 'display' || type === 'filter' ) {
+							var m = moment.tz(data, activeInfo.timezone);
+							return moment.utc(m, "YYYY-MM-DD hh:mm[Z]").local().fromNow();
+						}
+						return data;
+					}
+				},
+				{ data: 'indexer' },
+				{ data: 'title',
+					render: function ( data, type, row ) {
+						if(row.Details !== null){
+							return '<a href="'+row['infoUrl']+'" target="_blank">'+data+'</a>';
+						}else{
+							return data;
+						}
+
+					}
+				},
+				{ data: 'size',	render: function ( data ) {
+                    return humanFileSize(data, false);
+                }},
+				{ data: 'grabs' },
+				{ data: 'seeders' },
+				{ data: 'leechers' },
+				{ data: 'downloadUrl',
+					render: function ( data, type, row ) {
+						if ( type === 'display' || type === 'filter' ) {
+            	if(data !== null){
+								if(preferBlackholeDownload === true && row.guid !== null){
+									return '<a onclick="prowlarrDownload(\''+row.guid+","+row.indexerId+'\');return false;" href="#"><i class="fa fa-cloud-download"></i></a>';
+								} else {
+									return '<a href="'+data+'" target="_blank"><i class="fa fa-download"></i></a>';
+								}
+							}	else{
+								return 'No Download Link';
+							}
+						}
+						return data;
+					}
+				},
+			],
+			"order": [[ 5, 'desc' ]],
+			"initComplete": function(settings, json) {
+				ajaxloader();
+				//ajaxblocker('.prowlarr-panel .white-box');
+				$('.clearProwlarr').parent().removeClass('hidden');
+			}
+		} );
+}
+function prowlarrDownload(url) {
+	const args = url.split(",")
+	var post = {
+		guid: args[0],
+		indexerId: args[1],
+	};
+	organizrAPI2('POST', 'api/v2/homepage/prowlarr/download/', post, true)
 		.success(function() {
 			message('Torrent downloaded','',activeInfo.settings.notifications.position,"#FFF","success","5000");
 		})

@@ -37,6 +37,7 @@ class Organizr
 	use HTMLHomepageItem;
 	use ICalHomepageItem;
 	use JackettHomepageItem;
+	use ProwlarrHomepageItem;
 	use JDownloaderHomepageItem;
 	use JellyfinHomepageItem;
 	use LidarrHomepageItem;
@@ -4228,6 +4229,9 @@ class Organizr
 				'jackett' => [
 					'homepageJackettBackholeDownload' => $this->config['homepageJackettBackholeDownload'] ? true : false
 				],
+				'prowlarr' => [
+					'homepageProwlarrBackholeDownload' => $this->config['homepageProwlarrBackholeDownload'] ? true : false
+				],
 				'options' => [
 					'alternateHomepageHeaders' => $this->config['alternateHomepageHeaders'],
 					'healthChecksTags' => $this->config['healthChecksTags'],
@@ -4652,6 +4656,13 @@ class Organizr
 					$class = 'bg-inverse';
 					$image = 'plugins/images/tabs/jackett.png';
 					if (!$this->config['homepageJackettEnabled']) {
+						$class .= ' faded';
+					}
+					break;
+				case 'homepageOrderProwlarr':
+					$class = 'bg-inverse';
+					$image = 'plugins/images/tabs/prowlarr.png';
+					if (!$this->config['homepageProwlarrEnabled']) {
 						$class .= ' faded';
 					}
 					break;
