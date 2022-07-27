@@ -439,22 +439,26 @@ trait NormalFunctions
 			$scheme = $digest['scheme'];
 		}
 		// Host
-		$host = (isset($digest['host']) ? $digest['host'] : '');
+		$host = ($digest['host'] ?? '');
 		// Port
 		$port = (isset($digest['port']) ? ':' . $digest['port'] : '');
 		// Path
-		$path = (isset($digest['path']) ? $digest['path'] : '');
+		$path = ($digest['path'] ?? '');
 		// Query
 		$query = (isset($digest['query']) ? '?' . $digest['query'] : '');
+		// Fragment
+		$fragment = (isset($digest['fragment']) ? '#' . $digest['fragment'] : '');
 		// Output
-		$array = array(
+		$array = [
 			'scheme' => $scheme,
 			'host' => $host,
 			'port' => $port,
 			'path' => $path,
-			'query' => $query
-		);
-		return ($return) ? $array : $scheme . '://' . $host . $port . $path . $query;
+			'query' => $query,
+			'fragment' => $fragment,
+			'digest' => $digest
+		];
+		return ($return) ? $array : $scheme . '://' . $host . $port . $path . $query . $fragment;
 	}
 
 	public function getServer($over = false)
