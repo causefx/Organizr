@@ -1062,6 +1062,16 @@ function closeCurrentTab(event){
 			organizrConsole('Tab Function','No Available Tab to open', 'error');
 	}
 }
+function openInNewBrowserTab(){
+    let id = $('body').attr('data-active-tab-id');
+    let tabInfo = findTab(id);
+    if(!tabInfo){
+        organizrConsole('Open In New Browser Tab Function', 'No Tab Info Found... Id: '+id, 'error');
+        return false;
+    }
+    let url = tabInfo.access_url;
+    window.open(url, '_blank');
+}
 function findTab(query, term = 'id'){
     let tabInfo = activeInfo.tabs.filter(tab => tab[term] == query );
     return tabInfo.length >= 1 ? tabInfo[0] : false;
