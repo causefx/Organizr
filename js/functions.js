@@ -9851,6 +9851,10 @@ function searchJackett(){
 	let jackettTable = $("#jackettDataTable")
 		.on( 'error.dt', function ( e, settings, techNote, message ) {
 			console.log( 'An error has been reported by DataTables: ', message );
+			$('#jackettDataTable').DataTable().destroy();
+			ajaxblocker('.jackett-panel .white-box');
+			$('.clearJackett').parent().removeClass('hidden');
+			window.message('Jackett Connection Error','',activeInfo.settings.notifications.position,"#FFF","error","5000");
 		} )
 		.DataTable( {
 			"ajax": {
@@ -9936,7 +9940,6 @@ function jackettDownload(url) {
 			OrganizrApiError(xhr, 'Error downloading torrent');
 		});
 }
-/////////////////////////////////////////////////////////
 function homepageProwlarr(){
 	if(activeInfo.settings.homepage.options.alternateHomepageHeaders){
 		var header = `
