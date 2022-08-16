@@ -2431,6 +2431,7 @@ class Organizr
 				$this->settingsOption('enable', 'autoBackupCronEnabled', ['label' => 'Auto-Backup Organizr']),
 				$this->settingsOption('cron', 'autoBackupCronSchedule'),
 				$this->settingsOption('number', 'keepBackupsCountCron', ['label' => '# Backups Keep', 'help' => 'Number of backups to keep', 'attr' => 'min="1"']),
+				$this->settingsOption('folder', 'backupLocation', ['label' => 'Backup Save Path', 'help' => 'Folder path to save Organizr Backups - Please test before saving', 'value' => $this->getOrganizrBackupLocation()]),
 				$this->settingsOption('blank'),
 
 			],
@@ -6047,7 +6048,7 @@ class Organizr
 				}
 				$this->setAPIResponse('success', '', 200, $sponsors);
 				return $sponsors;
-			} catch (\PHPHtmlParser\Exceptions\ChildNotFoundException | \PHPHtmlParser\Exceptions\CircularException | \PHPHtmlParser\Exceptions\LogicalException | \PHPHtmlParser\Exceptions\StrictException | \PHPHtmlParser\Exceptions\ContentLengthException | \PHPHtmlParser\Exceptions\NotLoadedException $e) {
+			} catch (\PHPHtmlParser\Exceptions\ChildNotFoundException|\PHPHtmlParser\Exceptions\CircularException|\PHPHtmlParser\Exceptions\LogicalException|\PHPHtmlParser\Exceptions\StrictException|\PHPHtmlParser\Exceptions\ContentLengthException|\PHPHtmlParser\Exceptions\NotLoadedException $e) {
 				$this->setAPIResponse('error', 'Error connecting to Github', 409);
 				return false;
 			}
