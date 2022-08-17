@@ -8468,7 +8468,7 @@ function buildTautulliItem(array){
         var card = '';
         data.forEach(e => {
             let classes = '';
-            if(e['stat_id'] == stat) {
+	        if(e['stat_id'] == stat && e['rows'].length > 0) {
                 if(stat === 'top_platforms') {
                     classes = ' platform-' + e['rows'][0]['platform_name'] + '-rgba';
                 } else {
