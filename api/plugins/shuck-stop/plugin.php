@@ -1,6 +1,6 @@
 <?php
 // PLUGIN INFORMATION
-$GLOBALS['plugins']['ShuckStop'] = array( // Plugin Name
+$GLOBALS['plugins']['ShuckStop'] = [ // Plugin Name
 	'name' => 'ShuckStop', // Plugin Name
 	'author' => 'CauseFX', // Who wrote the plugin
 	'category' => 'Utilities', // One to Two Word Description
@@ -14,7 +14,7 @@ $GLOBALS['plugins']['ShuckStop'] = array( // Plugin Name
 	'bind' => true, // use default bind to make settings page - true or false
 	'api' => 'api/v2/plugins/shuck-stop/settings', // api route for settings page
 	'homepage' => false // Is plugin for use on homepage? true or false
-);
+];
 
 class ShuckStop extends Organizr
 {
@@ -72,8 +72,8 @@ class ShuckStop extends Organizr
 					$json = json_decode($jsonFile, true);
 				}
 				$url = 'https://shucks.top/';
-				$options = ($this->localURL($url)) ? array('verify' => false) : array();
-				$response = Requests::get($url, array(), $options);
+				$options = ($this->localURL($url)) ? ['verify' => false] : [];
+				$response = Requests::get($url, [], $options);
 				if ($response->success) {
 					$drives = [
 						'run_date' => $this->currentTime,
@@ -193,11 +193,11 @@ class ShuckStop extends Organizr
 								'inviteCode' => null,
 							];
 							$emailTemplate = $PhpMailer->_phpMailerPluginEmailTemplate($emailTemplate);
-							$sendEmail = array(
-								'to' => $this->config['SHUCKSTOP-emails'],
+							$sendEmail = [
+								'bcc' => $this->config['SHUCKSTOP-emails'],
 								'subject' => $emailTemplate['subject'],
 								'body' => $PhpMailer->_phpMailerPluginBuildEmail($emailTemplate),
-							);
+							];
 							$PhpMailer->_phpMailerPluginSendEmail($sendEmail);
 						}
 						// Write file
