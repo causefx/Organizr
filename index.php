@@ -138,7 +138,10 @@ $Organizr = new Organizr(true);
                     <span class="hide-menu hidden-sm hidden-md hidden-lg" id="side-logo"></span>
                 </h3>
             </div>
-            <ul class="nav" id="side-menu"></ul>
+            <ul class="nav" id="side-menu">
+                <li class="side-menu-top-sort"></li>
+                <li class="side-menu-bottom-sort"></li>
+            </ul>
         </div>
     </div>
     <!-- ============================================================== -->

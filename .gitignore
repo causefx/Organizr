@@ -176,6 +176,8 @@ api/plugins/*
 !api/plugins/invites/
 !api/plugins/php-mailer/
 !api/plugins/speedTest/
+!api/plugins/shuck-stop/
+api/plugins/shuck-stop/drives.json
 
 # =========================
 # Custom files
