@@ -504,6 +504,62 @@
                 ]
             }
         },
+        "/api/v2/plugins/shuck-stop/settings": {
+            "get": {
+                "tags": [
+                    "plugins-shuck-stop"
+                ],
+                "summary": "Get settings",
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/pluginSettingsPage"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    }
+                },
+                "security": [
+                    {
+                        "api_key": []
+                    }
+                ]
+            }
+        },
+        "/api/v2/plugins/shuck-stop/run": {
+            "get": {
+                "tags": [
+                    "plugins-shuck-stop"
+                ],
+                "summary": "Run ShuckStop plugin",
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/shuckStopRun"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    }
+                },
+                "security": [
+                    {
+                        "api_key": []
+                    }
+                ]
+            }
+        },
         "/api/v2/plugins/speedtest/settings": {
             "get": {
                 "tags": [
