@@ -2,6 +2,17 @@
 
 trait BackupFunctions
 {
+	public function getOrganizrBackupLocation()
+	{
+		$defaultPath = $this->config['dbLocation'] . 'backups' . DIRECTORY_SEPARATOR;
+		$userPath = $this->config['backupLocation'];
+		if ($this->config['backupLocation'] !== '') {
+			if (file_exists($userPath)) {
+				return $userPath;
+			}
+		}
+		return $defaultPath;
+	}
 
 	public function fileArray($files)
 	{
@@ -18,7 +29,7 @@ trait BackupFunctions
 	public function deleteBackup($filename)
 	{
 		$ext = strtolower(pathinfo($filename, PATHINFO_EXTENSION));
-		$path = $this->config['dbLocation'] . 'backups' . DIRECTORY_SEPARATOR;
+		$path = $this->getOrganizrBackupLocation();
 		$filename = $path . $filename;
 		if ($ext == 'zip') {
 			if (file_exists($filename)) {
@@ -37,7 +48,7 @@ trait BackupFunctions
 
 	public function downloadBackup($filename)
 	{
-		$path = $this->config['dbLocation'] . 'backups' . DIRECTORY_SEPARATOR;
+		$path = $this->getOrganizrBackupLocation();
 		$filename = $path . $filename;
 		if (file_exists($filename)) {
 			header('Content-Type: application/zip');
@@ -54,7 +65,7 @@ trait BackupFunctions
 
 	public function backupOrganizr($type = 'config')
 	{
-		$directory = $this->config['dbLocation'] . 'backups' . DIRECTORY_SEPARATOR;
+		$directory = $this->getOrganizrBackupLocation();
 		@mkdir($directory, 0770, true);
 		switch ($type) {
 			case 'config':
@@ -115,7 +126,7 @@ trait BackupFunctions
 
 	public function getBackups()
 	{
-		$path = $this->config['dbLocation'] . 'backups' . DIRECTORY_SEPARATOR;
+		$path = $this->getOrganizrBackupLocation();
 		@mkdir($path, 0770, true);
 		$files = array_diff(scandir($path), array('.', '..'));
 		$fileList = [];

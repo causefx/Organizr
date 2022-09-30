@@ -1062,6 +1062,16 @@ function closeCurrentTab(event){
 			organizrConsole('Tab Function','No Available Tab to open', 'error');
 	}
 }
+function openInNewBrowserTab(){
+    let id = $('body').attr('data-active-tab-id');
+    let tabInfo = findTab(id);
+    if(!tabInfo){
+        organizrConsole('Open In New Browser Tab Function', 'No Tab Info Found... Id: '+id, 'error');
+        return false;
+    }
+    let url = tabInfo.access_url;
+    window.open(url, '_blank');
+}
 function findTab(query, term = 'id'){
     let tabInfo = activeInfo.tabs.filter(tab => tab[term] == query );
     return tabInfo.length >= 1 ? tabInfo[0] : false;
@@ -2454,6 +2464,8 @@ function checkTabHomepageItem(id, name, url, urlLocal){
         addEditHomepageItem(id,'HealthChecks');
     }else if(name.includes('jackett') || url.includes('jackett') || urlLocal.includes('jackett')){
 	    addEditHomepageItem(id,'Jackett');
+    }else if(name.includes('prowlarr') || url.includes('prowlarr') || urlLocal.includes('prowlarr')){
+	    addEditHomepageItem(id,'Prowlarr');
     }else if(name.includes('unifi') || url.includes('unifi') || urlLocal.includes('unifi')){
 	    addEditHomepageItem(id,'Unifi');
     }else if(name.includes('tautulli') || url.includes('tautulli') || urlLocal.includes('tautulli')){
@@ -7272,6 +7284,29 @@ function buildPihole(array){
     `;
     return (array) ? html : '';
 }
+function buildAdGuard(array){
+    if(array === false){ return ''; }
+    var html = `
+    <div id="allAdGuard">
+        <div class="el-element-overlay row">`;
+    if(array['options']['title']) {
+        html += `
+            <div class="col-md-12">
+                <h4 class="pull-left homepage-element-title"><span lang="en">AdGuard Home</span> : </h4><h4 class="pull-left">&nbsp;</h4>
+                <hr class="hidden-xs ml-2">
+            </div>
+            <div class="clearfix"></div>
+        `;
+    }
+    html += `
+		    <div class="adguardCards col-sm-12 my-3">
+			    `+buildAdGuardItem(array)+`
+			</div>
+		</div>
+	</div>
+    `;
+    return (array) ? html : '';
+}
 function buildUnifi(array){
     if(array === false){ return ''; }
     var items = (typeof array.content.unifi.data !== 'undefined') ? array.content.unifi.data.length : false;
@@ -7555,6 +7590,243 @@ function arrayRemove(arr, value) {
 		return ele != value;
 	});
 }
+function buildAdGuardItem(array){
+    var stats = `
+    <style>
+    .bg-green {
+        background-color: #00a65a !important;
+    }
+    
+    .bg-aqua {
+        background-color: #00c0ef!important;
+    }
+    
+    .bg-yellow {
+        background-color: #f39c12!important;
+    }
+    
+    .bg-red {
+        background-color: #dd4b39!important;
+    }
+    
+    .adguard-stat {
+        color: #fff !important;
+    }
+    
+    .adguard-stat .card-body h3 {
+        font-size: 38px;
+        font-weight: 700;
+    }
+
+    .adguard-stat .card-body i {
+        font-size: 5em;
+        float: right;
+        color: #ffffff6b;
+    }
+
+    .inline-block {
+        display: inline-block;
+    }
+    </style>
+    `;
+    var length = Object.keys(array['data']).length;
+    var combine = array['options']['combine'];
+    var totalQueries = function(data) {
+        var card = `
+        <div class="col-lg-3 col-md-6 col-sm-6 col-xs-12">
+            <div class="card text-white mb-3 adguard-stat bg-green">
+                <div class="card-body">
+                    <div class="inline-block">
+                        <p class="d-inline mr-1">Total Queries</p>`;
+        for(var key in data) {
+            var e = data[key];
+	        if(length > 1 && !combine) {
+		        card += `<p class="d-inline text-muted">(`+key+`)</p>`;
+	        }
+	        card += `<h3 data-toggle="tooltip" data-placement="right" title="`+key+`">`+e['num_dns_queries'].toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")+`</h3>`;
+        };
+        card += `
+                    </div>
+                    <i class="fa fa-globe inline-block" aria-hidden="true"></i>
+                </div>
+            </div>
+        </div>
+        `
+        return card;
+    };
+    var totalBlocked = function(data) {
+        var card = `
+        <div class="col-lg-3 col-md-6 col-sm-6 col-xs-12">
+            <div class="card bg-inverse text-white mb-3 adguard-stat bg-aqua">
+                <div class="card-body">
+                    <div class="inline-block">
+                        <p class="d-inline mr-1">Queries Blocked</p>`;
+        for(var key in data) {
+            var e = data[key];
+		    if (length > 1 && !combine) {
+			    card += `<p class="d-inline text-muted">(${key})</p>`;
+		    }
+		    card += `<h3 data-toggle="tooltip" data-placement="right" title="${key}">${e['num_blocked_filtering'].toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}</h3>`;
+        };
+        card += `
+                    </div>
+                    <i class="fa fa-hand-paper-o inline-block" aria-hidden="true"></i>
+                </div>
+            </div>
+        </div>
+        `
+        return card;
+    };
+    var avgProcessingTime = function(data) {
+        var card = `
+        <div class="col-lg-3 col-md-6 col-sm-6 col-xs-12">
+            <div class="card bg-inverse text-white mb-3 adguard-stat bg-purple">
+                <div class="card-body">
+                    <div class="inline-block">
+                        <p class="d-inline mr-1">Avg Processing Time</p>`;
+        for(var key in data) {
+            var e = data[key];
+		        if (length > 1 && !combine) {
+			        card += `<p class="d-inline text-muted">(${key})</p>`;
+		        }
+                ms_time = parseFloat(e['avg_processing_time'])*1000
+		        card += `<h3 data-toggle="tooltip" data-placement="right" title="${key}">${ms_time.toFixed(2)} ms</h3>`;
+        };
+        card += `
+                    </div>
+                    <i class="fa fa-group inline-block" aria-hidden="true"></i>
+                </div>
+            </div>
+        </div>
+        `
+        return card;
+    };
+    var domainsBlocked = function(data) {
+        var card = `
+        <div class="col-lg-3 col-md-6 col-sm-6 col-xs-12">
+            <div class="card bg-inverse text-white mb-3 adguard-stat bg-red">
+                <div class="card-body">
+                    <div class="inline-block">
+                        <p class="d-inline mr-1">Domains on Blocklist</p>`;
+        for(var key in data) {
+            var e = data[key];
+		        if (length > 1 && !combine) {
+			        card += `<p class="d-inline text-muted">(${key})</p>`;
+		        }
+                var total_domains_blocked = 0
+                for(var key in e['filters']){
+                    total_domains_blocked += parseFloat(e['filters'][key]['rules_count'])
+                }
+		        card += `<h3 data-toggle="tooltip" data-placement="right" title="${key}">${total_domains_blocked.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}</h3>`;
+        };
+        card += `
+                    </div>
+                    <i class="fa fa-list inline-block" aria-hidden="true"></i>
+                </div>
+            </div>
+        </div>
+        `
+        return card;
+    };
+    var domainsBlocked = function(data) {
+        var card = `
+        <div class="col-lg-3 col-md-6 col-sm-6 col-xs-12">
+            <div class="card bg-inverse text-white mb-3 adguard-stat bg-red">
+                <div class="card-body">
+                    <div class="inline-block">
+                        <p class="d-inline mr-1">Domains on Blocklist</p>`;
+        for(var key in data) {
+            var e = data[key];
+		        if (length > 1 && !combine) {
+			        card += `<p class="d-inline text-muted">(${key})</p>`;
+		        }
+                var total_domains_blocked = 0
+                for(var key in e['filters']){
+                    total_domains_blocked += parseFloat(e['filters'][key]['rules_count'])
+                }
+                total_domains_blocked += Object.keys(e['user_rules']).length
+		        card += `<h3 data-toggle="tooltip" data-placement="right" title="${key}">${total_domains_blocked.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}</h3>`;
+        };
+        card += `
+                    </div>
+                    <i class="fa fa-list inline-block" aria-hidden="true"></i>
+                </div>
+            </div>
+        </div>
+        `
+        return card;
+    };
+    var percentBlocked = function(data) {
+        var card = `
+        <div class="col-lg-3 col-md-6 col-sm-6 col-xs-12">
+            <div class="card bg-inverse text-white mb-3 adguard-stat bg-yellow">
+                <div class="card-body">
+                    <div class="inline-block">
+                        <p class="d-inline mr-1">Percent Blocked</p>`;
+        for(var key in data) {
+            var e = data[key];
+	        if(typeof e['FTLnotrunning'] == 'undefined') {
+		        if (length > 1 && !combine) {
+			        card += `<p class="d-inline text-muted">(${key})</p>`;
+		        }
+                var percent = 100*(parseFloat(e['num_blocked_filtering'])/parseFloat(e['num_dns_queries']))
+		        card += `<h3 data-toggle="tooltip" data-placement="right" title="${key}">${percent.toFixed(2)}%</h3>`
+	        }
+        };
+        card += `
+                    </div>
+                    <i class="fa fa-pie-chart inline-block" aria-hidden="true"></i>
+                </div>
+            </div>
+        </div>
+        `
+        return card;
+    };
+        if(combine) {
+            stats += '<div class="row">'
+            if(array['options']['queries']){
+                stats += totalQueries(array['data']);
+            }
+            if(array['options']['blocked_count']){
+                stats += totalBlocked(array['data']);
+            }
+            if(array['options']['blocked_percent']){
+                stats += percentBlocked(array['data']);
+            }
+            if(array['options']['processing_time']){
+                stats += avgProcessingTime(array['data']);
+            }
+            if(array['options']['domain_count']){
+                stats += domainsBlocked(array['filters']);
+            }
+            stats += '</div>';
+        } else {
+            for(var key in array['data']) {
+                var data = array['data'][key];
+                obj = {};
+                obj[key] = data;
+                stats += '<div class="row">'
+                if(array['options']['queries']){
+                    stats += totalQueries(array['data']);
+                }
+                if(array['options']['blocked_count']){
+                    stats += totalBlocked(array['data']);
+                }
+                if(array['options']['blocked_percent']){
+                    stats += percentBlocked(array['data']);
+                }
+                if(array['options']['processing_time']){
+                    stats += avgProcessingTime(array['data']);
+                }
+                if(array['options']['domain_count']){
+                    stats += domainsBlocked(array['filters']);
+                }
+                stats += '</div>';
+            };
+        };
+        return stats
+}
+
 function buildPiholeItem(array){
     var stats = `
     <style>
@@ -7738,6 +8010,27 @@ function homepagePihole(timeout){
     let timeoutTitle = 'PiHole-Homepage';
     if(typeof timeouts[timeoutTitle] !== 'undefined'){ clearTimeout(timeouts[timeoutTitle]); }
     timeouts[timeoutTitle] = setTimeout(function(){ homepagePihole(timeout); }, timeout);
+    delete timeout;
+}
+function homepageAdGuard(timeout){
+    var timeout = (typeof timeout !== 'undefined') ? timeout : activeInfo.settings.homepage.refresh.homepageAdGuardRefresh;
+    organizrAPI2('GET','api/v2/homepage/adguard/stats').success(function(data) {
+        try {
+            let response = data.response;
+	        document.getElementById('homepageOrderAdGuard').innerHTML = '';
+	        if(response.data !== null){
+		        buildAdGuard(response.data)
+		        $('#homepageOrderAdGuard').html(buildAdGuard(response.data));
+	        }
+        }catch(e) {
+	        organizrCatchError(e,data);
+        }
+    }).fail(function(xhr) {
+	    OrganizrApiError(xhr);
+    });
+    let timeoutTitle = 'AdGuard-Homepage';
+    if(typeof timeouts[timeoutTitle] !== 'undefined'){ clearTimeout(timeouts[timeoutTitle]); }
+    timeouts[timeoutTitle] = setTimeout(function(){ homepageAdGuard(timeout); }, timeout);
     delete timeout;
 }
 function homepageHealthChecks(tags, timeout){
@@ -8175,7 +8468,7 @@ function buildTautulliItem(array){
         var card = '';
         data.forEach(e => {
             let classes = '';
-            if(e['stat_id'] == stat) {
+	        if(e['stat_id'] == stat && e['rows'].length > 0) {
                 if(stat === 'top_platforms') {
                     classes = ' platform-' + e['rows'][0]['platform_name'] + '-rgba';
                 } else {
@@ -9558,6 +9851,10 @@ function searchJackett(){
 	let jackettTable = $("#jackettDataTable")
 		.on( 'error.dt', function ( e, settings, techNote, message ) {
 			console.log( 'An error has been reported by DataTables: ', message );
+			$('#jackettDataTable').DataTable().destroy();
+			ajaxblocker('.jackett-panel .white-box');
+			$('.clearJackett').parent().removeClass('hidden');
+			window.message('Jackett Connection Error','',activeInfo.settings.notifications.position,"#FFF","error","5000");
 		} )
 		.DataTable( {
 			"ajax": {
@@ -9636,6 +9933,169 @@ function jackettDownload(url) {
 		url: blackholeLink
 	};
 	organizrAPI2('POST', 'api/v2/homepage/jackett/download/', post, true)
+		.success(function() {
+			message('Torrent downloaded','',activeInfo.settings.notifications.position,"#FFF","success","5000");
+		})
+		.fail(function(xhr) {
+			OrganizrApiError(xhr, 'Error downloading torrent');
+		});
+}
+function homepageProwlarr(){
+	if(activeInfo.settings.homepage.options.alternateHomepageHeaders){
+		var header = `
+		<div class="col-md-12">
+			<h2 class="text-white m-0 pull-left text-uppercase"><img class="lazyload homepageImageTitle" data-src="plugins/images/tabs/prowlarr.png"> &nbsp; <span lang="en">Prowlarr</span>&nbsp;</h2>
+			<hr class="hidden-xs"><div class="clearfix"></div>
+		</div>
+		<div class="clearfix"></div>
+		<script>$('.prowlarr-panel').removeClass('panel panel-default');</script>
+		`;
+	}else{
+		var header = `
+		<div class="panel-heading bg-info p-t-10 p-b-10">
+			<span class="pull-left m-t-5 text-white"><img class="lazyload homepageImageTitle" data-src="plugins/images/tabs/prowlarr.png" > &nbsp; <span lang="en">Prowlarr</span></span>
+			<div class="clearfix"></div>
+		</div>
+		`;
+	}
+	let html = `
+	<div id="prowlarrSearch" class="row">
+		<div class="col-lg-12">
+			<div class="prowlarr-panel panel panel-default">
+				`+header+`
+				<div class="panel-wrapper p-b-0 collapse in">
+					<div class="white-box">
+	                    <h3 class="box-title m-b-0" lang="en">Search</h3>
+	                    
+	                    <form onsubmit="searchProwlarr();return false;">
+	                        <div class="input-group m-b-30">
+	                        	<span class="input-group-btn hidden">
+									<button type="button" class="btn waves-effect waves-light btn-primary clearProwlarr" onclick="clearProwlarr();"><i class="fa fa-eraser"></i></button>
+								</span>
+	                            <input id="prowlarr-search-query" class="form-control" placeholder="Search for..." lang="en">
+	                            <span class="input-group-btn">
+									<button type="submit" class="btn waves-effect waves-light btn-info"><i class="fa fa-search"></i></button>
+								</span>
+	                        </div>
+	
+	                    </form>
+	                    
+	                    <div class="prowlarrDataTable hidden">
+        					<h3 class="box-title m-b-0" lang="en">Results</h3>
+					        <div class="table-responsive">
+					            <table id="prowlarrDataTable" class="table table-striped">
+					                <thead>
+					                    <tr>
+					                        <th lang="en">Date</th>
+					                        <th lang="en">Indexer</th>
+					                        <th lang="en">Title</th>
+					                        <th lang="en">Size</th>
+					                        <th lang="en">Grabs</th>
+					                        <th lang="en">Seeders</th>
+					                        <th lang="en">Leechers</th>
+					                        <th lang="en">Download</th>
+					                    </tr>
+					                </thead>
+					                <tbody></tbody>
+					            </table>
+					        </div>
+    					</div>
+	                </div>
+					
+				</div>
+			</div>
+		</div>
+	</div>
+	`;
+	$('#homepageOrderProwlarr').html(html);
+}
+function clearProwlarr(){
+	$('#prowlarr-search-query').val('');
+	$('.clearProwlarr').parent().addClass('hidden');
+	$('#prowlarrDataTable').DataTable().destroy();
+	$('.prowlarrDataTable').addClass('hidden');
+}
+function searchProwlarr(){
+	let query = $('#prowlarr-search-query').val();
+	if(query !== ''){
+		$('.prowlarrDataTable').removeClass('hidden');
+		ajaxloader('#prowlarrSearch .panel-wrapper', 'in');
+	}else{
+		return false;
+	}
+	$.fn.dataTable.ext.errMode = 'none';
+	$('#prowlarrDataTable').DataTable().destroy();
+	let preferBlackholeDownload = activeInfo.settings.homepage.prowlarr.homepageProwlarrBackholeDownload
+	let prowlarrTable = $("#prowlarrDataTable")
+		.on( 'error.dt', function ( e, settings, techNote, message ) {
+			console.log( 'An error has been reported by DataTables: ', message );
+		} )
+		.DataTable( {
+			"ajax": {
+				"url": "api/v2/homepage/prowlarr/" + query,
+				"dataSrc": function ( json ) {
+					return json.response.data.content;
+				}
+			},
+			"columns": [
+				{ data: 'publishDate',
+					render: function ( data, type, row ) {
+						if ( type === 'display' || type === 'filter' ) {
+							var m = moment.tz(data, activeInfo.timezone);
+							return moment.utc(m, "YYYY-MM-DD hh:mm[Z]").local().fromNow();
+						}
+						return data;
+					}
+				},
+				{ data: 'indexer' },
+				{ data: 'title',
+					render: function ( data, type, row ) {
+						if(row.Details !== null){
+							return '<a href="'+row['infoUrl']+'" target="_blank">'+data+'</a>';
+						}else{
+							return data;
+						}
+
+					}
+				},
+				{ data: 'size',	render: function ( data ) {
+                    return humanFileSize(data, false);
+                }},
+				{ data: 'grabs' },
+				{ data: 'seeders' },
+				{ data: 'leechers' },
+				{ data: 'downloadUrl',
+					render: function ( data, type, row ) {
+						if ( type === 'display' || type === 'filter' ) {
+            	if(data !== null){
+								if(preferBlackholeDownload === true && row.guid !== null){
+									return '<a onclick="prowlarrDownload(\''+row.guid+","+row.indexerId+'\');return false;" href="#"><i class="fa fa-cloud-download"></i></a>';
+								} else {
+									return '<a href="'+data+'" target="_blank"><i class="fa fa-download"></i></a>';
+								}
+							}	else{
+								return 'No Download Link';
+							}
+						}
+						return data;
+					}
+				},
+			],
+			"order": [[ 5, 'desc' ]],
+			"initComplete": function(settings, json) {
+				ajaxloader();
+				//ajaxblocker('.prowlarr-panel .white-box');
+				$('.clearProwlarr').parent().removeClass('hidden');
+			}
+		} );
+}
+function prowlarrDownload(url) {
+	const args = url.split(",")
+	var post = {
+		guid: args[0],
+		indexerId: args[1],
+	};
+	organizrAPI2('POST', 'api/v2/homepage/prowlarr/download/', post, true)
 		.success(function() {
 			message('Torrent downloaded','',activeInfo.settings.notifications.position,"#FFF","success","5000");
 		})

@@ -22,6 +22,40 @@ trait SSOFunctions
 		return $cookies;
 	}
 
+	public function getSSOList($enabledOnly = false)
+	{
+		$searchTerm = 'sso';
+		$list = array_filter($this->config, function ($k) use ($searchTerm) {
+			return stripos($k, $searchTerm) !== false;
+		}, ARRAY_FILTER_USE_KEY);
+		foreach ($list as $key => $sso) {
+			if (stripos(substr($key, 0, 3), $searchTerm) === false) {
+				unset($list[$key]);
+				continue;
+			}
+			if (gettype($sso) !== 'boolean') {
+				unset($list[$key]);
+			}
+			if ($enabledOnly) {
+				if (!$sso) {
+					unset($list[$key]);
+				}
+			}
+		}
+		return $list;
+	}
+
+	public function getSSOEnabledCount()
+	{
+		$count = count($this->getSSOList(true));
+		return ($count <= 0) ? 1 : $count;
+	}
+
+	public function getSSOTimeout()
+	{
+		return (60000 / $this->getSSOEnabledCount());
+	}
+
 	public function getSSOUserFor($app, $userobj)
 	{
 		$map = array(
@@ -134,7 +168,7 @@ trait SSOFunctions
 			}
 			$credentials = array('auth' => new Requests_Auth_Digest(array($email, $password)));
 			$url = $this->qualifyURL($this->config['komgaURL']);
-			$options = $this->requestOptions($url, 60000, true, false, $credentials);
+			$options = $this->requestOptions($url, $this->getSSOTimeout(), true, false, $credentials);
 			$response = Requests::get($url . '/api/v1/users/me', ['X-Auth-Token' => 'organizrSSO'], $options);
 			if ($response->success) {
 				if ($response->headers['x-auth-token']) {
@@ -179,7 +213,7 @@ trait SSOFunctions
 				"Pw" => $password
 			);
 			$endpoint = '/Users/authenticatebyname';
-			$options = $this->requestOptions($url, 60000);
+			$options = $this->requestOptions($url, $this->getSSOTimeout());
 			$response = Requests::post($url . $endpoint, $headers, json_encode($data), $options);
 			if ($response->success) {
 				$token = json_decode($response->body, true);
@@ -214,7 +248,7 @@ trait SSOFunctions
 				"plexToken" => $oAuthToken
 			);
 			$endpoint = ($oAuthToken) ? '/api/v1/Token/plextoken' : '/api/v1/Token';
-			$options = $this->requestOptions($url, 60000);
+			$options = $this->requestOptions($url, $this->getSSOTimeout());
 			$response = Requests::post($url . $endpoint, $headers, json_encode($data), $options);
 			if ($response->success) {
 				$token = json_decode($response->body, true)['access_token'];
@@ -258,7 +292,7 @@ trait SSOFunctions
 						"token" => $plexToken,
 						"remember_me" => 1,
 					);
-					$options = $this->requestOptions($url, 60000);
+					$options = $this->requestOptions($url, $this->getSSOTimeout());
 					$response = Requests::post($url . '/auth/signin', $headers, $data, $options);
 					if ($response->success) {
 						$qualifiedURL = $this->qualifyURL($url, true);
@@ -293,7 +327,7 @@ trait SSOFunctions
 				"authToken" => $oAuthToken
 			);
 			$endpoint = ($oAuthToken ? '/api/v1/auth/plex' : '/api/v1/auth/local');
-			$options = $this->requestOptions($url, 60000);
+			$options = $this->requestOptions($url, $this->getSSOTimeout());
 			$response = Requests::post($url . $endpoint, $headers, json_encode($data), $options);
 			if ($response->success) {
 				$user = json_decode($response->body, true); // not really needed yet
@@ -337,7 +371,7 @@ trait SSOFunctions
 				'token' => $oAuthToken
 			);
 			$endpoint = ($oAuthToken) ? '/api/login/plex_login' : '/api/login';
-			$options = $this->requestOptions($url, 60000);
+			$options = $this->requestOptions($url, $this->getSSOTimeout());
 			$response = Requests::post($url . $endpoint, $headers, json_encode($data), $options);
 			if ($response->success) {
 				$user = json_decode($response->body, true)['user'];

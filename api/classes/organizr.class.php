@@ -37,6 +37,7 @@ class Organizr
 	use HTMLHomepageItem;
 	use ICalHomepageItem;
 	use JackettHomepageItem;
+	use ProwlarrHomepageItem;
 	use JDownloaderHomepageItem;
 	use JellyfinHomepageItem;
 	use LidarrHomepageItem;
@@ -48,6 +49,7 @@ class Organizr
 	use OmbiHomepageItem;
 	use OverseerrHomepageItem;
 	use PiHoleHomepageItem;
+	use AdGuardHomepageItem;
 	use PlexHomepageItem;
 	use QBitTorrentHomepageItem;
 	use RadarrHomepageItem;
@@ -65,7 +67,7 @@ class Organizr
 
 	// ===================================
 	// Organizr Version
-	public $version = '2.1.2330';
+	public $version = '2.1.2370';
 	// ===================================
 	// Quick php Version check
 	public $minimumPHP = '7.4';
@@ -2429,6 +2431,7 @@ class Organizr
 				$this->settingsOption('enable', 'autoBackupCronEnabled', ['label' => 'Auto-Backup Organizr']),
 				$this->settingsOption('cron', 'autoBackupCronSchedule'),
 				$this->settingsOption('number', 'keepBackupsCountCron', ['label' => '# Backups Keep', 'help' => 'Number of backups to keep', 'attr' => 'min="1"']),
+				$this->settingsOption('folder', 'backupLocation', ['label' => 'Backup Save Path', 'help' => 'Folder path to save Organizr Backups - Please test before saving', 'value' => $this->getOrganizrBackupLocation()]),
 				$this->settingsOption('blank'),
 
 			],
@@ -3587,17 +3590,68 @@ class Organizr
 			'expires' => gmdate('Y-m-d H:i:s', time() + (86400 * $days))
 		];
 		$response = [
-			array(
+			[
 				'function' => 'query',
-				'query' => array(
+				'query' => [
 					'INSERT INTO [tokens]',
 					$addToken
-				)
-			),
+				],
+				'key' => 'insert'
+			],
+			[
+				'function' => 'fetchAll',
+				'query' => [
+					'SELECT * FROM `tokens` WHERE user_id = ? ORDER BY `id` DESC LIMIT 100',
+					[$result['id']]
+				],
+				'key' => 'tokens'
+			],
 		];
-		$this->processQueries($response);
+		$query = $this->processQueries($response);
 		if ($token) {
 			$this->logger->debug('Token has been created');
+			$browserCount = array_column($query['tokens'], 'browser');
+			$browserCount = array_count_values($browserCount);
+			if (isset($browserCount[$_SERVER ['HTTP_USER_AGENT']])) {
+				if ($browserCount[$_SERVER ['HTTP_USER_AGENT']] <= 1) {
+					if ($this->config['PHPMAILER-enabled']) {
+						$PhpMailer = new PhpMailer();
+						$emailTemplate = array(
+							'type' => 'device',
+							'body' => '
+								<h2>Hey there {user}!</h2>
+								We noticed a login attempt to your account and want to make sure it\'s you.<br />
+								If this was you, please ignore this email.<br /><br />
+								If this wasn\'t you, please change your password and revoke all tokens.<br /><br />
+								<b>Details:</b><br/ >
+								IP: ' . $this->userIP() . '<br />
+								Browser: ' . $_SERVER ['HTTP_USER_AGENT'] . '<br />
+								',
+							'subject' => 'We noticed a login attempt to your account on a new device.',
+							'user' => $result['username'],
+							'password' => null,
+							'inviteCode' => null,
+						);
+
+						$emailTemplate = $PhpMailer->_phpMailerPluginEmailTemplate($emailTemplate);
+						$sendEmail = array(
+							'to' => $result['email'],
+							'subject' => $emailTemplate['subject'],
+							'body' => $PhpMailer->_phpMailerPluginBuildEmail($emailTemplate),
+						);
+						$response = $PhpMailer->_phpMailerPluginSendEmail($sendEmail);
+						if ($response == true) {
+							$this->logger->debug('Sent new device email');
+						} else {
+							$this->logger->debug('Could not send new device email');
+						}
+					} else {
+						$this->logger->debug('Email not setup - cannot send new device email');
+					}
+				}
+			} else {
+				$this->logger->debug('Could not find token in database');
+			}
 		} else {
 			$this->logger->warning('Token creation error');
 		}
@@ -4227,6 +4281,9 @@ class Organizr
 				'jackett' => [
 					'homepageJackettBackholeDownload' => $this->config['homepageJackettBackholeDownload'] ? true : false
 				],
+				'prowlarr' => [
+					'homepageProwlarrBackholeDownload' => $this->config['homepageProwlarrBackholeDownload'] ? true : false
+				],
 				'options' => [
 					'alternateHomepageHeaders' => $this->config['alternateHomepageHeaders'],
 					'healthChecksTags' => $this->config['healthChecksTags'],
@@ -4591,6 +4648,13 @@ class Organizr
 						$class .= ' faded';
 					}
 					break;
+				case 'homepageOrderAdGuard':
+					$class = 'bg-info';
+					$image = 'plugins/images/tabs/AdGuardHomepageItem';
+					if (!$this->config['homepageAdGuardEnabled']) {
+						$class .= ' faded';
+					}
+					break;
 				case 'homepageOrderMonitorr':
 					$class = 'bg-info';
 					$image = 'plugins/images/tabs/monitorr.png';
@@ -4644,6 +4708,13 @@ class Organizr
 					$class = 'bg-inverse';
 					$image = 'plugins/images/tabs/jackett.png';
 					if (!$this->config['homepageJackettEnabled']) {
+						$class .= ' faded';
+					}
+					break;
+				case 'homepageOrderProwlarr':
+					$class = 'bg-inverse';
+					$image = 'plugins/images/tabs/prowlarr.png';
+					if (!$this->config['homepageProwlarrEnabled']) {
 						$class .= ' faded';
 					}
 					break;
@@ -6028,7 +6099,7 @@ class Organizr
 				}
 				$this->setAPIResponse('success', '', 200, $sponsors);
 				return $sponsors;
-			} catch (\PHPHtmlParser\Exceptions\ChildNotFoundException | \PHPHtmlParser\Exceptions\CircularException | \PHPHtmlParser\Exceptions\LogicalException | \PHPHtmlParser\Exceptions\StrictException | \PHPHtmlParser\Exceptions\ContentLengthException | \PHPHtmlParser\Exceptions\NotLoadedException $e) {
+			} catch (\PHPHtmlParser\Exceptions\ChildNotFoundException|\PHPHtmlParser\Exceptions\CircularException|\PHPHtmlParser\Exceptions\LogicalException|\PHPHtmlParser\Exceptions\StrictException|\PHPHtmlParser\Exceptions\ContentLengthException|\PHPHtmlParser\Exceptions\NotLoadedException $e) {
 				$this->setAPIResponse('error', 'Error connecting to Github', 409);
 				return false;
 			}

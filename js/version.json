@@ -593,5 +593,12 @@
     "new": "added check for updates on organizr class",
     "fixed": "fix fatal error on mariadb installs",
     "notes": "update api docs|Updated the following languages: [Catalan] [Chinese] [German] [Italian]"
+  },
+  "2.1.2370": {
+    "date": "2022-09-30 17:17",
+    "title": "Long Lost Update",
+    "new": "added button to open current Organizr tab in new browser tab|added context to mailer error|added custom backup location FR#160|added Duplicati tab icon|added new device emails to login|added new functions getSSOList getSSOEnabledCount getSSOTimeout|added new timeouts for sso item based of sso items enabled|added shuckStop plugin|added zwavejs image|change to address to bcc",
+    "fixed": "add blackhole downloads and fix order|fix cert issue on trakt oauth (#1872)|fixed anchor in url (#1858)|fixed Jackett is freezing in UI on API 500 Error (#1869)|fix order|fix tautulli api parse error (#1860)",
+    "notes": "Adguard Home|adguard home|Better Kavita.png so the icon is now the same size as other tabs|change relative path to use root path|change syling to adguard|Issue 1866 - Open in new browser tab|pihole refresh -\u003E adguard refresh|prowlarr|Prowlarr homepage|prowlarr homepage item|remove blackhole option|remove unneeded cases|remove unneeded text change|sometimes chmod sees double|update api.json|update api.json to reflect shucks plugin|updated gitignore to included shucktop plugin|Updated the following languages: [Catalan] [Dutch] [Polish]|Update Kavita.png|update linux script to check and set permissions"
   }
 }

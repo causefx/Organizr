@@ -112,6 +112,14 @@ $app->get('/homepage/pihole/stats', function ($request, $response, $args) {
 		->withHeader('Content-Type', 'application/json;charset=UTF-8')
 		->withStatus($GLOBALS['responseCode']);
 });
+$app->get('/homepage/adguard/stats', function ($request, $response, $args) {
+	$Organizr = ($request->getAttribute('Organizr')) ?? new Organizr();
+	$Organizr->getAdGuardHomepageStats();
+	$response->getBody()->write(jsonE($GLOBALS['api']));
+	return $response
+		->withHeader('Content-Type', 'application/json;charset=UTF-8')
+		->withStatus($GLOBALS['responseCode']);
+});
 $app->get('/homepage/rtorrent/queue', function ($request, $response, $args) {
 	$Organizr = ($request->getAttribute('Organizr')) ?? new Organizr();
 	$Organizr->getRTorrentHomepageQueue();
@@ -510,6 +518,23 @@ $app->post('/homepage/jackett/download/', function ($request, $response, $args) 
 	$Organizr = ($request->getAttribute('Organizr')) ?? new Organizr();
 	$postData = $request->getParsedBody();
 	$Organizr->performJackettBackHoleDownload($postData['url']);
+	$response->getBody()->write(jsonE($GLOBALS['api']));
+	return $response
+		->withHeader('Content-Type', 'application/json;charset=UTF-8')
+		->withStatus($GLOBALS['responseCode']);
+});
+$app->get('/homepage/prowlarr/{query}', function ($request, $response, $args) {
+	$Organizr = ($request->getAttribute('Organizr')) ?? new Organizr();
+	$Organizr->searchProwlarrIndexers($args['query']);
+	$response->getBody()->write(jsonE($GLOBALS['api']));
+	return $response
+		->withHeader('Content-Type', 'application/json;charset=UTF-8')
+		->withStatus($GLOBALS['responseCode']);
+});
+$app->post('/homepage/prowlarr/download/', function ($request, $response, $args) {
+	$Organizr = ($request->getAttribute('Organizr')) ?? new Organizr();
+	$postData = $request->getParsedBody();
+	$Organizr->performProwlarrBackHoleDownload($postData['guid'], $postData['indexerId']);
 	$response->getBody()->write(jsonE($GLOBALS['api']));
 	return $response
 		->withHeader('Content-Type', 'application/json;charset=UTF-8')

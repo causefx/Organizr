@@ -4,13 +4,16 @@ trait OAuthFunctions
 {
 	public function traktOAuth()
 	{
-		$provider = new Bogstag\OAuth2\Client\Provider\Trakt([
-			'clientId' => $this->config['traktClientId'],
-			'clientSecret' => $this->config['traktClientSecret'],
-			'redirectUri' => $this->getServerPath() . 'api/v2/oauth/trakt'
-		], [
-			'httpClient' => new GuzzleHttp\Client(['verify' => getCert()]),
-		]);
+		$provider = new Bogstag\OAuth2\Client\Provider\Trakt(
+			[
+				'clientId' => $this->config['traktClientId'],
+				'clientSecret' => $this->config['traktClientSecret'],
+				'redirectUri' => $this->getServerPath() . 'api/v2/oauth/trakt'
+			],
+			[
+				'httpClient' => new GuzzleHttp\Client(['verify' => $this->getCert()]),
+			]
+		);
 		if (!isset($_GET['code'])) {
 			$authUrl = $provider->getAuthorizationUrl();
 			header('Location: ' . $authUrl);
