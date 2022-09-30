@@ -3590,17 +3590,68 @@ class Organizr
 			'expires' => gmdate('Y-m-d H:i:s', time() + (86400 * $days))
 		];
 		$response = [
-			array(
+			[
 				'function' => 'query',
-				'query' => array(
+				'query' => [
 					'INSERT INTO [tokens]',
 					$addToken
-				)
-			),
+				],
+				'key' => 'insert'
+			],
+			[
+				'function' => 'fetchAll',
+				'query' => [
+					'SELECT * FROM `tokens` WHERE user_id = ? ORDER BY `id` DESC LIMIT 100',
+					[$result['id']]
+				],
+				'key' => 'tokens'
+			],
 		];
-		$this->processQueries($response);
+		$query = $this->processQueries($response);
 		if ($token) {
 			$this->logger->debug('Token has been created');
+			$browserCount = array_column($query['tokens'], 'browser');
+			$browserCount = array_count_values($browserCount);
+			if (isset($browserCount[$_SERVER ['HTTP_USER_AGENT']])) {
+				if ($browserCount[$_SERVER ['HTTP_USER_AGENT']] <= 1) {
+					if ($this->config['PHPMAILER-enabled']) {
+						$PhpMailer = new PhpMailer();
+						$emailTemplate = array(
+							'type' => 'device',
+							'body' => '
+								<h2>Hey there {user}!</h2>
+								We noticed a login attempt to your account and want to make sure it\'s you.<br />
+								If this was you, please ignore this email.<br /><br />
+								If this wasn\'t you, please change your password and revoke all tokens.<br /><br />
+								<b>Details:</b><br/ >
+								IP: ' . $this->userIP() . '<br />
+								Browser: ' . $_SERVER ['HTTP_USER_AGENT'] . '<br />
+								',
+							'subject' => 'We noticed a login attempt to your account on a new device.',
+							'user' => $result['username'],
+							'password' => null,
+							'inviteCode' => null,
+						);
+
+						$emailTemplate = $PhpMailer->_phpMailerPluginEmailTemplate($emailTemplate);
+						$sendEmail = array(
+							'to' => $result['email'],
+							'subject' => $emailTemplate['subject'],
+							'body' => $PhpMailer->_phpMailerPluginBuildEmail($emailTemplate),
+						);
+						$response = $PhpMailer->_phpMailerPluginSendEmail($sendEmail);
+						if ($response == true) {
+							$this->logger->debug('Sent new device email');
+						} else {
+							$this->logger->debug('Could not send new device email');
+						}
+					} else {
+						$this->logger->debug('Email not setup - cannot send new device email');
+					}
+				}
+			} else {
+				$this->logger->debug('Could not find token in database');
+			}
 		} else {
 			$this->logger->warning('Token creation error');
 		}
