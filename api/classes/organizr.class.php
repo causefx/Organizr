@@ -6081,7 +6081,7 @@ class Organizr
 			$dom = new PHPHtmlParser\Dom;
 			try {
 				$dom->loadStr($response->body);
-				$contents = $dom->find('#sponsors .clearfix div');
+				$contents = $dom->find('div#sponsors a');
 				foreach ($contents as $content) {
 					$html = $content->innerHtml;
 					preg_match('/(@[a-zA-Z])\w+/', $html, $username);
