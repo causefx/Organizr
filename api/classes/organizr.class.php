@@ -109,7 +109,7 @@ class Organizr
 			'API Folder' => dirname(__DIR__, 1) . DIRECTORY_SEPARATOR
 		];
 		// Temp Set Errors
-		$this->errors = E_ALL;//E_ALL & ~E_NOTICE
+		$this->errors = E_ERROR;//E_ALL & ~E_NOTICE
 		// Set current time
 		$this->currentTime = gmdate('Y-m-d\TH:i:s\Z');
 		// Set variable if install is for official docker
