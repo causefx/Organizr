@@ -1,0 +1,993 @@
+{
+    "run_date": "2022-08-30T22:31:05Z",
+    "has_file": false,
+    "email_setup": true,
+    "last_email_drives_lowest": {
+        "16": {
+            "easystore": "249.99",
+            "elements": "249.99"
+        },
+        "20": {
+            "elements": "499.99"
+        }
+    },
+    "last_email_drives_decent": {
+        "16": {
+            "easystore": "249.99",
+            "elements": "249.99"
+        },
+        "18": {
+            "my-book": "287.99"
+        }
+    },
+    "lowest_priced_drives": {
+        "16": {
+            "easystore": "249.99",
+            "elements": "249.99"
+        },
+        "20": {
+            "elements": "499.99"
+        }
+    },
+    "recent_decent_drives": {
+        "16": {
+            "easystore": "249.99",
+            "elements": "249.99"
+        },
+        "18": {
+            "my-book": "287.99"
+        }
+    },
+    "drives": {
+        "8": {
+            "easystore": {
+                "capacity": "8",
+                "model": "easystore",
+                "last_decent": "497 days ago",
+                "lowest_dollars": "119.99",
+                "lowest_decent_dollars": "154.99",
+                "lowest_per_tb": "15",
+                "lowest_now": false,
+                "decent_now": false,
+                "stores": {
+                    "amazon": {
+                        "store": "amazon",
+                        "data-per-tb": 0,
+                        "data-dollars": 0,
+                        "title": "",
+                        "link": "",
+                        "lowest_now": false
+                    },
+                    "bestbuy": {
+                        "store": "bestbuy",
+                        "data-per-tb": "19.37",
+                        "data-dollars": "154.99",
+                        "title": null,
+                        "link": "https://www.bestbuy.com/site/wd-easystore-8tb-external-usb-3-0-hard-drive-black/6425302.p?skuId=6425302",
+                        "lowest_now": false
+                    },
+                    "bhphoto": {
+                        "store": "bhphoto",
+                        "data-per-tb": 0,
+                        "data-dollars": 0,
+                        "title": "",
+                        "link": "",
+                        "lowest_now": false
+                    },
+                    "ebay": {
+                        "store": "ebay",
+                        "data-per-tb": 0,
+                        "data-dollars": 0,
+                        "title": "",
+                        "link": "",
+                        "lowest_now": false
+                    },
+                    "newegg": {
+                        "store": "newegg",
+                        "data-per-tb": 0,
+                        "data-dollars": 0,
+                        "title": "",
+                        "link": "",
+                        "lowest_now": false
+                    }
+                }
+            },
+            "elements": {
+                "capacity": "8",
+                "model": "elements",
+                "last_decent": "493 days ago",
+                "lowest_dollars": "124.99",
+                "lowest_decent_dollars": "149.06",
+                "lowest_per_tb": "15.62",
+                "lowest_now": false,
+                "decent_now": false,
+                "stores": {
+                    "amazon": {
+                        "store": "amazon",
+                        "data-per-tb": "18.63",
+                        "data-dollars": "149.06",
+                        "title": "Current lowest price for this capacity. $0.14 less than yesterday.",
+                        "link": "https://amzn.to/39jkKvL",
+                        "lowest_now": false
+                    },
+                    "bestbuy": {
+                        "store": "bestbuy",
+                        "data-per-tb": 0,
+                        "data-dollars": 0,
+                        "title": "",
+                        "link": "",
+                        "lowest_now": false
+                    },
+                    "bhphoto": {
+                        "store": "bhphoto",
+                        "data-per-tb": null,
+                        "data-dollars": null,
+                        "title": null,
+                        "link": "https://www.bhphotovideo.com/c/product/1415979-REG/wd_wdbwlg0080hbk_nesn_8tb_wd_elements_desktop.html",
+                        "lowest_now": false
+                    },
+                    "ebay": {
+                        "store": "ebay",
+                        "data-per-tb": "24.12",
+                        "data-dollars": "192.99",
+                        "title": "Not a good deal. Do not click.",
+                        "link": "https://www.ebay.com/itm/302811882818",
+                        "lowest_now": false
+                    },
+                    "newegg": {
+                        "store": "newegg",
+                        "data-per-tb": "24.12",
+                        "data-dollars": "192.99",
+                        "title": "Not a good deal. Do not click.",
+                        "link": "https://www.newegg.com/black-wd-elements-8tb/p/N82E16822234349",
+                        "lowest_now": false
+                    }
+                }
+            },
+            "my-book": {
+                "capacity": "8",
+                "model": "my-book",
+                "last_decent": "499 days ago",
+                "lowest_dollars": "124.99",
+                "lowest_decent_dollars": "184.99",
+                "lowest_per_tb": "15.62",
+                "lowest_now": false,
+                "decent_now": false,
+                "stores": {
+                    "amazon": {
+                        "store": "amazon",
+                        "data-per-tb": "23.12",
+                        "data-dollars": "184.99",
+                        "title": "Not a good deal. Do not click. $4.76 more than yesterday.",
+                        "link": "https://amzn.to/32ENPk2",
+                        "lowest_now": false
+                    },
+                    "bestbuy": {
+                        "store": "bestbuy",
+                        "data-per-tb": "23.12",
+                        "data-dollars": "184.99",
+                        "title": "Not a good deal. Do not click.",
+                        "link": "https://www.bestbuy.com/site/wd-my-book-8tb-external-usb-3-0-hard-drive-black/5605510.p?skuId=5605510",
+                        "lowest_now": false
+                    },
+                    "bhphoto": {
+                        "store": "bhphoto",
+                        "data-per-tb": null,
+                        "data-dollars": null,
+                        "title": null,
+                        "link": "https://www.bhphotovideo.com/c/product/1273853-REG/wd_wdbbgb0080hbk_nesn_8tb_my_boo.html",
+                        "lowest_now": false
+                    },
+                    "ebay": {
+                        "store": "ebay",
+                        "data-per-tb": "24.12",
+                        "data-dollars": "192.99",
+                        "title": "Not a good deal. Do not click.",
+                        "link": "https://www.ebay.com/itm/291928563729",
+                        "lowest_now": false
+                    },
+                    "newegg": {
+                        "store": "newegg",
+                        "data-per-tb": "24.12",
+                        "data-dollars": "192.99",
+                        "title": "Not a good deal. Do not click.",
+                        "link": "https://www.newegg.com/black-wd-my-book-8tb/p/N82E16822235160",
+                        "lowest_now": false
+                    }
+                }
+            }
+        },
+        "10": {
+            "elements": {
+                "capacity": "10",
+                "model": "elements",
+                "last_decent": "165 days ago",
+                "lowest_dollars": "149.99",
+                "lowest_decent_dollars": "209.99",
+                "lowest_per_tb": "15",
+                "lowest_now": false,
+                "decent_now": false,
+                "stores": {
+                    "amazon": {
+                        "store": "amazon",
+                        "data-per-tb": "21",
+                        "data-dollars": "209.99",
+                        "title": "Current lowest price for this capacity.",
+                        "link": "https://amzn.to/30zXtSA",
+                        "lowest_now": false
+                    },
+                    "bestbuy": {
+                        "store": "bestbuy",
+                        "data-per-tb": 0,
+                        "data-dollars": 0,
+                        "title": "",
+                        "link": "",
+                        "lowest_now": false
+                    },
+                    "bhphoto": {
+                        "store": "bhphoto",
+                        "data-per-tb": null,
+                        "data-dollars": null,
+                        "title": null,
+                        "link": "https://www.bhphotovideo.com/c/product/1433062-REG/wd_wdbwlg0100hbk_nesn_10tb_elements_desktop_hard.html",
+                        "lowest_now": false
+                    },
+                    "ebay": {
+                        "store": "ebay",
+                        "data-per-tb": "21.5",
+                        "data-dollars": "214.99",
+                        "title": "Not a good deal. Do not click.",
+                        "link": "https://www.ebay.com/itm/382581881519",
+                        "lowest_now": false
+                    },
+                    "newegg": {
+                        "store": "newegg",
+                        "data-per-tb": "21.5",
+                        "data-dollars": "214.99",
+                        "title": "Not a good deal. Do not click.",
+                        "link": "https://www.newegg.com/black-wd-elements-10tb/p/N82E16822234350",
+                        "lowest_now": false
+                    }
+                }
+            }
+        },
+        "12": {
+            "easystore": {
+                "capacity": "12",
+                "model": "easystore",
+                "last_decent": "82 days ago",
+                "lowest_dollars": "174.99",
+                "lowest_decent_dollars": "215.99",
+                "lowest_per_tb": "14.58",
+                "lowest_now": false,
+                "decent_now": false,
+                "stores": {
+                    "amazon": {
+                        "store": "amazon",
+                        "data-per-tb": 0,
+                        "data-dollars": 0,
+                        "title": "",
+                        "link": "",
+                        "lowest_now": false
+                    },
+                    "bestbuy": {
+                        "store": "bestbuy",
+                        "data-per-tb": "18",
+                        "data-dollars": "215.99",
+                        "title": "Current lowest price for this capacity.",
+                        "link": "https://www.bestbuy.com/site/wd-easystore-12tb-external-usb-3-0-hard-drive-black/6425301.p?skuId=6425301",
+                        "lowest_now": false
+                    },
+                    "bhphoto": {
+                        "store": "bhphoto",
+                        "data-per-tb": 0,
+                        "data-dollars": 0,
+                        "title": "",
+                        "link": "",
+                        "lowest_now": false
+                    },
+                    "ebay": {
+                        "store": "ebay",
+                        "data-per-tb": 0,
+                        "data-dollars": 0,
+                        "title": "",
+                        "link": "",
+                        "lowest_now": false
+                    },
+                    "newegg": {
+                        "store": "newegg",
+                        "data-per-tb": 0,
+                        "data-dollars": 0,
+                        "title": "",
+                        "link": "",
+                        "lowest_now": false
+                    }
+                }
+            },
+            "elements": {
+                "capacity": "12",
+                "model": "elements",
+                "last_decent": "19 days ago",
+                "lowest_dollars": "174.99",
+                "lowest_decent_dollars": "215.99",
+                "lowest_per_tb": "14.58",
+                "lowest_now": false,
+                "decent_now": false,
+                "stores": {
+                    "amazon": {
+                        "store": "amazon",
+                        "data-per-tb": "18",
+                        "data-dollars": "215.99",
+                        "title": "Current lowest price for this capacity.",
+                        "link": "https://amzn.to/30w6dZX",
+                        "lowest_now": false
+                    },
+                    "bestbuy": {
+                        "store": "bestbuy",
+                        "data-per-tb": 0,
+                        "data-dollars": 0,
+                        "title": "",
+                        "link": "",
+                        "lowest_now": false
+                    },
+                    "bhphoto": {
+                        "store": "bhphoto",
+                        "data-per-tb": null,
+                        "data-dollars": null,
+                        "title": null,
+                        "link": "https://www.bhphotovideo.com/c/product/1532285-REG/wd_wdbwlg0120hbk_nesn_12tb_elements_desktop_hd.html",
+                        "lowest_now": false
+                    },
+                    "ebay": {
+                        "store": "ebay",
+                        "data-per-tb": "22.5",
+                        "data-dollars": "269.99",
+                        "title": "Not a good deal. Do not click.",
+                        "link": "https://www.ebay.com/itm/383389257619",
+                        "lowest_now": false
+                    },
+                    "newegg": {
+                        "store": "newegg",
+                        "data-per-tb": "22.5",
+                        "data-dollars": "269.99",
+                        "title": "Not a good deal. Do not click.",
+                        "link": "https://www.newegg.com/black-wd-elements-12tb/p/N82E16822234406",
+                        "lowest_now": false
+                    }
+                }
+            },
+            "my-book": {
+                "capacity": "12",
+                "model": "my-book",
+                "last_decent": "38 days ago",
+                "lowest_dollars": "189.99",
+                "lowest_decent_dollars": "223.86",
+                "lowest_per_tb": "15.83",
+                "lowest_now": false,
+                "decent_now": false,
+                "stores": {
+                    "amazon": {
+                        "store": "amazon",
+                        "data-per-tb": "18.66",
+                        "data-dollars": "223.86",
+                        "title": null,
+                        "link": "https://amzn.to/3fRYR9t",
+                        "lowest_now": false
+                    },
+                    "bestbuy": {
+                        "store": "bestbuy",
+                        "data-per-tb": 0,
+                        "data-dollars": 0,
+                        "title": "",
+                        "link": "",
+                        "lowest_now": false
+                    },
+                    "bhphoto": {
+                        "store": "bhphoto",
+                        "data-per-tb": null,
+                        "data-dollars": null,
+                        "title": null,
+                        "link": "https://www.bhphotovideo.com/c/product/1514291-REG/wd_wdbbgb0120hbk_nesn_12tb_my_book_desktop.html",
+                        "lowest_now": false
+                    },
+                    "ebay": {
+                        "store": "ebay",
+                        "data-per-tb": "25.08",
+                        "data-dollars": "300.99",
+                        "title": "Not a good deal. Do not click.",
+                        "link": "https://www.ebay.com/itm/303495319941",
+                        "lowest_now": false
+                    },
+                    "newegg": {
+                        "store": "newegg",
+                        "data-per-tb": "25.08",
+                        "data-dollars": "300.99",
+                        "title": "Not a good deal. Do not click.",
+                        "link": "https://www.newegg.com/black-wd-my-book-12tb/p/N82E16822234404",
+                        "lowest_now": false
+                    }
+                }
+            }
+        },
+        "14": {
+            "easystore": {
+                "capacity": "14",
+                "model": "easystore",
+                "last_decent": "13 days ago",
+                "lowest_dollars": "189.99",
+                "lowest_decent_dollars": "239.99",
+                "lowest_per_tb": "13.57",
+                "lowest_now": false,
+                "decent_now": false,
+                "stores": {
+                    "amazon": {
+                        "store": "amazon",
+                        "data-per-tb": 0,
+                        "data-dollars": 0,
+                        "title": "",
+                        "link": "",
+                        "lowest_now": false
+                    },
+                    "bestbuy": {
+                        "store": "bestbuy",
+                        "data-per-tb": "17.14",
+                        "data-dollars": "239.99",
+                        "title": "Current lowest price for this capacity.",
+                        "link": "https://www.bestbuy.com/site/wd-easystore-14tb-external-usb-3-0-hard-drive-black/6425303.p?skuId=6425303",
+                        "lowest_now": false
+                    },
+                    "bhphoto": {
+                        "store": "bhphoto",
+                        "data-per-tb": 0,
+                        "data-dollars": 0,
+                        "title": "",
+                        "link": "",
+                        "lowest_now": false
+                    },
+                    "ebay": {
+                        "store": "ebay",
+                        "data-per-tb": 0,
+                        "data-dollars": 0,
+                        "title": "",
+                        "link": "",
+                        "lowest_now": false
+                    },
+                    "newegg": {
+                        "store": "newegg",
+                        "data-per-tb": 0,
+                        "data-dollars": 0,
+                        "title": "",
+                        "link": "",
+                        "lowest_now": false
+                    }
+                }
+            },
+            "elements": {
+                "capacity": "14",
+                "model": "elements",
+                "last_decent": "46 days ago",
+                "lowest_dollars": "199.99",
+                "lowest_decent_dollars": "259.99",
+                "lowest_per_tb": "14.29",
+                "lowest_now": false,
+                "decent_now": false,
+                "stores": {
+                    "amazon": {
+                        "store": "amazon",
+                        "data-per-tb": "18.57",
+                        "data-dollars": "259.99",
+                        "title": null,
+                        "link": "https://amzn.to/3fOAiKL",
+                        "lowest_now": false
+                    },
+                    "bestbuy": {
+                        "store": "bestbuy",
+                        "data-per-tb": 0,
+                        "data-dollars": 0,
+                        "title": "",
+                        "link": "",
+                        "lowest_now": false
+                    },
+                    "bhphoto": {
+                        "store": "bhphoto",
+                        "data-per-tb": null,
+                        "data-dollars": null,
+                        "title": null,
+                        "link": "https://www.bhphotovideo.com/c/product/1550572-REG/wd_wdbwlg0140hbk_nesn_14tb_elements_desktop_usb.html",
+                        "lowest_now": false
+                    },
+                    "ebay": {
+                        "store": "ebay",
+                        "data-per-tb": "18.79",
+                        "data-dollars": "262.99",
+                        "title": "Out of stock.",
+                        "link": "https://www.ebay.com/itm/293564303403",
+                        "lowest_now": false
+                    },
+                    "newegg": {
+                        "store": "newegg",
+                        "data-per-tb": "20.71",
+                        "data-dollars": "289.99",
+                        "title": null,
+                        "link": "https://www.newegg.com/wd-elements-14tb-black/p/N82E16822234411",
+                        "lowest_now": false
+                    }
+                }
+            },
+            "my-book": {
+                "capacity": "14",
+                "model": "my-book",
+                "last_decent": "&mdash;",
+                "lowest_dollars": "249.99",
+                "lowest_decent_dollars": "273.96",
+                "lowest_per_tb": "17.86",
+                "lowest_now": false,
+                "decent_now": false,
+                "stores": {
+                    "amazon": {
+                        "store": "amazon",
+                        "data-per-tb": "19.57",
+                        "data-dollars": "273.96",
+                        "title": null,
+                        "link": "https://amzn.to/30BOFeX",
+                        "lowest_now": false
+                    },
+                    "bestbuy": {
+                        "store": "bestbuy",
+                        "data-per-tb": "20",
+                        "data-dollars": "279.99",
+                        "title": null,
+                        "link": "https://www.bestbuy.com/site/wd-my-book-14tb-external-usb-3-0-hard-drive-black/6462926.p?skuId=6462926",
+                        "lowest_now": false
+                    },
+                    "bhphoto": {
+                        "store": "bhphoto",
+                        "data-per-tb": null,
+                        "data-dollars": null,
+                        "title": null,
+                        "link": "https://www.bhphotovideo.com/c/product/1519011-REG/wd_wdbbgb0140hbk_nesn_14tb_my_book_desktop.html",
+                        "lowest_now": false
+                    },
+                    "ebay": {
+                        "store": "ebay",
+                        "data-per-tb": 0,
+                        "data-dollars": 0,
+                        "title": "",
+                        "link": "",
+                        "lowest_now": false
+                    },
+                    "newegg": {
+                        "store": "newegg",
+                        "data-per-tb": 0,
+                        "data-dollars": 0,
+                        "title": "",
+                        "link": "",
+                        "lowest_now": false
+                    }
+                }
+            }
+        },
+        "16": {
+            "easystore": {
+                "capacity": "16",
+                "model": "easystore",
+                "last_decent": "now",
+                "lowest_dollars": "249.99",
+                "lowest_decent_dollars": "249.99",
+                "lowest_per_tb": "15.62",
+                "lowest_now": true,
+                "decent_now": true,
+                "stores": {
+                    "amazon": {
+                        "store": "amazon",
+                        "data-per-tb": 0,
+                        "data-dollars": 0,
+                        "title": "",
+                        "link": "",
+                        "lowest_now": false
+                    },
+                    "bestbuy": {
+                        "store": "bestbuy",
+                        "data-per-tb": "15.62",
+                        "data-dollars": "249.99",
+                        "title": "New lowest price yet for this drive. A good price, but not as low as we hope for. $50 less than yesterday.",
+                        "link": "https://www.bestbuy.com/site/wd-easystore-16tb-external-usb-3-0-hard-drive-black/6427998.p?skuId=6427998",
+                        "lowest_now": true
+                    },
+                    "bhphoto": {
+                        "store": "bhphoto",
+                        "data-per-tb": 0,
+                        "data-dollars": 0,
+                        "title": "",
+                        "link": "",
+                        "lowest_now": false
+                    },
+                    "ebay": {
+                        "store": "ebay",
+                        "data-per-tb": 0,
+                        "data-dollars": 0,
+                        "title": "",
+                        "link": "",
+                        "lowest_now": false
+                    },
+                    "newegg": {
+                        "store": "newegg",
+                        "data-per-tb": 0,
+                        "data-dollars": 0,
+                        "title": "",
+                        "link": "",
+                        "lowest_now": false
+                    }
+                }
+            },
+            "elements": {
+                "capacity": "16",
+                "model": "elements",
+                "last_decent": "now",
+                "lowest_dollars": "249.99",
+                "lowest_decent_dollars": "249.99",
+                "lowest_per_tb": "15.62",
+                "lowest_now": true,
+                "decent_now": true,
+                "stores": {
+                    "amazon": {
+                        "store": "amazon",
+                        "data-per-tb": "15.62",
+                        "data-dollars": "249.99",
+                        "title": "New lowest price yet for this drive. A good price, but not as low as we hope for. $59.24 less than yesterday.",
+                        "link": "https://amzn.to/3n9aviU",
+                        "lowest_now": true
+                    },
+                    "bestbuy": {
+                        "store": "bestbuy",
+                        "data-per-tb": 0,
+                        "data-dollars": 0,
+                        "title": "",
+                        "link": "",
+                        "lowest_now": false
+                    },
+                    "bhphoto": {
+                        "store": "bhphoto",
+                        "data-per-tb": null,
+                        "data-dollars": null,
+                        "title": null,
+                        "link": "https://www.bhphotovideo.com/c/product/1604996-REG/wd_wdbwlg0160hbk_nesn_wd_elements_desktop_16tb.html",
+                        "lowest_now": false
+                    },
+                    "ebay": {
+                        "store": "ebay",
+                        "data-per-tb": "26.87",
+                        "data-dollars": "429.99",
+                        "title": "Not a good deal. Do not click.",
+                        "link": "https://www.ebay.com/itm/383985687431",
+                        "lowest_now": false
+                    },
+                    "newegg": {
+                        "store": "newegg",
+                        "data-per-tb": "26.87",
+                        "data-dollars": "429.99",
+                        "title": "Not a good deal. Do not click.",
+                        "link": "https://www.newegg.com/wd-elements-16tb-black/p/N82E16822234435",
+                        "lowest_now": false
+                    }
+                }
+            },
+            "my-book": {
+                "capacity": "16",
+                "model": "my-book",
+                "last_decent": "&mdash;",
+                "lowest_dollars": "277.16",
+                "lowest_decent_dollars": "289.99",
+                "lowest_per_tb": "17.32",
+                "lowest_now": false,
+                "decent_now": false,
+                "stores": {
+                    "amazon": {
+                        "store": "amazon",
+                        "data-per-tb": "18.12",
+                        "data-dollars": "289.99",
+                        "title": null,
+                        "link": "https://amzn.to/38lfQjb",
+                        "lowest_now": false
+                    },
+                    "bestbuy": {
+                        "store": "bestbuy",
+                        "data-per-tb": 0,
+                        "data-dollars": 0,
+                        "title": "",
+                        "link": "",
+                        "lowest_now": false
+                    },
+                    "bhphoto": {
+                        "store": "bhphoto",
+                        "data-per-tb": null,
+                        "data-dollars": null,
+                        "title": null,
+                        "link": "https://www.bhphotovideo.com/c/product/1604991-REG/wd_wdbbgb0160hbk_nesn_my_book_16tb_black.html",
+                        "lowest_now": false
+                    },
+                    "ebay": {
+                        "store": "ebay",
+                        "data-per-tb": "26.25",
+                        "data-dollars": "419.99",
+                        "title": "Not a good deal. Do not click.",
+                        "link": "https://www.ebay.com/itm/294033471261",
+                        "lowest_now": false
+                    },
+                    "newegg": {
+                        "store": "newegg",
+                        "data-per-tb": 0,
+                        "data-dollars": 0,
+                        "title": "",
+                        "link": "",
+                        "lowest_now": false
+                    }
+                }
+            }
+        },
+        "18": {
+            "easystore": {
+                "capacity": "18",
+                "model": "easystore",
+                "last_decent": "158 days ago",
+                "lowest_dollars": "279.99",
+                "lowest_decent_dollars": "314.99",
+                "lowest_per_tb": "15.56",
+                "lowest_now": false,
+                "decent_now": false,
+                "stores": {
+                    "amazon": {
+                        "store": "amazon",
+                        "data-per-tb": 0,
+                        "data-dollars": 0,
+                        "title": "",
+                        "link": "",
+                        "lowest_now": false
+                    },
+                    "bestbuy": {
+                        "store": "bestbuy",
+                        "data-per-tb": "17.5",
+                        "data-dollars": "314.99",
+                        "title": null,
+                        "link": "https://www.bestbuy.com/site/wd-easystore-18tb-external-usb-3-0-portable-hard-drive-black/6427995.p?skuI=&skuId=6427995",
+                        "lowest_now": false
+                    },
+                    "bhphoto": {
+                        "store": "bhphoto",
+                        "data-per-tb": 0,
+                        "data-dollars": 0,
+                        "title": "",
+                        "link": "",
+                        "lowest_now": false
+                    },
+                    "ebay": {
+                        "store": "ebay",
+                        "data-per-tb": 0,
+                        "data-dollars": 0,
+                        "title": "",
+                        "link": "",
+                        "lowest_now": false
+                    },
+                    "newegg": {
+                        "store": "newegg",
+                        "data-per-tb": 0,
+                        "data-dollars": 0,
+                        "title": "",
+                        "link": "",
+                        "lowest_now": false
+                    }
+                }
+            },
+            "elements": {
+                "capacity": "18",
+                "model": "elements",
+                "last_decent": "117 days ago",
+                "lowest_dollars": "299.99",
+                "lowest_decent_dollars": "314.99",
+                "lowest_per_tb": "16.67",
+                "lowest_now": false,
+                "decent_now": false,
+                "stores": {
+                    "amazon": {
+                        "store": "amazon",
+                        "data-per-tb": "17.5",
+                        "data-dollars": "314.99",
+                        "title": null,
+                        "link": "https://amzn.to/2KU8L05",
+                        "lowest_now": false
+                    },
+                    "bestbuy": {
+                        "store": "bestbuy",
+                        "data-per-tb": 0,
+                        "data-dollars": 0,
+                        "title": "",
+                        "link": "",
+                        "lowest_now": false
+                    },
+                    "bhphoto": {
+                        "store": "bhphoto",
+                        "data-per-tb": null,
+                        "data-dollars": null,
+                        "title": null,
+                        "link": "https://www.bhphotovideo.com/c/product/1604997-REG/wd_wdbwlg0180hbk_nesn_wd_elements_desktop_18tb.html",
+                        "lowest_now": false
+                    },
+                    "ebay": {
+                        "store": "ebay",
+                        "data-per-tb": "26.67",
+                        "data-dollars": "479.99",
+                        "title": "Not a good deal. Do not click.",
+                        "link": "https://www.ebay.com/itm/383982785250",
+                        "lowest_now": false
+                    },
+                    "newegg": {
+                        "store": "newegg",
+                        "data-per-tb": "26.67",
+                        "data-dollars": "479.99",
+                        "title": "Not a good deal. Do not click.",
+                        "link": "https://www.newegg.com/wd-elements-18tb-black/p/N82E16822234436",
+                        "lowest_now": false
+                    }
+                }
+            },
+            "my-book": {
+                "capacity": "18",
+                "model": "my-book",
+                "last_decent": "now",
+                "lowest_dollars": "285.99",
+                "lowest_decent_dollars": "287.99",
+                "lowest_per_tb": "15.89",
+                "lowest_now": false,
+                "decent_now": true,
+                "stores": {
+                    "amazon": {
+                        "store": "amazon",
+                        "data-per-tb": "16",
+                        "data-dollars": "287.99",
+                        "title": "Current lowest price for this capacity. A good price, but not as low as we hope for. $72 less than yesterday.",
+                        "link": "https://amzn.to/2LvDL6I",
+                        "lowest_now": false
+                    },
+                    "bestbuy": {
+                        "store": "bestbuy",
+                        "data-per-tb": 0,
+                        "data-dollars": 0,
+                        "title": "",
+                        "link": "",
+                        "lowest_now": false
+                    },
+                    "bhphoto": {
+                        "store": "bhphoto",
+                        "data-per-tb": null,
+                        "data-dollars": null,
+                        "title": null,
+                        "link": "https://www.bhphotovideo.com/c/product/1604992-REG/wd_wdbbgb0180hbk_nesn_my_book_18tb_black.html",
+                        "lowest_now": false
+                    },
+                    "ebay": {
+                        "store": "ebay",
+                        "data-per-tb": 0,
+                        "data-dollars": 0,
+                        "title": "",
+                        "link": "",
+                        "lowest_now": false
+                    },
+                    "newegg": {
+                        "store": "newegg",
+                        "data-per-tb": 0,
+                        "data-dollars": 0,
+                        "title": "",
+                        "link": "",
+                        "lowest_now": false
+                    }
+                }
+            }
+        },
+        "20": {
+            "easystore": {
+                "capacity": "20",
+                "model": "easystore",
+                "last_decent": "&mdash;",
+                "lowest_dollars": "429.99",
+                "lowest_decent_dollars": "479.99",
+                "lowest_per_tb": "21.5",
+                "lowest_now": false,
+                "decent_now": false,
+                "stores": {
+                    "amazon": {
+                        "store": "amazon",
+                        "data-per-tb": 0,
+                        "data-dollars": 0,
+                        "title": "",
+                        "link": "",
+                        "lowest_now": false
+                    },
+                    "bestbuy": {
+                        "store": "bestbuy",
+                        "data-per-tb": "24",
+                        "data-dollars": "479.99",
+                        "title": "Current lowest price for this capacity. Not a good deal. Do not click.",
+                        "link": "https://www.bestbuy.com/site/wd-easystore-20tb-external-usb-3-0-hard-drive-black/6500985.p?skuId=6500985",
+                        "lowest_now": false
+                    },
+                    "bhphoto": {
+                        "store": "bhphoto",
+                        "data-per-tb": 0,
+                        "data-dollars": 0,
+                        "title": "",
+                        "link": "",
+                        "lowest_now": false
+                    },
+                    "ebay": {
+                        "store": "ebay",
+                        "data-per-tb": 0,
+                        "data-dollars": 0,
+                        "title": "",
+                        "link": "",
+                        "lowest_now": false
+                    },
+                    "newegg": {
+                        "store": "newegg",
+                        "data-per-tb": 0,
+                        "data-dollars": 0,
+                        "title": "",
+                        "link": "",
+                        "lowest_now": false
+                    }
+                }
+            },
+            "elements": {
+                "capacity": "20",
+                "model": "elements",
+                "last_decent": "&mdash;",
+                "lowest_dollars": "499.99",
+                "lowest_decent_dollars": "499.99",
+                "lowest_per_tb": "25",
+                "lowest_now": true,
+                "decent_now": false,
+                "stores": {
+                    "amazon": {
+                        "store": "amazon",
+                        "data-per-tb": "25",
+                        "data-dollars": "499.99",
+                        "title": "Not a good deal. Do not click.",
+                        "link": "https://amzn.to/3yrMknF",
+                        "lowest_now": true
+                    },
+                    "bestbuy": {
+                        "store": "bestbuy",
+                        "data-per-tb": 0,
+                        "data-dollars": 0,
+                        "title": "",
+                        "link": "",
+                        "lowest_now": false
+                    },
+                    "bhphoto": {
+                        "store": "bhphoto",
+                        "data-per-tb": 0,
+                        "data-dollars": 0,
+                        "title": "",
+                        "link": "",
+                        "lowest_now": false
+                    },
+                    "ebay": {
+                        "store": "ebay",
+                        "data-per-tb": 0,
+                        "data-dollars": 0,
+                        "title": "",
+                        "link": "",
+                        "lowest_now": false
+                    },
+                    "newegg": {
+                        "store": "newegg",
+                        "data-per-tb": 0,
+                        "data-dollars": 0,
+                        "title": "",
+                        "link": "",
+                        "lowest_now": false
+                    }
+                }
+            }
+        }
+    }
+}

@@ -792,6 +792,9 @@ trait OrganizrFunctions
 
 	public function userDefinedIdReplacementLink($link, $variables)
 	{
+		if (!isset($link) || $link == '') {
+			return null;
+		}
 		return strtr($link, $variables);
 	}
 

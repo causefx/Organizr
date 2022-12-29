@@ -183,7 +183,7 @@ class PhpMailer extends Organizr
 			return true;
 		} catch (PHPMailer\PHPMailer\Exception $e) {
 			$this->setLoggerChannel('Email')->error($e);
-			$this->setResponse(500, $e->getMessage());
+			$this->setResponse(500, $e->getMessage(), $this->config['phpmOriginalDebug']);
 			return false;
 		}
 		return false;

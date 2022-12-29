@@ -67,7 +67,7 @@ class Organizr
 
 	// ===================================
 	// Organizr Version
-	public $version = '2.1.2370';
+	public $version = '2.1.2380';
 	// ===================================
 	// Quick php Version check
 	public $minimumPHP = '7.4';
@@ -109,7 +109,7 @@ class Organizr
 			'API Folder' => dirname(__DIR__, 1) . DIRECTORY_SEPARATOR
 		];
 		// Temp Set Errors
-		$this->errors = E_ALL;//E_ALL & ~E_NOTICE
+		$this->errors = E_ERROR;//E_ALL & ~E_NOTICE
 		// Set current time
 		$this->currentTime = gmdate('Y-m-d\TH:i:s\Z');
 		// Set variable if install is for official docker
@@ -1601,22 +1601,22 @@ class Organizr
 			}
 		}
 		$guest = $guest ?? array(
-				"token" => null,
-				"tokenDate" => null,
-				"tokenExpire" => null,
-				"username" => "Guest",
-				"uid" => $this->guestHash(0, 5),
-				"group" => $this->getGuest()['group'],
-				"groupID" => $this->getGuest()['group_id'],
-				"email" => null,
-				//"groupImage"=>getGuest()['image'],
-				"image" => $this->getGuest()['image'],
-				"userID" => null,
-				"loggedin" => false,
-				"locked" => false,
-				"tokenList" => null,
-				"authService" => null
-			);
+			"token" => null,
+			"tokenDate" => null,
+			"tokenExpire" => null,
+			"username" => "Guest",
+			"uid" => $this->guestHash(0, 5),
+			"group" => $this->getGuest()['group'],
+			"groupID" => $this->getGuest()['group_id'],
+			"email" => null,
+			//"groupImage"=>getGuest()['image'],
+			"image" => $this->getGuest()['image'],
+			"userID" => null,
+			"loggedin" => false,
+			"locked" => false,
+			"tokenList" => null,
+			"authService" => null
+		);
 		return $guest;
 	}
 
@@ -6081,7 +6081,7 @@ class Organizr
 			$dom = new PHPHtmlParser\Dom;
 			try {
 				$dom->loadStr($response->body);
-				$contents = $dom->find('#sponsors .clearfix div');
+				$contents = $dom->find('div#sponsors a');
 				foreach ($contents as $content) {
 					$html = $content->innerHtml;
 					preg_match('/(@[a-zA-Z])\w+/', $html, $username);

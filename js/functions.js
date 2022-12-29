@@ -528,7 +528,7 @@ function cleanClass(string){
 }
 function cleanHash(hash){
     hash = encodeURI(hash);
-    return hash.replace('%20','-');
+    return hash.replaceAll('%20','-');
 }
 function dirtyHash(hash){
     hash = hash.replace('-','%20');
