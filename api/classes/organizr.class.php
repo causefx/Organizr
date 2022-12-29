@@ -67,7 +67,7 @@ class Organizr
 
 	// ===================================
 	// Organizr Version
-	public $version = '2.1.2370';
+	public $version = '2.1.2380';
 	// ===================================
 	// Quick php Version check
 	public $minimumPHP = '7.4';
@@ -1601,22 +1601,22 @@ class Organizr
 			}
 		}
 		$guest = $guest ?? array(
-				"token" => null,
-				"tokenDate" => null,
-				"tokenExpire" => null,
-				"username" => "Guest",
-				"uid" => $this->guestHash(0, 5),
-				"group" => $this->getGuest()['group'],
-				"groupID" => $this->getGuest()['group_id'],
-				"email" => null,
-				//"groupImage"=>getGuest()['image'],
-				"image" => $this->getGuest()['image'],
-				"userID" => null,
-				"loggedin" => false,
-				"locked" => false,
-				"tokenList" => null,
-				"authService" => null
-			);
+			"token" => null,
+			"tokenDate" => null,
+			"tokenExpire" => null,
+			"username" => "Guest",
+			"uid" => $this->guestHash(0, 5),
+			"group" => $this->getGuest()['group'],
+			"groupID" => $this->getGuest()['group_id'],
+			"email" => null,
+			//"groupImage"=>getGuest()['image'],
+			"image" => $this->getGuest()['image'],
+			"userID" => null,
+			"loggedin" => false,
+			"locked" => false,
+			"tokenList" => null,
+			"authService" => null
+		);
 		return $guest;
 	}
 
