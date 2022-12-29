@@ -22,7 +22,8 @@ trait PiHoleHomepageItem
 					$this->settingsOption('auth', 'homepagePiholeAuth'),
 				],
 				'Connection' => [
-					$this->settingsOption('url', 'piholeURL', ['help' => 'Please make sure to use local IP address and port and to include \'/admin/\' at the end of the URL. You can add multiple Pi-holes by comma separating the URLs.', 'placeholder' => 'http(s)://hostname:port/admin/']),
+					$this->settingsOption('multiple-url', 'piholeURL', ['help' => 'Please make sure to use local IP address and port and to include \'/admin/\' at the end of the URL. You can add multiple Pi-holes by comma separating the URLs.', 'placeholder' => 'http(s)://hostname:port/admin/']),
+					$this->settingsOption('multiple-token', 'piholeToken'),
 				],
 				'Misc' => [
 					$this->settingsOption('toggle-title', 'piholeHeaderToggle'),
@@ -47,8 +48,12 @@ trait PiHoleHomepageItem
 		$failed = false;
 		$errors = '';
 		$urls = explode(',', $this->config['piholeURL']);
-		foreach ($urls as $url) {
-			$url = $url . '/api.php?';
+		$list = $this->csvHomepageUrlToken($this->config['piholeURL'], $this->config['piholeToken']);
+		foreach ($list as $key => $value) {
+			$url = $value['url'] . '/api.php?';
+			if ($value['token'] !== '' && $value['token'] !== null) {
+				$url = $url . '&auth=' . $value['token'];
+			}
 			try {
 				$response = Requests::get($url, [], []);
 				if ($response->success) {
@@ -119,10 +124,13 @@ trait PiHoleHomepageItem
 		if (!$this->homepageItemPermissions($this->piholeHomepagePermissions('main'), true)) {
 			return false;
 		}
-		$api = array();
-		$urls = explode(',', $this->config['piholeURL']);
-		foreach ($urls as $url) {
-			$url = $url . '/api.php?';
+		$api = [];
+		$list = $this->csvHomepageUrlToken($this->config['piholeURL'], $this->config['piholeToken']);
+		foreach ($list as $key => $value) {
+			$url = $value['url'] . '/api.php?summaryRaw';
+			if ($value['token'] !== '' && $value['token'] !== null) {
+				$url = $url . '&auth=' . $value['token'];
+			}
 			try {
 				$response = Requests::get($url, [], []);
 				if ($response->success) {
@@ -140,7 +148,7 @@ trait PiHoleHomepageItem
 		}
 		$api['options']['combine'] = $this->config['homepagePiholeCombine'];
 		$api['options']['title'] = $this->config['piholeHeaderToggle'];
-		$api = isset($api) ? $api : null;
+		$api = $api ?? null;
 		$this->setAPIResponse('success', null, 200, $api);
 		return $api;
 	}

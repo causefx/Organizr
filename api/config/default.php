@@ -533,6 +533,7 @@ return [
 	'homepagePiholeCombine' => false,
 	'piholeHeaderToggle' => true,
 	'piholeURL' => '',
+	'piholeToken' => '',
 	'homepageAdGuardEnabled' => false,
 	'homepageAdGuardAuth' => '1',
 	'homepageAdGuardRefresh' => '10000',
