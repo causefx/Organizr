@@ -531,7 +531,7 @@ function cleanHash(hash){
     return hash.replaceAll('%20','-');
 }
 function dirtyHash(hash){
-    hash = hash.replace('-','%20');
+    hash = hash.replaceAll('-','%20');
     return decodeURI(hash);
 }
 // What the hell is this?  I don't remember this lol
