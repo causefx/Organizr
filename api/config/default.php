@@ -129,6 +129,8 @@ return [
 	'sickrageDisableCertCheck' => false,
 	'sickrageUseCustomCertificate' => false,
 	'jdownloaderURL' => '',
+	'jdownloaderUsername' => '',
+	'jdownloaderPassword' => '',
 	'jdownloaderCombine' => false,
 	'jdownloaderRefresh' => '60000',
 	'jdownloaderUseCustomCertificate' => false,
