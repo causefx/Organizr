@@ -27,7 +27,7 @@ trait AdGuardHomepageItem
 					$this->settingsOption('password', 'adGuardPassword'),
         ],
 				'Misc' => [
-					$this->settingsOption('toggle-title', 'adguardToggle'),
+					$this->settingsOption('toggle-title', 'adguardHeaderToggle'),
 					$this->settingsOption('switch', 'homepageAdGuardCombine', ['label' => 'Combine stat cards', 'help' => 'This controls whether to combine the stats for multiple adguard instances into 1 card.']),
 				],
 				'Stats' => [
