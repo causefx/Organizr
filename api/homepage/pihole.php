@@ -44,34 +44,35 @@ trait PiHoleHomepageItem
 			$this->setAPIResponse('error', 'Pihole URL is not defined', 422);
 			return false;
 		}
-		$api = array();
 		$failed = false;
 		$errors = '';
-		$urls = explode(',', $this->config['piholeURL']);
 		$list = $this->csvHomepageUrlToken($this->config['piholeURL'], $this->config['piholeToken']);
 		foreach ($list as $key => $value) {
-			$url = $value['url'] . '/api.php?';
+			$url = $value['url'] . '/api.php?status';
 			if ($value['token'] !== '' && $value['token'] !== null) {
 				$url = $url . '&auth=' . $value['token'];
 			}
+			$ip = $this->qualifyURL($url, true)['host'];
 			try {
 				$response = Requests::get($url, [], []);
 				if ($response->success) {
-					@$test = json_decode($response->body, true);
-					if (!is_array($test)) {
-						$ip = $this->qualifyURL($url, true)['host'];
+					$test = $this->testAndFormatString($response->body);
+					if (($test['type'] !== 'json')) {
 						$errors .= $ip . ': Response was not JSON';
 						$failed = true;
+					} else {
+						if (!isset($test['data']['status'])) {
+							$errors .= $ip . ': Missing API Token';
+							$failed = true;
+						}
 					}
 				}
 				if (!$response->success) {
-					$ip = $this->qualifyURL($url, true)['host'];
 					$errors .= $ip . ': Unknown Failure';
 					$failed = true;
 				}
 			} catch (Requests_Exception $e) {
 				$failed = true;
-				$ip = $this->qualifyURL($url, true)['host'];
 				$errors .= $ip . ': ' . $e->getMessage();
 				$this->setLoggerChannel('PiHole')->error($e);
 			};
