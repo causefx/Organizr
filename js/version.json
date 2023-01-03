@@ -607,5 +607,12 @@
     "new": "added debug info to exception for email test",
     "fixed": "fixed tab names not encoding correctly (#1885)|fix github backer issue|fix userDefinedIdReplacementLink if string is blank",
     "notes": "only errors logged|random commit for json file to test|random pest test class"
+  },
+  "2.1.2400": {
+    "date": "2023-01-03 22:57",
+    "title": "Tab Fix and update PiHole HP Item",
+    "new": "added piholeToken to config items",
+    "fixed": "fixed issue if pihole could not connect|Fixed issue with tabs not loading in settings|fix issue with Tab names after F5 reload (#1885)|Fix Latest Pi-Hole breaks stats if password enabled (#1896)|fix toggle header for adguard",
+    "notes": "Implement JDownloader Homepage Basic Auth #1830|Update adguard.php|updated pihole hp item to reflect auth change to new pihole version|updated pihole test connection to reflect auth changes"
   }
 }
