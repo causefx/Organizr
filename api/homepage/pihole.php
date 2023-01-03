@@ -22,7 +22,8 @@ trait PiHoleHomepageItem
 					$this->settingsOption('auth', 'homepagePiholeAuth'),
 				],
 				'Connection' => [
-					$this->settingsOption('url', 'piholeURL', ['help' => 'Please make sure to use local IP address and port and to include \'/admin/\' at the end of the URL. You can add multiple Pi-holes by comma separating the URLs.', 'placeholder' => 'http(s)://hostname:port/admin/']),
+					$this->settingsOption('multiple-url', 'piholeURL', ['help' => 'Please make sure to use local IP address and port and to include \'/admin/\' at the end of the URL. You can add multiple Pi-holes by comma separating the URLs.', 'placeholder' => 'http(s)://hostname:port/admin/']),
+					$this->settingsOption('multiple-token', 'piholeToken'),
 				],
 				'Misc' => [
 					$this->settingsOption('toggle-title', 'piholeHeaderToggle'),
@@ -43,30 +44,35 @@ trait PiHoleHomepageItem
 			$this->setAPIResponse('error', 'Pihole URL is not defined', 422);
 			return false;
 		}
-		$api = array();
 		$failed = false;
 		$errors = '';
-		$urls = explode(',', $this->config['piholeURL']);
-		foreach ($urls as $url) {
-			$url = $url . '/api.php?';
+		$list = $this->csvHomepageUrlToken($this->config['piholeURL'], $this->config['piholeToken']);
+		foreach ($list as $key => $value) {
+			$url = $value['url'] . '/api.php?status';
+			if ($value['token'] !== '' && $value['token'] !== null) {
+				$url = $url . '&auth=' . $value['token'];
+			}
+			$ip = $this->qualifyURL($url, true)['host'];
 			try {
 				$response = Requests::get($url, [], []);
 				if ($response->success) {
-					@$test = json_decode($response->body, true);
-					if (!is_array($test)) {
-						$ip = $this->qualifyURL($url, true)['host'];
+					$test = $this->testAndFormatString($response->body);
+					if (($test['type'] !== 'json')) {
 						$errors .= $ip . ': Response was not JSON';
 						$failed = true;
+					} else {
+						if (!isset($test['data']['status'])) {
+							$errors .= $ip . ': Missing API Token';
+							$failed = true;
+						}
 					}
 				}
 				if (!$response->success) {
-					$ip = $this->qualifyURL($url, true)['host'];
 					$errors .= $ip . ': Unknown Failure';
 					$failed = true;
 				}
 			} catch (Requests_Exception $e) {
 				$failed = true;
-				$ip = $this->qualifyURL($url, true)['host'];
 				$errors .= $ip . ': ' . $e->getMessage();
 				$this->setLoggerChannel('PiHole')->error($e);
 			};
@@ -119,10 +125,13 @@ trait PiHoleHomepageItem
 		if (!$this->homepageItemPermissions($this->piholeHomepagePermissions('main'), true)) {
 			return false;
 		}
-		$api = array();
-		$urls = explode(',', $this->config['piholeURL']);
-		foreach ($urls as $url) {
-			$url = $url . '/api.php?';
+		$api = [];
+		$list = $this->csvHomepageUrlToken($this->config['piholeURL'], $this->config['piholeToken']);
+		foreach ($list as $key => $value) {
+			$url = $value['url'] . '/api.php?summaryRaw';
+			if ($value['token'] !== '' && $value['token'] !== null) {
+				$url = $url . '&auth=' . $value['token'];
+			}
 			try {
 				$response = Requests::get($url, [], []);
 				if ($response->success) {
@@ -140,7 +149,7 @@ trait PiHoleHomepageItem
 		}
 		$api['options']['combine'] = $this->config['homepagePiholeCombine'];
 		$api['options']['title'] = $this->config['piholeHeaderToggle'];
-		$api = isset($api) ? $api : null;
+		$api = $api ?? null;
 		$this->setAPIResponse('success', null, 200, $api);
 		return $api;
 	}

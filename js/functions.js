@@ -531,7 +531,7 @@ function cleanHash(hash){
     return hash.replaceAll('%20','-');
 }
 function dirtyHash(hash){
-    hash = hash.replace('-','%20');
+    hash = hash.replaceAll('-','%20');
     return decodeURI(hash);
 }
 // What the hell is this?  I don't remember this lol
@@ -3480,9 +3480,14 @@ function buildCategoryEditorItem(array){
 function buildTabEditorItem(array){
 	var tabList = '';
 	$.each(array.tabs, function(i,v) {
-		var deleteDisabled = v.url.indexOf('/page/settings') > 0 ? 'disabled' : 'deleteTab';
-		var buttonDisabled = v.url.indexOf('/page/settings') > 0 ? 'disabled' : '';
-        var typeDisabled = v.url.indexOf('/v2/page/') > 0 ? 'disabled' : '';
+		let deleteDisabled = 'deleteTab';
+		let buttonDisabled = '';
+		let typeDisabled = '';
+		if(v.url !== null){
+			deleteDisabled = v.url.indexOf('/page/settings') > 0 ? 'disabled' : 'deleteTab';
+			buttonDisabled = v.url.indexOf('/page/settings') > 0 ? 'disabled' : '';
+			typeDisabled = v.url.indexOf('/v2/page/') > 0 ? 'disabled' : '';
+		}
 		tabList += `
 		<tr class="tabEditor" data-order="`+v.order+`" data-original-order="`+v.order+`" data-id="`+v.id+`" data-group-id="`+v.group_id+`" data-category-id="`+v.category_id+`" data-name="`+v.name+`" data-url="`+v.url+`" data-local-url="`+v.url_local+`" data-ping-url="`+v.ping_url+`" data-image="`+v.image+`" data-tab-action-type="`+v.timeout+`" data-tab-action-time="`+v.timeout_ms+`">
 			<input type="hidden" class="form-control" name="tab[`+v.id+`].id" value="`+v.id+`">
@@ -7869,6 +7874,7 @@ function buildPiholeItem(array){
     var length = Object.keys(array['data']).length;
     var combine = array['options']['combine'];
     var totalQueries = function(data) {
+
         var card = `
         <div class="col-lg-3 col-md-6 col-sm-6 col-xs-12">
             <div class="card text-white mb-3 pihole-stat bg-green">
@@ -7881,10 +7887,14 @@ function buildPiholeItem(array){
 	            if(length > 1 && !combine) {
 		            card += `<p class="d-inline text-muted">(`+key+`)</p>`;
 	            }
-	            card += `<h3 data-toggle="tooltip" data-placement="right" title="`+key+`">`+e['dns_queries_today'].toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")+`</h3>`;
-            }
+				let value = 'Error';
+				if(e.length == undefined){
+					value = e['dns_queries_today'].toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+				}
+	            card += `<h3 data-toggle="tooltip" data-placement="right" title="`+key+`">`+value+`</h3>`;
 
-        };
+            }
+        }
         card += `
                     </div>
                     <i class="fa fa-globe inline-block" aria-hidden="true"></i>
@@ -7907,9 +7917,13 @@ function buildPiholeItem(array){
 		        if (length > 1 && !combine) {
 			        card += `<p class="d-inline text-muted">(${key})</p>`;
 		        }
-		        card += `<h3 data-toggle="tooltip" data-placement="right" title="${key}">${e['ads_blocked_today'].toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}</h3>`;
-	        }
-        };
+		        let value = 'Error';
+		        if(e.length == undefined){
+			        value = e['ads_blocked_today'].toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+		        }
+		        card += `<h3 data-toggle="tooltip" data-placement="right" title="`+key+`">`+value+`</h3>`;
+			}
+        }
         card += `
                     </div>
                     <i class="fa fa-hand-paper-o inline-block" aria-hidden="true"></i>
@@ -7932,9 +7946,13 @@ function buildPiholeItem(array){
 		        if (length > 1 && !combine) {
 			        card += `<p class="d-inline text-muted">(${key})</p>`;
 		        }
-		        card += `<h3 data-toggle="tooltip" data-placement="right" title="${key}">${e['ads_percentage_today'].toFixed(1)}%</h3>`
+		        let value = 'Error';
+		        if(e.length == undefined){
+			        value = e['ads_percentage_today'].toFixed(1)
+		        }
+		        card += `<h3 data-toggle="tooltip" data-placement="right" title="`+key+`">`+value+`</h3>`;
 	        }
-        };
+        }
         card += `
                     </div>
                     <i class="fa fa-pie-chart inline-block" aria-hidden="true"></i>
@@ -7957,9 +7975,13 @@ function buildPiholeItem(array){
 		        if (length > 1 && !combine) {
 			        card += `<p class="d-inline text-muted">(${key})</p>`;
 		        }
-		        card += `<h3 data-toggle="tooltip" data-placement="right" title="${key}">${e['domains_being_blocked'].toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}</h3>`;
+		        let value = 'Error';
+		        if(e.length == undefined){
+			        value = e['domains_being_blocked'].toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+		        }
+		        card += `<h3 data-toggle="tooltip" data-placement="right" title="`+key+`">`+value+`</h3>`;
 	        }
-        };
+        }
         card += `
                     </div>
                     <i class="fa fa-list inline-block" aria-hidden="true"></i>
@@ -7969,26 +7991,28 @@ function buildPiholeItem(array){
         `
         return card;
     };
-    if(combine) {
-        stats += '<div class="row">'
-        stats += totalQueries(array['data']);
-        stats += totalBlocked(array['data']);
-        stats += percentBlocked(array['data']);
-        stats += domainsBlocked(array['data']);
-        stats += '</div>';
-    } else {
-        for(var key in array['data']) {
-            var data = array['data'][key];
-            obj = {};
-            obj[key] = data;
-            stats += '<div class="row">'
-            stats += totalQueries(obj);
-            stats += totalBlocked(obj);
-            stats += percentBlocked(obj);
-            stats += domainsBlocked(obj);
-            stats += '</div>';
-        };
-    }
+
+	if(combine) {
+		stats += '<div class="row">'
+		stats += totalQueries(array['data']);
+		stats += totalBlocked(array['data']);
+		stats += percentBlocked(array['data']);
+		stats += domainsBlocked(array['data']);
+		stats += '</div>';
+	} else {
+		for(var key in array['data']) {
+			var data = array['data'][key];
+			obj = {};
+			obj[key] = data;
+			stats += '<div class="row">'
+			stats += totalQueries(obj);
+			stats += totalBlocked(obj);
+			stats += percentBlocked(obj);
+			stats += domainsBlocked(obj);
+			stats += '</div>';
+		};
+	}
+
     return stats;
 }
 function homepagePihole(timeout){
