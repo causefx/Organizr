@@ -2442,7 +2442,7 @@ function checkTabHomepageItem(id, name, url, urlLocal){
         addEditHomepageItem(id,'Plex');
     }else if(name.includes('emby') || url.includes('emby') || urlLocal.includes('emby')){
         addEditHomepageItem(id,'Emby');
-    }else if(name.includes('jdownloader') || url.includes('jdownloader') || urlLocal.includes('jdownloader') || name.includes('rsscrawler') || url.includes('rsscrawler') || urlLocal.includes('rsscrawler')){
+    }else if(name.includes('jdownloader') || url.includes('jdownloader') || urlLocal.includes('jdownloader') || name.includes('feedcrawler') || url.includes('feedcrawler') || urlLocal.includes('feedcrawler')){
         addEditHomepageItem(id,'jDownloader');
     }else if(name.includes('sab') || url.includes('sab') || urlLocal.includes('sab')){
         addEditHomepageItem(id,'SabNZBD');
