@@ -508,6 +508,7 @@ trait AuthFunctions
 									$this->setLoggerChannel('Emby')->info('Found User');
 									return array(
 										'email' => $connectUser['Email'],
+										'username' => $connectUser['Name']
 										//'image' => $json['User']['ImageUrl'],
 									);
 								}
