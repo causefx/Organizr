@@ -286,14 +286,13 @@ trait ICalHomepageItem
 						if ($startDt->format('H') == 0 && $startDt->format('i') == 0) {
 							$startDate = $startDt->format('Y-m-d');
 						}
-
 						$events[] = array(
 							'title' => $eventName,
 							'imagetype' => 'calendar-o text-warning text-custom-calendar ' . $extraClass,
 							'imagetypeFilter' => 'ical',
 							'className' => 'bg-calendar calendar-item bg-custom-calendar',
-							'start' => $startDate,
-							'end' => $endDate,
+							'start' => (strlen(trim($start)) == 8) ? $eventDate['start']->format('Y-m-d') : $startDate,
+							'end' => (strlen(trim($end)) == 8) ? $eventDate['end']->format('Y-m-d') : $endDate,
 							'bgColor' => str_replace('text', 'bg', $extraClass),
 						);
 					}
