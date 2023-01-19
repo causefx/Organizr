@@ -3680,6 +3680,7 @@ class Organizr
 		$authSuccess = false;
 		$authProxy = false;
 		$addEmailToAuthProxy = true;
+		$bypassTFA = false;
 		// Check Login attempts and kill if over limit
 		if ($loginAttempts > $this->config['loginAttempts'] || isset($_COOKIE['lockout'])) {
 			$this->coookieSeconds('set', 'lockout', $this->config['loginLockout'], $this->config['loginLockout']);
@@ -3702,6 +3703,7 @@ class Organizr
 				$addEmailToAuthProxy = ($authProxy && $emailHeader) ? ['email' => $emailHeader] : true;
 				if ($authProxy) {
 					$this->logger->info('User has been verified using Auth Proxy');
+					$bypassTFA = true;
 				} else {
 					$this->logger->warning('User has failed verification using Auth Proxy');
 				}
@@ -3806,6 +3808,11 @@ class Organizr
 								$tfaProceed = false;
 							}
 						}
+					}
+					if ($bypassTFA) {
+						$tfaProceed = false;
+						$this->setLoggerChannel('Authentication', $username);
+						$this->logger->info('Bypassing 2FA');
 					}
 					if ($tfaProceed) {
 						$this->setLoggerChannel('Authentication', $username);
