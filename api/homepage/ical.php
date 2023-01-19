@@ -105,7 +105,7 @@ trait ICalHomepageItem
 					}
 				}
 			}
-		} catch (\Recurr\Exception\InvalidRRule | \Recurr\Exception\InvalidWeekday | Exception $e) {
+		} catch (\Recurr\Exception\InvalidRRule|\Recurr\Exception\InvalidWeekday|Exception $e) {
 			return $extraDates;
 		}
 		return $extraDates;
@@ -173,7 +173,7 @@ trait ICalHomepageItem
 		$icalString = $this->file_get_contents_curl($file);
 		$icsDates = array();
 		/* Explode the ICs Data to get datas as array according to string ‘BEGIN:’ */
-		$icsData = explode("BEGIN:", $icalString);
+		$icsData = explode('BEGIN:', $icalString);
 		/* Iterating the icsData value to make all the start end dates as sub array */
 		foreach ($icsData as $key => $value) {
 			$icsDatesMeta [$key] = explode("\n", $value);
@@ -192,14 +192,115 @@ trait ICalHomepageItem
 	public function getICSDates($key, $subKey, $subValue, $icsDates)
 	{
 		if ($key != 0 && $subKey == 0) {
-			$icsDates [$key] ["BEGIN"] = $subValue;
+			$icsDates [$key] ['BEGIN'] = $subValue;
 		} else {
-			$subValueArr = explode(":", $subValue, 2);
+			$subValueArr = explode(':', $subValue, 2);
 			if (isset ($subValueArr [1])) {
 				$icsDates [$key] [$subValueArr [0]] = $subValueArr [1];
 			}
 		}
 		return $icsDates;
+	}
+
+	public function retrieveCalenderByURL($url)
+	{
+		$events = [];
+		$icsEvents = $this->getIcsEventsAsArray($url);
+		if (isset($icsEvents) && !empty($icsEvents)) {
+			$timeZone = isset($icsEvents [1] ['X-WR-TIMEZONE']) ? trim($icsEvents[1]['X-WR-TIMEZONE']) : date_default_timezone_get();
+			$originalTimeZone = isset($icsEvents [1] ['X-WR-TIMEZONE']) ? str_replace('"', '', trim($icsEvents[1]['X-WR-TIMEZONE'])) : false;
+			unset($icsEvents [1]);
+			foreach ($icsEvents as $icsEvent) {
+				$startKeys = $this->array_filter_key($icsEvent, function ($key) {
+					return strpos($key, 'DTSTART') === 0;
+				});
+				$endKeys = $this->array_filter_key($icsEvent, function ($key) {
+					return strpos($key, 'DTEND') === 0;
+				});
+				if (!empty($startKeys) && !empty($endKeys) && isset($icsEvent['SUMMARY'])) {
+					/* Getting start date and time */
+					$dates = [];
+					$repeat = $icsEvent ['RRULE'] ?? false;
+					if (!$originalTimeZone) {
+						$tzKey = array_keys($startKeys);
+						if (strpos($tzKey[0], 'TZID=') !== false) {
+							$originalTimeZone = explode('TZID=', (string)$tzKey[0]);
+							$originalTimeZone = (count($originalTimeZone) >= 2) ? str_replace('"', '', $originalTimeZone[1]) : false;
+							$originalTimeZone = stripos($originalTimeZone, ';') !== false ? explode(';', $originalTimeZone)[0] : $originalTimeZone;
+						}
+					}
+					$start = reset($startKeys);
+					$end = reset($endKeys);
+					$oldestDay = new DateTime ($this->currentTime);
+					$oldestDay->modify('-' . $this->config['calendarStart'] . ' days');
+					$newestDay = new DateTime ($this->currentTime);
+					$newestDay->modify('+' . $this->config['calendarEnd'] . ' days');
+
+					if ($repeat) {
+						$dates = $this->getCalendarExtraDates($start, $icsEvent['RRULE'], $originalTimeZone);
+					} else {
+						$dates[] = [
+							'start' => new DateTime ($start),
+							'end' => new DateTime ($end)
+						];
+						if ($oldestDay > new DateTime ($end)) {
+							continue;
+						}
+					}
+					foreach ($dates as $eventDate) {
+						/* Converting to datetime and apply the timezone to get proper date time */
+						$startDt = $eventDate['start'];
+						/* Getting end date with time */
+						$endDt = $eventDate['end'];
+						$calendarStartDiff = date_diff($startDt, $newestDay);
+						$calendarEndDiff = date_diff($startDt, $oldestDay);
+						if ($originalTimeZone && $originalTimeZone !== 'UTC' && (strpos($start, 'Z') == false)) {
+							$originalTimeZone = $this->calendarStandardizeTimezone($originalTimeZone);
+							$dateTimeOriginalTZ = new DateTimeZone($originalTimeZone);
+							$dateTimeOriginal = new DateTime('now', $dateTimeOriginalTZ);
+							$dateTimeUTCTZ = new DateTimeZone(date_default_timezone_get());
+							$dateTimeUTC = new DateTime('now', $dateTimeUTCTZ);
+							$dateTimeOriginalOffset = $dateTimeOriginal->getOffset() / 3600;
+							$dateTimeUTCOffset = $dateTimeUTC->getOffset() / 3600;
+							$diff = $dateTimeUTCOffset - $dateTimeOriginalOffset;
+							if ((int)$diff >= 0) {
+								$startDt->modify('+ ' . $diff . ' hour');
+								$endDt->modify('+ ' . $diff . ' hour');
+							}
+						}
+						$startDt->setTimeZone(new DateTimezone ($timeZone));
+						$endDt->setTimeZone(new DateTimezone ($timeZone));
+						$startDate = $startDt->format(DateTime::ATOM);
+						$endDate = $endDt->format(DateTime::ATOM);
+						$dates = isset($icsEvent['RRULE']) ? $dates : null;
+						if (new DateTime() < $endDt) {
+							$extraClass = 'text-info';
+						} else {
+							$extraClass = 'text-success';
+						}
+						/* Getting the name of event */
+						$eventName = $icsEvent['SUMMARY'];
+						if (!$this->calendarDaysCheck($calendarStartDiff->format('%R') . $calendarStartDiff->days, $calendarEndDiff->format('%R') . $calendarEndDiff->days)) {
+							break;
+						}
+						if ($startDt->format('H') == 0 && $startDt->format('i') == 0) {
+							$startDate = $startDt->format('Y-m-d');
+						}
+
+						$events[] = array(
+							'title' => $eventName,
+							'imagetype' => 'calendar-o text-warning text-custom-calendar ' . $extraClass,
+							'imagetypeFilter' => 'ical',
+							'className' => 'bg-calendar calendar-item bg-custom-calendar',
+							'start' => $startDate,
+							'end' => $endDate,
+							'bgColor' => str_replace('text', 'bg', $extraClass),
+						);
+					}
+				}
+			}
+		}
+		return $events;
 	}
 
 	public function getICalendar()
@@ -216,106 +317,12 @@ trait ICalHomepageItem
 			$this->setAPIResponse('error', 'iCal URL is not defined', 422);
 			return false;
 		}
-		$calendarItems = array();
-		$calendars = array();
+		$iCalEvents = [];
 		$calendarURLList = explode(',', $this->config['calendariCal']);
-		$icalEvents = array();
 		foreach ($calendarURLList as $key => $value) {
-			$dates = [];
-			$icsEvents = $this->getIcsEventsAsArray($value);
-			if (isset($icsEvents) && !empty($icsEvents)) {
-				$timeZone = isset($icsEvents [1] ['X-WR-TIMEZONE']) ? trim($icsEvents[1]['X-WR-TIMEZONE']) : date_default_timezone_get();
-				$originalTimeZone = isset($icsEvents [1] ['X-WR-TIMEZONE']) ? str_replace('"', '', trim($icsEvents[1]['X-WR-TIMEZONE'])) : false;
-				unset($icsEvents [1]);
-				foreach ($icsEvents as $icsEvent) {
-					$startKeys = $this->array_filter_key($icsEvent, function ($key) {
-						return strpos($key, 'DTSTART') === 0;
-					});
-					$endKeys = $this->array_filter_key($icsEvent, function ($key) {
-						return strpos($key, 'DTEND') === 0;
-					});
-					if (!empty($startKeys) && !empty($endKeys) && isset($icsEvent['SUMMARY'])) {
-						/* Getting start date and time */
-						$repeat = $icsEvent ['RRULE'] ?? false;
-						if (!$originalTimeZone) {
-							$tzKey = array_keys($startKeys);
-							if (strpos($tzKey[0], 'TZID=') !== false) {
-								$originalTimeZone = explode('TZID=', (string)$tzKey[0]);
-								$originalTimeZone = (count($originalTimeZone) >= 2) ? str_replace('"', '', $originalTimeZone[1]) : false;
-								$originalTimeZone = stripos($originalTimeZone, ';') !== false ? explode(';', $originalTimeZone)[0] : $originalTimeZone;
-							}
-						}
-						$start = reset($startKeys);
-						$end = reset($endKeys);
-						$oldestDay = new DateTime ($this->currentTime);
-						$oldestDay->modify('-' . $this->config['calendarStart'] . ' days');
-						$newestDay = new DateTime ($this->currentTime);
-						$newestDay->modify('+' . $this->config['calendarEnd'] . ' days');
-						if ($repeat) {
-							$dates = $this->getCalendarExtraDates($start, $icsEvent['RRULE'], $originalTimeZone);
-						} else {
-							$dates[] = [
-								'start' => new DateTime ($start),
-								'end' => new DateTime ($end)
-							];
-							if ($oldestDay > new DateTime ($end)) {
-								continue;
-							}
-						}
-						foreach ($dates as $eventDate) {
-							/* Converting to datetime and apply the timezone to get proper date time */
-							$startDt = $eventDate['start'];
-							/* Getting end date with time */
-							$endDt = $eventDate['end'];
-							$calendarStartDiff = date_diff($startDt, $newestDay);
-							$calendarEndDiff = date_diff($startDt, $oldestDay);
-							if ($originalTimeZone && $originalTimeZone !== 'UTC' && (strpos($start, 'Z') == false)) {
-								$originalTimeZone = $this->calendarStandardizeTimezone($originalTimeZone);
-								$dateTimeOriginalTZ = new DateTimeZone($originalTimeZone);
-								$dateTimeOriginal = new DateTime('now', $dateTimeOriginalTZ);
-								$dateTimeUTCTZ = new DateTimeZone(date_default_timezone_get());
-								$dateTimeUTC = new DateTime('now', $dateTimeUTCTZ);
-								$dateTimeOriginalOffset = $dateTimeOriginal->getOffset() / 3600;
-								$dateTimeUTCOffset = $dateTimeUTC->getOffset() / 3600;
-								$diff = $dateTimeUTCOffset - $dateTimeOriginalOffset;
-								if ((int)$diff >= 0) {
-									$startDt->modify('+ ' . $diff . ' hour');
-									$endDt->modify('+ ' . $diff . ' hour');
-								}
-							}
-							$startDt->setTimeZone(new DateTimezone ($timeZone));
-							$endDt->setTimeZone(new DateTimezone ($timeZone));
-							$startDate = $startDt->format(DateTime::ATOM);
-							$endDate = $endDt->format(DateTime::ATOM);
-							$dates = isset($icsEvent['RRULE']) ? $dates : null;
-							if (new DateTime() < $endDt) {
-								$extraClass = 'text-info';
-							} else {
-								$extraClass = 'text-success';
-							}
-							/* Getting the name of event */
-							$eventName = $icsEvent['SUMMARY'];
-							if (!$this->calendarDaysCheck($calendarStartDiff->format('%R') . $calendarStartDiff->days, $calendarEndDiff->format('%R') . $calendarEndDiff->days)) {
-								break;
-							}
-							if ($startDt->format('H') == 0 && $startDt->format('i') == 0) {
-								$startDate = $startDt->format('Y-m-d');
-							}
-							$icalEvents[] = array(
-								'title' => $eventName,
-								'imagetype' => 'calendar-o text-warning text-custom-calendar ' . $extraClass,
-								'imagetypeFilter' => 'ical',
-								'className' => 'bg-calendar calendar-item bg-custom-calendar',
-								'start' => $startDate,
-								'end' => $endDate,
-								'bgColor' => str_replace('text', 'bg', $extraClass),
-							);
-						}
-					}
-				}
-			}
+			$iCalEvents = array_merge($iCalEvents, $this->retrieveCalenderByURL($value));
 		}
-		$calendarSources = $icalEvents;
+		$calendarSources = $iCalEvents;
 		$this->setAPIResponse('success', null, 200, $calendarSources);
 		return $calendarSources;
 	}
