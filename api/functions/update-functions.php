@@ -129,14 +129,15 @@ trait UpdateFunctions
 		ini_set('max_execution_time', 0);
 		set_time_limit(0);
 		$logFile = $this->root . DIRECTORY_SEPARATOR . 'scripts' . DIRECTORY_SEPARATOR . 'log.txt';
-		$script = $this->root . DIRECTORY_SEPARATOR . 'scripts' . DIRECTORY_SEPARATOR . 'linux-update.sh ' . $branch . ' > ' . $logFile . ' 2>&1';
+		$script = $this->root . DIRECTORY_SEPARATOR . 'scripts' . DIRECTORY_SEPARATOR . 'linux-update.sh';
+		$scriptExec = $script . ' ' . $branch . ' > ' . $logFile . ' 2>&1';
 		$checkScript = $this->testScriptFilePermissions($script);
 		if (!$checkScript) {
 			$this->setResponse(500, 'Update script permissions error');
 			$this->removeUpdateStatusFile();
 			return false;
 		}
-		$update = shell_exec($script);
+		$update = shell_exec($scriptExec);
 		$this->removeUpdateStatusFile();
 		if ($update) {
 			$this->setAPIResponse('success', $update, 200);
