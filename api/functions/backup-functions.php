@@ -75,9 +75,9 @@ trait BackupFunctions
 			default:
 		}
 		$this->setLoggerChannel('Backup')->notice('Backing up Organizr');
-		$zipname = $directory . 'backup[' . date('Y-m-d_H-i') . ' - ' . $this->random_ascii_string(2) . '][' . $this->version . '].zip';
+		$zipName = $directory . 'backup[' . date('Y-m-d_H-i') . ' - ' . $this->random_ascii_string(2) . '][' . $this->version . '].zip';
 		$zip = new ZipArchive;
-		$zip->open($zipname, ZipArchive::CREATE);
+		$zip->open($zipName, ZipArchive::CREATE);
 		if ($this->config['driver'] == 'sqlite3') {
 			$zip->addFile($this->config['dbLocation'] . $this->config['dbName'], basename($this->config['dbLocation'] . $this->config['dbName']));
 		}
@@ -87,7 +87,7 @@ trait BackupFunctions
 		foreach ($files as $name => $file) {
 			// Skip directories (they would be added automatically)
 			if (!$file->isDir()) {
-				if (stripos($name, 'data' . DIRECTORY_SEPARATOR . 'cache') == false) {
+				if (!stripos($name, 'data' . DIRECTORY_SEPARATOR . 'cache') && !stripos($name, 'backups')) {
 					// Get real and relative path for current file
 					$filePath = $file->getRealPath();
 					$relativePath = substr($filePath, strlen($rootPath));
@@ -96,8 +96,6 @@ trait BackupFunctions
 				}
 			}
 		}
-
-
 		$zip->close();
 		$this->setLoggerChannel('Backup')->notice('Backup process finished');
 		$this->setAPIResponse('success', 'Backup has been created', 200);
