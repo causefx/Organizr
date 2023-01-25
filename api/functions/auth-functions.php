@@ -472,46 +472,47 @@ trait AuthFunctions
 		// https://github.com/MediaBrowser/Emby/issues/3553
 		//return plugin_auth_emby_local($username, $password);
 		try {
-			// Get A User
-			$connectUserName = '';
-			$url = $this->qualifyURL($this->config['embyURL']) . '/Users?api_key=' . $this->config['embyToken'];
-			$response = Requests::get($url);
+			$this->setLoggerChannel('Emby')->info('Attempting to Login with Emby Connect for user: ' . $username);
+			$connectURL = 'https://connect.emby.media/service/user/authenticate';
+			$headers = array(
+				'Accept' => 'application/json',
+				'X-Application' => 'Organizr/2.0'
+			);
+			$data = array(
+				'nameOrEmail' => $username,
+				'rawpw' => $password,
+			);
+			$response = Requests::post($connectURL, $headers, $data);
 			if ($response->success) {
 				$json = json_decode($response->body, true);
-				if (is_array($json)) {
-					foreach ($json as $key => $value) { // Scan for this user
-						if (isset($value['ConnectUserName']) && isset($value['ConnectLinkType'])) { // Qualify as connect account
-							if (strtolower($value['ConnectUserName']) == strtolower($username) || strtolower($value['Name']) == strtolower($username)) {
-								$connectUserName = $value['ConnectUserName'];
-								$this->setLoggerChannel('Emby')->info('Found User');
-								break;
+				if (is_array($json) && isset($json['AccessToken']) && isset($json['User'])) {
+					$connectUser = $json['User'];
+				} else {
+					$this->setLoggerChannel('Emby')->warning('Bad Response');
+					return false;
+				}
+			} else {
+				$this->setLoggerChannel('Emby')->warning('401 From Emby Connect');
+				return false;
+			}
+			// Get A User
+			if ($connectUser) {
+				$url = $this->qualifyURL($this->config['embyURL']) . '/Users?api_key=' . $this->config['embyToken'];
+				$response = Requests::get($url);
+				if ($response->success) {
+					$json = json_decode($response->body, true);
+					if (is_array($json)) {
+						foreach ($json as $key => $value) { // Scan for this user
+							if (isset($value['ConnectUserName']) && isset($value['ConnectLinkType'])) { // Qualify as connect account
+								if (strtolower($value['ConnectUserName']) == strtolower($connectUser['Name']) || strtolower($value['ConnectUserName']) == strtolower($connectUser['Email'])) {
+									$this->setLoggerChannel('Emby')->info('Found User');
+									return array(
+										'email' => $connectUser['Email'],
+										'username' => $connectUser['Name']
+										//'image' => $json['User']['ImageUrl'],
+									);
+								}
 							}
-						}
-					}
-					if ($connectUserName) {
-						$this->setLoggerChannel('Emby')->info('Attempting to Login with Emby ID: ' . $connectUserName);
-						$connectURL = 'https://connect.emby.media/service/user/authenticate';
-						$headers = array(
-							'Accept' => 'application/json',
-							'X-Application' => 'Organizr/2.0'
-						);
-						$data = array(
-							'nameOrEmail' => $username,
-							'rawpw' => $password,
-						);
-						$response = Requests::post($connectURL, $headers, $data);
-						if ($response->success) {
-							$json = json_decode($response->body, true);
-							if (is_array($json) && isset($json['AccessToken']) && isset($json['User']) && $json['User']['Name'] == $connectUserName) {
-								return array(
-									'email' => $json['User']['Email'],
-									//'image' => $json['User']['ImageUrl'],
-								);
-							} else {
-								$this->setLoggerChannel('Emby')->warning('Bad Response');
-							}
-						} else {
-							$this->setLoggerChannel('Emby')->warning('401 From Emby Connect');
 						}
 					}
 				}
