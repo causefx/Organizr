@@ -7,7 +7,7 @@ trait UpdateFunctions
 		if (file_exists($script)) {
 			if (is_executable($script)) {
 				return true;
-			} elseif ($retest == false) {
+			} elseif (!$retest) {
 				$this->setLoggerChannel('Update')->notice('Attempting to set correct permissions', ['file' => $script]);
 				$permissions = shell_exec('chmod 777 ' . $script);
 				return $this->testScriptFilePermissions($script, true);
@@ -53,6 +53,23 @@ trait UpdateFunctions
 		return file_exists($this->config['dbLocation'] . 'updateInProgress.txt');
 	}
 
+	public function checkForGitLockFile()
+	{
+		return file_exists($this->root . DIRECTORY_SEPARATOR . '.git' . DIRECTORY_SEPARATOR . 'index.lock');
+	}
+
+	public function removeGitLockFile()
+	{
+		if ($this->checkForGitLockFile()) {
+			$removed = false;
+			if (@unlink($this->root . DIRECTORY_SEPARATOR . '.git' . DIRECTORY_SEPARATOR . 'index.lock')) {
+				$removed = true;
+			}
+			return $removed;
+		}
+		return true;
+	}
+
 	public function dockerUpdate()
 	{
 		if (!$this->docker) {
@@ -64,6 +81,10 @@ trait UpdateFunctions
 			return false;
 		} else {
 			$this->createUpdateStatusFile();
+		}
+		if (!$this->removeGitLockFile()) {
+			$this->setResponse(500, 'Git Lock file was found and could not be removed.  Please remove manually');
+			return false;
 		}
 		$dockerUpdate = null;
 		ini_set('max_execution_time', 0);
