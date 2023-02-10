@@ -621,5 +621,12 @@
     "new": "added arabic to lang|added username to emby connect user creation",
     "fixed": "fixed ICal Not really Working (#1909)|fixed issue if backup folder was inside data folder (#1891)",
     "notes": "bypass 2fa if auth proxy active (#1910)|Updated the following languages: [Romanian]|update emby connect auth to reflect email|update linux script to check script location only (#1899)|workaround for non-time entries on ical"
+  },
+  "2.1.2430": {
+    "date": "2023-02-10 21:50",
+    "title": "Weekly Update",
+    "new": "added check for gitlock file on docker update|added check for response to Overseerr test|Added check for response to the testConnectionOverseerr method",
+    "fixed": "Fix JDownloader API authentification|fix Overseerr homepage item does not read the username properly (#1915)|Truly Fix JDownloader API authentification",
+    "notes": "or MyJD-API \u003E= 1.0.4|Requires FeedCrawler \u003E= 16.0.4|Updated the following languages: [Arabic (Saudi Arabia)]|update shebang for portability (#1899) (#1908) (#1906) (#1881)"
   }
 }

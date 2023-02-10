@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 if [ -z "$1" ]
   then
   echo 'No branch setup.. using v2-master'

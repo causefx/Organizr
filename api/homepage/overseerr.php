@@ -69,7 +69,8 @@ trait OverseerrHomepageItem
 		try {
 			$options = $this->requestOptions($url, null, $this->config['overseerrDisableCertCheck'], $this->config['overseerrUseCustomCertificate']);
 			$test = Requests::get($url . "/api/v1/settings/main", $headers, $options);
-			if ($test->success) {
+			$testData = json_decode($test->body, true);
+			if ($test->success && isset($testData["apiKey"]) && $testData["apiKey"] == $this->config['overseerrToken']) {
 				$this->setAPIResponse('success', 'API Connection succeeded', 200);
 				return true;
 			} else {
@@ -164,7 +165,7 @@ trait OverseerrHomepageItem
 				$requestAll = [];
 				$requestsData = json_decode($request->body, true);
 				foreach ($requestsData['results'] as $key => $value) {
-					$requester = ($value['requestedBy']['username'] !== '') ? $value['requestedBy']['username'] : $value['requestedBy']['plexUsername'];
+					$requester = ($value['requestedBy']['username'] !== '' && $value['requestedBy']['username'] !== null) ? $value['requestedBy']['username'] : $value['requestedBy']['plexUsername'];
 					$requesterEmail = $value['requestedBy']['email'];
 					$proceed = (($this->config['overseerrLimitUser']) && strtolower($this->user['username']) == strtolower($requester)) || (strtolower($requester) == strtolower($this->config['overseerrFallbackUser'])) || (!$this->config['overseerrLimitUser']) || $this->qualifyRequest(1);
 					if ($proceed) {
