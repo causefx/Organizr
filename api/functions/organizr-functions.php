@@ -902,4 +902,93 @@ trait OrganizrFunctions
 			return ['type' => 'string', 'data' => $string];
 		}
 	}
+	
+	public function downloader($array)
+	{
+		switch ($array['data']['source']) {
+			case 'jdownloader':
+				switch ($array['data']['action']) {
+					case 'start':
+						jdownloaderAction($array['data']['action'], $array['data']['target']);
+						break;
+					case 'stop':
+						jdownloaderAction($array['data']['action'], $array['data']['target']);
+						break;
+					case 'resume':
+						jdownloaderAction($array['data']['action'], $array['data']['target']);
+						break;
+					case 'pause':
+						jdownloaderAction($array['data']['action'], $array['data']['target']);
+						break;
+					case 'update':
+						jdownloaderAction($array['data']['action'], $array['data']['target']);
+						break;
+					case 'retry':
+						jdownloaderAction($array['data']['action'], $array['data']['target']);
+						break;
+					case 'remove':
+						jdownloaderAction($array['data']['action'], $array['data']['target']);
+						break;
+					default:
+						# code...
+						break;
+				}
+				break;
+			default:
+				# code...
+				break;
+		}
+	}
+
+	public function jdownloaderAction($action = null, $target = null)
+	{
+		if ($GLOBALS['homepageJdownloaderEnabled'] && !empty($GLOBALS['jdownloaderURL']) && qualifyRequest($GLOBALS['homepageJdownloaderAuth'])) {
+			$url = qualifyURL($GLOBALS['jdownloaderURL']);
+
+			# This ensures compatibility with FeedCrawler
+			$url = str_replace('/api/myjd', '', $url);
+			if(substr($url , -1)=='/') {
+				$url = substr_replace($url ,"",-1);
+			}
+
+			switch ($action) {
+				case 'start':
+					$url = $url . '/myjd_start/';
+					echo($url . '/myjd_start/');
+					break;
+				case 'stop':
+					$url = $url . '/myjd_stop/';
+					break;
+				case 'resume':
+					$url = $url . '/myjd_pause/false';
+					break;
+				case 'pause':
+					$url = $url . '/myjd_pause/true';
+					break;
+				case 'update':
+					$url = $url . '/myjd_update/';
+					break;
+				case 'retry':
+					# code...
+					break;
+				case 'remove':
+					# code...
+					break;
+				default:
+					# code...
+					break;
+			}
+			try {
+				$options = (localURL($url)) ? array('verify' => false) : array();
+				$response = Requests::post($url, array(), $options);
+				if ($response->success) {
+					$api['content'] = json_decode($response->body, true);
+				}
+			} catch (Requests_Exception $e) {
+				writeLog('error', 'JDownloader Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
+			};
+			$api['content'] = isset($api['content']) ? $api['content'] : false;
+			return $api;
+		}
+	}
 }
