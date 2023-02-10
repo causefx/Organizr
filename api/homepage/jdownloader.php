@@ -44,8 +44,8 @@ trait JDownloaderHomepageItem
                 ],
                 'Connection' => [
                     $this->settingsOption('url', 'jdownloaderURL'),
-                    $this->settingsOption('url', 'jdownloaderUsername'),
-                    $this->settingsOption('url', 'jdownloaderPassword'),
+                    $this->settingsOption('username', 'jdownloaderUsername'),
+                    $this->settingsOption('password', 'jdownloaderPassword'),
                     $this->settingsOption('blank'),
                     $this->settingsOption('disable-cert-check', 'jdownloaderDisableCertCheck'),
                     $this->settingsOption('use-custom-certificate', 'jdownloaderUseCustomCertificate'),
@@ -70,21 +70,21 @@ trait JDownloaderHomepageItem
             return false;
         }
         if (!empty($this->config['jdownloaderUsername']) || !empty($this->config['jdownloaderPassword'])) {
-            $authHeader = 'Authorization: Basic ' . base64_encode($this->config['jdownloaderUsername'] . ':' . $this->config['jdownloaderPassword']);
-            $headers = array('headers' => array($authHeader));
+            $auth = array('auth' => array($this->config['jdownloaderUsername'], $this->decrypt($this->config['jdownloaderPassword'])));
         } else {
-            $headers = [];
+            $auth = [];
         }
         $url = $this->qualifyURL($this->config['jdownloaderURL']);
         try {
-            $options = $this->requestOptions($url, $this->config['jdownloaderRefresh'], $this->config['jdownloaderDisableCertCheck'], $this->config['jdownloaderUseCustomCertificate']);
-            $response = Requests::get($url, $headers, $options);
+            $options = $this->requestOptions($url, $this->config['jdownloaderRefresh'], $this->config['jdownloaderDisableCertCheck'], $this->config['jdownloaderUseCustomCertificate'], $auth);
+            $response = Requests::get($url, [], $options);
             if ($response->success) {
                 $this->setAPIResponse('success', 'API Connection succeeded', 200);
                 return true;
             } else {
+				echo($response->body);
                 $this->setAPIResponse('success', 'JDownloader Error Occurred', 500);
-                return false;
+				return false;
             }
         } catch (Requests_Exception $e) {
             $this->setLoggerChannel('JDownloader')->error($e);
@@ -137,14 +137,13 @@ trait JDownloaderHomepageItem
         }
         $url = $this->qualifyURL($this->config['jdownloaderURL']);
         if (!empty($this->config['jdownloaderUsername']) || !empty($this->config['jdownloaderPassword'])) {
-            $authHeader = 'Authorization: Basic ' . base64_encode($this->config['jdownloaderUsername'] . ':' . $this->config['jdownloaderPassword']);
-            $headers = array('headers' => array($authHeader));
+            $auth = array('auth' => array($this->config['jdownloaderUsername'], $this->decrypt($this->config['jdownloaderPassword'])));
         } else {
-            $headers = [];
+            $auth = [];
         }
         try {
-            $options = $this->requestOptions($url, $this->config['jdownloaderRefresh'], $this->config['jdownloaderDisableCertCheck'], $this->config['jdownloaderUseCustomCertificate']);
-            $response = Requests::get($url, $headers, $options);
+            $options = $this->requestOptions($url, $this->config['jdownloaderRefresh'], $this->config['jdownloaderDisableCertCheck'], $this->config['jdownloaderUseCustomCertificate'], $auth);
+            $response = Requests::get($url, [], $options);
             if ($response->success) {
                 $temp = json_decode($response->body, true);
                 $packages = $temp['packages'];
