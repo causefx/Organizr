@@ -69,7 +69,8 @@ trait OverseerrHomepageItem
 		try {
 			$options = $this->requestOptions($url, null, $this->config['overseerrDisableCertCheck'], $this->config['overseerrUseCustomCertificate']);
 			$test = Requests::get($url . "/api/v1/settings/main", $headers, $options);
-			if ($test->success) {
+			$testData = json_decode($test->body, true);
+			if ($test->success && isset($testData["apiKey"]) && $testData["apiKey"] == $this->config['overseerrToken']) {
 				$this->setAPIResponse('success', 'API Connection succeeded', 200);
 				return true;
 			} else {
