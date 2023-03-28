@@ -2045,36 +2045,34 @@ class Organizr
 	public function uploadImage()
 	{
 		$filesCheck = array_filter($_FILES);
-		if (!empty($filesCheck)) {
-			if ($_FILES['file']['tmp_name'] == '') {
-				$this->setResponse(500, 'File upload error');
-				return false;
-			}
-			if (strpos($_FILES['file']['type'], 'image/') === false) {
-				$this->setResponse(403, 'File Type not approved', $_FILES['file']['type']);
-				return false;
-			}
-			if (!$this->approvedFileType($_FILES['file']['tmp_name'])) {
-				$this->setResponse(403, 'File Type not approved', $_FILES['file']['tmp_name']);
-				return false;
-			}
-			if ($this->approvedFileExtension($_FILES['file']['name'])) {
-				ini_set('upload_max_filesize', '10M');
-				ini_set('post_max_size', '10M');
-				$tempFile = $_FILES['file']['tmp_name'];
-				$targetPath = $this->root . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR . 'userTabs' . DIRECTORY_SEPARATOR;
-				$this->makeDir($targetPath);
-				$targetFile = $targetPath . $this->sanitizeUserString($_FILES['file']['name']);
-				$this->setAPIResponse(null, pathinfo($_FILES['file']['name'], PATHINFO_BASENAME) . ' has been uploaded', null);
-				return move_uploaded_file($tempFile, $targetFile);
-			} else {
-				$this->setResponse(403, 'File Extension not approved');
-				return false;
-			}
-		} else {
+		if (empty($filesCheck)) {
 			$this->setResponse(500, 'No File was uploaded');
 			return false;
 		}
+		if ($_FILES['file']['tmp_name'] == '') {
+			$this->setResponse(500, 'File upload error');
+			return false;
+		}
+		if (strpos($_FILES['file']['type'], 'image/') === false) {
+			$this->setResponse(403, 'File Type not image', $_FILES['file']['type']);
+			return false;
+		}
+		if (!$this->approvedFileType($_FILES['file']['tmp_name'])) {
+			$this->setResponse(403, 'File Type not approved', $_FILES['file']['tmp_name']);
+			return false;
+		}
+		if (!$this->approvedFileExtension($_FILES['file']['name'])) {
+			$this->setResponse(403, 'File Extension not approved');
+			return false;
+		}
+		ini_set('upload_max_filesize', '10M');
+		ini_set('post_max_size', '10M');
+		$tempFile = $_FILES['file']['tmp_name'];
+		$targetPath = $this->root . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR . 'userTabs' . DIRECTORY_SEPARATOR;
+		$this->makeDir($targetPath);
+		$targetFile = $targetPath . $this->sanitizeUserString($_FILES['file']['name']);
+		$this->setAPIResponse(null, pathinfo($_FILES['file']['name'], PATHINFO_BASENAME) . ' has been uploaded', null);
+		return move_uploaded_file($tempFile, $targetFile);
 	}
 
 	public function formatPingHost($host)
