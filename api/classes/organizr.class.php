@@ -1453,7 +1453,7 @@ class Organizr
 		$status = [];
 		$dependenciesActive = [];
 		$dependenciesInactive = [];
-		$extensions = ['PDO_SQLITE', 'PDO', 'SQLITE3', 'zip', 'cURL', 'openssl', 'simplexml', 'json', 'session', 'filter'];
+		$extensions = ['PDO_SQLITE', 'PDO', 'SQLITE3', 'zip', 'cURL', 'openssl', 'simplexml', 'json', 'session', 'filter', 'fileinfo', 'mbstring'];
 		$functions = ['hash', 'fopen', 'fsockopen', 'fwrite', 'fclose', 'readfile'];
 		foreach ($extensions as $check) {
 			if (extension_loaded($check)) {
@@ -1501,7 +1501,7 @@ class Organizr
 		$status = array();
 		$dependenciesActive = array();
 		$dependenciesInactive = array();
-		$extensions = array('PDO_SQLITE', 'PDO', 'SQLITE3', 'zip', 'cURL', 'openssl', 'simplexml', 'json', 'session', 'filter');
+		$extensions = array('PDO_SQLITE', 'PDO', 'SQLITE3', 'zip', 'cURL', 'openssl', 'simplexml', 'json', 'session', 'filter', 'fileinfo', 'mbstring');
 		$functions = array('hash', 'fopen', 'fsockopen', 'fwrite', 'fclose', 'readfile');
 		foreach ($extensions as $check) {
 			if (extension_loaded($check)) {
@@ -2046,6 +2046,10 @@ class Organizr
 	{
 		$filesCheck = array_filter($_FILES);
 		if (!empty($filesCheck)) {
+			if ($_FILES['file']['tmp_name'] == '') {
+				$this->setResponse(500, 'File upload error');
+				return false;
+			}
 			if (strpos($_FILES['file']['type'], 'image/') === false) {
 				$this->setResponse(403, 'File Type not approved', $_FILES['file']['type']);
 				return false;
