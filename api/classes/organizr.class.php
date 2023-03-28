@@ -4083,6 +4083,26 @@ class Organizr
 		return $this->processQueries($response);
 	}
 
+	public function revokeTokensByUserId($userId = null)
+	{
+		if (!$userId) {
+			$this->setAPIResponse('error', 'User Id was not supplied', 422);
+			return false;
+		}
+		$response = [
+			array(
+				'function' => 'query',
+				'query' => array(
+					'DELETE FROM tokens WHERE user_id = ?',
+					$userId,
+				)
+			),
+		];
+		$this->setAPIResponse('success', 'User Tokens revoked', 204);
+		$this->setLoggerChannel('User Management')->info('Revoked all tokens for deleted user', ['id' => $userId]);
+		return $this->processQueries($response);
+	}
+
 	public function updateUserPassword($password, $id)
 	{
 		$response = [
@@ -6704,15 +6724,15 @@ class Organizr
 			$this->setAPIResponse('error', 'Cannot delete your own user', 409);
 			return false;
 		}
-		if ($userInfo) {
-			$this->setLoggerChannel('User Management');
-			$this->logger->info('Deleted User [' . $userInfo['username'] . ']');
-			$this->setAPIResponse('success', 'User deleted', 204);
-			return $this->processQueries($response);
-		} else {
+		if (!$userInfo) {
 			$this->setAPIResponse('error', 'id not found', 404);
 			return false;
 		}
+		$this->setLoggerChannel('User Management');
+		$this->logger->info('Deleted User [' . $userInfo['username'] . ']');
+		$this->revokeTokensByUserId($id);
+		$this->setAPIResponse('success', 'User deleted', 204);
+		return $this->processQueries($response);
 	}
 
 	public function addUser($array)
