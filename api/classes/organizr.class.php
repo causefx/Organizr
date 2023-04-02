@@ -7568,7 +7568,7 @@ class Organizr
 			$getParams = ($_GET) ? '?' . http_build_query($_GET) : '';
 			$url = $this->qualifyURL($appURL) . $new . $getParams;
 			$url = $this->cleanPath($url);
-			$options = ($this->localURL($appURL)) ? array('verify' => false, 'timeout' => 120) : array('timeout' => 120);
+			$options = ($this->localURL($appURL)) ? ['verify' => false, 'timeout' => 120] : ['timeout' => 120];
 			$headers = [];
 			$apiData = $this->apiData($requestObject, false);
 			if ($header) {
@@ -7590,8 +7590,7 @@ class Organizr
 				'options' => $options,
 				'data' => $apiData,
 			];
-			$this->setLoggerChannel('Socks');
-			$this->logger->debug('Sending Socks request', $debugInformation);
+			$this->setLoggerChannel('Socks')->debug('Sending Socks request', $debugInformation);
 			try {
 				switch ($requestObject->getMethod()) {
 					case 'GET':
@@ -7609,12 +7608,19 @@ class Organizr
 					default:
 						$call = Requests::get($url, $headers, $options);
 				}
-				$this->logger->debug('Socks Response', $this->json_validator($call->body) ? json_decode($call->body, true) : $call->body);
+				if ($this->json_validator($call->body)) {
+					$logData = json_decode($call->body, true);
+					if (count($logData) > 100) {
+						$logData = 'Count too large to output';
+					}
+				} else {
+					$logData = $call->body;
+				}
+				$this->setLoggerChannel('Socks')->debug('Socks Response', ['body' => $logData, 'debug' => $debugInformation]);
 				return $call->body;
 			} catch (Requests_Exception $e) {
 				$this->setResponse(500, $e->getMessage());
-				$this->setLoggerChannel('Socks');
-				$this->logger->critical($e, $debugInformation);
+				$this->setLoggerChannel('Socks')->critical($e, $debugInformation);
 				return null;
 			}
 		} else {
