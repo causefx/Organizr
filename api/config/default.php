@@ -694,5 +694,6 @@ return [
 	'slackLogWebhook' => '',
 	'slackLogWebHookChannel' => '',
 	'matchUserAgents' => false,
-	'matchUserIP' => false
+	'matchUserIP' => false,
+	'disableHomepageModals' => false
 ];

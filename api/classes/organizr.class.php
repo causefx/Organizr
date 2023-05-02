@@ -2199,6 +2199,7 @@ class Organizr
 			],
 			'Options' => [
 				$this->settingsOption('switch', 'alternateHomepageHeaders', ['label' => 'Alternate Homepage Titles']),
+				$this->settingsOption('switch', 'disableHomepageModals', ['label' => 'Disable Homepage Saved Modal', 'help' => 'Disable the modal when saving homepage config settings']),
 				$this->settingsOption('switch', 'debugErrors', ['label' => 'Show Debug Errors']),
 				$this->settingsOption('switch', 'easterEggs', ['label' => 'Show Easter Eggs']),
 				$this->settingsOption('input', 'gaTrackingID', ['label' => 'Google Analytics Tracking ID', 'placeholder' => 'e.g. UA-XXXXXXXXX-X']),
@@ -4432,6 +4433,7 @@ class Organizr
 				'collapseSideMenuOnClick' => $this->config['allowCollapsableSideMenu'] && $this->config['collapseSideMenuOnClick'],
 				'authProxyOverrideLogout' => $this->config['authProxyOverrideLogout'],
 				'authProxyLogoutURL' => $this->config['authProxyLogoutURL'],
+				'disableHomepageModals' => $this->config['disableHomepageModals']
 			],
 			'menuLink' => [
 				'githubMenuLink' => $this->config['githubMenuLink'],
@@ -7551,79 +7553,80 @@ class Organizr
 				$this->setAPIResponse('error', 'Multiple endpoint accessed but multiple URLs not found in field, please use /api/v2/socks endpoint', 409);
 			}
 		}
-		if (!$error) {
-			if ($multiple) {
-				$instance = $multiple - 1;
-				$pre = explode('/api/v2/multiple/socks/', $requestObject->getUri()->getPath());
-				$pre[1] = $this->replace_first('/' . $multiple . '/', '/', $pre[1]);
-				// sent url twice since we arent using tokens
-				$list = $this->csvHomepageUrlToken($this->config[$url], $this->config[$url]);
-				$appURL = $list[$instance]['url'];
-			} else {
-				$pre = explode('/api/v2/socks/', $requestObject->getUri()->getPath());
-				$appURL = $this->config[$url];
-			}
-			$endpoint = explode('/', $pre[1]);
-			$new = urldecode(preg_replace('/' . $endpoint[0] . '/', '', $pre[1], 1));
-			$getParams = ($_GET) ? '?' . http_build_query($_GET) : '';
-			$url = $this->qualifyURL($appURL) . $new . $getParams;
-			$url = $this->cleanPath($url);
-			$options = ($this->localURL($appURL)) ? ['verify' => false, 'timeout' => 120] : ['timeout' => 120];
-			$headers = [];
-			$apiData = $this->apiData($requestObject, false);
-			if ($header) {
-				if ($requestObject->hasHeader($header)) {
-					$headerKey = $requestObject->getHeaderLine($header);
-					$headers[$header] = $headerKey;
-				}
-			}
-			if ($requestObject->hasHeader('Content-Type')) {
-				$headerKey = $requestObject->getHeaderLine('Content-Type');
-				$headers['Content-Type'] = $headerKey;
-			}
-			$debugInformation = [
-				'type' => $requestObject->getMethod(),
-				'headerType' => $requestObject->getHeaderLine('Content-Type'),
-				'header' => $header,
-				'headers' => $headers,
-				'url' => $url,
-				'options' => $options,
-				'data' => $apiData,
-			];
-			$this->setLoggerChannel('Socks')->debug('Sending Socks request', $debugInformation);
-			try {
-				switch ($requestObject->getMethod()) {
-					case 'GET':
-						$call = Requests::get($url, $headers, $options);
-						break;
-					case 'POST':
-						$call = Requests::post($url, $headers, $apiData, $options);
-						break;
-					case 'DELETE':
-						$call = Requests::delete($url, $headers, $options);
-						break;
-					case 'PUT':
-						$call = Requests::put($url, $headers, $apiData, $options);
-						break;
-					default:
-						$call = Requests::get($url, $headers, $options);
-				}
-				if ($this->json_validator($call->body)) {
-					$logData = json_decode($call->body, true);
-					if (count($logData) > 100) {
-						$logData = 'Count too large to output';
-					}
-				} else {
-					$logData = $call->body;
-				}
-				$this->setLoggerChannel('Socks')->debug('Socks Response', ['body' => $logData, 'debug' => $debugInformation]);
-				return $call->body;
-			} catch (Requests_Exception $e) {
-				$this->setResponse(500, $e->getMessage());
-				$this->setLoggerChannel('Socks')->critical($e, $debugInformation);
-				return null;
-			}
+
+		if ($error) {
+			return null;
+		}
+
+		if ($multiple) {
+			$instance = $multiple - 1;
+			$pre = explode('/api/v2/multiple/socks/', $requestObject->getUri()->getPath());
+			$pre[1] = $this->replace_first('/' . $multiple . '/', '/', $pre[1]);
+			// sent url twice since we arent using tokens
+			$list = $this->csvHomepageUrlToken($this->config[$url], $this->config[$url]);
+			$appURL = $list[$instance]['url'];
 		} else {
+			$pre = explode('/api/v2/socks/', $requestObject->getUri()->getPath());
+			$appURL = $this->config[$url];
+		}
+		$endpoint = explode('/', $pre[1]);
+		$new = urldecode(preg_replace('/' . $endpoint[0] . '/', '', $pre[1], 1));
+		$getParams = ($_GET) ? '?' . http_build_query($_GET) : '';
+		$url = $this->qualifyURL($appURL) . $new . $getParams;
+		$url = $this->cleanPath($url);
+		$options = ($this->localURL($appURL)) ? ['verify' => false, 'timeout' => 120] : ['timeout' => 120];
+		$headers = [];
+		$apiData = $this->apiData($requestObject, false);
+		if ($header) {
+			if ($requestObject->hasHeader($header)) {
+				$headerKey = $requestObject->getHeaderLine($header);
+				$headers[$header] = $headerKey;
+			}
+		}
+		if ($requestObject->hasHeader('Content-Type')) {
+			$headerKey = $requestObject->getHeaderLine('Content-Type');
+			$headers['Content-Type'] = $headerKey;
+		}
+		$debugInformation = [
+			'type' => $requestObject->getMethod(),
+			'headerType' => $requestObject->getHeaderLine('Content-Type'),
+			'header' => $header,
+			'headers' => $headers,
+			'url' => $url,
+			'options' => $options,
+			'data' => $apiData,
+		];
+		$this->setLoggerChannel('Socks')->debug('Sending Socks request', $debugInformation);
+		try {
+			switch ($requestObject->getMethod()) {
+				case 'GET':
+					$call = Requests::get($url, $headers, $options);
+					break;
+				case 'POST':
+					$call = Requests::post($url, $headers, $apiData, $options);
+					break;
+				case 'DELETE':
+					$call = Requests::delete($url, $headers, $options);
+					break;
+				case 'PUT':
+					$call = Requests::put($url, $headers, $apiData, $options);
+					break;
+				default:
+					$call = Requests::get($url, $headers, $options);
+			}
+			if ($this->json_validator($call->body)) {
+				$logData = json_decode($call->body, true);
+				if (count($logData) > 100) {
+					$logData = 'Count too large to output';
+				}
+			} else {
+				$logData = $call->body;
+			}
+			$this->setLoggerChannel('Socks')->debug('Socks Response', ['body' => $logData, 'debug' => $debugInformation]);
+			return $call->body;
+		} catch (Requests_Exception $e) {
+			$this->setResponse(500, $e->getMessage());
+			$this->setLoggerChannel('Socks')->critical($e, $debugInformation);
 			return null;
 		}
 	}

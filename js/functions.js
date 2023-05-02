@@ -3643,7 +3643,7 @@ function submitSettingsForm(form, homepageItem = false){
 				organizrCatchError(e,data);
 			}
 			if(callbacks){ callbacks.fire(); }
-			if(homepageItem) {
+			if(homepageItem && !activeInfo.settings.misc.disableHomepageModals) {
 				let html = `
 		        <div class="panel panel-default">
                     <div class="panel-heading">${response.message}</div>
