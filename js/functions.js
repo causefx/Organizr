@@ -9111,7 +9111,7 @@ function buildUptimeKumaItem(array){
                             <div class="ml-1 w-100">
                                 <i class="`+imageText+` font-20 pull-right mt-3 mb-2"></i>
                                 `; if (typeof data.url !== 'undefined') { card += kumaLink; }
-                                card += `<h3 class="d-flex no-block align-items-center mt-2 mb-2"><img class="lazyload loginTitle">&nbsp;`+name+`</h3>
+                                card += `<h3 class="d-flex no-block align-items-center mt-2 mb-2"><img class="lazyload loginTitle">&nbsp;`+data.name+`</h3>
                                 `; if (typeof data.url !== 'undefined') { card +=`</a>`; }
                                 card += `<div class="clearfix"></div>
                             </div>

@@ -34,6 +34,7 @@ trait UptimeKumaHomepageItem
 					$this->settingsOption('refresh', 'homepageUptimeKumaRefresh'),
 					$this->settingsOption('title', 'homepageUptimeKumaHeader'),
 					$this->settingsOption('toggle-title', 'homepageUptimeKumaHeaderToggle'),
+					$this->settingsOption('switch', 'homepageUptimeKumaCompact', ['label' => 'Compact view', 'help' => 'Toggles the compact view of this homepage module']),
 				],
 			]
 		];
@@ -98,7 +99,14 @@ trait UptimeKumaHomepageItem
 					// do nothing when monitor is disabled
 				}
 			}, $body);
-			$api = array_values(array_filter($body));
+			$api = [
+				'data' => array_values(array_filter($body)),
+				'options' => [
+					'title' => $this->config['homepageUptimeKumaHeader'],
+					'titleToggle' => $this->config['homepageUptimeKumaHeaderToggle'],
+					'compact' => $this->config['homepageUptimeKumaCompact'],
+				]
+			];
 		} catch (GuzzleException $e) {
 			$this->setLoggerChannel('UptimeKuma')->error($e);
 			$this->setAPIResponse('error', $e->getMessage(), 401);
