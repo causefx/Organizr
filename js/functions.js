@@ -9112,7 +9112,7 @@ function buildUptimeKumaItem(array){
                                 <i class="`+imageText+` font-20 pull-right mt-3 mb-2"></i>
                                 `; if (typeof data.url !== 'undefined') { card += kumaLink; }
                                 card += `<h3 class="d-flex no-block align-items-center mt-2 mb-2"><img class="lazyload loginTitle">&nbsp;`+data.name;
-                                if (data.latency != null) {
+                                if (data.latency != null && options.showLatency) {
                                     card += `<span class="ml-3 font-12 align-self-center text-dark">`+data.latency+`ms</span></h3>`
                                 }
                                 card += `</h3>`
@@ -9130,10 +9130,10 @@ function buildUptimeKumaItem(array){
                     <div class="card-body bg-org-alt text-center">
                         `; if (typeof data.url !== 'undefined') { card +=`<a href="`+data.url+`" target="_blank">`; }
                         card += `<div class="d-block">
-                            <h3 class="mt-0 mb-3">`+data.name+`</h3>`
+                            <h3 class="mt-0 mb-2">`+data.name+`</h3>`
                             
-                        if (data.latency != null) {
-                            card += `<p class="text-dark">`+data.latency+`ms</p>`
+                        if (data.latency != null && options.showLatency) {
+                            card += `<p class="text-dark mb-0">`+data.latency+`ms</p>`
                         }
 
                         card += `</div>

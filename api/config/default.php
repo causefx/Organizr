@@ -705,4 +705,5 @@ return [
 	'homepageUptimeKumaHeader' => 'Uptime Kuma',
 	'homepageUptimeKumaHeaderToggle' => true,
 	'homepageUptimeKumaCompact' => true,
+	'homepageUptimeKumaShowLatency' => true,
 ];

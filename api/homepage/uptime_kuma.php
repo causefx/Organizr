@@ -35,6 +35,7 @@ trait UptimeKumaHomepageItem
 					$this->settingsOption('title', 'homepageUptimeKumaHeader'),
 					$this->settingsOption('toggle-title', 'homepageUptimeKumaHeaderToggle'),
 					$this->settingsOption('switch', 'homepageUptimeKumaCompact', ['label' => 'Compact view', 'help' => 'Toggles the compact view of this homepage module']),
+					$this->settingsOption('switch', 'homepageUptimeKumaShowLatency', ['label' => 'Show monitor latency']),
 				],
 			]
 		];
@@ -97,6 +98,7 @@ trait UptimeKumaHomepageItem
 					'title' => $this->config['homepageUptimeKumaHeader'],
 					'titleToggle' => $this->config['homepageUptimeKumaHeaderToggle'],
 					'compact' => $this->config['homepageUptimeKumaCompact'],
+					'showLatency' => $this->config['homepageUptimeKumaShowLatency'],
 				]
 			];
 		} catch (GuzzleException $e) {
