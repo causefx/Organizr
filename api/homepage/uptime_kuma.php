@@ -88,19 +88,10 @@ trait UptimeKumaHomepageItem
 
 			$body = $response->getBody()->getContents();
 
-			$body = explode(PHP_EOL, $body);
-			$body = array_filter($body, function (string $item) {
-				return str_starts_with($item, 'monitor_status');
-			});
-			$body = array_map(function (string $item) {
-				try {
-					return $this->parseUptimeKumaStatus($item);
-				} catch (Exception $e) {
-					// do nothing when monitor is disabled
-				}
-			}, $body);
+			$metrics = (new UptimeKumaMetrics($body))->process();
+
 			$api = [
-				'data' => array_values(array_filter($body)),
+				'data' => $metrics->getMonitors(),
 				'options' => [
 					'title' => $this->config['homepageUptimeKumaHeader'],
 					'titleToggle' => $this->config['homepageUptimeKumaHeaderToggle'],
@@ -130,32 +121,4 @@ trait UptimeKumaHomepageItem
 
 		return static::$kumaClient;
 	}
-
-	private function parseUptimeKumaStatus(string $status): array
-	{
-		if (substr($status, -1) === '2') {
-			throw new Exception("monitor diasbled");
-		}
-
-		$up = (substr($status, -1)) == '0' ? false : true;
-		$status = substr($status, 15);
-		$status = substr($status, 0, -4);
-		$status = explode(',', $status);
-		$data = [
-			'name' => $this->getStringBetweenQuotes($status[0]),
-			'url' => $this->getStringBetweenQuotes($status[2]),
-			'type' => $this->getStringBetweenQuotes($status[1]),
-			'status' => $up,
-		];
-
-		return $data;
-	}
-
-	private function getStringBetweenQuotes(string $input): string
-	{
-		if (preg_match('/"(.*?)"/', $input, $match) == 1) {
-			return $match[1];
-		}
-		return '';
-	} 
 }
