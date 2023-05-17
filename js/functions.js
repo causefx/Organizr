@@ -9111,8 +9111,12 @@ function buildUptimeKumaItem(array){
                             <div class="ml-1 w-100">
                                 <i class="`+imageText+` font-20 pull-right mt-3 mb-2"></i>
                                 `; if (typeof data.url !== 'undefined') { card += kumaLink; }
-                                card += `<h3 class="d-flex no-block align-items-center mt-2 mb-2"><img class="lazyload loginTitle">&nbsp;`+data.name+`</h3>
-                                `; if (typeof data.url !== 'undefined') { card +=`</a>`; }
+                                card += `<h3 class="d-flex no-block align-items-center mt-2 mb-2"><img class="lazyload loginTitle">&nbsp;`+data.name;
+                                if (data.latency != null) {
+                                    card += `<span class="ml-3 font-12 align-self-center text-dark">`+data.latency+`ms</span></h3>`
+                                }
+                                card += `</h3>`
+                                if (typeof data.url !== 'undefined') { card +=`</a>`; }
                                 card += `<div class="clearfix"></div>
                             </div>
                         </div>
@@ -9126,8 +9130,13 @@ function buildUptimeKumaItem(array){
                     <div class="card-body bg-org-alt text-center">
                         `; if (typeof data.url !== 'undefined') { card +=`<a href="`+data.url+`" target="_blank">`; }
                         card += `<div class="d-block">
-                            <h3 class="mt-0 mb-3">`+data.name+`</h3>
-                        </div>
+                            <h3 class="mt-0 mb-3">`+data.name+`</h3>`
+                            
+                        if (data.latency != null) {
+                            card += `<p class="text-dark">`+data.latency+`ms</p>`
+                        }
+
+                        card += `</div>
                         <div class="d-inline-block mt-4 py-2 px-4 badge indicator bg-`+statusColor+`">
                             <p class="mb-0">`; if(data.status == true) { card += 'ONLINE' } else { card += 'OFFLINE' } card+=`</p>
                         </div>
