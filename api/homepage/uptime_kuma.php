@@ -5,7 +5,7 @@ trait UptimeKumaHomepageItem
 	public function uptimeKumaSettingsArray($infoOnly = false)
 	{
 		$homepageInformation = [
-			'name' => 'Uptime Kuma',
+			'name' => 'UptimeKuma',
 			'enabled' => true,
 			'image' => 'plugins/images/tabs/kuma.png',
 			'category' => 'Monitor',

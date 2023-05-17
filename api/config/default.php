@@ -376,6 +376,7 @@ return [
 	'homepageOrderDonate' => '41',
 	'homepageOrderAdguard' => '42',
 	'homepageOrderProwlarr' => '43',
+	'homepageOrderUptimeKuma' => '44',
 	'homepageShowStreamNames' => false,
 	'homepageShowStreamNamesAuth' => '1',
 	'homepageShowStreamNamesWithoutIp' => false,
