@@ -86,9 +86,9 @@ trait UptimeKumaHomepageItem
 		try {
 			$metrics = (new UptimeKumaMetrics(
 				$this->getKumaClient($url, $this->config['uptimeKumaToken'])
-				->get('/metrics')
-				->getBody()
-				->getContents()
+					->get('/metrics')
+					->getBody()
+					->getContents()
 			))->process();
 
 			$api = [

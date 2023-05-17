@@ -18,6 +18,7 @@ class UptimeKumaMetrics
         $monitors = array_filter($processed, function (string $item) {
             return str_starts_with($item, 'monitor_status');
         });
+        // TODO: parse the latencies and add them on to the info card
         $latencies = array_filter($processed, function (string $item) {
             return str_starts_with($item, 'monitor_response_time');
         });
