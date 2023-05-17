@@ -695,5 +695,12 @@ return [
 	'slackLogWebHookChannel' => '',
 	'matchUserAgents' => false,
 	'matchUserIP' => false,
-	'disableHomepageModals' => false
+	'disableHomepageModals' => false,
+	'homepageUptimeKumaEnabled' => false,
+	'homepageUptimeKumaAuth' => '1',
+	'uptimeKumaURL' => '',
+	'uptimeKumaToken' => '',
+	'homepageUptimeKumaRefresh' => '60000',
+	'homepageUptimeKumaHeader' => 'Uptime Kuma',
+	'homepageUptimeKumaHeaderToggle' => true,
 ];
