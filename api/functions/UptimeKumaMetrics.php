@@ -4,7 +4,6 @@ class UptimeKumaMetrics
 {
     protected string $raw;
     private array $monitors = [];
-    private array $latencies = [];
 
     public function __construct(string $raw)
     {
@@ -24,12 +23,9 @@ class UptimeKumaMetrics
         });
         
         $monitors = array_map(function (string $item) {
-            try {
-                return $this->parseMonitorStatus($item);
-            } catch (Exception $e) {
-                // do nothing when monitor is disabled
-            }
+            return $this->parseMonitorStatus($item);
         }, $monitors);
+        $this->addLatencyToMonitors($monitors, $latencies);
         $this->monitors = array_values(array_filter($monitors));
 
         return $this;
@@ -40,10 +36,10 @@ class UptimeKumaMetrics
         return $this->monitors;
     }
 
-    private function parseMonitorStatus(string $status): array
+    private function parseMonitorStatus(string $status): ?array
     {  
         if (substr($status, -1) === '2') {
-			throw new Exception("monitor diasbled");
+            return null;
 		}
 
 		$up = (substr($status, -1)) == '0' ? false : true;
@@ -58,6 +54,28 @@ class UptimeKumaMetrics
 		];
 
 		return $data;
+    }
+
+    private function addLatencyToMonitors(array &$monitors, array $latencies)
+    {
+        $latencies = $this->getLatenciesByName($latencies);
+        foreach ($monitors as &$monitor) {
+            $monitor['latency'] = $latencies[$monitor['name']] ?? null;
+        }
+    }
+
+    private function getLatenciesByName(array $latencies): array
+    {
+        $l = [];
+
+        foreach ($latencies as $latency) {
+            if (preg_match('/monitor_name="(.*)",monitor_type.* ([0-9]{1,})$/', $latency, $match)) {
+                $l[$match[1]] = (int) $match[2];
+            }
+            continue;
+        }
+
+        return $l;
     }
 
     private function getStringBetweenQuotes(string $input): string
