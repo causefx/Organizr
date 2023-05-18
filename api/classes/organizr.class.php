@@ -64,6 +64,7 @@ class Organizr
 	use UnifiHomepageItem;
 	use WeatherHomepageItem;
 	use uTorrentHomepageItem;
+	use UptimeKumaHomepageItem;
 
 	// ===================================
 	// Organizr Version
@@ -4690,6 +4691,13 @@ class Organizr
 					$class = 'bg-info';
 					$image = 'plugins/images/tabs/monitorr.png';
 					if (!$this->config['homepageMonitorrEnabled']) {
+						$class .= ' faded';
+					}
+					break;
+				case 'homepageOrderUptimeKuma':
+					$class = 'bg-info';
+					$image = 'plugins/images/tabs/kuma.png';
+					if (!$this->config['homepageUptimeKumaEnabled']) {
 						$class .= ' faded';
 					}
 					break;
