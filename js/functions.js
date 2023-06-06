@@ -12234,7 +12234,7 @@ function OrganizrApiError(xhr, secondaryMessage = null){
 	return false;
 }
 function checkForUpdates(){
-	if(activeInfo.user.loggedin && activeInfo.user.groupID <= 1){
+	if(activeInfo.user.loggedin && activeInfo.user.groupID <= 1 && activeInfo.settings.misc.checkForUpdate){
 		updateCheck();
 		checkCommitLoad();
 		checkPluginUpdates();

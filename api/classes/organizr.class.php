@@ -2358,6 +2358,9 @@ class Organizr
 			'Settings Page' => [
 				$this->settingsOption('select', 'defaultSettingsTab', ['label' => 'Default Settings Tab', 'options' => $this->getSettingsTabs(), 'help' => 'Choose which Settings Tab to be default when opening settings page']),
 			],
+			'Other' => [
+				$this->settingsOption('switch', 'checkForUpdate', ['label' => 'Check For Update', 'help' => 'Check for update on Organizr load']),
+			],
 			'Github' => [
 				$this->settingsOption('select', 'branch', ['label' => 'Branch', 'value' => $this->config['branch'], 'options' => $this->getBranches(), 'disabled' => $this->docker, 'help' => ($this->docker) ? 'Since you are using the Official Docker image, Change the image to change the branch' : 'Choose which branch to download from']),
 				$this->settingsOption('button', 'force-install-branch', ['label' => 'Force Install Branch', 'class' => 'updateNow', 'icon' => 'fa fa-download', 'text' => 'Retrieve', 'attr' => ($this->docker) ? 'title="You can just restart your docker to update"' : '', 'help' => ($this->docker) ? 'Since you are using the official Docker image, you can just restart your Docker container to update Organizr' : 'This will re-download all of the source files for Organizr']),
@@ -4434,7 +4437,8 @@ class Organizr
 				'collapseSideMenuOnClick' => $this->config['allowCollapsableSideMenu'] && $this->config['collapseSideMenuOnClick'],
 				'authProxyOverrideLogout' => $this->config['authProxyOverrideLogout'],
 				'authProxyLogoutURL' => $this->config['authProxyLogoutURL'],
-				'disableHomepageModals' => $this->config['disableHomepageModals']
+				'disableHomepageModals' => $this->config['disableHomepageModals'],
+				'checkForUpdate' => $this->config['checkForUpdate']
 			],
 			'menuLink' => [
 				'githubMenuLink' => $this->config['githubMenuLink'],

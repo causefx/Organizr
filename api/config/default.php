@@ -706,4 +706,5 @@ return [
 	'homepageUptimeKumaHeaderToggle' => true,
 	'homepageUptimeKumaCompact' => true,
 	'homepageUptimeKumaShowLatency' => true,
+	'checkForUpdate' => true
 ];
