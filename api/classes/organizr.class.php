@@ -2355,6 +2355,10 @@ class Organizr
 	{
 		$certificateStatus = $this->hasCustomCert() ? '<span lang="en">Custom Certificate Loaded</span><br />Located at <span>' . $this->getCustomCert() . '</span>' : '<span lang="en">Custom Certificate not found - please upload below</span>';
 		$settings = [
+			'Socks' => [
+				$this->settingsOption('switch', 'socksDebug', ['label' => 'Enable Debug Log', 'help' => 'Enable the option to have socks output to logs']),
+				$this->settingsOption('number', 'maxSocksDebugSize', ['label' => 'Max Debug Data Rows', 'help' => 'Max amount of rows in debug log', 'attr' => 'min="1"'])
+			],
 			'Settings Page' => [
 				$this->settingsOption('select', 'defaultSettingsTab', ['label' => 'Default Settings Tab', 'options' => $this->getSettingsTabs(), 'help' => 'Choose which Settings Tab to be default when opening settings page']),
 			],
@@ -7626,13 +7630,18 @@ class Organizr
 				default:
 					$call = Requests::get($url, $headers, $options);
 			}
-			if ($this->json_validator($call->body)) {
-				$logData = json_decode($call->body, true);
-				if (count($logData) > 100) {
-					$logData = 'Count too large to output';
+			if ($this->config['socksDebug']) {
+				if ($this->json_validator($call->body)) {
+					$logData = json_decode($call->body, true);
+					$size = (!is_numeric($this->config['maxSocksDebugSize']) || $this->config['maxSocksDebugSize'] == 0) ? 1 : $this->config['maxSocksDebugSize'];
+					if (count($logData) > $size) {
+						$logData = 'Count too large to output';
+					}
+				} else {
+					$logData = $call->body;
 				}
 			} else {
-				$logData = $call->body;
+				$logData = 'Debug not enabled';
 			}
 			$this->setLoggerChannel('Socks')->debug('Socks Response', ['body' => $logData, 'debug' => $debugInformation]);
 			return $call->body;

@@ -706,5 +706,7 @@ return [
 	'homepageUptimeKumaHeaderToggle' => true,
 	'homepageUptimeKumaCompact' => true,
 	'homepageUptimeKumaShowLatency' => true,
-	'checkForUpdate' => true
+	'checkForUpdate' => true,
+	'socksDebug' => false,
+	'maxSocksDebugSize' => 100
 ];
