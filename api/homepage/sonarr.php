@@ -239,7 +239,7 @@ trait SonarrHomepageItem
 	public function formatSonarrCalendar($array, $number)
 	{
 		$array = json_decode($array, true);
-		$gotCalendar = array();
+		$gotCalendar = [];
 		$i = 0;
 		foreach ($array as $child) {
 			$i++;
@@ -250,12 +250,11 @@ trait SonarrHomepageItem
 			if (!isset($episodeID)) {
 				$episodeID = "";
 			}
-			//$episodeName = htmlentities($child['title'], ENT_QUOTES);
 			$episodeAirDate = $child['airDateUtc'];
 			$episodeAirDate = strtotime($episodeAirDate);
 			$episodeAirDate = date("Y-m-d H:i:s", $episodeAirDate);
 			if (new DateTime() < new DateTime($episodeAirDate)) {
-				$unaired = true;
+				$unAired = true;
 			}
 			if ($child['episodeNumber'] == "1") {
 				$episodePremier = "true";
@@ -267,32 +266,30 @@ trait SonarrHomepageItem
 				$child['airDateUtc'] = gmdate('Y-m-d\TH:i:s\Z', strtotime($date->format(DateTime::ATOM)));
 			}
 			$downloaded = $child['hasFile'];
-			if ($downloaded == "0" && isset($unaired) && $episodePremier == "true") {
+			if ($downloaded == "0" && isset($unAired) && $episodePremier == "true") {
 				$downloaded = "text-primary animated flash";
-			} elseif ($downloaded == "0" && isset($unaired) && $monitored == "0") {
+			} elseif ($downloaded == "0" && isset($unAired) && $monitored == "0") {
 				$downloaded = "text-dark";
-			} elseif ($downloaded == "0" && isset($unaired)) {
+			} elseif ($downloaded == "0" && isset($unAired)) {
 				$downloaded = "text-info";
 			} elseif ($downloaded == "1") {
 				$downloaded = "text-success";
 			} else {
 				$downloaded = "text-danger";
 			}
-			$fanart = "/plugins/images/homepage/no-np.png";
+			$fanArt = "/plugins/images/homepage/no-np.png";
 			foreach ($child['series']['images'] as $image) {
-				if ($image['coverType'] == "fanart") {
-					$fanart = $image['url'];
+				if ($image['coverType'] == "fanart" && (isset($image['url']) && $image['url'] !== '')) {
+					$fanArt = $image['url'];
 				}
 			}
-			if ($fanart !== "/plugins/images/homepage/no-np.png" || (strpos($fanart, '://') === false)) {
+			if ($fanArt !== "/plugins/images/homepage/no-np.png" || (strpos($fanArt, '://') === false)) {
 				$cacheDirectory = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR . 'cache' . DIRECTORY_SEPARATOR;
-				$imageURL = $fanart;
-				$cacheFile = $cacheDirectory . $seriesID . '.jpg';
-				$fanart = 'data/cache/' . $seriesID . '.jpg';
-				if (!file_exists($cacheFile)) {
+				$imageURL = $fanArt;
+				$fanArt = 'data/cache/' . $seriesID . '.jpg';
+				if (!file_exists($cacheDirectory . $seriesID . '.jpg')) {
 					$this->cacheImage($imageURL, $seriesID);
 					unset($imageURL);
-					unset($cacheFile);
 				}
 			}
 			$bottomTitle = 'S' . sprintf("%02d", $child['seasonNumber']) . 'E' . sprintf("%02d", $child['episodeNumber']) . ' - ' . $child['title'];
@@ -305,14 +302,14 @@ trait SonarrHomepageItem
 				$href = $href . '/series/' . preg_replace('/[^A-Za-z0-9 -]/', '', str_replace('&', 'and', preg_replace('/[[:space:]]+/', '-', $seriesName)));
 				$href = str_replace("//series/", "/series/", $href);
 			}
-			$details = array(
+			$details = [
 				"seasonCount" => $child['series']['seasonCount'] ?? isset($child['series']['seasons']) ? count($child['series']['seasons']) : 0,
 				"status" => $child['series']['status'],
 				"topTitle" => $seriesName,
 				"bottomTitle" => $bottomTitle,
 				"overview" => $child['overview'] ?? '',
 				"runtime" => $child['series']['runtime'],
-				"image" => $fanart,
+				"image" => $fanArt,
 				"ratings" => $child['series']['ratings']['value'],
 				"videoQuality" => $child["hasFile"] && isset($child['episodeFile']['quality']['quality']['name']) ? $child['episodeFile']['quality']['quality']['name'] : "unknown",
 				"audioChannels" => $child["hasFile"] && isset($child['episodeFile']['mediaInfo']) ? $child['episodeFile']['mediaInfo']['audioChannels'] : "unknown",
@@ -324,8 +321,8 @@ trait SonarrHomepageItem
 				"icon" => "/plugins/images/tabs/sonarr.png",
 				"frame" => $this->config['sonarrFrameTarget'],
 				"showLink" => $this->config['sonarrIcon']
-			);
-			array_push($gotCalendar, array(
+			];
+			$gotCalendar[] = [
 				"id" => "Sonarr-" . $number . "-" . $i,
 				"title" => $seriesName,
 				"start" => $child['airDateUtc'],
@@ -335,7 +332,7 @@ trait SonarrHomepageItem
 				"downloadFilter" => $downloaded,
 				"bgColor" => str_replace('text', 'bg', $downloaded),
 				"details" => $details
-			));
+			];
 		}
 		if ($i != 0) {
 			return $gotCalendar;
