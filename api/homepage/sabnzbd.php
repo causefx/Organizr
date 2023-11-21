@@ -147,7 +147,7 @@ trait SabNZBdHomepageItem
 		$url = $this->qualifyURL($this->config['sabnzbdURL']);
 		$url = $url . '/api?mode=history&output=json&limit=100&apikey=' . $this->config['sabnzbdToken'];
 		try {
-			$options = ($this->localURL($url)) ? array('verify' => false) : array();
+			$options = $this->requestOptions($url, $this->config['sabnzbdRefresh'], $this->config['sabnzbdDisableCertCheck'], $this->config['sabnzbdUseCustomCertificate']);
 			$response = Requests::get($url, array(), $options);
 			if ($response->success) {
 				$api['content']['historyItems'] = json_decode($response->body, true);
