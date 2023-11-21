@@ -376,6 +376,7 @@ return [
 	'homepageOrderDonate' => '41',
 	'homepageOrderAdguard' => '42',
 	'homepageOrderProwlarr' => '43',
+	'homepageOrderUptimeKuma' => '44',
 	'homepageShowStreamNames' => false,
 	'homepageShowStreamNamesAuth' => '1',
 	'homepageShowStreamNamesWithoutIp' => false,
@@ -694,5 +695,18 @@ return [
 	'slackLogWebhook' => '',
 	'slackLogWebHookChannel' => '',
 	'matchUserAgents' => false,
-	'matchUserIP' => false
+	'matchUserIP' => false,
+	'disableHomepageModals' => false,
+	'homepageUptimeKumaEnabled' => false,
+	'homepageUptimeKumaAuth' => '1',
+	'uptimeKumaURL' => '',
+	'uptimeKumaToken' => '',
+	'homepageUptimeKumaRefresh' => '60000',
+	'homepageUptimeKumaHeader' => 'Uptime Kuma',
+	'homepageUptimeKumaHeaderToggle' => true,
+	'homepageUptimeKumaCompact' => true,
+	'homepageUptimeKumaShowLatency' => true,
+	'checkForUpdate' => true,
+	'socksDebug' => false,
+	'maxSocksDebugSize' => 100
 ];

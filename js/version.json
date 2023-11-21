@@ -628,5 +628,12 @@
     "new": "added check for gitlock file on docker update|added check for response to Overseerr test|Added check for response to the testConnectionOverseerr method",
     "fixed": "Fix JDownloader API authentification|fix Overseerr homepage item does not read the username properly (#1915)|Truly Fix JDownloader API authentification",
     "notes": "or MyJD-API \u003E= 1.0.4|Requires FeedCrawler \u003E= 16.0.4|Updated the following languages: [Arabic (Saudi Arabia)]|update shebang for portability (#1899) (#1908) (#1906) (#1881)"
+  },
+  "2.1.2460": {
+    "date": "2023-11-21 19:44",
+    "title": "Long Lost Update",
+    "new": "added autobrr tab image|added base config|added check for file upload to see if upload was successful before mime check|added check on sonarr if url is not set (#1943)|added config item disableHomepageModals|added extension checks for mbstring and fileinfo|added function revokeTokensByUserId|added js to render homepage item|added kuma data route|added latency to monitors|added Navidrome logo|added settings page for kuma|Added setting to toggle compact mode|added socksDebug and maxSocksDebugSize config values|added TODO comment|added toggle for displaying latency|Added uptime kuma homepage item",
+    "fixed": "fixed A removed user can still use organizr until they logout (#1925)|fix homepage item name to remove space|set limit to log debugger for socks output - fixes Radarr etc",
+    "notes": "cleanup image error|formatting|Move autobrr image to correct dir|move parsing logic into a class|pop latency in the monitors array|turn off the update available notification (#1938)|updated socks to reflect big requests|update kuma function to get and parse prometheus metrics"
   }
 }

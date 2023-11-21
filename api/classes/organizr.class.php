@@ -64,10 +64,11 @@ class Organizr
 	use UnifiHomepageItem;
 	use WeatherHomepageItem;
 	use uTorrentHomepageItem;
+	use UptimeKumaHomepageItem;
 
 	// ===================================
 	// Organizr Version
-	public $version = '2.1.2430';
+	public $version = '2.1.2460';
 	// ===================================
 	// Quick php Version check
 	public $minimumPHP = '7.4';
@@ -1453,7 +1454,7 @@ class Organizr
 		$status = [];
 		$dependenciesActive = [];
 		$dependenciesInactive = [];
-		$extensions = ['PDO_SQLITE', 'PDO', 'SQLITE3', 'zip', 'cURL', 'openssl', 'simplexml', 'json', 'session', 'filter'];
+		$extensions = ['PDO_SQLITE', 'PDO', 'SQLITE3', 'zip', 'cURL', 'openssl', 'simplexml', 'json', 'session', 'filter', 'fileinfo', 'mbstring'];
 		$functions = ['hash', 'fopen', 'fsockopen', 'fwrite', 'fclose', 'readfile'];
 		foreach ($extensions as $check) {
 			if (extension_loaded($check)) {
@@ -1501,7 +1502,7 @@ class Organizr
 		$status = array();
 		$dependenciesActive = array();
 		$dependenciesInactive = array();
-		$extensions = array('PDO_SQLITE', 'PDO', 'SQLITE3', 'zip', 'cURL', 'openssl', 'simplexml', 'json', 'session', 'filter');
+		$extensions = array('PDO_SQLITE', 'PDO', 'SQLITE3', 'zip', 'cURL', 'openssl', 'simplexml', 'json', 'session', 'filter', 'fileinfo', 'mbstring');
 		$functions = array('hash', 'fopen', 'fsockopen', 'fwrite', 'fclose', 'readfile');
 		foreach ($extensions as $check) {
 			if (extension_loaded($check)) {
@@ -2045,32 +2046,34 @@ class Organizr
 	public function uploadImage()
 	{
 		$filesCheck = array_filter($_FILES);
-		if (!empty($filesCheck)) {
-			if (strpos($_FILES['file']['type'], 'image/') === false) {
-				$this->setResponse(403, 'File Type not approved', $_FILES['file']['type']);
-				return false;
-			}
-			if (!$this->approvedFileType($_FILES['file']['tmp_name'])) {
-				$this->setResponse(403, 'File Type not approved', $_FILES['file']['tmp_name']);
-				return false;
-			}
-			if ($this->approvedFileExtension($_FILES['file']['name'])) {
-				ini_set('upload_max_filesize', '10M');
-				ini_set('post_max_size', '10M');
-				$tempFile = $_FILES['file']['tmp_name'];
-				$targetPath = $this->root . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR . 'userTabs' . DIRECTORY_SEPARATOR;
-				$this->makeDir($targetPath);
-				$targetFile = $targetPath . $this->sanitizeUserString($_FILES['file']['name']);
-				$this->setAPIResponse(null, pathinfo($_FILES['file']['name'], PATHINFO_BASENAME) . ' has been uploaded', null);
-				return move_uploaded_file($tempFile, $targetFile);
-			} else {
-				$this->setResponse(403, 'File Extension not approved');
-				return false;
-			}
-		} else {
+		if (empty($filesCheck)) {
 			$this->setResponse(500, 'No File was uploaded');
 			return false;
 		}
+		if ($_FILES['file']['tmp_name'] == '') {
+			$this->setResponse(500, 'File upload error');
+			return false;
+		}
+		if (strpos($_FILES['file']['type'], 'image/') === false) {
+			$this->setResponse(403, 'File Type not image', $_FILES['file']['type']);
+			return false;
+		}
+		if (!$this->approvedFileType($_FILES['file']['tmp_name'])) {
+			$this->setResponse(403, 'File Type not approved', $_FILES['file']['tmp_name']);
+			return false;
+		}
+		if (!$this->approvedFileExtension($_FILES['file']['name'])) {
+			$this->setResponse(403, 'File Extension not approved');
+			return false;
+		}
+		ini_set('upload_max_filesize', '10M');
+		ini_set('post_max_size', '10M');
+		$tempFile = $_FILES['file']['tmp_name'];
+		$targetPath = $this->root . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR . 'userTabs' . DIRECTORY_SEPARATOR;
+		$this->makeDir($targetPath);
+		$targetFile = $targetPath . $this->sanitizeUserString($_FILES['file']['name']);
+		$this->setAPIResponse(null, pathinfo($_FILES['file']['name'], PATHINFO_BASENAME) . ' has been uploaded', null);
+		return move_uploaded_file($tempFile, $targetFile);
 	}
 
 	public function formatPingHost($host)
@@ -2197,6 +2200,7 @@ class Organizr
 			],
 			'Options' => [
 				$this->settingsOption('switch', 'alternateHomepageHeaders', ['label' => 'Alternate Homepage Titles']),
+				$this->settingsOption('switch', 'disableHomepageModals', ['label' => 'Disable Homepage Saved Modal', 'help' => 'Disable the modal when saving homepage config settings']),
 				$this->settingsOption('switch', 'debugErrors', ['label' => 'Show Debug Errors']),
 				$this->settingsOption('switch', 'easterEggs', ['label' => 'Show Easter Eggs']),
 				$this->settingsOption('input', 'gaTrackingID', ['label' => 'Google Analytics Tracking ID', 'placeholder' => 'e.g. UA-XXXXXXXXX-X']),
@@ -2351,8 +2355,15 @@ class Organizr
 	{
 		$certificateStatus = $this->hasCustomCert() ? '<span lang="en">Custom Certificate Loaded</span><br />Located at <span>' . $this->getCustomCert() . '</span>' : '<span lang="en">Custom Certificate not found - please upload below</span>';
 		$settings = [
+			'Socks' => [
+				$this->settingsOption('switch', 'socksDebug', ['label' => 'Enable Debug Log', 'help' => 'Enable the option to have socks output to logs']),
+				$this->settingsOption('number', 'maxSocksDebugSize', ['label' => 'Max Debug Data Rows', 'help' => 'Max amount of rows in debug log', 'attr' => 'min="1"'])
+			],
 			'Settings Page' => [
 				$this->settingsOption('select', 'defaultSettingsTab', ['label' => 'Default Settings Tab', 'options' => $this->getSettingsTabs(), 'help' => 'Choose which Settings Tab to be default when opening settings page']),
+			],
+			'Other' => [
+				$this->settingsOption('switch', 'checkForUpdate', ['label' => 'Check For Update', 'help' => 'Check for update on Organizr load']),
 			],
 			'Github' => [
 				$this->settingsOption('select', 'branch', ['label' => 'Branch', 'value' => $this->config['branch'], 'options' => $this->getBranches(), 'disabled' => $this->docker, 'help' => ($this->docker) ? 'Since you are using the Official Docker image, Change the image to change the branch' : 'Choose which branch to download from']),
@@ -4081,6 +4092,26 @@ class Organizr
 		return $this->processQueries($response);
 	}
 
+	public function revokeTokensByUserId($userId = null)
+	{
+		if (!$userId) {
+			$this->setAPIResponse('error', 'User Id was not supplied', 422);
+			return false;
+		}
+		$response = [
+			array(
+				'function' => 'query',
+				'query' => array(
+					'DELETE FROM tokens WHERE user_id = ?',
+					$userId,
+				)
+			),
+		];
+		$this->setAPIResponse('success', 'User Tokens revoked', 204);
+		$this->setLoggerChannel('User Management')->info('Revoked all tokens for deleted user', ['id' => $userId]);
+		return $this->processQueries($response);
+	}
+
 	public function updateUserPassword($password, $id)
 	{
 		$response = [
@@ -4410,6 +4441,8 @@ class Organizr
 				'collapseSideMenuOnClick' => $this->config['allowCollapsableSideMenu'] && $this->config['collapseSideMenuOnClick'],
 				'authProxyOverrideLogout' => $this->config['authProxyOverrideLogout'],
 				'authProxyLogoutURL' => $this->config['authProxyLogoutURL'],
+				'disableHomepageModals' => $this->config['disableHomepageModals'],
+				'checkForUpdate' => $this->config['checkForUpdate']
 			],
 			'menuLink' => [
 				'githubMenuLink' => $this->config['githubMenuLink'],
@@ -4666,6 +4699,13 @@ class Organizr
 					$class = 'bg-info';
 					$image = 'plugins/images/tabs/monitorr.png';
 					if (!$this->config['homepageMonitorrEnabled']) {
+						$class .= ' faded';
+					}
+					break;
+				case 'homepageOrderUptimeKuma':
+					$class = 'bg-info';
+					$image = 'plugins/images/tabs/kuma.png';
+					if (!$this->config['homepageUptimeKumaEnabled']) {
 						$class .= ' faded';
 					}
 					break;
@@ -6702,15 +6742,15 @@ class Organizr
 			$this->setAPIResponse('error', 'Cannot delete your own user', 409);
 			return false;
 		}
-		if ($userInfo) {
-			$this->setLoggerChannel('User Management');
-			$this->logger->info('Deleted User [' . $userInfo['username'] . ']');
-			$this->setAPIResponse('success', 'User deleted', 204);
-			return $this->processQueries($response);
-		} else {
+		if (!$userInfo) {
 			$this->setAPIResponse('error', 'id not found', 404);
 			return false;
 		}
+		$this->setLoggerChannel('User Management');
+		$this->logger->info('Deleted User [' . $userInfo['username'] . ']');
+		$this->revokeTokensByUserId($id);
+		$this->setAPIResponse('success', 'User deleted', 204);
+		return $this->processQueries($response);
 	}
 
 	public function addUser($array)
@@ -7529,73 +7569,85 @@ class Organizr
 				$this->setAPIResponse('error', 'Multiple endpoint accessed but multiple URLs not found in field, please use /api/v2/socks endpoint', 409);
 			}
 		}
-		if (!$error) {
-			if ($multiple) {
-				$instance = $multiple - 1;
-				$pre = explode('/api/v2/multiple/socks/', $requestObject->getUri()->getPath());
-				$pre[1] = $this->replace_first('/' . $multiple . '/', '/', $pre[1]);
-				// sent url twice since we arent using tokens
-				$list = $this->csvHomepageUrlToken($this->config[$url], $this->config[$url]);
-				$appURL = $list[$instance]['url'];
-			} else {
-				$pre = explode('/api/v2/socks/', $requestObject->getUri()->getPath());
-				$appURL = $this->config[$url];
-			}
-			$endpoint = explode('/', $pre[1]);
-			$new = urldecode(preg_replace('/' . $endpoint[0] . '/', '', $pre[1], 1));
-			$getParams = ($_GET) ? '?' . http_build_query($_GET) : '';
-			$url = $this->qualifyURL($appURL) . $new . $getParams;
-			$url = $this->cleanPath($url);
-			$options = ($this->localURL($appURL)) ? array('verify' => false, 'timeout' => 120) : array('timeout' => 120);
-			$headers = [];
-			$apiData = $this->apiData($requestObject, false);
-			if ($header) {
-				if ($requestObject->hasHeader($header)) {
-					$headerKey = $requestObject->getHeaderLine($header);
-					$headers[$header] = $headerKey;
-				}
-			}
-			if ($requestObject->hasHeader('Content-Type')) {
-				$headerKey = $requestObject->getHeaderLine('Content-Type');
-				$headers['Content-Type'] = $headerKey;
-			}
-			$debugInformation = [
-				'type' => $requestObject->getMethod(),
-				'headerType' => $requestObject->getHeaderLine('Content-Type'),
-				'header' => $header,
-				'headers' => $headers,
-				'url' => $url,
-				'options' => $options,
-				'data' => $apiData,
-			];
-			$this->setLoggerChannel('Socks');
-			$this->logger->debug('Sending Socks request', $debugInformation);
-			try {
-				switch ($requestObject->getMethod()) {
-					case 'GET':
-						$call = Requests::get($url, $headers, $options);
-						break;
-					case 'POST':
-						$call = Requests::post($url, $headers, $apiData, $options);
-						break;
-					case 'DELETE':
-						$call = Requests::delete($url, $headers, $options);
-						break;
-					case 'PUT':
-						$call = Requests::put($url, $headers, $apiData, $options);
-						break;
-					default:
-						$call = Requests::get($url, $headers, $options);
-				}
-				$this->logger->debug('Socks Response', $this->json_validator($call->body) ? json_decode($call->body, true) : $call->body);
-				return $call->body;
-			} catch (Requests_Exception $e) {
-				$this->setResponse(500, $e->getMessage());
-				$this->setLoggerChannel('Socks');
-				$this->logger->critical($e, $debugInformation);
-				return null;
-			}
+
+		if ($error) {
+			return null;
+		}
+
+		if ($multiple) {
+			$instance = $multiple - 1;
+			$pre = explode('/api/v2/multiple/socks/', $requestObject->getUri()->getPath());
+			$pre[1] = $this->replace_first('/' . $multiple . '/', '/', $pre[1]);
+			// sent url twice since we arent using tokens
+			$list = $this->csvHomepageUrlToken($this->config[$url], $this->config[$url]);
+			$appURL = $list[$instance]['url'];
 		} else {
+			$pre = explode('/api/v2/socks/', $requestObject->getUri()->getPath());
+			$appURL = $this->config[$url];
+		}
+		$endpoint = explode('/', $pre[1]);
+		$new = urldecode(preg_replace('/' . $endpoint[0] . '/', '', $pre[1], 1));
+		$getParams = ($_GET) ? '?' . http_build_query($_GET) : '';
+		$url = $this->qualifyURL($appURL) . $new . $getParams;
+		$url = $this->cleanPath($url);
+		$options = ($this->localURL($appURL)) ? ['verify' => false, 'timeout' => 120] : ['timeout' => 120];
+		$headers = [];
+		$apiData = $this->apiData($requestObject, false);
+		if ($header) {
+			if ($requestObject->hasHeader($header)) {
+				$headerKey = $requestObject->getHeaderLine($header);
+				$headers[$header] = $headerKey;
+			}
+		}
+		if ($requestObject->hasHeader('Content-Type')) {
+			$headerKey = $requestObject->getHeaderLine('Content-Type');
+			$headers['Content-Type'] = $headerKey;
+		}
+		$debugInformation = [
+			'type' => $requestObject->getMethod(),
+			'headerType' => $requestObject->getHeaderLine('Content-Type'),
+			'header' => $header,
+			'headers' => $headers,
+			'url' => $url,
+			'options' => $options,
+			'data' => $apiData,
+		];
+		$this->setLoggerChannel('Socks')->debug('Sending Socks request', $debugInformation);
+		try {
+			switch ($requestObject->getMethod()) {
+				case 'GET':
+					$call = Requests::get($url, $headers, $options);
+					break;
+				case 'POST':
+					$call = Requests::post($url, $headers, $apiData, $options);
+					break;
+				case 'DELETE':
+					$call = Requests::delete($url, $headers, $options);
+					break;
+				case 'PUT':
+					$call = Requests::put($url, $headers, $apiData, $options);
+					break;
+				default:
+					$call = Requests::get($url, $headers, $options);
+			}
+			if ($this->config['socksDebug']) {
+				if ($this->json_validator($call->body)) {
+					$logData = json_decode($call->body, true);
+					$size = (!is_numeric($this->config['maxSocksDebugSize']) || $this->config['maxSocksDebugSize'] == 0) ? 1 : $this->config['maxSocksDebugSize'];
+					if (count($logData) > $size) {
+						$logData = 'Count too large to output';
+					}
+				} else {
+					$logData = $call->body;
+				}
+			} else {
+				$logData = 'Debug not enabled';
+			}
+			$this->setLoggerChannel('Socks')->debug('Socks Response', ['body' => $logData, 'debug' => $debugInformation]);
+			return $call->body;
+		} catch (Requests_Exception $e) {
+			$this->setResponse(500, $e->getMessage());
+			$this->setLoggerChannel('Socks')->critical($e, $debugInformation);
 			return null;
 		}
 	}
