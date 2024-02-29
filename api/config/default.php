@@ -464,6 +464,7 @@ return [
 	'localIPTo' => '',
 	'localIPList' => '',
 	'sandbox' => 'allow-presentation,allow-forms,allow-same-origin,allow-pointer-lock,allow-scripts,allow-popups,allow-modals,allow-top-navigation,allow-downloads,allow-orientation-lock,allow-popups-to-escape-sandbox,allow-top-navigation-by-user-activation',
+	'iframeAllow' => 'fullscreen,autoplay,clipboard-read,clipboard-write,camera,microphone,speaker-selection,display-capture,web-share,encrypted-media,picture-in-picture',
 	'description' => 'Organizr - Accept no others',
 	'debugErrors' => false,
 	'healthChecksURL' => 'https://healthchecks.io/api/v1/checks/',

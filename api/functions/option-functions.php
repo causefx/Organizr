@@ -645,6 +645,108 @@ trait OptionsFunction
 		];
 	}
 
+	public function iframeAllowOptions()
+	{
+		return [
+			[
+				'name' => 'Allow Clipboard Read',
+				'value' => 'clipboard-read'
+			],
+			[
+				'name' => 'Allow Clipboard Write',
+				'value' => 'clipboard-write'
+			],
+			[
+				'name' => 'Allow Camera',
+				'value' => 'camera'
+			],
+			[
+				'name' => 'Allow Microphone',
+				'value' => 'microphone'
+			],
+			[
+				'name' => 'Allow Speaker Selection',
+				'value' => 'speaker-selection'
+			],
+			[
+				'name' => 'Allow Encrypted Media',
+				'value' => 'encrypted-media'
+			],
+			[
+				'name' => 'Allow Web Share',
+				'value' => 'web-share'
+			],
+			[
+				'name' => 'Allow Capture the Screen',
+				'value' => 'display-capture'
+			],
+			[
+				'name' => 'Allow Screen Wake Lock',
+				'value' => 'screen-wake-lock'
+			],
+			[
+				'name' => 'Allow Geolocation',
+				'value' => 'geolocation'
+			],
+			[
+				'name' => 'Allow Autoplay Media',
+				'value' => 'autoplay'
+			],
+			[
+				'name' => 'Allow USB',
+				'value' => 'usb'
+			],
+			[
+				'name' => 'Allow MIDI',
+				'value' => 'midi'
+			],
+			[
+				'name' => 'Allow Fullscreen',
+				'value' => 'fullscreen'
+			],
+			[
+				'name' => 'Allow Payment',
+				'value' => 'payment'
+			],
+			[
+				'name' => 'Allow Picture-in-Picture',
+				'value' => 'picture-in-picture'
+			],
+			[
+				'name' => 'Allow Gamepad',
+				'value' => 'gamepad'
+			],
+			[
+				'name' => 'Allow WebXR Spatial Tracking (VR)',
+				'value' => 'xr-spatial-tracking'
+			],
+			[
+				'name' => 'Allow Accelerometer Sensor',
+				'value' => 'accelerometer'
+			],
+			[
+				'name' => 'Allow Gyroscope Sensor',
+				'value' => 'gyroscope'
+			],
+			[
+				'name' => 'Allow Magnetometer Sensor',
+				'value' => 'magnetometer'
+			],
+			[
+				'name' => 'Allow Ambient Light Sensor',
+				'value' => 'ambient-light-sensor'
+			],
+			[
+				'name' => 'Allow Battery Status',
+				'value' => 'battery'
+			],
+			[
+				'name' => 'Allow Sync XMLHttpRequest',
+				'value' => 'sync-xhr'
+			],
+		];
+	}
+
 	public function calendarLocaleOptions()
 	{
 		return [
