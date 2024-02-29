@@ -3107,8 +3107,11 @@ function buildFrame(id, split = null){
     var sandbox = activeInfo.settings.misc.sandbox;
     sandbox = sandbox.replace(/,/gi, ' ');
     sandbox = (sandbox) ? ' sandbox="' + sandbox + '"' : '';
+    var allow = activeInfo.settings.misc.iframeAllow;
+    allow = allow.replace(/,/gi, '; ');
+    allow = (allow) ? ' allow="' + allow + '"' : '';
 	return `
-		<iframe allow="clipboard-read; clipboard-write" allowfullscreen="true" frameborder="0" id="frame-`+extra+id+`" `+sandbox+` scrolling="auto" src="`+tabInfo.access_url+`" class="iframe"></iframe>
+		<iframe `+allow+` frameborder="0" id="frame-`+extra+id+`" `+sandbox+` scrolling="auto" src="`+tabInfo.access_url+`" class="iframe"></iframe>
 	`;
 }
 function buildFrameContainer(id, split = null){
