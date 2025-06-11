@@ -7872,6 +7872,23 @@ function buildPiholeItem(array){
     .inline-block {
         display: inline-block;
     }
+
+    ul.multi-column {
+        column-count: 1;
+        column-gap: 2em;
+    }
+
+    @media (min-width: 650px) {
+        ul.multi-column {
+            column-count: 3;
+        }
+    }
+
+    @media (min-width: 1200px) {
+        ul.multi-column {
+            column-count: 5;
+        }
+    }
     </style>
     `;
     var length = Object.keys(array['data']).length;
@@ -7879,11 +7896,11 @@ function buildPiholeItem(array){
     var totalQueries = function(data) {
 
         var card = `
-        <div class="col-lg-3 col-md-6 col-sm-6 col-xs-12">
+        <div class="col-lg-4 col-md-6 col-sm-6 col-xs-12">
             <div class="card text-white mb-3 pihole-stat bg-green">
                 <div class="card-body">
                     <div class="inline-block">
-                        <p class="d-inline mr-1">Total queries</p>`;
+                        <p class="d-inline mr-1">Total queries (last 24 hours)</p>`;
         for(var key in data) {
             var e = data[key];
             if(typeof e['FTLnotrunning'] == 'undefined'){
@@ -7892,7 +7909,7 @@ function buildPiholeItem(array){
 	            }
 				let value = 'Error';
 				if(e.length == undefined){
-					value = e['dns_queries_today'].toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+                    value = e['sum_queries'].toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 				}
 	            card += `<h3 data-toggle="tooltip" data-placement="right" title="`+key+`">`+value+`</h3>`;
 
@@ -7909,11 +7926,11 @@ function buildPiholeItem(array){
     };
     var totalBlocked = function(data) {
         var card = `
-        <div class="col-lg-3 col-md-6 col-sm-6 col-xs-12">
+        <div class="col-lg-4 col-md-6 col-sm-6 col-xs-12">
             <div class="card bg-inverse text-white mb-3 pihole-stat bg-aqua">
                 <div class="card-body">
                     <div class="inline-block">
-                        <p class="d-inline mr-1">Queries Blocked</p>`;
+                        <p class="d-inline mr-1">Queries Blocked (last 24 hours)</p>`;
         for(var key in data) {
             var e = data[key];
 	        if(typeof e['FTLnotrunning'] == 'undefined') {
@@ -7922,7 +7939,7 @@ function buildPiholeItem(array){
 		        }
 		        let value = 'Error';
 		        if(e.length == undefined){
-			        value = e['ads_blocked_today'].toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+                    value = e['sum_blocked'].toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 		        }
 		        card += `<h3 data-toggle="tooltip" data-placement="right" title="`+key+`">`+value+`</h3>`;
 			}
@@ -7938,11 +7955,11 @@ function buildPiholeItem(array){
     };
     var percentBlocked = function(data) {
         var card = `
-        <div class="col-lg-3 col-md-6 col-sm-6 col-xs-12">
+        <div class="col-lg-4 col-md-6 col-sm-6 col-xs-12">
             <div class="card bg-inverse text-white mb-3 pihole-stat bg-yellow">
                 <div class="card-body">
                     <div class="inline-block">
-                        <p class="d-inline mr-1">Percent Blocked</p>`;
+                        <p class="d-inline mr-1">Percent Blocked (last 24 hours)</p>`;
         for(var key in data) {
             var e = data[key];
 	        if(typeof e['FTLnotrunning'] == 'undefined') {
@@ -7951,7 +7968,7 @@ function buildPiholeItem(array){
 		        }
 		        let value = 'Error';
 		        if(e.length == undefined){
-			        value = e['ads_percentage_today'].toFixed(1)
+                    value = e['percent_blocked'].toFixed(1)
 		        }
 		        card += `<h3 data-toggle="tooltip" data-placement="right" title="`+key+`">`+value+`</h3>`;
 	        }
@@ -7967,11 +7984,11 @@ function buildPiholeItem(array){
     };
     var domainsBlocked = function(data) {
         var card = `
-        <div class="col-lg-3 col-md-6 col-sm-6 col-xs-12">
+        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
             <div class="card bg-inverse text-white mb-3 pihole-stat bg-red">
                 <div class="card-body">
                     <div class="inline-block">
-                        <p class="d-inline mr-1">Domains on Blocklist</p>`;
+                        <p class="d-inline mr-1">Domains on Blocklist (last 24 hours)</p>`;
         for(var key in data) {
             var e = data[key];
 	        if(typeof e['FTLnotrunning'] == 'undefined') {
@@ -7979,10 +7996,11 @@ function buildPiholeItem(array){
 			        card += `<p class="d-inline text-muted">(${key})</p>`;
 		        }
 		        let value = 'Error';
-		        if(e.length == undefined){
-			        value = e['domains_being_blocked'].toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+                    value = e['domains_being_blocked'].map(function (x) {
+                        return `<li>${x.toString()}</li>`;
+                    }).join("");
 		        }
-		        card += `<h3 data-toggle="tooltip" data-placement="right" title="`+key+`">`+value+`</h3>`;
+                card += `<ul class="multi-column" data-toggle="tooltip" title="` + key + `">` + value + `</ul>`;
 	        }
         }
         card += `

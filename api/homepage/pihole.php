@@ -22,7 +22,7 @@ trait PiHoleHomepageItem
 					$this->settingsOption('auth', 'homepagePiholeAuth'),
 				],
 				'Connection' => [
-					$this->settingsOption('multiple-url', 'piholeURL', ['help' => 'Please make sure to use local IP address and port and to include \'/admin/\' at the end of the URL. You can add multiple Pi-holes by comma separating the URLs.', 'placeholder' => 'http(s)://hostname:port/admin/']),
+					$this->settingsOption('multiple-url', 'piholeURL', ['help' => 'Please make sure to use local IP address and port at the end of the URL. You can add multiple Pi-holes by comma separating the URLs.', 'placeholder' => 'http(s)://hostname:port/']),
 					$this->settingsOption('multiple-token', 'piholeToken'),
 				],
 				'Misc' => [
@@ -48,36 +48,10 @@ trait PiHoleHomepageItem
 		$errors = '';
 		$list = $this->csvHomepageUrlToken($this->config['piholeURL'], $this->config['piholeToken']);
 		foreach ($list as $key => $value) {
-			$url = $value['url'] . '/api.php?status';
-			if ($value['token'] !== '' && $value['token'] !== null) {
-				$url = $url . '&auth=' . $value['token'];
-			}
-			$ip = $this->qualifyURL($url, true)['host'];
-			try {
-				$response = Requests::get($url, [], []);
-				if ($response->success) {
-					$test = $this->testAndFormatString($response->body);
-					if (($test['type'] !== 'json')) {
-						$errors .= $ip . ': Response was not JSON';
-						$failed = true;
-					} else {
-						if (!isset($test['data']['status'])) {
-							$errors .= $ip . ': Missing API Token';
-							$failed = true;
-						}
-					}
-				}
-				if (!$response->success) {
-					$errors .= $ip . ': Unknown Failure';
-					$failed = true;
-				}
-			} catch (Requests_Exception $e) {
-				$failed = true;
-				$errors .= $ip . ': ' . $e->getMessage();
-				$this->setLoggerChannel('PiHole')->error($e);
-			};
+			$response = $this->getAuth($value['url'], $value['token']);
+			$errors = $response["errors"];
 		}
-		if ($failed) {
+		if ($errors != '') {
 			$this->setAPIResponse('error', $errors, 500);
 			return false;
 		} else {
@@ -120,6 +94,120 @@ trait PiHoleHomepageItem
 		}
 	}
 
+	public function getAuth($base_url, $token)
+	{
+		$sid = null;
+		if ($token === '' || $token === null) {
+			$errors .= $base_url . ': Missing API Token';
+			$this->setAPIResponse('error', $errors, 500);
+			return $errors;
+		}
+		try {
+			$sid = $this->doRequest($base_url, "createAuth", [], ['password' => $token]);
+			$this->cleanSessions($base_url, $sid);
+		} catch (Requests_Exception $e) {
+			$errors .= $ip . ': ' . $e->getMessage();
+			$this->setLoggerChannel('PiHole')->error($e);
+		};
+
+		return ["errors" => $errors, "sid" => $sid];
+	}
+
+	public function cleanSessions($base_url, $sid)
+	{
+		$sessions = $this->doRequest($base_url, "getAuths", ["sid" => $sid]);
+		foreach ($sessions as $session) {
+			//  Skip if not right user agent, skip if current session
+			if ($session['user_agent'] != 'Organizr' || $session['current_session'] == '1') {
+				continue;
+			}
+			$this->doRequest($base_url,"deleteAuth", ["sid" => $sid],  $session['id']);
+		}
+	}
+
+	public function endpoints($endpoint)
+	{
+		return [
+			"createAuth" => [
+				"type" => "post",
+				"urlHandler" => function() {
+					return "auth";
+				},
+				"responseHandler" => function($payload) {
+					return $payload['session']['sid'];
+				},
+				"payloadHandler" => function($data) {
+					return json_encode($data);
+				}
+			],
+			"getAuths" => [
+				"type" => "get",
+				"urlHandler" => function() {
+					return "auth/sessions";
+				},
+				"responseHandler" => function($payload) {
+					return $payload['sessions'];
+				}
+			],
+			"deleteAuth" => [
+				"type" => "delete",
+				"urlHandler" => function($id) {
+					return "auth/session/$id";
+				},
+			],
+			"get24HourStatsSummary" => [
+				"type" => "get",
+				"urlHandler" => function() {
+					$nowUnixTimestamp = time();
+					$oneDayAgoUnixTimestamp = $nowUnixTimestamp - (24 * 60 * 60);
+					return "stats/database/summary?from=$oneDayAgoUnixTimestamp&until=$nowUnixTimestamp";
+				}
+			],
+			"get24HourBlockedDomains" => [
+				"type" => "get",
+				"urlHandler" => function() {
+					$nowUnixTimestamp = time();
+					$oneDayAgoUnixTimestamp = $nowUnixTimestamp - (24 * 60 * 60);
+					return "stats/database/top_domains?from=$oneDayAgoUnixTimestamp&until=$nowUnixTimestamp&blocked=true&count=1000";
+				},
+				"responseHandler" => function($payload) {
+					return array_map(
+						function($item) {
+							return $item['domain'];
+						}, $payload['domains']
+					);
+					
+				}
+			],
+		][$endpoint];
+	}
+
+	public function doRequest($baseUrl, $endpoint, $headers = [], $data = null)
+	{
+		$endpointDictionary = $this->endpoints($endpoint);
+		$urlHandler = $endpointDictionary['urlHandler'];
+		$payloadHandler = $endpointDictionary['payloadHandler'] ?? function() {
+			return null;
+		};
+		$requestType = $endpointDictionary['type'];
+		$responseHandler = $endpointDictionary['responseHandler'] ?? function($payload) {
+			return $payload;
+		};
+		$url = $this->qualifyURL("$baseUrl/api/{$urlHandler($data)}");
+		$headers = $headers + ["User-Agent" => 'Organizr'];
+		try {
+			$response = Requests::$requestType($url, $headers, $payloadHandler($data));
+			
+			if ($response->success) {
+				$processedResponse = $responseHandler($this->testAndFormatString($response->body)["data"]);
+			}
+		} catch (Requests_Exception $e) {
+				$this->setResponse(500, $e->getMessage());
+				$this->setLoggerChannel('PiHole')->error($e);
+			};
+		return $processedResponse ?? [];
+	}
+
 	public function getPiholeHomepageStats()
 	{
 		if (!$this->homepageItemPermissions($this->piholeHomepagePermissions('main'), true)) {
@@ -128,24 +216,11 @@ trait PiHoleHomepageItem
 		$api = [];
 		$list = $this->csvHomepageUrlToken($this->config['piholeURL'], $this->config['piholeToken']);
 		foreach ($list as $key => $value) {
-			$url = $value['url'] . '/api.php?summaryRaw';
-			if ($value['token'] !== '' && $value['token'] !== null) {
-				$url = $url . '&auth=' . $value['token'];
-			}
-			try {
-				$response = Requests::get($url, [], []);
-				if ($response->success) {
-					@$piholeResults = json_decode($response->body, true);
-					if (is_array($piholeResults)) {
-						$ip = $this->qualifyURL($url, true)['host'];
-						$api['data'][$ip] = $piholeResults;
-					}
-				}
-			} catch (Requests_Exception $e) {
-				$this->setResponse(500, $e->getMessage());
-				$this->setLoggerChannel('PiHole')->error($e);
-				return false;
-			};
+			$base_url = $value['url'];
+			$sid = $this->getAuth($base_url, $value['token'])["sid"];
+			$stats = $this->doRequest($base_url, "get24HourStatsSummary", ["sid" => $sid]);
+			$stats["domains_being_blocked"] = $this->doRequest($base_url, "get24HourBlockedDomains", ["sid" => $sid]);
+			$api['data'][$base_url] = $stats;
 		}
 		$api['options']['combine'] = $this->config['homepagePiholeCombine'];
 		$api['options']['title'] = $this->config['piholeHeaderToggle'];
