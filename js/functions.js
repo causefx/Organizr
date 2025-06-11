@@ -7996,11 +7996,9 @@ function buildPiholeItem(array){
 			        card += `<p class="d-inline text-muted">(${key})</p>`;
 		        }
 		        let value = 'Error';
-		        if(e.length == undefined){
                     value = e['domains_being_blocked'].map(function (x) {
                         return `<li>${x.toString()}</li>`;
                     }).join("");
-		        }
                 card += `<ul class="multi-column" data-toggle="tooltip" title="` + key + `">` + value + `</ul>`;
 	        }
         }
