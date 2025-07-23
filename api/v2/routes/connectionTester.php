@@ -134,6 +134,16 @@ $app->post('/test/emby', function ($request, $response, $args) {
 		->withHeader('Content-Type', 'application/json;charset=UTF-8')
 		->withStatus($GLOBALS['responseCode']);
 });
+$app->post('/test/embyLiveTVTracker', function ($request, $response, $args) {
+	$Organizr = ($request->getAttribute('Organizr')) ?? new Organizr();
+	if ($Organizr->qualifyRequest(1, true)) {
+		$Organizr->testConnectionEmbyLiveTVTracker($Organizr->apiData($request));
+	}
+	$response->getBody()->write(jsonE($GLOBALS['api']));
+	return $response
+		->withHeader('Content-Type', 'application/json;charset=UTF-8')
+		->withStatus($GLOBALS['responseCode']);
+});
 $app->post('/test/jellyfin', function ($request, $response, $args) {
 	/**
 	 * @OA\Post(

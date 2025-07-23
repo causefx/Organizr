@@ -33,6 +33,7 @@ class Organizr
 	use DelugeHomepageItem;
 	use DonateHomepageItem;
 	use EmbyHomepageItem;
+	use EmbyLiveTVTrackerHomepageItem;
 	use HealthChecksHomepageItem;
 	use HTMLHomepageItem;
 	use ICalHomepageItem;
@@ -4611,14 +4612,21 @@ class Organizr
 						$class .= ' faded';
 					}
 					break;
-				case 'homepageOrderembynowplaying':
-				case 'homepageOrderembyrecent':
-					$class = 'bg-emby';
-					$image = 'plugins/images/tabs/emby.png';
-					if (!$this->config['homepageEmbyEnabled']) {
-						$class .= ' faded';
-					}
-					break;
+			case 'homepageOrderembynowplaying':
+			case 'homepageOrderembyrecent':
+				$class = 'bg-emby';
+				$image = 'plugins/images/tabs/emby.png';
+				if (!$this->config['homepageEmbyEnabled']) {
+					$class .= ' faded';
+				}
+				break;
+			case 'homepageOrderEmbyLiveTVTracker':
+				$class = 'bg-emby';
+				$image = 'plugins/images/homepage/embyLiveTVTracker.png';
+				if (!$this->config['homepageEmbyLiveTVTrackerEnabled']) {
+					$class .= ' faded';
+				}
+				break;
 				case 'homepageOrderjellyfinnowplaying':
 				case 'homepageOrderjellyfinrecent':
 					$class = 'bg-jellyfin';
