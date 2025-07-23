@@ -7,16 +7,254 @@
 
 trait HomepageUserWatchStats
 {
-    /**
-     * Get user watch statistics data
-     */
-    public function userWatchStatsHomepagePermissions($user)
+    public function userWatchStatsSettingsArray($infoOnly = false)
     {
-        // Check if user has access to statistics
-        if ($user['groupID'] == 0 || $user['groupID'] == 1) {
-            return true;
+        $homepageInformation = [
+            'name' => 'User Watch Statistics',
+            'enabled' => strpos('personal', $this->config['license']) !== false,
+            'image' => 'plugins/images/homepage/userWatchStats.png',
+            'category' => 'Media Server',
+            'settingsArray' => __FUNCTION__
+        ];
+        if ($infoOnly) {
+            return $homepageInformation;
         }
-        return false;
+        $homepageSettings = [
+            'debug' => true,
+            'settings' => [
+                'Enable' => [
+                    $this->settingsOption('enable', 'homepageUserWatchStatsEnabled'),
+                    $this->settingsOption('auth', 'homepageUserWatchStatsAuth'),
+                ],
+                'Connection' => [
+                    $this->settingsOption('select', 'homepageUserWatchStatsService', ['label' => 'Media Server', 'options' => [
+                        ['name' => 'Plex (via Tautulli)', 'value' => 'plex'],
+                        ['name' => 'Emby', 'value' => 'emby'],
+                        ['name' => 'Jellyfin', 'value' => 'jellyfin']
+                    ]]),
+                ],
+                'Display Options' => [
+                    $this->settingsOption('number', 'homepageUserWatchStatsRefresh', ['label' => 'Auto-refresh Interval (minutes)', 'min' => 1, 'max' => 60]),
+                    $this->settingsOption('number', 'homepageUserWatchStatsDays', ['label' => 'Statistics Period (days)', 'min' => 1, 'max' => 365]),
+                    $this->settingsOption('switch', 'homepageUserWatchStatsCompactView', ['label' => 'Use Compact View']),
+                    $this->settingsOption('switch', 'homepageUserWatchStatsShowTopUsers', ['label' => 'Show Top Users']),
+                    $this->settingsOption('switch', 'homepageUserWatchStatsShowMostWatched', ['label' => 'Show Most Watched']),
+                    $this->settingsOption('switch', 'homepageUserWatchStatsShowRecentActivity', ['label' => 'Show Recent Activity']),
+                    $this->settingsOption('number', 'homepageUserWatchStatsMaxItems', ['label' => 'Maximum Items to Display', 'min' => 5, 'max' => 50]),
+                ],
+                'Test Connection' => [
+                    $this->settingsOption('blank', null, ['label' => 'Please Save before Testing']),
+                    $this->settingsOption('test', 'userWatchStats'),
+                ]
+            ]
+        ];
+        return array_merge($homepageInformation, $homepageSettings);
+    }
+
+    public function testConnectionUserWatchStats()
+    {
+        if (!$this->homepageItemPermissions($this->userWatchStatsHomepagePermissions('test'), true)) {
+            return false;
+        }
+        
+        $mediaServer = $this->config['homepageUserWatchStatsService'] ?? 'plex';
+        
+        switch (strtolower($mediaServer)) {
+            case 'plex':
+                $url = $this->config['plexURL'] ?? '';
+                $token = $this->config['plexToken'] ?? '';
+                if (empty($url) || empty($token)) {
+                    $this->setAPIResponse('error', 'Tautulli URL or API key not configured', 500);
+                    return false;
+                }
+                break;
+            case 'emby':
+                $url = $this->config['embyURL'] ?? '';
+                $token = $this->config['embyToken'] ?? '';
+                if (empty($url) || empty($token)) {
+                    $this->setAPIResponse('error', 'Emby URL or API key not configured', 500);
+                    return false;
+                }
+                break;
+            case 'jellyfin':
+                $url = $this->config['jellyfinURL'] ?? '';
+                $token = $this->config['jellyfinToken'] ?? '';
+                if (empty($url) || empty($token)) {
+                    $this->setAPIResponse('error', 'Jellyfin URL or API key not configured', 500);
+                    return false;
+                }
+                break;
+        }
+        
+        $this->setAPIResponse('success', 'Configuration looks good for ' . ucfirst($mediaServer), 200);
+        return true;
+    }
+    public function userWatchStatsHomepagePermissions($key = null)
+    {
+        $permissions = [
+            'test' => [
+                'enabled' => [
+                    'homepageUserWatchStatsEnabled',
+                ],
+                'auth' => [
+                    'homepageUserWatchStatsAuth',
+                ],
+                'not_empty' => [
+                    // Will depend on selected service
+                ]
+            ],
+            'main' => [
+                'enabled' => [
+                    'homepageUserWatchStatsEnabled'
+                ],
+                'auth' => [
+                    'homepageUserWatchStatsAuth'
+                ],
+                'not_empty' => [
+                    // Will depend on selected service
+                ]
+            ]
+        ];
+        return $this->homepageCheckKeyPermissions($key, $permissions);
+    }
+
+    public function homepageOrderUserWatchStats()
+    {
+        if ($this->homepageItemPermissions($this->userWatchStatsHomepagePermissions('main'))) {
+            $refreshInterval = ($this->config['homepageUserWatchStatsRefresh'] ?? 5) * 60000; // Convert minutes to milliseconds
+            $compactView = ($this->config['homepageUserWatchStatsCompactView'] ?? false) ? 'true' : 'false';
+            $days = $this->config['homepageUserWatchStatsDays'] ?? 30;
+            $maxItems = $this->config['homepageUserWatchStatsMaxItems'] ?? 10;
+            $showTopUsers = ($this->config['homepageUserWatchStatsShowTopUsers'] ?? true) ? 'true' : 'false';
+            $showMostWatched = ($this->config['homepageUserWatchStatsShowMostWatched'] ?? true) ? 'true' : 'false';
+            $showRecentActivity = ($this->config['homepageUserWatchStatsShowRecentActivity'] ?? true) ? 'true' : 'false';
+
+            return '
+            <div id="' . __FUNCTION__ . '">
+                <div class="white-box">
+                    <div class="white-box-header">
+                        <i class="fa fa-bar-chart"></i> User Watch Statistics
+                        <span class="pull-right">
+                            <small id="watchstats-last-update" class="text-muted"></small>
+                            <button class="btn btn-xs btn-primary" onclick="refreshUserWatchStats()" title="Refresh Data">
+                                <i class="fa fa-refresh" id="watchstats-refresh-icon"></i>
+                            </button>
+                        </span>
+                    </div>
+                    <div class="white-box-content">
+                        <div class="row" id="watchstats-content">
+                            <div class="col-lg-12 text-center">
+                                <i class="fa fa-spinner fa-spin"></i> Loading statistics...
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <script>
+            var watchStatsRefreshTimer;
+            var watchStatsLastRefresh = 0;
+
+            function refreshUserWatchStats() {
+                var refreshIcon = $("#watchstats-refresh-icon");
+                refreshIcon.addClass("fa-spin");
+
+                // Show loading state
+                $("#watchstats-content").html(\'<div class="col-lg-12 text-center"><i class="fa fa-spinner fa-spin"></i> Loading statistics...</div>\');
+
+                // Load watch statistics
+                getUserWatchStatsData()
+                .always(function() {
+                    refreshIcon.removeClass("fa-spin");
+                    watchStatsLastRefresh = Date.now();
+                    updateWatchStatsLastRefreshTime();
+                });
+            }
+
+            function updateWatchStatsLastRefreshTime() {
+                if (watchStatsLastRefresh > 0) {
+                    var ago = Math.floor((Date.now() - watchStatsLastRefresh) / 1000);
+                    var timeText = ago < 60 ? ago + "s ago" : Math.floor(ago / 60) + "m ago";
+                    $("#watchstats-last-update").text("Updated " + timeText);
+                }
+            }
+
+            function getUserWatchStatsData() {
+                return organizrAPI2("GET", "api/v2/homepage/userWatchStats")
+                .done(function(data) {
+                    if (data && data.response && data.response.result === "success" && data.response.data) {
+                        var stats = data.response.data;
+                        var html = "";
+                        
+                        // Display statistics period
+                        html += \'<div class="col-lg-12"><h4>Statistics for \' + (stats.period || "30 days") + \'</h4></div>\';
+                        
+                        // Show top users if enabled
+                        if (' . $showTopUsers . ' && stats.top_users && stats.top_users.length > 0) {
+                            html += \'<div class="col-lg-6"><h5>Top Users</h5><ul class="list-group">\';
+                            stats.top_users.slice(0, 5).forEach(function(user) {
+                                html += \'<li class="list-group-item">\' + (user.friendly_name || user.username || "Unknown User") + \' - \' + (user.play_count || 0) + \' plays</li>\';
+                            });
+                            html += \'</ul></div>\';
+                        }
+                        
+                        // Show most watched if enabled
+                        if (' . $showMostWatched . ' && stats.most_watched && stats.most_watched.length > 0) {
+                            html += \'<div class="col-lg-6"><h5>Most Watched</h5><ul class="list-group">\';
+                            stats.most_watched.slice(0, 5).forEach(function(item) {
+                                html += \'<li class="list-group-item">\' + (item.title || "Unknown Title") + \' - \' + (item.total_plays || 0) + \' plays</li>\';
+                            });
+                            html += \'</ul></div>\';
+                        }
+                        
+                        // Show recent activity if enabled
+                        if (' . $showRecentActivity . ' && stats.recent_activity && stats.recent_activity.length > 0) {
+                            html += \'<div class="col-lg-12"><h5>Recent Activity</h5><ul class="list-group">\';
+                            stats.recent_activity.slice(0, 10).forEach(function(activity) {
+                                html += \'<li class="list-group-item">\' + (activity.title || "Unknown Title") + \' - \' + (activity.added_at || "Unknown Date") + \'</li>\';
+                            });
+                            html += \'</ul></div>\';
+                        }
+                        
+                        if (html === \'<div class="col-lg-12"><h4>Statistics for \' + (stats.period || "30 days") + \'</h4></div>\') {
+                            html += \'<div class="col-lg-12 text-center text-muted">No statistics available</div>\';
+                        }
+                        
+                        $("#watchstats-content").html(html);
+                    } else {
+                        $("#watchstats-content").html(\'<div class="col-lg-12 text-center text-danger">Failed to load statistics</div>\');
+                    }
+                })
+                .fail(function(xhr, status, error) {
+                    $("#watchstats-content").html(\'<div class="col-lg-12 text-center text-danger">Error loading statistics</div>\');
+                });
+            }
+
+            // Auto-refresh setup
+            var refreshInterval = ' . $refreshInterval . ';
+            if (refreshInterval > 0) {
+                watchStatsRefreshTimer = setInterval(function() {
+                    refreshUserWatchStats();
+                }, refreshInterval);
+            }
+
+            // Update time display every 30 seconds
+            setInterval(updateWatchStatsLastRefreshTime, 30000);
+
+            // Initial load
+            $(document).ready(function() {
+                refreshUserWatchStats();
+            });
+
+            // Cleanup timer when page unloads
+            $(window).on("beforeunload", function() {
+                if (watchStatsRefreshTimer) {
+                    clearInterval(watchStatsRefreshTimer);
+                }
+            });
+            </script>
+            ';
+        }
     }
 
     /**
@@ -24,30 +262,41 @@ trait HomepageUserWatchStats
      */
     public function getUserWatchStats($options = null)
     {
-        if (!$this->homepageItemPermissions($this->userWatchStatsHomepagePermissions($this->user), true)) {
+        if (!$this->homepageItemPermissions($this->userWatchStatsHomepagePermissions('main'), true)) {
             return false;
         }
 
         try {
             $mediaServer = $this->config['homepageUserWatchStatsService'] ?? 'plex';
-            $days = intval($options['days'] ?? 30);
+            $days = intval($this->config['homepageUserWatchStatsDays'] ?? 30);
             
             switch (strtolower($mediaServer)) {
                 case 'plex':
-                    return $this->getPlexWatchStats($days);
+                    $stats = $this->getPlexWatchStats($days);
+                    break;
                 case 'emby':
-                    return $this->getEmbyWatchStats($days);
+                    $stats = $this->getEmbyWatchStats($days);
+                    break;
                 case 'jellyfin':
-                    return $this->getJellyfinWatchStats($days);
+                    $stats = $this->getJellyfinWatchStats($days);
+                    break;
                 default:
-                    return $this->getPlexWatchStats($days);
+                    $stats = $this->getPlexWatchStats($days);
+                    break;
             }
+            
+            if (isset($stats['error']) && $stats['error']) {
+                $this->setAPIResponse('error', $stats['message'], 500);
+                return false;
+            }
+            
+            $this->setAPIResponse('success', 'Watch statistics retrieved successfully', 200, $stats);
+            return true;
+            
         } catch (Exception $e) {
             $this->writeLog('error', 'User Watch Stats Error: ' . $e->getMessage(), 'SYSTEM');
-            return [
-                'error' => true,
-                'message' => 'Failed to retrieve watch statistics'
-            ];
+            $this->setAPIResponse('error', 'Failed to retrieve watch statistics: ' . $e->getMessage(), 500);
+            return false;
         }
     }
 
