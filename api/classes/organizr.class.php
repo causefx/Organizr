@@ -66,6 +66,7 @@ class Organizr
 	use WeatherHomepageItem;
 	use uTorrentHomepageItem;
 	use UptimeKumaHomepageItem;
+	use HomepageUserWatchStats;
 
 	// ===================================
 	// Organizr Version
