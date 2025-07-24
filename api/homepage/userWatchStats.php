@@ -377,7 +377,7 @@ trait HomepageUserWatchStats
         $apiURL = rtrim($url, '/') . '/api/v2?apikey=' . $token . '&cmd=get_home_stats&time_range=' . $days . '&stats_type=plays&stats_count=10';
         
         try {
-            $options = $this->requestOptions($url, null, $this->config['plexDisableCertCheck'] ?? false, $this->config['plexUseCustomCertificate'] ?? false);
+            $options = $this->requestOptions($url, null, $this->config['userWatchStatsDisableCertCheck'] ?? false, $this->config['userWatchStatsUseCustomCertificate'] ?? false);
             $response = Requests::get($apiURL, [], $options);
             
             if ($response->success) {
@@ -399,7 +399,7 @@ trait HomepageUserWatchStats
         $apiURL = rtrim($url, '/') . '/api/v2?apikey=' . $token . '&cmd=get_user_watch_time_stats&time_range=' . $days;
         
         try {
-            $options = $this->requestOptions($url, null, $this->config['plexDisableCertCheck'] ?? false, $this->config['plexUseCustomCertificate'] ?? false);
+            $options = $this->requestOptions($url, null, $this->config['userWatchStatsDisableCertCheck'] ?? false, $this->config['userWatchStatsUseCustomCertificate'] ?? false);
             $response = Requests::get($apiURL, [], $options);
             
             if ($response->success) {
@@ -421,7 +421,7 @@ trait HomepageUserWatchStats
         $apiURL = rtrim($url, '/') . '/api/v2?apikey=' . $token . '&cmd=get_users&length=25';
         
         try {
-            $options = $this->requestOptions($url, null, $this->config['plexDisableCertCheck'] ?? false, $this->config['plexUseCustomCertificate'] ?? false);
+            $options = $this->requestOptions($url, null, $this->config['userWatchStatsDisableCertCheck'] ?? false, $this->config['userWatchStatsUseCustomCertificate'] ?? false);
             $response = Requests::get($apiURL, [], $options);
             
             if ($response->success) {
@@ -450,7 +450,7 @@ trait HomepageUserWatchStats
         $apiURL = rtrim($url, '/') . '/api/v2?apikey=' . $token . '&cmd=get_recently_added&count=10';
         
         try {
-            $options = $this->requestOptions($url, null, $this->config['plexDisableCertCheck'] ?? false, $this->config['plexUseCustomCertificate'] ?? false);
+            $options = $this->requestOptions($url, null, $this->config['userWatchStatsDisableCertCheck'] ?? false, $this->config['userWatchStatsUseCustomCertificate'] ?? false);
             $response = Requests::get($apiURL, [], $options);
             
             if ($response->success) {
@@ -472,7 +472,7 @@ trait HomepageUserWatchStats
         $apiURL = rtrim($url, '/') . '/api/v2?apikey=' . $token . '&cmd=get_libraries';
         
         try {
-            $options = $this->requestOptions($url, null, $this->config['plexDisableCertCheck'] ?? false, $this->config['plexUseCustomCertificate'] ?? false);
+            $options = $this->requestOptions($url, null, $this->config['userWatchStatsDisableCertCheck'] ?? false, $this->config['userWatchStatsUseCustomCertificate'] ?? false);
             $response = Requests::get($apiURL, [], $options);
             
             if ($response->success) {
@@ -504,7 +504,7 @@ trait HomepageUserWatchStats
         $apiURL = rtrim($url, '/') . '/api/v2?apikey=' . $token . '&cmd=get_library_media_info&section_id=' . $sectionId . '&length=50&order_column=play_count&order_dir=asc';
         
         try {
-            $options = $this->requestOptions($url, null, $this->config['plexDisableCertCheck'] ?? false, $this->config['plexUseCustomCertificate'] ?? false);
+            $options = $this->requestOptions($url, null, $this->config['userWatchStatsDisableCertCheck'] ?? false, $this->config['userWatchStatsUseCustomCertificate'] ?? false);
             $response = Requests::get($apiURL, [], $options);
             
             if ($response->success) {
