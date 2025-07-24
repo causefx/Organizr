@@ -133,7 +133,8 @@ trait HomepageUserWatchStats
                     'homepageUserWatchStatsAuth',
                 ],
                 'not_empty' => [
-                    // Will depend on selected service
+                    'homepageUserWatchStatsURL',
+                    'homepageUserWatchStatsToken'
                 ]
             ],
             'main' => [
@@ -144,7 +145,8 @@ trait HomepageUserWatchStats
                     'homepageUserWatchStatsAuth'
                 ],
                 'not_empty' => [
-                    // Will depend on selected service
+                    'homepageUserWatchStatsURL',
+                    'homepageUserWatchStatsToken'
                 ]
             ]
         ];
