@@ -68,6 +68,7 @@ class Organizr
 	use UptimeKumaHomepageItem;
 	use HomepageUserWatchStats;
 	use HomepageUserWatchStatsSimple;
+	use UserWatchStatsTestHomepageItem;
 
 	// ===================================
 	// Organizr Version
