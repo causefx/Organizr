@@ -26,16 +26,25 @@ trait HomepageUserWatchStats
                     $this->settingsOption('enable', 'homepageUserWatchStatsEnabled'),
                     $this->settingsOption('auth', 'homepageUserWatchStatsAuth'),
                 ],
-                'Connection' => array_merge(
-                    [
-                        $this->settingsOption('select', 'homepageUserWatchStatsService', ['label' => 'Media Server', 'options' => [
-                            ['name' => 'Plex (via Tautulli)', 'value' => 'plex'],
-                            ['name' => 'Emby', 'value' => 'emby'],
-                            ['name' => 'Jellyfin', 'value' => 'jellyfin']
-                        ]])
-                    ],
-                    $this->getUserWatchStatsConnectionFields()
-                ),
+                'Connection' => [
+                    $this->settingsOption('select', 'homepageUserWatchStatsService', ['label' => 'Media Server', 'options' => [
+                        ['name' => 'Plex (via Tautulli)', 'value' => 'plex'],
+                        ['name' => 'Emby', 'value' => 'emby'],
+                        ['name' => 'Jellyfin', 'value' => 'jellyfin']
+                    ]]),
+                    $this->settingsOption('url', 'plexURL', ['label' => 'Tautulli URL']),
+                    $this->settingsOption('token', 'plexToken', ['label' => 'Tautulli API Key']),
+                    $this->settingsOption('disable-cert-check', 'plexDisableCertCheck'),
+                    $this->settingsOption('use-custom-certificate', 'plexUseCustomCertificate'),
+                    $this->settingsOption('url', 'embyURL', ['label' => 'Emby Server URL']),
+                    $this->settingsOption('token', 'embyToken', ['label' => 'Emby API Key']),
+                    $this->settingsOption('disable-cert-check', 'embyDisableCertCheck'),
+                    $this->settingsOption('use-custom-certificate', 'embyUseCustomCertificate'),
+                    $this->settingsOption('url', 'jellyfinURL', ['label' => 'Jellyfin Server URL']),
+                    $this->settingsOption('token', 'jellyfinToken', ['label' => 'Jellyfin API Key']),
+                    $this->settingsOption('disable-cert-check', 'jellyfinDisableCertCheck'),
+                    $this->settingsOption('use-custom-certificate', 'jellyfinUseCustomCertificate'),
+                ],
                 'Display Options' => [
                     $this->settingsOption('number', 'homepageUserWatchStatsRefresh', ['label' => 'Auto-refresh Interval (minutes)', 'min' => 1, 'max' => 60]),
                     $this->settingsOption('number', 'homepageUserWatchStatsDays', ['label' => 'Statistics Period (days)', 'min' => 1, 'max' => 365]),
@@ -54,41 +63,6 @@ trait HomepageUserWatchStats
         return array_merge($homepageInformation, $homepageSettings);
     }
 
-    private function getUserWatchStatsConnectionFields()
-    {
-        $mediaServer = $this->config['homepageUserWatchStatsService'] ?? 'plex';
-        
-        switch (strtolower($mediaServer)) {
-            case 'plex':
-                return [
-                    $this->settingsOption('url', 'plexURL', ['label' => 'Tautulli URL']),
-                    $this->settingsOption('token', 'plexToken', ['label' => 'Tautulli API Key']),
-                    $this->settingsOption('disable-cert-check', 'plexDisableCertCheck'),
-                    $this->settingsOption('use-custom-certificate', 'plexUseCustomCertificate'),
-                ];
-            case 'emby':
-                return [
-                    $this->settingsOption('url', 'embyURL', ['label' => 'Emby Server URL']),
-                    $this->settingsOption('token', 'embyToken', ['label' => 'Emby API Key']),
-                    $this->settingsOption('disable-cert-check', 'embyDisableCertCheck'),
-                    $this->settingsOption('use-custom-certificate', 'embyUseCustomCertificate'),
-                ];
-            case 'jellyfin':
-                return [
-                    $this->settingsOption('url', 'jellyfinURL', ['label' => 'Jellyfin Server URL']),
-                    $this->settingsOption('token', 'jellyfinToken', ['label' => 'Jellyfin API Key']),
-                    $this->settingsOption('disable-cert-check', 'jellyfinDisableCertCheck'),
-                    $this->settingsOption('use-custom-certificate', 'jellyfinUseCustomCertificate'),
-                ];
-            default:
-                return [
-                    $this->settingsOption('url', 'plexURL', ['label' => 'Tautulli URL']),
-                    $this->settingsOption('token', 'plexToken', ['label' => 'Tautulli API Key']),
-                    $this->settingsOption('disable-cert-check', 'plexDisableCertCheck'),
-                    $this->settingsOption('use-custom-certificate', 'plexUseCustomCertificate'),
-                ];
-        }
-    }
 
     public function testConnectionUserWatchStats()
     {
