@@ -32,10 +32,10 @@ trait HomepageUserWatchStats
                         ['name' => 'Emby', 'value' => 'emby'],
                         ['name' => 'Jellyfin', 'value' => 'jellyfin']
                     ]]),
-                    $this->settingsOption('url', 'plexURL', ['label' => 'Tautulli URL']),
-                    $this->settingsOption('token', 'plexToken', ['label' => 'Tautulli API Key']),
-                    $this->settingsOption('disable-cert-check', 'plexDisableCertCheck'),
-                    $this->settingsOption('use-custom-certificate', 'plexUseCustomCertificate'),
+                    $this->settingsOption('multiple-url', 'userWatchStatsURL'),
+                    $this->settingsOption('multiple-api-key', 'userWatchStatsApikey'),
+                    $this->settingsOption('disable-cert-check', 'userWatchStatsDisableCertCheck'),
+                    $this->settingsOption('use-custom-certificate', 'userWatchStatsUseCustomCertificate'),
                 ],
                 'Display Options' => [
                     $this->settingsOption('number', 'homepageUserWatchStatsRefresh', ['label' => 'Auto-refresh Interval (minutes)', 'min' => 1, 'max' => 60]),
@@ -64,33 +64,11 @@ trait HomepageUserWatchStats
         
         $mediaServer = $this->config['homepageUserWatchStatsService'] ?? 'plex';
         
-        // Get URL and token from global config based on selected media server
-        switch (strtolower($mediaServer)) {
-            case 'plex':
-                $url = $this->config['plexURL'] ?? '';
-                $token = $this->config['plexToken'] ?? '';
-                $disableCert = $this->config['plexDisableCertCheck'] ?? false;
-                $customCert = $this->config['plexUseCustomCertificate'] ?? false;
-                break;
-            case 'emby':
-                $url = $this->config['embyURL'] ?? '';
-                $token = $this->config['embyToken'] ?? '';
-                $disableCert = $this->config['embyDisableCertCheck'] ?? false;
-                $customCert = $this->config['embyUseCustomCertificate'] ?? false;
-                break;
-            case 'jellyfin':
-                $url = $this->config['jellyfinURL'] ?? '';
-                $token = $this->config['jellyfinToken'] ?? '';
-                $disableCert = $this->config['jellyfinDisableCertCheck'] ?? false;
-                $customCert = $this->config['jellyfinUseCustomCertificate'] ?? false;
-                break;
-            default:
-                $url = $this->config['plexURL'] ?? '';
-                $token = $this->config['plexToken'] ?? '';
-                $disableCert = $this->config['plexDisableCertCheck'] ?? false;
-                $customCert = $this->config['plexUseCustomCertificate'] ?? false;
-                break;
-        }
+        // Get URL and token from plugin-specific config  
+        $url = $this->config['userWatchStatsURL'] ?? '';
+        $token = $this->config['userWatchStatsApikey'] ?? '';
+        $disableCert = $this->config['userWatchStatsDisableCertCheck'] ?? false;
+        $customCert = $this->config['userWatchStatsUseCustomCertificate'] ?? false;
         
         if (empty($url) || empty($token)) {
             $serverName = ucfirst($mediaServer) . ($mediaServer === 'plex' ? ' (Tautulli)' : '');
@@ -151,32 +129,6 @@ trait HomepageUserWatchStats
     }
     public function userWatchStatsHomepagePermissions($key = null)
     {
-        // Get the selected media server to determine which global config keys to check
-        $mediaServer = $this->config['homepageUserWatchStatsService'] ?? 'plex';
-        
-        // Determine the appropriate global config keys based on selected media server
-        $urlKey = '';
-        $tokenKey = '';
-        
-        switch (strtolower($mediaServer)) {
-            case 'plex':
-                $urlKey = 'plexURL';
-                $tokenKey = 'plexToken';
-                break;
-            case 'emby':
-                $urlKey = 'embyURL';
-                $tokenKey = 'embyToken';
-                break;
-            case 'jellyfin':
-                $urlKey = 'jellyfinURL';
-                $tokenKey = 'jellyfinToken';
-                break;
-            default:
-                $urlKey = 'plexURL';
-                $tokenKey = 'plexToken';
-                break;
-        }
-        
         $permissions = [
             'test' => [
                 'enabled' => [
@@ -186,8 +138,8 @@ trait HomepageUserWatchStats
                     'homepageUserWatchStatsAuth',
                 ],
                 'not_empty' => [
-                    $urlKey,
-                    $tokenKey
+                    'userWatchStatsURL',
+                    'userWatchStatsApikey'
                 ]
             ],
             'main' => [
@@ -198,8 +150,8 @@ trait HomepageUserWatchStats
                     'homepageUserWatchStatsAuth'
                 ],
                 'not_empty' => [
-                    $urlKey,
-                    $tokenKey
+                    'userWatchStatsURL',
+                    'userWatchStatsApikey'
                 ]
             ]
         ];
@@ -393,8 +345,8 @@ trait HomepageUserWatchStats
      */
     private function getPlexWatchStats($days = 30)
     {
-        $tautulliUrl = $this->config['plexURL'] ?? '';
-        $tautulliToken = $this->config['plexToken'] ?? '';
+        $tautulliUrl = $this->config['userWatchStatsURL'] ?? '';
+        $tautulliToken = $this->config['userWatchStatsApikey'] ?? '';
         
         if (empty($tautulliUrl) || empty($tautulliToken)) {
             return ['error' => true, 'message' => 'Tautulli URL or API key not configured'];
