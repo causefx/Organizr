@@ -124,6 +124,32 @@ trait HomepageUserWatchStats
     }
     public function userWatchStatsHomepagePermissions($key = null)
     {
+        // Get the selected media server to determine which global config keys to check
+        $mediaServer = $this->config['homepageUserWatchStatsService'] ?? 'plex';
+        
+        // Determine the appropriate global config keys based on selected media server
+        $urlKey = '';
+        $tokenKey = '';
+        
+        switch (strtolower($mediaServer)) {
+            case 'plex':
+                $urlKey = 'plexURL';
+                $tokenKey = 'plexToken';
+                break;
+            case 'emby':
+                $urlKey = 'embyURL';
+                $tokenKey = 'embyToken';
+                break;
+            case 'jellyfin':
+                $urlKey = 'jellyfinURL';
+                $tokenKey = 'jellyfinToken';
+                break;
+            default:
+                $urlKey = 'plexURL';
+                $tokenKey = 'plexToken';
+                break;
+        }
+        
         $permissions = [
             'test' => [
                 'enabled' => [
@@ -133,8 +159,8 @@ trait HomepageUserWatchStats
                     'homepageUserWatchStatsAuth',
                 ],
                 'not_empty' => [
-                    'homepageUserWatchStatsURL',
-                    'homepageUserWatchStatsToken'
+                    $urlKey,
+                    $tokenKey
                 ]
             ],
             'main' => [
@@ -145,8 +171,8 @@ trait HomepageUserWatchStats
                     'homepageUserWatchStatsAuth'
                 ],
                 'not_empty' => [
-                    'homepageUserWatchStatsURL',
-                    'homepageUserWatchStatsToken'
+                    $urlKey,
+                    $tokenKey
                 ]
             ]
         ];
