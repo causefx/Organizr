@@ -131,7 +131,7 @@ trait HomepageUserWatchStatsSimple
                 refreshIcon.addClass("fa-spin");
 
                 // Show loading state
-                $("#watchstats-simple-content").html(\'\'<div class="col-lg-12 text-center"><i class="fa fa-spinner fa-spin"></i> Loading statistics...</div>\'\'');
+                $("#watchstats-simple-content").html(\'<div class="col-lg-12 text-center"><i class="fa fa-spinner fa-spin"></i> Loading statistics...</div>\');
 
                 // Load watch statistics
                 getUserWatchStatsSimpleData()
@@ -158,18 +158,18 @@ trait HomepageUserWatchStatsSimple
                         var html = "";
                         
                         // Display basic statistics
-                        html += \'\'<div class="col-lg-12"><h4>Basic Statistics (Simplified View)</h4></div>\'\'';
+                        html += \'<div class="col-lg-12"><h4>Basic Statistics (Simplified View)</h4></div>\';
                         
                         // Show some basic info
-                        html += \'\'<div class="col-lg-12"><div class="alert alert-info">This is a simplified version of User Watch Statistics for testing purposes.</div></div>\'\'';
+                        html += \'<div class="col-lg-12"><div class="alert alert-info">This is a simplified version of User Watch Statistics for testing purposes.</div></div>\';
                         
                         $("#watchstats-simple-content").html(html);
                     } else {
-                        $("#watchstats-simple-content").html(\'\'<div class="col-lg-12 text-center text-danger">Failed to load statistics</div>\'\''');
+                        $("#watchstats-simple-content").html(\'<div class="col-lg-12 text-center text-danger">Failed to load statistics</div>\');
                     }
                 })
                 .fail(function(xhr, status, error) {
-                    $("#watchstats-simple-content").html(\'\'<div class="col-lg-12 text-center text-danger">Error loading statistics</div>\'\''');
+                    $("#watchstats-simple-content").html(\'<div class="col-lg-12 text-center text-danger">Error loading statistics</div>\');
                 });
             }
 
