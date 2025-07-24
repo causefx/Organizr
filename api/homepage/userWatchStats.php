@@ -11,7 +11,7 @@ trait HomepageUserWatchStats
     {
         $homepageInformation = [
             'name' => 'User Watch Statistics',
-            'enabled' => strpos('personal', $this->config['license']) !== false,
+            'enabled' => true,
             'image' => 'plugins/images/homepage/userWatchStats.png',
             'category' => 'Media Server',
             'settingsArray' => __FUNCTION__
@@ -36,14 +36,6 @@ trait HomepageUserWatchStats
                     $this->settingsOption('token', 'plexToken', ['label' => 'Tautulli API Key']),
                     $this->settingsOption('disable-cert-check', 'plexDisableCertCheck'),
                     $this->settingsOption('use-custom-certificate', 'plexUseCustomCertificate'),
-                    $this->settingsOption('url', 'embyURL', ['label' => 'Emby Server URL']),
-                    $this->settingsOption('token', 'embyToken', ['label' => 'Emby API Key']),
-                    $this->settingsOption('disable-cert-check', 'embyDisableCertCheck'),
-                    $this->settingsOption('use-custom-certificate', 'embyUseCustomCertificate'),
-                    $this->settingsOption('url', 'jellyfinURL', ['label' => 'Jellyfin Server URL']),
-                    $this->settingsOption('token', 'jellyfinToken', ['label' => 'Jellyfin API Key']),
-                    $this->settingsOption('disable-cert-check', 'jellyfinDisableCertCheck'),
-                    $this->settingsOption('use-custom-certificate', 'jellyfinUseCustomCertificate'),
                 ],
                 'Display Options' => [
                     $this->settingsOption('number', 'homepageUserWatchStatsRefresh', ['label' => 'Auto-refresh Interval (minutes)', 'min' => 1, 'max' => 60]),

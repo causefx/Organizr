@@ -67,6 +67,7 @@ class Organizr
 	use uTorrentHomepageItem;
 	use UptimeKumaHomepageItem;
 	use HomepageUserWatchStats;
+	use HomepageUserWatchStatsSimple;
 
 	// ===================================
 	// Organizr Version
