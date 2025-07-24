@@ -523,15 +523,28 @@ trait HomepageUserWatchStats
      */
     private function getEmbyWatchStats($days = 30)
     {
-        $embyUrl = $this->config['embyURL'] ?? '';
-        $embyToken = $this->config['embyToken'] ?? '';
+        $embyUrl = $this->config['userWatchStatsURL'] ?? '';
+        $embyToken = $this->config['userWatchStatsApikey'] ?? '';
         
         if (empty($embyUrl) || empty($embyToken)) {
             return ['error' => true, 'message' => 'Emby URL or API key not configured'];
         }
 
-        // Implement Emby-specific statistics gathering
-        return $this->getGenericMediaServerStats('emby', $embyUrl, $embyToken, $days);
+        $endDate = date('Y-m-d');
+        $startDate = date('Y-m-d', strtotime("-{$days} days"));
+        
+        $stats = [
+            'period' => "{$days} days",
+            'start_date' => $startDate,
+            'end_date' => $endDate,
+            'most_watched' => $this->getEmbyMostWatched($embyUrl, $embyToken, $days),
+            'least_watched' => [],  // Emby doesn't have a direct least watched API
+            'user_stats' => $this->getEmbyUserStats($embyUrl, $embyToken, $days),
+            'recent_activity' => $this->getEmbyRecentActivity($embyUrl, $embyToken),
+            'top_users' => $this->getEmbyTopUsers($embyUrl, $embyToken, $days)
+        ];
+
+        return $stats;
     }
 
     /**
@@ -625,6 +638,131 @@ trait HomepageUserWatchStats
         }
 
         return '/plugins/images/organizr/user-bg.png';
+    }
+
+    /**
+     * Get most watched content from Emby
+     */
+    private function getEmbyMostWatched($url, $token, $days)
+    {
+        $apiURL = rtrim($url, '/') . '/emby/Items?api_key=' . $token . '&SortBy=PlayCount&SortOrder=Descending&Limit=10&Recursive=true&IncludeItemTypes=Movie,Episode';
+        
+        try {
+            $options = $this->requestOptions($url, null, $this->config['userWatchStatsDisableCertCheck'] ?? false, $this->config['userWatchStatsUseCustomCertificate'] ?? false);
+            $response = Requests::get($apiURL, [], $options);
+            
+            if ($response->success) {
+                $data = json_decode($response->body, true);
+                $items = $data['Items'] ?? [];
+                
+                $mostWatched = [];
+                foreach ($items as $item) {
+                    $mostWatched[] = [
+                        'title' => $item['Name'] ?? 'Unknown Title',
+                        'play_count' => $item['UserData']['PlayCount'] ?? 0,
+                        'type' => $item['Type'] ?? 'Unknown',
+                        'year' => $item['ProductionYear'] ?? null
+                    ];
+                }
+                
+                return $mostWatched;
+            }
+        } catch (Requests_Exception $e) {
+            $this->writeLog('error', 'Emby Most Watched Error: ' . $e->getMessage(), 'SYSTEM');
+        }
+
+        return [];
+    }
+
+    /**
+     * Get user statistics from Emby
+     */
+    private function getEmbyUserStats($url, $token, $days)
+    {
+        $apiURL = rtrim($url, '/') . '/emby/Users?api_key=' . $token;
+        
+        try {
+            $options = $this->requestOptions($url, null, $this->config['userWatchStatsDisableCertCheck'] ?? false, $this->config['userWatchStatsUseCustomCertificate'] ?? false);
+            $response = Requests::get($apiURL, [], $options);
+            
+            if ($response->success) {
+                $data = json_decode($response->body, true);
+                return $data ?? [];
+            }
+        } catch (Requests_Exception $e) {
+            $this->writeLog('error', 'Emby User Stats Error: ' . $e->getMessage(), 'SYSTEM');
+        }
+
+        return [];
+    }
+
+    /**
+     * Get top users from Emby
+     */
+    private function getEmbyTopUsers($url, $token, $days)
+    {
+        $apiURL = rtrim($url, '/') . '/emby/Users?api_key=' . $token;
+        
+        try {
+            $options = $this->requestOptions($url, null, $this->config['userWatchStatsDisableCertCheck'] ?? false, $this->config['userWatchStatsUseCustomCertificate'] ?? false);
+            $response = Requests::get($apiURL, [], $options);
+            
+            if ($response->success) {
+                $data = json_decode($response->body, true);
+                $users = $data ?? [];
+                
+                $topUsers = [];
+                foreach ($users as $user) {
+                    if (!isset($user['Policy']['IsHidden']) || !$user['Policy']['IsHidden']) {
+                        $topUsers[] = [
+                            'username' => $user['Name'] ?? 'Unknown User',
+                            'friendly_name' => $user['Name'] ?? 'Unknown User',
+                            'play_count' => 0,  // Emby doesn't provide direct play count per user
+                            'last_seen' => $user['LastActivityDate'] ?? null
+                        ];
+                    }
+                }
+                
+                return array_slice($topUsers, 0, 10);
+            }
+        } catch (Requests_Exception $e) {
+            $this->writeLog('error', 'Emby Top Users Error: ' . $e->getMessage(), 'SYSTEM');
+        }
+
+        return [];
+    }
+
+    /**
+     * Get recent activity from Emby
+     */
+    private function getEmbyRecentActivity($url, $token)
+    {
+        $apiURL = rtrim($url, '/') . '/emby/Items/Latest?api_key=' . $token . '&Limit=10&Recursive=true&IncludeItemTypes=Movie,Episode';
+        
+        try {
+            $options = $this->requestOptions($url, null, $this->config['userWatchStatsDisableCertCheck'] ?? false, $this->config['userWatchStatsUseCustomCertificate'] ?? false);
+            $response = Requests::get($apiURL, [], $options);
+            
+            if ($response->success) {
+                $data = json_decode($response->body, true);
+                
+                $recentActivity = [];
+                foreach ($data as $item) {
+                    $recentActivity[] = [
+                        'title' => $item['Name'] ?? 'Unknown Title',
+                        'type' => $item['Type'] ?? 'Unknown',
+                        'added_at' => $item['DateCreated'] ?? 'Unknown Date',
+                        'year' => $item['ProductionYear'] ?? null
+                    ];
+                }
+                
+                return $recentActivity;
+            }
+        } catch (Requests_Exception $e) {
+            $this->writeLog('error', 'Emby Recent Activity Error: ' . $e->getMessage(), 'SYSTEM');
+        }
+
+        return [];
     }
 
     /**
