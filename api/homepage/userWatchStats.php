@@ -422,25 +422,18 @@ trait HomepageUserWatchStats
      */
     private function getTautulliMostWatched($url, $token, $days)
     {
-        $endpoint = rtrim($url, '/') . '/api/v2';
-        $params = [
-            'apikey' => $token,
-            'cmd' => 'get_home_stats',
-            'time_range' => $days,
-            'stats_type' => 'plays',
-            'stats_count' => 10
-        ];
+        $apiURL = rtrim($url, '/') . '/api/v2?apikey=' . $token . '&cmd=get_home_stats&time_range=' . $days . '&stats_type=plays&stats_count=10';
         
-        $response = $this->guzzle->request('GET', $endpoint, [
-            'query' => $params,
-            'timeout' => 15,
-            'connect_timeout' => 15,
-            'http_errors' => false
-        ]);
-
-        if ($response->getStatusCode() === 200) {
-            $data = json_decode($response->getBody(), true);
-            return $data['response']['data'] ?? [];
+        try {
+            $options = $this->requestOptions($url, null, $this->config['plexDisableCertCheck'] ?? false, $this->config['plexUseCustomCertificate'] ?? false);
+            $response = Requests::get($apiURL, [], $options);
+            
+            if ($response->success) {
+                $data = json_decode($response->body, true);
+                return $data['response']['data'] ?? [];
+            }
+        } catch (Requests_Exception $e) {
+            $this->writeLog('error', 'Tautulli Most Watched Error: ' . $e->getMessage(), 'SYSTEM');
         }
 
         return [];
@@ -451,23 +444,18 @@ trait HomepageUserWatchStats
      */
     private function getTautulliUserStats($url, $token, $days)
     {
-        $endpoint = rtrim($url, '/') . '/api/v2';
-        $params = [
-            'apikey' => $token,
-            'cmd' => 'get_user_watch_time_stats',
-            'time_range' => $days
-        ];
+        $apiURL = rtrim($url, '/') . '/api/v2?apikey=' . $token . '&cmd=get_user_watch_time_stats&time_range=' . $days;
         
-        $response = $this->guzzle->request('GET', $endpoint, [
-            'query' => $params,
-            'timeout' => 15,
-            'connect_timeout' => 15,
-            'http_errors' => false
-        ]);
-
-        if ($response->getStatusCode() === 200) {
-            $data = json_decode($response->getBody(), true);
-            return $data['response']['data'] ?? [];
+        try {
+            $options = $this->requestOptions($url, null, $this->config['plexDisableCertCheck'] ?? false, $this->config['plexUseCustomCertificate'] ?? false);
+            $response = Requests::get($apiURL, [], $options);
+            
+            if ($response->success) {
+                $data = json_decode($response->body, true);
+                return $data['response']['data'] ?? [];
+            }
+        } catch (Requests_Exception $e) {
+            $this->writeLog('error', 'Tautulli User Stats Error: ' . $e->getMessage(), 'SYSTEM');
         }
 
         return [];
@@ -478,30 +466,25 @@ trait HomepageUserWatchStats
      */
     private function getTautulliTopUsers($url, $token, $days)
     {
-        $endpoint = rtrim($url, '/') . '/api/v2';
-        $params = [
-            'apikey' => $token,
-            'cmd' => 'get_users',
-            'length' => 25
-        ];
+        $apiURL = rtrim($url, '/') . '/api/v2?apikey=' . $token . '&cmd=get_users&length=25';
         
-        $response = $this->guzzle->request('GET', $endpoint, [
-            'query' => $params,
-            'timeout' => 15,
-            'connect_timeout' => 15,
-            'http_errors' => false
-        ]);
-
-        if ($response->getStatusCode() === 200) {
-            $data = json_decode($response->getBody(), true);
-            $users = $data['response']['data']['data'] ?? [];
+        try {
+            $options = $this->requestOptions($url, null, $this->config['plexDisableCertCheck'] ?? false, $this->config['plexUseCustomCertificate'] ?? false);
+            $response = Requests::get($apiURL, [], $options);
             
-            // Sort by play count
-            usort($users, function($a, $b) {
-                return ($b['play_count'] ?? 0) - ($a['play_count'] ?? 0);
-            });
-            
-            return array_slice($users, 0, 10);
+            if ($response->success) {
+                $data = json_decode($response->body, true);
+                $users = $data['response']['data']['data'] ?? [];
+                
+                // Sort by play count
+                usort($users, function($a, $b) {
+                    return ($b['play_count'] ?? 0) - ($a['play_count'] ?? 0);
+                });
+                
+                return array_slice($users, 0, 10);
+            }
+        } catch (Requests_Exception $e) {
+            $this->writeLog('error', 'Tautulli Top Users Error: ' . $e->getMessage(), 'SYSTEM');
         }
 
         return [];
@@ -512,23 +495,18 @@ trait HomepageUserWatchStats
      */
     private function getTautulliRecentActivity($url, $token)
     {
-        $endpoint = rtrim($url, '/') . '/api/v2';
-        $params = [
-            'apikey' => $token,
-            'cmd' => 'get_recently_added',
-            'count' => 10
-        ];
+        $apiURL = rtrim($url, '/') . '/api/v2?apikey=' . $token . '&cmd=get_recently_added&count=10';
         
-        $response = $this->guzzle->request('GET', $endpoint, [
-            'query' => $params,
-            'timeout' => 15,
-            'connect_timeout' => 15,
-            'http_errors' => false
-        ]);
-
-        if ($response->getStatusCode() === 200) {
-            $data = json_decode($response->getBody(), true);
-            return $data['response']['data']['recently_added'] ?? [];
+        try {
+            $options = $this->requestOptions($url, null, $this->config['plexDisableCertCheck'] ?? false, $this->config['plexUseCustomCertificate'] ?? false);
+            $response = Requests::get($apiURL, [], $options);
+            
+            if ($response->success) {
+                $data = json_decode($response->body, true);
+                return $data['response']['data']['recently_added'] ?? [];
+            }
+        } catch (Requests_Exception $e) {
+            $this->writeLog('error', 'Tautulli Recent Activity Error: ' . $e->getMessage(), 'SYSTEM');
         }
 
         return [];
@@ -539,32 +517,28 @@ trait HomepageUserWatchStats
      */
     private function getTautulliLeastWatched($url, $token, $days)
     {
-        $endpoint = rtrim($url, '/') . '/api/v2';
-        $params = [
-            'apikey' => $token,
-            'cmd' => 'get_libraries',
-        ];
+        $apiURL = rtrim($url, '/') . '/api/v2?apikey=' . $token . '&cmd=get_libraries';
         
-        $response = $this->guzzle->request('GET', $endpoint, [
-            'query' => $params,
-            'timeout' => 15,
-            'connect_timeout' => 15,
-            'http_errors' => false
-        ]);
-
-        if ($response->getStatusCode() === 200) {
-            $data = json_decode($response->getBody(), true);
-            $libraries = $data['response']['data'] ?? [];
+        try {
+            $options = $this->requestOptions($url, null, $this->config['plexDisableCertCheck'] ?? false, $this->config['plexUseCustomCertificate'] ?? false);
+            $response = Requests::get($apiURL, [], $options);
             
-            $leastWatched = [];
-            foreach ($libraries as $library) {
-                $libraryStats = $this->getTautulliLibraryStats($url, $token, $library['section_id'], $days);
-                if (!empty($libraryStats)) {
-                    $leastWatched = array_merge($leastWatched, array_slice($libraryStats, -10));
+            if ($response->success) {
+                $data = json_decode($response->body, true);
+                $libraries = $data['response']['data'] ?? [];
+                
+                $leastWatched = [];
+                foreach ($libraries as $library) {
+                    $libraryStats = $this->getTautulliLibraryStats($url, $token, $library['section_id'], $days);
+                    if (!empty($libraryStats)) {
+                        $leastWatched = array_merge($leastWatched, array_slice($libraryStats, -10));
+                    }
                 }
+                
+                return $leastWatched;
             }
-            
-            return $leastWatched;
+        } catch (Requests_Exception $e) {
+            $this->writeLog('error', 'Tautulli Least Watched Error: ' . $e->getMessage(), 'SYSTEM');
         }
 
         return [];
@@ -575,26 +549,18 @@ trait HomepageUserWatchStats
      */
     private function getTautulliLibraryStats($url, $token, $sectionId, $days)
     {
-        $endpoint = rtrim($url, '/') . '/api/v2';
-        $params = [
-            'apikey' => $token,
-            'cmd' => 'get_library_media_info',
-            'section_id' => $sectionId,
-            'length' => 50,
-            'order_column' => 'play_count',
-            'order_dir' => 'asc'
-        ];
+        $apiURL = rtrim($url, '/') . '/api/v2?apikey=' . $token . '&cmd=get_library_media_info&section_id=' . $sectionId . '&length=50&order_column=play_count&order_dir=asc';
         
-        $response = $this->guzzle->request('GET', $endpoint, [
-            'query' => $params,
-            'timeout' => 15,
-            'connect_timeout' => 15,
-            'http_errors' => false
-        ]);
-
-        if ($response->getStatusCode() === 200) {
-            $data = json_decode($response->getBody(), true);
-            return $data['response']['data']['data'] ?? [];
+        try {
+            $options = $this->requestOptions($url, null, $this->config['plexDisableCertCheck'] ?? false, $this->config['plexUseCustomCertificate'] ?? false);
+            $response = Requests::get($apiURL, [], $options);
+            
+            if ($response->success) {
+                $data = json_decode($response->body, true);
+                return $data['response']['data']['data'] ?? [];
+            }
+        } catch (Requests_Exception $e) {
+            $this->writeLog('error', 'Tautulli Library Stats Error: ' . $e->getMessage(), 'SYSTEM');
         }
 
         return [];
@@ -692,27 +658,18 @@ trait HomepageUserWatchStats
             return '/plugins/images/organizr/user-bg.png';
         }
 
-        $endpoint = rtrim($tautulliUrl, '/') . "/api/v2";
-        $params = [
-            'apikey' => $tautulliToken,
-            'cmd' => 'get_user_thumb',
-            'user_id' => $userId
-        ];
+        $apiURL = rtrim($tautulliUrl, '/') . '/api/v2?apikey=' . $tautulliToken . '&cmd=get_user_thumb&user_id=' . $userId;
 
         try {
-            $response = $this->guzzle->request('GET', $endpoint, [
-                'query' => $params,
-                'timeout' => 10,
-                'connect_timeout' => 10,
-                'http_errors' => false
-            ]);
+            $options = $this->requestOptions($tautulliUrl, null, $this->config['plexDisableCertCheck'] ?? false, $this->config['plexUseCustomCertificate'] ?? false);
+            $response = Requests::get($apiURL, [], $options);
 
-            if ($response->getStatusCode() === 200) {
-                $data = json_decode($response->getBody(), true);
+            if ($response->success) {
+                $data = json_decode($response->body, true);
                 return $data['response']['data']['thumb'] ?? '/plugins/images/organizr/user-bg.png';
             }
-        } catch (Exception $e) {
-            // Return default avatar on error
+        } catch (Requests_Exception $e) {
+            $this->writeLog('error', 'Tautulli User Avatar Error: ' . $e->getMessage(), 'SYSTEM');
         }
 
         return '/plugins/images/organizr/user-bg.png';
