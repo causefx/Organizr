@@ -10,7 +10,7 @@ trait HomepageUserWatchStats
     public function userWatchStatsSettingsArray($infoOnly = false)
     {
         $homepageInformation = [
-            'name' => 'User Watch Statistics',
+            'name' => 'UserWatchStats',
             'enabled' => true,
             'image' => 'plugins/images/homepage/userWatchStats.png',
             'category' => 'Media Server',
