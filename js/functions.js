@@ -1253,7 +1253,7 @@ function buildFormItem(item){
 			return '<input data-changed="false" lang="en" type="hidden" class="form-control'+extraClass+'"'+placeholder+value+id+name+disabled+type+label+attr+' />';
 			break;
 		case 'select':
-			return smallLabel+'<select class="form-control'+extraClass+'"'+placeholder+value+id+name+disabled+type+label+attr+'>'+selectOptions(item.options, item.value)+'</select>';
+			return smallLabel+'<select data-changed="false" class="form-control'+extraClass+'"'+placeholder+value+id+name+disabled+type+label+attr+'>'+selectOptions(item.options, item.value)+'</select>';
 			break;
 		case 'select2':
             var select2ID = (item.id) ? '#'+item.id : '.'+item.name;
