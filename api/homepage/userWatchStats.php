@@ -32,6 +32,10 @@ trait HomepageUserWatchStats
                         ['name' => 'Emby', 'value' => 'emby'],
                         ['name' => 'Jellyfin', 'value' => 'jellyfin']
                     ]]),
+                    $this->settingsOption('url', 'homepageUserWatchStatsURL', ['label' => 'Server URL']),
+                    $this->settingsOption('token', 'homepageUserWatchStatsToken', ['label' => 'API Token/Key']),
+                    $this->settingsOption('disable-cert-check', 'homepageUserWatchStatsDisableCertCheck'),
+                    $this->settingsOption('use-custom-certificate', 'homepageUserWatchStatsUseCustomCertificate'),
                 ],
                 'Display Options' => [
                     $this->settingsOption('number', 'homepageUserWatchStatsRefresh', ['label' => 'Auto-refresh Interval (minutes)', 'min' => 1, 'max' => 60]),
@@ -58,36 +62,65 @@ trait HomepageUserWatchStats
         }
         
         $mediaServer = $this->config['homepageUserWatchStatsService'] ?? 'plex';
+        $url = $this->config['homepageUserWatchStatsURL'] ?? '';
+        $token = $this->config['homepageUserWatchStatsToken'] ?? '';
         
-        switch (strtolower($mediaServer)) {
-            case 'plex':
-                $url = $this->config['plexURL'] ?? '';
-                $token = $this->config['plexToken'] ?? '';
-                if (empty($url) || empty($token)) {
-                    $this->setAPIResponse('error', 'Tautulli URL or API key not configured', 500);
-                    return false;
-                }
-                break;
-            case 'emby':
-                $url = $this->config['embyURL'] ?? '';
-                $token = $this->config['embyToken'] ?? '';
-                if (empty($url) || empty($token)) {
-                    $this->setAPIResponse('error', 'Emby URL or API key not configured', 500);
-                    return false;
-                }
-                break;
-            case 'jellyfin':
-                $url = $this->config['jellyfinURL'] ?? '';
-                $token = $this->config['jellyfinToken'] ?? '';
-                if (empty($url) || empty($token)) {
-                    $this->setAPIResponse('error', 'Jellyfin URL or API key not configured', 500);
-                    return false;
-                }
-                break;
+        if (empty($url) || empty($token)) {
+            $serverName = ucfirst($mediaServer) . ($mediaServer === 'plex' ? ' (Tautulli)' : '');
+            $this->setAPIResponse('error', $serverName . ' URL or API key not configured', 500);
+            return false;
         }
         
-        $this->setAPIResponse('success', 'Configuration looks good for ' . ucfirst($mediaServer), 200);
-        return true;
+        // Test the connection based on media server type
+        try {
+            $options = $this->requestOptions($url, null, $this->config['homepageUserWatchStatsDisableCertCheck'] ?? false, $this->config['homepageUserWatchStatsUseCustomCertificate'] ?? false);
+            
+            switch (strtolower($mediaServer)) {
+                case 'plex':
+                    // Test Tautulli connection
+                    $testUrl = $this->qualifyURL($url) . '/api/v2?apikey=' . $token . '&cmd=get_server_info';
+                    $response = Requests::get($testUrl, [], $options);
+                    if ($response->success) {
+                        $data = json_decode($response->body, true);
+                        if (isset($data['response']['result']) && $data['response']['result'] === 'success') {
+                            $this->setAPIResponse('success', 'Successfully connected to Tautulli', 200);
+                            return true;
+                        }
+                    }
+                    break;
+                case 'emby':
+                    // Test Emby connection
+                    $testUrl = $this->qualifyURL($url) . '/emby/System/Info?api_key=' . $token;
+                    $response = Requests::get($testUrl, [], $options);
+                    if ($response->success) {
+                        $data = json_decode($response->body, true);
+                        if (isset($data['ServerName'])) {
+                            $this->setAPIResponse('success', 'Successfully connected to Emby server: ' . $data['ServerName'], 200);
+                            return true;
+                        }
+                    }
+                    break;
+                case 'jellyfin':
+                    // Test Jellyfin connection
+                    $testUrl = $this->qualifyURL($url) . '/System/Info?api_key=' . $token;
+                    $response = Requests::get($testUrl, [], $options);
+                    if ($response->success) {
+                        $data = json_decode($response->body, true);
+                        if (isset($data['ServerName'])) {
+                            $this->setAPIResponse('success', 'Successfully connected to Jellyfin server: ' . $data['ServerName'], 200);
+                            return true;
+                        }
+                    }
+                    break;
+            }
+            
+            $this->setAPIResponse('error', 'Connection test failed - invalid response from server', 500);
+            return false;
+            
+        } catch (Exception $e) {
+            $this->setAPIResponse('error', 'Connection test failed: ' . $e->getMessage(), 500);
+            return false;
+        }
     }
     public function userWatchStatsHomepagePermissions($key = null)
     {
@@ -305,8 +338,8 @@ trait HomepageUserWatchStats
      */
     private function getPlexWatchStats($days = 30)
     {
-        $tautulliUrl = $this->config['plexURL'] ?? '';
-        $tautulliToken = $this->config['plexToken'] ?? '';
+        $tautulliUrl = $this->config['homepageUserWatchStatsURL'] ?? '';
+        $tautulliToken = $this->config['homepageUserWatchStatsToken'] ?? '';
         
         if (empty($tautulliUrl) || empty($tautulliToken)) {
             return ['error' => true, 'message' => 'Tautulli URL or API key not configured'];
@@ -517,8 +550,8 @@ trait HomepageUserWatchStats
      */
     private function getEmbyWatchStats($days = 30)
     {
-        $embyUrl = $this->config['embyURL'] ?? '';
-        $embyToken = $this->config['embyToken'] ?? '';
+        $embyUrl = $this->config['homepageUserWatchStatsURL'] ?? '';
+        $embyToken = $this->config['homepageUserWatchStatsToken'] ?? '';
         
         if (empty($embyUrl) || empty($embyToken)) {
             return ['error' => true, 'message' => 'Emby URL or API key not configured'];
@@ -533,8 +566,8 @@ trait HomepageUserWatchStats
      */
     private function getJellyfinWatchStats($days = 30)
     {
-        $jellyfinUrl = $this->config['jellyfinURL'] ?? '';
-        $jellyfinToken = $this->config['jellyfinToken'] ?? '';
+        $jellyfinUrl = $this->config['homepageUserWatchStatsURL'] ?? '';
+        $jellyfinToken = $this->config['homepageUserWatchStatsToken'] ?? '';
         
         if (empty($jellyfinUrl) || empty($jellyfinToken)) {
             return ['error' => true, 'message' => 'Jellyfin URL or API key not configured'];
