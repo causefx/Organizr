@@ -32,8 +32,8 @@ trait HomepageUserWatchStats
                         ['name' => 'Emby', 'value' => 'emby'],
                         ['name' => 'Jellyfin', 'value' => 'jellyfin']
                     ]]),
-                    $this->settingsOption('multiple-url', 'userWatchStatsURL'),
-                    $this->settingsOption('multiple-api-key', 'userWatchStatsApikey'),
+                    $this->settingsOption('url', 'userWatchStatsURL'),
+                    $this->settingsOption('token', 'userWatchStatsApikey'),
                     $this->settingsOption('disable-cert-check', 'userWatchStatsDisableCertCheck'),
                     $this->settingsOption('use-custom-certificate', 'userWatchStatsUseCustomCertificate'),
                 ],
