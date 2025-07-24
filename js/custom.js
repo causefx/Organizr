@@ -1160,6 +1160,19 @@ $(document).on('change keydown', '.addFormTick :input', function(e) {
         activeInfo.settings.misc.authDebug = value;
     }
 });
+
+// Additional handler for Switchery switches that don't trigger standard change events
+$(document).on('click', '.addFormTick .js-switch', function(e) {
+    var checkbox = this;
+    // Wait for Switchery to update the checkbox state
+    setTimeout(function() {
+        $(checkbox).attr('data-changed', true);
+        $(checkbox).closest('.form-group').addClass('has-success');
+        var formID = $(checkbox).closest('form').attr('id');
+        $('#'+formID+'-save').removeClass('hidden');
+        $('#'+formID+'-reset').removeClass('hidden');
+    }, 100);
+});
 //DELETE IMAGE
 $(document).on("click", ".deleteImage", function () {
     var image = $(this);
