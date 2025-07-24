@@ -4628,6 +4628,13 @@ class Organizr
 					$class .= ' faded';
 				}
 				break;
+			case 'homepageOrderUserWatchStats':
+				$class = 'bg-info';
+				$image = 'plugins/images/homepage/userWatchStats.png';
+				if (!$this->config['homepageUserWatchStatsEnabled']) {
+					$class .= ' faded';
+				}
+				break;
 				case 'homepageOrderjellyfinnowplaying':
 				case 'homepageOrderjellyfinrecent':
 					$class = 'bg-jellyfin';
