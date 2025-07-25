@@ -219,103 +219,156 @@ trait HomepageUserWatchStats
                 }
             }
 
+            var watchStatsData = null;
+            var currentSort = { field: 'total_plays', direction: 'desc' };
+            var currentFilter = 'all';
+            var currentView = 'table';
+            
             function getUserWatchStatsData() {
                 return organizrAPI2("GET", "api/v2/homepage/userWatchStats")
                 .done(function(data) {
                     if (data && data.response && data.response.result === "success" && data.response.data) {
-                        var stats = data.response.data;
-                        var html = "";
-                        
-                        // Display statistics period
-                        html += \'<div class="col-lg-12"><h4>Statistics for \' + (stats.period || "30 days") + \'</h4></div>\';
-                        
-                        // Show watch history (Movies & Shows)
-                        if (stats.watch_history && stats.watch_history.length > 0) {
-                            html += \'<div class="col-lg-12"><h5>Watch History</h5><table class="table table-striped table-condensed">\';
-                            html += \'<thead>\';
-                            html += \'<tr>\';
-                            html += \'<th>Title</th>\';
-                            html += \'<th>Type</th>\';
-                            html += \'<th>Play Count</th>\';
-                            html += \'<th>Runtime</th>\';
-                            html += \'</tr>\';
-                            html += \'</thead>\';
-                            html += \'<tbody>\';
-                            stats.watch_history.slice(0, 10).forEach(function(item) {
-                                html += \'<tr>\';
-                                html += \'<td>\' + (item.title || "Unknown Title") + \'</td>\';
-                                html += \'<td>\' + (item.type || "Unknown") + \'</td>\';
-                                html += \'<td>\' + (item.play_count || 0) + \'</td>\';
-                                html += \'<td>\' + (item.runtime || "Unknown") + \'</td>\';
-                                html += \'</tr>\';
-                            });
-                            html += \'</tbody>\';
-                            html += \'</table>\';
-                            html += \'</div>\';
-                        }
-                        
-                        // Show user stats (Emby users)
-                        if (stats.user_stats && stats.user_stats.length > 0) {
-                            html += \'<div class="col-lg-12"><h5>Server Users (\' + stats.user_stats.length + \' total)</h5><ul class="list-group">\';
-                            stats.user_stats.slice(0, 10).forEach(function(user) {
-                                var lastActivity = "Never";
-                                if (user.LastActivityDate && user.LastActivityDate !== "0001-01-01T00:00:00.0000000Z") {
-                                    var activityDate = new Date(user.LastActivityDate);
-                                    lastActivity = activityDate.toLocaleDateString();
-                                }
-                                var isAdmin = user.Policy && user.Policy.IsAdministrator ? " [Admin]" : "";
-                                var isDisabled = user.Policy && user.Policy.IsDisabled ? " [Disabled]" : "";
-                                html += \'<li class="list-group-item">\' + (user.Name || "Unknown User") + isAdmin + isDisabled + \' - Last Activity: \' + lastActivity + \'</li>\';
-                            });
-                            html += \'</ul></div>\';
-                        }
-                        
-                        // Show top users if enabled and has data
-                        if (' . $showTopUsers . ' && stats.top_users && stats.top_users.length > 0) {
-                            html += \'<div class="col-lg-6"><h5>Top Users</h5><ul class="list-group">\';
-                            stats.top_users.slice(0, 5).forEach(function(user) {
-                                html += \'<li class="list-group-item">\' + (user.friendly_name || user.username || "Unknown User") + \' - \' + (user.play_count || 0) + \' plays</li>\';
-                            });
-                            html += \'</ul></div>\';
-                        }
-                        
-                        // Show most watched if enabled and has data
-                        if (' . $showMostWatched . ' && stats.most_watched && stats.most_watched.length > 0) {
-                            html += \'<div class="col-lg-6"><h5>Most Watched</h5><ul class="list-group">\';
-                            stats.most_watched.slice(0, 5).forEach(function(item) {
-                                html += \'<li class="list-group-item">\' + (item.title || "Unknown Title") + \' - \' + (item.play_count || item.total_plays || 0) + \' plays</li>\';
-                            });
-                            html += \'</ul></div>\';
-                        }
-                        
-                        // Show recent activity if enabled and has data
-                        if (' . $showRecentActivity . ' && stats.recent_activity && stats.recent_activity.length > 0) {
-                            html += \'<div class="col-lg-12"><h5>Recent Activity</h5><ul class="list-group">\';
-                            stats.recent_activity.slice(0, 10).forEach(function(activity) {
-                                html += \'<li class="list-group-item">\' + (activity.title || "Unknown Title") + \' - \' + (activity.added_at || "Unknown Date") + \'</li>\';
-                            });
-                            html += \'</ul></div>\';
-                        }
-                        
-                        // Check if we have any data to display
-                        var hasUserStats = stats.user_stats && stats.user_stats.length > 0;
-                        var hasTopUsers = stats.top_users && stats.top_users.length > 0;
-                        var hasMostWatched = stats.most_watched && stats.most_watched.length > 0;
-                        var hasRecentActivity = stats.recent_activity && stats.recent_activity.length > 0;
-                        var hasWatchHistory = stats.watch_history && stats.watch_history.length > 0;
-                        
-                        if (!hasUserStats && !hasTopUsers && !hasMostWatched && !hasRecentActivity && !hasWatchHistory) {
-                            html += \'<div class="col-lg-12 text-center text-muted">No statistics available</div>\';
-                        }
-                        
-                        $("#watchstats-content").html(html);
+                        watchStatsData = data.response.data;
+                        renderWatchStatsUI();
                     } else {
-                        $("#watchstats-content").html(\'<div class="col-lg-12 text-center text-danger">Failed to load statistics</div>\');
+                        $("#watchstats-content").html('\<div class="col-lg-12 text-center text-danger">Failed to load statistics\</div>\');
                     }
                 })
                 .fail(function(xhr, status, error) {
-                    $("#watchstats-content").html(\'<div class="col-lg-12 text-center text-danger">Error loading statistics</div>\');
+                    $("#watchstats-content").html('\<div class="col-lg-12 text-center text-danger">Error loading statistics\</div>\');
                 });
+            }
+            
+            function renderWatchStatsUI() {
+                if (!watchStatsData) return;
+                
+                var stats = watchStatsData;
+                var html = "";
+                
+                // Header with controls
+                html += '\<div class="col-lg-12">\'';
+                html += '\<div class="row">\'';
+                html += '\<div class="col-md-6">\<h4>Watch Statistics for \' + (stats.period || "30 days") + '\</h4>\</div>\'';
+                html += '\<div class="col-md-6 text-right">\'';
+                html += '\<div class="btn-group btn-group-sm" role="group">\'';
+                html += '\<button type="button" class="btn btn-sm \' + (currentView === "table" ? "btn-primary" : "btn-default") + '\" onclick="switchView(\'table\')">\<i class="fa fa-table">\</i> Table\</button>\'';
+                html += '\<button type="button" class="btn btn-sm \' + (currentView === "cards" ? "btn-primary" : "btn-default") + '\" onclick="switchView(\'cards\')">\<i class="fa fa-th">\</i> Cards\</button>\'';
+                html += '\</div>\'';
+                html += '\</div>\'';
+                html += '\</div>\'';
+                html += '\</div>\'';
+                
+                // Filter and search controls
+                html += '\<div class="col-lg-12">\'';
+                html += '\<div class="row" style="margin-bottom: 15px;">\'';
+                html += '\<div class="col-md-4">\'';
+                html += '\<select class="form-control input-sm" id="media-filter" onchange="filterMedia(this.value)">\'';
+                html += '\<option value="all" \' + (currentFilter === "all" ? "selected" : "") + '>All Media\</option>\'';
+                html += '\<option value="Movie" \' + (currentFilter === "Movie" ? "selected" : "") + '>Movies\</option>\'';
+                html += '\<option value="Episode" \' + (currentFilter === "Episode" ? "selected" : "") + '>TV Episodes\</option>\'';
+                html += '\<option value="Series" \' + (currentFilter === "Series" ? "selected" : "") + '>TV Series\</option>\'';
+                html += '\</select>\'';
+                html += '\</div>\'';
+                html += '\<div class="col-md-4">\'';
+                html += '\<input type="text" class="form-control input-sm" placeholder="Search titles..." id="search-input" oninput="searchMedia(this.value)">\'';
+                html += '\</div>\'';
+                html += '\<div class="col-md-4">\'';
+                html += '\<small class="text-muted" id="results-count">\</small>\'';
+                html += '\</div>\'';
+                html += '\</div>\'';
+                html += '\</div>\'';
+                
+                // Most Watched Content
+                if (stats.most_watched && stats.most_watched.length > 0) {
+                    html += renderMostWatchedContent(stats.most_watched);
+                }
+                
+                // User Statistics (collapsible)
+                if (stats.user_stats && stats.user_stats.length > 0) {
+                    html += '\<div class="col-lg-12" style="margin-top: 20px;">\'';
+                    html += '\<div class="panel panel-default">\'';
+                    html += '\<div class="panel-heading">\'';
+                    html += '\<h5 class="panel-title">\'';
+                    html += '\<a data-toggle="collapse" href="#user-stats-panel">\'';
+                    html += '\<i class="fa fa-users">\</i> Server Users (\' + stats.user_stats.length + '\' total) \<i class="fa fa-chevron-down pull-right">\</i>\'';
+                    html += '\</a>\'';
+                    html += '\</h5>\'';
+                    html += '\</div>\'';
+                    html += '\<div id="user-stats-panel" class="panel-collapse collapse">\'';
+                    html += '\<div class="panel-body">\'';
+                    html += '\<div class="row">\'';
+                    stats.user_stats.slice(0, 12).forEach(function(user, index) {
+                        var lastActivity = "Never";
+                        if (user.LastActivityDate && user.LastActivityDate !== "0001-01-01T00:00:00.0000000Z") {
+                            var activityDate = new Date(user.LastActivityDate);
+                            lastActivity = activityDate.toLocaleDateString();
+                        }
+                        var isAdmin = user.Policy && user.Policy.IsAdministrator;
+                        var isDisabled = user.Policy && user.Policy.IsDisabled;
+                        var badgeClass = isAdmin ? "label-success" : (isDisabled ? "label-danger" : "label-info");
+                        var badgeText = isAdmin ? "Admin" : (isDisabled ? "Disabled" : "User");
+                        
+                        html += '\<div class="col-md-4 col-sm-6" style="margin-bottom: 10px;">\'';
+                        html += '\<div class="media">\'';
+                        html += '\<div class="media-left">\'';
+                        html += '\<i class="fa fa-user fa-2x text-muted">\</i>\'';
+                        html += '\</div>\'';
+                        html += '\<div class="media-body">\'';
+                        html += '\<h6 class="media-heading">\' + (user.Name || "Unknown User") + '\' \<span class="label \' + badgeClass + '">\' + badgeText + '\</span>\</h6>\'';
+                        html += '\<small class="text-muted">Last Activity: \' + lastActivity + '\</small>\'';
+                        html += '\</div>\'';
+                        html += '\</div>\'';
+                        html += '\</div>\'';
+                    });
+                    html += '\</div>\'';
+                    html += '\</div>\'';
+                    html += '\</div>\'';
+                    html += '\</div>\'';
+                    html += '\</div>\'';
+                }
+                
+                // Recent Activity (collapsible)
+                if (' . $showRecentActivity . ' && stats.recent_activity && stats.recent_activity.length > 0) {
+                    html += '\<div class="col-lg-12">\'';
+                    html += '\<div class="panel panel-default">\'';
+                    html += '\<div class="panel-heading">\'';
+                    html += '\<h5 class="panel-title">\'';
+                    html += '\<a data-toggle="collapse" href="#recent-activity-panel">\'';
+                    html += '\<i class="fa fa-clock-o">\</i> Recent Activity \<i class="fa fa-chevron-down pull-right">\</i>\'';
+                    html += '\</a>\'';
+                    html += '\</h5>\'';
+                    html += '\</div>\'';
+                    html += '\<div id="recent-activity-panel" class="panel-collapse collapse">\'';
+                    html += '\<div class="panel-body">\'';
+                    html += '\<div class="row">\'';
+                    stats.recent_activity.slice(0, 10).forEach(function(activity) {
+                        html += '\<div class="col-md-6" style="margin-bottom: 5px;">\'';
+                        html += '\<i class="fa fa-play-circle text-success">\</i> \' + (activity.title || "Unknown Title");
+                        if (activity.year) html += '\' (\' + activity.year + '\')\'';
+                        html += '\<br>\<small class="text-muted">\' + (activity.added_at || "Unknown Date") + '\</small>\'';
+                        html += '\</div>\'';
+                    });
+                    html += '\</div>\'';
+                    html += '\</div>\'';
+                    html += '\</div>\'';
+                    html += '\</div>\'';
+                    html += '\</div>\'';
+                }
+                
+                // Check if we have any data to display
+                var hasData = (stats.most_watched && stats.most_watched.length > 0) ||
+                             (stats.user_stats && stats.user_stats.length > 0) ||
+                             (stats.recent_activity && stats.recent_activity.length > 0);
+                             
+                if (!hasData) {
+                    html += '\<div class="col-lg-12 text-center text-muted">\'';
+                    html += '\<i class="fa fa-exclamation-circle fa-3x" style="margin-bottom: 10px;">\</i>\'';
+                    html += '\<h4>No statistics available\</h4>\'';
+                    html += '\<p>Start watching some content to see statistics here!\</p>\'';
+                    html += '\</div>\'';
+                }
+                
+                $("#watchstats-content").html(html);
             }
 
             // Auto-refresh setup
@@ -340,6 +393,193 @@ trait HomepageUserWatchStats
                     clearInterval(watchStatsRefreshTimer);
                 }
             });
+            
+            function renderMostWatchedContent(items) {
+                var html = '\<div class="col-lg-12">\'';
+                html += '\<h5>\<i class="fa fa-star text-warning">\</i> Most Watched Content\</h5>\'';
+                
+                if (currentView === "table") {
+                    html += renderTableView(items);
+                } else {
+                    html += renderCardView(items);
+                }
+                
+                html += '\</div>\'';
+                return html;
+            }
+            
+            function renderTableView(items) {
+                var filteredItems = filterAndSortItems(items);
+                var html = '\<div class="table-responsive">\'';
+                html += '\<table class="table table-striped table-hover table-condensed">\'';
+                html += '\<thead>\'';
+                html += '\<tr>\'';
+                html += '\<th>\<a href="#" onclick="sortBy(\'title\')" class="text-decoration-none">Title \' + getSortIcon(\'title\') + '\</a>\</th>\'';
+                html += '\<th>\<a href="#" onclick="sortBy(\'type\')" class="text-decoration-none">Type \' + getSortIcon(\'type\') + '\</a>\</th>\'';
+                html += '\<th>\<a href="#" onclick="sortBy(\'total_plays\')" class="text-decoration-none">Users \' + getSortIcon(\'total_plays\') + '\</a>\</th>\'';
+                html += '\<th>\<a href="#" onclick="sortBy(\'runtime\')" class="text-decoration-none">Runtime \' + getSortIcon(\'runtime\') + '\</a>\</th>\'';
+                html += '\<th>\<a href="#" onclick="sortBy(\'year\')" class="text-decoration-none">Year \' + getSortIcon(\'year\') + '\</a>\</th>\'';
+                html += '\</tr>\'';
+                html += '\</thead>\'';
+                html += '\<tbody>\'';
+                
+                filteredItems.slice(0, 20).forEach(function(item) {
+                    var typeIcon = getTypeIcon(item.type);
+                    var typeBadge = getTypeBadge(item.type);
+                    
+                    html += '\<tr>\'';
+                    html += '\<td>\<strong>\' + (item.title || "Unknown Title") + '\</strong>\</td>\'';
+                    html += '\<td>\' + typeIcon + '\' \' + typeBadge + '\</td>\'';
+                    html += '\<td>\<span class="badge badge-primary">\' + (item.total_plays || 0) + '\</span>\</td>\'';
+                    html += '\<td>\' + (item.runtime || "Unknown") + '\</td>\'';
+                    html += '\<td>\' + (item.year || "N/A") + '\</td>\'';
+                    html += '\</tr>\'';
+                });
+                
+                html += '\</tbody>\'';
+                html += '\</table>\'';
+                html += '\</div>\'';
+                
+                updateResultsCount(filteredItems.length);
+                return html;
+            }
+            
+            function renderCardView(items) {
+                var filteredItems = filterAndSortItems(items);
+                var html = '\<div class="row">\'';
+                
+                filteredItems.slice(0, 20).forEach(function(item) {
+                    var typeIcon = getTypeIcon(item.type);
+                    var typeBadge = getTypeBadge(item.type);
+                    
+                    html += '\<div class="col-lg-4 col-md-6 col-sm-12" style="margin-bottom: 15px;">\'';
+                    html += '\<div class="panel panel-default">\'';
+                    html += '\<div class="panel-body">\'';
+                    html += '\<div class="media">\'';
+                    html += '\<div class="media-left">\'';
+                    html += '\<div class="text-center" style="width: 60px;">\'';
+                    html += typeIcon + '\<br>\'';
+                    html += '\<span class="badge badge-primary">\' + (item.total_plays || 0) + '\</span>\'';
+                    html += '\</div>\'';
+                    html += '\</div>\'';
+                    html += '\<div class="media-body">\'';
+                    html += '\<h6 class="media-heading">\<strong>\' + (item.title || "Unknown Title") + '\</strong>\</h6>\'';
+                    html += '\<p class="text-muted" style="margin-bottom: 5px;">\'';
+                    html += typeBadge;
+                    if (item.year) html += '\' • \' + item.year;
+                    if (item.runtime && item.runtime !== "Unknown") html += '\' • \' + item.runtime;
+                    html += '\</p>\'';
+                    html += '\</div>\'';
+                    html += '\</div>\'';
+                    html += '\</div>\'';
+                    html += '\</div>\'';
+                    html += '\</div>\'';
+                });
+                
+                html += '\</div>\'';
+                updateResultsCount(filteredItems.length);
+                return html;
+            }
+            
+            function filterAndSortItems(items) {
+                var filtered = items.filter(function(item) {
+                    // Apply media type filter
+                    if (currentFilter !== "all" && item.type !== currentFilter) {
+                        return false;
+                    }
+                    
+                    // Apply search filter
+                    var searchTerm = document.getElementById(\'search-input\') ? document.getElementById(\'search-input\').value.toLowerCase() : "";
+                    if (searchTerm && item.title && item.title.toLowerCase().indexOf(searchTerm) === -1) {
+                        return false;
+                    }
+                    
+                    return true;
+                });
+                
+                // Sort items
+                filtered.sort(function(a, b) {
+                    var aVal = a[currentSort.field];
+                    var bVal = b[currentSort.field];
+                    
+                    // Handle different data types
+                    if (currentSort.field === \'year\' || currentSort.field === \'total_plays\') {
+                        aVal = parseInt(aVal) || 0;
+                        bVal = parseInt(bVal) || 0;
+                    } else {
+                        aVal = (aVal || "").toString().toLowerCase();
+                        bVal = (bVal || "").toString().toLowerCase();
+                    }
+                    
+                    var result = aVal < bVal ? -1 : (aVal > bVal ? 1 : 0);
+                    return currentSort.direction === \'desc\' ? -result : result;
+                });
+                
+                return filtered;
+            }
+            
+            function getTypeIcon(type) {
+                switch(type) {
+                    case \'Movie\': return '\<i class="fa fa-film fa-2x text-primary">\</i>\';
+                    case \'Episode\': return '\<i class="fa fa-tv fa-2x text-success">\</i>\';
+                    case \'Series\': return '\<i class="fa fa-television fa-2x text-info">\</i>\';
+                    case \'Audio\': return '\<i class="fa fa-music fa-2x text-warning">\</i>\';
+                    default: return '\<i class="fa fa-play-circle fa-2x text-muted">\</i>\';
+                }
+            }
+            
+            function getTypeBadge(type) {
+                switch(type) {
+                    case \'Movie\': return '\<span class="label label-primary">Movie\</span>\';
+                    case \'Episode\': return '\<span class="label label-success">TV Episode\</span>\';
+                    case \'Series\': return '\<span class="label label-info">TV Series\</span>\';
+                    case \'Audio\': return '\<span class="label label-warning">Music\</span>\';
+                    default: return '\<span class="label label-default">\' + (type || "Unknown") + '\</span>\';
+                }
+            }
+            
+            function getSortIcon(field) {
+                if (currentSort.field !== field) {
+                    return '\<i class="fa fa-sort text-muted">\</i>\';
+                }
+                return currentSort.direction === \'asc\' ? 
+                    '\<i class="fa fa-sort-up text-primary">\</i>\' : 
+                    '\<i class="fa fa-sort-down text-primary">\</i>\';
+            }
+            
+            function sortBy(field) {
+                if (currentSort.field === field) {
+                    currentSort.direction = currentSort.direction === \'asc\' ? \'desc\' : \'asc\';
+                } else {
+                    currentSort.field = field;
+                    currentSort.direction = \'desc\';
+                }
+                renderWatchStatsUI();
+            }
+            
+            function filterMedia(type) {
+                currentFilter = type;
+                renderWatchStatsUI();
+            }
+            
+            function searchMedia(term) {
+                renderWatchStatsUI();
+            }
+            
+            function switchView(view) {
+                currentView = view;
+                renderWatchStatsUI();
+            }
+            
+            function updateResultsCount(count) {
+                setTimeout(function() {
+                    var countElement = document.getElementById(\'results-count\');
+                    if (countElement) {
+                        countElement.innerHTML = \'Showing \' + count + \' item\' + (count !== 1 ? \'s\' : \'\') + \'\'';
+                    }
+                }, 100);
+            }
+            
             </script>
             ';
         }
