@@ -704,35 +704,63 @@ trait HomepageUserWatchStats
      */
     private function getEmbySimpleMostWatched($url, $token)
     {
-        $apiURL = rtrim($url, '/') . '/emby/Items?api_key=' . $token . 
-                  '&Recursive=true&IncludeItemTypes=Movie,Episode&Fields=Name,RunTimeTicks,ProductionYear' .
-                  '&SortBy=DatePlayed&SortOrder=Descending&Limit=20';
-        
-        try {
-            $options = $this->requestOptions($url, null, $this->config['userWatchStatsDisableCertCheck'] ?? false, $this->config['userWatchStatsUseCustomCertificate'] ?? false);
-            $response = Requests::get($apiURL, [], $options);
+        // Try multiple approaches to get content
+        $approaches = [
+            // Approach 1: Recently played items
+            rtrim($url, '/') . '/emby/Items?api_key=' . $token . 
+            '&Recursive=true&IncludeItemTypes=Movie,Episode&Fields=Name,RunTimeTicks,ProductionYear' .
+            '&SortBy=DatePlayed&SortOrder=Descending&Limit=20',
             
-            if ($response->success) {
-                $data = json_decode($response->body, true);
-                $items = $data['Items'] ?? [];
+            // Approach 2: All items without date filter
+            rtrim($url, '/') . '/emby/Items?api_key=' . $token . 
+            '&Recursive=true&IncludeItemTypes=Movie,Episode&Fields=Name,RunTimeTicks,ProductionYear&Limit=20',
+            
+            // Approach 3: Recently added items
+            rtrim($url, '/') . '/emby/Items/Latest?api_key=' . $token . '&Limit=20'
+        ];
+        
+        foreach ($approaches as $index => $apiURL) {
+            try {
+                $options = $this->requestOptions($url, null, $this->config['userWatchStatsDisableCertCheck'] ?? false, $this->config['userWatchStatsUseCustomCertificate'] ?? false);
+                $response = Requests::get($apiURL, [], $options);
                 
-                $mostWatched = [];
-                foreach ($items as $item) {
-                    $mostWatched[] = [
-                        'title' => $item['Name'] ?? 'Unknown Title',
-                        'total_plays' => 1, // We don't have actual play count, so assume 1
-                        'runtime' => isset($item['RunTimeTicks']) ? $this->formatDuration($item['RunTimeTicks'] / 10000000) : 'Unknown',
-                        'type' => $item['Type'] ?? 'Unknown',
-                        'year' => $item['ProductionYear'] ?? null
-                    ];
+                if ($response->success) {
+                    $data = json_decode($response->body, true);
+                    $items = [];
+                    
+                    // Handle different response formats
+                    if ($index === 2) {
+                        // Latest items API returns array directly
+                        $items = is_array($data) ? $data : [];
+                    } else {
+                        // Other APIs return Items array
+                        $items = $data['Items'] ?? [];
+                    }
+                    
+                    if (!empty($items)) {
+                        $mostWatched = [];
+                        foreach ($items as $item) {
+                            $mostWatched[] = [
+                                'title' => $item['Name'] ?? 'Unknown Title',
+                                'total_plays' => 1, // We don't have actual play count, so assume 1
+                                'runtime' => isset($item['RunTimeTicks']) ? $this->formatDuration($item['RunTimeTicks'] / 10000000) : 'Unknown',
+                                'type' => $item['Type'] ?? 'Unknown',
+                                'year' => $item['ProductionYear'] ?? null
+                            ];
+                        }
+                        
+                        // Log which approach worked
+                        $this->writeLog('info', 'Emby Most Watched: Approach ' . ($index + 1) . ' returned ' . count($mostWatched) . ' items', 'SYSTEM');
+                        return $mostWatched;
+                    }
                 }
-                
-                return $mostWatched;
+            } catch (Requests_Exception $e) {
+                $this->writeLog('error', 'Emby Simple Most Watched Approach ' . ($index + 1) . ' Error: ' . $e->getMessage(), 'SYSTEM');
+                continue;
             }
-        } catch (Requests_Exception $e) {
-            $this->writeLog('error', 'Emby Simple Most Watched Error: ' . $e->getMessage(), 'SYSTEM');
         }
-
+        
+        $this->writeLog('error', 'All Emby Most Watched approaches failed', 'SYSTEM');
         return [];
     }
     
