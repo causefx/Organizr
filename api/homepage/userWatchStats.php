@@ -424,16 +424,29 @@ trait HomepageUserWatchStats
             $userId = $user['Id'];
             $userWatchedItems = $this->getEmbyUserWatchedContent($url, $token, $userId, 30);
             
-            // Aggregate play counts - count each user who has played the item
+            // Aggregate play counts - use actual PlayCount if available, otherwise count as 1 per user
             foreach ($userWatchedItems as $item) {
                 $itemId = $item['Id'] ?? $item['title']; // Use ID if available, title as fallback
-                $isPlayed = $item['is_played'] ?? false;
+                $userPlayCount = $item['play_count'] ?? 0; // Get actual play count from this user
                 
-                if ($isPlayed) {
-                    // Increment count for each user who has played this item
-                    $playCountsByItem[$itemId] = ($playCountsByItem[$itemId] ?? 0) + 1;
+                if ($userPlayCount > 0) {
+                    // Add this user's play count to the total for this item
+                    $playCountsByItem[$itemId] = ($playCountsByItem[$itemId] ?? 0) + $userPlayCount;
                     
                     // Store item details (only need to do this once per item)
+                    if (!isset($itemDetails[$itemId])) {
+                        $itemDetails[$itemId] = [
+                            'title' => $item['title'] ?? 'Unknown Title',
+                            'runtime' => $item['runtime'] ?? 'Unknown',
+                            'type' => $item['type'] ?? 'Unknown',
+                            'year' => $item['year'] ?? null
+                        ];
+                    }
+                } elseif ($item['is_played'] ?? false) {
+                    // Fallback: if no play count but marked as played, count as 1 for this user
+                    $playCountsByItem[$itemId] = ($playCountsByItem[$itemId] ?? 0) + 1;
+                    
+                    // Store item details
                     if (!isset($itemDetails[$itemId])) {
                         $itemDetails[$itemId] = [
                             'title' => $item['title'] ?? 'Unknown Title',
@@ -523,9 +536,10 @@ trait HomepageUserWatchStats
      */
     private function getEmbyUserWatchedContent($url, $token, $userId, $days)
     {
+        // Try to get all items for this user, including play counts
         $apiURL = rtrim($url, '/') . '/emby/Users/' . $userId . '/Items?api_key=' . $token . 
-                  '&Recursive=true&IncludeItemTypes=Movie,Episode&IsPlayed=true&Limit=50' .
-                  '&Fields=Name,PlayCount,UserData,RunTimeTicks,ProductionYear';
+                  '&Recursive=true&IncludeItemTypes=Movie,Episode&Limit=200' .
+                  '&Fields=Name,PlayCount,UserData,RunTimeTicks,ProductionYear&SortBy=PlayCount&SortOrder=Descending';
         
         try {
             $options = $this->requestOptions($url, null, $this->config['userWatchStatsDisableCertCheck'] ?? false, $this->config['userWatchStatsUseCustomCertificate'] ?? false);
@@ -537,12 +551,16 @@ trait HomepageUserWatchStats
 
                 $watchedContent = [];
                 foreach ($items as $item) {
-                    // Use Played flag instead of PlayCount since Emby may not increment PlayCount properly
-                    if (($item['UserData']['Played'] ?? false)) {
+                    $playCount = $item['UserData']['PlayCount'] ?? 0;
+                    $isPlayed = $item['UserData']['Played'] ?? false;
+                    
+                    // Include items that have been played OR have a play count > 0
+                    if ($playCount > 0 || $isPlayed) {
                         $watchedContent[] = [
                             'Id' => $item['Id'] ?? null,
                             'title' => $item['Name'] ?? 'Unknown Title',
-                            'is_played' => true, // Mark as played for our aggregation
+                            'play_count' => $playCount, // Use actual play count from UserData
+                            'is_played' => $isPlayed,
                             'runtime' => $item['RunTimeTicks'] ? $this->formatDuration($item['RunTimeTicks'] / 10000000) : 'Unknown',
                             'type' => $item['Type'] ?? 'Unknown',
                             'year' => $item['ProductionYear'] ?? null
