@@ -700,69 +700,70 @@ trait HomepageUserWatchStats
     }
     
     /**
-     * Simple approach to get most watched from Emby
+     * Get most watched content by aggregating play counts across all users
      */
     private function getEmbySimpleMostWatched($url, $token)
     {
-        // Try multiple approaches to get content
-        $approaches = [
-            // Approach 1: Recently created items (most likely to have content)
-            rtrim($url, '/') . '/emby/Items?api_key=' . $token . 
-            '&Recursive=true&IncludeItemTypes=Movie,Episode&Fields=Name,RunTimeTicks,ProductionYear,DateCreated' .
-            '&SortBy=DateCreated&SortOrder=Descending&Limit=20',
-            
-            // Approach 2: All items without date filter
-            rtrim($url, '/') . '/emby/Items?api_key=' . $token . 
-            '&Recursive=true&IncludeItemTypes=Movie,Episode&Fields=Name,RunTimeTicks,ProductionYear&Limit=20',
-            
-            // Approach 3: Recently played items (if available)
-            rtrim($url, '/') . '/emby/Items?api_key=' . $token . 
-            '&Recursive=true&IncludeItemTypes=Movie,Episode&Fields=Name,RunTimeTicks,ProductionYear' .
-            '&SortBy=DatePlayed&SortOrder=Descending&Limit=20'
-        ];
+        // First get all users
+        $users = $this->getEmbyUserStats($url, $token, 30);
+        if (empty($users)) {
+            return [];
+        }
         
-        foreach ($approaches as $index => $apiURL) {
-            try {
-                $options = $this->requestOptions($url, null, $this->config['userWatchStatsDisableCertCheck'] ?? false, $this->config['userWatchStatsUseCustomCertificate'] ?? false);
-                $response = Requests::get($apiURL, [], $options);
-                
-                if ($response->success) {
-                    $data = json_decode($response->body, true);
-                    $items = [];
-                    
-                    // Handle different response formats
-                    if ($index === 2) {
-                        // Latest items API returns array directly
-                        $items = is_array($data) ? $data : [];
-                    } else {
-                        // Other APIs return Items array
-                        $items = $data['Items'] ?? [];
-                    }
-                    
-                    if (!empty($items)) {
-                        $mostWatched = [];
-                        foreach ($items as $item) {
-                            $mostWatched[] = [
-                                'title' => $item['Name'] ?? 'Unknown Title',
-                                'total_plays' => 1, // We don't have actual play count, so assume 1
-                                'runtime' => isset($item['RunTimeTicks']) ? $this->formatDuration($item['RunTimeTicks'] / 10000000) : 'Unknown',
-                                'type' => $item['Type'] ?? 'Unknown',
-                                'year' => $item['ProductionYear'] ?? null
-                            ];
-                        }
-                        
-                        // Log which approach worked (approach " . ($index + 1) . " returned " . count($mostWatched) . " items)
-                        return $mostWatched;
-                    }
-                }
-            } catch (Requests_Exception $e) {
-                // Error in approach " . ($index + 1) . ": " . $e->getMessage();
+        $itemPlayCounts = [];
+        $itemDetails = [];
+        
+        // For each user, get their watched content
+        foreach ($users as $user) {
+            if (isset($user['Policy']['IsDisabled']) && $user['Policy']['IsDisabled']) {
                 continue;
+            }
+            
+            $userId = $user['Id'];
+            $userWatchedContent = $this->getEmbyUserWatchedContent($url, $token, $userId, 30);
+            
+            foreach ($userWatchedContent as $item) {
+                $itemId = $item['Id'] ?? $item['title'];
+                if (!$itemId) continue;
+                
+                // Aggregate play counts across all users
+                if (!isset($itemPlayCounts[$itemId])) {
+                    $itemPlayCounts[$itemId] = 0;
+                    $itemDetails[$itemId] = [
+                        'title' => $item['title'],
+                        'type' => $item['type'],
+                        'runtime' => $item['runtime'],
+                        'year' => $item['year']
+                    ];
+                }
+                $itemPlayCounts[$itemId] += $item['play_count'];
             }
         }
         
-        // All Emby Most Watched approaches failed
-        return [];
+        // Sort by play count descending
+        arsort($itemPlayCounts);
+        
+        // Build most watched list
+        $mostWatched = [];
+        $limit = 20;
+        $count = 0;
+        
+        foreach ($itemPlayCounts as $itemId => $totalPlays) {
+            if ($count >= $limit) break;
+            if ($totalPlays < 1) continue; // Skip items with no plays
+            
+            $details = $itemDetails[$itemId] ?? [];
+            $mostWatched[] = [
+                'title' => $details['title'] ?? 'Unknown Title',
+                'total_plays' => $totalPlays,
+                'runtime' => $details['runtime'] ?? 'Unknown',
+                'type' => $details['type'] ?? 'Unknown',
+                'year' => $details['year'] ?? null
+            ];
+            $count++;
+        }
+        
+        return $mostWatched;
     }
     
     /**
