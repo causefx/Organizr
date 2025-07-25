@@ -402,6 +402,15 @@ trait HomepageUserWatchStats
      */
     private function getEmbyMostWatched($url, $token, $days)
     {
+        // Try multiple approaches to get accurate play counts
+        
+        // Approach 1: Try to get activity/playback history if available
+        $historyStats = $this->getEmbyPlaybackHistory($url, $token, $days);
+        if (!empty($historyStats)) {
+            return $historyStats;
+        }
+        
+        // Approach 2: Fallback to user aggregation method
         return $this->getEmbyFallbackMostWatched($url, $token);
     }
     
@@ -532,7 +541,81 @@ trait HomepageUserWatchStats
     }
 
     /**
-     * Get watched content for a specific user
+     * Try to get playback history from Emby's activity log
+     */
+    private function getEmbyPlaybackHistory($url, $token, $days)
+    {
+        // Try to access Emby's activity log for more accurate play statistics
+        $apiURL = rtrim($url, '/') . '/emby/System/ActivityLog/Entries?api_key=' . $token . '&Limit=1000&HasUserId=true';
+        
+        try {
+            $options = $this->requestOptions($url, null, $this->config['userWatchStatsDisableCertCheck'] ?? false, $this->config['userWatchStatsUseCustomCertificate'] ?? false);
+            $response = Requests::get($apiURL, [], $options);
+            
+            if ($response->success) {
+                $data = json_decode($response->body, true);
+                $activities = $data['Items'] ?? [];
+                
+                $playCountsByItem = [];
+                $itemDetails = [];
+                
+                // Filter for playback activities in the last X days
+                $cutoffDate = time() - ($days * 24 * 60 * 60);
+                
+                foreach ($activities as $activity) {
+                    if (isset($activity['Type']) && $activity['Type'] === 'PlaybackStart') {
+                        $activityDate = strtotime($activity['Date']);
+                        if ($activityDate >= $cutoffDate && isset($activity['ItemId'])) {
+                            $itemId = $activity['ItemId'];
+                            $playCountsByItem[$itemId] = ($playCountsByItem[$itemId] ?? 0) + 1;
+                            
+                            // Store item name if available
+                            if (isset($activity['Name']) && !isset($itemDetails[$itemId])) {
+                                $itemDetails[$itemId] = [
+                                    'title' => $activity['Name'],
+                                    'type' => 'Unknown', // Activity log doesn't have type info
+                                    'runtime' => 'Unknown',
+                                    'year' => null
+                                ];
+                            }
+                        }
+                    }
+                }
+                
+                if (!empty($playCountsByItem)) {
+                    // Sort by play count and build result
+                    arsort($playCountsByItem);
+                    
+                    $mostWatched = [];
+                    $count = 0;
+                    foreach ($playCountsByItem as $itemId => $totalPlays) {
+                        if ($count >= 20) break;
+                        
+                        $details = $itemDetails[$itemId] ?? ['title' => 'Unknown Title', 'type' => 'Unknown', 'runtime' => 'Unknown', 'year' => null];
+                        
+                        $mostWatched[] = [
+                            'title' => $details['title'],
+                            'total_plays' => $totalPlays,
+                            'runtime' => $details['runtime'],
+                            'type' => $details['type'],
+                            'year' => $details['year']
+                        ];
+                        
+                        $count++;
+                    }
+                    
+                    return $mostWatched;
+                }
+            }
+        } catch (Requests_Exception $e) {
+            // Fall through to other methods
+        }
+        
+        return [];
+    }
+    
+    /**
+     * Get watched content for a specific user with debugging
      */
     private function getEmbyUserWatchedContent($url, $token, $userId, $days)
     {
@@ -553,6 +636,10 @@ trait HomepageUserWatchStats
                 foreach ($items as $item) {
                     $playCount = $item['UserData']['PlayCount'] ?? 0;
                     $isPlayed = $item['UserData']['Played'] ?? false;
+                    
+                    // Debug: Log some play count data to see what we're getting
+                    // Uncomment these lines temporarily to debug:
+                    // error_log("Emby Item: " . ($item['Name'] ?? 'Unknown') . " - PlayCount: $playCount, Played: " . ($isPlayed ? 'true' : 'false'));
                     
                     // Include items that have been played OR have a play count > 0
                     if ($playCount > 0 || $isPlayed) {
