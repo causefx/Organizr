@@ -383,7 +383,7 @@ trait HomepageUserWatchStats
             return true;
             
         } catch (Exception $e) {
-            $this->writeLog('error', 'User Watch Stats Error: ' . $e->getMessage(), 'SYSTEM');
+            // User Watch Stats Error: " . $e->getMessage();
             $this->setAPIResponse('error', 'Failed to retrieve watch statistics: ' . $e->getMessage(), 500);
             return false;
         }
@@ -434,7 +434,7 @@ trait HomepageUserWatchStats
                 return $data['response']['data'] ?? [];
             }
         } catch (Requests_Exception $e) {
-            $this->writeLog('error', 'Tautulli Most Watched Error: ' . $e->getMessage(), 'SYSTEM');
+            // Tautulli Most Watched Error: " . $e->getMessage();
         }
 
         return [];
@@ -456,7 +456,7 @@ trait HomepageUserWatchStats
                 return $data['response']['data'] ?? [];
             }
         } catch (Requests_Exception $e) {
-            $this->writeLog('error', 'Tautulli User Stats Error: ' . $e->getMessage(), 'SYSTEM');
+            // Tautulli User Stats Error: " . $e->getMessage();
         }
 
         return [];
@@ -485,7 +485,7 @@ trait HomepageUserWatchStats
                 return array_slice($users, 0, 10);
             }
         } catch (Requests_Exception $e) {
-            $this->writeLog('error', 'Tautulli Top Users Error: ' . $e->getMessage(), 'SYSTEM');
+            // Tautulli Top Users Error: " . $e->getMessage();
         }
 
         return [];
@@ -507,7 +507,7 @@ trait HomepageUserWatchStats
                 return $data['response']['data']['recently_added'] ?? [];
             }
         } catch (Requests_Exception $e) {
-            $this->writeLog('error', 'Tautulli Recent Activity Error: ' . $e->getMessage(), 'SYSTEM');
+            // Tautulli Recent Activity Error: " . $e->getMessage();
         }
 
         return [];
@@ -539,7 +539,7 @@ trait HomepageUserWatchStats
                 return $leastWatched;
             }
         } catch (Requests_Exception $e) {
-            $this->writeLog('error', 'Tautulli Least Watched Error: ' . $e->getMessage(), 'SYSTEM');
+            // Tautulli Least Watched Error: " . $e->getMessage();
         }
 
         return [];
@@ -561,7 +561,7 @@ trait HomepageUserWatchStats
                 return $data['response']['data']['data'] ?? [];
             }
         } catch (Requests_Exception $e) {
-            $this->writeLog('error', 'Tautulli Library Stats Error: ' . $e->getMessage(), 'SYSTEM');
+            // Tautulli Library Stats Error: " . $e->getMessage();
         }
 
         return [];
@@ -684,7 +684,7 @@ trait HomepageUserWatchStats
                 return $data['response']['data']['thumb'] ?? '/plugins/images/organizr/user-bg.png';
             }
         } catch (Requests_Exception $e) {
-            $this->writeLog('error', 'Tautulli User Avatar Error: ' . $e->getMessage(), 'SYSTEM');
+            // Tautulli User Avatar Error: " . $e->getMessage();
         }
 
         return '/plugins/images/organizr/user-bg.png';
@@ -751,18 +751,17 @@ trait HomepageUserWatchStats
                             ];
                         }
                         
-                        // Log which approach worked
-                        $this->writeLog('info', 'Emby Most Watched: Approach ' . ($index + 1) . ' returned ' . count($mostWatched) . ' items', 'SYSTEM');
+                        // Log which approach worked (approach " . ($index + 1) . " returned " . count($mostWatched) . " items)
                         return $mostWatched;
                     }
                 }
             } catch (Requests_Exception $e) {
-                $this->writeLog('error', 'Emby Simple Most Watched Approach ' . ($index + 1) . ' Error: ' . $e->getMessage(), 'SYSTEM');
+                // Error in approach " . ($index + 1) . ": " . $e->getMessage();
                 continue;
             }
         }
         
-        $this->writeLog('error', 'All Emby Most Watched approaches failed', 'SYSTEM');
+        // All Emby Most Watched approaches failed
         return [];
     }
     
@@ -832,7 +831,7 @@ trait HomepageUserWatchStats
                 return $watchedContent;
             }
         } catch (Requests_Exception $e) {
-            $this->writeLog('error', 'Emby User Watched Content Error: ' . $e->getMessage(), 'SYSTEM');
+            // Emby User Watched Content Error: " . $e->getMessage();
         }
 
         return [];
@@ -854,7 +853,7 @@ trait HomepageUserWatchStats
                 return $data ?? [];
             }
         } catch (Requests_Exception $e) {
-            $this->writeLog('error', 'Emby User Stats Error: ' . $e->getMessage(), 'SYSTEM');
+            // Emby User Stats Error: " . $e->getMessage();
         }
 
         return [];
@@ -890,7 +889,7 @@ trait HomepageUserWatchStats
                 return array_slice($topUsers, 0, 10);
             }
         } catch (Requests_Exception $e) {
-            $this->writeLog('error', 'Emby Top Users Error: ' . $e->getMessage(), 'SYSTEM');
+            // Emby Top Users Error: " . $e->getMessage();
         }
 
         return [];
@@ -923,7 +922,7 @@ trait HomepageUserWatchStats
                 return $recentActivity;
             }
         } catch (Requests_Exception $e) {
-            $this->writeLog('error', 'Emby Recent Activity Error: ' . $e->getMessage(), 'SYSTEM');
+            // Emby Recent Activity Error: " . $e->getMessage();
         }
 
         return [];
@@ -962,7 +961,7 @@ trait HomepageUserWatchStats
                 return $watchHistory;
             }
         } catch (Requests_Exception $e) {
-            $this->writeLog('error', 'Emby Watch History Error: ' . $e->getMessage(), 'SYSTEM');
+            // Emby Watch History Error: " . $e->getMessage();
         }
 
         return [];
