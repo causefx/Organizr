@@ -351,6 +351,7 @@ trait HomepageUserWatchStats
     public function getUserWatchStats($options = null)
     {
         if (!$this->homepageItemPermissions($this->userWatchStatsHomepagePermissions('main'), true)) {
+            $this->setAPIResponse('error', 'User not approved to view this homepage item - check plugin configuration', 401);
             return false;
         }
 
@@ -690,11 +691,47 @@ trait HomepageUserWatchStats
     }
 
     /**
-     * Get most watched content from Emby
+     * Get most watched content from Emby (server-wide statistics)
      */
     private function getEmbyMostWatched($url, $token, $days)
     {
-        $apiURL = rtrim($url, '/') . '/emby/Items?api_key=' . $token . '&SortBy=PlayCount&SortOrder=Descending&Limit=10&Recursive=true&IncludeItemTypes=Movie,Episode';
+        // Get all users first
+        $users = $this->getEmbyUserStats($url, $token, $days);
+        $allWatchedContent = [];
+        
+        // For each user, get their played content and aggregate
+        foreach ($users as $user) {
+            $userId = $user['Id'];
+            $userWatchedContent = $this->getEmbyUserWatchedContent($url, $token, $userId, $days);
+            
+            foreach ($userWatchedContent as $content) {
+                $contentId = $content['Id'] ?? $content['title'];
+                if (!isset($allWatchedContent[$contentId])) {
+                    $allWatchedContent[$contentId] = $content;
+                    $allWatchedContent[$contentId]['total_plays'] = 0;
+                    $allWatchedContent[$contentId]['watched_by_users'] = [];
+                }
+                $allWatchedContent[$contentId]['total_plays'] += $content['play_count'] ?? 0;
+                $allWatchedContent[$contentId]['watched_by_users'][] = $user['Name'];
+            }
+        }
+        
+        // Sort by total plays and return top 10
+        uasort($allWatchedContent, function($a, $b) {
+            return ($b['total_plays'] ?? 0) - ($a['total_plays'] ?? 0);
+        });
+        
+        return array_slice(array_values($allWatchedContent), 0, 10);
+    }
+    
+    /**
+     * Get watched content for a specific user
+     */
+    private function getEmbyUserWatchedContent($url, $token, $userId, $days)
+    {
+        $apiURL = rtrim($url, '/') . '/emby/Users/' . $userId . '/Items?api_key=' . $token . 
+                  '&Recursive=true&IncludeItemTypes=Movie,Episode&IsPlayed=true&Limit=50' .
+                  '&Fields=Name,PlayCount,UserData,RunTimeTicks,ProductionYear';
         
         try {
             $options = $this->requestOptions($url, null, $this->config['userWatchStatsDisableCertCheck'] ?? false, $this->config['userWatchStatsUseCustomCertificate'] ?? false);
@@ -703,21 +740,24 @@ trait HomepageUserWatchStats
             if ($response->success) {
                 $data = json_decode($response->body, true);
                 $items = $data['Items'] ?? [];
-                
-                $mostWatched = [];
+
+                $watchedContent = [];
                 foreach ($items as $item) {
-                    $mostWatched[] = [
-                        'title' => $item['Name'] ?? 'Unknown Title',
-                        'play_count' => $item['UserData']['PlayCount'] ?? 0,
-                        'type' => $item['Type'] ?? 'Unknown',
-                        'year' => $item['ProductionYear'] ?? null
-                    ];
+                    if (($item['UserData']['PlayCount'] ?? 0) > 0) {
+                        $watchedContent[] = [
+                            'Id' => $item['Id'] ?? null,
+                            'title' => $item['Name'] ?? 'Unknown Title',
+                            'play_count' => $item['UserData']['PlayCount'] ?? 0,
+                            'runtime' => $item['RunTimeTicks'] ? $this->formatDuration($item['RunTimeTicks'] / 10000000) : 'Unknown',
+                            'type' => $item['Type'] ?? 'Unknown',
+                            'year' => $item['ProductionYear'] ?? null
+                        ];
+                    }
                 }
-                
-                return $mostWatched;
+                return $watchedContent;
             }
         } catch (Requests_Exception $e) {
-            $this->writeLog('error', 'Emby Most Watched Error: ' . $e->getMessage(), 'SYSTEM');
+            $this->writeLog('error', 'Emby User Watched Content Error: ' . $e->getMessage(), 'SYSTEM');
         }
 
         return [];
@@ -819,10 +859,10 @@ trait HomepageUserWatchStats
      */
     private function getEmbyWatchHistory($url, $token, $days)
     {
+        // Try without date filter first to see if we get any played content
         $apiURL = rtrim($url, '/') . '/emby/UserLibrary/Items?api_key=' . $token . 
-                  '&Recursive=true&IncludeItemTypes=Movie,Episode&IsPlayed=true' .
-                  '&MinDateLastPlayed=' . urlencode(date('c', strtotime("-{$days} days"))) . 
-                  '&Fields=Name,PlayCount,UserData,RunTimeTicks';
+                  '&Recursive=true&IncludeItemTypes=Movie,Episode&IsPlayed=true&Limit=20' .
+                  '&Fields=Name,PlayCount,UserData,RunTimeTicks,DateCreated,UserDataLastPlayedDate';
         
         try {
             $options = $this->requestOptions($url, null, $this->config['userWatchStatsDisableCertCheck'] ?? false, $this->config['userWatchStatsUseCustomCertificate'] ?? false);
@@ -839,7 +879,8 @@ trait HomepageUserWatchStats
                         'play_count' => $item['UserData']['PlayCount'] ?? 0,
                         'runtime' => $item['RunTimeTicks'] ? $this->formatDuration($item['RunTimeTicks'] / 10000000) : 'Unknown',
                         'type' => $item['Type'] ?? 'Unknown',
-                        'year' => $item['ProductionYear'] ?? null
+                        'year' => $item['ProductionYear'] ?? null,
+                        'last_played' => $item['UserData']['LastPlayedDate'] ?? 'Never'
                     ];
                 }
 
