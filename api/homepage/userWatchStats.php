@@ -772,13 +772,89 @@ trait HomepageUserWatchStats
     }
     
     /**
-     * Fallback method using recently created items when other approaches fail
+     * Fallback method - calculate most watched by aggregating play counts across all users
      */
     private function getEmbyFallbackMostWatched($url, $token)
     {
+        // Get all users first
+        $users = $this->getEmbyUserStats($url, $token, 30);
+        $playCountsByItem = [];
+        $itemDetails = [];
+        
+        // For each user, get their watched items
+        foreach ($users as $user) {
+            if (isset($user['Policy']['IsDisabled']) && $user['Policy']['IsDisabled']) {
+                continue; // Skip disabled users
+            }
+            
+            $userId = $user['Id'];
+            $userWatchedItems = $this->getEmbyUserWatchedContent($url, $token, $userId, 30);
+            
+            // Aggregate play counts
+            foreach ($userWatchedItems as $item) {
+                $itemId = $item['Id'] ?? $item['title']; // Use ID if available, title as fallback
+                $playCount = $item['play_count'] ?? 0;
+                
+                if ($playCount > 0) {
+                    // Add to total play count
+                    $playCountsByItem[$itemId] = ($playCountsByItem[$itemId] ?? 0) + $playCount;
+                    
+                    // Store item details (only need to do this once per item)
+                    if (!isset($itemDetails[$itemId])) {
+                        $itemDetails[$itemId] = [
+                            'title' => $item['title'] ?? 'Unknown Title',
+                            'runtime' => $item['runtime'] ?? 'Unknown',
+                            'type' => $item['type'] ?? 'Unknown',
+                            'year' => $item['year'] ?? null
+                        ];
+                    }
+                }
+            }
+        }
+        
+        // Sort by total play count (descending)
+        arsort($playCountsByItem);
+        
+        // Build most watched array
+        $mostWatched = [];
+        $count = 0;
+        foreach ($playCountsByItem as $itemId => $totalPlays) {
+            if ($count >= 20) break; // Limit to top 20
+            
+            $details = $itemDetails[$itemId] ?? [
+                'title' => 'Unknown Title',
+                'runtime' => 'Unknown',
+                'type' => 'Unknown',
+                'year' => null
+            ];
+            
+            $mostWatched[] = [
+                'title' => $details['title'],
+                'total_plays' => $totalPlays,
+                'runtime' => $details['runtime'],
+                'type' => $details['type'],
+                'year' => $details['year']
+            ];
+            
+            $count++;
+        }
+        
+        // If no watched content found, fall back to recent items as last resort
+        if (empty($mostWatched)) {
+            return $this->getEmbyRecentItemsFallback($url, $token);
+        }
+        
+        return $mostWatched;
+    }
+    
+    /**
+     * Final fallback - recent items when no watch data is available
+     */
+    private function getEmbyRecentItemsFallback($url, $token)
+    {
         $apiURL = rtrim($url, '/') . '/emby/Items?api_key=' . $token . 
                   '&Recursive=true&IncludeItemTypes=Movie,Episode&Fields=Name,RunTimeTicks,ProductionYear,DateCreated' .
-                  '&SortBy=DateCreated&SortOrder=Descending&Limit=20';
+                  '&SortBy=DateCreated&SortOrder=Descending&Limit=10';
         
         try {
             $options = $this->requestOptions($url, null, $this->config['userWatchStatsDisableCertCheck'] ?? false, $this->config['userWatchStatsUseCustomCertificate'] ?? false);
@@ -788,21 +864,21 @@ trait HomepageUserWatchStats
                 $data = json_decode($response->body, true);
                 $items = $data['Items'] ?? [];
                 
-                $mostWatched = [];
+                $recentItems = [];
                 foreach ($items as $item) {
-                    $mostWatched[] = [
+                    $recentItems[] = [
                         'title' => $item['Name'] ?? 'Unknown Title',
-                        'total_plays' => 1, // Placeholder since we can't get real play counts
+                        'total_plays' => 0, // No play data available
                         'runtime' => isset($item['RunTimeTicks']) ? $this->formatDuration($item['RunTimeTicks'] / 10000000) : 'Unknown',
                         'type' => $item['Type'] ?? 'Unknown',
                         'year' => $item['ProductionYear'] ?? null
                     ];
                 }
                 
-                return $mostWatched;
+                return $recentItems;
             }
         } catch (Requests_Exception $e) {
-            // Final fallback - empty array
+            // Nothing we can do at this point
         }
         
         return [];
@@ -841,6 +917,7 @@ trait HomepageUserWatchStats
         return $totalPlays;
     }
     
+
     /**
      * Get watched content for a specific user
      */
