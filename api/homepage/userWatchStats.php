@@ -695,33 +695,124 @@ trait HomepageUserWatchStats
      */
     private function getEmbyMostWatched($url, $token, $days)
     {
-        // Get all users first
-        $users = $this->getEmbyUserStats($url, $token, $days);
-        $allWatchedContent = [];
+        // Use activity logs to get most watched content
+        $mostWatched = [];
         
-        // For each user, get their played content and aggregate
-        foreach ($users as $user) {
-            $userId = $user['Id'];
-            $userWatchedContent = $this->getEmbyUserWatchedContent($url, $token, $userId, $days);
+        // Try to get activity data from Emby
+        $apiURL = rtrim($url, '/') . '/emby/System/ActivityLog/Entries?api_key=' . $token . 
+                  '&limit=1000&type=VideoPlayback';
+        
+        try {
+            $options = $this->requestOptions($url, null, $this->config['userWatchStatsDisableCertCheck'] ?? false, $this->config['userWatchStatsUseCustomCertificate'] ?? false);
+            $response = Requests::get($apiURL, [], $options);
             
-            foreach ($userWatchedContent as $content) {
-                $contentId = $content['Id'] ?? $content['title'];
-                if (!isset($allWatchedContent[$contentId])) {
-                    $allWatchedContent[$contentId] = $content;
-                    $allWatchedContent[$contentId]['total_plays'] = 0;
-                    $allWatchedContent[$contentId]['watched_by_users'] = [];
+            if ($response->success) {
+                $data = json_decode($response->body, true);
+                $items = $data['Items'] ?? [];
+                
+                $playCount = [];
+                foreach ($items as $item) {
+                    if (isset($item['Name']) && isset($item['ShortOverview'])) {
+                        $title = $item['Name'];
+                        if (!isset($playCount[$title])) {
+                            $playCount[$title] = [
+                                'title' => $title,
+                                'total_plays' => 0,
+                                'type' => 'Media',
+                                'year' => null
+                            ];
+                        }
+                        $playCount[$title]['total_plays']++;
+                    }
                 }
-                $allWatchedContent[$contentId]['total_plays'] += $content['play_count'] ?? 0;
-                $allWatchedContent[$contentId]['watched_by_users'][] = $user['Name'];
+                
+                // Sort by play count
+                uasort($playCount, function($a, $b) {
+                    return $b['total_plays'] - $a['total_plays'];
+                });
+                
+                $mostWatched = array_slice(array_values($playCount), 0, 10);
+            }
+        } catch (Requests_Exception $e) {
+            $this->writeLog('error', 'Emby Most Watched Error: ' . $e->getMessage(), 'SYSTEM');
+        }
+        
+        // If activity log doesn't work, try simpler approach
+        if (empty($mostWatched)) {
+            $mostWatched = $this->getEmbySimpleMostWatched($url, $token);
+        }
+
+        return $mostWatched;
+    }
+    
+    /**
+     * Simple approach to get most watched from Emby
+     */
+    private function getEmbySimpleMostWatched($url, $token)
+    {
+        $apiURL = rtrim($url, '/') . '/emby/Items?api_key=' . $token . 
+                  '&Recursive=true&IncludeItemTypes=Movie,Episode&Fields=Name,RunTimeTicks,ProductionYear' .
+                  '&SortBy=DatePlayed&SortOrder=Descending&Limit=20';
+        
+        try {
+            $options = $this->requestOptions($url, null, $this->config['userWatchStatsDisableCertCheck'] ?? false, $this->config['userWatchStatsUseCustomCertificate'] ?? false);
+            $response = Requests::get($apiURL, [], $options);
+            
+            if ($response->success) {
+                $data = json_decode($response->body, true);
+                $items = $data['Items'] ?? [];
+                
+                $mostWatched = [];
+                foreach ($items as $item) {
+                    $mostWatched[] = [
+                        'title' => $item['Name'] ?? 'Unknown Title',
+                        'total_plays' => 1, // We don't have actual play count, so assume 1
+                        'runtime' => isset($item['RunTimeTicks']) ? $this->formatDuration($item['RunTimeTicks'] / 10000000) : 'Unknown',
+                        'type' => $item['Type'] ?? 'Unknown',
+                        'year' => $item['ProductionYear'] ?? null
+                    ];
+                }
+                
+                return $mostWatched;
+            }
+        } catch (Requests_Exception $e) {
+            $this->writeLog('error', 'Emby Simple Most Watched Error: ' . $e->getMessage(), 'SYSTEM');
+        }
+
+        return [];
+    }
+    
+    /**
+     * Get total play count for a specific item across all users
+     */
+    private function getEmbyItemTotalPlays($url, $token, $itemId)
+    {
+        $totalPlays = 0;
+        $users = $this->getEmbyUserStats($url, $token, 30);
+        
+        foreach ($users as $user) {
+            if (isset($user['Policy']['IsDisabled']) && $user['Policy']['IsDisabled']) {
+                continue;
+            }
+            
+            $userId = $user['Id'];
+            $userItemURL = rtrim($url, '/') . '/emby/Users/' . $userId . '/Items/' . $itemId . '?api_key=' . $token . '&Fields=UserData';
+            
+            try {
+                $options = $this->requestOptions($url, null, $this->config['userWatchStatsDisableCertCheck'] ?? false, $this->config['userWatchStatsUseCustomCertificate'] ?? false);
+                $response = Requests::get($userItemURL, [], $options);
+                
+                if ($response->success) {
+                    $itemData = json_decode($response->body, true);
+                    $totalPlays += $itemData['UserData']['PlayCount'] ?? 0;
+                }
+            } catch (Requests_Exception $e) {
+                // Continue with other users if one fails
+                continue;
             }
         }
         
-        // Sort by total plays and return top 10
-        uasort($allWatchedContent, function($a, $b) {
-            return ($b['total_plays'] ?? 0) - ($a['total_plays'] ?? 0);
-        });
-        
-        return array_slice(array_values($allWatchedContent), 0, 10);
+        return $totalPlays;
     }
     
     /**
