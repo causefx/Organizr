@@ -716,6 +716,14 @@ trait HomepageUserWatchStats
             
             if ($response->success) {
                 $data = json_decode($response->body, true);
+                
+                // Check if response contains an error (SQLite exception)
+                if (is_string($data) || (is_array($data) && isset($data['error'])) || 
+                    (is_string($response->body) && strpos($response->body, 'SQLiteException') !== false)) {
+                    // Fall back to recently created items if DatePlayed sorting fails
+                    return $this->getEmbyFallbackMostWatched($url, $token);
+                }
+                
                 $items = $data['Items'] ?? [];
                 
                 $mostWatched = [];
@@ -732,9 +740,14 @@ trait HomepageUserWatchStats
                     }
                 }
                 
+                // If no items with DatePlayed, fall back to recently created
+                if (empty($mostWatched)) {
+                    return $this->getEmbyFallbackMostWatched($url, $token);
+                }
+                
                 return $mostWatched;
             }
-        } catch (Requests_Exception $e) {
+        } catch (Exception $e) {
             // Fall back to recently created items if DatePlayed sorting fails
             return $this->getEmbyFallbackMostWatched($url, $token);
         }
