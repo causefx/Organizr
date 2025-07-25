@@ -706,17 +706,19 @@ trait HomepageUserWatchStats
     {
         // Try multiple approaches to get content
         $approaches = [
-            // Approach 1: Recently played items
+            // Approach 1: Recently created items (most likely to have content)
             rtrim($url, '/') . '/emby/Items?api_key=' . $token . 
-            '&Recursive=true&IncludeItemTypes=Movie,Episode&Fields=Name,RunTimeTicks,ProductionYear' .
-            '&SortBy=DatePlayed&SortOrder=Descending&Limit=20',
+            '&Recursive=true&IncludeItemTypes=Movie,Episode&Fields=Name,RunTimeTicks,ProductionYear,DateCreated' .
+            '&SortBy=DateCreated&SortOrder=Descending&Limit=20',
             
             // Approach 2: All items without date filter
             rtrim($url, '/') . '/emby/Items?api_key=' . $token . 
             '&Recursive=true&IncludeItemTypes=Movie,Episode&Fields=Name,RunTimeTicks,ProductionYear&Limit=20',
             
-            // Approach 3: Recently added items
-            rtrim($url, '/') . '/emby/Items/Latest?api_key=' . $token . '&Limit=20'
+            // Approach 3: Recently played items (if available)
+            rtrim($url, '/') . '/emby/Items?api_key=' . $token . 
+            '&Recursive=true&IncludeItemTypes=Movie,Episode&Fields=Name,RunTimeTicks,ProductionYear' .
+            '&SortBy=DatePlayed&SortOrder=Descending&Limit=20'
         ];
         
         foreach ($approaches as $index => $apiURL) {
