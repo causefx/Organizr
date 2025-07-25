@@ -695,54 +695,8 @@ trait HomepageUserWatchStats
      */
     private function getEmbyMostWatched($url, $token, $days)
     {
-        // Use activity logs to get most watched content
-        $mostWatched = [];
-        
-        // Try to get activity data from Emby
-        $apiURL = rtrim($url, '/') . '/emby/System/ActivityLog/Entries?api_key=' . $token . 
-                  '&limit=1000&type=VideoPlayback';
-        
-        try {
-            $options = $this->requestOptions($url, null, $this->config['userWatchStatsDisableCertCheck'] ?? false, $this->config['userWatchStatsUseCustomCertificate'] ?? false);
-            $response = Requests::get($apiURL, [], $options);
-            
-            if ($response->success) {
-                $data = json_decode($response->body, true);
-                $items = $data['Items'] ?? [];
-                
-                $playCount = [];
-                foreach ($items as $item) {
-                    if (isset($item['Name']) && isset($item['ShortOverview'])) {
-                        $title = $item['Name'];
-                        if (!isset($playCount[$title])) {
-                            $playCount[$title] = [
-                                'title' => $title,
-                                'total_plays' => 0,
-                                'type' => 'Media',
-                                'year' => null
-                            ];
-                        }
-                        $playCount[$title]['total_plays']++;
-                    }
-                }
-                
-                // Sort by play count
-                uasort($playCount, function($a, $b) {
-                    return $b['total_plays'] - $a['total_plays'];
-                });
-                
-                $mostWatched = array_slice(array_values($playCount), 0, 10);
-            }
-        } catch (Requests_Exception $e) {
-            $this->writeLog('error', 'Emby Most Watched Error: ' . $e->getMessage(), 'SYSTEM');
-        }
-        
-        // If activity log doesn't work, try simpler approach
-        if (empty($mostWatched)) {
-            $mostWatched = $this->getEmbySimpleMostWatched($url, $token);
-        }
-
-        return $mostWatched;
+        // Skip activity log approach and go directly to simple media approach
+        return $this->getEmbySimpleMostWatched($url, $token);
     }
     
     /**
