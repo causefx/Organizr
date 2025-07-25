@@ -229,7 +229,23 @@ trait HomepageUserWatchStats
                         // Display statistics period
                         html += \'<div class="col-lg-12"><h4>Statistics for \' + (stats.period || "30 days") + \'</h4></div>\';
                         
-                        // Show top users if enabled
+                        // Show user stats (Emby users)
+                        if (stats.user_stats && stats.user_stats.length > 0) {
+                            html += \'<div class="col-lg-12"><h5>Server Users (\' + stats.user_stats.length + \' total)</h5><ul class="list-group">\';
+                            stats.user_stats.slice(0, 10).forEach(function(user) {
+                                var lastActivity = "Never";
+                                if (user.LastActivityDate && user.LastActivityDate !== "0001-01-01T00:00:00.0000000Z") {
+                                    var activityDate = new Date(user.LastActivityDate);
+                                    lastActivity = activityDate.toLocaleDateString();
+                                }
+                                var isAdmin = user.Policy && user.Policy.IsAdministrator ? " [Admin]" : "";
+                                var isDisabled = user.Policy && user.Policy.IsDisabled ? " [Disabled]" : "";
+                                html += \'<li class="list-group-item">\' + (user.Name || "Unknown User") + isAdmin + isDisabled + \' - Last Activity: \' + lastActivity + \'</li>\';
+                            });
+                            html += \'</ul></div>\';
+                        }
+                        
+                        // Show top users if enabled and has data
                         if (' . $showTopUsers . ' && stats.top_users && stats.top_users.length > 0) {
                             html += \'<div class="col-lg-6"><h5>Top Users</h5><ul class="list-group">\';
                             stats.top_users.slice(0, 5).forEach(function(user) {
@@ -238,16 +254,16 @@ trait HomepageUserWatchStats
                             html += \'</ul></div>\';
                         }
                         
-                        // Show most watched if enabled
+                        // Show most watched if enabled and has data
                         if (' . $showMostWatched . ' && stats.most_watched && stats.most_watched.length > 0) {
                             html += \'<div class="col-lg-6"><h5>Most Watched</h5><ul class="list-group">\';
                             stats.most_watched.slice(0, 5).forEach(function(item) {
-                                html += \'<li class="list-group-item">\' + (item.title || "Unknown Title") + \' - \' + (item.total_plays || 0) + \' plays</li>\';
+                                html += \'<li class="list-group-item">\' + (item.title || "Unknown Title") + \' - \' + (item.play_count || item.total_plays || 0) + \' plays</li>\';
                             });
                             html += \'</ul></div>\';
                         }
                         
-                        // Show recent activity if enabled
+                        // Show recent activity if enabled and has data
                         if (' . $showRecentActivity . ' && stats.recent_activity && stats.recent_activity.length > 0) {
                             html += \'<div class="col-lg-12"><h5>Recent Activity</h5><ul class="list-group">\';
                             stats.recent_activity.slice(0, 10).forEach(function(activity) {
@@ -256,7 +272,13 @@ trait HomepageUserWatchStats
                             html += \'</ul></div>\';
                         }
                         
-                        if (html === \'<div class="col-lg-12"><h4>Statistics for \' + (stats.period || "30 days") + \'</h4></div>\') {
+                        // Check if we have any data to display
+                        var hasUserStats = stats.user_stats && stats.user_stats.length > 0;
+                        var hasTopUsers = stats.top_users && stats.top_users.length > 0;
+                        var hasMostWatched = stats.most_watched && stats.most_watched.length > 0;
+                        var hasRecentActivity = stats.recent_activity && stats.recent_activity.length > 0;
+                        
+                        if (!hasUserStats && !hasTopUsers && !hasMostWatched && !hasRecentActivity) {
                             html += \'<div class="col-lg-12 text-center text-muted">No statistics available</div>\';
                         }
                         
