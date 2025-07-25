@@ -790,14 +790,14 @@ trait HomepageUserWatchStats
             $userId = $user['Id'];
             $userWatchedItems = $this->getEmbyUserWatchedContent($url, $token, $userId, 30);
             
-            // Aggregate play counts
+            // Aggregate play counts - count each user who has played the item
             foreach ($userWatchedItems as $item) {
                 $itemId = $item['Id'] ?? $item['title']; // Use ID if available, title as fallback
-                $playCount = $item['play_count'] ?? 0;
+                $isPlayed = $item['is_played'] ?? false;
                 
-                if ($playCount > 0) {
-                    // Add to total play count
-                    $playCountsByItem[$itemId] = ($playCountsByItem[$itemId] ?? 0) + $playCount;
+                if ($isPlayed) {
+                    // Increment count for each user who has played this item
+                    $playCountsByItem[$itemId] = ($playCountsByItem[$itemId] ?? 0) + 1;
                     
                     // Store item details (only need to do this once per item)
                     if (!isset($itemDetails[$itemId])) {
@@ -937,11 +937,12 @@ trait HomepageUserWatchStats
 
                 $watchedContent = [];
                 foreach ($items as $item) {
-                    if (($item['UserData']['PlayCount'] ?? 0) > 0) {
+                    // Use Played flag instead of PlayCount since Emby may not increment PlayCount properly
+                    if (($item['UserData']['Played'] ?? false)) {
                         $watchedContent[] = [
                             'Id' => $item['Id'] ?? null,
                             'title' => $item['Name'] ?? 'Unknown Title',
-                            'play_count' => $item['UserData']['PlayCount'] ?? 0,
+                            'is_played' => true, // Mark as played for our aggregation
                             'runtime' => $item['RunTimeTicks'] ? $this->formatDuration($item['RunTimeTicks'] / 10000000) : 'Unknown',
                             'type' => $item['Type'] ?? 'Unknown',
                             'year' => $item['ProductionYear'] ?? null
