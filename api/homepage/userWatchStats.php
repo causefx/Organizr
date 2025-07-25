@@ -229,6 +229,31 @@ trait HomepageUserWatchStats
                         // Display statistics period
                         html += \'<div class="col-lg-12"><h4>Statistics for \' + (stats.period || "30 days") + \'</h4></div>\';
                         
+                        // Show watch history (Movies & Shows)
+                        if (stats.watch_history && stats.watch_history.length > 0) {
+                            html += \'<div class="col-lg-12"><h5>Watch History</h5><table class="table table-striped table-condensed">\';
+                            html += \'<thead>\';
+                            html += \'<tr>\';
+                            html += \'<th>Title</th>\';
+                            html += \'<th>Type</th>\';
+                            html += \'<th>Play Count</th>\';
+                            html += \'<th>Runtime</th>\';
+                            html += \'</tr>\';
+                            html += \'</thead>\';
+                            html += \'<tbody>\';
+                            stats.watch_history.slice(0, 10).forEach(function(item) {
+                                html += \'<tr>\';
+                                html += \'<td>\' + (item.title || "Unknown Title") + \'</td>\';
+                                html += \'<td>\' + (item.type || "Unknown") + \'</td>\';
+                                html += \'<td>\' + (item.play_count || 0) + \'</td>\';
+                                html += \'<td>\' + (item.runtime || "Unknown") + \'</td>\';
+                                html += \'</tr>\';
+                            });
+                            html += \'</tbody>\';
+                            html += \'</table>\';
+                            html += \'</div>\';
+                        }
+                        
                         // Show user stats (Emby users)
                         if (stats.user_stats && stats.user_stats.length > 0) {
                             html += \'<div class="col-lg-12"><h5>Server Users (\' + stats.user_stats.length + \' total)</h5><ul class="list-group">\';
@@ -277,8 +302,9 @@ trait HomepageUserWatchStats
                         var hasTopUsers = stats.top_users && stats.top_users.length > 0;
                         var hasMostWatched = stats.most_watched && stats.most_watched.length > 0;
                         var hasRecentActivity = stats.recent_activity && stats.recent_activity.length > 0;
+                        var hasWatchHistory = stats.watch_history && stats.watch_history.length > 0;
                         
-                        if (!hasUserStats && !hasTopUsers && !hasMostWatched && !hasRecentActivity) {
+                        if (!hasUserStats && !hasTopUsers && !hasMostWatched && !hasRecentActivity && !hasWatchHistory) {
                             html += \'<div class="col-lg-12 text-center text-muted">No statistics available</div>\';
                         }
                         
@@ -563,6 +589,7 @@ trait HomepageUserWatchStats
             'least_watched' => [],  // Emby doesn't have a direct least watched API
             'user_stats' => $this->getEmbyUserStats($embyUrl, $embyToken, $days),
             'recent_activity' => $this->getEmbyRecentActivity($embyUrl, $embyToken),
+            'watch_history' => $this->getEmbyWatchHistory($embyUrl, $embyToken, $days),
             'top_users' => $this->getEmbyTopUsers($embyUrl, $embyToken, $days)
         ];
 
@@ -782,6 +809,44 @@ trait HomepageUserWatchStats
             }
         } catch (Requests_Exception $e) {
             $this->writeLog('error', 'Emby Recent Activity Error: ' . $e->getMessage(), 'SYSTEM');
+        }
+
+        return [];
+    }
+
+    /**
+     * Get watch history from Emby
+     */
+    private function getEmbyWatchHistory($url, $token, $days)
+    {
+        $apiURL = rtrim($url, '/') . '/emby/UserLibrary/Items?api_key=' . $token . 
+                  '&Recursive=true&IncludeItemTypes=Movie,Episode&IsPlayed=true' .
+                  '&MinDateLastPlayed=' . urlencode(date('c', strtotime("-{$days} days"))) . 
+                  '&Fields=Name,PlayCount,UserData,RunTimeTicks';
+        
+        try {
+            $options = $this->requestOptions($url, null, $this->config['userWatchStatsDisableCertCheck'] ?? false, $this->config['userWatchStatsUseCustomCertificate'] ?? false);
+            $response = Requests::get($apiURL, [], $options);
+            
+            if ($response->success) {
+                $data = json_decode($response->body, true);
+                $items = $data['Items'] ?? [];
+
+                $watchHistory = [];
+                foreach ($items as $item) {
+                    $watchHistory[] = [
+                        'title' => $item['Name'] ?? 'Unknown Title',
+                        'play_count' => $item['UserData']['PlayCount'] ?? 0,
+                        'runtime' => $item['RunTimeTicks'] ? $this->formatDuration($item['RunTimeTicks'] / 10000000) : 'Unknown',
+                        'type' => $item['Type'] ?? 'Unknown',
+                        'year' => $item['ProductionYear'] ?? null
+                    ];
+                }
+
+                return $watchHistory;
+            }
+        } catch (Requests_Exception $e) {
+            $this->writeLog('error', 'Emby Watch History Error: ' . $e->getMessage(), 'SYSTEM');
         }
 
         return [];
