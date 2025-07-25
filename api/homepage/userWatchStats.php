@@ -715,12 +715,24 @@ trait HomepageUserWatchStats
             $response = Requests::get($apiURL, [], $options);
             
             if ($response->success) {
-                $data = json_decode($response->body, true);
+                $responseBody = $response->body;
                 
-                // Check if response contains an error (SQLite exception)
-                if (is_string($data) || (is_array($data) && isset($data['error'])) || 
-                    (is_string($response->body) && strpos($response->body, 'SQLiteException') !== false)) {
+                // Check if response contains SQLite exception or other error indicators
+                if (is_string($responseBody) && (
+                    strpos($responseBody, 'SQLiteException') !== false ||
+                    strpos($responseBody, 'error') !== false ||
+                    strpos($responseBody, 'Error') !== false ||
+                    !trim($responseBody) || 
+                    $responseBody === 'null'
+                )) {
                     // Fall back to recently created items if DatePlayed sorting fails
+                    return $this->getEmbyFallbackMostWatched($url, $token);
+                }
+                
+                $data = json_decode($responseBody, true);
+                
+                // Check if JSON decode failed or returned invalid data
+                if ($data === null || !is_array($data) || !isset($data['Items'])) {
                     return $this->getEmbyFallbackMostWatched($url, $token);
                 }
                 
@@ -746,13 +758,17 @@ trait HomepageUserWatchStats
                 }
                 
                 return $mostWatched;
+            } else {
+                // HTTP request failed, use fallback
+                return $this->getEmbyFallbackMostWatched($url, $token);
             }
         } catch (Exception $e) {
-            // Fall back to recently created items if DatePlayed sorting fails
+            // Any exception triggers fallback
             return $this->getEmbyFallbackMostWatched($url, $token);
         }
         
-        return [];
+        // Fallback if we somehow get here
+        return $this->getEmbyFallbackMostWatched($url, $token);
     }
     
     /**
