@@ -291,6 +291,69 @@ trait JellyStatHomepageItem
             }
         }
 
+        // Helper function to get icon for content type
+        function getTypeIcon(collectionType) {
+            switch(collectionType) {
+                case "movies": return "fa-film";
+                case "tvshows": return "fa-television";
+                case "music": return "fa-music";
+                case "mixed": return "fa-folder-open";
+                default: return "fa-folder";
+            }
+        }
+        
+        // Helper function to format duration from ticks
+        function formatDuration(ticks) {
+            if (!ticks || ticks === 0) return "0 min";
+            
+            // Convert ticks to seconds (ticks are in 100-nanosecond intervals)
+            var seconds = ticks / 10000000;
+            
+            if (seconds < 60) {
+                return Math.round(seconds) + " sec";
+            } else if (seconds < 3600) {
+                return Math.round(seconds / 60) + " min";
+            } else if (seconds < 86400) {
+                var hours = Math.floor(seconds / 3600);
+                var minutes = Math.floor((seconds % 3600) / 60);
+                return hours + "h " + minutes + "m";
+            } else {
+                var days = Math.floor(seconds / 86400);
+                var hours = Math.floor((seconds % 86400) / 3600);
+                return days + "d " + hours + "h";
+            }
+        }
+        
+        // Helper function to generate poster URLs from JellyStat/Jellyfin
+        function getPosterUrl(posterPath, itemId, serverId) {
+            if (!posterPath && !itemId) return null;
+            
+            // If we have a poster path from JellyStat, use it directly
+            if (posterPath) {
+                // Check if it's already a full URL
+                if (posterPath.startsWith('http://') || posterPath.startsWith('https://')) {
+                    return posterPath;
+                }
+                
+                // If it's a relative path, construct the full URL via JellyStat
+                var jellyStatUrl = "' . $this->qualifyURL($this->config['jellyStatURL'] ?? '') . '";
+                if (jellyStatUrl && posterPath.startsWith('/')) {
+                    return jellyStatUrl + posterPath;
+                }
+            }
+            
+            // Fallback: Try to construct Jellyfin/Emby image URL if we have itemId
+            if (itemId && serverId) {
+                var jellyStatUrl = "' . $this->qualifyURL($this->config['jellyStatURL'] ?? '') . '";
+                if (jellyStatUrl) {
+                    // Try JellyStat's image proxy endpoint (if available)
+                    return jellyStatUrl + '/api/image/' + itemId + '/Primary';
+                }
+            }
+            
+            return null;
+        }
+
         function getJellyStatData() {
             return organizrAPI2("GET", "api/v2/homepage/jellystat")
             .done(function(data) {
@@ -645,69 +708,6 @@ trait JellyStatHomepageItem
                 clearInterval(jellyStatRefreshTimer);
             }
         });
-        
-        // Helper function to get icon for content type
-        function getTypeIcon(collectionType) {
-            switch(collectionType) {
-                case "movies": return "fa-film";
-                case "tvshows": return "fa-television";
-                case "music": return "fa-music";
-                case "mixed": return "fa-folder-open";
-                default: return "fa-folder";
-            }
-        }
-        
-        // Helper function to format duration from ticks
-        function formatDuration(ticks) {
-            if (!ticks || ticks === 0) return "0 min";
-            
-            // Convert ticks to seconds (ticks are in 100-nanosecond intervals)
-            var seconds = ticks / 10000000;
-            
-            if (seconds < 60) {
-                return Math.round(seconds) + " sec";
-            } else if (seconds < 3600) {
-                return Math.round(seconds / 60) + " min";
-            } else if (seconds < 86400) {
-                var hours = Math.floor(seconds / 3600);
-                var minutes = Math.floor((seconds % 3600) / 60);
-                return hours + "h " + minutes + "m";
-            } else {
-                var days = Math.floor(seconds / 86400);
-                var hours = Math.floor((seconds % 86400) / 3600);
-                return days + "d " + hours + "h";
-            }
-        }
-        
-        // Helper function to generate poster URLs from JellyStat/Jellyfin
-        function getPosterUrl(posterPath, itemId, serverId) {
-            if (!posterPath && !itemId) return null;
-            
-            // If we have a poster path from JellyStat, use it directly
-            if (posterPath) {
-                // Check if it's already a full URL
-                if (posterPath.startsWith('http://') || posterPath.startsWith('https://')) {
-                    return posterPath;
-                }
-                
-                // If it's a relative path, construct the full URL via JellyStat
-                var jellyStatUrl = "' . $this->qualifyURL($this->config['jellyStatURL'] ?? '') . '";
-                if (jellyStatUrl && posterPath.startsWith('/')) {
-                    return jellyStatUrl + posterPath;
-                }
-            }
-            
-            // Fallback: Try to construct Jellyfin/Emby image URL if we have itemId
-            if (itemId && serverId) {
-                var jellyStatUrl = "' . $this->qualifyURL($this->config['jellyStatURL'] ?? '') . '";
-                if (jellyStatUrl) {
-                    // Try JellyStat's image proxy endpoint (if available)
-                    return jellyStatUrl + '/api/image/' + itemId + '/Primary';
-                }
-            }
-            
-            return null;
-        }
         
         </script>
         ';
