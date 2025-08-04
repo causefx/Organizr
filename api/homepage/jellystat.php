@@ -115,7 +115,13 @@ trait JellyStatHomepageItem
                         $this->setAPIResponse('success', 'Successfully connected to JellyStat API', 200);
                         return true;
                     }
+                    // Log the actual response for debugging
+                    $this->writeLog('error', 'JellyStat API test: Valid HTTP response but invalid data format. Response: ' . substr($response->body, 0, 500));
                 }
+                
+                // Log first endpoint failure details
+                $firstError = "HTTP {$response->status_code}: " . substr($response->body, 0, 200);
+                $this->writeLog('error', "JellyStat API test failed on /api/getLibraries: {$firstError}");
                 
                 // Fallback test - try different API endpoint structure
                 $testUrl = $this->qualifyURL($url) . '/api/v1/stats';
@@ -125,10 +131,21 @@ trait JellyStatHomepageItem
                     return true;
                 }
                 
-                $this->setAPIResponse('error', 'Connection test failed - invalid response from JellyStat API', 500);
+                // Log second endpoint failure details
+                $secondError = "HTTP {$response->status_code}: " . substr($response->body, 0, 200);
+                $this->writeLog('error', "JellyStat API test failed on /api/v1/stats: {$secondError}");
+                
+                // Try basic connection test to see if JellyStat is even running
+                $response = Requests::get($this->qualifyURL($url), [], $options);
+                if ($response->success) {
+                    $this->setAPIResponse('error', 'JellyStat is reachable but API endpoints are not responding correctly. Check API key and JellyStat version.', 500);
+                } else {
+                    $this->setAPIResponse('error', 'Cannot connect to JellyStat URL. Check URL and network connectivity.', 500);
+                }
                 return false;
                 
             } catch (Exception $e) {
+                $this->writeLog('error', 'JellyStat API test exception: ' . $e->getMessage());
                 $this->setAPIResponse('error', 'Connection test failed: ' . $e->getMessage(), 500);
                 return false;
             }
