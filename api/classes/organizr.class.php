@@ -67,6 +67,7 @@ class Organizr
 	use uTorrentHomepageItem;
 	use UptimeKumaHomepageItem;
 	use HomepageUserWatchStats;
+	use JellyStatHomepageItem;
 
 	// ===================================
 	// Organizr Version
@@ -4632,6 +4633,13 @@ class Organizr
 				$class = 'bg-info';
 				$image = 'plugins/images/homepage/userWatchStats.png';
 				if (!$this->config['homepageUserWatchStatsEnabled']) {
+					$class .= ' faded';
+				}
+				break;
+			case 'homepageOrderJellyStat':
+				$class = 'bg-info';
+				$image = 'plugins/images/homepage/jellystat.png';
+				if (!$this->config['homepageJellyStatEnabled']) {
 					$class .= ' faded';
 				}
 				break;
