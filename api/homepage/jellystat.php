@@ -146,7 +146,8 @@ trait JellyStatHomepageItem
                     'homepageJellyStatAuth',
                 ],
                 'not_empty' => [
-                    'jellyStatURL'
+                    'jellyStatURL',
+                    'jellyStatApikey'
                 ]
             ],
             'main' => [
@@ -157,7 +158,8 @@ trait JellyStatHomepageItem
                     'homepageJellyStatAuth'
                 ],
                 'not_empty' => [
-                    'jellyStatURL'
+                    'jellyStatURL',
+                    'jellyStatApikey'
                 ]
             ]
         ];

@@ -32,10 +32,10 @@ trait HomepageUserWatchStats
                         ['name' => 'Emby', 'value' => 'emby'],
                         ['name' => 'Jellyfin', 'value' => 'jellyfin']
                     ]]),
-                    $this->settingsOption('url', 'userWatchStatsURL'),
-                    $this->settingsOption('token', 'userWatchStatsApikey'),
-                    $this->settingsOption('disable-cert-check', 'userWatchStatsDisableCertCheck'),
-                    $this->settingsOption('use-custom-certificate', 'userWatchStatsUseCustomCertificate'),
+                    $this->settingsOption('url', 'homepageUserWatchStatsURL'),
+                    $this->settingsOption('token', 'homepageUserWatchStatsToken'),
+                    $this->settingsOption('disable-cert-check', 'homepageUserWatchStatsDisableCertCheck'),
+                    $this->settingsOption('use-custom-certificate', 'homepageUserWatchStatsUseCustomCertificate'),
                 ],
                 'Display Options' => [
                     $this->settingsOption('number', 'homepageUserWatchStatsRefresh', ['label' => 'Auto-refresh Interval (minutes)', 'min' => 1, 'max' => 60]),
@@ -65,10 +65,10 @@ trait HomepageUserWatchStats
         $mediaServer = $this->config['homepageUserWatchStatsService'] ?? 'plex';
         
         // Get URL and token from plugin-specific config  
-        $url = $this->config['userWatchStatsURL'] ?? '';
-        $token = $this->config['userWatchStatsApikey'] ?? '';
-        $disableCert = $this->config['userWatchStatsDisableCertCheck'] ?? false;
-        $customCert = $this->config['userWatchStatsUseCustomCertificate'] ?? false;
+        $url = $this->config['homepageUserWatchStatsURL'] ?? '';
+        $token = $this->config['homepageUserWatchStatsToken'] ?? '';
+        $disableCert = $this->config['homepageUserWatchStatsDisableCertCheck'] ?? false;
+        $customCert = $this->config['homepageUserWatchStatsUseCustomCertificate'] ?? false;
         
         if (empty($url) || empty($token)) {
             $serverName = ucfirst($mediaServer) . ($mediaServer === 'plex' ? ' (Tautulli)' : '');
@@ -139,8 +139,8 @@ trait HomepageUserWatchStats
                     'homepageUserWatchStatsAuth',
                 ],
                 'not_empty' => [
-                    'userWatchStatsURL',
-                    'userWatchStatsApikey'
+                    'homepageUserWatchStatsURL',
+                    'homepageUserWatchStatsToken'
                 ]
             ],
             'main' => [
@@ -151,8 +151,8 @@ trait HomepageUserWatchStats
                     'homepageUserWatchStatsAuth'
                 ],
                 'not_empty' => [
-                    'userWatchStatsURL',
-                    'userWatchStatsApikey'
+                    'homepageUserWatchStatsURL',
+                    'homepageUserWatchStatsToken'
                 ]
             ]
         ];
@@ -375,8 +375,8 @@ trait HomepageUserWatchStats
      */
     private function getEmbyWatchStats($days = 30)
     {
-        $embyUrl = $this->config['userWatchStatsURL'] ?? '';
-        $embyToken = $this->config['userWatchStatsApikey'] ?? '';
+        $embyUrl = $this->config['homepageUserWatchStatsURL'] ?? '';
+        $embyToken = $this->config['homepageUserWatchStatsToken'] ?? '';
         
         if (empty($embyUrl) || empty($embyToken)) {
             return ['error' => true, 'message' => 'Emby URL or API key not configured'];
@@ -513,7 +513,7 @@ trait HomepageUserWatchStats
                   '&SortBy=DateCreated&SortOrder=Descending&Limit=10';
         
         try {
-            $options = $this->requestOptions($url, null, $this->config['userWatchStatsDisableCertCheck'] ?? false, $this->config['userWatchStatsUseCustomCertificate'] ?? false);
+            $options = $this->requestOptions($url, null, $this->config['homepageUserWatchStatsDisableCertCheck'] ?? false, $this->config['homepageUserWatchStatsUseCustomCertificate'] ?? false);
             $response = Requests::get($apiURL, [], $options);
             
             if ($response->success) {
@@ -549,7 +549,7 @@ trait HomepageUserWatchStats
         $apiURL = rtrim($url, '/') . '/emby/System/ActivityLog/Entries?api_key=' . $token . '&Limit=1000&HasUserId=true';
         
         try {
-            $options = $this->requestOptions($url, null, $this->config['userWatchStatsDisableCertCheck'] ?? false, $this->config['userWatchStatsUseCustomCertificate'] ?? false);
+            $options = $this->requestOptions($url, null, $this->config['homepageUserWatchStatsDisableCertCheck'] ?? false, $this->config['homepageUserWatchStatsUseCustomCertificate'] ?? false);
             $response = Requests::get($apiURL, [], $options);
             
             if ($response->success) {
@@ -625,7 +625,7 @@ trait HomepageUserWatchStats
                   '&Fields=Name,PlayCount,UserData,RunTimeTicks,ProductionYear&SortBy=PlayCount&SortOrder=Descending';
         
         try {
-            $options = $this->requestOptions($url, null, $this->config['userWatchStatsDisableCertCheck'] ?? false, $this->config['userWatchStatsUseCustomCertificate'] ?? false);
+            $options = $this->requestOptions($url, null, $this->config['homepageUserWatchStatsDisableCertCheck'] ?? false, $this->config['homepageUserWatchStatsUseCustomCertificate'] ?? false);
             $response = Requests::get($apiURL, [], $options);
             
             if ($response->success) {
@@ -671,7 +671,7 @@ trait HomepageUserWatchStats
         $apiURL = rtrim($url, '/') . '/emby/Users?api_key=' . $token;
         
         try {
-            $options = $this->requestOptions($url, null, $this->config['userWatchStatsDisableCertCheck'] ?? false, $this->config['userWatchStatsUseCustomCertificate'] ?? false);
+            $options = $this->requestOptions($url, null, $this->config['homepageUserWatchStatsDisableCertCheck'] ?? false, $this->config['homepageUserWatchStatsUseCustomCertificate'] ?? false);
             $response = Requests::get($apiURL, [], $options);
             
             if ($response->success) {
@@ -693,7 +693,7 @@ trait HomepageUserWatchStats
         $apiURL = rtrim($url, '/') . '/emby/Items/Latest?api_key=' . $token . '&Limit=10&Recursive=true&IncludeItemTypes=Movie,Episode';
         
         try {
-            $options = $this->requestOptions($url, null, $this->config['userWatchStatsDisableCertCheck'] ?? false, $this->config['userWatchStatsUseCustomCertificate'] ?? false);
+            $options = $this->requestOptions($url, null, $this->config['homepageUserWatchStatsDisableCertCheck'] ?? false, $this->config['homepageUserWatchStatsUseCustomCertificate'] ?? false);
             $response = Requests::get($apiURL, [], $options);
             
             if ($response->success) {
