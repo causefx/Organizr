@@ -67,7 +67,7 @@ class Organizr
 	use uTorrentHomepageItem;
 	use UptimeKumaHomepageItem;
 	use HomepageUserWatchStats;
-	use JellyStatHomepageItem;
+	//use JellyStatHomepageItem;
 
 	// ===================================
 	// Organizr Version
