@@ -137,6 +137,14 @@ trait JellyStatHomepageItem
     
     public function jellystatHomepagePermissions($key = null)
     {
+        $displayMode = $this->config['homepageJellyStatDisplayMode'] ?? 'native';
+        
+        // For iframe mode, only URL is required; for native mode, both URL and API key are required
+        $requiredFields = ['jellyStatURL'];
+        if ($displayMode === 'native') {
+            $requiredFields[] = 'jellyStatApikey';
+        }
+        
         $permissions = [
             'test' => [
                 'enabled' => [
@@ -145,10 +153,7 @@ trait JellyStatHomepageItem
                 'auth' => [
                     'homepageJellyStatAuth',
                 ],
-                'not_empty' => [
-                    'jellyStatURL',
-                    'jellyStatApikey'
-                ]
+                'not_empty' => $requiredFields
             ],
             'main' => [
                 'enabled' => [
@@ -157,10 +162,7 @@ trait JellyStatHomepageItem
                 'auth' => [
                     'homepageJellyStatAuth'
                 ],
-                'not_empty' => [
-                    'jellyStatURL',
-                    'jellyStatApikey'
-                ]
+                'not_empty' => $requiredFields
             ]
         ];
         return $this->homepageCheckKeyPermissions($key, $permissions);
