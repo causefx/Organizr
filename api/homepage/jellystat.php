@@ -104,16 +104,21 @@ trait JellyStatHomepageItem
             try {
                 $options = $this->requestOptions($url, null, $disableCert, $customCert);
                 
-                // Test JellyStat API - try to get server info or stats
-                $testUrl = $this->qualifyURL($url) . '/api/getLibraries';
-                $headers = ['Authorization' => 'Bearer ' . $token];
+                // Test JellyStat API - use query parameter authentication
+                $testUrl = $this->qualifyURL($url) . '/api/getLibraries?apiKey=' . urlencode($token);
                 
-                $response = Requests::get($testUrl, $headers, $options);
+                $response = Requests::get($testUrl, [], $options);
                 if ($response->success) {
                     $data = json_decode($response->body, true);
-                    if (isset($data) && is_array($data)) {
+                    if (isset($data) && is_array($data) && !isset($data['error'])) {
                         $this->setAPIResponse('success', 'Successfully connected to JellyStat API', 200);
                         return true;
+                    }
+                    // Check if there's an error message in the response
+                    if (isset($data['error'])) {
+                        $this->writeLog('error', 'JellyStat API test error: ' . $data['error']);
+                        $this->setAPIResponse('error', 'JellyStat API error: ' . $data['error'], 500);
+                        return false;
                     }
                     // Log the actual response for debugging
                     $this->writeLog('error', 'JellyStat API test: Valid HTTP response but invalid data format. Response: ' . substr($response->body, 0, 500));
@@ -123,22 +128,25 @@ trait JellyStatHomepageItem
                 $firstError = "HTTP {$response->status_code}: " . substr($response->body, 0, 200);
                 $this->writeLog('error', "JellyStat API test failed on /api/getLibraries: {$firstError}");
                 
-                // Fallback test - try different API endpoint structure
-                $testUrl = $this->qualifyURL($url) . '/api/v1/stats';
-                $response = Requests::get($testUrl, $headers, $options);
+                // Fallback test - try to get users as a simpler test
+                $testUrl = $this->qualifyURL($url) . '/api/getUsers?apiKey=' . urlencode($token);
+                $response = Requests::get($testUrl, [], $options);
                 if ($response->success) {
-                    $this->setAPIResponse('success', 'Successfully connected to JellyStat API', 200);
-                    return true;
+                    $data = json_decode($response->body, true);
+                    if (isset($data) && is_array($data) && !isset($data['error'])) {
+                        $this->setAPIResponse('success', 'Successfully connected to JellyStat API', 200);
+                        return true;
+                    }
                 }
                 
                 // Log second endpoint failure details
                 $secondError = "HTTP {$response->status_code}: " . substr($response->body, 0, 200);
-                $this->writeLog('error', "JellyStat API test failed on /api/v1/stats: {$secondError}");
+                $this->writeLog('error', "JellyStat API test failed on /api/getUsers: {$secondError}");
                 
                 // Try basic connection test to see if JellyStat is even running
                 $response = Requests::get($this->qualifyURL($url), [], $options);
                 if ($response->success) {
-                    $this->setAPIResponse('error', 'JellyStat is reachable but API endpoints are not responding correctly. Check API key and JellyStat version.', 500);
+                    $this->setAPIResponse('error', 'JellyStat is reachable but API key is invalid or API endpoints are not responding correctly.', 500);
                 } else {
                     $this->setAPIResponse('error', 'Cannot connect to JellyStat URL. Check URL and network connectivity.', 500);
                 }
@@ -477,7 +485,6 @@ trait JellyStatHomepageItem
         $customCert = $this->config['jellyStatUseCustomCertificate'] ?? false;
         $options = $this->requestOptions($url, null, $disableCert, $customCert);
         $baseUrl = $this->qualifyURL($url);
-        $headers = ['Authorization' => 'Bearer ' . $token];
         
         $stats = [
             'period' => "{$days} days",
@@ -488,70 +495,83 @@ trait JellyStatHomepageItem
         ];
         
         try {
-            // Get Library Statistics
-            $librariesUrl = $baseUrl . '/api/getLibraries';
-            $response = Requests::get($librariesUrl, $headers, $options);
+            // Get Library Statistics - use query parameter authentication
+            $librariesUrl = $baseUrl . '/api/getLibraries?apiKey=' . urlencode($token);
+            $response = Requests::get($librariesUrl, [], $options);
             if ($response->success) {
                 $data = json_decode($response->body, true);
-                if (is_array($data)) {
+                if (is_array($data) && !isset($data['error'])) {
                     $stats['libraries'] = array_map(function($lib) {
                         return [
-                            'name' => $lib['Name'] ?? $lib['name'] ?? 'Unknown Library',
-                            'item_count' => $lib['ItemCount'] ?? $lib['item_count'] ?? 0,
-                            'size' => $this->formatBytes($lib['Size'] ?? $lib['size'] ?? 0)
+                            'name' => $lib['Name'] ?? 'Unknown Library',
+                            'item_count' => $lib['item_count'] ?? 0,
+                            'size' => $this->formatBytes($lib['total_play_time'] ?? 0) // JellyStat doesn't provide size, use play time as proxy
                         ];
                     }, $data);
                 }
             }
             
             // Get User Statistics
-            $usersUrl = $baseUrl . '/api/getUserStats';
-            $response = Requests::get($usersUrl, $headers, $options);
+            $usersUrl = $baseUrl . '/api/getUsers?apiKey=' . urlencode($token);
+            $response = Requests::get($usersUrl, [], $options);
             if ($response->success) {
                 $data = json_decode($response->body, true);
-                if (is_array($data)) {
+                if (is_array($data) && !isset($data['error'])) {
                     $stats['users'] = array_map(function($user) {
                         return [
-                            'name' => $user['UserName'] ?? $user['name'] ?? 'Unknown User',
-                            'play_count' => $user['PlayCount'] ?? $user['play_count'] ?? 0,
-                            'last_activity' => $user['LastActivityDate'] ?? $user['last_activity'] ?? null
+                            'name' => $user['Name'] ?? 'Unknown User',
+                            'play_count' => $user['PlayCount'] ?? 0,
+                            'last_activity' => $user['LastActivityDate'] ?? null
                         ];
                     }, $data);
                 }
             }
             
-            // Get Most Watched Content
-            $mostWatchedUrl = $baseUrl . '/api/getMostWatched?days=' . $days;
-            $response = Requests::get($mostWatchedUrl, $headers, $options);
+            // Get Most Watched Content - try item activity as proxy
+            $activityUrl = $baseUrl . '/api/getItemActivity?apiKey=' . urlencode($token) . '&days=' . $days;
+            $response = Requests::get($activityUrl, [], $options);
             if ($response->success) {
                 $data = json_decode($response->body, true);
-                if (is_array($data)) {
-                    $stats['most_watched'] = array_map(function($item) {
-                        return [
-                            'title' => $item['Name'] ?? $item['title'] ?? 'Unknown Title',
-                            'type' => $item['Type'] ?? $item['type'] ?? 'Unknown',
-                            'play_count' => $item['PlayCount'] ?? $item['play_count'] ?? 0,
-                            'runtime' => $this->formatDuration($item['RunTimeTicks'] ?? $item['runtime'] ?? 0),
-                            'year' => $item['ProductionYear'] ?? $item['year'] ?? null
-                        ];
-                    }, $data);
+                if (is_array($data) && !isset($data['error'])) {
+                    // Process activity data into most watched format
+                    $itemCounts = [];
+                    foreach ($data as $activity) {
+                        $itemId = $activity['NowPlayingItemId'] ?? $activity['ItemId'] ?? 'unknown';
+                        if (!isset($itemCounts[$itemId])) {
+                            $itemCounts[$itemId] = [
+                                'title' => $activity['NowPlayingItemName'] ?? $activity['ItemName'] ?? 'Unknown Title',
+                                'type' => $activity['ItemType'] ?? 'Unknown',
+                                'play_count' => 0,
+                                'runtime' => 'Unknown',
+                                'year' => null
+                            ];
+                        }
+                        $itemCounts[$itemId]['play_count']++;
+                    }
+                    
+                    // Sort by play count and take top items
+                    uasort($itemCounts, function($a, $b) {
+                        return $b['play_count'] - $a['play_count'];
+                    });
+                    
+                    $stats['most_watched'] = array_slice($itemCounts, 0, 10);
                 }
             }
             
             // Get Recent Activity
-            $recentActivityUrl = $baseUrl . '/api/getRecentActivity?days=' . $days;
-            $response = Requests::get($recentActivityUrl, $headers, $options);
+            $recentActivityUrl = $baseUrl . '/api/getItemActivity?apiKey=' . urlencode($token) . '&days=7'; // Get last 7 days
+            $response = Requests::get($recentActivityUrl, [], $options);
             if ($response->success) {
                 $data = json_decode($response->body, true);
-                if (is_array($data)) {
-                    $stats['recent_activity'] = array_map(function($activity) {
+                if (is_array($data) && !isset($data['error'])) {
+                    $stats['recent_activity'] = array_slice(array_map(function($activity) {
                         return [
-                            'date' => $activity['Date'] ?? $activity['date'] ?? date('c'),
-                            'user' => $activity['UserName'] ?? $activity['user'] ?? 'Unknown User',
-                            'title' => $activity['ItemName'] ?? $activity['title'] ?? 'Unknown Title',
-                            'type' => $activity['ItemType'] ?? $activity['type'] ?? 'Unknown'
+                            'date' => $activity['DateCreated'] ?? date('c'),
+                            'user' => $activity['UserName'] ?? 'Unknown User',
+                            'title' => $activity['NowPlayingItemName'] ?? $activity['ItemName'] ?? 'Unknown Title',
+                            'type' => $activity['ItemType'] ?? 'Unknown'
                         ];
-                    }, $data);
+                    }, $data), 0, 20); // Limit to 20 recent items
                 }
             }
             
