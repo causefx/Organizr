@@ -128,20 +128,8 @@ trait JellyStatHomepageItem
                 $firstError = "HTTP {$response->status_code}: " . substr($response->body, 0, 200);
                 $this->writeLog('error', "JellyStat API test failed on /api/getLibraries: {$firstError}");
                 
-                // Fallback test - try to get users as a simpler test
-                $testUrl = $this->qualifyURL($url) . '/api/getUsers?apiKey=' . urlencode($token);
-                $response = Requests::get($testUrl, [], $options);
-                if ($response->success) {
-                    $data = json_decode($response->body, true);
-                    if (isset($data) && is_array($data) && !isset($data['error'])) {
-                        $this->setAPIResponse('success', 'Successfully connected to JellyStat API', 200);
-                        return true;
-                    }
-                }
-                
-                // Log second endpoint failure details
-                $secondError = "HTTP {$response->status_code}: " . substr($response->body, 0, 200);
-                $this->writeLog('error', "JellyStat API test failed on /api/getUsers: {$secondError}");
+                // If libraries test failed, the API key is likely invalid
+                $this->writeLog('error', 'JellyStat API key appears to be invalid or JellyStat API is not responding');
                 
                 // Try basic connection test to see if JellyStat is even running
                 $response = Requests::get($this->qualifyURL($url), [], $options);
