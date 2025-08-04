@@ -551,6 +551,13 @@ trait JellyStatHomepageItem
                 html += "</tbody></table></div></div>";
             }
             
+            // Debug data availability
+            console.log("Full stats object:", stats);
+            console.log("Movie settings enabled:", ' . $showMostWatchedMovies . ');
+            console.log("Movies data:", stats.most_watched_movies);
+            console.log("Shows data:", stats.most_watched_shows);
+            console.log("Music data:", stats.most_listened_music);
+            
             // Most Watched Movies with Posters
             if (' . $showMostWatchedMovies . ' && stats.most_watched_movies && stats.most_watched_movies.length > 0) {
                 console.log("Rendering most watched movies:", stats.most_watched_movies);
@@ -565,15 +572,15 @@ trait JellyStatHomepageItem
                     var year = movie.year || "N/A";
                     var title = movie.title || "Unknown Movie";
                     
-                    html += "<div class=\"col-lg-2 col-md-3 col-sm-4 col-xs-6\" style=\"margin-bottom: 20px;\">";
-                    html += "<div class=\"poster-card\" style=\"position: relative; background: #f8f9fa; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1); transition: transform 0.2s;\">";
+                    html += "<div style=\"display: inline-block; margin: 10px; width: 150px;\">";
+                    html += "<div class=\"poster-card\" style=\"position: relative; background: #f8f9fa; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1); width: 150px; height: 270px;\">";
                     
-                    // Poster image
-                    html += "<div class=\"poster-image\" style=\"position: relative; padding-top: 150%; background: #e9ecef;\">";
+                    // Poster image container
+                    html += "<div class=\"poster-image\" style=\"position: relative; width: 150px; height: 225px; background: #e9ecef;\">";
                     if (posterUrl) {
-                        html += "<img src=\"" + posterUrl + "\" alt=\"" + title + "\" style=\"position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover;\" onerror=\"this.style.display=\"none\"; this.nextElementSibling.style.display=\"flex\";\">";
+                        html += "<img src=\"" + posterUrl + "\" alt=\"" + title + "\" style=\"width: 150px; height: 225px; object-fit: cover;\" onerror=\"this.style.display='none'; this.nextElementSibling.style.display='flex';\">";
                     }
-                    html += "<div class=\"poster-placeholder\" style=\"position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: " + (posterUrl ? "none" : "flex") + "; align-items: center; justify-content: center; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;\">";
+                    html += "<div class=\"poster-placeholder\" style=\"position: absolute; top: 0; left: 0; width: 150px; height: 225px; display: " + (posterUrl ? "none" : "flex") + "; align-items: center; justify-content: center; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;\">";
                     html += "<i class=\"fa fa-film fa-3x\"></i>";
                     html += "</div>";
                     
@@ -584,8 +591,8 @@ trait JellyStatHomepageItem
                     html += "</div>";
                     
                     // Movie info
-                    html += "<div class=\"poster-info\" style=\"padding: 12px; text-align: center;\">";
-                    html += "<h6 style=\"margin: 0 0 4px 0; font-size: 13px; font-weight: bold; line-height: 1.2; height: 32px; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;\" title=\"" + title + "\">" + title + "</h6>";
+                    html += "<div class=\"poster-info\" style=\"padding: 8px; text-align: center; height: 45px;\">";
+                    html += "<div style=\"font-size: 12px; font-weight: bold; line-height: 1.2; height: 24px; overflow: hidden;\" title=\"" + title + "\">" + title + "</div>";
                     html += "<small class=\"text-muted\">" + year + "</small>";
                     html += "</div>";
                     
@@ -593,6 +600,11 @@ trait JellyStatHomepageItem
                 });
                 
                 html += "</div></div>";
+            } else {
+                console.log("Movies not showing because:");
+                console.log("- Setting enabled:", ' . $showMostWatchedMovies . ');
+                console.log("- Has data:", stats.most_watched_movies && stats.most_watched_movies.length > 0);
+                console.log("- Data:", stats.most_watched_movies);
             }
             
             // Most Watched TV Shows with Posters
