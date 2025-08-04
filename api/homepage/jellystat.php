@@ -573,7 +573,7 @@ trait JellyStatHomepageItem
                     var title = movie.title || "Unknown Movie";
                     
                     html += "<div style=\"display: inline-block; margin: 10px; width: 150px;\">";
-                    html += "<div class=\"poster-card\" style=\"position: relative; background: #f8f9fa; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1); width: 150px; height: 270px;\">";
+                    html += "<div class=\"poster-card\" style=\"position: relative; background: #f8f9fa; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1); width: 150px; height: 280px;\">";
                     
                     // Poster image container
                     html += "<div class=\"poster-image\" style=\"position: relative; width: 150px; height: 225px; background: #e9ecef;\">";
