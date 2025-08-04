@@ -328,30 +328,21 @@ trait JellyStatHomepageItem
         // Helper function to generate poster URLs from JellyStat/Jellyfin
         function getPosterUrl(posterPath, itemId, serverId) {
             if (!posterPath && !itemId) return null;
-            
-            // If we have a poster path from JellyStat, use it directly
             if (posterPath) {
-                // Check if it's already a full URL
-                if (posterPath.startsWith("http://") || posterPath.startsWith("https://")) {
+                if (posterPath.indexOf("http://") === 0 || posterPath.indexOf("https://") === 0) {
                     return posterPath;
                 }
-                
-                // If it's a relative path, construct the full URL via JellyStat
-                var jellyStatUrl = "' . htmlspecialchars($this->qualifyURL($this->config['jellyStatURL'] ?? ''), ENT_QUOTES, 'UTF-8') . '";
-                if (jellyStatUrl && posterPath.startsWith("/")) {
+                var jellyStatUrl = "' . $jellyStatUrl . '";
+                if (jellyStatUrl && posterPath.indexOf("/") === 0) {
                     return jellyStatUrl + posterPath;
                 }
             }
-            
-            // Fallback: Try to construct Jellyfin/Emby image URL if we have itemId
             if (itemId && serverId) {
-                var jellyStatUrl = "' . htmlspecialchars($this->qualifyURL($this->config['jellyStatURL'] ?? ''), ENT_QUOTES, 'UTF-8') . '";
+                var jellyStatUrl = "' . $jellyStatUrl . '";
                 if (jellyStatUrl) {
-                    // Try JellyStat image proxy endpoint (if available)
                     return jellyStatUrl + "/api/image/" + itemId + "/Primary";
                 }
             }
-            
             return null;
         }
 
@@ -559,8 +550,8 @@ trait JellyStatHomepageItem
                 stats.most_watched_movies.forEach(function(movie) {
                     var posterUrl = getPosterUrl(movie.poster_path, movie.id, movie.server_id);
                     var playCount = movie.play_count || 0;
-                    var year = movie.year || 'N/A';
-                    var title = movie.title || 'Unknown Movie';
+                    var year = movie.year || "N/A";
+                    var title = movie.title || "Unknown Movie";
                     
                     html += "<div class=\"col-lg-2 col-md-3 col-sm-4 col-xs-6\" style=\"margin-bottom: 20px;\">";
                     html += "<div class=\"poster-card\" style=\"position: relative; background: #f8f9fa; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1); transition: transform 0.2s;\">";
@@ -568,9 +559,9 @@ trait JellyStatHomepageItem
                     // Poster image
                     html += "<div class=\"poster-image\" style=\"position: relative; padding-top: 150%; background: #e9ecef;\">";
                     if (posterUrl) {
-                        html += "<img src=\"" + posterUrl + "\" alt=\"" + title + "\" style=\"position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover;\" onerror=\"this.style.display='none'; this.nextElementSibling.style.display='flex';\">";
+                        html += "<img src=\"" + posterUrl + "\" alt=\"" + title + "\" style=\"position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover;\" onerror=\"this.style.display=\"none\"; this.nextElementSibling.style.display=\"flex\";\">";
                     }
-                    html += "<div class=\"poster-placeholder\" style=\"position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: " + (posterUrl ? 'none' : 'flex') + "; align-items: center; justify-content: center; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;\">";
+                    html += "<div class=\"poster-placeholder\" style=\"position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: " + (posterUrl ? "none" : "flex") + "; align-items: center; justify-content: center; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;\">";
                     html += "<i class=\"fa fa-film fa-3x\"></i>";
                     html += "</div>";
                     
@@ -601,8 +592,8 @@ trait JellyStatHomepageItem
                 stats.most_watched_shows.forEach(function(show) {
                     var posterUrl = getPosterUrl(show.poster_path, show.id, show.server_id);
                     var playCount = show.play_count || 0;
-                    var year = show.year || 'N/A';
-                    var title = show.title || 'Unknown Show';
+                    var year = show.year || "N/A";
+                    var title = show.title || "Unknown Show";
                     
                     html += "<div class=\"col-lg-2 col-md-3 col-sm-4 col-xs-6\" style=\"margin-bottom: 20px;\">";
                     html += "<div class=\"poster-card\" style=\"position: relative; background: #f8f9fa; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1); transition: transform 0.2s;\">";
@@ -610,9 +601,9 @@ trait JellyStatHomepageItem
                     // Poster image
                     html += "<div class=\"poster-image\" style=\"position: relative; padding-top: 150%; background: #e9ecef;\">";
                     if (posterUrl) {
-                        html += "<img src=\"" + posterUrl + "\" alt=\"" + title + "\" style=\"position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover;\" onerror=\"this.style.display='none'; this.nextElementSibling.style.display='flex';\">";
+                        html += "<img src=\"" + posterUrl + "\" alt=\"" + title + "\" style=\"position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover;\" onerror=\"this.style.display=\"none\"; this.nextElementSibling.style.display=\"flex\";\">";
                     }
-                    html += "<div class=\"poster-placeholder\" style=\"position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: " + (posterUrl ? 'none' : 'flex') + "; align-items: center; justify-content: center; background: linear-gradient(135deg, #74b9ff 0%, #0984e3 100%); color: white;\">";
+                    html += "<div class=\"poster-placeholder\" style=\"position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: " + (posterUrl ? "none" : "flex") + "; align-items: center; justify-content: center; background: linear-gradient(135deg, #74b9ff 0%, #0984e3 100%); color: white;\">";
                     html += "<i class=\"fa fa-television fa-3x\"></i>";
                     html += "</div>";
                     
@@ -643,8 +634,8 @@ trait JellyStatHomepageItem
                 stats.most_listened_music.forEach(function(music) {
                     var posterUrl = getPosterUrl(music.poster_path || music.cover_art, music.id, music.server_id);
                     var playCount = music.play_count || 0;
-                    var artist = music.artist || 'Unknown Artist';
-                    var title = music.title || music.album || 'Unknown';
+                    var artist = music.artist || "Unknown Artist";
+                    var title = music.title || music.album || "Unknown";
                     
                     html += "<div class=\"col-lg-2 col-md-3 col-sm-4 col-xs-6\" style=\"margin-bottom: 20px;\">";
                     html += "<div class=\"poster-card\" style=\"position: relative; background: #f8f9fa; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1); transition: transform 0.2s;\">";
@@ -652,9 +643,9 @@ trait JellyStatHomepageItem
                     // Cover art
                     html += "<div class=\"poster-image\" style=\"position: relative; padding-top: 100%; background: #e9ecef;\">";
                     if (posterUrl) {
-                        html += "<img src=\"" + posterUrl + "\" alt=\"" + title + "\" style=\"position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover;\" onerror=\"this.style.display='none'; this.nextElementSibling.style.display='flex';\">";
+                        html += "<img src=\"" + posterUrl + "\" alt=\"" + title + "\" style=\"position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover;\" onerror=\"this.style.display=\"none\"; this.nextElementSibling.style.display=\"flex\";\">";
                     }
-                    html += "<div class=\"poster-placeholder\" style=\"position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: " + (posterUrl ? 'none' : 'flex') + "; align-items: center; justify-content: center; background: linear-gradient(135deg, #fd79a8 0%, #e84393 100%); color: white;\">";
+                    html += "<div class=\"poster-placeholder\" style=\"position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: " + (posterUrl ? "none" : "flex") + "; align-items: center; justify-content: center; background: linear-gradient(135deg, #fd79a8 0%, #e84393 100%); color: white;\">";
                     html += "<i class=\"fa fa-music fa-3x\"></i>";
                     html += "</div>";
                     
