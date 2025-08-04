@@ -349,22 +349,32 @@ trait JellyStatHomepageItem
         function getJellyStatData() {
             return organizrAPI2("GET", "api/v2/homepage/jellystat")
             .done(function(data) {
+                console.log("JellyStat API Response:", data);
                 if (data && data.response && data.response.result === "success" && data.response.data) {
+                    console.log("JellyStat Data:", data.response.data);
                     renderJellyStatData(data.response.data);
                 } else {
-                    $("#jellystat-content").html("<div class=\"col-lg-12 text-center text-danger\">Failed to load JellyStat data</div>");
+                    console.error("JellyStat API Error:", data);
+                    var errorMsg = "Failed to load JellyStat data";
+                    if (data && data.response && data.response.message) {
+                        errorMsg += ": " + data.response.message;
+                    }
+                    $("#jellystat-content").html("<div class=\"col-lg-12 text-center text-danger\">" + errorMsg + "</div>");
                 }
             })
             .fail(function(xhr, status, error) {
-                $("#jellystat-content").html("<div class=\"col-lg-12 text-center text-danger\">Error loading JellyStat data</div>");
+                console.error("JellyStat API Request Failed:", xhr, status, error);
+                $("#jellystat-content").html("<div class=\"col-lg-12 text-center text-danger\">Error loading JellyStat data: " + error + "</div>");
             });
         }
         
         function renderJellyStatData(stats) {
+            console.log("Rendering JellyStat data:", stats);
             var html = "";
             
             // Server Overview - Summary Stats
             if (stats.library_totals) {
+                console.log("Library totals found:", stats.library_totals);
                 html += "<div class=\"col-lg-12\" style=\"margin-bottom: 20px;\">";
                 html += "<div class=\"row\">";
                 
@@ -543,11 +553,13 @@ trait JellyStatHomepageItem
             
             // Most Watched Movies with Posters
             if (' . $showMostWatchedMovies . ' && stats.most_watched_movies && stats.most_watched_movies.length > 0) {
+                console.log("Rendering most watched movies:", stats.most_watched_movies);
                 html += "<div class=\"col-lg-12\" style=\"margin-top: 30px;\">";
                 html += "<h5><i class=\"fa fa-film text-primary\"></i> Most Watched Movies</h5>";
                 html += "<div class=\"row\" style=\"margin-top: 15px;\">";
                 
                 stats.most_watched_movies.forEach(function(movie) {
+                    console.log("Processing movie:", movie);
                     var posterUrl = getPosterUrl(movie.poster_path, movie.id, movie.server_id);
                     var playCount = movie.play_count || 0;
                     var year = movie.year || "N/A";
