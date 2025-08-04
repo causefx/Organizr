@@ -837,33 +837,27 @@ trait JellyStatHomepageItem
                 }
             }
             
-            // Get Most Watched Movies (if endpoint available)
-            $moviesUrl = $baseUrl . '/api/getMostWatchedMovies?apiKey=' . urlencode($token) . '&count=' . $mostWatchedCount;
-            $response = Requests::get($moviesUrl, [], $options);
+            // Get History data and process to extract most watched content
+            $historyUrl = $baseUrl . '/api/getHistory?apiKey=' . urlencode($token) . '&size=500';
+            $response = Requests::get($historyUrl, [], $options);
             if ($response->success) {
-                $data = json_decode($response->body, true);
-                if (is_array($data) && !isset($data['error'])) {
-                    $stats['most_watched_movies'] = $data;
-                }
-            }
-            
-            // Get Most Watched Shows (if endpoint available)
-            $showsUrl = $baseUrl . '/api/getMostWatchedShows?apiKey=' . urlencode($token) . '&count=' . $mostWatchedCount;
-            $response = Requests::get($showsUrl, [], $options);
-            if ($response->success) {
-                $data = json_decode($response->body, true);
-                if (is_array($data) && !isset($data['error'])) {
-                    $stats['most_watched_shows'] = $data;
-                }
-            }
-            
-            // Get Most Listened Music (if endpoint available)
-            $musicUrl = $baseUrl . '/api/getMostListenedMusic?apiKey=' . urlencode($token) . '&count=' . $mostWatchedCount;
-            $response = Requests::get($musicUrl, [], $options);
-            if ($response->success) {
-                $data = json_decode($response->body, true);
-                if (is_array($data) && !isset($data['error'])) {
-                    $stats['most_listened_music'] = $data;
+                $historyData = json_decode($response->body, true);
+                if (is_array($historyData) && isset($historyData['results']) && is_array($historyData['results'])) {
+                    // Process history to get most watched content
+                    $processedData = $this->processJellyStatHistory($historyData['results']);
+                    
+                    // Extract most watched items based on user settings
+                    if ($this->config['homepageJellyStatShowMostWatchedMovies'] ?? false) {
+                        $stats['most_watched_movies'] = array_slice($processedData['movies'], 0, $mostWatchedCount);
+                    }
+                    
+                    if ($this->config['homepageJellyStatShowMostWatchedShows'] ?? false) {
+                        $stats['most_watched_shows'] = array_slice($processedData['shows'], 0, $mostWatchedCount);
+                    }
+                    
+                    if ($this->config['homepageJellyStatShowMostListenedMusic'] ?? false) {
+                        $stats['most_listened_music'] = array_slice($processedData['music'], 0, $mostWatchedCount);
+                    }
                 }
             }
             
@@ -918,5 +912,140 @@ trait JellyStatHomepageItem
         } else {
             return gmdate('H:i:s', $seconds);
         }
+    }
+    
+    /**
+     * Process JellyStat history data to extract most watched content
+     */
+    private function processJellyStatHistory($historyResults)
+    {
+        $processed = [
+            'movies' => [],
+            'shows' => [],
+            'music' => []
+        ];
+        
+        // Group items by ID and count plays
+        $itemStats = [];
+        
+        foreach ($historyResults as $result) {
+            // Determine content type based on available data
+            $contentType = 'unknown';
+            $itemId = null;
+            $title = 'Unknown';
+            $year = null;
+            $serverId = $result['ServerId'] ?? null;
+            
+            // Check if it's a TV show (has SeriesName)
+            if (!empty($result['SeriesName'])) {
+                $contentType = 'show';
+                $itemId = $result['SeriesName']; // Use series name as unique identifier
+                $title = $result['SeriesName'];
+                // Try to extract year from episode or series data
+                if (!empty($result['EpisodeName'])) {
+                    // This is an episode, count toward the series
+                    $episodeTitle = $result['EpisodeName'];
+                    if (preg_match('/\b(19|20)\d{2}\b/', $episodeTitle, $matches)) {
+                        $year = $matches[0];
+                    }
+                }
+            }
+            // Check if it's a movie (has NowPlayingItemName but no SeriesName)
+            elseif (!empty($result['NowPlayingItemName']) && empty($result['SeriesName'])) {
+                // Determine if it's likely a movie or music based on duration or other hints
+                $itemName = $result['NowPlayingItemName'];
+                $duration = $result['PlaybackDuration'] ?? 0;
+                
+                // If duration is very short (< 10 minutes) and no video streams, likely music
+                $hasVideo = false;
+                if (isset($result['MediaStreams']) && is_array($result['MediaStreams'])) {
+                    foreach ($result['MediaStreams'] as $stream) {
+                        if (($stream['Type'] ?? '') === 'Video') {
+                            $hasVideo = true;
+                            break;
+                        }
+                    }
+                }
+                
+                if (!$hasVideo || $duration < 600) { // Less than 10 minutes and no video = likely music
+                    $contentType = 'music';
+                    $title = $itemName;
+                    // For music, try to extract artist info
+                    // Music tracks might have format like "Artist - Song" or just "Song"
+                } else {
+                    $contentType = 'movie';
+                    $title = $itemName;
+                    // Try to extract year from movie title
+                    if (preg_match('/\((19|20)\d{2}\)/', $title, $matches)) {
+                        $year = $matches[1] . $matches[2];
+                        $title = trim(str_replace($matches[0], '', $title));
+                    }
+                }
+                
+                $itemId = $result['NowPlayingItemId'] ?? $itemName;
+            }
+            
+            if ($itemId && $contentType !== 'unknown') {
+                $key = $contentType . '_' . $itemId;
+                
+                if (!isset($itemStats[$key])) {
+                    $itemStats[$key] = [
+                        'id' => $itemId,
+                        'title' => $title,
+                        'type' => $contentType,
+                        'play_count' => 0,
+                        'total_duration' => 0,
+                        'year' => $year,
+                        'server_id' => $serverId,
+                        'first_played' => $result['ActivityDateInserted'] ?? null,
+                        'last_played' => $result['ActivityDateInserted'] ?? null
+                    ];
+                }
+                
+                $itemStats[$key]['play_count']++;
+                $itemStats[$key]['total_duration'] += $result['PlaybackDuration'] ?? 0;
+                
+                // Update last played time
+                $currentTime = $result['ActivityDateInserted'] ?? null;
+                if ($currentTime && (!$itemStats[$key]['last_played'] || $currentTime > $itemStats[$key]['last_played'])) {
+                    $itemStats[$key]['last_played'] = $currentTime;
+                }
+                
+                // Update first played time  
+                if ($currentTime && (!$itemStats[$key]['first_played'] || $currentTime < $itemStats[$key]['first_played'])) {
+                    $itemStats[$key]['first_played'] = $currentTime;
+                }
+            }
+        }
+        
+        // Separate by content type and sort by play count
+        foreach ($itemStats as $item) {
+            switch ($item['type']) {
+                case 'movie':
+                    $processed['movies'][] = $item;
+                    break;
+                case 'show':
+                    $processed['shows'][] = $item;
+                    break;
+                case 'music':
+                    $processed['music'][] = $item;
+                    break;
+            }
+        }
+        
+        // Sort each category by play count (descending)
+        usort($processed['movies'], function($a, $b) {
+            return $b['play_count'] - $a['play_count'];
+        });
+        
+        usort($processed['shows'], function($a, $b) {
+            return $b['play_count'] - $a['play_count'];
+        });
+        
+        usort($processed['music'], function($a, $b) {
+            return $b['play_count'] - $a['play_count'];
+        });
+        
+        return $processed;
     }
 }
