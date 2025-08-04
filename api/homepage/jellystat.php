@@ -513,33 +513,33 @@ trait JellyStatHomepageItem
         // Helper function to get icon for content type
         function getTypeIcon(collectionType) {
             switch(collectionType) {
-                case 'movies': return 'fa-film';
-                case 'tvshows': return 'fa-television';
-                case 'music': return 'fa-music';
-                case 'mixed': return 'fa-folder-open';
-                default: return 'fa-folder';
+                case "movies": return "fa-film";
+                case "tvshows": return "fa-television";
+                case "music": return "fa-music";
+                case "mixed": return "fa-folder-open";
+                default: return "fa-folder";
             }
         }
         
         // Helper function to format duration from ticks
         function formatDuration(ticks) {
-            if (!ticks || ticks === 0) return '0 min';
+            if (!ticks || ticks === 0) return "0 min";
             
             // Convert ticks to seconds (ticks are in 100-nanosecond intervals)
             var seconds = ticks / 10000000;
             
             if (seconds < 60) {
-                return Math.round(seconds) + ' sec';
+                return Math.round(seconds) + " sec";
             } else if (seconds < 3600) {
-                return Math.round(seconds / 60) + ' min';
+                return Math.round(seconds / 60) + " min";
             } else if (seconds < 86400) {
                 var hours = Math.floor(seconds / 3600);
                 var minutes = Math.floor((seconds % 3600) / 60);
-                return hours + 'h ' + minutes + 'm';
+                return hours + "h " + minutes + "m";
             } else {
                 var days = Math.floor(seconds / 86400);
                 var hours = Math.floor((seconds % 86400) / 3600);
-                return days + 'd ' + hours + 'h';
+                return days + "d " + hours + "h";
             }
         }
         
