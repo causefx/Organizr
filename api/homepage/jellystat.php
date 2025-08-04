@@ -625,7 +625,7 @@ trait JellyStatHomepageItem
                     // Poster image
                     html += "<div class=\"poster-image\" style=\"position: relative; padding-top: 150%; background: #e9ecef;\">";
                     if (posterUrl) {
-                        html += "<img src=\"" + posterUrl + "\" alt=\"" + title + "\" style=\"position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover;\" onerror=\"this.style.display=\"none\"; this.nextElementSibling.style.display=\"flex\";\">";
+                        html += "<img src=\"" + posterUrl + "\" alt=\"" + title + "\" style=\"position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover;\" onerror=\"this.style.display='none'; this.nextElementSibling.style.display='flex';\">";
                     }
                     html += "<div class=\"poster-placeholder\" style=\"position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: " + (posterUrl ? "none" : "flex") + "; align-items: center; justify-content: center; background: linear-gradient(135deg, #74b9ff 0%, #0984e3 100%); color: white;\">";
                     html += "<i class=\"fa fa-television fa-3x\"></i>";
@@ -667,7 +667,7 @@ trait JellyStatHomepageItem
                     // Cover art
                     html += "<div class=\"poster-image\" style=\"position: relative; padding-top: 100%; background: #e9ecef;\">";
                     if (posterUrl) {
-                        html += "<img src=\"" + posterUrl + "\" alt=\"" + title + "\" style=\"position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover;\" onerror=\"this.style.display=\"none\"; this.nextElementSibling.style.display=\"flex\";\">";
+                        html += "<img src=\"" + posterUrl + "\" alt=\"" + title + "\" style=\"position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover;\" onerror=\"this.style.display='none'; this.nextElementSibling.style.display='flex';\">";
                     }
                     html += "<div class=\"poster-placeholder\" style=\"position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: " + (posterUrl ? "none" : "flex") + "; align-items: center; justify-content: center; background: linear-gradient(135deg, #fd79a8 0%, #e84393 100%); color: white;\">";
                     html += "<i class=\"fa fa-music fa-3x\"></i>";
