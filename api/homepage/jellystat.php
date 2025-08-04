@@ -240,6 +240,7 @@ trait JellyStatHomepageItem
         $showMostWatchedShows = ($this->config['homepageJellyStatShowMostWatchedShows'] ?? true) ? 'true' : 'false';
         $showMostListenedMusic = ($this->config['homepageJellyStatShowMostListenedMusic'] ?? true) ? 'true' : 'false';
         $mostWatchedCount = $this->config['homepageJellyStatMostWatchedCount'] ?? 10;
+        $jellyStatUrl = htmlspecialchars($this->qualifyURL($this->config['jellyStatURL'] ?? ''), ENT_QUOTES, 'UTF-8');
 
         return '
         <div id="' . __FUNCTION__ . '">
@@ -331,23 +332,23 @@ trait JellyStatHomepageItem
             // If we have a poster path from JellyStat, use it directly
             if (posterPath) {
                 // Check if it's already a full URL
-                if (posterPath.startsWith('http://') || posterPath.startsWith('https://')) {
+                if (posterPath.startsWith("http://") || posterPath.startsWith("https://")) {
                     return posterPath;
                 }
                 
                 // If it's a relative path, construct the full URL via JellyStat
-                var jellyStatUrl = "' . $this->qualifyURL($this->config['jellyStatURL'] ?? '') . '";
-                if (jellyStatUrl && posterPath.startsWith('/')) {
+                var jellyStatUrl = "' . htmlspecialchars($this->qualifyURL($this->config['jellyStatURL'] ?? ''), ENT_QUOTES, 'UTF-8') . '";
+                if (jellyStatUrl && posterPath.startsWith("/")) {
                     return jellyStatUrl + posterPath;
                 }
             }
             
             // Fallback: Try to construct Jellyfin/Emby image URL if we have itemId
             if (itemId && serverId) {
-                var jellyStatUrl = "' . $this->qualifyURL($this->config['jellyStatURL'] ?? '') . '";
+                var jellyStatUrl = "' . htmlspecialchars($this->qualifyURL($this->config['jellyStatURL'] ?? ''), ENT_QUOTES, 'UTF-8') . '";
                 if (jellyStatUrl) {
-                    // Try JellyStat's image proxy endpoint (if available)
-                    return jellyStatUrl + '/api/image/' + itemId + '/Primary';
+                    // Try JellyStat image proxy endpoint (if available)
+                    return jellyStatUrl + "/api/image/" + itemId + "/Primary";
                 }
             }
             
