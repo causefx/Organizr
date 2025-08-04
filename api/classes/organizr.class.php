@@ -66,8 +66,10 @@ class Organizr
 	use WeatherHomepageItem;
 	use uTorrentHomepageItem;
 	use UptimeKumaHomepageItem;
-	use HomepageUserWatchStats;
-	//use JellyStatHomepageItem;
+	use HomepageUserWatchStats, JellyStatHomepageItem {
+		JellyStatHomepageItem::formatDuration insteadof HomepageUserWatchStats;
+		HomepageUserWatchStats::formatDuration as formatDurationSeconds;
+	}
 
 	// ===================================
 	// Organizr Version
