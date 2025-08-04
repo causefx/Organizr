@@ -47,6 +47,12 @@ trait JellyStatHomepageItem
                     $this->settingsOption('switch', 'homepageJellyStatShowRecentActivity', ['label' => 'Show Recent Activity']),
                     $this->settingsOption('number', 'homepageJellyStatMaxItems', ['label' => 'Maximum Items to Display', 'min' => 5, 'max' => 50]),
                 ],
+                'Most Watched Content' => [
+                    $this->settingsOption('switch', 'homepageJellyStatShowMostWatchedMovies', ['label' => 'Show Most Watched Movies with Posters']),
+                    $this->settingsOption('switch', 'homepageJellyStatShowMostWatchedShows', ['label' => 'Show Most Watched TV Shows with Posters']),
+                    $this->settingsOption('switch', 'homepageJellyStatShowMostListenedMusic', ['label' => 'Show Most Listened Music with Cover Art']),
+                    $this->settingsOption('number', 'homepageJellyStatMostWatchedCount', ['label' => 'Number of Most Watched Items to Display', 'min' => 1, 'max' => 50]),
+                ],
                 'Iframe Mode Options' => [
                     $this->settingsOption('number', 'homepageJellyStatIframeHeight', ['label' => 'Iframe Height (pixels)', 'min' => 300, 'max' => 2000]),
                     $this->settingsOption('switch', 'homepageJellyStatIframeScrolling', ['label' => 'Allow Scrolling in Iframe']),
@@ -230,6 +236,10 @@ trait JellyStatHomepageItem
         $showUsers = ($this->config['homepageJellyStatShowUsers'] ?? true) ? 'true' : 'false';
         $showMostWatched = ($this->config['homepageJellyStatShowMostWatched'] ?? true) ? 'true' : 'false';
         $showRecentActivity = ($this->config['homepageJellyStatShowRecentActivity'] ?? true) ? 'true' : 'false';
+        $showMostWatchedMovies = ($this->config['homepageJellyStatShowMostWatchedMovies'] ?? true) ? 'true' : 'false';
+        $showMostWatchedShows = ($this->config['homepageJellyStatShowMostWatchedShows'] ?? true) ? 'true' : 'false';
+        $showMostListenedMusic = ($this->config['homepageJellyStatShowMostListenedMusic'] ?? true) ? 'true' : 'false';
+        $mostWatchedCount = $this->config['homepageJellyStatMostWatchedCount'] ?? 10;
 
         return '
         <div id="' . __FUNCTION__ . '">
@@ -476,6 +486,132 @@ trait JellyStatHomepageItem
                 html += "</tbody></table></div></div>";
             }
             
+            // Most Watched Movies with Posters
+            if (' . $showMostWatchedMovies . ' && stats.most_watched_movies && stats.most_watched_movies.length > 0) {
+                html += "<div class=\"col-lg-12\" style=\"margin-top: 30px;\">";
+                html += "<h5><i class=\"fa fa-film text-primary\"></i> Most Watched Movies</h5>";
+                html += "<div class=\"row\" style=\"margin-top: 15px;\">";
+                
+                stats.most_watched_movies.forEach(function(movie) {
+                    var posterUrl = getPosterUrl(movie.poster_path, movie.id, movie.server_id);
+                    var playCount = movie.play_count || 0;
+                    var year = movie.year || 'N/A';
+                    var title = movie.title || 'Unknown Movie';
+                    
+                    html += "<div class=\"col-lg-2 col-md-3 col-sm-4 col-xs-6\" style=\"margin-bottom: 20px;\">";
+                    html += "<div class=\"poster-card\" style=\"position: relative; background: #f8f9fa; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1); transition: transform 0.2s;\">";
+                    
+                    // Poster image
+                    html += "<div class=\"poster-image\" style=\"position: relative; padding-top: 150%; background: #e9ecef;\">";
+                    if (posterUrl) {
+                        html += "<img src=\"" + posterUrl + "\" alt=\"" + title + "\" style=\"position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover;\" onerror=\"this.style.display='none'; this.nextElementSibling.style.display='flex';\">";
+                    }
+                    html += "<div class=\"poster-placeholder\" style=\"position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: " + (posterUrl ? 'none' : 'flex') + "; align-items: center; justify-content: center; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;\">";
+                    html += "<i class=\"fa fa-film fa-3x\"></i>";
+                    html += "</div>";
+                    
+                    // Play count badge
+                    html += "<div class=\"play-count-badge\" style=\"position: absolute; top: 8px; right: 8px; background: rgba(0,0,0,0.8); color: white; padding: 4px 8px; border-radius: 12px; font-size: 11px;\">";
+                    html += "<i class=\"fa fa-play\"></i> " + playCount;
+                    html += "</div>";
+                    html += "</div>";
+                    
+                    // Movie info
+                    html += "<div class=\"poster-info\" style=\"padding: 12px; text-align: center;\">";
+                    html += "<h6 style=\"margin: 0 0 4px 0; font-size: 13px; font-weight: bold; line-height: 1.2; height: 32px; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;\" title=\"" + title + "\">" + title + "</h6>";
+                    html += "<small class=\"text-muted\">" + year + "</small>";
+                    html += "</div>";
+                    
+                    html += "</div></div>";
+                });
+                
+                html += "</div></div>";
+            }
+            
+            // Most Watched TV Shows with Posters
+            if (' . $showMostWatchedShows . ' && stats.most_watched_shows && stats.most_watched_shows.length > 0) {
+                html += "<div class=\"col-lg-12\" style=\"margin-top: 30px;\">";
+                html += "<h5><i class=\"fa fa-television text-info\"></i> Most Watched TV Shows</h5>";
+                html += "<div class=\"row\" style=\"margin-top: 15px;\">";
+                
+                stats.most_watched_shows.forEach(function(show) {
+                    var posterUrl = getPosterUrl(show.poster_path, show.id, show.server_id);
+                    var playCount = show.play_count || 0;
+                    var year = show.year || 'N/A';
+                    var title = show.title || 'Unknown Show';
+                    
+                    html += "<div class=\"col-lg-2 col-md-3 col-sm-4 col-xs-6\" style=\"margin-bottom: 20px;\">";
+                    html += "<div class=\"poster-card\" style=\"position: relative; background: #f8f9fa; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1); transition: transform 0.2s;\">";
+                    
+                    // Poster image
+                    html += "<div class=\"poster-image\" style=\"position: relative; padding-top: 150%; background: #e9ecef;\">";
+                    if (posterUrl) {
+                        html += "<img src=\"" + posterUrl + "\" alt=\"" + title + "\" style=\"position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover;\" onerror=\"this.style.display='none'; this.nextElementSibling.style.display='flex';\">";
+                    }
+                    html += "<div class=\"poster-placeholder\" style=\"position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: " + (posterUrl ? 'none' : 'flex') + "; align-items: center; justify-content: center; background: linear-gradient(135deg, #74b9ff 0%, #0984e3 100%); color: white;\">";
+                    html += "<i class=\"fa fa-television fa-3x\"></i>";
+                    html += "</div>";
+                    
+                    // Play count badge
+                    html += "<div class=\"play-count-badge\" style=\"position: absolute; top: 8px; right: 8px; background: rgba(0,0,0,0.8); color: white; padding: 4px 8px; border-radius: 12px; font-size: 11px;\">";
+                    html += "<i class=\"fa fa-play\"></i> " + playCount;
+                    html += "</div>";
+                    html += "</div>";
+                    
+                    // Show info
+                    html += "<div class=\"poster-info\" style=\"padding: 12px; text-align: center;\">";
+                    html += "<h6 style=\"margin: 0 0 4px 0; font-size: 13px; font-weight: bold; line-height: 1.2; height: 32px; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;\" title=\"" + title + "\">" + title + "</h6>";
+                    html += "<small class=\"text-muted\">" + year + "</small>";
+                    html += "</div>";
+                    
+                    html += "</div></div>";
+                });
+                
+                html += "</div></div>";
+            }
+            
+            // Most Listened Music with Cover Art
+            if (' . $showMostListenedMusic . ' && stats.most_listened_music && stats.most_listened_music.length > 0) {
+                html += "<div class=\"col-lg-12\" style=\"margin-top: 30px;\">";
+                html += "<h5><i class=\"fa fa-music text-success\"></i> Most Listened Music</h5>";
+                html += "<div class=\"row\" style=\"margin-top: 15px;\">";
+                
+                stats.most_listened_music.forEach(function(music) {
+                    var posterUrl = getPosterUrl(music.poster_path || music.cover_art, music.id, music.server_id);
+                    var playCount = music.play_count || 0;
+                    var artist = music.artist || 'Unknown Artist';
+                    var title = music.title || music.album || 'Unknown';
+                    
+                    html += "<div class=\"col-lg-2 col-md-3 col-sm-4 col-xs-6\" style=\"margin-bottom: 20px;\">";
+                    html += "<div class=\"poster-card\" style=\"position: relative; background: #f8f9fa; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1); transition: transform 0.2s;\">";
+                    
+                    // Cover art
+                    html += "<div class=\"poster-image\" style=\"position: relative; padding-top: 100%; background: #e9ecef;\">";
+                    if (posterUrl) {
+                        html += "<img src=\"" + posterUrl + "\" alt=\"" + title + "\" style=\"position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover;\" onerror=\"this.style.display='none'; this.nextElementSibling.style.display='flex';\">";
+                    }
+                    html += "<div class=\"poster-placeholder\" style=\"position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: " + (posterUrl ? 'none' : 'flex') + "; align-items: center; justify-content: center; background: linear-gradient(135deg, #fd79a8 0%, #e84393 100%); color: white;\">";
+                    html += "<i class=\"fa fa-music fa-3x\"></i>";
+                    html += "</div>";
+                    
+                    // Play count badge
+                    html += "<div class=\"play-count-badge\" style=\"position: absolute; top: 8px; right: 8px; background: rgba(0,0,0,0.8); color: white; padding: 4px 8px; border-radius: 12px; font-size: 11px;\">";
+                    html += "<i class=\"fa fa-play\"></i> " + playCount;
+                    html += "</div>";
+                    html += "</div>";
+                    
+                    // Music info
+                    html += "<div class=\"poster-info\" style=\"padding: 12px; text-align: center;\">";
+                    html += "<h6 style=\"margin: 0 0 4px 0; font-size: 13px; font-weight: bold; line-height: 1.2; height: 32px; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;\" title=\"" + title + "\">" + title + "</h6>";
+                    html += "<small class=\"text-muted\">" + artist + "</small>";
+                    html += "</div>";
+                    
+                    html += "</div></div>";
+                });
+                
+                html += "</div></div>";
+            }
+            
             if (!html) {
                 html = "<div class=\"col-lg-12 text-center text-muted\">";
                 html += "<i class=\"fa fa-exclamation-circle fa-3x\" style=\"margin-bottom: 10px;\"></i>";
@@ -543,6 +679,36 @@ trait JellyStatHomepageItem
             }
         }
         
+        // Helper function to generate poster URLs from JellyStat/Jellyfin
+        function getPosterUrl(posterPath, itemId, serverId) {
+            if (!posterPath && !itemId) return null;
+            
+            // If we have a poster path from JellyStat, use it directly
+            if (posterPath) {
+                // Check if it's already a full URL
+                if (posterPath.startsWith('http://') || posterPath.startsWith('https://')) {
+                    return posterPath;
+                }
+                
+                // If it's a relative path, construct the full URL via JellyStat
+                var jellyStatUrl = "' . $this->qualifyURL($this->config['jellyStatURL'] ?? '') . '";
+                if (jellyStatUrl && posterPath.startsWith('/')) {
+                    return jellyStatUrl + posterPath;
+                }
+            }
+            
+            // Fallback: Try to construct Jellyfin/Emby image URL if we have itemId
+            if (itemId && serverId) {
+                var jellyStatUrl = "' . $this->qualifyURL($this->config['jellyStatURL'] ?? '') . '";
+                if (jellyStatUrl) {
+                    // Try JellyStat's image proxy endpoint (if available)
+                    return jellyStatUrl + '/api/image/' + itemId + '/Primary';
+                }
+            }
+            
+            return null;
+        }
+        
         </script>
         ';
     }
@@ -597,8 +763,13 @@ trait JellyStatHomepageItem
             'period' => "{$days} days",
             'libraries' => [],
             'library_totals' => [],
-            'server_info' => []
+            'server_info' => [],
+            'most_watched_movies' => [],
+            'most_watched_shows' => [],
+            'most_listened_music' => []
         ];
+        
+        $mostWatchedCount = $this->config['homepageJellyStatMostWatchedCount'] ?? 10;
         
         try {
             // Get Library Statistics - use query parameter authentication
@@ -659,6 +830,36 @@ trait JellyStatHomepageItem
                         'server_id' => $data[0]['ServerId'] ?? 'Unknown',
                         'last_updated' => date('c')
                     ];
+                }
+            }
+            
+            // Get Most Watched Movies (if endpoint available)
+            $moviesUrl = $baseUrl . '/api/getMostWatchedMovies?apiKey=' . urlencode($token) . '&count=' . $mostWatchedCount;
+            $response = Requests::get($moviesUrl, [], $options);
+            if ($response->success) {
+                $data = json_decode($response->body, true);
+                if (is_array($data) && !isset($data['error'])) {
+                    $stats['most_watched_movies'] = $data;
+                }
+            }
+            
+            // Get Most Watched Shows (if endpoint available)
+            $showsUrl = $baseUrl . '/api/getMostWatchedShows?apiKey=' . urlencode($token) . '&count=' . $mostWatchedCount;
+            $response = Requests::get($showsUrl, [], $options);
+            if ($response->success) {
+                $data = json_decode($response->body, true);
+                if (is_array($data) && !isset($data['error'])) {
+                    $stats['most_watched_shows'] = $data;
+                }
+            }
+            
+            // Get Most Listened Music (if endpoint available)
+            $musicUrl = $baseUrl . '/api/getMostListenedMusic?apiKey=' . urlencode($token) . '&count=' . $mostWatchedCount;
+            $response = Requests::get($musicUrl, [], $options);
+            if ($response->success) {
+                $data = json_decode($response->body, true);
+                if (is_array($data) && !isset($data['error'])) {
+                    $stats['most_listened_music'] = $data;
                 }
             }
             
