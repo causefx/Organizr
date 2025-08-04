@@ -298,20 +298,106 @@ trait JellyStatHomepageItem
         function renderJellyStatData(stats) {
             var html = "";
             
-            // Library Statistics
-            if (' . $showLibraries . ' && stats.libraries && stats.libraries.length > 0) {
+            // Server Overview - Summary Stats
+            if (stats.library_totals) {
+                html += "<div class=\"col-lg-12\" style=\"margin-bottom: 20px;\">";
+                html += "<div class=\"row\">";
+                
+                // Total Libraries
+                html += "<div class=\"col-sm-3\">";
+                html += "<div class=\"small-box bg-blue\">";
+                html += "<div class=\"inner\">";
+                html += "<h3>" + (stats.library_totals.total_libraries || 0) + "</h3>";
+                html += "<p>Libraries</p>";
+                html += "</div>";
+                html += "<div class=\"icon\"><i class=\"fa fa-folder\"></i></div>";
+                html += "</div></div>";
+                
+                // Total Items
+                html += "<div class=\"col-sm-3\">";
+                html += "<div class=\"small-box bg-green\">";
+                html += "<div class=\"inner\">";
+                html += "<h3>" + (stats.library_totals.total_items || 0).toLocaleString() + "</h3>";
+                html += "<p>Total Items</p>";
+                html += "</div>";
+                html += "<div class=\"icon\"><i class=\"fa fa-film\"></i></div>";
+                html += "</div></div>";
+                
+                // Total Episodes (if any)
+                if (stats.library_totals.total_episodes > 0) {
+                    html += "<div class=\"col-sm-3\">";
+                    html += "<div class=\"small-box bg-yellow\">";
+                    html += "<div class=\"inner\">";
+                    html += "<h3>" + (stats.library_totals.total_episodes || 0).toLocaleString() + "</h3>";
+                    html += "<p>Episodes</p>";
+                    html += "</div>";
+                    html += "<div class=\"icon\"><i class=\"fa fa-television\"></i></div>";
+                    html += "</div></div>";
+                }
+                
+                // Total Play Time
+                html += "<div class=\"col-sm-3\">";
+                html += "<div class=\"small-box bg-red\">";
+                html += "<div class=\"inner\">";
+                html += "<h3 style=\"font-size: 18px;\">" + (stats.library_totals.total_play_time || "0 min") + "</h3>";
+                html += "<p>Total Watched</p>";
+                html += "</div>";
+                html += "<div class=\"icon\"><i class=\"fa fa-clock-o\"></i></div>";
+                html += "</div></div>";
+                
+                html += "</div></div>";
+            }
+            
+            // Content Type Breakdown
+            if (stats.library_totals && stats.library_totals.type_breakdown) {
                 html += "<div class=\"col-lg-6\">";
-                html += "<h5><i class=\"fa fa-folder text-info\"></i> Library Statistics</h5>";
+                html += "<h5><i class=\"fa fa-pie-chart text-primary\"></i> Content Breakdown</h5>";
                 html += "<div class=\"table-responsive\">";
                 html += "<table class=\"table table-striped table-condensed\">";
-                html += "<thead><tr><th>Library</th><th>Items</th><th>Size</th></tr></thead>";
+                html += "<thead><tr><th>Type</th><th>Libraries</th><th>Items</th><th>Watch Time</th></tr></thead>";
+                html += "<tbody>";
+                
+                Object.keys(stats.library_totals.type_breakdown).forEach(function(type) {
+                    var breakdown = stats.library_totals.type_breakdown[type];
+                    var playTimeFormatted = breakdown.play_time > 0 ? formatDuration(breakdown.play_time) : "0 min";
+                    
+                    html += "<tr>";
+                    html += "<td><strong>" + breakdown.label + "</strong></td>";
+                    html += "<td><span class=\"label label-info\">" + breakdown.count + "</span></td>";
+                    html += "<td><span class=\"label label-success\">" + breakdown.items.toLocaleString() + "</span></td>";
+                    html += "<td><small>" + playTimeFormatted + "</small></td>";
+                    html += "</tr>";
+                });
+                
+                html += "</tbody></table></div></div>";
+            }
+            
+            // Detailed Library Statistics
+            if (' . $showLibraries . ' && stats.libraries && stats.libraries.length > 0) {
+                html += "<div class=\"col-lg-6\">";
+                html += "<h5><i class=\"fa fa-folder text-info\"></i> Library Details</h5>";
+                html += "<div class=\"table-responsive\">";
+                html += "<table class=\"table table-striped table-condensed\">";
+                html += "<thead><tr><th>Library</th><th>Type</th><th>Items</th><th>Watch Time</th></tr></thead>";
                 html += "<tbody>";
                 
                 stats.libraries.slice(0, ' . $maxItems . ').forEach(function(lib) {
+                    var typeIcon = getTypeIcon(lib.collection_type);
                     html += "<tr>";
-                    html += "<td><strong>" + (lib.name || "Unknown Library") + "</strong></td>";
-                    html += "<td><span class=\"label label-primary\">" + (lib.item_count || 0) + "</span></td>";
-                    html += "<td>" + (lib.size || "Unknown") + "</td>";
+                    html += "<td><i class=\"fa " + typeIcon + " text-muted\"></i> <strong>" + (lib.name || "Unknown Library") + "</strong></td>";
+                    html += "<td><small>" + (lib.type || "Unknown") + "</small></td>";
+                    html += "<td><span class=\"label label-primary\">" + (lib.item_count || 0).toLocaleString() + "</span>";
+                    
+                    // Show additional counts for TV libraries
+                    if (lib.episode_count > 0) {
+                        html += "<br><small class=\"text-muted\">Episodes: " + lib.episode_count.toLocaleString() + "</small>";
+                    }
+                    if (lib.season_count > 0) {
+                        html += "<br><small class=\"text-muted\">Seasons: " + lib.season_count.toLocaleString() + "</small>";
+                    }
+                    
+                    html += "</td>";
+                    html += "<td><small>" + (lib.total_play_time || "0 min") + "</small></td>";
                     html += "</tr>";
                 });
                 
@@ -424,6 +510,39 @@ trait JellyStatHomepageItem
             }
         });
         
+        // Helper function to get icon for content type
+        function getTypeIcon(collectionType) {
+            switch(collectionType) {
+                case 'movies': return 'fa-film';
+                case 'tvshows': return 'fa-television';
+                case 'music': return 'fa-music';
+                case 'mixed': return 'fa-folder-open';
+                default: return 'fa-folder';
+            }
+        }
+        
+        // Helper function to format duration from ticks
+        function formatDuration(ticks) {
+            if (!ticks || ticks === 0) return '0 min';
+            
+            // Convert ticks to seconds (ticks are in 100-nanosecond intervals)
+            var seconds = ticks / 10000000;
+            
+            if (seconds < 60) {
+                return Math.round(seconds) + ' sec';
+            } else if (seconds < 3600) {
+                return Math.round(seconds / 60) + ' min';
+            } else if (seconds < 86400) {
+                var hours = Math.floor(seconds / 3600);
+                var minutes = Math.floor((seconds % 3600) / 60);
+                return hours + 'h ' + minutes + 'm';
+            } else {
+                var days = Math.floor(seconds / 86400);
+                var hours = Math.floor((seconds % 86400) / 3600);
+                return days + 'd ' + hours + 'h';
+            }
+        }
+        
         </script>
         ';
     }
@@ -477,9 +596,8 @@ trait JellyStatHomepageItem
         $stats = [
             'period' => "{$days} days",
             'libraries' => [],
-            'users' => [],
-            'most_watched' => [],
-            'recent_activity' => []
+            'library_totals' => [],
+            'server_info' => []
         ];
         
         try {
@@ -489,77 +607,58 @@ trait JellyStatHomepageItem
             if ($response->success) {
                 $data = json_decode($response->body, true);
                 if (is_array($data) && !isset($data['error'])) {
+                    // Process individual libraries
                     $stats['libraries'] = array_map(function($lib) {
                         return [
                             'name' => $lib['Name'] ?? 'Unknown Library',
+                            'type' => $this->getCollectionTypeLabel($lib['CollectionType'] ?? 'unknown'),
                             'item_count' => $lib['item_count'] ?? 0,
-                            'size' => $this->formatBytes($lib['total_play_time'] ?? 0) // JellyStat doesn't provide size, use play time as proxy
+                            'season_count' => $lib['season_count'] ?? 0,
+                            'episode_count' => $lib['episode_count'] ?? 0,
+                            'total_play_time' => $lib['total_play_time'] ? $this->formatDuration($lib['total_play_time']) : '0 min',
+                            'play_time_raw' => $lib['total_play_time'] ?? 0,
+                            'collection_type' => $lib['CollectionType'] ?? 'unknown'
                         ];
                     }, $data);
-                }
-            }
-            
-            // Get User Statistics
-            $usersUrl = $baseUrl . '/api/getUsers?apiKey=' . urlencode($token);
-            $response = Requests::get($usersUrl, [], $options);
-            if ($response->success) {
-                $data = json_decode($response->body, true);
-                if (is_array($data) && !isset($data['error'])) {
-                    $stats['users'] = array_map(function($user) {
-                        return [
-                            'name' => $user['Name'] ?? 'Unknown User',
-                            'play_count' => $user['PlayCount'] ?? 0,
-                            'last_activity' => $user['LastActivityDate'] ?? null
-                        ];
-                    }, $data);
-                }
-            }
-            
-            // Get Most Watched Content - try item activity as proxy
-            $activityUrl = $baseUrl . '/api/getItemActivity?apiKey=' . urlencode($token) . '&days=' . $days;
-            $response = Requests::get($activityUrl, [], $options);
-            if ($response->success) {
-                $data = json_decode($response->body, true);
-                if (is_array($data) && !isset($data['error'])) {
-                    // Process activity data into most watched format
-                    $itemCounts = [];
-                    foreach ($data as $activity) {
-                        $itemId = $activity['NowPlayingItemId'] ?? $activity['ItemId'] ?? 'unknown';
-                        if (!isset($itemCounts[$itemId])) {
-                            $itemCounts[$itemId] = [
-                                'title' => $activity['NowPlayingItemName'] ?? $activity['ItemName'] ?? 'Unknown Title',
-                                'type' => $activity['ItemType'] ?? 'Unknown',
-                                'play_count' => 0,
-                                'runtime' => 'Unknown',
-                                'year' => null
+                    
+                    // Calculate totals across all libraries
+                    $totalItems = array_sum(array_column($data, 'item_count'));
+                    $totalSeasons = array_sum(array_column($data, 'season_count'));
+                    $totalEpisodes = array_sum(array_column($data, 'episode_count'));
+                    $totalPlayTime = array_sum(array_column($data, 'total_play_time'));
+                    
+                    // Calculate library type breakdowns
+                    $typeBreakdown = [];
+                    foreach ($data as $lib) {
+                        $type = $lib['CollectionType'] ?? 'unknown';
+                        if (!isset($typeBreakdown[$type])) {
+                            $typeBreakdown[$type] = [
+                                'count' => 0,
+                                'items' => 0,
+                                'play_time' => 0,
+                                'label' => $this->getCollectionTypeLabel($type)
                             ];
                         }
-                        $itemCounts[$itemId]['play_count']++;
+                        $typeBreakdown[$type]['count']++;
+                        $typeBreakdown[$type]['items'] += $lib['item_count'] ?? 0;
+                        $typeBreakdown[$type]['play_time'] += $lib['total_play_time'] ?? 0;
                     }
                     
-                    // Sort by play count and take top items
-                    uasort($itemCounts, function($a, $b) {
-                        return $b['play_count'] - $a['play_count'];
-                    });
+                    $stats['library_totals'] = [
+                        'total_libraries' => count($data),
+                        'total_items' => $totalItems,
+                        'total_seasons' => $totalSeasons,
+                        'total_episodes' => $totalEpisodes,
+                        'total_play_time' => $this->formatDuration($totalPlayTime),
+                        'total_play_time_raw' => $totalPlayTime,
+                        'type_breakdown' => $typeBreakdown
+                    ];
                     
-                    $stats['most_watched'] = array_slice($itemCounts, 0, 10);
-                }
-            }
-            
-            // Get Recent Activity
-            $recentActivityUrl = $baseUrl . '/api/getItemActivity?apiKey=' . urlencode($token) . '&days=7'; // Get last 7 days
-            $response = Requests::get($recentActivityUrl, [], $options);
-            if ($response->success) {
-                $data = json_decode($response->body, true);
-                if (is_array($data) && !isset($data['error'])) {
-                    $stats['recent_activity'] = array_slice(array_map(function($activity) {
-                        return [
-                            'date' => $activity['DateCreated'] ?? date('c'),
-                            'user' => $activity['UserName'] ?? 'Unknown User',
-                            'title' => $activity['NowPlayingItemName'] ?? $activity['ItemName'] ?? 'Unknown Title',
-                            'type' => $activity['ItemType'] ?? 'Unknown'
-                        ];
-                    }, $data), 0, 20); // Limit to 20 recent items
+                    // Server information
+                    $stats['server_info'] = [
+                        'server_id' => $data[0]['ServerId'] ?? 'Unknown',
+                        'last_updated' => date('c')
+                    ];
                 }
             }
             
@@ -568,6 +667,22 @@ trait JellyStatHomepageItem
         }
         
         return $stats;
+    }
+    
+    /**
+     * Get human-readable label for collection type
+     */
+    private function getCollectionTypeLabel($type)
+    {
+        $labels = [
+            'movies' => 'Movies',
+            'tvshows' => 'TV Shows',
+            'music' => 'Music',
+            'mixed' => 'Mixed Content',
+            'unknown' => 'Other'
+        ];
+        
+        return $labels[$type] ?? ucfirst($type);
     }
 
     /**
