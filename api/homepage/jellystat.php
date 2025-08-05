@@ -1046,17 +1046,6 @@ trait JellyStatHomepageItem
                         // For movies, use the NowPlayingItemId
                         $actualItemId = $result['NowPlayingItemId'] ?? null;
                     } elseif ($contentType === 'show') {
-                        // Debug: Log available ID fields for TV shows
-                        $this->writeLog('debug', 'JellyStat TV Show Debug - Available fields for "' . $title . '":', [
-                            'SeriesId' => $result['SeriesId'] ?? 'null',
-                            'ShowId' => $result['ShowId'] ?? 'null', 
-                            'ParentId' => $result['ParentId'] ?? 'null',
-                            'NowPlayingItemId' => $result['NowPlayingItemId'] ?? 'null',
-                            'SeasonId' => $result['SeasonId'] ?? 'null',
-                            'SeriesName' => $result['SeriesName'] ?? 'null',
-                            'EpisodeName' => $result['EpisodeName'] ?? 'null'
-                        ]);
-                        
                         // For TV shows, try different ID fields to get the proper series ID
                         // SeriesId is most specific, then try other fields
                         $actualItemId = $result['SeriesId'] ?? $result['ShowId'] ?? $result['ParentId'] ?? $result['NowPlayingItemId'] ?? null;
@@ -1066,8 +1055,6 @@ trait JellyStatHomepageItem
                         if ($actualItemId === $result['NowPlayingItemId'] && !empty($result['ParentId']) && $result['ParentId'] !== $result['NowPlayingItemId']) {
                             $actualItemId = $result['ParentId'];
                         }
-                        
-                        $this->writeLog('debug', 'JellyStat TV Show Debug - Selected ID for "' . $title . '": ' . ($actualItemId ?? 'null'));
                     } elseif ($contentType === 'music') {
                         // For music, use NowPlayingItemId (album/track)
                         $actualItemId = $result['NowPlayingItemId'] ?? null;
