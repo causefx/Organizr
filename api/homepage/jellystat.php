@@ -334,7 +334,7 @@ trait JellyStatHomepageItem
         function getPosterUrl(posterPath, itemId, serverId) {
             console.log("getPosterUrl called with:", {posterPath, itemId, serverId});
             // Use external URL for frontend poster display to avoid mixed content issues
-            var jellyStatUrl = "' . $jellyStatUrl . '";
+            var jellyStatUrl = ' . json_encode($jellyStatUrl) . ';
             console.log("JellyStat URL from config:", jellyStatUrl);
             
             if (!posterPath && !itemId) {
@@ -345,12 +345,12 @@ trait JellyStatHomepageItem
             // If we have a poster path, process it
             if (posterPath) {
                 console.log("Processing poster path:", posterPath);
-                // If it's already an absolute URL, use it directly
+                // If its already an absolute URL, use it directly
                 if (posterPath.indexOf("http://") === 0 || posterPath.indexOf("https://") === 0) {
                     console.log("Poster path is absolute URL:", posterPath);
                     return posterPath;
                 }
-                // If it's a relative path starting with /, prepend the JellyStat URL
+                // If its a relative path starting with /, prepend the JellyStat URL
                 if (jellyStatUrl && posterPath.indexOf("/") === 0) {
                     var fullUrl = jellyStatUrl + posterPath;
                     console.log("Generated full URL from relative path:", fullUrl);
