@@ -362,13 +362,7 @@ trait JellyStatHomepageItem
             if (itemId && jellyStatUrl) {
                 // JellyStat uses /proxy/Items/Images/Primary endpoint
                 // Format: /proxy/Items/Images/Primary?id={itemId}&fillWidth=200&quality=90
-                // Use actual JellyStat domain for image proxy
                 var baseUrl = jellyStatUrl.replace(/\/+$/, ''); // Remove trailing slashes
-                
-                // Check if we need to use the jellystat subdomain instead
-                if (baseUrl.indexOf('media.glassnetworks.net') !== -1) {
-                    baseUrl = baseUrl.replace('media.glassnetworks.net', 'jellystat.glassnetworks.net');
-                }
                 
                 var apiUrl = baseUrl + "/proxy/Items/Images/Primary?id=" + itemId + "&fillWidth=200&quality=90";
                 console.log("Generated JellyStat proxy image URL:", apiUrl);
