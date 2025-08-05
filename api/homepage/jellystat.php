@@ -1049,9 +1049,8 @@ trait JellyStatHomepageItem
                         $actualItemId = $result['NowPlayingItemId'] ?? null;
                     } elseif ($contentType === 'show') {
                         // Debug: Log all available IDs for TV shows to understand data structure
-                        $this->setLoggerChannel('JellyStat');
-                        $this->logger->debug("JellyStat TV Show Debug - Series: {$result['SeriesName']}");
-                        $this->logger->debug("Available IDs: SeriesId=" . ($result['SeriesId'] ?? 'null') . 
+                        $this->setLoggerChannel('JellyStat')->debug("JellyStat TV Show Debug - Series: {$result['SeriesName']}");
+                        $this->setLoggerChannel('JellyStat')->debug("Available IDs: SeriesId=" . ($result['SeriesId'] ?? 'null') . 
                                  ", ShowId=" . ($result['ShowId'] ?? 'null') . 
                                  ", ParentId=" . ($result['ParentId'] ?? 'null') . 
                                  ", NowPlayingItemId=" . ($result['NowPlayingItemId'] ?? 'null'));
@@ -1063,23 +1062,23 @@ trait JellyStatHomepageItem
                         if (!empty($result['SeriesId'])) {
                             // SeriesId is the most reliable for series posters
                             $actualItemId = $result['SeriesId'];
-                            $this->logger->debug("Using SeriesId: {$actualItemId}");
+                            $this->setLoggerChannel('JellyStat')->debug("Using SeriesId: {$actualItemId}");
                         } elseif (!empty($result['ShowId'])) {
                             // ShowId is also series-specific
                             $actualItemId = $result['ShowId'];
-                            $this->logger->debug("Using ShowId: {$actualItemId}");
+                            $this->setLoggerChannel('JellyStat')->debug("Using ShowId: {$actualItemId}");
                         } elseif (!empty($result['NowPlayingItemId'])) {
                             // Try NowPlayingItemId - it might be the series ID if we're looking at series-level data
                             $actualItemId = $result['NowPlayingItemId'];
-                            $this->logger->debug("Using NowPlayingItemId: {$actualItemId}");
+                            $this->setLoggerChannel('JellyStat')->debug("Using NowPlayingItemId: {$actualItemId}");
                         } elseif (!empty($result['ParentId'])) {
                             // Last resort: ParentId (might be series, season, or library)
                             $actualItemId = $result['ParentId'];
-                            $this->logger->debug("Using ParentId: {$actualItemId}");
+                            $this->setLoggerChannel('JellyStat')->debug("Using ParentId: {$actualItemId}");
                         }
                         
                         if (!$actualItemId) {
-                            $this->logger->debug("No suitable ID found for TV show: {$result['SeriesName']}");
+                            $this->setLoggerChannel('JellyStat')->debug("No suitable ID found for TV show: {$result['SeriesName']}");
                         }
                     } elseif ($contentType === 'music') {
                         // For music, use NowPlayingItemId (album/track)
@@ -1105,7 +1104,7 @@ trait JellyStatHomepageItem
                 
                 // Debug: Log each play count increment
                 if ($contentType === 'show') {
-                    $this->logger->debug("Play count increment for {$title}: now {$itemStats[$key]['play_count']} (Episode: {$result['EpisodeName']}, User: {$result['UserName']}, Date: {$result['ActivityDateInserted']})");
+                    $this->setLoggerChannel('JellyStat')->debug("Play count increment for {$title}: now {$itemStats[$key]['play_count']} (Episode: {$result['EpisodeName']}, User: {$result['UserName']}, Date: {$result['ActivityDateInserted']})");
                 }
                 
                 // Update last played time
