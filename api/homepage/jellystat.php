@@ -1049,8 +1049,8 @@ trait JellyStatHomepageItem
                         $actualItemId = $result['NowPlayingItemId'] ?? null;
                     } elseif ($contentType === 'show') {
                         // Debug: Log all available IDs for TV shows to understand data structure
-                        $this->setLoggerChannel('JellyStat')->debug("JellyStat TV Show Debug - Series: {$result['SeriesName']}");
-                        $this->setLoggerChannel('JellyStat')->debug("Available IDs: SeriesId=" . ($result['SeriesId'] ?? 'null') . 
+                        $this->setLoggerChannel('JellyStat')->info("JellyStat TV Show Debug - Series: {$result['SeriesName']}");
+                        $this->setLoggerChannel('JellyStat')->info("Available IDs: SeriesId=" . ($result['SeriesId'] ?? 'null') . 
                                  ", ShowId=" . ($result['ShowId'] ?? 'null') . 
                                  ", ParentId=" . ($result['ParentId'] ?? 'null') . 
                                  ", NowPlayingItemId=" . ($result['NowPlayingItemId'] ?? 'null'));
@@ -1062,23 +1062,23 @@ trait JellyStatHomepageItem
                         if (!empty($result['SeriesId'])) {
                             // SeriesId is the most reliable for series posters
                             $actualItemId = $result['SeriesId'];
-                            $this->setLoggerChannel('JellyStat')->debug("Using SeriesId: {$actualItemId}");
+                            $this->setLoggerChannel('JellyStat')->info("Using SeriesId: {$actualItemId}");
                         } elseif (!empty($result['ShowId'])) {
                             // ShowId is also series-specific
                             $actualItemId = $result['ShowId'];
-                            $this->setLoggerChannel('JellyStat')->debug("Using ShowId: {$actualItemId}");
+                            $this->setLoggerChannel('JellyStat')->info("Using ShowId: {$actualItemId}");
                         } elseif (!empty($result['NowPlayingItemId'])) {
                             // Try NowPlayingItemId - it might be the series ID if we're looking at series-level data
                             $actualItemId = $result['NowPlayingItemId'];
-                            $this->setLoggerChannel('JellyStat')->debug("Using NowPlayingItemId: {$actualItemId}");
+                            $this->setLoggerChannel('JellyStat')->info("Using NowPlayingItemId: {$actualItemId}");
                         } elseif (!empty($result['ParentId'])) {
                             // Last resort: ParentId (might be series, season, or library)
                             $actualItemId = $result['ParentId'];
-                            $this->setLoggerChannel('JellyStat')->debug("Using ParentId: {$actualItemId}");
+                            $this->setLoggerChannel('JellyStat')->info("Using ParentId: {$actualItemId}");
                         }
                         
                         if (!$actualItemId) {
-                            $this->setLoggerChannel('JellyStat')->debug("No suitable ID found for TV show: {$result['SeriesName']}");
+                            $this->setLoggerChannel('JellyStat')->info("No suitable ID found for TV show: {$result['SeriesName']}");
                         }
                     } elseif ($contentType === 'music') {
                         // For music, use NowPlayingItemId (album/track)
@@ -1104,7 +1104,7 @@ trait JellyStatHomepageItem
                 
                 // Debug: Log each play count increment
                 if ($contentType === 'show') {
-                    $this->setLoggerChannel('JellyStat')->debug("Play count increment for {$title}: now {$itemStats[$key]['play_count']} (Episode: {$result['EpisodeName']}, User: {$result['UserName']}, Date: {$result['ActivityDateInserted']})");
+                    $this->setLoggerChannel('JellyStat')->info("Play count increment for {$title}: now {$itemStats[$key]['play_count']} (Episode: {$result['EpisodeName']}, User: {$result['UserName']}, Date: {$result['ActivityDateInserted']})");
                 }
                 
                 // Update last played time
