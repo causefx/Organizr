@@ -621,14 +621,6 @@ $app->get('/homepage/embyLiveTVTracker/activity', function ($request, $response,
 		->withHeader('Content-Type', 'application/json;charset=UTF-8')
 		->withStatus($GLOBALS['responseCode']);
 });
-$app->get('/homepage/userWatchStats', function ($request, $response, $args) {
-	$Organizr = ($request->getAttribute('Organizr')) ?? new Organizr();
-	$Organizr->getUserWatchStats();
-	$response->getBody()->write(jsonE($GLOBALS['api']));
-	return $response
-		->withHeader('Content-Type', 'application/json;charset=UTF-8')
-		->withStatus($GLOBALS['responseCode']);
-});
 $app->get('/homepage/jellystat', function ($request, $response, $args) {
 	$Organizr = ($request->getAttribute('Organizr')) ?? new Organizr();
 	$Organizr->getJellyStatData();

@@ -645,12 +645,7 @@ trait JellyStatHomepageItem
                 html += "<div class=\"row\" style=\"margin-top: 15px;\">";
                 
                 stats.most_watched_shows.forEach(function(show) {
-                    console.log("Processing TV show:", show);
-                    console.log("Show poster_path:", show.poster_path);
-                    console.log("Show id:", show.id);
-                    console.log("Show server_id:", show.server_id);
                     var posterUrl = getPosterUrl(show.poster_path, show.id, show.server_id);
-                    console.log("Generated TV show posterUrl:", posterUrl);
                     var playCount = show.play_count || 0;
                     var year = show.year || "N/A";
                     var title = show.title || "Unknown Show";

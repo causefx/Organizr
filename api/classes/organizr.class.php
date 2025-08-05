@@ -66,7 +66,6 @@ class Organizr
 	use WeatherHomepageItem;
 	use uTorrentHomepageItem;
 	use UptimeKumaHomepageItem;
-	use HomepageUserWatchStats;
 	use JellyStatHomepageItem;
 
 	// ===================================
@@ -4626,13 +4625,6 @@ class Organizr
 				$class = 'bg-emby';
 				$image = 'plugins/images/homepage/embyLiveTVTracker.png';
 				if (!$this->config['homepageEmbyLiveTVTrackerEnabled']) {
-					$class .= ' faded';
-				}
-				break;
-			case 'homepageOrderUserWatchStats':
-				$class = 'bg-info';
-				$image = 'plugins/images/homepage/userWatchStats.png';
-				if (!$this->config['homepageUserWatchStatsEnabled']) {
 					$class .= ' faded';
 				}
 				break;
