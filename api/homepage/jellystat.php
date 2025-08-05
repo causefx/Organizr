@@ -34,6 +34,7 @@ trait JellyStatHomepageItem
                 ],
                 'Connection' => [
                     $this->settingsOption('url', 'jellyStatURL', ['label' => 'JellyStat URL', 'help' => 'URL to your JellyStat instance']),
+                    $this->settingsOption('url', 'jellyStatInternalURL', ['label' => 'Internal JellyStat URL (optional)', 'help' => 'Internal URL for server-side API calls (e.g., http://192.168.80.77:3000). If not set, uses main URL.']),
                     $this->settingsOption('token', 'jellyStatApikey', ['label' => 'JellyStat API Key', 'help' => 'API key for JellyStat (required for native mode)']),
                     $this->settingsOption('disable-cert-check', 'jellyStatDisableCertCheck'),
                     $this->settingsOption('use-custom-certificate', 'jellyStatUseCustomCertificate'),
@@ -791,8 +792,13 @@ trait JellyStatHomepageItem
     {
         $disableCert = $this->config['jellyStatDisableCertCheck'] ?? false;
         $customCert = $this->config['jellyStatUseCustomCertificate'] ?? false;
-        $options = $this->requestOptions($url, null, $disableCert, $customCert);
-        $baseUrl = $this->qualifyURL($url);
+        
+        // Use internal URL for server-side API calls if configured, otherwise use main URL
+        $internalUrl = $this->config['jellyStatInternalURL'] ?? '';
+        $apiUrl = !empty($internalUrl) ? $internalUrl : $url;
+        
+        $options = $this->requestOptions($apiUrl, null, $disableCert, $customCert);
+        $baseUrl = $this->qualifyURL($apiUrl);
         
         $stats = [
             'period' => "{$days} days",
