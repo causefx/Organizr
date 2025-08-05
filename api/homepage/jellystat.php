@@ -1167,14 +1167,14 @@ trait JellyStatHomepageItem
             // For JellyStat's stats API, we need to use Bearer token authentication
             // Extract the token from the API key format
             $bearerToken = $token;
-            if (strpos($token, 'Bearer ') === 0) {
-                $bearerToken = substr($token, 7);
+            if (strpos($token, 'Bearer ') !== 0) {
+                $bearerToken = 'Bearer ' . $token;
             }
             
             // Set up headers for POST request with Bearer authentication
             $headers = [
                 'Content-Type' => 'application/json',
-                'Authorization' => 'Bearer ' . $bearerToken
+                'Authorization' => $bearerToken
             ];
             
             $this->setLoggerChannel('JellyStat')->info("Making POST request to: {$apiUrl}");
