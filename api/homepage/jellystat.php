@@ -1155,32 +1155,13 @@ trait JellyStatHomepageItem
             // Log the API call for debugging
             $this->setLoggerChannel('JellyStat')->info("fetchJellyStatMostViewedByType called with type: {$type}, days: {$days}");
             
-            // Use the same endpoint and authentication method as the JellyStat web UI
-            $apiUrl = $baseUrl . '/stats/getMostViewedByType';
+            // Use query parameter authentication like the other working JellyStat API calls
+            $apiUrl = $baseUrl . '/stats/getMostViewedByType?apiKey=' . urlencode($token) . '&days=' . intval($days) . '&type=' . urlencode($type);
             
-            // Create the request body (same format as the web UI)
-            $requestData = [
-                'days' => $days,
-                'type' => $type
-            ];
+            $this->setLoggerChannel('JellyStat')->info("Making GET request to: {$apiUrl}");
             
-            // For JellyStat's stats API, we need to use Bearer token authentication
-            // Extract the token from the API key format
-            $bearerToken = $token;
-            if (strpos($token, 'Bearer ') !== 0) {
-                $bearerToken = 'Bearer ' . $token;
-            }
-            
-            // Set up headers for POST request with Bearer authentication
-            $headers = [
-                'Content-Type' => 'application/json',
-                'Authorization' => $bearerToken
-            ];
-            
-            $this->setLoggerChannel('JellyStat')->info("Making POST request to: {$apiUrl}");
-            
-            // Make POST request to JellyStat API
-            $response = Requests::post($apiUrl, $headers, json_encode($requestData), $options);
+            // Make GET request to JellyStat API using query parameters (same as other working endpoints)
+            $response = Requests::get($apiUrl, [], $options);
             
             $this->setLoggerChannel('JellyStat')->info("Response status: {$response->status_code}");
             
