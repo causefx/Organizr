@@ -66,7 +66,7 @@ class Organizr
 	use WeatherHomepageItem;
 	use uTorrentHomepageItem;
 	use UptimeKumaHomepageItem;
-	use HomepageUserWatchStats, JellyStatHomepageItem;
+	use JellyStatHomepageItem;
 
 	// ===================================
 	// Organizr Version
@@ -758,7 +758,7 @@ class Organizr
 		}
 	}
 
-	public function setResponse(int $responseCode = 200, string $message = null, $data = null)
+	public function setResponse(int $responseCode = 200, ?string $message = null, $data = null)
 	{
 		switch ($responseCode) {
 			case 200:
