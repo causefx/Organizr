@@ -1152,6 +1152,9 @@ trait JellyStatHomepageItem
     private function fetchJellyStatMostViewedByType($baseUrl, $token, $options, $type, $days, $limit)
     {
         try {
+            // Log the API call for debugging
+            $this->setLoggerChannel('JellyStat')->info("fetchJellyStatMostViewedByType called with type: {$type}, days: {$days}");
+            
             // Use the same endpoint and authentication method as the JellyStat web UI
             $apiUrl = $baseUrl . '/stats/getMostViewedByType';
             
@@ -1174,13 +1177,19 @@ trait JellyStatHomepageItem
                 'Authorization' => 'Bearer ' . $bearerToken
             ];
             
+            $this->setLoggerChannel('JellyStat')->info("Making POST request to: {$apiUrl}");
+            
             // Make POST request to JellyStat API
             $response = Requests::post($apiUrl, $headers, json_encode($requestData), $options);
+            
+            $this->setLoggerChannel('JellyStat')->info("Response status: {$response->status_code}");
             
             if ($response->success) {
                 $data = json_decode($response->body, true);
                 
                 if (is_array($data)) {
+                    $this->setLoggerChannel('JellyStat')->info("Received " . count($data) . " items from JellyStat API for type: {$type}");
+                    
                     // Process the response data to match our expected format
                     $processedItems = [];
                     
@@ -1208,13 +1217,14 @@ trait JellyStatHomepageItem
                         }
                     }
                     
+                    $this->setLoggerChannel('JellyStat')->info("Processed " . count($processedItems) . " items for type: {$type}");
                     return $processedItems;
                 } else {
-                    $this->setLoggerChannel('JellyStat')->error('JellyStat getMostViewedByType returned invalid data format for type: ' . $type);
+                    $this->setLoggerChannel('JellyStat')->error('JellyStat getMostViewedByType returned invalid data format for type: ' . $type . '. Response: ' . substr($response->body, 0, 500));
                     return [];
                 }
             } else {
-                $this->setLoggerChannel('JellyStat')->error('JellyStat getMostViewedByType API request failed for type: ' . $type . ' - HTTP ' . $response->status_code);
+                $this->setLoggerChannel('JellyStat')->error('JellyStat getMostViewedByType API request failed for type: ' . $type . ' - HTTP ' . $response->status_code . '. Response: ' . substr($response->body, 0, 500));
                 return [];
             }
             
