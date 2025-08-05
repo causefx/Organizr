@@ -1048,33 +1048,37 @@ trait JellyStatHomepageItem
                         // For movies, use the NowPlayingItemId
                         $actualItemId = $result['NowPlayingItemId'] ?? null;
                     } elseif ($contentType === 'show') {
+                        // Debug: Log all available IDs for TV shows to understand data structure
+                        error_log("JellyStat TV Show Debug - Series: {$result['SeriesName']}");
+                        error_log("Available IDs: SeriesId=" . ($result['SeriesId'] ?? 'null') . 
+                                 ", ShowId=" . ($result['ShowId'] ?? 'null') . 
+                                 ", ParentId=" . ($result['ParentId'] ?? 'null') . 
+                                 ", NowPlayingItemId=" . ($result['NowPlayingItemId'] ?? 'null'));
+                        
                         // For TV shows, be more selective about ID selection to ensure we get series posters
-                        // Priority: SeriesId (if exists) > specific logic for ParentId vs NowPlayingItemId
+                        // Priority: SeriesId (if exists) > ShowId > NowPlayingItemId (only if it looks like series) > ParentId
                         $actualItemId = null;
                         
                         if (!empty($result['SeriesId'])) {
                             // SeriesId is the most reliable for series posters
                             $actualItemId = $result['SeriesId'];
+                            error_log("Using SeriesId: {$actualItemId}");
                         } elseif (!empty($result['ShowId'])) {
                             // ShowId is also series-specific
                             $actualItemId = $result['ShowId'];
-                        } elseif (!empty($result['ParentId']) && !empty($result['NowPlayingItemId'])) {
-                            // When both ParentId and NowPlayingItemId exist:
-                            // - If they're different, ParentId is likely the series/season
-                            // - If they're the same, we might be at series level already
-                            if ($result['ParentId'] !== $result['NowPlayingItemId']) {
-                                // ParentId is likely series or season, prefer it over episode ID
-                                $actualItemId = $result['ParentId'];
-                            } else {
-                                // They're the same, could be series-level already
-                                $actualItemId = $result['NowPlayingItemId'];
-                            }
+                            error_log("Using ShowId: {$actualItemId}");
+                        } elseif (!empty($result['NowPlayingItemId'])) {
+                            // Try NowPlayingItemId - it might be the series ID if we're looking at series-level data
+                            $actualItemId = $result['NowPlayingItemId'];
+                            error_log("Using NowPlayingItemId: {$actualItemId}");
                         } elseif (!empty($result['ParentId'])) {
-                            // Only ParentId available, use it (might be series or season)
+                            // Last resort: ParentId (might be series, season, or library)
                             $actualItemId = $result['ParentId'];
-                        } else {
-                            // Fallback to NowPlayingItemId (likely episode, but better than nothing)
-                            $actualItemId = $result['NowPlayingItemId'] ?? null;
+                            error_log("Using ParentId: {$actualItemId}");
+                        }
+                        
+                        if (!$actualItemId) {
+                            error_log("No suitable ID found for TV show: {$result['SeriesName']}");
                         }
                     } elseif ($contentType === 'music') {
                         // For music, use NowPlayingItemId (album/track)
