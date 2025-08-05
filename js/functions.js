@@ -12027,7 +12027,7 @@ function jsFriendlyJSONStringify (s) {
 	replace(/\u2029/g, '\\u2029');
 }
 function exportLogs() {
-    const query = "api/v2/log/0?filter=NONEpageSize=1000offset=0";
+    const query = "api/v2/log/0?filter=NONE&pageSize=1000&offset=0";
     $.get(query, function (data) {
         const logs = data.response.data.results;
         let csvContent = "data:text/csv;charset=utf-8,Date,Severity,Function,Message,IP Address,User\n";
