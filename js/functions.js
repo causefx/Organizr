@@ -2255,7 +2255,7 @@ function buildImageManagerView(){
 		        }else{
 			        $container.isotope({itemSelector : "img"});
 		        }
-	        }catch{
+	        }catch(e){
 		        $container.isotope('destroy');
 		        $container.isotope({itemSelector : "img"});
 	        }
