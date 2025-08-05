@@ -1012,7 +1012,13 @@ trait JellyStatHomepageItem
         // Group items by ID and count plays
         $itemStats = [];
         
-        foreach ($historyResults as $result) {
+        // Debug: Log sample of first few results to understand data structure
+        $this->setLoggerChannel('JellyStat')->info('JellyStat History Debug: Processing ' . count($historyResults) . ' history records');
+        if (count($historyResults) > 0) {
+            $this->setLoggerChannel('JellyStat')->info('JellyStat Sample Record: ' . json_encode(array_slice($historyResults, 0, 3), JSON_PRETTY_PRINT));
+        }
+        
+        foreach ($historyResults as $index => $result) {
             // Determine content type based on available data
             $contentType = 'unknown';
             $itemId = null;
