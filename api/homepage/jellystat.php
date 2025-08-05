@@ -1046,9 +1046,15 @@ trait JellyStatHomepageItem
                         // For movies, use the NowPlayingItemId
                         $actualItemId = $result['NowPlayingItemId'] ?? null;
                     } elseif ($contentType === 'show') {
-                        // For TV shows, use ParentId (series ID) for series poster
-                        // ParentId should be the series, not the episode
-                        $actualItemId = $result['ParentId'] ?? $result['NowPlayingItemId'] ?? null;
+                        // For TV shows, try different ID fields to get the proper series ID
+                        // SeriesId is most specific, then try other fields
+                        $actualItemId = $result['SeriesId'] ?? $result['ShowId'] ?? $result['ParentId'] ?? $result['NowPlayingItemId'] ?? null;
+                        
+                        // If ParentId and NowPlayingItemId are the same, it might be pointing to an episode
+                        // In that case, we should try to use a different approach
+                        if ($actualItemId === $result['NowPlayingItemId'] && !empty($result['ParentId']) && $result['ParentId'] !== $result['NowPlayingItemId']) {
+                            $actualItemId = $result['ParentId'];
+                        }
                     } elseif ($contentType === 'music') {
                         // For music, use NowPlayingItemId (album/track)
                         $actualItemId = $result['NowPlayingItemId'] ?? null;
