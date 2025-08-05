@@ -461,7 +461,7 @@ trait JellyStatHomepageItem
                 
                 Object.keys(stats.library_totals.type_breakdown).forEach(function(type) {
                     var breakdown = stats.library_totals.type_breakdown[type];
-                    var playTimeFormatted = breakdown.play_time > 0 ? formatDuration(breakdown.play_time) : "0 min";
+                    var playTimeFormatted = breakdown.play_time > 0 ? formatJellyStatDuration(breakdown.play_time) : "0 min";
                     
                     html += "<tr>";
                     html += "<td><strong>" + breakdown.label + "</strong></td>";
