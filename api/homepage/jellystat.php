@@ -885,28 +885,22 @@ trait JellyStatHomepageItem
                 }
             }
             
-            // Get History data and process to extract most watched content
-            $historyUrl = $baseUrl . '/api/getHistory?apiKey=' . urlencode($token) . '&size=500';
-            $response = Requests::get($historyUrl, [], $options);
-            if ($response->success) {
-                $historyData = json_decode($response->body, true);
-                if (is_array($historyData) && isset($historyData['results']) && is_array($historyData['results'])) {
-                    // Process history to get most watched content
-                    $processedData = $this->processJellyStatHistory($historyData['results']);
-                    
-                    // Extract most watched items based on user settings
-                    if ($this->config['homepageJellyStatShowMostWatchedMovies'] ?? false) {
-                        $stats['most_watched_movies'] = array_slice($processedData['movies'], 0, $mostWatchedCount);
-                    }
-                    
-                    if ($this->config['homepageJellyStatShowMostWatchedShows'] ?? false) {
-                        $stats['most_watched_shows'] = array_slice($processedData['shows'], 0, $mostWatchedCount);
-                    }
-                    
-                    if ($this->config['homepageJellyStatShowMostListenedMusic'] ?? false) {
-                        $stats['most_listened_music'] = array_slice($processedData['music'], 0, $mostWatchedCount);
-                    }
-                }
+            // Get most viewed content using JellyStat's native API endpoints
+            // This matches what the JellyStat web UI uses and provides accurate "most viewed" data
+            
+            // Get most viewed movies
+            if ($this->config['homepageJellyStatShowMostWatchedMovies'] ?? false) {
+                $stats['most_watched_movies'] = $this->fetchJellyStatMostViewedByType($baseUrl, $token, $options, 'Movie', $days, $mostWatchedCount);
+            }
+            
+            // Get most viewed TV shows
+            if ($this->config['homepageJellyStatShowMostWatchedShows'] ?? false) {
+                $stats['most_watched_shows'] = $this->fetchJellyStatMostViewedByType($baseUrl, $token, $options, 'Series', $days, $mostWatchedCount);
+            }
+            
+            // Get most listened music
+            if ($this->config['homepageJellyStatShowMostListenedMusic'] ?? false) {
+                $stats['most_listened_music'] = $this->fetchJellyStatMostViewedByType($baseUrl, $token, $options, 'Audio', $days, $mostWatchedCount);
             }
             
         } catch (Exception $e) {
@@ -1149,5 +1143,84 @@ trait JellyStatHomepageItem
         });
         
         return $processed;
+    }
+    
+    /**
+     * Fetch most viewed content by type using JellyStat's native API endpoint
+     * This matches exactly what the JellyStat web UI uses
+     */
+    private function fetchJellyStatMostViewedByType($baseUrl, $token, $options, $type, $days, $limit)
+    {
+        try {
+            // Use the same endpoint and authentication method as the JellyStat web UI
+            $apiUrl = $baseUrl . '/stats/getMostViewedByType';
+            
+            // Create the request body (same format as the web UI)
+            $requestData = [
+                'days' => $days,
+                'type' => $type
+            ];
+            
+            // For JellyStat's stats API, we need to use Bearer token authentication
+            // Extract the token from the API key format
+            $bearerToken = $token;
+            if (strpos($token, 'Bearer ') === 0) {
+                $bearerToken = substr($token, 7);
+            }
+            
+            // Set up headers for POST request with Bearer authentication
+            $headers = [
+                'Content-Type' => 'application/json',
+                'Authorization' => 'Bearer ' . $bearerToken
+            ];
+            
+            // Make POST request to JellyStat API
+            $response = Requests::post($apiUrl, $headers, json_encode($requestData), $options);
+            
+            if ($response->success) {
+                $data = json_decode($response->body, true);
+                
+                if (is_array($data)) {
+                    // Process the response data to match our expected format
+                    $processedItems = [];
+                    
+                    foreach ($data as $item) {
+                        $processedItem = [
+                            'id' => $item['Id'] ?? null,
+                            'title' => $item['Name'] ?? 'Unknown',
+                            'play_count' => $item['Plays'] ?? 0,
+                            'total_duration' => $item['total_playback_duration'] ?? 0,
+                            'type' => strtolower($type), // Normalize type
+                            'server_id' => null, // JellyStat doesn't return server ID in this endpoint
+                            'poster_path' => null, // Will be generated using item ID
+                            'year' => null, // Not provided by this endpoint
+                            'archived' => $item['archived'] ?? false
+                        ];
+                        
+                        // Only include non-archived items
+                        if (!$processedItem['archived']) {
+                            $processedItems[] = $processedItem;
+                        }
+                        
+                        // Limit results
+                        if (count($processedItems) >= $limit) {
+                            break;
+                        }
+                    }
+                    
+                    return $processedItems;
+                } else {
+                    $this->setLoggerChannel('JellyStat')->error('JellyStat getMostViewedByType returned invalid data format for type: ' . $type);
+                    return [];
+                }
+            } else {
+                $this->setLoggerChannel('JellyStat')->error('JellyStat getMostViewedByType API request failed for type: ' . $type . ' - HTTP ' . $response->status_code);
+                return [];
+            }
+            
+        } catch (Exception $e) {
+            $this->setLoggerChannel('JellyStat')->error('JellyStat getMostViewedByType exception for type: ' . $type . ' - ' . $e->getMessage());
+            return [];
+        }
     }
 }
