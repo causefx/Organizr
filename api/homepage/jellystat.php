@@ -1012,7 +1012,12 @@ trait JellyStatHomepageItem
         // Group items by ID and count plays
         $itemStats = [];
         
-        // Process history records to extract statistics
+        // Debug: Log sample of first few results to understand data structure
+        $this->setLoggerChannel('JellyStat')->info('JellyStat History Debug: Processing ' . count($historyResults) . ' history records');
+        if (count($historyResults) > 0) {
+            $this->setLoggerChannel('JellyStat')->info('JellyStat Sample Record: ' . json_encode(array_slice($historyResults, 0, 3), JSON_PRETTY_PRINT));
+        }
+        
         foreach ($historyResults as $index => $result) {
             // Determine content type based on available data
             $contentType = 'unknown';
@@ -1024,71 +1029,46 @@ trait JellyStatHomepageItem
             // Check if it's a TV show (has SeriesName)
             if (!empty($result['SeriesName'])) {
                 $contentType = 'show';
-                // Use SeriesName as the primary identifier to group all episodes under the same series
-                $itemId = $result['SeriesName'];
+                $itemId = $result['SeriesName']; // Use series name as unique identifier
                 $title = $result['SeriesName'];
-                
-                // Try to extract year from SeriesName or other series-level data
-                if (preg_match('/\((19|20)\d{2}\)/', $title, $matches)) {
-                    $year = $matches[1] . $matches[2];
-                    // Keep the year in the title for shows as it helps with identification
-                } elseif (!empty($result['SeriesProductionYear'])) {
-                    $year = $result['SeriesProductionYear'];
-                } elseif (!empty($result['ProductionYear'])) {
-                    $year = $result['ProductionYear'];
+                // Try to extract year from episode or series data
+                if (!empty($result['EpisodeName'])) {
+                    // This is an episode, count toward the series
+                    $episodeTitle = $result['EpisodeName'];
+                    if (preg_match('/\b(19|20)\d{2}\b/', $episodeTitle, $matches)) {
+                        $year = $matches[0];
+                    }
                 }
             }
-            // Check if it's a movie or music (has NowPlayingItemName but no SeriesName)
+            // Check if it's a movie (has NowPlayingItemName but no SeriesName)
             elseif (!empty($result['NowPlayingItemName']) && empty($result['SeriesName'])) {
+                // Determine if it's likely a movie or music based on duration or other hints
                 $itemName = $result['NowPlayingItemName'];
                 $duration = $result['PlaybackDuration'] ?? 0;
                 
-                // More robust content type detection
+                // If duration is very short (< 10 minutes) and no video streams, likely music
                 $hasVideo = false;
-                $hasAudio = false;
-                $videoStreams = 0;
-                $audioStreams = 0;
-                
                 if (isset($result['MediaStreams']) && is_array($result['MediaStreams'])) {
                     foreach ($result['MediaStreams'] as $stream) {
-                        $streamType = $stream['Type'] ?? '';
-                        if ($streamType === 'Video') {
+                        if (($stream['Type'] ?? '') === 'Video') {
                             $hasVideo = true;
-                            $videoStreams++;
-                        } elseif ($streamType === 'Audio') {
-                            $hasAudio = true;
-                            $audioStreams++;
+                            break;
                         }
                     }
                 }
                 
-                // Improved logic for distinguishing music from movies
-                // Music: No video streams OR very short duration with only audio
-                // Movies: Has video streams OR longer duration content
-                if (!$hasVideo && $hasAudio) {
-                    // Pure audio content = music
+                if (!$hasVideo || $duration < 600) { // Less than 10 minutes and no video = likely music
                     $contentType = 'music';
                     $title = $itemName;
-                } elseif ($hasVideo && $duration < 1800) { // Less than 30 minutes with video could be music video or short film
-                    // Check if it looks like a music track (common music patterns)
-                    if (preg_match('/\s-\s/', $itemName) || preg_match('/\b(feat\.|ft\.|featuring)\b/i', $itemName)) {
-                        $contentType = 'music';
-                        $title = $itemName;
-                    } else {
-                        $contentType = 'movie'; // Short film or episode
-                        $title = $itemName;
-                    }
+                    // For music, try to extract artist info
+                    // Music tracks might have format like "Artist - Song" or just "Song"
                 } else {
-                    // Has video streams or longer duration = movie
                     $contentType = 'movie';
                     $title = $itemName;
-                    
                     // Try to extract year from movie title
                     if (preg_match('/\((19|20)\d{2}\)/', $title, $matches)) {
                         $year = $matches[1] . $matches[2];
                         $title = trim(str_replace($matches[0], '', $title));
-                    } elseif (!empty($result['ProductionYear'])) {
-                        $year = $result['ProductionYear'];
                     }
                 }
                 
@@ -1110,8 +1090,38 @@ trait JellyStatHomepageItem
                         // For movies, use the NowPlayingItemId
                         $actualItemId = $result['NowPlayingItemId'] ?? null;
                     } elseif ($contentType === 'show') {
-                        // For TV shows, use available IDs for poster generation  
-                        $actualItemId = $result['SeriesId'] ?? $result['ShowId'] ?? $result['ParentId'] ?? $result['NowPlayingItemId'] ?? null;
+                        // Debug: Log all available IDs for TV shows to understand data structure
+                        $this->setLoggerChannel('JellyStat')->info("JellyStat TV Show Debug - Series: {$result['SeriesName']}");
+                        $this->setLoggerChannel('JellyStat')->info("Available IDs: SeriesId=" . ($result['SeriesId'] ?? 'null') . 
+                                 ", ShowId=" . ($result['ShowId'] ?? 'null') . 
+                                 ", ParentId=" . ($result['ParentId'] ?? 'null') . 
+                                 ", NowPlayingItemId=" . ($result['NowPlayingItemId'] ?? 'null'));
+                        
+                        // For TV shows, be more selective about ID selection to ensure we get series posters
+                        // Priority: SeriesId (if exists) > ShowId > NowPlayingItemId (only if it looks like series) > ParentId
+                        $actualItemId = null;
+                        
+                        if (!empty($result['SeriesId'])) {
+                            // SeriesId is the most reliable for series posters
+                            $actualItemId = $result['SeriesId'];
+                            $this->setLoggerChannel('JellyStat')->info("Using SeriesId: {$actualItemId}");
+                        } elseif (!empty($result['ShowId'])) {
+                            // ShowId is also series-specific
+                            $actualItemId = $result['ShowId'];
+                            $this->setLoggerChannel('JellyStat')->info("Using ShowId: {$actualItemId}");
+                        } elseif (!empty($result['NowPlayingItemId'])) {
+                            // Try NowPlayingItemId - it might be the series ID if we're looking at series-level data
+                            $actualItemId = $result['NowPlayingItemId'];
+                            $this->setLoggerChannel('JellyStat')->info("Using NowPlayingItemId: {$actualItemId}");
+                        } elseif (!empty($result['ParentId'])) {
+                            // Last resort: ParentId (might be series, season, or library)
+                            $actualItemId = $result['ParentId'];
+                            $this->setLoggerChannel('JellyStat')->info("Using ParentId: {$actualItemId}");
+                        }
+                        
+                        if (!$actualItemId) {
+                            $this->setLoggerChannel('JellyStat')->info("No suitable ID found for TV show: {$result['SeriesName']}");
+                        }
                     } elseif ($contentType === 'music') {
                         // For music, use NowPlayingItemId (album/track)
                         $actualItemId = $result['NowPlayingItemId'] ?? null;
@@ -1134,6 +1144,10 @@ trait JellyStatHomepageItem
                 $itemStats[$key]['play_count']++;
                 $itemStats[$key]['total_duration'] += $result['PlaybackDuration'] ?? 0;
                 
+                // Debug: Log each play count increment
+                if ($contentType === 'show') {
+                    $this->setLoggerChannel('JellyStat')->info("Play count increment for {$title}: now {$itemStats[$key]['play_count']} (Episode: {$result['EpisodeName']}, User: {$result['UserName']}, Date: {$result['ActivityDateInserted']})");
+                }
                 
                 // Update last played time
                 $currentTime = $result['ActivityDateInserted'] ?? null;
