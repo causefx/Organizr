@@ -1046,14 +1046,33 @@ trait JellyStatHomepageItem
                         // For movies, use the NowPlayingItemId
                         $actualItemId = $result['NowPlayingItemId'] ?? null;
                     } elseif ($contentType === 'show') {
-                        // For TV shows, try different ID fields to get the proper series ID
-                        // SeriesId is most specific, then try other fields
-                        $actualItemId = $result['SeriesId'] ?? $result['ShowId'] ?? $result['ParentId'] ?? $result['NowPlayingItemId'] ?? null;
+                        // For TV shows, be more selective about ID selection to ensure we get series posters
+                        // Priority: SeriesId (if exists) > specific logic for ParentId vs NowPlayingItemId
+                        $actualItemId = null;
                         
-                        // If ParentId and NowPlayingItemId are the same, it might be pointing to an episode
-                        // In that case, we should try to use a different approach
-                        if ($actualItemId === $result['NowPlayingItemId'] && !empty($result['ParentId']) && $result['ParentId'] !== $result['NowPlayingItemId']) {
+                        if (!empty($result['SeriesId'])) {
+                            // SeriesId is the most reliable for series posters
+                            $actualItemId = $result['SeriesId'];
+                        } elseif (!empty($result['ShowId'])) {
+                            // ShowId is also series-specific
+                            $actualItemId = $result['ShowId'];
+                        } elseif (!empty($result['ParentId']) && !empty($result['NowPlayingItemId'])) {
+                            // When both ParentId and NowPlayingItemId exist:
+                            // - If they're different, ParentId is likely the series/season
+                            // - If they're the same, we might be at series level already
+                            if ($result['ParentId'] !== $result['NowPlayingItemId']) {
+                                // ParentId is likely series or season, prefer it over episode ID
+                                $actualItemId = $result['ParentId'];
+                            } else {
+                                // They're the same, could be series-level already
+                                $actualItemId = $result['NowPlayingItemId'];
+                            }
+                        } elseif (!empty($result['ParentId'])) {
+                            // Only ParentId available, use it (might be series or season)
                             $actualItemId = $result['ParentId'];
+                        } else {
+                            // Fallback to NowPlayingItemId (likely episode, but better than nothing)
+                            $actualItemId = $result['NowPlayingItemId'] ?? null;
                         }
                     } elseif ($contentType === 'music') {
                         // For music, use NowPlayingItemId (album/track)
