@@ -12026,6 +12026,31 @@ function jsFriendlyJSONStringify (s) {
 	replace(/\u2028/g, '\\u2028').
 	replace(/\u2029/g, '\\u2029');
 }
+function exportLogs() {
+    const query = "api/v2/log/0?filter=NONEpageSize=1000offset=0";
+    $.get(query, function (data) {
+        const logs = data.response.data.results;
+        let csvContent = "data:text/csv;charset=utf-8,Date,Severity,Function,Message,IP Address,User\n";
+        logs.forEach(function (log) {
+            const row = [
+                log.datetime,
+                log.log_level,
+                log.channel,
+                log.message,
+                log.remote_ip_address,
+                log.username
+            ].join(",");
+            csvContent += row + "\n";
+        });
+        const encodedUri = encodeURI(csvContent);
+        const link = document.createElement("a");
+        link.setAttribute("href", encodedUri);
+        link.setAttribute("download", "organizr_logs.csv");
+        document.body.appendChild(link); 
+        link.click();
+        document.body.removeChild(link);
+    });
+}
 function logContext(row){
 	let buttons = '';
 	buttons += (Object.keys(row).length > 0) ? '<button data-toggle="tooltip" title="" data-original-title="View Details" class="btn btn-xs btn-primary waves-effect waves-light log-details m-r-5" data-trace="'+row.trace_id+'"><i class="mdi mdi-file-find"></i></button>' : '';
