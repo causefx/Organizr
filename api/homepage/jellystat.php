@@ -362,7 +362,7 @@ trait JellyStatHomepageItem
             if (itemId && jellyStatUrl) {
                 // JellyStat uses /proxy/Items/Images/Primary endpoint
                 // Format: /proxy/Items/Images/Primary?id={itemId}&fillWidth=200&quality=90
-                var baseUrl = jellyStatUrl.replace(/\/+$/, ''); // Remove trailing slashes
+                var baseUrl = jellyStatUrl.replace(/\/+$/, ""); // Remove trailing slashes
                 
                 var apiUrl = baseUrl + "/proxy/Items/Images/Primary?id=" + itemId + "&fillWidth=200&quality=90";
                 console.log("Generated JellyStat proxy image URL:", apiUrl);
