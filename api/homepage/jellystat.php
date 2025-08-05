@@ -885,22 +885,28 @@ trait JellyStatHomepageItem
                 }
             }
             
-            // Get most viewed content using JellyStat's native API endpoints
-            // This matches what the JellyStat web UI uses and provides accurate "most viewed" data
-            
-            // Get most viewed movies
-            if ($this->config['homepageJellyStatShowMostWatchedMovies'] ?? false) {
-                $stats['most_watched_movies'] = $this->fetchJellyStatMostViewedByType($baseUrl, $token, $options, 'Movie', $days, $mostWatchedCount);
-            }
-            
-            // Get most viewed TV shows
-            if ($this->config['homepageJellyStatShowMostWatchedShows'] ?? false) {
-                $stats['most_watched_shows'] = $this->fetchJellyStatMostViewedByType($baseUrl, $token, $options, 'Series', $days, $mostWatchedCount);
-            }
-            
-            // Get most listened music
-            if ($this->config['homepageJellyStatShowMostListenedMusic'] ?? false) {
-                $stats['most_listened_music'] = $this->fetchJellyStatMostViewedByType($baseUrl, $token, $options, 'Audio', $days, $mostWatchedCount);
+            // Get History data and process to extract most watched content
+            $historyUrl = $baseUrl . '/api/getHistory?apiKey=' . urlencode($token) . '&size=500';
+            $response = Requests::get($historyUrl, [], $options);
+            if ($response->success) {
+                $historyData = json_decode($response->body, true);
+                if (is_array($historyData) && isset($historyData['results']) && is_array($historyData['results'])) {
+                    // Process history to get most watched content
+                    $processedData = $this->processJellyStatHistory($historyData['results']);
+                    
+                    // Extract most watched items based on user settings
+                    if ($this->config['homepageJellyStatShowMostWatchedMovies'] ?? false) {
+                        $stats['most_watched_movies'] = array_slice($processedData['movies'], 0, $mostWatchedCount);
+                    }
+                    
+                    if ($this->config['homepageJellyStatShowMostWatchedShows'] ?? false) {
+                        $stats['most_watched_shows'] = array_slice($processedData['shows'], 0, $mostWatchedCount);
+                    }
+                    
+                    if ($this->config['homepageJellyStatShowMostListenedMusic'] ?? false) {
+                        $stats['most_listened_music'] = array_slice($processedData['music'], 0, $mostWatchedCount);
+                    }
+                }
             }
             
         } catch (Exception $e) {
