@@ -886,7 +886,13 @@ trait JellyStatHomepageItem
             }
             
             // Get History data and process to extract most watched content
-            $historyUrl = $baseUrl . '/api/getHistory?apiKey=' . urlencode($token) . '&size=500';
+            // Calculate the start date based on the configured days period
+            $startDate = date('Y-m-d', strtotime("-{$days} days"));
+            
+            // Use a larger page size and add date filtering to get accurate play counts
+            $historyUrl = $baseUrl . '/api/getHistory?apiKey=' . urlencode($token) . 
+                         '&size=10000' . 
+                         '&startDate=' . urlencode($startDate);
             $response = Requests::get($historyUrl, [], $options);
             if ($response->success) {
                 $historyData = json_decode($response->body, true);
@@ -1149,75 +1155,5 @@ trait JellyStatHomepageItem
         });
         
         return $processed;
-    }
-    
-    /**
-     * Fetch most viewed content by type using JellyStat's native API endpoint
-     * This matches exactly what the JellyStat web UI uses
-     */
-    private function fetchJellyStatMostViewedByType($baseUrl, $token, $options, $type, $days, $limit)
-    {
-        try {
-            // Log the API call for debugging
-            $this->setLoggerChannel('JellyStat')->info("fetchJellyStatMostViewedByType called with type: {$type}, days: {$days}");
-            
-            // Use query parameter authentication like the other working JellyStat API calls
-            $apiUrl = $baseUrl . '/stats/getMostViewedByType?apiKey=' . urlencode($token) . '&days=' . intval($days) . '&type=' . urlencode($type);
-            
-            $this->setLoggerChannel('JellyStat')->info("Making GET request to: {$apiUrl}");
-            
-            // Make GET request to JellyStat API using query parameters (same as other working endpoints)
-            $response = Requests::get($apiUrl, [], $options);
-            
-            $this->setLoggerChannel('JellyStat')->info("Response status: {$response->status_code}");
-            
-            if ($response->success) {
-                $data = json_decode($response->body, true);
-                
-                if (is_array($data)) {
-                    $this->setLoggerChannel('JellyStat')->info("Received " . count($data) . " items from JellyStat API for type: {$type}");
-                    
-                    // Process the response data to match our expected format
-                    $processedItems = [];
-                    
-                    foreach ($data as $item) {
-                        $processedItem = [
-                            'id' => $item['Id'] ?? null,
-                            'title' => $item['Name'] ?? 'Unknown',
-                            'play_count' => $item['Plays'] ?? 0,
-                            'total_duration' => $item['total_playback_duration'] ?? 0,
-                            'type' => strtolower($type), // Normalize type
-                            'server_id' => null, // JellyStat doesn't return server ID in this endpoint
-                            'poster_path' => null, // Will be generated using item ID
-                            'year' => null, // Not provided by this endpoint
-                            'archived' => $item['archived'] ?? false
-                        ];
-                        
-                        // Only include non-archived items
-                        if (!$processedItem['archived']) {
-                            $processedItems[] = $processedItem;
-                        }
-                        
-                        // Limit results
-                        if (count($processedItems) >= $limit) {
-                            break;
-                        }
-                    }
-                    
-                    $this->setLoggerChannel('JellyStat')->info("Processed " . count($processedItems) . " items for type: {$type}");
-                    return $processedItems;
-                } else {
-                    $this->setLoggerChannel('JellyStat')->error('JellyStat getMostViewedByType returned invalid data format for type: ' . $type . '. Response: ' . substr($response->body, 0, 500));
-                    return [];
-                }
-            } else {
-                $this->setLoggerChannel('JellyStat')->error('JellyStat getMostViewedByType API request failed for type: ' . $type . ' - HTTP ' . $response->status_code . '. Response: ' . substr($response->body, 0, 500));
-                return [];
-            }
-            
-        } catch (Exception $e) {
-            $this->setLoggerChannel('JellyStat')->error('JellyStat getMostViewedByType exception for type: ' . $type . ' - ' . $e->getMessage());
-            return [];
-        }
     }
 }
