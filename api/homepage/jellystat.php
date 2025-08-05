@@ -327,22 +327,37 @@ trait JellyStatHomepageItem
         
         // Helper function to generate poster URLs from JellyStat/Jellyfin
         function getPosterUrl(posterPath, itemId, serverId) {
-            if (!posterPath && !itemId) return null;
+            console.log("getPosterUrl called with:", {posterPath, itemId, serverId});
+            var jellyStatUrl = "' . $jellyStatUrl . '";
+            console.log("JellyStat URL from config:", jellyStatUrl);
+            
+            if (!posterPath && !itemId) {
+                console.log("No poster path or item ID provided");
+                return null;
+            }
+            
             if (posterPath) {
+                console.log("Processing poster path:", posterPath);
                 if (posterPath.indexOf("http://") === 0 || posterPath.indexOf("https://") === 0) {
+                    console.log("Poster path is absolute URL:", posterPath);
                     return posterPath;
                 }
-                var jellyStatUrl = "' . $jellyStatUrl . '";
                 if (jellyStatUrl && posterPath.indexOf("/") === 0) {
-                    return jellyStatUrl + posterPath;
+                    var fullUrl = jellyStatUrl + posterPath;
+                    console.log("Generated full URL from relative path:", fullUrl);
+                    return fullUrl;
                 }
             }
+            
             if (itemId && serverId) {
-                var jellyStatUrl = "' . $jellyStatUrl . '";
                 if (jellyStatUrl) {
-                    return jellyStatUrl + "/api/image/" + itemId + "/Primary";
+                    var apiUrl = jellyStatUrl + "/api/image/" + itemId + "/Primary";
+                    console.log("Generated API image URL:", apiUrl);
+                    return apiUrl;
                 }
             }
+            
+            console.log("No valid poster URL could be generated");
             return null;
         }
 
@@ -567,7 +582,11 @@ trait JellyStatHomepageItem
                 
                 stats.most_watched_movies.forEach(function(movie) {
                     console.log("Processing movie:", movie);
+                    console.log("Movie poster_path:", movie.poster_path);
+                    console.log("Movie id:", movie.id);
+                    console.log("Movie server_id:", movie.server_id);
                     var posterUrl = getPosterUrl(movie.poster_path, movie.id, movie.server_id);
+                    console.log("Generated posterUrl:", posterUrl);
                     var playCount = movie.play_count || 0;
                     var year = movie.year || "N/A";
                     var title = movie.title || "Unknown Movie";
