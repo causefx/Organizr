@@ -309,7 +309,7 @@ trait JellyStatHomepageItem
         }
         
         // Helper function to format duration from ticks
-        function formatDuration(ticks) {
+        function formatJellyStatDuration(ticks) {
             if (!ticks || ticks === 0) return "0 min";
             
             // Convert ticks to seconds (ticks are in 100-nanosecond intervals)
@@ -645,7 +645,12 @@ trait JellyStatHomepageItem
                 html += "<div class=\"row\" style=\"margin-top: 15px;\">";
                 
                 stats.most_watched_shows.forEach(function(show) {
+                    console.log("Processing TV show:", show);
+                    console.log("Show poster_path:", show.poster_path);
+                    console.log("Show id:", show.id);
+                    console.log("Show server_id:", show.server_id);
                     var posterUrl = getPosterUrl(show.poster_path, show.id, show.server_id);
+                    console.log("Generated TV show posterUrl:", posterUrl);
                     var playCount = show.play_count || 0;
                     var year = show.year || "N/A";
                     var title = show.title || "Unknown Show";
@@ -838,7 +843,7 @@ trait JellyStatHomepageItem
                             'item_count' => $lib['item_count'] ?? 0,
                             'season_count' => $lib['season_count'] ?? 0,
                             'episode_count' => $lib['episode_count'] ?? 0,
-                            'total_play_time' => $lib['total_play_time'] ? $this->formatDuration($lib['total_play_time']) : '0 min',
+                            'total_play_time' => $lib['total_play_time'] ? $this->formatJellyStatDuration($lib['total_play_time']) : '0 min',
                             'play_time_raw' => $lib['total_play_time'] ?? 0,
                             'collection_type' => $lib['CollectionType'] ?? 'unknown'
                         ];
@@ -872,7 +877,7 @@ trait JellyStatHomepageItem
                         'total_items' => $totalItems,
                         'total_seasons' => $totalSeasons,
                         'total_episodes' => $totalEpisodes,
-                        'total_play_time' => $this->formatDuration($totalPlayTime),
+                        'total_play_time' => $this->formatJellyStatDuration($totalPlayTime),
                         'total_play_time_raw' => $totalPlayTime,
                         'type_breakdown' => $typeBreakdown
                     ];
@@ -946,9 +951,9 @@ trait JellyStatHomepageItem
     }
 
     /**
-     * Format duration for display
+     * Format duration for display (JellyStat specific)
      */
-    private function formatDuration($ticks)
+    private function formatJellyStatDuration($ticks)
     {
         if ($ticks == 0) return 'Unknown';
         
