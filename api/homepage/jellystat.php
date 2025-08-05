@@ -86,7 +86,7 @@ trait JellyStatHomepageItem
         $displayMode = $this->config['homepageJellyStatDisplayMode'] ?? 'native';
         
         if ($displayMode === 'iframe') {
-            // For iframe mode, just test if the URL is reachable
+            // For iframe mode, just test if the URL is reachable (use main URL for frontend)
             try {
                 $options = $this->requestOptions($url, null, $disableCert, $customCert);
                 $response = Requests::get($this->qualifyURL($url), [], $options);
@@ -109,10 +109,14 @@ trait JellyStatHomepageItem
             }
             
             try {
-                $options = $this->requestOptions($url, null, $disableCert, $customCert);
+                // Use internal URL for server-side API calls if configured, otherwise use main URL
+                $internalUrl = $this->config['jellyStatInternalURL'] ?? '';
+                $apiUrl = !empty($internalUrl) ? $internalUrl : $url;
+                
+                $options = $this->requestOptions($apiUrl, null, $disableCert, $customCert);
                 
                 // Test JellyStat API - use query parameter authentication
-                $testUrl = $this->qualifyURL($url) . '/api/getLibraries?apiKey=' . urlencode($token);
+                $testUrl = $this->qualifyURL($apiUrl) . '/api/getLibraries?apiKey=' . urlencode($token);
                 
                 $response = Requests::get($testUrl, [], $options);
                 if ($response->success) {
@@ -139,7 +143,7 @@ trait JellyStatHomepageItem
                 $this->writeLog('error', 'JellyStat API key appears to be invalid or JellyStat API is not responding');
                 
                 // Try basic connection test to see if JellyStat is even running
-                $response = Requests::get($this->qualifyURL($url), [], $options);
+                $response = Requests::get($this->qualifyURL($apiUrl), [], $options);
                 if ($response->success) {
                     $this->setAPIResponse('error', 'JellyStat is reachable but API key is invalid or API endpoints are not responding correctly.', 500);
                 } else {
@@ -329,6 +333,7 @@ trait JellyStatHomepageItem
         // Helper function to generate poster URLs from JellyStat/Jellyfin
         function getPosterUrl(posterPath, itemId, serverId) {
             console.log("getPosterUrl called with:", {posterPath, itemId, serverId});
+            // Use external URL for frontend poster display to avoid mixed content issues
             var jellyStatUrl = "' . $jellyStatUrl . '";
             console.log("JellyStat URL from config:", jellyStatUrl);
             
@@ -337,12 +342,15 @@ trait JellyStatHomepageItem
                 return null;
             }
             
+            // If we have a poster path, process it
             if (posterPath) {
                 console.log("Processing poster path:", posterPath);
+                // If it's already an absolute URL, use it directly
                 if (posterPath.indexOf("http://") === 0 || posterPath.indexOf("https://") === 0) {
                     console.log("Poster path is absolute URL:", posterPath);
                     return posterPath;
                 }
+                // If it's a relative path starting with /, prepend the JellyStat URL
                 if (jellyStatUrl && posterPath.indexOf("/") === 0) {
                     var fullUrl = jellyStatUrl + posterPath;
                     console.log("Generated full URL from relative path:", fullUrl);
@@ -350,12 +358,13 @@ trait JellyStatHomepageItem
                 }
             }
             
-            if (itemId && serverId) {
-                if (jellyStatUrl) {
-                    var apiUrl = jellyStatUrl + "/api/image/" + itemId + "/Primary";
-                    console.log("Generated API image URL:", apiUrl);
-                    return apiUrl;
-                }
+            // If we have itemId, try to generate JellyStat image proxy URL
+            if (itemId && jellyStatUrl) {
+                // JellyStat uses /proxy/Items/Images/Primary endpoint
+                // Format: /proxy/Items/Images/Primary?id={itemId}&fillWidth=400&quality=90
+                var apiUrl = jellyStatUrl + "/proxy/Items/Images/Primary?id=" + itemId + "&fillWidth=400&quality=90";
+                console.log("Generated JellyStat proxy image URL:", apiUrl);
+                return apiUrl;
             }
             
             console.log("No valid poster URL could be generated");
@@ -1026,14 +1035,34 @@ trait JellyStatHomepageItem
                 $key = $contentType . '_' . $itemId;
                 
                 if (!isset($itemStats[$key])) {
+                    // Extract poster/image information from JellyStat API response
+                    $posterPath = null;
+                    $actualItemId = null;
+                    
+                    // Get the actual Jellyfin/Emby item ID for poster generation
+                    // Note: JellyStat history API doesn't provide poster paths directly,
+                    // so we'll use item IDs with JellyStat's image proxy API
+                    if ($contentType === 'movie') {
+                        // For movies, use the NowPlayingItemId
+                        $actualItemId = $result['NowPlayingItemId'] ?? null;
+                    } elseif ($contentType === 'show') {
+                        // For TV shows, use ParentId (series ID) for series poster
+                        // ParentId should be the series, not the episode
+                        $actualItemId = $result['ParentId'] ?? $result['NowPlayingItemId'] ?? null;
+                    } elseif ($contentType === 'music') {
+                        // For music, use NowPlayingItemId (album/track)
+                        $actualItemId = $result['NowPlayingItemId'] ?? null;
+                    }
+                    
                     $itemStats[$key] = [
-                        'id' => $itemId,
+                        'id' => $actualItemId ?? $itemId,  // Use actual item ID if available, fallback to name-based ID
                         'title' => $title,
                         'type' => $contentType,
                         'play_count' => 0,
                         'total_duration' => 0,
                         'year' => $year,
                         'server_id' => $serverId,
+                        'poster_path' => $posterPath,
                         'first_played' => $result['ActivityDateInserted'] ?? null,
                         'last_played' => $result['ActivityDateInserted'] ?? null
                     ];
