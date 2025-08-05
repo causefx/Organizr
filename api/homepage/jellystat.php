@@ -889,29 +889,24 @@ trait JellyStatHomepageItem
             // Calculate the start date based on the configured days period
             $startDate = date('Y-m-d', strtotime("-{$days} days"));
             
-            // Use a larger page size and add date filtering to get accurate play counts
-            $historyUrl = $baseUrl . '/api/getHistory?apiKey=' . urlencode($token) . 
-                         '&size=10000' . 
-                         '&startDate=' . urlencode($startDate);
-            $response = Requests::get($historyUrl, [], $options);
-            if ($response->success) {
-                $historyData = json_decode($response->body, true);
-                if (is_array($historyData) && isset($historyData['results']) && is_array($historyData['results'])) {
-                    // Process history to get most watched content
-                    $processedData = $this->processJellyStatHistory($historyData['results']);
-                    
-                    // Extract most watched items based on user settings
-                    if ($this->config['homepageJellyStatShowMostWatchedMovies'] ?? false) {
-                        $stats['most_watched_movies'] = array_slice($processedData['movies'], 0, $mostWatchedCount);
-                    }
-                    
-                    if ($this->config['homepageJellyStatShowMostWatchedShows'] ?? false) {
-                        $stats['most_watched_shows'] = array_slice($processedData['shows'], 0, $mostWatchedCount);
-                    }
-                    
-                    if ($this->config['homepageJellyStatShowMostListenedMusic'] ?? false) {
-                        $stats['most_listened_music'] = array_slice($processedData['music'], 0, $mostWatchedCount);
-                    }
+            // Fetch ALL history data using pagination to ensure complete play counts
+            $allHistoryResults = $this->fetchAllJellyStatHistory($baseUrl, $token, $startDate, $options);
+            
+            if (!empty($allHistoryResults)) {
+                // Process history to get most watched content
+                $processedData = $this->processJellyStatHistory($allHistoryResults);
+                
+                // Extract most watched items based on user settings
+                if ($this->config['homepageJellyStatShowMostWatchedMovies'] ?? false) {
+                    $stats['most_watched_movies'] = array_slice($processedData['movies'], 0, $mostWatchedCount);
+                }
+                
+                if ($this->config['homepageJellyStatShowMostWatchedShows'] ?? false) {
+                    $stats['most_watched_shows'] = array_slice($processedData['shows'], 0, $mostWatchedCount);
+                }
+                
+                if ($this->config['homepageJellyStatShowMostListenedMusic'] ?? false) {
+                    $stats['most_listened_music'] = array_slice($processedData['music'], 0, $mostWatchedCount);
                 }
             }
             
@@ -920,6 +915,41 @@ trait JellyStatHomepageItem
         }
         
         return $stats;
+    }
+
+    /**
+     * Fetch all history from JellyStat using pagination
+     */
+    private function fetchAllJellyStatHistory($baseUrl, $token, $startDate, $options)
+    {
+        $allResults = [];
+        $page = 1;
+        $pageSize = 1000; // API page size limit
+
+        do {
+            $historyUrl = $baseUrl . '/api/getHistory?apiKey=' . urlencode($token) . 
+                         '&page=' . $page . 
+                         '&size=' . $pageSize . 
+                         '&startDate=' . urlencode($startDate);
+
+            $response = Requests::get($historyUrl, [], $options);
+            if (!$response->success) {
+                // Stop if there is an error
+                break;
+            }
+
+            $data = json_decode($response->body, true);
+            if (!isset($data['results']) || !is_array($data['results']) || empty($data['results'])) {
+                // No more results, break the loop
+                break;
+            }
+
+            $allResults = array_merge($allResults, $data['results']);
+            $page++;
+
+        } while (count($data['results']) == $pageSize);
+
+        return $allResults;
     }
     
     /**
