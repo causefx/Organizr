@@ -204,31 +204,123 @@ trait JellyStatHomepageItem
             return false;
         }
         
-        // For now, return basic metadata from the key (which is the item ID)
-        // In the future this could be enhanced to fetch full metadata from JellyStat API
-        $metadata = [
-            'guid' => (string)$key,
-            'summary' => 'This item data is from JellyStat analytics. Click the JellyStat button to view detailed statistics and analytics for this content.',
-            'rating' => '0',
-            'duration' => '0',
-            'originallyAvailableAt' => '',
-            'year' => '',
-            'tagline' => 'JellyStat Analytics',
-            'genres' => [], // Empty array will be handled as string in frontend
-            'actors' => []  // Empty array will be handled as string in frontend
-        ];
+        // Get JellyStat data to find the item details
+        $url = $this->config['jellyStatURL'] ?? '';
+        $token = $this->config['jellyStatApikey'] ?? '';
+        $days = intval($this->config['homepageJellyStatDays'] ?? 30);
         
-        // Create a mock item structure similar to Emby's format
-        $item = [
-            'uid' => (string)$key,
-            'title' => 'JellyStat Item',
-            'type' => 'jellystat',
-            'nowPlayingImageURL' => 'plugins/images/homepage/no-np.png', // Safe fallback image
-            'address' => $this->qualifyURL($this->config['jellyStatURL'] ?? ''),
-            'tabName' => 'jellystat',
-            'openTab' => 'true',
-            'metadata' => $metadata
-        ];
+        if (empty($url) || empty($token)) {
+            $this->setAPIResponse('error', 'JellyStat URL or API key not configured', 500);
+            return false;
+        }
+        
+        // Fetch all JellyStat data
+        $disableCert = $this->config['jellyStatDisableCertCheck'] ?? false;
+        $customCert = $this->config['jellyStatUseCustomCertificate'] ?? false;
+        $internalUrl = $this->config['jellyStatInternalURL'] ?? '';
+        $apiUrl = !empty($internalUrl) ? $internalUrl : $url;
+        $options = $this->requestOptions($apiUrl, null, $disableCert, $customCert);
+        $baseUrl = $this->qualifyURL($apiUrl);
+        
+        // Try to find the item in cached data if available
+        $stats = null;
+        try {
+            $startDate = date('Y-m-d', strtotime("-{$days} days"));
+            $allHistoryResults = $this->fetchAllJellyStatHistory($baseUrl, $token, $startDate, $options);
+            
+            if (!empty($allHistoryResults)) {
+                $processedData = $this->processJellyStatHistory($allHistoryResults);
+                
+                // Look for the item in each content type
+                foreach (['movies', 'shows', 'music'] as $type) {
+                    foreach ($processedData[$type] as $item) {
+                        if ($item['id'] == $key) {
+                            $stats = $item;
+                            break 2; // Exit both loops if found
+                        }
+                    }
+                }
+            }
+        } catch (Exception $e) {
+            $this->writeLog('error', 'Failed to fetch JellyStat metadata: ' . $e->getMessage());
+        }
+        
+        if (!$stats) {
+            // Fallback to basic metadata if item not found
+            $metadata = [
+                'guid' => (string)$key,
+                'summary' => 'This item data is from JellyStat analytics. No additional metadata available.',
+                'rating' => '0',
+                'duration' => '0',
+                'originallyAvailableAt' => '',
+                'year' => '',
+                'tagline' => 'JellyStat Analytics',
+                'genres' => [],
+                'actors' => []
+            ];
+            
+            $item = [
+                'uid' => (string)$key,
+                'title' => 'JellyStat Item',
+                'type' => 'jellystat',
+                'nowPlayingImageURL' => 'plugins/images/homepage/no-np.png',
+                'address' => $this->qualifyURL($this->config['jellyStatURL'] ?? ''),
+                'tabName' => 'jellystat',
+                'openTab' => 'true',
+                'metadata' => $metadata
+            ];
+        } else {
+            // Use actual item data from JellyStat
+            $runtime = '';
+            if (!empty($stats['total_duration'])) {
+                $hours = floor($stats['total_duration'] / 3600);
+                $minutes = floor(($stats['total_duration'] % 3600) / 60);
+                if ($hours > 0) {
+                    $runtime = sprintf('%dh %dm', $hours, $minutes);
+                } else {
+                    $runtime = sprintf('%dm', $minutes);
+                }
+            }
+            
+            $contentType = ucfirst($stats['type'] ?? 'content');
+            $playCount = intval($stats['play_count'] ?? 0);
+            
+            $metadata = [
+                'guid' => (string)$key,
+                'summary' => sprintf(
+                    'This %s has been played %d time%s through your Jellyfin/Emby server. '
+                    . 'Total watch time: %s. Click the JellyStat button to view detailed analytics.',
+                    $stats['type'] === 'show' ? 'TV series' : ($stats['type'] ?? 'content'),
+                    $playCount,
+                    $playCount == 1 ? '' : 's',
+                    $runtime ?: 'Unknown'
+                ),
+                'rating' => '0',
+                'duration' => (string)($stats['total_duration'] ?? '0'),
+                'originallyAvailableAt' => !empty($stats['first_played']) ? date('Y-m-d', strtotime($stats['first_played'])) : '',
+                'year' => (string)($stats['year'] ?? ''),
+                'tagline' => sprintf('Most Watched %s • %d Plays', $contentType, $playCount),
+                'genres' => [],
+                'actors' => []
+            ];
+            
+            $posterUrl = '';
+            if (!empty($stats['poster_path']) && !empty($stats['id']) && !empty($stats['server_id'])) {
+                // Get poster URL if available
+                $posterUrl = $this->getPosterUrl($stats['poster_path'], $stats['id'], $stats['server_id']);
+            }
+            
+            $item = [
+                'uid' => (string)$key,
+                'title' => $stats['title'] ?? 'Unknown Title',
+                'type' => 'jellystat',
+                'nowPlayingImageURL' => $posterUrl ?: 'plugins/images/homepage/no-np.png',
+                'address' => $this->qualifyURL($this->config['jellyStatURL'] ?? ''),
+                'tabName' => 'jellystat',
+                'openTab' => 'true',
+                'metadata' => $metadata
+            ];
+        }
         
         $api['content'][] = $item;
         $this->setAPIResponse('success', null, 200, $api);
@@ -373,6 +465,16 @@ trait JellyStatHomepageItem
             }
         }
         
+        // Helper function to sanitize IDs for use in HTML attributes and CSS selectors
+        function sanitizeId(id) {
+            if (!id) return 'jellystat-unknown';
+            // Convert to string and replace problematic characters
+            return String(id)
+                .replace(/[^a-zA-Z0-9\-_]/g, '_') // Replace special chars with underscores
+                .replace(/^[0-9]/, '_$&') // Prefix with underscore if starts with number
+                .toLowerCase();
+        }
+        
         // Helper function to generate poster URLs from JellyStat/Jellyfin
         function getPosterUrl(posterPath, itemId, serverId) {
             console.log("getPosterUrl called with:", {posterPath, itemId, serverId});
@@ -407,7 +509,7 @@ trait JellyStatHomepageItem
                 // Format: /proxy/Items/Images/Primary?id={itemId}&fillWidth=200&quality=90
                 var baseUrl = jellyStatUrl.replace(/\/+$/, ""); // Remove trailing slashes
                 
-                var apiUrl = baseUrl + "/proxy/Items/Images/Primary?id=" + itemId + "&fillWidth=200&quality=90";
+                var apiUrl = baseUrl + "/proxy/Items/Images/Primary?id=" + encodeURIComponent(itemId) + "&fillWidth=200&quality=90";
                 console.log("Generated JellyStat proxy image URL:", apiUrl);
                 return apiUrl;
             }
@@ -647,8 +749,12 @@ trait JellyStatHomepageItem
                     var year = movie.year && movie.year !== "N/A" ? movie.year : "";
                     var title = movie.title || "Unknown Movie";
                     
+                    // Use sanitized ID for DOM elements but original ID for data attributes
+                    var sanitizedId = sanitizeId(movie.id);
+                    console.log("Using sanitized ID:", sanitizedId, "for original ID:", movie.id);
+                    
                     html += "<div style=\"display: inline-block; margin: 0 10px 0 0; width: 150px; vertical-align: top;\">";
-                    html += "<div class=\"poster-card metadata-get\" style=\"position: relative; width: 150px; height: 225px; transition: transform 0.2s ease; cursor: pointer;\" data-source=\"jellystat\" data-key=\"" + movie.id + "\" data-uid=\"" + movie.id + "\">";
+                    html += "<div class=\"poster-card metadata-get\" style=\"position: relative; width: 150px; height: 225px; transition: transform 0.2s ease; cursor: pointer;\" data-source=\"jellystat\" data-key=\"" + movie.id + "\" data-uid=\"" + sanitizedId + "\">";
                     
                     // Poster image container
                     html += "<div class=\"poster-image\" style=\"position: relative; width: 150px; height: 225px; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.3);\">";
@@ -683,9 +789,9 @@ trait JellyStatHomepageItem
                     
                     html += "</div>";
                     
-                    // Add metadata popup elements (Organizr style)
-                    html += "<div id=\"" + movie.id + "-metadata-div\" class=\"white-popup mfp-with-anim mfp-hide\">";
-                    html += "<div class=\"col-md-8 col-md-offset-2 " + movie.id + "-metadata-info\"></div>";
+                    // Add metadata popup elements (Organizr style) using sanitized ID
+                    html += "<div id=\"" + sanitizedId + "-metadata-div\" class=\"white-popup mfp-with-anim mfp-hide\">";
+                    html += "<div class=\"col-md-8 col-md-offset-2 " + sanitizedId + "-metadata-info\"></div>";
                     html += "</div>";
                     
                     html += "</div>";
@@ -712,8 +818,12 @@ trait JellyStatHomepageItem
                     var year = show.year && show.year !== "N/A" ? show.year : "";
                     var title = show.title || "Unknown Show";
                     
+                    // Use sanitized ID for DOM elements but original ID for data attributes
+                    var sanitizedId = sanitizeId(show.id);
+                    console.log("Using sanitized ID:", sanitizedId, "for original ID:", show.id);
+                    
                     html += "<div style=\"display: inline-block; margin: 0 10px 0 0; width: 150px; vertical-align: top;\">";
-                    html += "<div class=\"poster-card metadata-get\" style=\"position: relative; width: 150px; height: 225px; transition: transform 0.2s ease; cursor: pointer;\" data-source=\"jellystat\" data-key=\"" + show.id + "\" data-uid=\"" + show.id + "\">";
+                    html += "<div class=\"poster-card metadata-get\" style=\"position: relative; width: 150px; height: 225px; transition: transform 0.2s ease; cursor: pointer;\" data-source=\"jellystat\" data-key=\"" + show.id + "\" data-uid=\"" + sanitizedId + "\">";
                     
                     // Poster image container
                     html += "<div class=\"poster-image\" style=\"position: relative; width: 150px; height: 225px; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.3);\">";
@@ -748,9 +858,9 @@ trait JellyStatHomepageItem
                     
                     html += "</div>";
                     
-                    // Add metadata popup elements (Organizr style) 
-                    html += "<div id=\"" + show.id + "-metadata-div\" class=\"white-popup mfp-with-anim mfp-hide\">";
-                    html += "<div class=\"col-md-8 col-md-offset-2 " + show.id + "-metadata-info\"></div>";
+                    // Add metadata popup elements (Organizr style) using sanitized ID
+                    html += "<div id=\"" + sanitizedId + "-metadata-div\" class=\"white-popup mfp-with-anim mfp-hide\">";
+                    html += "<div class=\"col-md-8 col-md-offset-2 " + sanitizedId + "-metadata-info\"></div>";
                     html += "</div>";
                     
                     html += "</div>";
@@ -1032,6 +1142,41 @@ trait JellyStatHomepageItem
         } while (count($data['results']) == $pageSize);
 
         return $allResults;
+    }
+    
+    /**
+     * Generate poster URL from JellyStat API
+     */
+    private function getPosterUrl($posterPath, $itemId, $serverId)
+    {
+        // Use main URL for poster display (not internal URL)
+        $jellyStatUrl = $this->qualifyURL($this->config['jellyStatURL'] ?? '');
+        
+        if (!$jellyStatUrl) {
+            return null;
+        }
+        
+        // If we have a poster path, process it
+        if ($posterPath) {
+            // If its already an absolute URL, use it directly
+            if (strpos($posterPath, 'http://') === 0 || strpos($posterPath, 'https://') === 0) {
+                return $posterPath;
+            }
+            // If its a relative path starting with /, prepend the JellyStat URL
+            if (strpos($posterPath, '/') === 0) {
+                return rtrim($jellyStatUrl, '/') . $posterPath;
+            }
+        }
+        
+        // If we have itemId, try to generate JellyStat image proxy URL
+        if ($itemId) {
+            // JellyStat uses /proxy/Items/Images/Primary endpoint
+            // Format: /proxy/Items/Images/Primary?id={itemId}&fillWidth=200&quality=90
+            $baseUrl = rtrim($jellyStatUrl, '/');
+            return $baseUrl . '/proxy/Items/Images/Primary?id=' . urlencode($itemId) . '&fillWidth=200&quality=90';
+        }
+        
+        return null;
     }
     
     /**
