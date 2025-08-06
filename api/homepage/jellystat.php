@@ -194,15 +194,22 @@ trait JellyStatHomepageItem
     
     public function getJellyStatMetadata($array)
     {
+        // Debug logging
+        $this->writeLog('info', 'JellyStat getJellyStatMetadata called with: ' . json_encode($array));
+        
         if (!$this->homepageItemPermissions($this->jellystatHomepagePermissions('main'), true)) {
+            $this->writeLog('error', 'JellyStat metadata: Permission check failed');
             return false;
         }
         
         $key = $array['key'] ?? null;
         if (!$key) {
+            $this->writeLog('error', 'JellyStat metadata: No key provided');
             $this->setAPIResponse('error', 'JellyStat metadata key is not defined', 422);
             return false;
         }
+        
+        $this->writeLog('info', 'JellyStat metadata: Processing key: ' . $key);
         
         // Get JellyStat data to find the item details
         $url = $this->config['jellyStatURL'] ?? '';
