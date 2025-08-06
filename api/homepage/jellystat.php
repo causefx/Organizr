@@ -605,10 +605,18 @@ trait JellyStatHomepageItem
                     var title = movie.title || "Unknown Movie";
                     
                     html += "<div style=\"display: inline-block; margin: 0 10px 0 0; width: 150px; vertical-align: top;\">";
-                    html += "<div class=\"poster-card\" style=\"position: relative; width: 150px; height: 320px; transition: transform 0.2s ease;\">";
+                    html += "<div class=\"poster-card\" style=\"position: relative; width: 150px; height: 225px; transition: transform 0.2s ease; cursor: pointer;\">";
                     
                     // Poster image container
                     html += "<div class=\"poster-image\" style=\"position: relative; width: 150px; height: 225px; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.3);\">";
+                    
+                    // Hover overlay with title and year - initially hidden
+                    html += "<div class=\"poster-overlay\" style=\"position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(transparent, rgba(0,0,0,0.8)); color: white; padding: 20px 10px 10px; opacity: 0; transition: opacity 0.3s ease; pointer-events: none;\">";
+                    html += "<div style=\"font-size: 12px; font-weight: bold; line-height: 1.3; margin-bottom: 4px; text-shadow: 1px 1px 2px rgba(0,0,0,0.9); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;\" title=\"" + title + "\">" + title + "</div>";
+                    if (year && year !== "N/A") {
+                        html += "<small style=\"color: rgba(255,255,255,0.8); text-shadow: 1px 1px 2px rgba(0,0,0,0.9); line-height: 1.2;\">" + year + "</small>";
+                    }
+                    html += "</div>";
                     if (posterUrl) {
                         html += "<img src=\"" + posterUrl + "\" alt=\"" + title + "\" style=\"width: 150px; height: 225px; object-fit: cover;\" onerror=\"this.style.display=\"none\"; this.nextElementSibling.style.display=\"flex\";\">";
                     }
@@ -622,11 +630,13 @@ trait JellyStatHomepageItem
                     html += "</div>";
                     html += "</div>";
                     
-                    // Movie info with transparent background and white text
-                    html += "<div class=\"poster-info\" style=\"padding: 8px 4px; text-align: center; height: 85px; display: flex; flex-direction: column; justify-content: center;\">";
-                    html += "<div style=\"font-size: 12px; font-weight: bold; line-height: 1.3; margin-bottom: 4px; color: white; text-shadow: 1px 1px 2px rgba(0,0,0,0.8); display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; word-wrap: break-word; hyphens: auto;\" title=\"" + title + "\">" + title + "</div>";
-                    html += "<small style=\"color: rgba(255,255,255,0.8); text-shadow: 1px 1px 2px rgba(0,0,0,0.8); line-height: 1.2;\">" + (year && year !== "N/A" ? year : "") + "</small>";
-                    html += "</div>";
+                    // Add CSS for hover effect - this will be applied once when the first poster is rendered
+                    if (movie === stats.most_watched_movies[0]) {
+                        html += "<style>";
+                        html += ".poster-card:hover .poster-overlay { opacity: 1 !important; }";
+                        html += ".poster-card:hover { transform: scale(1.05); z-index: 10; }";
+                        html += "</style>";
+                    }
                     
                     html += "</div></div>";
                 });
@@ -653,10 +663,18 @@ trait JellyStatHomepageItem
                     var title = show.title || "Unknown Show";
                     
                     html += "<div style=\"display: inline-block; margin: 0 10px 0 0; width: 150px; vertical-align: top;\">";
-                    html += "<div class=\"poster-card\" style=\"position: relative; width: 150px; height: 320px; transition: transform 0.2s ease;\">";
+                    html += "<div class=\"poster-card\" style=\"position: relative; width: 150px; height: 225px; transition: transform 0.2s ease; cursor: pointer;\">";
                     
                     // Poster image container
                     html += "<div class=\"poster-image\" style=\"position: relative; width: 150px; height: 225px; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.3);\">";
+                    
+                    // Hover overlay with title and year - initially hidden
+                    html += "<div class=\"poster-overlay\" style=\"position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(transparent, rgba(0,0,0,0.8)); color: white; padding: 20px 10px 10px; opacity: 0; transition: opacity 0.3s ease; pointer-events: none;\">";
+                    html += "<div style=\"font-size: 12px; font-weight: bold; line-height: 1.3; margin-bottom: 4px; text-shadow: 1px 1px 2px rgba(0,0,0,0.9); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;\" title=\"" + title + "\">" + title + "</div>";
+                    if (year && year !== "N/A") {
+                        html += "<small style=\"color: rgba(255,255,255,0.8); text-shadow: 1px 1px 2px rgba(0,0,0,0.9); line-height: 1.2;\">" + year + "</small>";
+                    }
+                    html += "</div>";
                     if (posterUrl) {
                         html += "<img src=\"" + posterUrl + "\" alt=\"" + title + "\" style=\"width: 150px; height: 225px; object-fit: cover;\" onerror=\"this.style.display=\"none\"; this.nextElementSibling.style.display=\"flex\";\">";
                     }
@@ -670,11 +688,13 @@ trait JellyStatHomepageItem
                     html += "</div>";
                     html += "</div>";
                     
-                    // Show info with transparent background and white text
-                    html += "<div class=\"poster-info\" style=\"padding: 8px 4px; text-align: center; height: 85px; display: flex; flex-direction: column; justify-content: center;\">";
-                    html += "<div style=\"font-size: 12px; font-weight: bold; line-height: 1.3; margin-bottom: 4px; color: white; text-shadow: 1px 1px 2px rgba(0,0,0,0.8); display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; word-wrap: break-word; hyphens: auto;\" title=\"" + title + "\">" + title + "</div>";
-                    html += "<small style=\"color: rgba(255,255,255,0.8); text-shadow: 1px 1px 2px rgba(0,0,0,0.8); line-height: 1.2;\">" + (year && year !== "N/A" ? year : "") + "</small>";
-                    html += "</div>";
+                    // Add CSS for hover effect - this will be applied once when the first poster is rendered
+                    if (show === stats.most_watched_shows[0]) {
+                        html += "<style>";
+                        html += ".poster-card:hover .poster-overlay { opacity: 1 !important; }";
+                        html += ".poster-card:hover { transform: scale(1.05); z-index: 10; }";
+                        html += "</style>";
+                    }
                     
                     html += "</div></div>";
                 });
