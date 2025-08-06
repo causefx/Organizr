@@ -207,22 +207,26 @@ trait JellyStatHomepageItem
         // For now, return basic metadata from the key (which is the item ID)
         // In the future this could be enhanced to fetch full metadata from JellyStat API
         $metadata = [
-            'guid' => $key,
-            'summary' => 'This item data is from JellyStat analytics.',
-            'rating' => '',
-            'duration' => '',
+            'guid' => (string)$key,
+            'summary' => 'This item data is from JellyStat analytics. Click the JellyStat button to view detailed statistics and analytics for this content.',
+            'rating' => '0',
+            'duration' => '0',
             'originallyAvailableAt' => '',
             'year' => '',
             'tagline' => 'JellyStat Analytics',
-            'genres' => [],
-            'actors' => []
+            'genres' => [], // Empty array will be handled as string in frontend
+            'actors' => []  // Empty array will be handled as string in frontend
         ];
         
         // Create a mock item structure similar to Emby's format
         $item = [
-            'uid' => $key,
+            'uid' => (string)$key,
             'title' => 'JellyStat Item',
-            'type' => 'jellystat', 
+            'type' => 'jellystat',
+            'nowPlayingImageURL' => 'plugins/images/homepage/no-np.png', // Safe fallback image
+            'address' => $this->qualifyURL($this->config['jellyStatURL'] ?? ''),
+            'tabName' => 'jellystat',
+            'openTab' => 'true',
             'metadata' => $metadata
         ];
         

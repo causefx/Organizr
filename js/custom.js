@@ -1412,6 +1412,9 @@ $(document).on("click", ".metadata-get", function(e) {
         case 'jellyfin':
             var action = 'getEmbyMetadata';
             break;
+        case 'jellystat':
+            var action = 'getJellyStatMetadata';
+            break;
         default:
 
     }
