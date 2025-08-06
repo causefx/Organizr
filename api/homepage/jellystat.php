@@ -680,8 +680,8 @@ trait JellyStatHomepageItem
                     html += "</div>";
                     
                     // Add metadata popup elements (Organizr style)
-                    html += "<div id='" + movie.id + "-metadata-div' class='white-popup mfp-with-anim mfp-hide'>";
-                    html += "<div class='col-md-8 col-md-offset-2 " + movie.id + "-metadata-info'></div>";
+                    html += "<div id=\"" + movie.id + "-metadata-div\" class=\"white-popup mfp-with-anim mfp-hide\">";
+                    html += "<div class=\"col-md-8 col-md-offset-2 " + movie.id + "-metadata-info\"></div>";
                     html += "</div>";
                     
                     html += "</div>";
@@ -745,8 +745,8 @@ trait JellyStatHomepageItem
                     html += "</div>";
                     
                     // Add metadata popup elements (Organizr style) 
-                    html += "<div id='" + show.id + "-metadata-div' class='white-popup mfp-with-anim mfp-hide'>";
-                    html += "<div class='col-md-8 col-md-offset-2 " + show.id + "-metadata-info'></div>";
+                    html += "<div id=\"" + show.id + "-metadata-div\" class=\"white-popup mfp-with-anim mfp-hide\">";
+                    html += "<div class=\"col-md-8 col-md-offset-2 " + show.id + "-metadata-info\"></div>";
                     html += "</div>";
                     
                     html += "</div>";
@@ -831,7 +831,7 @@ trait JellyStatHomepageItem
             }
         });
         
-        // JellyStat metadata popups are handled by Organizr's built-in metadata-get click handler
+        // JellyStat metadata popups are handled by Organizr\'s built-in metadata-get click handler
         // The handler will call api/v2/homepage/jellystat/metadata with the data-key value
         
         </script>
