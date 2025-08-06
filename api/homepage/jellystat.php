@@ -590,7 +590,8 @@ trait JellyStatHomepageItem
                 console.log("Rendering most watched movies:", stats.most_watched_movies);
                 html += "<div class=\"col-lg-12\" style=\"margin-top: 30px;\">";
                 html += "<h5><i class=\"fa fa-film text-primary\"></i> Most Watched Movies</h5>";
-                html += "<div class=\"row\" style=\"margin-top: 15px;\">";
+                html += "<div style=\"margin-top: 15px; overflow-x: auto; overflow-y: hidden; white-space: nowrap; padding-bottom: 10px; scrollbar-width: thin; scrollbar-color: rgba(255,255,255,0.3) transparent;\">";
+                html += "<style>div::-webkit-scrollbar { height: 8px; } div::-webkit-scrollbar-track { background: rgba(255,255,255,0.1); border-radius: 4px; } div::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.3); border-radius: 4px; } div::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.5); }</style>";
                 
                 stats.most_watched_movies.forEach(function(movie) {
                     console.log("Processing movie:", movie);
@@ -603,8 +604,8 @@ trait JellyStatHomepageItem
                     var year = movie.year && movie.year !== "N/A" ? movie.year : "";
                     var title = movie.title || "Unknown Movie";
                     
-                    html += "<div style=\"display: inline-block; margin: 10px; width: 150px;\">";
-                    html += "<div class=\"poster-card\" style=\"position: relative; width: 150px; height: 280px; transition: transform 0.2s ease;\">";
+                    html += "<div style=\"display: inline-block; margin: 0 10px 0 0; width: 150px; vertical-align: top;\">";
+                    html += "<div class=\"poster-card\" style=\"position: relative; width: 150px; height: 320px; transition: transform 0.2s ease;\">";
                     
                     // Poster image container
                     html += "<div class=\"poster-image\" style=\"position: relative; width: 150px; height: 225px; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.3);\">";
@@ -622,9 +623,9 @@ trait JellyStatHomepageItem
                     html += "</div>";
                     
                     // Movie info with transparent background and white text
-                    html += "<div class=\"poster-info\" style=\"padding: 8px 4px; text-align: center; height: 45px;\">";
-                    html += "<div style=\"font-size: 12px; font-weight: bold; line-height: 1.2; height: 24px; overflow: hidden; color: white; text-shadow: 1px 1px 2px rgba(0,0,0,0.8);\" title=\"" + title + "\">" + title + "</div>";
-                    html += "<small style=\"color: rgba(255,255,255,0.8); text-shadow: 1px 1px 2px rgba(0,0,0,0.8);\">" + (year && year !== "N/A" ? year : "") + "</small>";
+                    html += "<div class=\"poster-info\" style=\"padding: 8px 4px; text-align: center; height: 85px; display: flex; flex-direction: column; justify-content: center;\">";
+                    html += "<div style=\"font-size: 12px; font-weight: bold; line-height: 1.3; margin-bottom: 4px; color: white; text-shadow: 1px 1px 2px rgba(0,0,0,0.8); display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; word-wrap: break-word; hyphens: auto;\" title=\"" + title + "\">" + title + "</div>";
+                    html += "<small style=\"color: rgba(255,255,255,0.8); text-shadow: 1px 1px 2px rgba(0,0,0,0.8); line-height: 1.2;\">" + (year && year !== "N/A" ? year : "") + "</small>";
                     html += "</div>";
                     
                     html += "</div></div>";
@@ -642,7 +643,8 @@ trait JellyStatHomepageItem
             if (' . $showMostWatchedShows . ' && stats.most_watched_shows && stats.most_watched_shows.length > 0) {
                 html += "<div class=\"col-lg-12\" style=\"margin-top: 30px;\">";
                 html += "<h5><i class=\"fa fa-television text-info\"></i> Most Watched TV Shows</h5>";
-                html += "<div class=\"row\" style=\"margin-top: 15px;\">";
+                html += "<div style=\"margin-top: 15px; overflow-x: auto; overflow-y: hidden; white-space: nowrap; padding-bottom: 10px; scrollbar-width: thin; scrollbar-color: rgba(255,255,255,0.3) transparent;\">";
+                html += "<style>div::-webkit-scrollbar { height: 8px; } div::-webkit-scrollbar-track { background: rgba(255,255,255,0.1); border-radius: 4px; } div::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.3); border-radius: 4px; } div::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.5); }</style>";
                 
                 stats.most_watched_shows.forEach(function(show) {
                     var posterUrl = getPosterUrl(show.poster_path, show.id, show.server_id);
@@ -650,8 +652,8 @@ trait JellyStatHomepageItem
                     var year = show.year && show.year !== "N/A" ? show.year : "";
                     var title = show.title || "Unknown Show";
                     
-                    html += "<div style=\"display: inline-block; margin: 10px; width: 150px;\">";
-                    html += "<div class=\"poster-card\" style=\"position: relative; width: 150px; height: 280px; transition: transform 0.2s ease;\">";
+                    html += "<div style=\"display: inline-block; margin: 0 10px 0 0; width: 150px; vertical-align: top;\">";
+                    html += "<div class=\"poster-card\" style=\"position: relative; width: 150px; height: 320px; transition: transform 0.2s ease;\">";
                     
                     // Poster image container
                     html += "<div class=\"poster-image\" style=\"position: relative; width: 150px; height: 225px; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.3);\">";
@@ -669,9 +671,9 @@ trait JellyStatHomepageItem
                     html += "</div>";
                     
                     // Show info with transparent background and white text
-                    html += "<div class=\"poster-info\" style=\"padding: 8px 4px; text-align: center; height: 45px;\">";
-                    html += "<div style=\"font-size: 12px; font-weight: bold; line-height: 1.2; height: 24px; overflow: hidden; color: white; text-shadow: 1px 1px 2px rgba(0,0,0,0.8);\" title=\"" + title + "\">" + title + "</div>";
-                    html += "<small style=\"color: rgba(255,255,255,0.8); text-shadow: 1px 1px 2px rgba(0,0,0,0.8);\">" + (year && year !== "N/A" ? year : "") + "</small>";
+                    html += "<div class=\"poster-info\" style=\"padding: 8px 4px; text-align: center; height: 85px; display: flex; flex-direction: column; justify-content: center;\">";
+                    html += "<div style=\"font-size: 12px; font-weight: bold; line-height: 1.3; margin-bottom: 4px; color: white; text-shadow: 1px 1px 2px rgba(0,0,0,0.8); display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; word-wrap: break-word; hyphens: auto;\" title=\"" + title + "\">" + title + "</div>";
+                    html += "<small style=\"color: rgba(255,255,255,0.8); text-shadow: 1px 1px 2px rgba(0,0,0,0.8); line-height: 1.2;\">" + (year && year !== "N/A" ? year : "") + "</small>";
                     html += "</div>";
                     
                     html += "</div></div>";
