@@ -248,21 +248,21 @@ trait JellyStatHomepageItem
         $jellyStatUrl = htmlspecialchars($this->qualifyURL($this->config['jellyStatURL'] ?? ''), ENT_QUOTES, 'UTF-8');
 
         return '
-        <div id="' . __FUNCTION__ . '">
-            <div class="white-box">
-                <div class="white-box-header">
-                    <i class="fa fa-bar-chart"></i> JellyStat Analytics
+        <div id="' . __FUNCTION__ . '" style="background: transparent; border: none; padding: 20px;">
+            <div style="background: rgba(0,0,0,0.1); border-radius: 10px; padding: 20px; backdrop-filter: blur(10px);">
+                <div style="margin-bottom: 20px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 15px;">
+                    <h3 style="color: white; margin: 0; display: inline-block;"><i class="fa fa-bar-chart"></i> JellyStat Analytics</h3>
                     <span class="pull-right">
-                        <small id="jellystat-last-update" class="text-muted"></small>
-                        <button class="btn btn-xs btn-primary" onclick="refreshJellyStatData()" title="Refresh Data">
+                        <small id="jellystat-last-update" style="color: rgba(255,255,255,0.7);"></small>
+                        <button class="btn btn-xs btn-primary" onclick="refreshJellyStatData()" title="Refresh Data" style="margin-left: 10px;">
                             <i class="fa fa-refresh" id="jellystat-refresh-icon"></i>
                         </button>
                     </span>
                 </div>
-                <div class="white-box-content">
+                <div>
                     <div class="row" id="jellystat-content">
                         <div class="col-lg-12 text-center">
-                            <i class="fa fa-spinner fa-spin"></i> Loading JellyStat data...
+                            <i class="fa fa-spinner fa-spin" style="color: white;"></i> <span style="color: white;">Loading JellyStat data...</span>
                         </div>
                     </div>
                 </div>
@@ -547,7 +547,7 @@ trait JellyStatHomepageItem
                     html += "<td>" + (item.type || "Unknown") + "</td>";
                     html += "<td><span class=\"label label-primary\">" + (item.play_count || 0) + "</span></td>";
                     html += "<td>" + (item.runtime || "Unknown") + "</td>";
-                    html += "<td>" + (item.year || "N/A") + "</td>";
+                    html += "<td>" + (item.year && item.year !== "N/A" ? item.year : "") + "</td>";
                     html += "</tr>";
                 });
                 
@@ -600,7 +600,7 @@ trait JellyStatHomepageItem
                     var posterUrl = getPosterUrl(movie.poster_path, movie.id, movie.server_id);
                     console.log("Generated posterUrl:", posterUrl);
                     var playCount = movie.play_count || 0;
-                    var year = movie.year || "N/A";
+                    var year = movie.year && movie.year !== "N/A" ? movie.year : "";
                     var title = movie.title || "Unknown Movie";
                     
                     html += "<div style=\"display: inline-block; margin: 10px; width: 150px;\">";
@@ -647,7 +647,7 @@ trait JellyStatHomepageItem
                 stats.most_watched_shows.forEach(function(show) {
                     var posterUrl = getPosterUrl(show.poster_path, show.id, show.server_id);
                     var playCount = show.play_count || 0;
-                    var year = show.year || "N/A";
+                    var year = show.year && show.year !== "N/A" ? show.year : "";
                     var title = show.title || "Unknown Show";
                     
                     html += "<div style=\"display: inline-block; margin: 10px; width: 150px;\">";
