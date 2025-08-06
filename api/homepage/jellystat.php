@@ -624,7 +624,7 @@ trait JellyStatHomepageItem
                     // Movie info
                     html += "<div class=\"poster-info\" style=\"padding: 8px; text-align: center; height: 45px;\">";
                     html += "<div style=\"font-size: 12px; font-weight: bold; line-height: 1.2; height: 24px; overflow: hidden;\" title=\"" + title + "\">" + title + "</div>";
-                    html += "<small class=\"text-muted\">" + year + "</small>";
+                    html += "<small class=\"text-muted\">" + (year && year !== "N/A" ? year : "") + "</small>";
                     html += "</div>";
                     
                     html += "</div></div>";
@@ -671,7 +671,7 @@ trait JellyStatHomepageItem
                     // Show info
                     html += "<div class=\"poster-info\" style=\"padding: 8px; text-align: center; height: 45px;\">";
                     html += "<div style=\"font-size: 12px; font-weight: bold; line-height: 1.2; height: 24px; overflow: hidden;\" title=\"" + title + "\">" + title + "</div>";
-                    html += "<small class=\"text-muted\">" + year + "</small>";
+                    html += "<small class=\"text-muted\">" + (year && year !== "N/A" ? year : "") + "</small>";
                     html += "</div>";
                     
                     html += "</div></div>";
@@ -1031,12 +1031,27 @@ trait JellyStatHomepageItem
                 $contentType = 'show';
                 $itemId = $result['SeriesName']; // Use series name as unique identifier
                 $title = $result['SeriesName'];
-                // Try to extract year from episode or series data
-                if (!empty($result['EpisodeName'])) {
-                    // This is an episode, count toward the series
-                    $episodeTitle = $result['EpisodeName'];
-                    if (preg_match('/\b(19|20)\d{2}\b/', $episodeTitle, $matches)) {
-                        $year = $matches[0];
+                
+                // Try to extract year from multiple possible sources for TV shows
+                // 1. Check for SeriesProductionYear or ProductionYear fields
+                if (!empty($result['SeriesProductionYear'])) {
+                    $year = (string)$result['SeriesProductionYear'];
+                } elseif (!empty($result['ProductionYear'])) {
+                    $year = (string)$result['ProductionYear'];
+                } elseif (!empty($result['PremiereDate'])) {
+                    // Extract year from premiere date
+                    $year = date('Y', strtotime($result['PremiereDate']));
+                } else {
+                    // 2. Try to extract year from series name (e.g., "Show Name (2019)")
+                    if (preg_match('/\((19|20)\d{2}\)/', $title, $matches)) {
+                        $year = trim($matches[0], '()');
+                        $title = trim(str_replace($matches[0], '', $title));
+                    } elseif (!empty($result['EpisodeName'])) {
+                        // 3. As a last resort, try to extract year from episode name
+                        $episodeTitle = $result['EpisodeName'];
+                        if (preg_match('/\b(19|20)\d{2}\b/', $episodeTitle, $matches)) {
+                            $year = $matches[0];
+                        }
                     }
                 }
             }
@@ -1065,10 +1080,20 @@ trait JellyStatHomepageItem
                 } else {
                     $contentType = 'movie';
                     $title = $itemName;
-                    // Try to extract year from movie title
-                    if (preg_match('/\((19|20)\d{2}\)/', $title, $matches)) {
-                        $year = $matches[1] . $matches[2];
-                        $title = trim(str_replace($matches[0], '', $title));
+                    
+                    // Try to extract year from multiple possible sources for movies
+                    // 1. Check for ProductionYear field first
+                    if (!empty($result['ProductionYear'])) {
+                        $year = (string)$result['ProductionYear'];
+                    } elseif (!empty($result['PremiereDate'])) {
+                        // Extract year from premiere date
+                        $year = date('Y', strtotime($result['PremiereDate']));
+                    } else {
+                        // 2. Try to extract year from movie title (e.g., "Movie Title (2019)")
+                        if (preg_match('/\((19|20)\d{2}\)/', $title, $matches)) {
+                            $year = trim($matches[0], '()');
+                            $title = trim(str_replace($matches[0], '', $title));
+                        }
                     }
                 }
                 
