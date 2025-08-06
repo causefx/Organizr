@@ -605,7 +605,7 @@ trait JellyStatHomepageItem
                     var title = movie.title || "Unknown Movie";
                     
                     html += "<div style=\"display: inline-block; margin: 0 10px 0 0; width: 150px; vertical-align: top;\">";
-                    html += "<div class=\"poster-card\" style=\"position: relative; width: 150px; height: 225px; transition: transform 0.2s ease; cursor: pointer;\">";
+                    html += "<div class=\"poster-card jellystat-metadata-trigger\" style=\"position: relative; width: 150px; height: 225px; transition: transform 0.2s ease; cursor: pointer;\" data-title=\"" + title + "\" data-year=\"" + year + "\" data-plays=\"" + playCount + "\" data-type=\"Movie\" data-id=\"movie-" + movie.id + "\">";
                     
                     // Poster image container
                     html += "<div class=\"poster-image\" style=\"position: relative; width: 150px; height: 225px; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.3);\">";
@@ -638,6 +638,9 @@ trait JellyStatHomepageItem
                         html += "</style>";
                     }
                     
+                    // Add hidden metadata popup div for this movie
+                    html += "<div class=\"movie-" + movie.id + "-metadata-info hidden\"></div>";
+                    html += "<a class=\"movie-" + movie.id + " hidden\" data-toggle=\"modal\" data-target=\"#database\"></a>";
                     html += "</div></div>";
                 });
                 
@@ -663,7 +666,7 @@ trait JellyStatHomepageItem
                     var title = show.title || "Unknown Show";
                     
                     html += "<div style=\"display: inline-block; margin: 0 10px 0 0; width: 150px; vertical-align: top;\">";
-                    html += "<div class=\"poster-card\" style=\"position: relative; width: 150px; height: 225px; transition: transform 0.2s ease; cursor: pointer;\">";
+                    html += "<div class=\"poster-card jellystat-metadata-trigger\" style=\"position: relative; width: 150px; height: 225px; transition: transform 0.2s ease; cursor: pointer;\" data-title=\"" + title + "\" data-year=\"" + year + "\" data-plays=\"" + playCount + "\" data-type=\"TV Show\" data-id=\"show-" + show.id + "\">";
                     
                     // Poster image container
                     html += "<div class=\"poster-image\" style=\"position: relative; width: 150px; height: 225px; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.3);\">";
@@ -696,6 +699,9 @@ trait JellyStatHomepageItem
                         html += "</style>";
                     }
                     
+                    // Add hidden metadata popup div for this show
+                    html += "<div class=\"show-" + show.id + "-metadata-info hidden\"></div>";
+                    html += "<a class=\"show-" + show.id + " hidden\" data-toggle=\"modal\" data-target=\"#database\"></a>";
                     html += "</div></div>";
                 });
                 
@@ -777,6 +783,45 @@ trait JellyStatHomepageItem
                 clearInterval(jellyStatRefreshTimer);
             }
         });
+        
+        // Add click handler for metadata popups
+        $(document).on(\'click\', \'.jellystat-metadata-trigger\', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            var title = $(this).data(\'title\');
+            var year = $(this).data(\'year\');
+            var plays = $(this).data(\'plays\');
+            var type = $(this).data(\'type\');
+            var id = $(this).data(\'id\');
+            
+            if (title && id) {
+                var metadataHtml = buildJellyStatMetadata(title, year, plays, type);
+                $(\'.\' + id + \'-metadata-info\').html(metadataHtml);
+                $(\'.\' + id).trigger(\'click\');
+            }
+        });
+        
+        // Function to build metadata popup HTML
+        function buildJellyStatMetadata(title, year, plays, type) {
+            var html = \'<div class="modal-body">\'; 
+            html += \'<div class="row">\'; 
+            html += \'<div class="col-sm-12">\'; 
+            html += \'<h4><strong>\' + title + \'</strong>\'; 
+            if (year && year !== \'N/A\' && year !== \'\') { 
+                html += \' (\' + year + \')\'; 
+            } 
+            html += \'</h4>\'; 
+            html += \'<hr>\'; 
+            html += \'<p><strong>Type:</strong> \' + type + \'</p>\'; 
+            html += \'<p><strong>Total Plays:</strong> \' + plays + \'</p>\'; 
+            html += \'<p><strong>Source:</strong> JellyStat Analytics</p>\'; 
+            html += \'<p class="text-muted">This data is collected from JellyStat viewing history and may include plays from all users.</p>\'; 
+            html += \'</div>\'; 
+            html += \'</div>\'; 
+            html += \'</div>\'; 
+            return html;
+        }
         
         </script>
         ';
