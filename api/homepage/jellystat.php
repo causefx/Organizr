@@ -467,11 +467,11 @@ trait JellyStatHomepageItem
         
         // Helper function to sanitize IDs for use in HTML attributes and CSS selectors
         function sanitizeId(id) {
-            if (!id) return 'jellystat-unknown';
+            if (!id) return \'jellystat-unknown\';
             // Convert to string and replace problematic characters
             return String(id)
-                .replace(/[^a-zA-Z0-9\-_]/g, '_') // Replace special chars with underscores
-                .replace(/^[0-9]/, '_$&') // Prefix with underscore if starts with number
+                .replace(/[^a-zA-Z0-9\\-_]/g, \'_\') // Replace special chars with underscores
+                .replace(/^[0-9]/, \'_\' + String(id).charAt(0)) // Prefix with underscore if starts with number
                 .toLowerCase();
         }
         
