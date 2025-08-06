@@ -465,8 +465,8 @@ trait JellyStatHomepageItem
                     
                     html += "<tr>";
                     html += "<td><strong>" + breakdown.label + "</strong></td>";
-                    html += "<td><span class=\"label label-info\">" + breakdown.count + "</span></td>";
-                    html += "<td><span class=\"label label-success\">" + breakdown.items.toLocaleString() + "</span></td>";
+                    html += "<td><strong style=\"color: #5bc0de;\">" + breakdown.count + "</strong></td>";
+                    html += "<td><strong style=\"color: #5cb85c;\">" + breakdown.items.toLocaleString() + "</strong></td>";
                     html += "<td><small>" + playTimeFormatted + "</small></td>";
                     html += "</tr>";
                 });
@@ -488,14 +488,14 @@ trait JellyStatHomepageItem
                     html += "<tr>";
                     html += "<td><i class=\"fa " + typeIcon + " text-muted\"></i> <strong>" + (lib.name || "Unknown Library") + "</strong></td>";
                     html += "<td><small>" + (lib.type || "Unknown") + "</small></td>";
-                    html += "<td><span class=\"label label-primary\">" + (lib.item_count || 0).toLocaleString() + "</span>";
+                    html += "<td><strong style=\"color: #337ab7;\">" + (lib.item_count || 0).toLocaleString() + "</strong>";
                     
                     // Show additional counts for TV libraries
                     if (lib.episode_count > 0) {
-                        html += "<br><small class=\"text-muted\">Episodes: " + lib.episode_count.toLocaleString() + "</small>";
+                        html += "<br><small class=\"text-muted\">Episodes: <strong style=\"color: #337ab7;\">" + lib.episode_count.toLocaleString() + "</strong></small>";
                     }
                     if (lib.season_count > 0) {
-                        html += "<br><small class=\"text-muted\">Seasons: " + lib.season_count.toLocaleString() + "</small>";
+                        html += "<br><small class=\"text-muted\">Seasons: <strong style=\"color: #337ab7;\">" + lib.season_count.toLocaleString() + "</strong></small>";
                     }
                     
                     html += "</td>";
@@ -524,7 +524,7 @@ trait JellyStatHomepageItem
                     html += "<div class=\"media\">";
                     html += "<div class=\"media-left\"><i class=\"fa fa-user fa-2x text-muted\"></i></div>";
                     html += "<div class=\"media-body\">";
-                    html += "<h6 class=\"media-heading\">" + (user.name || "Unknown User") + " <span class=\"label label-info\">" + playCount + " plays</span></h6>";
+                    html += "<h6 class=\"media-heading\">" + (user.name || "Unknown User") + " <strong style=\"color: #5bc0de;\">" + playCount + " plays</strong></h6>";
                     html += "<small class=\"text-muted\">Last Activity: " + lastActivity + "</small>";
                     html += "</div></div></div>";
                 });
@@ -545,7 +545,7 @@ trait JellyStatHomepageItem
                     html += "<tr>";
                     html += "<td><strong>" + (item.title || "Unknown Title") + "</strong></td>";
                     html += "<td>" + (item.type || "Unknown") + "</td>";
-                    html += "<td><span class=\"label label-primary\">" + (item.play_count || 0) + "</span></td>";
+                    html += "<td><strong style=\"color: #337ab7;\">" + (item.play_count || 0) + "</strong></td>";
                     html += "<td>" + (item.runtime || "Unknown") + "</td>";
                     html += "<td>" + (item.year && item.year !== "N/A" ? item.year : "") + "</td>";
                     html += "</tr>";
