@@ -604,10 +604,10 @@ trait JellyStatHomepageItem
                     var title = movie.title || "Unknown Movie";
                     
                     html += "<div style=\"display: inline-block; margin: 10px; width: 150px;\">";
-                    html += "<div class=\"poster-card\" style=\"position: relative; background: #f8f9fa; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1); width: 150px; height: 280px;\">";
+                    html += "<div class=\"poster-card\" style=\"position: relative; width: 150px; height: 280px; transition: transform 0.2s ease;\">";
                     
                     // Poster image container
-                    html += "<div class=\"poster-image\" style=\"position: relative; width: 150px; height: 225px; background: #e9ecef;\">";
+                    html += "<div class=\"poster-image\" style=\"position: relative; width: 150px; height: 225px; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.3);\">";
                     if (posterUrl) {
                         html += "<img src=\"" + posterUrl + "\" alt=\"" + title + "\" style=\"width: 150px; height: 225px; object-fit: cover;\" onerror=\"this.style.display=\"none\"; this.nextElementSibling.style.display=\"flex\";\">";
                     }
@@ -616,15 +616,15 @@ trait JellyStatHomepageItem
                     html += "</div>";
                     
                     // Play count badge
-                    html += "<div class=\"play-count-badge\" style=\"position: absolute; top: 8px; right: 8px; background: rgba(0,0,0,0.8); color: white; padding: 4px 8px; border-radius: 12px; font-size: 11px;\">";
+                    html += "<div class=\"play-count-badge\" style=\"position: absolute; top: 8px; right: 8px; background: rgba(0,0,0,0.8); color: white; padding: 4px 8px; border-radius: 12px; font-size: 11px; backdrop-filter: blur(4px);\">";
                     html += "<i class=\"fa fa-play\"></i> " + playCount;
                     html += "</div>";
                     html += "</div>";
                     
-                    // Movie info
-                    html += "<div class=\"poster-info\" style=\"padding: 8px; text-align: center; height: 45px;\">";
-                    html += "<div style=\"font-size: 12px; font-weight: bold; line-height: 1.2; height: 24px; overflow: hidden;\" title=\"" + title + "\">" + title + "</div>";
-                    html += "<small class=\"text-muted\">" + (year && year !== "N/A" ? year : "") + "</small>";
+                    // Movie info with transparent background and white text
+                    html += "<div class=\"poster-info\" style=\"padding: 8px 4px; text-align: center; height: 45px;\">";
+                    html += "<div style=\"font-size: 12px; font-weight: bold; line-height: 1.2; height: 24px; overflow: hidden; color: white; text-shadow: 1px 1px 2px rgba(0,0,0,0.8);\" title=\"" + title + "\">" + title + "</div>";
+                    html += "<small style=\"color: rgba(255,255,255,0.8); text-shadow: 1px 1px 2px rgba(0,0,0,0.8);\">" + (year && year !== "N/A" ? year : "") + "</small>";
                     html += "</div>";
                     
                     html += "</div></div>";
@@ -651,10 +651,10 @@ trait JellyStatHomepageItem
                     var title = show.title || "Unknown Show";
                     
                     html += "<div style=\"display: inline-block; margin: 10px; width: 150px;\">";
-                    html += "<div class=\"poster-card\" style=\"position: relative; background: #f8f9fa; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1); width: 150px; height: 280px;\">";
+                    html += "<div class=\"poster-card\" style=\"position: relative; width: 150px; height: 280px; transition: transform 0.2s ease;\">";
                     
                     // Poster image container
-                    html += "<div class=\"poster-image\" style=\"position: relative; width: 150px; height: 225px; background: #e9ecef;\">";
+                    html += "<div class=\"poster-image\" style=\"position: relative; width: 150px; height: 225px; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.3);\">";
                     if (posterUrl) {
                         html += "<img src=\"" + posterUrl + "\" alt=\"" + title + "\" style=\"width: 150px; height: 225px; object-fit: cover;\" onerror=\"this.style.display=\"none\"; this.nextElementSibling.style.display=\"flex\";\">";
                     }
@@ -663,15 +663,15 @@ trait JellyStatHomepageItem
                     html += "</div>";
                     
                     // Play count badge
-                    html += "<div class=\"play-count-badge\" style=\"position: absolute; top: 8px; right: 8px; background: rgba(0,0,0,0.8); color: white; padding: 4px 8px; border-radius: 12px; font-size: 11px;\">";
+                    html += "<div class=\"play-count-badge\" style=\"position: absolute; top: 8px; right: 8px; background: rgba(0,0,0,0.8); color: white; padding: 4px 8px; border-radius: 12px; font-size: 11px; backdrop-filter: blur(4px);\">";
                     html += "<i class=\"fa fa-play\"></i> " + playCount;
                     html += "</div>";
                     html += "</div>";
                     
-                    // Show info
-                    html += "<div class=\"poster-info\" style=\"padding: 8px; text-align: center; height: 45px;\">";
-                    html += "<div style=\"font-size: 12px; font-weight: bold; line-height: 1.2; height: 24px; overflow: hidden;\" title=\"" + title + "\">" + title + "</div>";
-                    html += "<small class=\"text-muted\">" + (year && year !== "N/A" ? year : "") + "</small>";
+                    // Show info with transparent background and white text
+                    html += "<div class=\"poster-info\" style=\"padding: 8px 4px; text-align: center; height: 45px;\">";
+                    html += "<div style=\"font-size: 12px; font-weight: bold; line-height: 1.2; height: 24px; overflow: hidden; color: white; text-shadow: 1px 1px 2px rgba(0,0,0,0.8);\" title=\"" + title + "\">" + title + "</div>";
+                    html += "<small style=\"color: rgba(255,255,255,0.8); text-shadow: 1px 1px 2px rgba(0,0,0,0.8);\">" + (year && year !== "N/A" ? year : "") + "</small>";
                     html += "</div>";
                     
                     html += "</div></div>";
@@ -693,10 +693,10 @@ trait JellyStatHomepageItem
                     var title = music.title || music.album || "Unknown";
                     
                     html += "<div class=\"col-lg-2 col-md-3 col-sm-4 col-xs-6\" style=\"margin-bottom: 20px;\">";
-                    html += "<div class=\"poster-card\" style=\"position: relative; background: #f8f9fa; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1); transition: transform 0.2s;\">";
+                    html += "<div class=\"poster-card\" style=\"position: relative; transition: transform 0.2s ease;\">";
                     
                     // Cover art
-                    html += "<div class=\"poster-image\" style=\"position: relative; padding-top: 100%; background: #e9ecef;\">";
+                    html += "<div class=\"poster-image\" style=\"position: relative; padding-top: 100%; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.3);\">";
                     if (posterUrl) {
                         html += "<img src=\"" + posterUrl + "\" alt=\"" + title + "\" style=\"position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover;\" onerror=\"this.style.display=\"none\"; this.nextElementSibling.style.display=\"flex\";\">";
                     }
@@ -705,15 +705,15 @@ trait JellyStatHomepageItem
                     html += "</div>";
                     
                     // Play count badge
-                    html += "<div class=\"play-count-badge\" style=\"position: absolute; top: 8px; right: 8px; background: rgba(0,0,0,0.8); color: white; padding: 4px 8px; border-radius: 12px; font-size: 11px;\">";
+                    html += "<div class=\"play-count-badge\" style=\"position: absolute; top: 8px; right: 8px; background: rgba(0,0,0,0.8); color: white; padding: 4px 8px; border-radius: 12px; font-size: 11px; backdrop-filter: blur(4px);\">";
                     html += "<i class=\"fa fa-play\"></i> " + playCount;
                     html += "</div>";
                     html += "</div>";
                     
-                    // Music info
-                    html += "<div class=\"poster-info\" style=\"padding: 12px; text-align: center;\">";
-                    html += "<h6 style=\"margin: 0 0 4px 0; font-size: 13px; font-weight: bold; line-height: 1.2; height: 32px; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;\" title=\"" + title + "\">" + title + "</h6>";
-                    html += "<small class=\"text-muted\">" + artist + "</small>";
+                    // Music info with transparent background and white text
+                    html += "<div class=\"poster-info\" style=\"padding: 12px 8px; text-align: center;\">";
+                    html += "<h6 style=\"margin: 0 0 4px 0; font-size: 13px; font-weight: bold; line-height: 1.2; height: 32px; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; color: white; text-shadow: 1px 1px 2px rgba(0,0,0,0.8);\" title=\"" + title + "\">" + title + "</h6>";
+                    html += "<small style=\"color: rgba(255,255,255,0.8); text-shadow: 1px 1px 2px rgba(0,0,0,0.8);\">" + artist + "</small>";
                     html += "</div>";
                     
                     html += "</div></div>";
