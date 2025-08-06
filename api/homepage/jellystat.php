@@ -191,6 +191,45 @@ trait JellyStatHomepageItem
         ];
         return $this->homepageCheckKeyPermissions($key, $permissions);
     }
+    
+    public function getJellyStatMetadata($array)
+    {
+        if (!$this->homepageItemPermissions($this->jellystatHomepagePermissions('main'), true)) {
+            return false;
+        }
+        
+        $key = $array['key'] ?? null;
+        if (!$key) {
+            $this->setAPIResponse('error', 'JellyStat metadata key is not defined', 422);
+            return false;
+        }
+        
+        // For now, return basic metadata from the key (which is the item ID)
+        // In the future this could be enhanced to fetch full metadata from JellyStat API
+        $metadata = [
+            'guid' => $key,
+            'summary' => 'This item data is from JellyStat analytics.',
+            'rating' => '',
+            'duration' => '',
+            'originallyAvailableAt' => '',
+            'year' => '',
+            'tagline' => 'JellyStat Analytics',
+            'genres' => [],
+            'actors' => []
+        ];
+        
+        // Create a mock item structure similar to Emby's format
+        $item = [
+            'uid' => $key,
+            'title' => 'JellyStat Item',
+            'type' => 'jellystat', 
+            'metadata' => $metadata
+        ];
+        
+        $api['content'][] = $item;
+        $this->setAPIResponse('success', null, 200, $api);
+        return $api;
+    }
 
     public function homepageOrderJellyStat()
     {
@@ -605,7 +644,7 @@ trait JellyStatHomepageItem
                     var title = movie.title || "Unknown Movie";
                     
                     html += "<div style=\"display: inline-block; margin: 0 10px 0 0; width: 150px; vertical-align: top;\">";
-                    html += "<div class=\"poster-card jellystat-metadata-trigger\" style=\"position: relative; width: 150px; height: 225px; transition: transform 0.2s ease; cursor: pointer;\" data-title=\"" + title + "\" data-year=\"" + year + "\" data-plays=\"" + playCount + "\" data-type=\"Movie\" data-id=\"movie-" + movie.id + "\">";
+                    html += "<div class=\"poster-card metadata-get\" style=\"position: relative; width: 150px; height: 225px; transition: transform 0.2s ease; cursor: pointer;\" data-source=\"jellystat\" data-key=\"" + movie.id + "\" data-uid=\"" + movie.id + "\">";
                     
                     // Poster image container
                     html += "<div class=\"poster-image\" style=\"position: relative; width: 150px; height: 225px; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.3);\">";
@@ -638,7 +677,14 @@ trait JellyStatHomepageItem
                         html += "</style>";
                     }
                     
-                    html += "</div></div>";
+                    html += "</div>";
+                    
+                    // Add metadata popup elements (Organizr style)
+                    html += "<div id='" + movie.id + "-metadata-div' class='white-popup mfp-with-anim mfp-hide'>";
+                    html += "<div class='col-md-8 col-md-offset-2 " + movie.id + "-metadata-info'></div>";
+                    html += "</div>";
+                    
+                    html += "</div>";
                 });
                 
                 html += "</div></div>";
@@ -663,7 +709,7 @@ trait JellyStatHomepageItem
                     var title = show.title || "Unknown Show";
                     
                     html += "<div style=\"display: inline-block; margin: 0 10px 0 0; width: 150px; vertical-align: top;\">";
-                    html += "<div class=\"poster-card jellystat-metadata-trigger\" style=\"position: relative; width: 150px; height: 225px; transition: transform 0.2s ease; cursor: pointer;\" data-title=\"" + title + "\" data-year=\"" + year + "\" data-plays=\"" + playCount + "\" data-type=\"TV Show\" data-id=\"show-" + show.id + "\">";
+                    html += "<div class=\"poster-card metadata-get\" style=\"position: relative; width: 150px; height: 225px; transition: transform 0.2s ease; cursor: pointer;\" data-source=\"jellystat\" data-key=\"" + show.id + "\" data-uid=\"" + show.id + "\">";
                     
                     // Poster image container
                     html += "<div class=\"poster-image\" style=\"position: relative; width: 150px; height: 225px; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.3);\">";
@@ -696,7 +742,14 @@ trait JellyStatHomepageItem
                         html += "</style>";
                     }
                     
-                    html += "</div></div>";
+                    html += "</div>";
+                    
+                    // Add metadata popup elements (Organizr style) 
+                    html += "<div id='" + show.id + "-metadata-div' class='white-popup mfp-with-anim mfp-hide'>";
+                    html += "<div class='col-md-8 col-md-offset-2 " + show.id + "-metadata-info'></div>";
+                    html += "</div>";
+                    
+                    html += "</div>";
                 });
                 
                 html += "</div></div>";
@@ -778,55 +831,8 @@ trait JellyStatHomepageItem
             }
         });
         
-        // Add click handler for metadata popups
-        $(document).on(\'click\', \'.jellystat-metadata-trigger\', function(e) {
-            e.preventDefault();
-            e.stopPropagation();
-            
-            var title = $(this).data(\'title\');
-            var year = $(this).data(\'year\');
-            var plays = $(this).data(\'plays\');
-            var type = $(this).data(\'type\');
-            var id = $(this).data(\'id\');
-            
-            if (title && id) {
-                try {
-                    var metadataHtml = buildJellyStatMetadata(title, year, plays, type);
-                    var modalBody = $(\'#database .modal-body\');
-                    if (modalBody.length) {
-                        modalBody.html(metadataHtml);
-                        $(\'#database\').modal(\'show\');
-                    } else {
-                        console.error(\'JellyStat: Could not find database modal\');
-                    }
-                } catch (error) {
-                    console.error(\'JellyStat: Error displaying metadata popup:\', error);
-                }
-            } else {
-                console.error(\'JellyStat: Missing title or id for metadata popup\');
-            }
-        });
-        
-        // Function to build metadata popup HTML
-        function buildJellyStatMetadata(title, year, plays, type) {
-            var html = \'<div class="modal-body">\'; 
-            html += \'<div class="row">\'; 
-            html += \'<div class="col-sm-12">\'; 
-            html += \'<h4><strong>\' + title + \'</strong>\'; 
-            if (year && year !== \'N/A\' && year !== \'\') { 
-                html += \' (\' + year + \')\'; 
-            } 
-            html += \'</h4>\'; 
-            html += \'<hr>\'; 
-            html += \'<p><strong>Type:</strong> \' + type + \'</p>\'; 
-            html += \'<p><strong>Total Plays:</strong> \' + plays + \'</p>\'; 
-            html += \'<p><strong>Source:</strong> JellyStat Analytics</p>\'; 
-            html += \'<p class="text-muted">This data is collected from JellyStat viewing history and may include plays from all users.</p>\'; 
-            html += \'</div>\'; 
-            html += \'</div>\'; 
-            html += \'</div>\'; 
-            return html;
-        }
+        // JellyStat metadata popups are handled by Organizr's built-in metadata-get click handler
+        // The handler will call api/v2/homepage/jellystat/metadata with the data-key value
         
         </script>
         ';
