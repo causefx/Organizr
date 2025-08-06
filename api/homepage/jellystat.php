@@ -638,9 +638,6 @@ trait JellyStatHomepageItem
                         html += "</style>";
                     }
                     
-                    // Add hidden metadata popup div for this movie
-                    html += "<div class=\"movie-" + movie.id + "-metadata-info hidden\"></div>";
-                    html += "<a class=\"movie-" + movie.id + " hidden\" data-toggle=\"modal\" data-target=\"#database\"></a>";
                     html += "</div></div>";
                 });
                 
@@ -699,9 +696,6 @@ trait JellyStatHomepageItem
                         html += "</style>";
                     }
                     
-                    // Add hidden metadata popup div for this show
-                    html += "<div class=\"show-" + show.id + "-metadata-info hidden\"></div>";
-                    html += "<a class=\"show-" + show.id + " hidden\" data-toggle=\"modal\" data-target=\"#database\"></a>";
                     html += "</div></div>";
                 });
                 
@@ -796,9 +790,20 @@ trait JellyStatHomepageItem
             var id = $(this).data(\'id\');
             
             if (title && id) {
-                var metadataHtml = buildJellyStatMetadata(title, year, plays, type);
-                $(\'.\' + id + \'-metadata-info\').html(metadataHtml);
-                $(\'.\' + id).trigger(\'click\');
+                try {
+                    var metadataHtml = buildJellyStatMetadata(title, year, plays, type);
+                    var modalBody = $(\'#database .modal-body\');
+                    if (modalBody.length) {
+                        modalBody.html(metadataHtml);
+                        $(\'#database\').modal(\'show\');
+                    } else {
+                        console.error(\'JellyStat: Could not find database modal\');
+                    }
+                } catch (error) {
+                    console.error(\'JellyStat: Error displaying metadata popup:\', error);
+                }
+            } else {
+                console.error(\'JellyStat: Missing title or id for metadata popup\');
             }
         });
         
