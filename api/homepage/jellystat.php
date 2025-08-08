@@ -205,144 +205,78 @@ trait JellyStatHomepageItem
     
     public function getJellyStatMetadata($array)
     {
-        // Debug logging
         $this->writeLog('info', 'JellyStat getJellyStatMetadata called with: ' . json_encode($array));
-        
-        if (!$this->homepageItemPermissions($this->jellystatHomepagePermissions('main'), true)) {
-            $this->writeLog('error', 'JellyStat metadata: Permission check failed');
-            return false;
-        }
-        
-        $key = $array['key'] ?? null;
-        if (!$key) {
-            $this->writeLog('error', 'JellyStat metadata: No key provided');
-            $this->setAPIResponse('error', 'JellyStat metadata key is not defined', 422);
-            return false;
-        }
-        
-        $this->writeLog('info', 'JellyStat metadata: Processing key: ' . $key);
-        
-        // Get JellyStat data to find the item details
-        $url = $this->config['jellyStatURL'] ?? '';
-        $token = $this->config['jellyStatApikey'] ?? '';
-        $days = intval($this->config['homepageJellyStatDays'] ?? 30);
-        
-        if (empty($url) || empty($token)) {
-            $this->setAPIResponse('error', 'JellyStat URL or API key not configured', 500);
-            return false;
-        }
-        
-        // Fetch all JellyStat data
-        $disableCert = $this->config['jellyStatDisableCertCheck'] ?? false;
-        $customCert = $this->config['jellyStatUseCustomCertificate'] ?? false;
-        $internalUrl = $this->config['jellyStatInternalURL'] ?? '';
-        $apiUrl = !empty($internalUrl) ? $internalUrl : $url;
-        $options = $this->requestOptions($apiUrl, null, $disableCert, $customCert);
-        $baseUrl = $this->qualifyURL($apiUrl);
-        
-        // Try to find the item in cached data if available
-        $stats = null;
         try {
-            $startDate = date('Y-m-d', strtotime("-{$days} days"));
-            $allHistoryResults = $this->fetchAllJellyStatHistory($baseUrl, $token, $startDate, $options);
-            
-            if (!empty($allHistoryResults)) {
-                $processedData = $this->processJellyStatHistory($allHistoryResults);
-                
-                // Look for the item in each content type
-                foreach (['movies', 'shows', 'music'] as $type) {
-                    foreach ($processedData[$type] as $item) {
-                        if ($item['id'] == $key) {
-                            $stats = $item;
-                            break 2; // Exit both loops if found
-                        }
-                    }
-                }
+            // Use dedicated 'metadata' permission (lighter requirements than 'main')
+            if (!$this->homepageItemPermissions($this->jellystatHomepagePermissions('metadata'), true)) {
+                $this->writeLog('error', 'JellyStat metadata: Permission check failed');
+                $this->setAPIResponse('error', 'Not authorized for JellyStat metadata', 401);
+                return false;
             }
-        } catch (Exception $e) {
-            $this->writeLog('error', 'Failed to fetch JellyStat metadata: ' . $e->getMessage());
-        }
-        
-        if (!$stats) {
-            // Fallback to basic metadata if item not found
-            $metadata = [
-                'guid' => (string)$key,
-                'summary' => 'This item data is from JellyStat analytics. No additional metadata available.',
-                'rating' => '0',
-                'duration' => '0',
-                'originallyAvailableAt' => '',
-                'year' => '',
-                'tagline' => 'JellyStat Analytics',
-                'genres' => [],
-                'actors' => []
-            ];
-            
+
+            $key = $array['key'] ?? null;
+            if (!$key) {
+                $this->writeLog('error', 'JellyStat metadata: No key provided');
+                $this->setAPIResponse('error', 'JellyStat metadata key is not defined', 422);
+                return false;
+            }
+
+            // Build minimal, safe metadata payload without external API calls
+            $title = 'JellyStat Item';
+            $year  = '';
+
             $item = [
                 'uid' => (string)$key,
+                'title' => $title,
+                'type' => 'jellystat',
+                'nowPlayingImageURL' => 'plugins/images/homepage/no-np.png',
+                'address' => $this->qualifyURL($this->config['jellyStatURL'] ?? ''),
+                'tabName' => 'jellystat',
+                'openTab' => 'true',
+                'metadata' => [
+                    'guid' => (string)$key,
+                    'summary' => 'Analytics item from JellyStat. Detailed metadata not available.',
+                    'rating' => '0',
+                    'duration' => '0',
+                    'originallyAvailableAt' => '',
+                    'year' => $year,
+                    'tagline' => 'JellyStat Analytics',
+                    'genres' => [],
+                    'actors' => []
+                ]
+            ];
+
+            $api = [];
+            $api['content'][] = $item;
+            $this->setAPIResponse('success', null, 200, $api);
+            return $api;
+        } catch (\Throwable $e) {
+            // Fail gracefully with a fallback success response instead of 500
+            $this->writeLog('error', 'JellyStat metadata exception: ' . $e->getMessage());
+            $fallback = [
+                'uid' => (string)($array['key'] ?? 'unknown'),
                 'title' => 'JellyStat Item',
                 'type' => 'jellystat',
                 'nowPlayingImageURL' => 'plugins/images/homepage/no-np.png',
                 'address' => $this->qualifyURL($this->config['jellyStatURL'] ?? ''),
                 'tabName' => 'jellystat',
                 'openTab' => 'true',
-                'metadata' => $metadata
+                'metadata' => [
+                    'guid' => (string)($array['key'] ?? 'unknown'),
+                    'summary' => 'Analytics item from JellyStat.',
+                    'rating' => '0',
+                    'duration' => '0',
+                    'originallyAvailableAt' => '',
+                    'year' => '',
+                    'tagline' => 'JellyStat Analytics',
+                    'genres' => [],
+                    'actors' => []
+                ]
             ];
-        } else {
-            // Use actual item data from JellyStat
-            $runtime = '';
-            if (!empty($stats['total_duration'])) {
-                $hours = floor($stats['total_duration'] / 3600);
-                $minutes = floor(($stats['total_duration'] % 3600) / 60);
-                if ($hours > 0) {
-                    $runtime = sprintf('%dh %dm', $hours, $minutes);
-                } else {
-                    $runtime = sprintf('%dm', $minutes);
-                }
-            }
-            
-            $contentType = ucfirst($stats['type'] ?? 'content');
-            $playCount = intval($stats['play_count'] ?? 0);
-            
-            $metadata = [
-                'guid' => (string)$key,
-                'summary' => sprintf(
-                    'This %s has been played %d time%s through your Jellyfin/Emby server. '
-                    . 'Total watch time: %s. Click the JellyStat button to view detailed analytics.',
-                    $stats['type'] === 'show' ? 'TV series' : ($stats['type'] ?? 'content'),
-                    $playCount,
-                    $playCount == 1 ? '' : 's',
-                    $runtime ?: 'Unknown'
-                ),
-                'rating' => '0',
-                'duration' => (string)($stats['total_duration'] ?? '0'),
-                'originallyAvailableAt' => !empty($stats['first_played']) ? date('Y-m-d', strtotime($stats['first_played'])) : '',
-                'year' => (string)($stats['year'] ?? ''),
-                'tagline' => sprintf('Most Watched %s • %d Plays', $contentType, $playCount),
-                'genres' => [],
-                'actors' => []
-            ];
-            
-            $posterUrl = '';
-            if (!empty($stats['poster_path']) && !empty($stats['id']) && !empty($stats['server_id'])) {
-                // Get poster URL if available
-                $posterUrl = $this->getPosterUrl($stats['poster_path'], $stats['id'], $stats['server_id']);
-            }
-            
-            $item = [
-                'uid' => (string)$key,
-                'title' => $stats['title'] ?? 'Unknown Title',
-                'type' => 'jellystat',
-                'nowPlayingImageURL' => $posterUrl ?: 'plugins/images/homepage/no-np.png',
-                'address' => $this->qualifyURL($this->config['jellyStatURL'] ?? ''),
-                'tabName' => 'jellystat',
-                'openTab' => 'true',
-                'metadata' => $metadata
-            ];
+            $api = ['content' => [$fallback]];
+            $this->setAPIResponse('success', null, 200, $api);
+            return $api;
         }
-        
-        $api['content'][] = $item;
-        $this->setAPIResponse('success', null, 200, $api);
-        return $api;
     }
 
     public function homepageOrderJellyStat()
