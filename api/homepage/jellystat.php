@@ -187,6 +187,17 @@ trait JellyStatHomepageItem
                     'homepageJellyStatAuth'
                 ],
                 'not_empty' => $requiredFields
+            ],
+            'metadata' => [
+                'enabled' => [
+                    'homepageJellyStatEnabled'
+                ],
+                'auth' => [
+                    'homepageJellyStatAuth'
+                ],
+                'not_empty' => [
+                    'jellyStatURL'
+                ]
             ]
         ];
         return $this->homepageCheckKeyPermissions($key, $permissions);
