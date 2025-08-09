@@ -127,20 +127,20 @@ trait JellyStatHomepageItem
                     }
                     // Check if there's an error message in the response
                     if (isset($data['error'])) {
-                        $this->writeLog('error', 'JellyStat API test error: ' . $data['error']);
+                        $this->error('JellyStat API test error: ' . $data['error']);
                         $this->setAPIResponse('error', 'JellyStat API error: ' . $data['error'], 500);
                         return false;
                     }
                     // Log the actual response for debugging
-                    $this->writeLog('error', 'JellyStat API test: Valid HTTP response but invalid data format. Response: ' . substr($response->body, 0, 500));
+                    $this->error('JellyStat API test: Valid HTTP response but invalid data format. Response: ' . substr($response->body, 0, 500));
                 }
                 
                 // Log first endpoint failure details
                 $firstError = "HTTP {$response->status_code}: " . substr($response->body, 0, 200);
-                $this->writeLog('error', "JellyStat API test failed on /api/getLibraries: {$firstError}");
+                $this->error("JellyStat API test failed on /api/getLibraries: {$firstError}");
                 
                 // If libraries test failed, the API key is likely invalid
-                $this->writeLog('error', 'JellyStat API key appears to be invalid or JellyStat API is not responding');
+                $this->error('JellyStat API key appears to be invalid or JellyStat API is not responding');
                 
                 // Try basic connection test to see if JellyStat is even running
                 $response = Requests::get($this->qualifyURL($apiUrl), [], $options);
@@ -152,7 +152,7 @@ trait JellyStatHomepageItem
                 return false;
                 
             } catch (Exception $e) {
-                $this->writeLog('error', 'JellyStat API test exception: ' . $e->getMessage());
+                $this->error('JellyStat API test exception: ' . $e->getMessage());
                 $this->setAPIResponse('error', 'Connection test failed: ' . $e->getMessage(), 500);
                 return false;
             }
@@ -205,18 +205,18 @@ trait JellyStatHomepageItem
     
     public function getJellyStatMetadata($array)
     {
-        $this->writeLog('info', 'JellyStat getJellyStatMetadata called with: ' . json_encode($array));
+        $this->info('JellyStat getJellyStatMetadata called with: ' . json_encode($array));
         try {
             // Use dedicated 'metadata' permission (lighter requirements than 'main')
             if (!$this->homepageItemPermissions($this->jellystatHomepagePermissions('metadata'), true)) {
-                $this->writeLog('error', 'JellyStat metadata: Permission check failed');
+                $this->error('JellyStat metadata: Permission check failed');
                 $this->setAPIResponse('error', 'Not authorized for JellyStat metadata', 401);
                 return false;
             }
 
             $key = $array['key'] ?? null;
             if (!$key) {
-                $this->writeLog('error', 'JellyStat metadata: No key provided');
+                $this->error('JellyStat metadata: No key provided');
                 $this->setAPIResponse('error', 'JellyStat metadata key is not defined', 422);
                 return false;
             }
@@ -252,7 +252,7 @@ trait JellyStatHomepageItem
             return $api;
         } catch (\Throwable $e) {
             // Fail gracefully with a fallback success response instead of 500
-            $this->writeLog('error', 'JellyStat metadata exception: ' . $e->getMessage());
+            $this->error('JellyStat metadata exception: ' . $e->getMessage());
             $fallback = [
                 'uid' => (string)($array['key'] ?? 'unknown'),
                 'title' => 'JellyStat Item',

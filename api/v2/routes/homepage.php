@@ -631,9 +631,9 @@ $app->get('/homepage/jellystat', function ($request, $response, $args) {
 });
 $app->post('/homepage/jellystat/metadata', function ($request, $response, $args) {
 	$Organizr = ($request->getAttribute('Organizr')) ?? new Organizr();
-	$Organizr->writeLog('info', 'JellyStat metadata route called');
+	$Organizr->info('JellyStat metadata route called');
 	$apiData = $Organizr->apiData($request);
-	$Organizr->writeLog('info', 'API data: ' . json_encode($apiData));
+	$Organizr->info('API data: ' . json_encode($apiData));
 	$Organizr->getJellyStatMetadata($apiData);
 	$response->getBody()->write(jsonE($GLOBALS['api']));
 	return $response
