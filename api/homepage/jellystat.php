@@ -742,7 +742,9 @@ trait JellyStatHomepageItem
                     html += "</div>";
                     
                     // Add metadata popup elements (Organizr style) using sanitized ID
-                    html += "<div id=\"" + sanitizedId + "-metadata-div\" class=\"white-popup mfp-with-anim mfp-hide\">";
+                    // Include a hidden anchor to trigger Magnific Popup, matching Emby/Jellyfin implementation
+                    html += "<a class=\"inline-popups " + sanitizedId + " hidden\" href=\"#" + sanitizedId + "-metadata-div\" data-effect=\"mfp-zoom-out\"></a>";
+                    html += "<div id=\"" + sanitizedId + "-metadata-div\" class=\"white-popup mfp-with-anim mfp-hide\"">";
                     html += "<div class=\"col-md-8 col-md-offset-2 " + sanitizedId + "-metadata-info\"></div>";
                     html += "</div>";
                     
@@ -811,7 +813,9 @@ trait JellyStatHomepageItem
                     html += "</div>";
                     
                     // Add metadata popup elements (Organizr style) using sanitized ID
-                    html += "<div id=\"" + sanitizedId + "-metadata-div\" class=\"white-popup mfp-with-anim mfp-hide\">";
+                    // Include a hidden anchor to trigger Magnific Popup, matching Emby/Jellyfin implementation
+                    html += "<a class=\"inline-popups " + sanitizedId + " hidden\" href=\"#" + sanitizedId + "-metadata-div\" data-effect=\"mfp-zoom-out\"></a>";
+                    html += "<div id=\"" + sanitizedId + "-metadata-div\" class=\"white-popup mfp-with-anim mfp-hide\"">";
                     html += "<div class=\"col-md-8 col-md-offset-2 " + sanitizedId + "-metadata-info\"></div>";
                     html += "</div>";
                     
