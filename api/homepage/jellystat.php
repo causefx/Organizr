@@ -743,12 +743,12 @@ trait JellyStatHomepageItem
                     
                     // Add metadata popup elements (Organizr style) using sanitized ID
                     // Include a hidden anchor to trigger Magnific Popup, matching Emby/Jellyfin implementation
-                    html += "<a class=\"inline-popups " + sanitizedId + " hidden\" href=\"#" + sanitizedId + "-metadata-div\" data-effect=\"mfp-zoom-out\"></a>";
-                    html += "<div id=\"" + sanitizedId + "-metadata-div\" class=\"white-popup mfp-with-anim mfp-hide\"">";
-                    html += "<div class=\"col-md-8 col-md-offset-2 " + sanitizedId + "-metadata-info\"></div>";
-                    html += "</div>";
+                    html += "\u003ca class=\\"inline-popups " + sanitizedId + " hidden\\" href=\\"#" + sanitizedId + "-metadata-div\\" data-effect=\\"mfp-zoom-out\\"\u003e\u003c/a\u003e";
+                    html += "\u003cdiv id=\\"" + sanitizedId + "-metadata-div\\" class=\\"white-popup mfp-with-anim mfp-hide\\"\u003e";
+                    html += "\u003cdiv class=\\"col-md-8 col-md-offset-2 " + sanitizedId + "-metadata-info\\"\u003e\u003c/div\u003e";
+                    html += "\u003c/div\u003e";
                     
-                    html += "</div>";
+                    html += "\u003c/div\u003e";
                 });
                 
                 html += "</div></div>";
@@ -814,12 +814,12 @@ trait JellyStatHomepageItem
                     
                     // Add metadata popup elements (Organizr style) using sanitized ID
                     // Include a hidden anchor to trigger Magnific Popup, matching Emby/Jellyfin implementation
-                    html += "<a class=\"inline-popups " + sanitizedId + " hidden\" href=\"#" + sanitizedId + "-metadata-div\" data-effect=\"mfp-zoom-out\"></a>";
-                    html += "<div id=\"" + sanitizedId + "-metadata-div\" class=\"white-popup mfp-with-anim mfp-hide\"">";
-                    html += "<div class=\"col-md-8 col-md-offset-2 " + sanitizedId + "-metadata-info\"></div>";
-                    html += "</div>";
+                    html += "\u003ca class=\\"inline-popups " + sanitizedId + " hidden\\" href=\\"#" + sanitizedId + "-metadata-div\\" data-effect=\\"mfp-zoom-out\\"\u003e\u003c/a\u003e";
+                    html += "\u003cdiv id=\\"" + sanitizedId + "-metadata-div\\" class=\\"white-popup mfp-with-anim mfp-hide\\"\u003e";
+                    html += "\u003cdiv class=\\"col-md-8 col-md-offset-2 " + sanitizedId + "-metadata-info\\"\u003e\u003c/div\u003e";
+                    html += "\u003c/div\u003e";
                     
-                    html += "</div>";
+                    html += "\u003c/div\u003e";
                 });
                 
                 html += "</div></div>";
