@@ -221,33 +221,107 @@ trait JellyStatHomepageItem
                 return false;
             }
 
-            // Build minimal, safe metadata payload without external API calls
-            $title = 'JellyStat Item';
-            $year  = '';
+            // Prepare URLs and options
+            $url = $this->config['jellyStatURL'] ?? '';
+            $internalUrl = $this->config['jellyStatInternalURL'] ?? '';
+            $apiUrl = !empty($internalUrl) ? $internalUrl : $url;
+            $token = $this->config['jellyStatApikey'] ?? '';
+            $disableCert = $this->config['jellyStatDisableCertCheck'] ?? false;
+            $customCert = $this->config['jellyStatUseCustomCertificate'] ?? false;
+            $options = $this->requestOptions($apiUrl, null, $disableCert, $customCert);
+
+            $details = null;
+            // Try a JellyStat native item detail endpoint if available
+            $tryEndpoints = [];
+            if ($token !== '') {
+                $tryEndpoints[] = rtrim($this->qualifyURL($apiUrl), '/') . '/api/getItem?apiKey=' . urlencode($token) . '&id=' . urlencode($key);
+                $tryEndpoints[] = rtrim($this->qualifyURL($apiUrl), '/') . '/api/getItemById?apiKey=' . urlencode($token) . '&id=' . urlencode($key);
+            }
+            // Try proxying directly to Jellyfin/Emby items
+            $tryEndpoints[] = rtrim($this->qualifyURL($apiUrl), '/') . '/proxy/Items/' . rawurlencode($key);
+
+            foreach ($tryEndpoints as $ep) {
+                try {
+                    $resp = Requests::get($ep, [], $options);
+                    if ($resp->success) {
+                        $json = json_decode($resp->body, true);
+                        if (is_array($json) && !isset($json['error'])) {
+                            $details = $json;
+                            break;
+                        }
+                    }
+                } catch (\Throwable $e) {
+                    // ignore and try next
+                }
+            }
+
+            // Build response for buildMetadata()
+            $title = 'Item';
+            $type = 'jellystat';
+            $year = '';
+            $summary = '';
+            $tagline = 'JellyStat Analytics';
+            $genres = [];
+            $rating = '0';
+            $durationMs = '0';
+            $imageUrl = 'plugins/images/homepage/no-np.png';
+
+            if (is_array($details)) {
+                // Common fields from Jellyfin/Emby item shapes
+                $title = $details['Name'] ?? $details['OriginalTitle'] ?? $title;
+                $summary = $details['Overview'] ?? $summary;
+                $tagline = $details['Taglines'][0] ?? ($details['Tagline'] ?? $tagline);
+                $year = isset($details['ProductionYear']) ? (string)$details['ProductionYear'] : ($details['PremiereDate'] ?? '');
+                if ($year && preg_match('/^\d{4}/', $year, $m)) { $year = $m[0]; }
+                $genres = $details['Genres'] ?? [];
+                $ratingVal = $details['CommunityRating'] ?? ($details['CriticRating'] ?? null);
+                if ($ratingVal !== null) { $rating = (string)$ratingVal; }
+                // Duration: RunTimeTicks (100ns ticks)
+                if (isset($details['RunTimeTicks'])) {
+                    $durationMs = (string) floor(($details['RunTimeTicks'] / 10000000) * 1000);
+                }
+                // Type mapping
+                $jType = strtolower($details['Type'] ?? '');
+                if ($jType === 'movie') { $type = 'movie'; }
+                elseif ($jType === 'series') { $type = 'tv'; }
+                elseif ($jType === 'audio' || $jType === 'musicalbum' || $jType === 'musicvideo') { $type = 'music'; }
+
+                // Image selection
+                $primaryTag = $details['ImageTags']['Primary'] ?? null;
+                if ($primaryTag) {
+                    // Use proxy primary image
+                    $imageUrl = rtrim($this->qualifyURL($url), '/') . '/proxy/Items/' . rawurlencode($details['Id']) . '/Images/Primary?tag=' . urlencode($primaryTag);
+                } else {
+                    // Fallback: use earlier helper to derive from item id (frontend safe URL)
+                    $imageUrl = $this->getPosterUrl(null, $details['Id'] ?? $key, $details['ServerId'] ?? null) ?: $imageUrl;
+                }
+            } else {
+                // As a fallback, at least provide a generated poster via proxy if possible
+                $imageUrl = $this->getPosterUrl(null, $key, null) ?: $imageUrl;
+            }
 
             $item = [
                 'uid' => (string)$key,
                 'title' => $title,
-                'type' => 'jellystat',
-                'nowPlayingImageURL' => 'plugins/images/homepage/no-np.png',
+                'type' => $type,
+                'nowPlayingImageURL' => $imageUrl,
                 'address' => $this->qualifyURL($this->config['jellyStatURL'] ?? ''),
                 'tabName' => 'jellystat',
                 'openTab' => 'true',
                 'metadata' => [
                     'guid' => (string)$key,
-                    'summary' => 'Analytics item from JellyStat. Detailed metadata not available.',
-                    'rating' => '0',
-                    'duration' => '0',
+                    'summary' => $summary,
+                    'rating' => $rating,
+                    'duration' => $durationMs,
                     'originallyAvailableAt' => '',
                     'year' => $year,
-                    'tagline' => 'JellyStat Analytics',
-                    'genres' => [],
+                    'tagline' => $tagline,
+                    'genres' => $genres,
                     'actors' => []
                 ]
             ];
 
-            $api = [];
-            $api['content'][] = $item;
+            $api = ['content' => [$item]];
             $this->setAPIResponse('success', null, 200, $api);
             return $api;
         } catch (\Throwable $e) {
