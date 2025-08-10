@@ -526,9 +526,10 @@ trait JellyStatHomepageItem
                         // Fallback to Backdrop image
                         $backdropTag = $details['BackdropImageTags'][0];
                         $imageUrl = $imageBaseUrl . '/proxy/Items/' . rawurlencode($itemId) . '/Images/Backdrop?tag=' . urlencode($backdropTag) . '&fillWidth=400&quality=90';
-                } else {
-                    // Final fallback: try generic Primary image proxy
-                    $imageUrl = $this->getPosterUrl(null, $itemId, $serverId) ?: $imageUrl;
+                    } else {
+                        // Final fallback: try generic Primary image proxy
+                        $imageUrl = $this->getPosterUrl(null, $itemId, $serverId) ?: $imageUrl;
+                    }
                 }
                 
                 $this->info("JellyStat metadata: Processed item - Title: {$title}, Type: {$type}, Year: {$year}, Rating: {$rating}");
