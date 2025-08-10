@@ -316,7 +316,7 @@ trait JellyStatHomepageItem
                                 }
                             } else {
                                 $this->info('JellyStat metadata: Failed to fetch item from ' . $serverType . ' - Status: ' . $metadataResponse->status_code);
-                                $metadataSource = null; // Failed to get from media server
+                                // Do not clear $metadataSource; keep configured server so we can still build a link
                             }
                         }
                     }
@@ -582,6 +582,19 @@ trait JellyStatHomepageItem
             $this->error('JellyStat metadata exception: ' . $e->getMessage());
             
             $fallbackKey = (string)($array['key'] ?? 'unknown');
+            // Even on failure, if a media server is configured, build a link so the Emby/Jellyfin button works
+            $effectiveSource = $metadataSource;
+            $effectiveUrl = $mediaServerUrl;
+            if (!$effectiveSource) {
+                if ($useJellyfinMetadata) {
+                    $effectiveSource = 'jellyfin';
+                    $effectiveUrl = $this->qualifyURL($this->config['jellyfinURL'] ?? '');
+                } elseif ($useEmbyMetadata) {
+                    $effectiveSource = 'emby';
+                    $effectiveUrl = $this->qualifyURL($this->config['embyURL'] ?? '');
+                }
+            }
+
             $fallback = [
                 'uid' => $fallbackKey,
                 'title' => 'Media Item',
@@ -597,9 +610,9 @@ trait JellyStatHomepageItem
                 'imageURL' => 'plugins/images/homepage/no-list.png',
                 'originalImage' => 'plugins/images/homepage/no-list.png',
                 'nowPlayingOriginalImage' => 'plugins/images/homepage/no-np.png',
-                'address' => '',  // No link when we don't have server info
-                'tabName' => '',
-                'openTab' => false,
+                'address' => $this->generateMediaServerLink($effectiveSource, $effectiveUrl, $fallbackKey),
+                'tabName' => $this->getMediaServerTabName($effectiveSource),
+                'openTab' => $this->shouldOpenMediaServerTab($effectiveSource),
                 'metadata' => [
                     'guid' => $fallbackKey,
                     'summary' => 'This item is available in your media library. Unable to load detailed metadata at this time.',
