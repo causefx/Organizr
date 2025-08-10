@@ -221,48 +221,137 @@ trait JellyStatHomepageItem
                 return false;
             }
 
-            // Prepare URLs and options
-            $url = $this->config['jellyStatURL'] ?? '';
-            $internalUrl = $this->config['jellyStatInternalURL'] ?? '';
-            $apiUrl = !empty($internalUrl) ? $internalUrl : $url;
-            $token = $this->config['jellyStatApikey'] ?? '';
-            $disableCert = $this->config['jellyStatDisableCertCheck'] ?? false;
-            $customCert = $this->config['jellyStatUseCustomCertificate'] ?? false;
-            $options = $this->requestOptions($apiUrl, null, $disableCert, $customCert);
-
-            $details = null;
-            $this->info("JellyStat metadata: Attempting to fetch metadata for key: {$key}");
+            // First, try to use Emby/Jellyfin if configured
+            // JellyStat tracks Jellyfin/Emby servers, so we can use their metadata
+            $useEmbyMetadata = false;
+            $useJellyfinMetadata = false;
             
-            // Try multiple JellyStat/proxy endpoints to get detailed item information
-            $tryEndpoints = [];
-            if ($token !== '') {
-                // Try JellyStat's native item detail endpoints first
-                $tryEndpoints[] = rtrim($this->qualifyURL($apiUrl), '/') . '/api/getItem?apiKey=' . urlencode($token) . '&id=' . urlencode($key);
-                $tryEndpoints[] = rtrim($this->qualifyURL($apiUrl), '/') . '/api/getItemById?apiKey=' . urlencode($token) . '&id=' . urlencode($key);
+            // Check if Emby is configured and enabled
+            if ($this->config['homepageEmbyEnabled'] && !empty($this->config['embyURL']) && !empty($this->config['embyToken'])) {
+                $this->info('JellyStat metadata: Emby is configured, will try to use it for metadata');
+                $useEmbyMetadata = true;
             }
-            // Try proxying directly to Jellyfin/Emby items endpoint
-            $tryEndpoints[] = rtrim($this->qualifyURL($apiUrl), '/') . '/proxy/Items/' . rawurlencode($key);
-            // Also try with Fields parameter to get comprehensive metadata
-            $tryEndpoints[] = rtrim($this->qualifyURL($apiUrl), '/') . '/proxy/Items/' . rawurlencode($key) . '?Fields=Overview,People,Genres,CommunityRating,CriticRating,Studios,Taglines,ProductionYear,PremiereDate';
-
-            foreach ($tryEndpoints as $index => $endpoint) {
+            
+            // Check if Jellyfin is configured and enabled (Jellyfin uses same backend as Emby)
+            if ($this->config['homepageJellyfinEnabled'] && !empty($this->config['jellyfinURL']) && !empty($this->config['jellyfinToken'])) {
+                $this->info('JellyStat metadata: Jellyfin is configured, will try to use it for metadata');
+                $useJellyfinMetadata = true;
+            }
+            
+            // Try to get metadata from Emby/Jellyfin first
+            if ($useEmbyMetadata || $useJellyfinMetadata) {
+                $this->info('JellyStat metadata: Attempting to fetch metadata from configured media server');
+                
+                // Use Jellyfin preferentially if both are configured (since JellyStat is for Jellyfin)
+                if ($useJellyfinMetadata) {
+                    // Jellyfin uses the same Emby trait, just with different config keys
+                    $mediaServerUrl = $this->qualifyURL($this->config['jellyfinURL']);
+                    $mediaServerToken = $this->config['jellyfinToken'];
+                    $disableCert = $this->config['jellyfinDisableCertCheck'] ?? false;
+                    $customCert = $this->config['jellyfinUseCustomCertificate'] ?? false;
+                    $serverType = 'jellyfin';
+                } else {
+                    $mediaServerUrl = $this->qualifyURL($this->config['embyURL']);
+                    $mediaServerToken = $this->config['embyToken'];
+                    $disableCert = $this->config['embyDisableCertCheck'] ?? false;
+                    $customCert = $this->config['embyUseCustomCertificate'] ?? false;
+                    $serverType = 'emby';
+                }
+                
+                // Try to fetch metadata directly from Emby/Jellyfin
                 try {
-                    $this->info("JellyStat metadata: Trying endpoint {$index}: {$endpoint}");
-                    $resp = Requests::get($endpoint, [], $options);
-                    if ($resp->success) {
-                        $json = json_decode($resp->body, true);
-                        if (is_array($json) && !isset($json['error']) && !empty($json)) {
-                            $this->info("JellyStat metadata: Successfully fetched data from endpoint {$index}");
-                            $details = $json;
-                            break;
-                        } else {
-                            $this->info("JellyStat metadata: Endpoint {$index} returned invalid or empty data");
+                    $this->info("JellyStat metadata: Trying to fetch from {$serverType} server");
+                    
+                    // Get the item metadata directly from Emby/Jellyfin API
+                    $options = $this->requestOptions($mediaServerUrl, 60, $disableCert, $customCert);
+                    
+                    // First, get a user ID (preferably admin)
+                    $userIds = $mediaServerUrl . "/Users?api_key=" . $mediaServerToken;
+                    $response = Requests::get($userIds, [], $options);
+                    
+                    if ($response->success) {
+                        $users = json_decode($response->body, true);
+                        $userId = null;
+                        
+                        // Find an admin user
+                        foreach ($users as $user) {
+                            if (isset($user['Policy']) && isset($user['Policy']['IsAdministrator']) && $user['Policy']['IsAdministrator']) {
+                                $userId = $user['Id'];
+                                break;
+                            }
                         }
-                    } else {
-                        $this->info("JellyStat metadata: Endpoint {$index} failed with status {$resp->status_code}");
+                        
+                        // If no admin found, use first user
+                        if (!$userId && !empty($users)) {
+                            $userId = $users[0]['Id'];
+                        }
+                        
+                        if ($userId) {
+                            // Fetch the item metadata
+                            $metadataUrl = $mediaServerUrl . '/Users/' . $userId . '/Items/' . $key . '?EnableImages=true&api_key=' . $mediaServerToken . '&Fields=Overview,People,Genres,CommunityRating,CriticRating,Studios,Taglines,ProductionYear,PremiereDate,RunTimeTicks';
+                            $metadataResponse = Requests::get($metadataUrl, [], $options);
+                            
+                            if ($metadataResponse->success) {
+                                $details = json_decode($metadataResponse->body, true);
+                                if (is_array($details) && !empty($details)) {
+                                    $this->info('JellyStat metadata: Successfully fetched metadata from ' . $serverType);
+                                    // Process this using existing Emby metadata processing
+                                    // The structure will be handled below in the existing processing code
+                                }
+                            } else {
+                                $this->info('JellyStat metadata: Failed to fetch item from ' . $serverType . ' - Status: ' . $metadataResponse->status_code);
+                            }
+                        }
                     }
                 } catch (\Throwable $e) {
-                    $this->info("JellyStat metadata: Endpoint {$index} threw exception: " . $e->getMessage());
+                    $this->info('JellyStat metadata: Exception while fetching from media server: ' . $e->getMessage());
+                }
+            }
+            
+            // If we don't have details from Emby/Jellyfin, try JellyStat's own endpoints (legacy fallback)
+            if (!$details) {
+                $this->info('JellyStat metadata: No metadata from media servers, trying JellyStat endpoints');
+                
+                // Prepare URLs and options for JellyStat
+                $url = $this->config['jellyStatURL'] ?? '';
+                $internalUrl = $this->config['jellyStatInternalURL'] ?? '';
+                $apiUrl = !empty($internalUrl) ? $internalUrl : $url;
+                $token = $this->config['jellyStatApikey'] ?? '';
+                $disableCert = $this->config['jellyStatDisableCertCheck'] ?? false;
+                $customCert = $this->config['jellyStatUseCustomCertificate'] ?? false;
+                $options = $this->requestOptions($apiUrl, null, $disableCert, $customCert);
+                
+                // Try multiple JellyStat/proxy endpoints to get detailed item information
+                $tryEndpoints = [];
+                if ($token !== '') {
+                    // Try JellyStat's native item detail endpoints first
+                    $tryEndpoints[] = rtrim($this->qualifyURL($apiUrl), '/') . '/api/getItem?apiKey=' . urlencode($token) . '&id=' . urlencode($key);
+                    $tryEndpoints[] = rtrim($this->qualifyURL($apiUrl), '/') . '/api/getItemById?apiKey=' . urlencode($token) . '&id=' . urlencode($key);
+                }
+                // Try proxying directly to Jellyfin/Emby items endpoint
+                $tryEndpoints[] = rtrim($this->qualifyURL($apiUrl), '/') . '/proxy/Items/' . rawurlencode($key);
+                // Also try with Fields parameter to get comprehensive metadata
+                $tryEndpoints[] = rtrim($this->qualifyURL($apiUrl), '/') . '/proxy/Items/' . rawurlencode($key) . '?Fields=Overview,People,Genres,CommunityRating,CriticRating,Studios,Taglines,ProductionYear,PremiereDate';
+                
+                foreach ($tryEndpoints as $index => $endpoint) {
+                    try {
+                        $this->info("JellyStat metadata: Trying endpoint {$index}: {$endpoint}");
+                        $resp = Requests::get($endpoint, [], $options);
+                        if ($resp->success) {
+                            $json = json_decode($resp->body, true);
+                            if (is_array($json) && !isset($json['error']) && !empty($json)) {
+                                $this->info("JellyStat metadata: Successfully fetched data from endpoint {$index}");
+                                $details = $json;
+                                break;
+                            } else {
+                                $this->info("JellyStat metadata: Endpoint {$index} returned invalid or empty data");
+                            }
+                        } else {
+                            $this->info("JellyStat metadata: Endpoint {$index} failed with status {$resp->status_code}");
+                        }
+                    } catch (\Throwable $e) {
+                        $this->info("JellyStat metadata: Endpoint {$index} threw exception: " . $e->getMessage());
+                    }
                 }
             }
 
