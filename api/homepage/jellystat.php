@@ -247,6 +247,11 @@ trait JellyStatHomepageItem
                 $useJellyfinMetadata = true;
             }
             
+            // Track where metadata comes from to generate correct image URLs
+            $metadataSource = null;
+            $mediaServerUrl = null;
+            $mediaServerToken = null;
+            
             // Try to get metadata from Emby/Jellyfin first
             if ($useEmbyMetadata || $useJellyfinMetadata) {
                 $this->info('JellyStat metadata: Attempting to fetch metadata from configured media server');
@@ -259,12 +264,14 @@ trait JellyStatHomepageItem
                     $disableCert = $this->config['jellyfinDisableCertCheck'] ?? false;
                     $customCert = $this->config['jellyfinUseCustomCertificate'] ?? false;
                     $serverType = 'jellyfin';
+                    $metadataSource = 'jellyfin';
                 } else {
                     $mediaServerUrl = $this->qualifyURL($this->config['embyURL']);
                     $mediaServerToken = $this->config['embyToken'];
                     $disableCert = $this->config['embyDisableCertCheck'] ?? false;
                     $customCert = $this->config['embyUseCustomCertificate'] ?? false;
                     $serverType = 'emby';
+                    $metadataSource = 'emby';
                 }
                 
                 // Try to fetch metadata directly from Emby/Jellyfin
@@ -304,11 +311,12 @@ trait JellyStatHomepageItem
                                 $details = json_decode($metadataResponse->body, true);
                                 if (is_array($details) && !empty($details)) {
                                     $this->info('JellyStat metadata: Successfully fetched metadata from ' . $serverType);
-                                    // Process this using existing Emby metadata processing
-                                    // The structure will be handled below in the existing processing code
+                                    // Keep track that we got metadata from media server
+                                    // This determines which URL to use for images
                                 }
                             } else {
                                 $this->info('JellyStat metadata: Failed to fetch item from ' . $serverType . ' - Status: ' . $metadataResponse->status_code);
+                                $metadataSource = null; // Failed to get from media server
                             }
                         }
                     }
@@ -373,6 +381,18 @@ trait JellyStatHomepageItem
             $rating = '0';
             $durationMs = '0';
             $imageUrl = 'plugins/images/homepage/no-np.png';
+            
+            // Determine which base URL to use for images
+            // If we got metadata from Emby/Jellyfin, use their URL for images
+            // Otherwise, fall back to JellyStat proxy (which likely won't work)
+            $imageBaseUrl = $jellyStatImageBaseUrl; // Default to JellyStat
+            if ($metadataSource && $mediaServerUrl) {
+                // Use the media server URL directly for images
+                $imageBaseUrl = rtrim($mediaServerUrl, '/');
+                $this->info("JellyStat metadata: Using {$metadataSource} server for image URLs: {$imageBaseUrl}");
+            } else {
+                $this->info("JellyStat metadata: Using JellyStat URL for image URLs (may not work): {$imageBaseUrl}");
+            }
 
             if (is_array($details) && !empty($details)) {
                 $this->info('JellyStat metadata: Processing fetched details: ' . json_encode(array_keys($details)));
@@ -450,10 +470,16 @@ trait JellyStatHomepageItem
                     $actors = [];
                     foreach ($details['People'] as $person) {
                         if (isset($person['Name']) && isset($person['Role']) && !empty($person['Role'])) {
-                            // Generate actor image URL using JellyStat proxy if person has an ID
+                            // Generate actor image URL using appropriate server
                             $actorImageUrl = 'plugins/images/homepage/no-list.png';
                             if (isset($person['Id']) && !empty($person['Id'])) {
-                                $actorImageUrl = rtrim($jellyStatImageBaseUrl, '/') . '/proxy/Items/' . rawurlencode($person['Id']) . '/Images/Primary?fillWidth=300&quality=90';
+                                if ($metadataSource && $mediaServerToken) {
+                                    // Use Emby/Jellyfin URL with authentication
+                                    $actorImageUrl = $imageBaseUrl . '/Items/' . rawurlencode($person['Id']) . '/Images/Primary?fillWidth=300&quality=90&api_key=' . $mediaServerToken;
+                                } else {
+                                    // Fallback to JellyStat proxy (probably won't work)
+                                    $actorImageUrl = $imageBaseUrl . '/proxy/Items/' . rawurlencode($person['Id']) . '/Images/Primary?fillWidth=300&quality=90';
+                                }
                             }
                             
                             $actors[] = [
@@ -469,18 +495,37 @@ trait JellyStatHomepageItem
                 $itemId = $details['Id'] ?? $key;
                 $serverId = $details['ServerId'] ?? null;
                 
-                // Try to use Primary image with tag if available
-                if (isset($details['ImageTags']['Primary'])) {
-                    $primaryTag = $details['ImageTags']['Primary'];
-                    $imageUrl = rtrim($jellyStatImageBaseUrl, '/') . '/proxy/Items/' . rawurlencode($itemId) . '/Images/Primary?tag=' . urlencode($primaryTag) . '&fillWidth=400&quality=90';
-                } elseif (isset($details['ImageTags']['Thumb'])) {
-                    // Fallback to Thumb image
-                    $thumbTag = $details['ImageTags']['Thumb'];
-                    $imageUrl = rtrim($jellyStatImageBaseUrl, '/') . '/proxy/Items/' . rawurlencode($itemId) . '/Images/Thumb?tag=' . urlencode($thumbTag) . '&fillWidth=400&quality=90';
-                } elseif (isset($details['BackdropImageTags'][0])) {
-                    // Fallback to Backdrop image
-                    $backdropTag = $details['BackdropImageTags'][0];
-                    $imageUrl = rtrim($jellyStatImageBaseUrl, '/') . '/proxy/Items/' . rawurlencode($itemId) . '/Images/Backdrop?tag=' . urlencode($backdropTag) . '&fillWidth=400&quality=90';
+                // Generate image URLs based on metadata source
+                if ($metadataSource && $mediaServerToken) {
+                    // Use Emby/Jellyfin URLs with authentication
+                    if (isset($details['ImageTags']['Primary'])) {
+                        $primaryTag = $details['ImageTags']['Primary'];
+                        $imageUrl = $imageBaseUrl . '/Items/' . rawurlencode($itemId) . '/Images/Primary?tag=' . urlencode($primaryTag) . '&fillWidth=400&quality=90&api_key=' . $mediaServerToken;
+                    } elseif (isset($details['ImageTags']['Thumb'])) {
+                        // Fallback to Thumb image
+                        $thumbTag = $details['ImageTags']['Thumb'];
+                        $imageUrl = $imageBaseUrl . '/Items/' . rawurlencode($itemId) . '/Images/Thumb?tag=' . urlencode($thumbTag) . '&fillWidth=400&quality=90&api_key=' . $mediaServerToken;
+                    } elseif (isset($details['BackdropImageTags'][0])) {
+                        // Fallback to Backdrop image
+                        $backdropTag = $details['BackdropImageTags'][0];
+                        $imageUrl = $imageBaseUrl . '/Items/' . rawurlencode($itemId) . '/Images/Backdrop?tag=' . urlencode($backdropTag) . '&fillWidth=400&quality=90&api_key=' . $mediaServerToken;
+                    } else {
+                        // Final fallback: try generic Primary image
+                        $imageUrl = $imageBaseUrl . '/Items/' . rawurlencode($itemId) . '/Images/Primary?fillWidth=400&quality=90&api_key=' . $mediaServerToken;
+                    }
+                } else {
+                    // Fallback to JellyStat proxy URLs (probably won't work)
+                    if (isset($details['ImageTags']['Primary'])) {
+                        $primaryTag = $details['ImageTags']['Primary'];
+                        $imageUrl = $imageBaseUrl . '/proxy/Items/' . rawurlencode($itemId) . '/Images/Primary?tag=' . urlencode($primaryTag) . '&fillWidth=400&quality=90';
+                    } elseif (isset($details['ImageTags']['Thumb'])) {
+                        // Fallback to Thumb image
+                        $thumbTag = $details['ImageTags']['Thumb'];
+                        $imageUrl = $imageBaseUrl . '/proxy/Items/' . rawurlencode($itemId) . '/Images/Thumb?tag=' . urlencode($thumbTag) . '&fillWidth=400&quality=90';
+                    } elseif (isset($details['BackdropImageTags'][0])) {
+                        // Fallback to Backdrop image
+                        $backdropTag = $details['BackdropImageTags'][0];
+                        $imageUrl = $imageBaseUrl . '/proxy/Items/' . rawurlencode($itemId) . '/Images/Backdrop?tag=' . urlencode($backdropTag) . '&fillWidth=400&quality=90';
                 } else {
                     // Final fallback: try generic Primary image proxy
                     $imageUrl = $this->getPosterUrl(null, $itemId, $serverId) ?: $imageUrl;
