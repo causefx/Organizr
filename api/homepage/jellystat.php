@@ -557,9 +557,9 @@ trait JellyStatHomepageItem
                 'imageURL' => $imageUrl,
                 'originalImage' => $imageUrl,
                 'nowPlayingOriginalImage' => $imageUrl,
-                'address' => $jellyStatImageBaseUrl,
-                'tabName' => 'jellystat',
-                'openTab' => true,
+                'address' => $this->generateMediaServerLink($metadataSource, $mediaServerUrl, $key, $serverId),
+                'tabName' => $this->getMediaServerTabName($metadataSource),
+                'openTab' => $this->shouldOpenMediaServerTab($metadataSource),
                 'metadata' => [
                     'guid' => (string)$key,
                     'summary' => $summary,
@@ -597,9 +597,9 @@ trait JellyStatHomepageItem
                 'imageURL' => 'plugins/images/homepage/no-list.png',
                 'originalImage' => 'plugins/images/homepage/no-list.png',
                 'nowPlayingOriginalImage' => 'plugins/images/homepage/no-np.png',
-                'address' => $this->qualifyURL($jellyStatUrl),
-                'tabName' => 'jellystat',
-                'openTab' => true,
+                'address' => '',  // No link when we don't have server info
+                'tabName' => '',
+                'openTab' => false,
                 'metadata' => [
                     'guid' => $fallbackKey,
                     'summary' => 'This item is available in your media library. Unable to load detailed metadata at this time.',
@@ -1519,6 +1519,72 @@ trait JellyStatHomepageItem
         } else {
             return gmdate('H:i:s', $seconds);
         }
+    }
+    
+    /**
+     * Generate media server link for metadata popup
+     */
+    private function generateMediaServerLink($metadataSource, $mediaServerUrl, $itemId, $serverId = null)
+    {
+        if (!$metadataSource || !$mediaServerUrl) {
+            // If we don't know the source, return empty (no link)
+            return '';
+        }
+        
+        // Check if we have proper Emby/Jellyfin configuration
+        if ($metadataSource === 'jellyfin' && $this->config['homepageJellyfinLink']) {
+            $variablesForLink = [
+                '{id}' => $itemId,
+                '{serverId}' => $serverId ?? ''
+            ];
+            return $this->userDefinedIdReplacementLink($this->config['homepageJellyfinLink'], $variablesForLink);
+        } elseif ($metadataSource === 'emby' && $this->config['homepageEmbyLink']) {
+            $variablesForLink = [
+                '{id}' => $itemId,
+                '{serverId}' => $serverId ?? ''
+            ];
+            return $this->userDefinedIdReplacementLink($this->config['homepageEmbyLink'], $variablesForLink);
+        }
+        
+        // Fallback to direct URL if no custom link configured
+        $baseUrl = rtrim($mediaServerUrl, '/');
+        return $baseUrl . '/web/index.html#!/item?id=' . $itemId . '&serverId=' . ($serverId ?? '');
+    }
+    
+    /**
+     * Get the tab name for the media server
+     */
+    private function getMediaServerTabName($metadataSource)
+    {
+        if (!$metadataSource) {
+            return '';
+        }
+        
+        if ($metadataSource === 'jellyfin') {
+            return $this->config['jellyfinTabName'] ?? '';
+        } elseif ($metadataSource === 'emby') {
+            return $this->config['embyTabName'] ?? '';
+        }
+        
+        return '';
+    }
+    
+    /**
+     * Check if we should open media server tab
+     */
+    private function shouldOpenMediaServerTab($metadataSource)
+    {
+        if (!$metadataSource) {
+            return false;
+        }
+        
+        if ($metadataSource === 'jellyfin') {
+            return ($this->config['jellyfinTabURL'] && $this->config['jellyfinTabName']) ? true : false;
+        } elseif ($metadataSource === 'emby') {
+            return ($this->config['embyTabURL'] && $this->config['embyTabName']) ? true : false;
+        }
+        
+        return false;
     }
     
     /**
