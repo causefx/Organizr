@@ -221,6 +221,15 @@ trait JellyStatHomepageItem
                 return false;
             }
 
+            // Always get JellyStat URL for image generation (needed regardless of metadata source)
+            $jellyStatUrl = $this->config['jellyStatURL'] ?? '';
+            $jellyStatInternalUrl = $this->config['jellyStatInternalURL'] ?? '';
+            // Use external URL for image URLs (to avoid mixed content issues)
+            $jellyStatImageBaseUrl = $this->qualifyURL($jellyStatUrl);
+            
+            // Initialize details variable
+            $details = null;
+
             // First, try to use Emby/Jellyfin if configured
             // JellyStat tracks Jellyfin/Emby servers, so we can use their metadata
             $useEmbyMetadata = false;
@@ -313,9 +322,7 @@ trait JellyStatHomepageItem
                 $this->info('JellyStat metadata: No metadata from media servers, trying JellyStat endpoints');
                 
                 // Prepare URLs and options for JellyStat
-                $url = $this->config['jellyStatURL'] ?? '';
-                $internalUrl = $this->config['jellyStatInternalURL'] ?? '';
-                $apiUrl = !empty($internalUrl) ? $internalUrl : $url;
+                $apiUrl = !empty($jellyStatInternalUrl) ? $jellyStatInternalUrl : $jellyStatUrl;
                 $token = $this->config['jellyStatApikey'] ?? '';
                 $disableCert = $this->config['jellyStatDisableCertCheck'] ?? false;
                 $customCert = $this->config['jellyStatUseCustomCertificate'] ?? false;
@@ -446,7 +453,7 @@ trait JellyStatHomepageItem
                             // Generate actor image URL using JellyStat proxy if person has an ID
                             $actorImageUrl = 'plugins/images/homepage/no-list.png';
                             if (isset($person['Id']) && !empty($person['Id'])) {
-                                $actorImageUrl = rtrim($this->qualifyURL($url), '/') . '/proxy/Items/' . rawurlencode($person['Id']) . '/Images/Primary?fillWidth=300&quality=90';
+                                $actorImageUrl = rtrim($jellyStatImageBaseUrl, '/') . '/proxy/Items/' . rawurlencode($person['Id']) . '/Images/Primary?fillWidth=300&quality=90';
                             }
                             
                             $actors[] = [
@@ -465,15 +472,15 @@ trait JellyStatHomepageItem
                 // Try to use Primary image with tag if available
                 if (isset($details['ImageTags']['Primary'])) {
                     $primaryTag = $details['ImageTags']['Primary'];
-                    $imageUrl = rtrim($this->qualifyURL($url), '/') . '/proxy/Items/' . rawurlencode($itemId) . '/Images/Primary?tag=' . urlencode($primaryTag) . '&fillWidth=400&quality=90';
+                    $imageUrl = rtrim($jellyStatImageBaseUrl, '/') . '/proxy/Items/' . rawurlencode($itemId) . '/Images/Primary?tag=' . urlencode($primaryTag) . '&fillWidth=400&quality=90';
                 } elseif (isset($details['ImageTags']['Thumb'])) {
                     // Fallback to Thumb image
                     $thumbTag = $details['ImageTags']['Thumb'];
-                    $imageUrl = rtrim($this->qualifyURL($url), '/') . '/proxy/Items/' . rawurlencode($itemId) . '/Images/Thumb?tag=' . urlencode($thumbTag) . '&fillWidth=400&quality=90';
+                    $imageUrl = rtrim($jellyStatImageBaseUrl, '/') . '/proxy/Items/' . rawurlencode($itemId) . '/Images/Thumb?tag=' . urlencode($thumbTag) . '&fillWidth=400&quality=90';
                 } elseif (isset($details['BackdropImageTags'][0])) {
                     // Fallback to Backdrop image
                     $backdropTag = $details['BackdropImageTags'][0];
-                    $imageUrl = rtrim($this->qualifyURL($url), '/') . '/proxy/Items/' . rawurlencode($itemId) . '/Images/Backdrop?tag=' . urlencode($backdropTag) . '&fillWidth=400&quality=90';
+                    $imageUrl = rtrim($jellyStatImageBaseUrl, '/') . '/proxy/Items/' . rawurlencode($itemId) . '/Images/Backdrop?tag=' . urlencode($backdropTag) . '&fillWidth=400&quality=90';
                 } else {
                     // Final fallback: try generic Primary image proxy
                     $imageUrl = $this->getPosterUrl(null, $itemId, $serverId) ?: $imageUrl;
@@ -504,7 +511,7 @@ trait JellyStatHomepageItem
                 'imageURL' => $imageUrl,
                 'originalImage' => $imageUrl,
                 'nowPlayingOriginalImage' => $imageUrl,
-                'address' => $this->qualifyURL($this->config['jellyStatURL'] ?? ''),
+                'address' => $jellyStatImageBaseUrl,
                 'tabName' => 'jellystat',
                 'openTab' => true,
                 'metadata' => [
@@ -544,7 +551,7 @@ trait JellyStatHomepageItem
                 'imageURL' => 'plugins/images/homepage/no-list.png',
                 'originalImage' => 'plugins/images/homepage/no-list.png',
                 'nowPlayingOriginalImage' => 'plugins/images/homepage/no-np.png',
-                'address' => $this->qualifyURL($this->config['jellyStatURL'] ?? ''),
+                'address' => $this->qualifyURL($jellyStatUrl),
                 'tabName' => 'jellystat',
                 'openTab' => true,
                 'metadata' => [
