@@ -1421,8 +1421,16 @@ $(document).on("click", ".metadata-get", function(e) {
     ajaxloader(".content-wrap","in");
     organizrAPI2('POST','api/v2/homepage/'+source+'/metadata',{key:key}).success(function(data) {
         let response = data.response;
+        // Determine effective source for icon/button (e.g., emby/jellyfin) when coming from jellystat
+        let effectiveSource = source;
+        try {
+            if (source === 'jellystat' && response && response.data && response.data.content && response.data.content[0]) {
+                const c = response.data.content[0];
+                if (c.tabName) { effectiveSource = String(c.tabName).toLowerCase(); }
+            }
+        } catch (e) { /* no-op */ }
         $('.'+uid+'-metadata-info').html('');
-        $('.'+uid+'-metadata-info').html(buildMetadata(response.data, source));
+        $('.'+uid+'-metadata-info').html(buildMetadata(response.data, effectiveSource));
         $('.'+uid).trigger('click');
         $(".metadata-actors").owlCarousel({
             autoplay: true,

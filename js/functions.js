@@ -10655,7 +10655,8 @@ function youtubeCheck(title,link){
 			inlineLoad();
 			var id = response.data.items["0"].id.videoId;
 			var div = `
-		<div id="player-`+link+`" data-plyr-provider="youtube" data-plyr-embed-id="`+id+`"></div>
+		<div id="player-`+link+`" data-plyr-provider="youtube" data-plyr-embed-id="`+id+`"
+		></div>
 		<div class="clearfix"></div>
 		`;
 			$('.youtube-div').html(div);
@@ -10665,9 +10666,13 @@ function youtubeCheck(title,link){
 
 	}).fail(function(xhr) {
 		OrganizrApiError(xhr, 'YouTube API Error');
+        // Fallback: open YouTube search in a new tab/window
+        var q = '';
+        try { q = decodeURIComponent(title); } catch(e1) { try { q = unescape(title); } catch(e2) { q = title; } }
+        var url = 'https://www.youtube.com/results?search_query=' + encodeURIComponent(q + ' trailer');
+        window.open(url, '_blank');
 	});
 }
-//request search
 function requestSearch(title,page=1) {
 	return $.ajax({
 		url: "https://api.themoviedb.org/3/search/multi?api_key=83cf4ee97bb728eeaf9d4a54e64356a1&language="+activeInfo.language+"&query="+title+"&page="+page+"&include_adult=false",
