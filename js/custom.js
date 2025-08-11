@@ -1432,8 +1432,15 @@ $(document).on("click", ".metadata-get", function(e) {
                         effectiveSource = 'emby';
                     } else if (name.indexOf('jellyfin') !== -1) {
                         effectiveSource = 'jellyfin';
-                    } else {
-                        effectiveSource = source; // fallback
+                    }
+                }
+                // Fallback inference from address if tabName did not resolve
+                if ((effectiveSource === 'jellystat' || effectiveSource === source) && c.address) {
+                    const addr = String(c.address).toLowerCase();
+                    if (addr.indexOf('jellyfin') !== -1) {
+                        effectiveSource = 'jellyfin';
+                    } else if (addr.indexOf('emby') !== -1) {
+                        effectiveSource = 'emby';
                     }
                 }
             }

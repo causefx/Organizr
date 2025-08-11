@@ -7136,6 +7136,12 @@ function buildMetadata(array, source){
                     if (tn.indexOf('emby') !== -1) { itemSource = 'emby'; }
                     else if (tn.indexOf('jellyfin') !== -1) { itemSource = 'jellyfin'; }
                 }
+                // Fallback inference from address if tabName did not resolve
+                if ((itemSource === source || itemSource === 'jellystat') && v.address) {
+                    var addr = String(v.address).toLowerCase();
+                    if (addr.indexOf('jellyfin') !== -1) { itemSource = 'jellyfin'; }
+                    else if (addr.indexOf('emby') !== -1) { itemSource = 'emby'; }
+                }
             }
         } catch(e) {}
         // Normalize to lowercase to avoid casing issues like 'Emby'
