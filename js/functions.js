@@ -7127,6 +7127,17 @@ function buildMetadata(array, source){
 	var rating = '<div class="col-xs-2 p-10"></div>';
     var sourceIcon = (source === 'jellyfin') ? 'fish' : source;
 	$.each(array.content, function(i,v) {
+        // Normalize per-item source when coming from JellyStat or unknown
+        var itemSource = source;
+        try {
+            if ((source === 'jellystat') || (source !== 'emby' && source !== 'jellyfin')) {
+                if (v.tabName) {
+                    var tn = String(v.tabName).toLowerCase();
+                    if (tn.indexOf('emby') !== -1) { itemSource = 'emby'; }
+                    else if (tn.indexOf('jellyfin') !== -1) { itemSource = 'jellyfin'; }
+                }
+            }
+        } catch(e) {}
 		var hasActor = (typeof v.metadata.actors !== 'string') ? true : false;
 		var hasGenre = (typeof v.metadata.genres !== 'string') ? true : false;
 		if(hasActor){
@@ -7148,10 +7159,11 @@ function buildMetadata(array, source){
 		var format =  Math.floor(moment.duration(seconds,'seconds').asHours()) + ':' + moment.duration(seconds,'seconds').minutes() + ':' + moment.duration(seconds,'seconds').seconds();
         // Build icon HTML: use image for Emby to avoid missing MDI glyphs; keep MDI for others
         var sourceIconHtml = '';
-        if (source === 'emby') {
+        var iconChoice = (itemSource === 'jellyfin') ? 'fish' : itemSource;
+        if (itemSource === 'emby') {
             sourceIconHtml = '<img src="plugins/images/tabs/emby.png" class="metadata-source-image" style="height:24px;width:24px;" />';
         } else {
-            sourceIconHtml = '<i class="fa mdi mdi-'+sourceIcon+' fa-2x"></i>';
+            sourceIconHtml = '<i class="fa mdi mdi-'+iconChoice+' fa-2x"></i>';
         }
 		metadata = `
 		<div class="white-box m-b-0">
@@ -7161,7 +7173,7 @@ function buildMetadata(array, source){
 	                <h2 class="m-b-0 font-medium pull-right text-right">
 						`+v.title+`<button type="button" class="btn bg-org btn-circle close-popup m-l-10"><i class="fa fa-times"></i> </button><br>
 						<small class="m-t-0 text-white">`+v.metadata.tagline+`</small><br>
-						<button class="btn waves-effect waves-light openTab bg-`+source+`" type="button" data-tab-name="`+cleanClass(v.tabName)+`" data-type="`+v.type+`" data-open-tab="`+v.openTab+`" data-url="`+v.address+`" href="javascript:void(0);"> `+sourceIconHtml+` </button>
+						<button class="btn waves-effect waves-light openTab bg-`+itemSource+`" type="button" data-tab-name="`+cleanClass(v.tabName)+`" data-type="`+v.type+`" data-open-tab="`+v.openTab+`" data-url="`+v.address+`" href="javascript:void(0);"> `+sourceIconHtml+` </button>
 						`+buildYoutubeLink(v.title+' '+v.metadata.year+' '+v.type)+`
 					</h2>
 	            </div>
