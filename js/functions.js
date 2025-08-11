@@ -1253,7 +1253,7 @@ function buildFormItem(item){
 			return '<input data-changed="false" lang="en" type="hidden" class="form-control'+extraClass+'"'+placeholder+value+id+name+disabled+type+label+attr+' />';
 			break;
 		case 'select':
-			return smallLabel+'<select class="form-control'+extraClass+'"'+placeholder+value+id+name+disabled+type+label+attr+'>'+selectOptions(item.options, item.value)+'</select>';
+			return smallLabel+'<select data-changed="false" class="form-control'+extraClass+'"'+placeholder+value+id+name+disabled+type+label+attr+'>'+selectOptions(item.options, item.value)+'</select>';
 			break;
 		case 'select2':
             var select2ID = (item.id) ? '#'+item.id : '.'+item.name;
@@ -2255,7 +2255,7 @@ function buildImageManagerView(){
 		        }else{
 			        $container.isotope({itemSelector : "img"});
 		        }
-	        }catch{
+	        }catch(e){
 		        $container.isotope('destroy');
 		        $container.isotope({itemSelector : "img"});
 	        }
@@ -7127,6 +7127,25 @@ function buildMetadata(array, source){
 	var rating = '<div class="col-xs-2 p-10"></div>';
     var sourceIcon = (source === 'jellyfin') ? 'fish' : source;
 	$.each(array.content, function(i,v) {
+        // Normalize per-item source when coming from JellyStat or unknown
+        var itemSource = source;
+        try {
+            if ((source === 'jellystat') || (source !== 'emby' && source !== 'jellyfin')) {
+                if (v.tabName) {
+                    var tn = String(v.tabName).toLowerCase();
+                    if (tn.indexOf('emby') !== -1) { itemSource = 'emby'; }
+                    else if (tn.indexOf('jellyfin') !== -1) { itemSource = 'jellyfin'; }
+                }
+                // Fallback inference from address if tabName did not resolve
+                if ((itemSource === source || itemSource === 'jellystat') && v.address) {
+                    var addr = String(v.address).toLowerCase();
+                    if (addr.indexOf('jellyfin') !== -1) { itemSource = 'jellyfin'; }
+                    else if (addr.indexOf('emby') !== -1) { itemSource = 'emby'; }
+                }
+            }
+        } catch(e) {}
+        // Normalize to lowercase to avoid casing issues like 'Emby'
+        itemSource = (itemSource || '').toString().toLowerCase();
 		var hasActor = (typeof v.metadata.actors !== 'string') ? true : false;
 		var hasGenre = (typeof v.metadata.genres !== 'string') ? true : false;
 		if(hasActor){
@@ -7146,6 +7165,14 @@ function buildMetadata(array, source){
 		var seconds = v.metadata.duration / 1000 ; // or "2000"
         seconds = parseInt(seconds); //because moment js dont know to handle number in string format
 		var format =  Math.floor(moment.duration(seconds,'seconds').asHours()) + ':' + moment.duration(seconds,'seconds').minutes() + ':' + moment.duration(seconds,'seconds').seconds();
+        // Build icon HTML: use image for Emby to avoid missing MDI glyphs; keep MDI for others
+        var sourceIconHtml = '';
+        var iconChoice = (itemSource === 'jellyfin') ? 'fish' : itemSource;
+        if (itemSource === 'emby') {
+            sourceIconHtml = '<img src="plugins/images/tabs/emby.png" class="metadata-source-image" style="height:24px;width:24px;" />';
+        } else {
+            sourceIconHtml = '<i class="fa mdi mdi-'+iconChoice+' fa-2x"></i>';
+        }
 		metadata = `
 		<div class="white-box m-b-0">
 			<div class="user-bg lazyload" data-src="`+v.nowPlayingImageURL+`">
@@ -7154,7 +7181,7 @@ function buildMetadata(array, source){
 	                <h2 class="m-b-0 font-medium pull-right text-right">
 						`+v.title+`<button type="button" class="btn bg-org btn-circle close-popup m-l-10"><i class="fa fa-times"></i> </button><br>
 						<small class="m-t-0 text-white">`+v.metadata.tagline+`</small><br>
-						<button class="btn waves-effect waves-light openTab bg-`+source+`" type="button" data-tab-name="`+cleanClass(v.tabName)+`" data-type="`+v.type+`" data-open-tab="`+v.openTab+`" data-url="`+v.address+`" href="javascript:void(0);"> <i class="fa mdi mdi-`+sourceIcon+` fa-2x"></i> </button>
+						<button class="btn waves-effect waves-light openTab bg-`+itemSource+`" type="button" data-tab-name="`+cleanClass(v.tabName)+`" data-type="`+v.type+`" data-open-tab="`+v.openTab+`" data-url="`+v.address+`" href="javascript:void(0);"> `+sourceIconHtml+` </button>
 						`+buildYoutubeLink(v.title+' '+v.metadata.year+' '+v.type)+`
 					</h2>
 	            </div>
@@ -10655,7 +10682,8 @@ function youtubeCheck(title,link){
 			inlineLoad();
 			var id = response.data.items["0"].id.videoId;
 			var div = `
-		<div id="player-`+link+`" data-plyr-provider="youtube" data-plyr-embed-id="`+id+`"></div>
+		<div id="player-`+link+`" data-plyr-provider="youtube" data-plyr-embed-id="`+id+`"
+		></div>
 		<div class="clearfix"></div>
 		`;
 			$('.youtube-div').html(div);
@@ -10665,9 +10693,13 @@ function youtubeCheck(title,link){
 
 	}).fail(function(xhr) {
 		OrganizrApiError(xhr, 'YouTube API Error');
+        // Fallback: open YouTube search in a new tab/window
+        var q = '';
+        try { q = decodeURIComponent(title); } catch(e1) { try { q = unescape(title); } catch(e2) { q = title; } }
+        var url = 'https://www.youtube.com/results?search_query=' + encodeURIComponent(q + ' trailer');
+        window.open(url, '_blank');
 	});
 }
-//request search
 function requestSearch(title,page=1) {
 	return $.ajax({
 		url: "https://api.themoviedb.org/3/search/multi?api_key=83cf4ee97bb728eeaf9d4a54e64356a1&language="+activeInfo.language+"&query="+title+"&page="+page+"&include_adult=false",
@@ -12025,6 +12057,31 @@ function jsFriendlyJSONStringify (s) {
 	replace('\'', "").
 	replace(/\u2028/g, '\\u2028').
 	replace(/\u2029/g, '\\u2029');
+}
+function exportLogs() {
+    const query = "api/v2/log/0?filter=NONE&pageSize=1000&offset=0";
+    $.get(query, function (data) {
+        const logs = data.response.data.results;
+        let csvContent = "data:text/csv;charset=utf-8,Date,Severity,Function,Message,IP Address,User\n";
+        logs.forEach(function (log) {
+            const row = [
+                log.datetime,
+                log.log_level,
+                log.channel,
+                log.message,
+                log.remote_ip_address,
+                log.username
+            ].join(",");
+            csvContent += row + "\n";
+        });
+        const encodedUri = encodeURI(csvContent);
+        const link = document.createElement("a");
+        link.setAttribute("href", encodedUri);
+        link.setAttribute("download", "organizr_logs.csv");
+        document.body.appendChild(link); 
+        link.click();
+        document.body.removeChild(link);
+    });
 }
 function logContext(row){
 	let buttons = '';

@@ -66,6 +66,7 @@ class Organizr
 	use WeatherHomepageItem;
 	use uTorrentHomepageItem;
 	use UptimeKumaHomepageItem;
+	use JellyStatHomepageItem;
 
 	// ===================================
 	// Organizr Version
@@ -757,7 +758,7 @@ class Organizr
 		}
 	}
 
-	public function setResponse(int $responseCode = 200, string $message = null, $data = null)
+	public function setResponse(int $responseCode = 200, ?string $message = null, $data = null)
 	{
 		switch ($responseCode) {
 			case 200:
@@ -4627,6 +4628,13 @@ class Organizr
 					$class .= ' faded';
 				}
 				break;
+			case 'homepageOrderJellyStat':
+				$class = 'bg-info';
+				$image = 'plugins/images/homepage/jellystat.png';
+				if (!$this->config['homepageJellyStatEnabled']) {
+					$class .= ' faded';
+				}
+				break;
 				case 'homepageOrderjellyfinnowplaying':
 				case 'homepageOrderjellyfinrecent':
 					$class = 'bg-jellyfin';
@@ -7289,7 +7297,7 @@ class Organizr
 		return $this->processQueries($response);
 	}
 
-	public function youtubeSearch($query)
+public function youtubeSearch($query)
 	{
 		if (!$query) {
 			$this->setAPIResponse('error', 'No query supplied', 422);
@@ -7305,7 +7313,9 @@ class Organizr
 		$key = $keys[$randomKeyIndex];
 		$apikey = ($this->config['youtubeAPI'] !== '') ? $this->config['youtubeAPI'] : $key;
 		$results = false;
-		$url = "https://www.googleapis.com/youtube/v3/search?part=snippet&q=$query+official+trailer&part=snippet&maxResults=1&type=video&videoDuration=short&key=$apikey";
+		// Ensure query is URL-encoded to avoid API errors
+		$safeQuery = urlencode($query . ' official trailer');
+		$url = "https://www.googleapis.com/youtube/v3/search?part=snippet&q={$safeQuery}&maxResults=1&type=video&videoDuration=short&key={$apikey}";
 		$response = Requests::get($url);
 		if ($response->success) {
 			$results = json_decode($response->body, true);
