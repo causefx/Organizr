@@ -1426,7 +1426,16 @@ $(document).on("click", ".metadata-get", function(e) {
         try {
             if (source === 'jellystat' && response && response.data && response.data.content && response.data.content[0]) {
                 const c = response.data.content[0];
-                if (c.tabName) { effectiveSource = String(c.tabName).toLowerCase(); }
+                if (c.tabName) {
+                    const name = String(c.tabName).toLowerCase();
+                    if (name.indexOf('emby') !== -1) {
+                        effectiveSource = 'emby';
+                    } else if (name.indexOf('jellyfin') !== -1) {
+                        effectiveSource = 'jellyfin';
+                    } else {
+                        effectiveSource = source; // fallback
+                    }
+                }
             }
         } catch (e) { /* no-op */ }
         $('.'+uid+'-metadata-info').html('');
