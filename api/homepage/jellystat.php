@@ -689,9 +689,30 @@ trait JellyStatHomepageItem
 
         return '
         <div id="' . __FUNCTION__ . '" style="background: transparent; border: none; padding: 20px;">
-            <div style="background: rgba(0,0,0,0.1); border-radius: 10px; padding: 20px; backdrop-filter: blur(10px);">
-                <div style="margin-bottom: 20px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 15px;">
-                    <h3 style="color: white; margin: 0; display: inline-block;"><i class="fa fa-bar-chart"></i> JellyStat Analytics</h3>
+            <style>
+                /* JellyStat native view cleanup for uniform look */
+                #' . __FUNCTION__ . ' { color: #e9edf2; }
+                #' . __FUNCTION__ . ' .js-card { background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; padding: 15px; margin-bottom: 20px; }
+                #' . __FUNCTION__ . ' .js-header { margin-bottom: 15px; border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 10px; }
+                #' . __FUNCTION__ . ' .js-header h3 { margin: 0; font-weight: 600; font-size: 18px; }
+                #' . __FUNCTION__ . ' h5 { margin: 0 0 10px; font-size: 14px; font-weight: 600; color: #cfd8e3; }
+                #' . __FUNCTION__ . ' .small-box { background: rgba(255,255,255,0.06)!important; border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; padding: 12px; min-height: 90px; }
+                #' . __FUNCTION__ . ' .small-box .inner h3 { margin: 0; font-size: 20px; font-weight: 700; }
+                #' . __FUNCTION__ . ' .small-box .inner p { margin: 4px 0 0; font-size: 12px; opacity: 0.85; }
+                #' . __FUNCTION__ . ' .table { margin-bottom: 0; }
+                #' . __FUNCTION__ . ' .table > thead > tr > th { border-color: rgba(255,255,255,0.08); color: #cfd8e3; font-size: 12px; font-weight: 600; }
+                #' . __FUNCTION__ . ' .table > tbody > tr > td { border-color: rgba(255,255,255,0.06); font-size: 12px; }
+                #' . __FUNCTION__ . ' .media { background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; padding: 10px; }
+                #' . __FUNCTION__ . ' .media .media-left i { width: 36px; height: 36px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; background: rgba(255,255,255,0.08); }
+                #' . __FUNCTION__ . ' .media .media-heading { font-size: 13px; margin: 0 0 4px; }
+                #' . __FUNCTION__ . ' .media small { font-size: 11px; opacity: 0.8; }
+                #' . __FUNCTION__ . ' .poster-card { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.06); border-radius: 10px; }
+                #' . __FUNCTION__ . ' .poster-image { border-radius: 8px; }
+                #' . __FUNCTION__ . ' .play-count-badge { background: rgba(0,0,0,0.65)!important; }
+            </style>
+            <div class="js-card">
+                <div class="js-header">
+                    <h3><i class="fa fa-bar-chart"></i> JellyStat Analytics</h3>
                     <span class="pull-right">
                         <small id="jellystat-last-update" style="color: rgba(255,255,255,0.7);"></small>
                         <button class="btn btn-xs btn-primary" onclick="refreshJellyStatData()" title="Refresh Data" style="margin-left: 10px;">
