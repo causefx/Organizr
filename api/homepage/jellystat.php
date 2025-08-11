@@ -979,11 +979,11 @@ trait JellyStatHomepageItem
             
             // User Statistics  
             if (' . $showUsers . ' && stats.users && stats.users.length > 0) {
-                html += "<div class=\"col-lg-6\">";
+                html += "<div class=\"col-lg-12\">";
                 html += "<h5><i class=\"fa fa-users\"></i> Active Users (" + stats.users.length + " total)</h5>";
                 html += "<div class=\"row\">";
                 
-                stats.users.slice(0, 8).forEach(function(user) {
+                stats.users.slice(0, 12).forEach(function(user) {
                     var lastActivity = "Never";
                     if (user.last_activity && user.last_activity !== "0001-01-01T00:00:00.0000000Z") {
                         var activityDate = new Date(user.last_activity);
@@ -991,7 +991,7 @@ trait JellyStatHomepageItem
                     }
                     var playCount = user.play_count || 0;
                     
-                    html += "<div class=\"col-md-6 col-sm-6\" style=\"margin-bottom: 10px;\">";
+                    html += "<div class=\"col-lg-3 col-md-4 col-sm-6\" style=\"margin-bottom: 15px;\">";
                     html += "<div class=\"media\">";
                     html += "<div class=\"media-left\"><i class=\"fa fa-user fa-2x text-muted\"></i></div>";
                     html += "<div class=\"media-body\">";
