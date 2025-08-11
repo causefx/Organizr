@@ -7138,6 +7138,8 @@ function buildMetadata(array, source){
                 }
             }
         } catch(e) {}
+        // Normalize to lowercase to avoid casing issues like 'Emby'
+        itemSource = (itemSource || '').toString().toLowerCase();
 		var hasActor = (typeof v.metadata.actors !== 'string') ? true : false;
 		var hasGenre = (typeof v.metadata.genres !== 'string') ? true : false;
 		if(hasActor){
