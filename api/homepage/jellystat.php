@@ -1317,6 +1317,7 @@ trait JellyStatHomepageItem
             'libraries' => [],
             'library_totals' => [],
             'server_info' => [],
+            'users' => [],
             'most_watched_movies' => [],
             'most_watched_shows' => [],
             'most_listened_music' => []
@@ -1409,6 +1410,9 @@ trait JellyStatHomepageItem
                 if ($this->config['homepageJellyStatShowMostListenedMusic'] ?? false) {
                     $stats['most_listened_music'] = array_slice($processedData['music'], 0, $mostWatchedCount);
                 }
+
+                // Aggregate user activity statistics for frontend Active Users section
+                $stats['users'] = $this->aggregateJellyStatUsers($allHistoryResults);
             }
             
         } catch (Exception $e) {
@@ -1818,5 +1822,39 @@ trait JellyStatHomepageItem
         });
         
         return $processed;
+    }
+
+    /**
+     * Aggregate user statistics (plays and last activity) from JellyStat history
+     */
+    private function aggregateJellyStatUsers($historyResults)
+    {
+        $users = [];
+        foreach ($historyResults as $row) {
+            $name = $row['UserName'] ?? ($row['User'] ?? 'Unknown User');
+            if (!isset($users[$name])) {
+                $users[$name] = [
+                    'name' => $name,
+                    'play_count' => 0,
+                    'last_activity' => null,
+                ];
+            }
+            $users[$name]['play_count']++;
+            $activity = $row['ActivityDateInserted'] ?? ($row['Date'] ?? null);
+            if ($activity) {
+                if ($users[$name]['last_activity'] === null || $activity > $users[$name]['last_activity']) {
+                    $users[$name]['last_activity'] = $activity;
+                }
+            }
+        }
+        // Sort by play_count desc, then by last_activity desc
+        usort($users, function($a, $b) {
+            if ($b['play_count'] === $a['play_count']) {
+                return strcmp($b['last_activity'] ?? '', $a['last_activity'] ?? '');
+            }
+            return $b['play_count'] <=> $a['play_count'];
+        });
+        // Return as a list
+        return array_values($users);
     }
 }
