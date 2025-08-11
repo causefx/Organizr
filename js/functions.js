@@ -7146,6 +7146,13 @@ function buildMetadata(array, source){
 		var seconds = v.metadata.duration / 1000 ; // or "2000"
         seconds = parseInt(seconds); //because moment js dont know to handle number in string format
 		var format =  Math.floor(moment.duration(seconds,'seconds').asHours()) + ':' + moment.duration(seconds,'seconds').minutes() + ':' + moment.duration(seconds,'seconds').seconds();
+        // Build icon HTML: use image for Emby to avoid missing MDI glyphs; keep MDI for others
+        var sourceIconHtml = '';
+        if (source === 'emby') {
+            sourceIconHtml = '<img src="plugins/images/tabs/emby.png" class="metadata-source-image" style="height:24px;width:24px;" />';
+        } else {
+            sourceIconHtml = '<i class="fa mdi mdi-'+sourceIcon+' fa-2x"></i>';
+        }
 		metadata = `
 		<div class="white-box m-b-0">
 			<div class="user-bg lazyload" data-src="`+v.nowPlayingImageURL+`">
@@ -7154,7 +7161,7 @@ function buildMetadata(array, source){
 	                <h2 class="m-b-0 font-medium pull-right text-right">
 						`+v.title+`<button type="button" class="btn bg-org btn-circle close-popup m-l-10"><i class="fa fa-times"></i> </button><br>
 						<small class="m-t-0 text-white">`+v.metadata.tagline+`</small><br>
-						<button class="btn waves-effect waves-light openTab bg-`+source+`" type="button" data-tab-name="`+cleanClass(v.tabName)+`" data-type="`+v.type+`" data-open-tab="`+v.openTab+`" data-url="`+v.address+`" href="javascript:void(0);"> <i class="fa mdi mdi-`+sourceIcon+` fa-2x"></i> </button>
+						<button class="btn waves-effect waves-light openTab bg-`+source+`" type="button" data-tab-name="`+cleanClass(v.tabName)+`" data-type="`+v.type+`" data-open-tab="`+v.openTab+`" data-url="`+v.address+`" href="javascript:void(0);"> `+sourceIconHtml+` </button>
 						`+buildYoutubeLink(v.title+' '+v.metadata.year+' '+v.type)+`
 					</h2>
 	            </div>
