@@ -149,6 +149,7 @@ trait SSOFunctions
 		return true;
 	}
 
+	//coucou
 	public function getKomgaToken($email, $password, $fallback = false)
 	{
 		$token = null;
