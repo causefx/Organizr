@@ -178,7 +178,6 @@ trait SSOFunctions
 			$options = $this->requestOptions($url, $this->getSSOTimeout(), true, false, $credentials);
 			$this->logger->debug('COUCOURequest options prepared :: ' . $options);
 			$response = Requests::get($url . '/api/v2/users/me', ['X-Auth-Token' => 'organizrSSO'], $options);
-			$this->logger->debug('COUCOU Komga API response received response success:: ' . $response->success . 'response header:: ' . $response->headers);
 			if ($response->success) {
 				if ($response->headers['x-auth-token']) {
 					$this->logger->debug('COUCOU Grabbed token');
