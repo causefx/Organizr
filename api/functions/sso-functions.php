@@ -176,7 +176,7 @@ trait SSOFunctions
 			$url = $this->qualifyURL($this->config['komgaURL']);
 			$this->logger->debug('COUCOU Komga URL qualified :: ' . $url);
 			$options = $this->requestOptions($url, $this->getSSOTimeout(), true, false, $credentials);
-			$this->logger->debug('COUCOURequest options prepared :: ' . $options);
+			$this->logger->debug('COUCOURequest options prepared :: ' . print_r($options, true));
 			$response = Requests::get($url . '/api/v2/users/me', ['X-Auth-Token' => 'organizrSSO'], $options);
 			$this->logger->debug('COUCOU Komga API response received response URL:: ' . $url . '/api/v2/users/me');
 			if ($response->success) {
