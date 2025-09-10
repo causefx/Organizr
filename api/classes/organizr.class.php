@@ -2615,7 +2615,7 @@ class Organizr
 				$this->settingsOption('blank'),
 				$this->settingsOption('username', 'komgaFallbackUser', ['label' => 'Komga Fallback Email', 'help' => 'DO NOT SET THIS TO YOUR ADMIN ACCOUNT. We recommend you create a local account as a "catch all" for when Organizr is unable to perform SSO.  Organizr will request a User Token based off of this user credentials']),
 				$this->settingsOption('password', 'komgaFallbackPassword', ['label' => 'Komga Fallback Password']),
-				$this->settingsOption('password', 'komgaSSOMasterPassword', ['label' => 'Komga Master Password', 'help' => 'Sets master password if using oAuth backend - This will set the password on the login form for logins using oAuth where no password is supplied.']),
+				$this->settingsOption('password', 'komgaSSOMasterPassword', ['label' => 'Komga Master Password', 'help' => 'COUCOU Sets master password if using oAuth backend - This will set the password on the login form for logins using oAuth where no password is supplied.']),
 			],
 		];
 	}
@@ -7395,7 +7395,7 @@ class Organizr
 		*/
 		;( function( window ) {
 			\'use strict\';
-		
+
 			function extend( a, b ) {
 				for( var key in b ) {
 					if( b.hasOwnProperty( key ) ) {
@@ -7404,18 +7404,18 @@ class Organizr
 				}
 				return a;
 			}
-		
+
 			function CBPFWTabs( el, options ) {
 				this.el = el;
 				this.options = extend( {}, this.options );
 				extend( this.options, options );
 				this._init();
 			}
-		
+
 			CBPFWTabs.prototype.options = {
 				start : 0
 			};
-		
+
 			CBPFWTabs.prototype._init = function() {
 				// tabs elems
 				this.tabs = [].slice.call( this.el.querySelectorAll( \'nav > ul > li\' ) );
@@ -7439,7 +7439,7 @@ class Organizr
 				// init events
 				this._initEvents();
 			};
-		
+
 			CBPFWTabs.prototype._initEvents = function() {
 				var self = this;
 				this.tabs.forEach( function( tab, idx ) {
@@ -7449,7 +7449,7 @@ class Organizr
 					} );
 				} );
 			};
-		
+
 			CBPFWTabs.prototype._show = function( idx ) {
 				if( this.current >= 0 ) {
 					this.tabs[ this.current ].className = this.items[ this.current ].className = \'\';
@@ -7459,10 +7459,10 @@ class Organizr
 				this.tabs[ this.current ].className = \'tab-current\';
 				this.items[ this.current ].className = \'content-current\';
 			};
-		
+
 			// add to global namespace
 			window.CBPFWTabs = CBPFWTabs;
-		
+
 		})( window );
 		</script>
 		';
