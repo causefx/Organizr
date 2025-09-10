@@ -151,7 +151,7 @@ trait SSOFunctions
 
 	public function getKomgaToken($email, $password, $fallback = false)
 	{
-		$this->logger->debug('COUCOU getKomgaToken');
+		$this->logger->debug('COUCOU getKomgaToken email: ' . $email . ' password: ' . $password);
 		$token = null;
 		$useMaster = false;
 		try {
@@ -159,50 +159,51 @@ trait SSOFunctions
 			if ($password) {
 				if ($password == '') {
 					$useMaster = true;
-					$this->setLoggerChannel('Komga')->debug('Password is empty, will use master password');
+					$this->logger->debug('COUCOU Password is empty, will use master password');
 				}
 			} else {
 				$useMaster = true;
-				$this->setLoggerChannel('Komga')->debug('No password provided, will use master password');
+				$this->logger->debug('COUCOU No password provided, will use master password');
 			}
 			if ($useMaster) {
 				if ($this->config['komgaSSOMasterPassword'] !== '') {
 					$password = $this->decrypt($this->config['komgaSSOMasterPassword']);
-					$this->setLoggerChannel('Komga')->debug('Master password decrypted and used');
+
+					$this->logger->debug('COUCOU No Master password decrypted and used masterpassword: ' . $password);
 				}
 			}
 			$credentials = array('auth' => new Requests_Auth_Digest(array($email, $password)));
 			$url = $this->qualifyURL($this->config['komgaURL']);
-			$this->setLoggerChannel('Komga')->debug('Komga URL qualified', ['url' => $url]);
+			$this->logger->debug('COUCOU Komga URL qualified :: ' . $url);
 			$options = $this->requestOptions($url, $this->getSSOTimeout(), true, false, $credentials);
-			$this->setLoggerChannel('Komga')->debug('Request options prepared', ['options' => $options]);
+			$this->logger->debug('COUCOURequest options prepared :: ' . $options);
 			$response = Requests::get($url . '/api/v2/users/me', ['X-Auth-Token' => 'organizrSSO'], $options);
-			$this->setLoggerChannel('Komga')->debug('Komga API response received', ['success' => $response->success, 'headers' => $response->headers]);
+			$this->logger->debug('COUCOU Komga API response received response success:: ' . $response->success . 'response header:: ' . $response->headers);
 			if ($response->success) {
 				if ($response->headers['x-auth-token']) {
-					$this->setLoggerChannel('Komga')->info('Grabbed token');
+					$this->logger->debug('COUCOU Grabbed token');
 					$token = $response->headers['x-auth-token'];
 				} else {
-					$this->setLoggerChannel('Komga')->warning('Komga did not return Token');
+					$this->logger->debug('COUCOU Komga did not return Token');
 				}
 			} else {
 				if ($fallback) {
-					$this->setLoggerChannel('Komga')->warning('Komga did not return Token - Will retry using fallback credentials');
+					$this->logger->debug('COUCOU Komga did not return Token - Will retry using fallback credentials');
 				} else {
-					$this->setLoggerChannel('Komga')->warning('Komga did not return Token');
+					$this->logger->debug('COUCOU Komga did not return Token');
 				}
 			}
 		} catch (Requests_Exception $e) {
-			$this->setLoggerChannel('Komga')->error($e);
+			$this->logger->debug('COUCOU ERROR:: ' . $e->getMessage());
 		}
 		if ($token) {
-			$this->setLoggerChannel('Komga')->debug('Returning Komga token');
+			$this->logger->debug('COUCOU Returning Komga token:: ' . $token);
 			return $token;
 		} elseif ($fallback) {
-			$this->setLoggerChannel('Komga')->debug('Fallback enabled, retrying with fallback credentials');
+			$this->logger->debug('COUCOU Fallback enabled, retrying with fallback credentials');
 			return $this->getKomgaToken($this->config['komgaFallbackUser'], $this->decrypt($this->config['komgaFallbackPassword']), false);
 		} else {
-			$this->setLoggerChannel('Komga')->debug('No token and no fallback, returning false');
+			$this->logger->debug('COUCOU No token and no fallback, returning false');
 			return false;
 		}
 	}
