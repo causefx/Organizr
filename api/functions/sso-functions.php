@@ -73,77 +73,77 @@ trait SSOFunctions
 	{
 		$this->setCurrentUser(false);
 		$this->setLoggerChannel('Authentication', $this->user['username']);
-		$this->logger->debug('Starting SSO check function');
+		$this->logger->info('Starting SSO check function');
 		if ($this->config['ssoPlex'] && $token) {
-			$this->logger->debug('Setting Plex SSO cookie');
+			$this->logger->info('Setting Plex SSO cookie');
 			$this->coookie('set', 'mpt', $token, $this->config['rememberMeDays'], false);
 		}
 		if ($this->config['ssoOmbi']) {
-			$this->logger->debug('Starting Ombi SSO check function');
+			$this->logger->info('Starting Ombi SSO check function');
 			$fallback = ($this->config['ombiFallbackUser'] !== '' && $this->config['ombiFallbackPassword'] !== '');
 			$ombiToken = $this->getOmbiToken($this->getSSOUserFor('ombi', $userobj), $password, $token, $fallback);
 			if ($ombiToken) {
-				$this->logger->debug('Setting Ombi SSO cookie');
+				$this->logger->info('Setting Ombi SSO cookie');
 				$this->coookie('set', 'Auth', $ombiToken, $this->config['rememberMeDays'], false);
 			} else {
-				$this->logger->debug('No Ombi token received from backend');
+				$this->logger->info('No Ombi token received from backend');
 			}
 		}
 		if ($this->config['ssoTautulli'] && $this->qualifyRequest($this->config['ssoTautulliAuth'])) {
-			$this->logger->debug('Starting Tautulli SSO check function');
+			$this->logger->info('Starting Tautulli SSO check function');
 			$tautulliToken = $this->getTautulliToken($this->getSSOUserFor('tautulli', $userobj), $password, $token);
 			if ($tautulliToken) {
 				foreach ($tautulliToken as $key => $value) {
-					$this->logger->debug('Setting Tautulli SSO cookie');
+					$this->logger->info('Setting Tautulli SSO cookie');
 					$this->coookie('set', 'tautulli_token_' . $value['uuid'], $value['token'], $this->config['rememberMeDays'], true, $value['path']);
 				}
 			} else {
-				$this->logger->debug('No Tautulli token received from backend');
+				$this->logger->info('No Tautulli token received from backend');
 			}
 		}
 		if ($this->config['ssoJellyfin']) {
-			$this->logger->debug('Starting Jellyfin SSO check function');
+			$this->logger->info('Starting Jellyfin SSO check function');
 			$jellyfinToken = $this->getJellyfinToken($this->getSSOUserFor('jellyfin', $userobj), $password);
 			if ($jellyfinToken) {
 				foreach ($jellyfinToken as $k => $v) {
-					$this->logger->debug('Setting Jellyfin SSO cookie');
+					$this->logger->info('Setting Jellyfin SSO cookie');
 					$this->coookie('set', $k, $v, $this->config['rememberMeDays'], false);
 				}
 			} else {
-				$this->logger->debug('No Jellyfin token received from backend');
+				$this->logger->info('No Jellyfin token received from backend');
 			}
 		}
 		if ($this->config['ssoOverseerr']) {
-			$this->logger->debug('Starting Overseerr SSO check function');
+			$this->logger->info('Starting Overseerr SSO check function');
 			$fallback = ($this->config['overseerrFallbackUser'] !== '' && $this->config['overseerrFallbackPassword'] !== '');
 			$overseerrToken = $this->getOverseerrToken($this->getSSOUserFor('overseerr', $userobj), $password, $token, $fallback);
 			if ($overseerrToken) {
-				$this->logger->debug('Setting Overseerr SSO cookie');
+				$this->logger->info('Setting Overseerr SSO cookie');
 				$this->coookie('set', 'connect.sid', $overseerrToken, $this->config['rememberMeDays'], false);
 			} else {
-				$this->logger->debug('No Overseerr token received from backend');
+				$this->logger->info('No Overseerr token received from backend');
 			}
 		}
 		if ($this->config['ssoPetio']) {
-			$this->logger->debug('Starting Petio SSO check function');
+			$this->logger->info('Starting Petio SSO check function');
 			$fallback = ($this->config['petioFallbackUser'] !== '' && $this->config['petioFallbackPassword'] !== '');
 			$petioToken = $this->getPetioToken($this->getSSOUserFor('petio', $userobj), $password, $token, $fallback);
 			if ($petioToken) {
-				$this->logger->debug('Setting Petio SSO cookie');
+				$this->logger->info('Setting Petio SSO cookie');
 				$this->coookie('set', 'petio_jwt', $petioToken, $this->config['rememberMeDays'], false);
 			} else {
-				$this->logger->debug('No Petio token received from backend');
+				$this->logger->info('No Petio token received from backend');
 			}
 		}
 		if ($this->config['ssoKomga'] && $this->qualifyRequest($this->config['ssoKomgaAuth'])) {
-			$this->logger->debug('Starting Komga SSO check function');
+			$this->logger->info('Starting Komga SSO check function');
 			$fallback = ($this->config['komgaFallbackUser'] !== '' && $this->config['komgaFallbackPassword'] !== '');
 			$komga = $this->getKomgaToken($this->getSSOUserFor('komga', $userobj), $password, $fallback);
 			if ($komga) {
-				$this->logger->debug('Setting Komga SSO cookie');
+				$this->logger->info('Setting Komga SSO cookie');
 				$this->coookie('set', 'komga_token', $komga, $this->config['rememberMeDays'], false);
 			} else {
-				$this->logger->debug('No Komga token received from backend');
+				$this->logger->info('No Komga token received from backend');
 			}
 		}
 		return true;
@@ -159,51 +159,51 @@ trait SSOFunctions
 			if ($password) {
 				if ($password == '') {
 					$useMaster = true;
-					$this->logger->debug('COUCOU Password is empty, will use master password');
+					$this->logger->info('COUCOU Password is empty, will use master password');
 				}
 			} else {
 				$useMaster = true;
-				$this->logger->debug('COUCOU No password provided, will use master password');
+				$this->logger->info('COUCOU No password provided, will use master password');
 			}
 			if ($useMaster) {
 				if ($this->config['komgaSSOMasterPassword'] !== '') {
 					$password = $this->decrypt($this->config['komgaSSOMasterPassword']);
 
-					$this->logger->debug('COUCOU No Master password decrypted and used masterpassword: ' . $password);
+					$this->logger->info('COUCOU No Master password decrypted and used masterpassword: ' . $password);
 				}
 			}
 			$credentials = array('auth' => new Requests_Auth_Digest(array($email, $password)));
 			$url = $this->qualifyURL($this->config['komgaURL']);
-			$this->logger->debug('COUCOU Komga URL qualified :: ' . $url);
+			$this->logger->info('COUCOU Komga URL qualified :: ' . $url);
 			$options = $this->requestOptions($url, $this->getSSOTimeout(), true, false, $credentials);
-			$this->logger->debug('COUCOURequest options prepared :: ' . print_r($options, true));
+			$this->logger->info('COUCOURequest options prepared :: ' . print_r($options, true));
 			$response = Requests::get($url . '/api/v2/users/me', ['X-Auth-Token' => 'organizrSSO'], $options);
-			$this->logger->debug('COUCOU Komga API response received response URL:: ' . $url . '/api/v2/users/me');
+			$this->logger->info('COUCOU Komga API response received response URL:: ' . $url . '/api/v2/users/me');
 			if ($response->success) {
 				if ($response->headers['x-auth-token']) {
-					$this->logger->debug('COUCOU Grabbed token');
+					$this->logger->info('COUCOU Grabbed token');
 					$token = $response->headers['x-auth-token'];
 				} else {
-					$this->logger->debug('COUCOU Komga did not return Token');
+					$this->logger->info('COUCOU Komga did not return Token');
 				}
 			} else {
 				if ($fallback) {
-					$this->logger->debug('COUCOU Komga did not return Token - Will retry using fallback credentials');
+					$this->logger->info('COUCOU Komga did not return Token - Will retry using fallback credentials');
 				} else {
-					$this->logger->debug('COUCOU Komga did not return Token');
+					$this->logger->info('COUCOU Komga did not return Token');
 				}
 			}
 		} catch (Requests_Exception $e) {
-			$this->logger->debug('COUCOU ERROR:: ' . $e->getMessage());
+			$this->logger->info('COUCOU ERROR:: ' . $e->getMessage());
 		}
 		if ($token) {
-			$this->logger->debug('COUCOU Returning Komga token:: ' . $token);
+			$this->logger->info('COUCOU Returning Komga token:: ' . $token);
 			return $token;
 		} elseif ($fallback) {
-			$this->logger->debug('COUCOU Fallback enabled, retrying with fallback credentials');
+			$this->logger->info('COUCOU Fallback enabled, retrying with fallback credentials');
 			return $this->getKomgaToken($this->config['komgaFallbackUser'], $this->decrypt($this->config['komgaFallbackPassword']), false);
 		} else {
-			$this->logger->debug('COUCOU No token and no fallback, returning false');
+			$this->logger->info('COUCOU No token and no fallback, returning false');
 			return false;
 		}
 	}
