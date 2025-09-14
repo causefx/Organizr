@@ -198,6 +198,8 @@ trait SSOFunctions
 		}
 		if ($token) {
 			$this->logger->info('COUCOU Returning Komga token:: ' . $token);
+            // Ajout du cookie pour le domaine komga.jamesserver.fr
+            $this->coookie('set', 'komga_token', $token, $this->config['rememberMeDays'], false, '/', 'komga.jamesserver.fr');
 			return $token;
 		} elseif ($fallback) {
 			$this->logger->info('COUCOU Fallback enabled, retrying with fallback credentials');
