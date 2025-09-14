@@ -748,7 +748,7 @@ trait OrganizrFunctions
 			try {
 				$url = $this->qualifyURL($this->config['komgaURL']);
 				$options = $this->requestOptions($url, 60000, true, false);
-				$response = Requests::post($url . '/api/v1/users/logout', ['X-Auth-Token' => $_COOKIE['komga_token']], $options);
+				$response = Requests::post($url . '/api/logout', ['X-Auth-Token' => $_COOKIE['komga_token']], $options);
 				if ($response->success) {
 					$this->setLoggerChannel('Komga')->info('Logged User out');
 				} else {
