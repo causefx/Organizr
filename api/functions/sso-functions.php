@@ -151,7 +151,7 @@ trait SSOFunctions
 
 	public function getKomgaToken($email, $password, $fallback = false)
 	{
-		$this->logger->debug('COUCOU getKomgaToken email: ' . $email . ' password: ' . $password);
+		$this->logger->info('COUCOU getKomgaToken email: ' . $email . ' password: ' . $password);
 		$token = null;
 		$useMaster = false;
 		try {
