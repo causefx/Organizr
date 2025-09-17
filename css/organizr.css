@@ -1066,6 +1066,9 @@ input#inviteCodeInput {
 .bg-jellyfin {
     background: #a15dc3;
 }
+.bg-jellystat {
+    background: #00a4dc;  /* JellyStat blue color */
+}
 .bg-healthchecks {
     background: #56b059;
 }

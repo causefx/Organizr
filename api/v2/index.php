@@ -131,6 +131,19 @@ if (file_exists(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_S
 	}
 }
 /*
+ * Include Plugin routes from plugins/ directory (for external git repos)
+ */
+if (file_exists(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'plugins')) {
+	$folder = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'plugins';
+	$directoryIterator = new RecursiveDirectoryIterator($folder, FilesystemIterator::SKIP_DOTS);
+	$iteratorIterator = new RecursiveIteratorIterator($directoryIterator);
+	foreach ($iteratorIterator as $info) {
+		if ($info->getFilename() == 'routes.php' || ($info->getFilename() == 'api.php' && strpos($info->getPathname(), '/api/') !== false)) {
+			require_once $info->getPathname();
+		}
+	}
+}
+/*
  *
  *  This is the last defined api endpoint to catch all undefined endpoints
  *

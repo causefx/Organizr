@@ -1160,6 +1160,19 @@ $(document).on('change keydown', '.addFormTick :input', function(e) {
         activeInfo.settings.misc.authDebug = value;
     }
 });
+
+// Additional handler for Switchery switches that don't trigger standard change events
+$(document).on('click', '.addFormTick .js-switch', function(e) {
+    var checkbox = this;
+    // Wait for Switchery to update the checkbox state
+    setTimeout(function() {
+        $(checkbox).attr('data-changed', true);
+        $(checkbox).closest('.form-group').addClass('has-success');
+        var formID = $(checkbox).closest('form').attr('id');
+        $('#'+formID+'-save').removeClass('hidden');
+        $('#'+formID+'-reset').removeClass('hidden');
+    }, 100);
+});
 //DELETE IMAGE
 $(document).on("click", ".deleteImage", function () {
     var image = $(this);
@@ -1399,14 +1412,41 @@ $(document).on("click", ".metadata-get", function(e) {
         case 'jellyfin':
             var action = 'getEmbyMetadata';
             break;
+        case 'jellystat':
+            var action = 'getJellyStatMetadata';
+            break;
         default:
 
     }
     ajaxloader(".content-wrap","in");
     organizrAPI2('POST','api/v2/homepage/'+source+'/metadata',{key:key}).success(function(data) {
         let response = data.response;
+        // Determine effective source for icon/button (e.g., emby/jellyfin) when coming from jellystat
+        let effectiveSource = source;
+        try {
+            if (source === 'jellystat' && response && response.data && response.data.content && response.data.content[0]) {
+                const c = response.data.content[0];
+                if (c.tabName) {
+                    const name = String(c.tabName).toLowerCase();
+                    if (name.indexOf('emby') !== -1) {
+                        effectiveSource = 'emby';
+                    } else if (name.indexOf('jellyfin') !== -1) {
+                        effectiveSource = 'jellyfin';
+                    }
+                }
+                // Fallback inference from address if tabName did not resolve
+                if ((effectiveSource === 'jellystat' || effectiveSource === source) && c.address) {
+                    const addr = String(c.address).toLowerCase();
+                    if (addr.indexOf('jellyfin') !== -1) {
+                        effectiveSource = 'jellyfin';
+                    } else if (addr.indexOf('emby') !== -1) {
+                        effectiveSource = 'emby';
+                    }
+                }
+            }
+        } catch (e) { /* no-op */ }
         $('.'+uid+'-metadata-info').html('');
-        $('.'+uid+'-metadata-info').html(buildMetadata(response.data, source));
+        $('.'+uid+'-metadata-info').html(buildMetadata(response.data, effectiveSource));
         $('.'+uid).trigger('click');
         $(".metadata-actors").owlCarousel({
             autoplay: true,
