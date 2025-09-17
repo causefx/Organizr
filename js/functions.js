@@ -8026,6 +8026,7 @@ function buildPiholeItem(array){
                     value = e['domains_being_blocked'].map(function (x) {
                         return `<li>${x.toString()}</li>`;
                     }).join("");
+		        }
                 card += `<ul class="multi-column" data-toggle="tooltip" title="` + key + `">` + value + `</ul>`;
 	        }
         }
@@ -9248,6 +9249,121 @@ function homepageUptimeKuma(timeout){
     let timeoutTitle = 'UptimeKuma-Homepage';
     if(typeof timeouts[timeoutTitle] !== 'undefined'){ clearTimeout(timeouts[timeoutTitle]); }
     timeouts[timeoutTitle] = setTimeout(function(){ homepageUptimeKuma(timeout); }, timeout);
+    delete timeout;
+}
+function buildPromPageItem(array) {
+    var cards = '';
+    var options = array['options'];
+    var services = array['data'];
+    var tabName = '';
+    console.log(options)
+
+    var buildCard = function(name, data) {
+        if(data.status == true) {
+            var statusColor = 'success'; var imageText = 'fa fa-check-circle text-success'
+        } else {
+            var statusColor = 'danger animated-3 loop-animation flash'; var imageText = 'fa fa-times-circle text-danger'
+        }
+        tabName = data.name;
+        if(options['compact']) {
+            var card = `
+            <div class="col-xl-2 col-lg-3 col-md-4 col-sm-6 col-xs-12">
+                <div class="card bg-inverse text-white mb-3 monitorr-card">
+                    <div class="card-body bg-org-alt pt-1 pb-1">
+                        <div class="d-flex no-block align-items-center">
+                            <div class="left-health bg-`+statusColor+`"></div>
+                            <div class="ml-1 w-100">
+                                <i class="`+imageText+` font-20 pull-right mt-3 mb-2"></i>
+                                `;
+                                card += `<h3 class="d-flex no-block align-items-center mt-2 mb-2"><img class="lazyload loginTitle">&nbsp;`+data.name;
+                                if (data.uptime != null && options.showUptime) {
+                                    card += `<span class="ml-3 font-12 align-self-center text-dark">`+ Math.round(data.uptime * 100) / 100 +`%</span></h3>`
+                                }
+                                card += `</h3>`
+                                card += `<div class="clearfix"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>`;
+        } else {
+            var card = `
+            <div class="col-lg-2 col-md-3 col-sm-4 col-xs-6">
+                <div class="card bg-inverse text-white mb-3 monitorr-card">
+                    <div class="card-body bg-org-alt text-center">
+                        `;
+                        card += `<div class="d-block">
+                            <h3 class="mt-0 mb-2">`+data.name+`</h3>`
+                            
+                        if (data.uptime != null && options.showUptime) {
+                            card += `<p class="text-dark mb-0">`+ Math.round(data.uptime * 100) / 100 +`%</p>`
+                        }
+
+                        card += `</div>
+                        <div class="d-inline-block mt-4 py-2 px-4 badge indicator bg-`+statusColor+`">
+                            <p class="mb-0">`; if(data.status == true) { card += 'UP' } else { card += 'DOWN' } card+=`</p>
+                        </div>
+                        `;
+                        card += `</div>
+                </div>
+            </div>
+            `;
+        }
+        return card;
+    }
+    for(var key in services) {
+        cards += buildCard(key, services[key]);
+    };
+    return cards;
+}
+function buildPromPage(array) {
+    if(array === false){ return ''; }
+    if(array.error != undefined) {
+	    organizrConsole('PromPage Function',array.error, 'error');
+    } else {
+        var html = `
+        <div id="allPromPage">
+            <div class="el-element-overlay row">`
+        if(array['options']['titleToggle']) {
+            html += `
+                <div class="col-md-12">
+                    <h4 class="pull-left homepage-element-title"><span lang="en">`+array['options']['title']+`</span> : </h4>
+                    <hr class="hidden-xs ml-2">
+                </div>
+                <div class="clearfix"></div>
+            `;
+        }
+        html += `
+                <div class="promPageCards">
+                    `+buildPromPageItem(array)+`
+                </div>
+            </div>
+        </div>
+        <div class="clearfix"></div>
+        `;
+    }
+    return (array) ? html : '';
+}
+function homepagePromPage(timeout){
+    var timeout = (typeof timeout !== 'undefined') ? timeout : activeInfo.settings.homepage.refresh.homepagePromPageRefresh;
+    organizrAPI2('GET','api/v2/homepage/prompage/data').success(function(data) {
+        try {
+            let response = data.response;
+	        document.getElementById('homepageOrderPromPage').innerHTML = '';
+	        if(response.data !== null){
+		        buildUptimeKuma(response.data)
+		        $('#homepageOrderPromPage').html(buildPromPage(response.data));
+	        }
+        }catch(e) {
+            console.log(e)
+	        organizrCatchError(e,data);
+        }
+    }).fail(function(xhr) {
+	    OrganizrApiError(xhr);
+    });
+    let timeoutTitle = 'PromPage-Homepage';
+    if(typeof timeouts[timeoutTitle] !== 'undefined'){ clearTimeout(timeouts[timeoutTitle]); }
+    timeouts[timeoutTitle] = setTimeout(function(){ homepagePromPage(timeout); }, timeout);
     delete timeout;
 }
 function homepageSpeedtest(timeout){
@@ -12001,7 +12117,19 @@ function showPlexMachineForm(selector = null){
 		})
 	);
 }
-function oAuthLoginNeededCheck() {
+function bypassLocalLogin() {
+
+	if(activeInfo.settings.user.bypass !== true){
+		return false;
+	}
+	const bypass = $.urlParam('bypassDisable');
+	if(bypass){
+		return false;
+	}
+	OAuthLoginNeeded = true;
+	oAuthLoginNeededCheck('Bypass');
+}
+function oAuthLoginNeededCheck(type = "OAuth") {
     if(OAuthLoginNeeded == false){
         return false;
     }else{
@@ -12009,8 +12137,15 @@ function oAuthLoginNeededCheck() {
             return false;
         }
     }
-    message('OAuth', ' Proceeding to login', activeInfo.settings.notifications.position, '#FFF', 'info', '10000');
-    organizrAPI2('POST', 'api/v2/login', '').success(function (data) {
+	let data = '';
+	if(type === 'Bypass'){
+		const bypass = $.urlParam('bypassDisable');
+		if(bypass){
+			data = 'bypass';
+		}
+	}
+    message(type, ' Proceeding to login', activeInfo.settings.notifications.position, '#FFF', 'info', '10000');
+    organizrAPI2('POST', 'api/v2/login', data).success(function (data) {
 	    local('set','message','Welcome|Login Successful|success');
 	    local('r','loggingIn');
 	    location.reload();
@@ -12579,6 +12714,7 @@ function launch(){
 	        }
 	        console.info("%c Organizr %c ".concat("DOM Fully loaded", " "), "color: white; background: #AD80FD; font-weight: 700;", "color: #AD80FD; background: white; font-weight: 700;");
 	        oAuthLoginNeededCheck();
+			bypassLocalLogin();
         } catch (e) {
             orgErrorCode(data);
             defineNotification();

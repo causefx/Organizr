@@ -292,7 +292,9 @@ trait RadarrHomepageItem
 				$banner = "/plugins/images/homepage/no-np.png";
 				foreach ($child['images'] as $image) {
 					if ($image['coverType'] == "banner" || $image['coverType'] == "fanart") {
-						if (strpos($image['url'], '://') === false) {
+						if ($image['coverType'] == 'fanart' && (isset($image['remoteUrl']) && $image['remoteUrl'] !== '')) {
+							$banner = $image['remoteUrl'];
+						}elseif (strpos($image['url'], '://') === false) {
 							$imageUrl = $image['url'];
 							$urlParts = explode("/", $url);
 							$imageParts = explode("/", $image['url']);
@@ -306,7 +308,7 @@ trait RadarrHomepageItem
 						}
 					}
 				}
-				if ($banner !== "/plugins/images/homepage/no-np.png" || (strpos($banner, 'apikey') !== false)) {
+				if ($banner !== "/plugins/images/homepage/no-np.png" && (strpos($banner, 'apikey') !== false)) {
 					$cacheDirectory = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR . 'cache' . DIRECTORY_SEPARATOR;
 					$imageURL = $banner;
 					$cacheFile = $cacheDirectory . $movieID . '.jpg';
