@@ -65,6 +65,7 @@ class Organizr
 	use WeatherHomepageItem;
 	use uTorrentHomepageItem;
 	use UptimeKumaHomepageItem;
+	use PromPageHomepageItem;
 
 	// ===================================
 	// Organizr Version
@@ -4732,6 +4733,13 @@ class Organizr
 						$class .= ' faded';
 					}
 					break;
+				case 'homepageOrderPromPage':
+					$class = 'bg-info';
+					$image = 'plugins/images/tabs/prompage.png';
+					if (!$this->config['homepagePromPageEnabled']) {
+						$class .= ' faded';
+					}
+					break;
 				case 'homepageOrderWeatherAndAir':
 					$class = 'bg-success';
 					$image = 'plugins/images/tabs/wind.png';
@@ -5163,7 +5171,7 @@ class Organizr
 		];
 		return $this->processQueries($response);
 	}
-
+	
 	public function getNextCategoryId()
 	{
 		$response = [
