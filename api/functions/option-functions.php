@@ -23,6 +23,14 @@ trait OptionsFunction
 			'value' => $this->config[$name] ?? ''
 		];
 		switch ($type) {
+			case 'orguser':
+				$this->setUserOptionsVariable();
+				$settingMerge = [
+					'type' => 'select',
+					'label' => 'Organizr User',
+					'options' => $this->userOptions
+				];
+				break;
 			case 'enable':
 				$settingMerge = [
 					'type' => 'switch',

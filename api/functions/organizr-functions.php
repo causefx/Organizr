@@ -638,6 +638,19 @@ trait OrganizrFunctions
 		return $select;
 	}
 
+	public function userSelect()
+	{
+		$users = $this->getAllUsers();
+		$select = [];
+		foreach ($users as $key => $value) {
+			$select[] = array(
+				'name' => $value['username'],
+				'value' => $value['id']
+			);
+		}
+		return $select;
+	}
+
 	public function showLogin()
 	{
 		if ($this->config['hideRegistration'] == false) {

@@ -384,7 +384,7 @@ class Invites extends Organizr
 					'label' => 'Get Plex Token',
 					'icon' => 'fa fa-ticket',
 					'text' => 'Retrieve',
-					'attr' => 'onclick="PlexOAuth(oAuthSuccess,oAuthError, null, \'#INVITES-settings-items [name=plexToken]\')"'
+					'attr' => 'onclick="PlexOAuth(oAuthSuccess,oAuthError, oAuthMaxRetry, null, null, \'#INVITES-settings-items [name=plexToken]\')"'
 				),
 				array(
 					'type' => 'password-alt',

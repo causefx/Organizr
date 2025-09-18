@@ -36,7 +36,7 @@ class Chat extends Organizr
 										<li><i class="fa fa-chevron-right text-danger"></i> <a href="https://dashboard.pusher.com/accounts/sign_up" target="_blank"><span lang="en">Signup for Pusher [FREE]</span></a></li>
 										<li><i class="fa fa-chevron-right text-danger"></i> <span lang="en">Create an App called whatever you like and choose a cluster (Close to you)</span></li>
 										<li><i class="fa fa-chevron-right text-danger"></i> <span lang="en">Frontend (JQuery) - Backend (PHP)</span></li>
-										<li><i class="fa fa-chevron-right text-danger"></i> <span lang="en">Click the overview tab on top left</span></li>
+										<li><i class="fa fa-chevron-right text-danger"></i> <span lang="en">Click the App Keys tab on top left</span></li>
 										<li><i class="fa fa-chevron-right text-danger"></i> <span lang="en">Copy and paste the 4 values into Organizr</span></li>
 										<li><i class="fa fa-chevron-right text-danger"></i> <span lang="en">Save and reload!</span></li>
 									</ul>

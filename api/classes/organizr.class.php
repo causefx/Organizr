@@ -33,6 +33,7 @@ class Organizr
 	use DelugeHomepageItem;
 	use DonateHomepageItem;
 	use EmbyHomepageItem;
+	use EmbyLiveTVTrackerHomepageItem;
 	use HealthChecksHomepageItem;
 	use HTMLHomepageItem;
 	use ICalHomepageItem;
@@ -65,10 +66,13 @@ class Organizr
 	use WeatherHomepageItem;
 	use uTorrentHomepageItem;
 	use UptimeKumaHomepageItem;
+	use JellyStatHomepageItem;
+	use PromPageHomepageItem;
+
 
 	// ===================================
 	// Organizr Version
-	public $version = '2.1.2490';
+	public $version = '2.1.3180';
 	// ===================================
 	// Quick php Version check
 	public $minimumPHP = '7.4';
@@ -92,6 +96,7 @@ class Organizr
 	public $paths;
 	public $checkForUpdates;
 	public $groupOptions;
+	public $userOptions;
 	public $warnings;
 	public $errors;
 	public bool $loggerSetup = false;
@@ -756,7 +761,7 @@ class Organizr
 		}
 	}
 
-	public function setResponse(int $responseCode = 200, string $message = null, $data = null)
+	public function setResponse(int $responseCode = 200, ?string $message = null, $data = null)
 	{
 		switch ($responseCode) {
 			case 200:
@@ -2378,7 +2383,7 @@ class Organizr
 				$this->settingsOption('select', 'authType', ['id' => 'authSelect', 'label' => 'Authentication Type', 'value' => $this->config['authType'], 'options' => $this->getAuthTypes()]),
 				$this->settingsOption('select', 'authBackend', ['id' => 'authBackendSelect', 'label' => 'Authentication Backend', 'class' => 'backendAuth switchAuth', 'value' => $this->config['authBackend'], 'options' => $this->getAuthBackends()]),
 				$this->settingsOption('token', 'plexToken', ['class' => 'plexAuth switchAuth']),
-				$this->settingsOption('button', '', ['class' => 'getPlexTokenAuth plexAuth switchAuth', 'label' => 'Get Plex Token', 'icon' => 'fa fa-ticket', 'text' => 'Retrieve', 'attr' => 'onclick="PlexOAuth(oAuthSuccess,oAuthError, null, \'#settings-main-form [name=plexToken]\')"']),
+				$this->settingsOption('button', '', ['class' => 'getPlexTokenAuth plexAuth switchAuth', 'label' => 'Get Plex Token', 'icon' => 'fa fa-ticket', 'text' => 'Retrieve', 'attr' => 'onclick="PlexOAuth(oAuthSuccess,oAuthError, oAuthMaxRetry, null, null, \'#settings-main-form [name=plexToken]\')"']),
 				$this->settingsOption('password-alt', 'plexID', ['class' => 'plexAuth switchAuth', 'label' => 'Plex Machine', 'placeholder' => 'Use Get Plex Machine Button']),
 				$this->settingsOption('button', '', ['class' => 'getPlexMachineAuth plexAuth switchAuth', 'label' => 'Get Plex Machine', 'icon' => 'fa fa-id-badge', 'text' => 'Retrieve', 'attr' => 'onclick="showPlexMachineForm(\'#settings-main-form [name=plexID]\')"']),
 				$this->settingsOption('input', 'plexAdmin', ['label' => 'Plex Admin Username or Email', 'class' => 'plexAuth switchAuth', 'placeholder' => 'Admin username for Plex']),
@@ -2458,6 +2463,8 @@ class Organizr
 				$this->settingsOption('switch', 'enableLocalAddressForward', ['label' => 'Enable Local Address Forward', 'help' => 'Enables the local address forward if on local address and accessed from WAN Domain']),
 				$this->settingsOption('switch', 'disableRecoverPass', ['label' => 'Disable Recover Password', 'help' => 'Disables recover password area']),
 				$this->settingsOption('input', 'customForgotPassText', ['label' => 'Custom Recover Password Text', 'help' => 'Text or HTML for recovery password section']),
+				$this->settingsOption('switch', 'bypassLoginForLocal', ['label' => 'Bypass Login For Local Access', 'help' => 'Disables login and logs user in with default User Id']),
+				$this->settingsOption('orguser', 'localLoginUserId', ['label' => 'Local User Id', 'help' => 'User Id to login the user when bypassing login']),
 			],
 			'Auth Proxy' => [
 				$this->settingsOption('switch', 'authProxyEnabled', ['label' => 'Auth Proxy', 'help' => 'Enable option to set Auth Proxy Header Login']),
@@ -2569,7 +2576,7 @@ class Organizr
 			],
 			'Plex' => [
 				$this->settingsOption('token', 'plexToken'),
-				$this->settingsOption('button', '', ['label' => 'Get Plex Token', 'icon' => 'fa fa-ticket', 'text' => 'Retrieve', 'attr' => 'onclick="PlexOAuth(oAuthSuccess,oAuthError, null, \'#sso-form [name=plexToken]\')"']),
+				$this->settingsOption('button', '', ['label' => 'Get Plex Token', 'icon' => 'fa fa-ticket', 'text' => 'Retrieve', 'attr' => 'onclick="PlexOAuth(oAuthSuccess,oAuthError, oAuthMaxRetry, null, null, \'#sso-form [name=plexToken]\')"']),
 				$this->settingsOption('password-alt', 'plexID', ['label' => 'Plex Machine']),
 				$this->settingsOption('button', '', ['label' => 'Get Plex Machine', 'icon' => 'fa fa-id-badge', 'text' => 'Retrieve', 'attr' => 'onclick="showPlexMachineForm(\'#sso-form [name=plexID]\')"']),
 				$this->settingsOption('input', 'plexAdmin', ['label' => 'Plex Admin Username or Email']),
@@ -3673,6 +3680,19 @@ class Organizr
 
 	public function login($array)
 	{
+		// Bypass Check
+		$bypassLogin = $this->config['bypassLoginForLocal'] && $this->config['localLoginUserId'] && $this->isLocal() == true;
+		if(gettype($array) == 'array'){
+			if(key_exists('bypass', $array)){
+				$bypassLogin = false;
+			}
+			if(key_exists('username', $array)){
+				$bypassLogin = false;
+			}
+			if(key_exists('oAuth', $array)){
+				$bypassLogin = false;
+			}
+		}
 		// Grab username, Password & other optional items from api call
 		$username = $array['username'] ?? null;
 		$password = $array['password'] ?? null;
@@ -3722,7 +3742,7 @@ class Organizr
 			}
 		}
 		// Check if Login method was an oAuth login
-		if (!$oAuth) {
+		if (!$oAuth && !$bypassLogin) {
 			$result = $this->getUserByUsernameAndEmail($username, $username);
 			$result['password'] = $result['password'] ?? '';
 			// Switch AuthType - internal - external - both
@@ -3748,6 +3768,10 @@ class Organizr
 					}
 			}
 			$authSuccess = ($authProxy) ? $addEmailToAuthProxy : $authSuccess;
+		} elseif ($bypassLogin){
+			$id = $this->config['localLoginUserId'];
+			$result = $this->getUserById($id);
+			$authSuccess = true;
 		} else {
 			// Has oAuth Token!
 			switch ($oAuthType) {
@@ -3794,7 +3818,7 @@ class Organizr
 			}
 			if ($userExists) {
 				//does org password need to be updated
-				if (!$passwordMatches) {
+				if (!$passwordMatches && $password) {
 					$this->updateUserPassword($password, $result['id']);
 					$this->setLoggerChannel('Authentication', $username);
 					$this->logger->info('User Password updated from backend');
@@ -4409,7 +4433,8 @@ class Organizr
 				'agent' => isset($_SERVER ['HTTP_USER_AGENT']) ? $_SERVER ['HTTP_USER_AGENT'] : null,
 				'oAuthLogin' => isset($_COOKIE['oAuth']),
 				'local' => $this->isLocal(),
-				'ip' => $this->userIP()
+				'ip' => $this->userIP(),
+				'bypass' => $this->config['bypassLoginForLocal'] && $this->config['localLoginUserId'] && $this->isLocal() == true
 			],
 			'login' => [
 				'rememberMe' => $this->config['rememberMe'],
@@ -4611,14 +4636,28 @@ class Organizr
 						$class .= ' faded';
 					}
 					break;
-				case 'homepageOrderembynowplaying':
-				case 'homepageOrderembyrecent':
-					$class = 'bg-emby';
-					$image = 'plugins/images/tabs/emby.png';
-					if (!$this->config['homepageEmbyEnabled']) {
-						$class .= ' faded';
-					}
-					break;
+			case 'homepageOrderembynowplaying':
+			case 'homepageOrderembyrecent':
+				$class = 'bg-emby';
+				$image = 'plugins/images/tabs/emby.png';
+				if (!$this->config['homepageEmbyEnabled']) {
+					$class .= ' faded';
+				}
+				break;
+			case 'homepageOrderEmbyLiveTVTracker':
+				$class = 'bg-emby';
+				$image = 'plugins/images/homepage/embyLiveTVTracker.png';
+				if (!$this->config['homepageEmbyLiveTVTrackerEnabled']) {
+					$class .= ' faded';
+				}
+				break;
+			case 'homepageOrderJellyStat':
+				$class = 'bg-info';
+				$image = 'plugins/images/homepage/jellystat.png';
+				if (!$this->config['homepageJellyStatEnabled']) {
+					$class .= ' faded';
+				}
+				break;
 				case 'homepageOrderjellyfinnowplaying':
 				case 'homepageOrderjellyfinrecent':
 					$class = 'bg-jellyfin';
@@ -4711,6 +4750,13 @@ class Organizr
 						$class .= ' faded';
 					}
 					break;
+				case 'homepageOrderPromPage':
+					$class = 'bg-info';
+					$image = 'plugins/images/tabs/prompage.png';
+					if (!$this->config['homepagePromPageEnabled']) {
+						$class .= ' faded';
+					}
+					break;
 				case 'homepageOrderWeatherAndAir':
 					$class = 'bg-success';
 					$image = 'plugins/images/tabs/wind.png';
@@ -4798,6 +4844,11 @@ class Organizr
 	public function setGroupOptionsVariable()
 	{
 		$this->groupOptions = $this->groupSelect();
+	}
+
+	public function setUserOptionsVariable()
+	{
+		$this->userOptions = $this->userSelect();
 	}
 
 	public function getSettingsHomepageItem($item)
@@ -5137,7 +5188,7 @@ class Organizr
 		];
 		return $this->processQueries($response);
 	}
-
+	
 	public function getNextCategoryId()
 	{
 		$response = [
@@ -7281,7 +7332,7 @@ class Organizr
 		return $this->processQueries($response);
 	}
 
-	public function youtubeSearch($query)
+public function youtubeSearch($query)
 	{
 		if (!$query) {
 			$this->setAPIResponse('error', 'No query supplied', 422);
@@ -7297,7 +7348,9 @@ class Organizr
 		$key = $keys[$randomKeyIndex];
 		$apikey = ($this->config['youtubeAPI'] !== '') ? $this->config['youtubeAPI'] : $key;
 		$results = false;
-		$url = "https://www.googleapis.com/youtube/v3/search?part=snippet&q=$query+official+trailer&part=snippet&maxResults=1&type=video&videoDuration=short&key=$apikey";
+		// Ensure query is URL-encoded to avoid API errors
+		$safeQuery = urlencode($query . ' official trailer');
+		$url = "https://www.googleapis.com/youtube/v3/search?part=snippet&q={$safeQuery}&maxResults=1&type=video&videoDuration=short&key={$apikey}";
 		$response = Requests::get($url);
 		if ($response->success) {
 			$results = json_decode($response->body, true);

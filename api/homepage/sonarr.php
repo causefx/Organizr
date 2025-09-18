@@ -282,6 +282,9 @@ trait SonarrHomepageItem
 				if ($image['coverType'] == "fanart" && (isset($image['url']) && $image['url'] !== '')) {
 					$fanArt = $image['url'];
 				}
+				if ($image['coverType'] == 'fanart' && (isset($image['remoteUrl']) && $image['remoteUrl'] !== '')) {
+					$fanArt = $image['remoteUrl'];
+				}
 			}
 			if ($fanArt !== "/plugins/images/homepage/no-np.png" || (strpos($fanArt, '://') === false)) {
 				$cacheDirectory = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR . 'cache' . DIRECTORY_SEPARATOR;
