@@ -8023,44 +8023,42 @@ function buildPiholeItem(array){
 			        card += `<p class="d-inline text-muted">(${key})</p>`;
 		        }
 		        let value = 'Error';
-                    value = e['domains_being_blocked'].map(function (x) {
-                        return `<li>${x.toString()}</li>`;
-                    }).join("");
-		        }
-                card += `<ul class="multi-column" data-toggle="tooltip" title="` + key + `">` + value + `</ul>`;
+                value = e['domains_being_blocked'].map(function (x) {
+                    return `<li>${x.toString()}</li>`;
+                }).join("");
+            }
+            card += `<ul class="multi-column" data-toggle="tooltip" title="` + key + `">` + value + `</ul>`;
 	        }
-        }
-        card += `
+            card += `
+                        </div>
+                        <i class="fa fa-list inline-block" aria-hidden="true"></i>
                     </div>
-                    <i class="fa fa-list inline-block" aria-hidden="true"></i>
                 </div>
             </div>
-        </div>
-        `
-        return card;
-    };
+            `
+            return card;
+        }
 
-	if(combine) {
-		stats += '<div class="row">'
-		stats += totalQueries(array['data']);
-		stats += totalBlocked(array['data']);
-		stats += percentBlocked(array['data']);
-		stats += domainsBlocked(array['data']);
-		stats += '</div>';
-	} else {
-		for(var key in array['data']) {
-			var data = array['data'][key];
-			obj = {};
-			obj[key] = data;
-			stats += '<div class="row">'
-			stats += totalQueries(obj);
-			stats += totalBlocked(obj);
-			stats += percentBlocked(obj);
-			stats += domainsBlocked(obj);
-			stats += '</div>';
-		};
-	}
-
+    if(combine) {
+        stats += '<div class="row">'
+        stats += totalQueries(array['data']);
+        stats += totalBlocked(array['data']);
+        stats += percentBlocked(array['data']);
+        stats += domainsBlocked(array['data']);
+        stats += '</div>';
+    } else {
+        for(var key in array['data']) {
+            var data = array['data'][key];
+            obj = {};
+            obj[key] = data;
+            stats += '<div class="row">'
+            stats += totalQueries(obj);
+            stats += totalBlocked(obj);
+            stats += percentBlocked(obj);
+            stats += domainsBlocked(obj);
+            stats += '</div>';
+        }
+    }
     return stats;
 }
 function homepagePihole(timeout){
@@ -10630,9 +10628,9 @@ getPlexOAuthPin = function () {
     return deferred;
 };
 var polling = null;
-function PlexOAuth(success, error, pre, id = null) {
-    if (typeof pre === "function") {
-        pre()
+function PlexOAuth(successCallback, errorCallback, maxRetryCallback, pollingCallback, preFunction, clientID = null) {
+    if (typeof preFunction === "function") {
+        preFunction()
     }
     closePlexOAuthWindow();
     plex_oauth_window = PopupCenter('', 'Plex-OAuth', 600, 700);
@@ -10656,39 +10654,42 @@ function PlexOAuth(success, error, pre, id = null) {
         };
         plex_oauth_window.location = 'https://app.plex.tv/auth/#!?' + encodeData(oauth_params);
         polling = pin;
+        let maxPollCount = 120;
         (function poll() {
+            maxPollCount--;
             $.ajax({
                 url: 'https://plex.tv/api/v2/pins/' + pin,
                 type: 'GET',
                 headers: x_plex_headers,
                 success: function (data) {
                     if (data.authToken){
+                        polling = null;
                         closePlexOAuthWindow();
-                        if (typeof success === "function") {
-                            success('plex',data.authToken, id)
-                        }
-                    }
-                },
-                error: function (jqXHR, textStatus, errorThrown) {
-                    if (textStatus !== "timeout") {
-                        closePlexOAuthWindow();
-                        if (typeof error === "function") {
-                            error()
+                        if (typeof successCallback === "function") {
+                            successCallback('plex', data.authToken, clientID)
                         }
                     }
                 },
                 complete: function () {
-                    if (!plex_oauth_window.closed && polling === pin){
+                    if (maxPollCount <= 0) {
+                        closePlexOAuthWindow();
+                        if (typeof maxRetryCallback === "function") {
+                            maxRetryCallback()
+                        }
+                    } else if (polling === pin) {
                         setTimeout(function() {poll()}, 1000);
+                        if (typeof pollingCallback === "function") {
+                            pollingCallback(maxPollCount);
+                        }
                     }
                 },
-                timeout: 10000
+                timeout: 1000
             });
         })();
     }, function () {
         closePlexOAuthWindow();
-        if (typeof error === "function") {
-            error()
+        if (typeof errorCallback === "function") {
+            errorCallback()
         }
     });
 }
@@ -10727,10 +10728,13 @@ function oAuthSuccess(type,token, id = null){
 function oAuthError(){
     messageSingle('',window.lang.translate('Error Connecting to oAuth Provider'),activeInfo.settings.notifications.position,'#FFF','error','5000');
 }
+function oAuthMaxRetry(){
+    messageSingle('',window.lang.translate('Max Retry Error Connecting to oAuth Provider'),activeInfo.settings.notifications.position,'#FFF','error','5000');
+}
 function oAuthStart(type){
     switch(type){
         case 'plex':
-            PlexOAuth(oAuthSuccess,oAuthError);
+            PlexOAuth(oAuthSuccess,oAuthError, oAuthMaxRetry, null, null);
             break;
         default:
             break;

@@ -2383,7 +2383,7 @@ class Organizr
 				$this->settingsOption('select', 'authType', ['id' => 'authSelect', 'label' => 'Authentication Type', 'value' => $this->config['authType'], 'options' => $this->getAuthTypes()]),
 				$this->settingsOption('select', 'authBackend', ['id' => 'authBackendSelect', 'label' => 'Authentication Backend', 'class' => 'backendAuth switchAuth', 'value' => $this->config['authBackend'], 'options' => $this->getAuthBackends()]),
 				$this->settingsOption('token', 'plexToken', ['class' => 'plexAuth switchAuth']),
-				$this->settingsOption('button', '', ['class' => 'getPlexTokenAuth plexAuth switchAuth', 'label' => 'Get Plex Token', 'icon' => 'fa fa-ticket', 'text' => 'Retrieve', 'attr' => 'onclick="PlexOAuth(oAuthSuccess,oAuthError, null, \'#settings-main-form [name=plexToken]\')"']),
+				$this->settingsOption('button', '', ['class' => 'getPlexTokenAuth plexAuth switchAuth', 'label' => 'Get Plex Token', 'icon' => 'fa fa-ticket', 'text' => 'Retrieve', 'attr' => 'onclick="PlexOAuth(oAuthSuccess,oAuthError, oAuthMaxRetry, null, null, \'#settings-main-form [name=plexToken]\')"']),
 				$this->settingsOption('password-alt', 'plexID', ['class' => 'plexAuth switchAuth', 'label' => 'Plex Machine', 'placeholder' => 'Use Get Plex Machine Button']),
 				$this->settingsOption('button', '', ['class' => 'getPlexMachineAuth plexAuth switchAuth', 'label' => 'Get Plex Machine', 'icon' => 'fa fa-id-badge', 'text' => 'Retrieve', 'attr' => 'onclick="showPlexMachineForm(\'#settings-main-form [name=plexID]\')"']),
 				$this->settingsOption('input', 'plexAdmin', ['label' => 'Plex Admin Username or Email', 'class' => 'plexAuth switchAuth', 'placeholder' => 'Admin username for Plex']),
@@ -2576,7 +2576,7 @@ class Organizr
 			],
 			'Plex' => [
 				$this->settingsOption('token', 'plexToken'),
-				$this->settingsOption('button', '', ['label' => 'Get Plex Token', 'icon' => 'fa fa-ticket', 'text' => 'Retrieve', 'attr' => 'onclick="PlexOAuth(oAuthSuccess,oAuthError, null, \'#sso-form [name=plexToken]\')"']),
+				$this->settingsOption('button', '', ['label' => 'Get Plex Token', 'icon' => 'fa fa-ticket', 'text' => 'Retrieve', 'attr' => 'onclick="PlexOAuth(oAuthSuccess,oAuthError, oAuthMaxRetry, null, null, \'#sso-form [name=plexToken]\')"']),
 				$this->settingsOption('password-alt', 'plexID', ['label' => 'Plex Machine']),
 				$this->settingsOption('button', '', ['label' => 'Get Plex Machine', 'icon' => 'fa fa-id-badge', 'text' => 'Retrieve', 'attr' => 'onclick="showPlexMachineForm(\'#sso-form [name=plexID]\')"']),
 				$this->settingsOption('input', 'plexAdmin', ['label' => 'Plex Admin Username or Email']),
