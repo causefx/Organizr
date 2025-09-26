@@ -1,6 +1,7 @@
 <?php
 return array(
 	'INVITES-enabled' => false,
+	'INVITES-add-plex-home' => false,
 	'INVITES-Auth-include' => '1',
 	'INVITES-dbVersion' => '1.0.0',
 	'INVITES-type-include' => 'plex',

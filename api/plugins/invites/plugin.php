@@ -515,6 +515,9 @@ class Invites extends Organizr
 						switch ($action) {
 							case 'share':
 								$response = Requests::post($url, $headers, json_encode($data), array());
+								if($this->config['INVITES-add-plex-home']) {
+									$this->_addUserPlexHome($username);
+								}
 								break;
 							case 'unshare':
 								$id = (is_numeric($username) ? $username : $this->_invitesPluginConvertPlexName($username, "id"));
@@ -554,6 +557,7 @@ class Invites extends Organizr
 						$this->setAPIResponse('error', $e->getMessage(), 409);
 						return false;
 					}
+
 				} else {
 					$this->setLoggerChannel('Plex')->warning('Plex Token/ID not set');
 					$this->setAPIResponse('error', 'Plex Token/ID not set', 409);
@@ -593,6 +597,27 @@ class Invites extends Organizr
 				$plexUser = false;
 		}
 		return (!empty($plexUser) ? $plexUser : null);
+	}
+
+	public function _addUserPlexHome($email)
+	{
+		if (empty($email) || empty($this->config['plexToken'])) {
+			$this->logger->warning('_addUserPlexHome: email or plexToken missing');
+			return false;
+		}
+		$url = 'https://clients.plex.tv/api/home/users?invitedEmail=' . urlencode($email) . '&skipFriendship=1&X-Plex-Token=' . urlencode($this->config['plexToken']);
+		try {
+			$response = Requests::post($url, $headers);
+			if ($response->success) {
+				$this->logger->info('User added on plex home');
+				return json_decode($response->body, true);
+			} else {
+				$this->logger->info('_getPlexHomeUserByEmail: error (HTTP ' . $response->status_code . ')');
+			}
+		} catch (Requests_Exception $e) {
+			$this->logger->info('_addUserPlexHome: ' . $e->getMessage());
+		}
+		return false;
 	}
 
 }
