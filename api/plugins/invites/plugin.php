@@ -533,7 +533,7 @@ class Invites extends Organizr
 							switch ($response->status_code) {
 								case 400:
 									$this->setLoggerChannel('Plex')->warning('Plex User already has access');
-									$this->setAPIResponse('error', 'Plex User already has access', 409);
+									$this->setAPIResponse('success', 'Plex User already has access', 200);
 									return false;
 								case 401:
 									$this->setLoggerChannel('Plex')->warning('Incorrect Token');
