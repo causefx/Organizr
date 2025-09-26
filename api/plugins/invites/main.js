@@ -155,8 +155,14 @@ function hasPlexUsername(){
 		organizrAPI2('POST','api/v2/plugins/invites/' + code,post).success(function(data) {
 			var response = data.response;
 			if(response.result === 'success'){
-				$('.invite-step-3-plex-yes').toggleClass('hidden');
-				$('.invite-step-4-plex-accept').toggleClass('hidden');
+				if(response.message == 'Plex User already has access'){
+					$('.invite-step-3-plex-yes').toggleClass('hidden');
+					$('.invite-step-4-plex-accept-already-access').toggleClass('hidden');
+
+				} else {
+					$('.invite-step-3-plex-yes').toggleClass('hidden');
+					$('.invite-step-4-plex-accept').toggleClass('hidden');
+				}
 				if(local('get', 'invite')){
 					local('remove', 'invite');
 				}
@@ -412,6 +418,9 @@ $(document).on('click', '.inviteModal', function() {
 						</div>
 						<div class="form-group invite-step-4-plex-accept hidden">
 							<h4 class="" lang="en">You have been invited.  Please check your email or goto <a href="https://plex.tv" target="_blank">PLEX.TV</a> and login to accept the invite.  Once you have done that, you may head back here and login with your credentials.</h4>
+						</div>
+						<div class="form-group invite-step-4-plex-accept-already-access hidden">
+							<h4 class="" lang="en">You have already access.  Goto <a href="https://plex.tv" target="_blank">PLEX.TV</a> and login.  Once you have done that, you may head back here and login with your credentials.</h4>
 						</div>
 						<!-- Begin Emby Invites -->
 						<div class="form-group invite-step-3-emby-yes hidden">
