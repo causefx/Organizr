@@ -452,7 +452,7 @@ class Invites extends Organizr
 					'value' => $this->config['INVITES-komga-api-key']
 				),
 				array(
-					'type' => 'input',
+					'type' => 'password-alt',
 					'name' => 'INVITES-komga-default-user-password',
 					'label' => 'Default password for new user',
 					'value' => $this->config['INVITES-komga-default-user-password']
