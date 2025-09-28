@@ -557,7 +557,7 @@ class Invites extends Organizr
 							case 'share':
 								$response = Requests::post($url, $headers, json_encode($data), array());
 
-								if($this->config['STRIPE-komga-enabled']) {
+								if($this->config['INVITES-komga-enabled']) {
 									$this->_createKomgaAccount($username);
 								}
 
