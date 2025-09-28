@@ -10,5 +10,11 @@ return array(
 	'INVITES-plex-music-labels' => '',
 	'INVITES-plex-movies-labels' => '',
 	'INVITES-allow-delete-include' => false,
-	'INVITES-maximum-invites' => '0'
+	'INVITES-maximum-invites' => '0',
+	'STRIPE-komga-enabled' => false,
+	'STRIPE-komga-uri' => '',
+	'STRIPE-komga-api-key' => '',
+	'STRIPE-komga-default-user-password' => '',
+	'STRIPE-komga-roles' => '',
+	'STRIPE-komga-libraryIds' => '',
 );

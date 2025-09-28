@@ -431,6 +431,47 @@ class Invites extends Organizr
 					'placeholder' => 'All'
 				),
 			),
+			'Komga Settings' => array(
+				array(
+					'type' => 'switch',
+					'name' => 'INVITES-komga-enabled',
+					'label' => 'Enable Komga for auto create account',
+					'value' => $this->config['INVITES-komga-enabled'],
+				),
+				array(
+					'type' => 'input',
+					'name' => 'INVITES-komga-uri',
+					'label' => 'URL',
+					'value' => $this->config['INVITES-komga-uri'],
+					'placeholder' => 'http(s)://hostname:port'
+				),
+				array(
+					'type' => 'password-alt',
+					'name' => 'INVITES-komga-api-key',
+					'label' => 'Komga Api Key',
+					'value' => $this->config['INVITES-komga-api-key']
+				),
+				array(
+					'type' => 'input',
+					'name' => 'INVITES-komga-default-user-password',
+					'label' => 'Default password for new user',
+					'value' => $this->config['INVITES-komga-default-user-password']
+				),
+				array(
+					'type' => 'input',
+					'name' => 'INVITES-komga-roles',
+					'label' => 'Roles separated by semicolon',
+					'value' => $this->config['INVITES-komga-roles'],
+					'placeholder' => 'Ex: PAGE_STREAMING;FILE_DOWNLOAD'
+				),
+				array(
+					'type' => 'input',
+					'name' => 'INVITES-komga-libraryIds',
+					'label' => 'Library IDs separated by semicolon',
+					'value' => $this->config['INVITES-komga-libraryIds'],
+					'placeholder' => 'Ex: 06GANAD4YYZC4;06GANAD4BYZC7'
+				)
+			),
 			'Emby Settings' => array(
 				array(
 					'type' => 'password-alt',
@@ -515,6 +556,11 @@ class Invites extends Organizr
 						switch ($action) {
 							case 'share':
 								$response = Requests::post($url, $headers, json_encode($data), array());
+
+								if($this->config['STRIPE-komga-enabled']) {
+									$this->_createKomgaAccount($username);
+								}
+
 								break;
 							case 'unshare':
 								$id = (is_numeric($username) ? $username : $this->_invitesPluginConvertPlexName($username, "id"));
@@ -593,6 +639,84 @@ class Invites extends Organizr
 				$plexUser = false;
 		}
 		return (!empty($plexUser) ? $plexUser : null);
+	}
+
+		/**
+	 * Creates a new Komga user account using the provided email address.
+	 *
+	 * This method checks if Komga integration is enabled in the configuration,
+	 * validates the required parameters (endpoint URI, API key, and email),
+	 * and sends a POST request to the Komga API to create a user with the specified
+	 * roles and shared library IDs. Roles and library IDs are parsed from the configuration,
+	 * separated by semicolons. The default user password is also taken from the configuration.
+	 *
+	 * Logs informational, warning, or error messages based on the outcome.
+	 *
+	 * @param string $email The email address for the new Komga user account.
+	 * @return bool True if the account was successfully created, false otherwise.
+	 */
+	private function _createKomgaAccount($email) {
+		if (empty($this->config['INVITES-komga-uri'])) {
+			$this->setLoggerChannel('Invites')->info('Komga uri is missing');
+			return false;
+		}
+
+		if (empty($this->config['INVITES-komga-api-key'])) {
+			$this->setLoggerChannel('Invites')->info('Komga api key is missing');
+			return false;
+		}
+
+		if (empty($this->config['INVITES-komga-roles'])) {
+			$this->setLoggerChannel('Invites')->info('Komga roles empty');
+			return false;
+		}
+
+		if (empty($this->config['INVITES-komga-libraryIds'])) {
+			$this->setLoggerChannel('Invites')->info('Komga library empty');
+			return false;
+		}
+
+		if (empty($email)) {
+			$this->setLoggerChannel('Invites')->info('User email empty');
+			return false;
+		}
+
+		$endpoint = rtrim($this->config['INVITES-komga-uri'], '/') . '/api/v2/users';
+		$apiKey   = $this->config['INVITES-komga-api-key'];
+
+		$rolesStr = $this->config['INVITES-komga-roles'] ?? '';
+		$roles = array_values(array_filter(array_map('trim', explode(';', $rolesStr))));
+
+		$libIdsStr = $this->config['INVITES-komga-libraryIds'] ?? '';
+		$libraryIds = array_values(array_filter(array_map('trim', explode(';', $libIdsStr))));
+
+		$headers = array(
+			'accept' => 'application/json',
+			'X-API-Key' => $apiKey,
+			'Content-Type' => 'application/json'
+		);
+
+		$payload = array(
+			'email' => $email,
+			'password' => $this->config['INVITES-komga-default-user-password'] ?? '',
+			'roles' => $roles,
+			'sharedLibraries' => array(
+				'all' => false,
+				'libraryIds' => $libraryIds
+			)
+		);
+
+		try {
+			$response = Requests::post($endpoint, $headers, json_encode($payload));
+			if ($response->success) {
+				$this->setLoggerChannel('Komga')->info('User created ' . $email . ' with roles: ' . implode(',', $roles) . ' and libraries: ' . implode(',', $libraryIds));
+				return true;
+			}
+			$this->setLoggerChannel('Komga')->warning('User not created ' . $email . ' HTTP ' . $response->status_code);
+		} catch (Requests_Exception $e) {
+			$this->setLoggerChannel('Komga')->error('User not created ' . $email . ' Requests_Exception: ' . $e->getMessage());
+		}
+		return false;
 	}
 
 }
