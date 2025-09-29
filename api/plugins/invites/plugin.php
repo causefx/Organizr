@@ -676,13 +676,19 @@ class Invites extends Organizr
 			return false;
 		}
 
+		if (empty($this->config['INVITES-komga-default-user-password'])) {
+			$this->setLoggerChannel('Invites')->info('Komga default user password empty');
+			return false;
+		}
+
 		if (empty($email)) {
 			$this->setLoggerChannel('Invites')->info('User email empty');
 			return false;
 		}
 
 		$endpoint = rtrim($this->config['INVITES-komga-uri'], '/') . '/api/v2/users';
-		$apiKey   = $this->config['INVITES-komga-api-key'];
+		$apiKey = $this->config['INVITES-komga-api-key'];
+		$password =  $this->decrypt($this->config['INVITES-komga-default-user-password']);
 
 		$rolesStr = $this->config['INVITES-komga-roles'] ?? '';
 		$roles = array_values(array_filter(array_map('trim', explode(';', $rolesStr))));
@@ -698,7 +704,7 @@ class Invites extends Organizr
 
 		$payload = array(
 			'email' => $email,
-			'password' => $this->config['INVITES-komga-default-user-password'] ?? '',
+			'password' => $password,
 			'roles' => $roles,
 			'sharedLibraries' => array(
 				'all' => false,
