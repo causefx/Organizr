@@ -326,6 +326,10 @@ class Invites extends Organizr
 				),
 			);
 		}
+
+		$komgaRoles = $this->_getKomgaRoles();
+		$komgalibrary = $this->_getKomgaLibraries();
+
 		return array(
 			'Backend' => array(
 				array(
@@ -458,18 +462,22 @@ class Invites extends Organizr
 					'value' => $this->config['INVITES-komga-default-user-password']
 				),
 				array(
-					'type' => 'input',
+					'type' => 'select2',
+					'class' => 'select2-multiple',
+					'id' => 'invites-select-' . $this->random_ascii_string(6),
 					'name' => 'INVITES-komga-roles',
-					'label' => 'Roles separated by semicolon',
+					'label' => 'Roles',
 					'value' => $this->config['INVITES-komga-roles'],
-					'placeholder' => 'Ex: PAGE_STREAMING;FILE_DOWNLOAD'
+					'options' => $komgaRoles
 				),
 				array(
-					'type' => 'input',
+					'type' => 'select2',
+					'class' => 'select2-multiple',
+					'id' => 'invit4es-select-' . $this->random_ascii_string(6),
 					'name' => 'INVITES-komga-libraryIds',
-					'label' => 'Library IDs separated by semicolon',
+					'label' => 'Libraries',
 					'value' => $this->config['INVITES-komga-libraryIds'],
-					'placeholder' => 'Ex: 06GANAD4YYZC4;06GANAD4BYZC7'
+					'options' => $komgalibrary
 				)
 			),
 			'Emby Settings' => array(
@@ -656,6 +664,8 @@ class Invites extends Organizr
 	 * @return bool True if the account was successfully created, false otherwise.
 	 */
 	private function _createKomgaAccount($email) {
+        $this->logger->info('Try to create Komga account for ' . $email);
+
 		if (empty($this->config['INVITES-komga-uri'])) {
 			$this->setLoggerChannel('Invites')->info('Komga uri is missing');
 			return false;
@@ -724,5 +734,79 @@ class Invites extends Organizr
 		}
 		return false;
 	}
+
+    /**
+     * Retrieves a list of Komga roles
+     *
+     * @return array An array of associative arrays, each containing 'name' and 'value' for a Komga role.
+     */
+    function _getKomgaRoles() {
+        $komgaRoles = array();
+
+        $roleNames = array(
+            'ADMIN' => 'Administrator',
+            'FILE_DOWNLOAD' => 'File download',
+            'PAGE_STREAMING' => 'Page streaming',
+            'KOBO_SYNC' => 'Kobo Sync',
+            'KOREADER_SYNC' => 'Koreader Sync'
+        );
+
+        foreach ($roleNames as $value => $name) {
+            $komgaRoles[] = array(
+                'name' => $name,
+                'value' => $value
+            );
+        }
+        return $komgaRoles;
+    }
+
+	/**
+     * Fetches the list of Komga libraries from the Komga API.
+     *
+     * @return array|false Returns an array of libraries with 'name' and 'id' on success, or false on failure.
+     */
+    function _getKomgaLibraries() {
+        $this->logger->info('Try to fetch Komga libraries');
+
+        $endpoint = rtrim($this->config['komgaURL'], '/') . '/api/v1/libraries';
+        $apiKey = $this->config['INVITES-komga-api-key'];
+
+        $libraryListDefault = array(
+			array(
+				'name' => 'Refresh page to update List',
+				'value' => '',
+				'disabled' => true,
+			),
+		);
+
+        $headers = array(
+            'accept' => 'application/json',
+            'X-API-Key' => $apiKey
+        );
+
+        try {
+            $response = Requests::get($endpoint, $headers);
+            if ($response->success) {
+                $libraries = json_decode($response->body, true);
+                // Komga retourne un tableau d'objets librairie
+                $result = array();
+                foreach ($libraries as $library) {
+                    $result[] = array(
+                        'name' => $library['name'],
+                        'id' => $library['id']
+                    );
+                }
+                $this->logger->info('Fetched libraries: ' . json_encode($result));
+                if(!empty($result)) {
+                    return $result;
+                }
+            } else {
+                $this->logger->warning("Error HTTP ".$response->status_code.' body='.$response->body);
+            }
+        } catch (Requests_Exception $e) {
+            $this->logger->warning("Exception: " . $e->getMessage());
+        }
+        return $libraryListDefault;
+    }
 
 }
