@@ -652,14 +652,6 @@ class Invites extends Organizr
 		/**
 	 * Creates a new Komga user account using the provided email address.
 	 *
-	 * This method checks if Komga integration is enabled in the configuration,
-	 * validates the required parameters (endpoint URI, API key, and email),
-	 * and sends a POST request to the Komga API to create a user with the specified
-	 * roles and shared library IDs. Roles and library IDs are parsed from the configuration,
-	 * separated by semicolons. The default user password is also taken from the configuration.
-	 *
-	 * Logs informational, warning, or error messages based on the outcome.
-	 *
 	 * @param string $email The email address for the new Komga user account.
 	 * @return bool True if the account was successfully created, false otherwise.
 	 */
