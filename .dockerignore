@@ -1,0 +1,22 @@
+# Ignore VCS and local artifacts
+.git
+.gitignore
+.github
+.idea
+.vscode
+.DS_Store
+
+# Node/build caches
+node_modules
+npm-debug.log*
+yarn-error.log*
+
+# Logs/temp
+*.log
+logs
+cache
+.tmp
+tmp
+
+# Optional: exclude local .env if present
+.env
