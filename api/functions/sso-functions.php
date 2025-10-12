@@ -169,7 +169,7 @@ trait SSOFunctions
 			$credentials = array('auth' => new Requests_Auth_Digest(array($email, $password)));
 			$url = $this->qualifyURL($this->config['komgaURL']);
 			$options = $this->requestOptions($url, $this->getSSOTimeout(), true, false, $credentials);
-			$response = Requests::get($url . '/api/v1/users/me', ['X-Auth-Token' => 'organizrSSO'], $options);
+			$response = Requests::get($url . '/api/v2/users/me', ['X-Auth-Token' => 'organizrSSO'], $options);
 			if ($response->success) {
 				if ($response->headers['x-auth-token']) {
 					$this->setLoggerChannel('Komga')->info('Grabbed token');
