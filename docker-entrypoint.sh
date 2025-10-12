@@ -20,7 +20,4 @@ if [ ! -L /var/www/html/www/organizr ]; then
     ln -s /config/www/organizr /var/www/html/www/organizr
 fi
 
-# Corriger les droits à chaque démarrage
-chown -R www-data:www-data /config/www/organizr
-
 exec apache2-foreground
