@@ -16,6 +16,7 @@ RUN set -eux; \
     zlib1g-dev \
     libonig-dev \
     ca-certificates curl \
+    rsync \
     ; \
     rm -rf /var/lib/apt/lists/*; \
     deb_multiarch="$(dpkg-architecture --query DEB_BUILD_MULTIARCH)"; \

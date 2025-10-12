@@ -1,13 +1,11 @@
 #!/bin/bash
 set -e
 
-# Initialiser /config/www/organizr si vide
-if [ ! -d /config/www/organizr ] || [ -z "$(ls -A /config/www/organizr 2>/dev/null)" ]; then
-    echo "Initialisation de /config/www/organizr avec les fichiers d'origine..."
-    mkdir -p /config/www/organizr
-    cp -r /usr/src/app/. /config/www/organizr/
-    chown -R www-data:www-data /config/www/organizr
-fi
+# Synchroniser les fichiers d'origine vers /config/www/organizr (écrase les fichiers modifiés sauf /data)
+echo "Synchronisation des fichiers d'origine vers /config/www/organizr (hors dossier data)..."
+mkdir -p /config/www/organizr
+rsync -a --delete --exclude='.git' --exclude='data' /usr/src/app/ /config/www/organizr/
+chown -R www-data:www-data /config/www/organizr
 
 # Créer le dossier /var/www/html si absent
 mkdir -p /var/www/html
