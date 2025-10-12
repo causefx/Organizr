@@ -1,21 +1,15 @@
 #!/bin/bash
 set -e
 
-# Synchroniser les fichiers d'origine vers /config/www/organizr (écrase les fichiers modifiés sauf /data)
-echo "Synchronisation des fichiers d'origine vers /config/www/organizr (hors dossier data)..."
+# Synchroniser tout le code dans /config/www/organizr sauf le dossier data
 mkdir -p /config/www/organizr
-rsync -a --delete --exclude='.git' --exclude='data' /usr/src/app/ /config/www/organizr/
-chown -R www-data:www-data /config/www/organizr
+rsync -a --delete --exclude='data' /usr/src/app/ /config/www/organizr/
+mkdir -p /config/www/organizr/data
 
-# Créer le dossier /var/www/html si absent
-mkdir -p /var/www/html
-# Créer également le dossier parent requis pour le lien symbolique
-mkdir -p /var/www/html/www
-
-# Supprimer /var/www/html/www/organizr si ce n'est pas un lien symbolique
-if [ ! -L /var/www/html/www/organizr ]; then
-    rm -rf /var/www/html/www/organizr
-    ln -s /config/www/organizr /var/www/html/www/organizr
-fi
+# Appliquer les droits sur tous les dossiers parents et le code
+chown -R www-data:www-data /config
+chmod 755 /config
+chmod 755 /config/www
+chmod -R 755 /config/www/organizr
 
 exec apache2-foreground

@@ -35,7 +35,14 @@ RUN printf "<Directory /var/www/html>\n\
     && a2enconf overrides
 
 
-RUN sed -i 's|DocumentRoot /var/www/html|DocumentRoot /var/www/html/www/organizr|g' /etc/apache2/sites-available/000-default.conf
+RUN sed -i 's|DocumentRoot /var/www/html|DocumentRoot /config/www/organizr|g' /etc/apache2/sites-available/000-default.conf
+
+
+RUN printf "<Directory /config/www/organizr>\n\
+    AllowOverride All\n\
+    Require all granted\n\
+</Directory>\n" > /etc/apache2/conf-available/organizr.conf \
+    && a2enconf organizr
 
 
 RUN { \
@@ -57,7 +64,7 @@ COPY . /usr/src/app
 RUN chown -R www-data:www-data /var/www/html
 
 
-VOLUME ["/config"]
+VOLUME ["/config/www/organizr"]
 
 
 COPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
