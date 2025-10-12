@@ -20,3 +20,13 @@ tmp
 
 # Optional: exclude local .env if present
 .env
+
+# Docker ignore patterns
+config/log/
+config/cache/
+node_modules/
+*.log
+*.tmp
+.DS_Store
+.git
+.gitignore
