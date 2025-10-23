@@ -3,11 +3,13 @@
 class UptimeKumaMetrics
 {
     protected string $raw;
-    private array $monitors = [];
+    private array $monitors = [];    
+	private bool $kumaVersionV2;
 
-    public function __construct(string $raw)
+    public function __construct(string $raw, bool $kumaVersionV2 = false)
     {
         $this->raw = $raw;
+        $this->kumaVersionV2 = $kumaVersionV2;
     }
 
     public function process(): self
@@ -45,13 +47,23 @@ class UptimeKumaMetrics
 		$up = (substr($status, -1)) == '0' ? false : true;
 		$status = substr($status, 15);
 		$status = substr($status, 0, -4);
-		$status = explode(',', $status);
-		$data = [
-			'name' => $this->getStringBetweenQuotes($status[0]),
-			'url' => $this->getStringBetweenQuotes($status[2]),
-			'type' => $this->getStringBetweenQuotes($status[1]),
-			'status' => $up,
-		];
+		$status = explode(',', $status);	
+		if ($this->kumaVersionV2) {
+			$data = [
+				'name' => $this->getStringBetweenQuotes($status[1]),
+				'url' => $this->getStringBetweenQuotes($status[3]),
+				'type' => $this->getStringBetweenQuotes($status[2]),
+				'status' => $up,
+			];
+		}
+		else {
+			$data = [
+				'name' => $this->getStringBetweenQuotes($status[0]),
+				'url' => $this->getStringBetweenQuotes($status[2]),
+				'type' => $this->getStringBetweenQuotes($status[1]),
+				'status' => $up,
+			];
+		}
 
 		return $data;
     }

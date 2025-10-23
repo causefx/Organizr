@@ -36,6 +36,7 @@ trait UptimeKumaHomepageItem
 					$this->settingsOption('toggle-title', 'homepageUptimeKumaHeaderToggle'),
 					$this->settingsOption('switch', 'homepageUptimeKumaCompact', ['label' => 'Compact view', 'help' => 'Toggles the compact view of this homepage module']),
 					$this->settingsOption('switch', 'homepageUptimeKumaShowLatency', ['label' => 'Show monitor latency']),
+					$this->settingsOption('switch', 'homepageUptimeKumaVersionV2', ['label' => 'Using V2 of Uptime Kuma']),
 				],
 			]
 		];
@@ -89,7 +90,8 @@ trait UptimeKumaHomepageItem
 				$this->getKumaClient($url, $this->config['uptimeKumaToken'])
 					->get('/metrics')
 					->getBody()
-					->getContents()
+					->getContents(),
+				(bool) $this->config['homepageUptimeKumaVersionV2']
 			))->process();
 
 			$api = [
@@ -99,6 +101,7 @@ trait UptimeKumaHomepageItem
 					'titleToggle' => $this->config['homepageUptimeKumaHeaderToggle'],
 					'compact' => $this->config['homepageUptimeKumaCompact'],
 					'showLatency' => $this->config['homepageUptimeKumaShowLatency'],
+					'kumaVersionV2' => $this->config['homepageUptimeKumaVersionV2'],
 				]
 			];
 		} catch (GuzzleException $e) {
