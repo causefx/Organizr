@@ -80,7 +80,7 @@ if (isset($_GET["isp"])) {
                                     $dist = "<20";
                                 $isp .= " (" . $dist . " km)";
                             }
-                        } catch (Exception $e) {
+                        } catch (\Throwable $e) {
 
                         }
                     }
@@ -89,7 +89,7 @@ if (isset($_GET["isp"])) {
         }else{
             $isp = "Unknown ISP";
         }
-    } catch (Exception $ex) {
+    } catch (\Throwable $ex) {
         $isp = "Unknown ISP";
     }
     echo $ip . " - " . $isp;

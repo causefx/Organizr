@@ -75,7 +75,7 @@ trait SickRageHomepageItem
 					$errors .= $ip . ': Response was not JSON';
 					$failed = true;
 				}
-			} catch (Exception $e) {
+			} catch (\Throwable $e) {
 				$failed = true;
 				$ip = $value['url'];
 				$errors .= $ip . ': ' . $e->getMessage();
@@ -129,7 +129,7 @@ trait SickRageHomepageItem
 				if (!empty($sickrageHistory)) {
 					$calendarItems = array_merge($calendarItems, $sickrageHistory);
 				}
-			} catch (Exception $e) {
+			} catch (\Throwable $e) {
 				$this->setLoggerChannel('SickRage')->error($e);
 			}
 		}

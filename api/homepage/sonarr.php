@@ -101,7 +101,7 @@ trait SonarrHomepageItem
 					$errors .= $ip . ': Response was not JSON';
 					$failed = true;
 				}
-			} catch (Exception $e) {
+			} catch (\Throwable $e) {
 				$failed = true;
 				$ip = $value['url'];
 				$errors .= $ip . ': ' . $e->getMessage();
@@ -191,7 +191,7 @@ trait SonarrHomepageItem
 				if (!empty($queue)) {
 					$queueItems = array_merge($queueItems, $queue);
 				}
-			} catch (Exception $e) {
+			} catch (\Throwable $e) {
 				$this->setLoggerChannel('Sonarr')->error($e);
 			}
 		}
@@ -225,7 +225,7 @@ trait SonarrHomepageItem
 				} else {
 					$sonarrCalendar = '';
 				}
-			} catch (Exception $e) {
+			} catch (\Throwable $e) {
 				$this->setLoggerChannel('Sonarr')->error($e);
 			}
 			if (!empty($sonarrCalendar)) {

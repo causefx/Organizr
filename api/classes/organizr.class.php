@@ -2377,7 +2377,7 @@ class Organizr
 					default:
 						return false;
 				}
-			} catch (Exception $e) {
+			} catch (\Throwable $e) {
 				return false;
 			}
 		} else {
@@ -8058,7 +8058,7 @@ public function youtubeSearch($query)
 					default:
 						return false;
 				}
-			} catch (Exception $e) {
+			} catch (\Throwable $e) {
 				$this->setLoggerChannel('Database');
 				$this->logger->critical($e, $v['query']);
 				return false;

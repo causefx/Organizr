@@ -363,7 +363,7 @@ trait NetDataHomepageItem
 	{
 		try {
 			$customs = json_decode($this->config['netdataCustom'], true, 512, JSON_THROW_ON_ERROR);
-		} catch (Exception $e) {
+		} catch (\Throwable $e) {
 			$customs = false;
 		}
 		if ($customs == false) {
@@ -448,7 +448,7 @@ trait NetDataHomepageItem
 					default:
 						break;
 				}
-			} catch (Exception $e) {
+			} catch (\Throwable $e) {
 				//
 			}
 		}

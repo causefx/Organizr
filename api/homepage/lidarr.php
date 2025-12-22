@@ -89,7 +89,7 @@ trait LidarrHomepageItem
 					$errors .= $ip . ': Response was not JSON';
 					$failed = true;
 				}
-			} catch (Exception $e) {
+			} catch (\Throwable $e) {
 				$failed = true;
 				$ip = $value['url'];
 				$errors .= $ip . ': ' . $e->getMessage();
@@ -159,7 +159,7 @@ trait LidarrHomepageItem
 				if (!empty($queue)) {
 					$queueItems = array_merge($queueItems, $queue);
 				}
-			} catch (Exception $e) {
+			} catch (\Throwable $e) {
 				$this->setLoggerChannel('Lidarr')->error($e);
 			}
 		}
@@ -193,7 +193,7 @@ trait LidarrHomepageItem
 				} else {
 					$calendar = '';
 				}
-			} catch (Exception $e) {
+			} catch (\Throwable $e) {
 				$this->setLoggerChannel('Lidarr')->error($e);
 			}
 			if (!empty($calendar)) {

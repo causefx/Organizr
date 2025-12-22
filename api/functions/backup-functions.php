@@ -142,7 +142,7 @@ trait BackupFunctions
 						'size' => $this->human_filesize($size, 0),
 						'date' => gmdate("Y-m-d\TH:i:s\Z", (filemtime($path . $file)))
 					];
-				} catch (Exception $e) {
+				} catch (\Throwable $e) {
 					$this->setAPIResponse('error', 'Backup list failed', 409, $e->getMessage());
 					return false;
 				}

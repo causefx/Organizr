@@ -99,7 +99,7 @@ trait RadarrHomepageItem
 					$errors .= $ip . ': Response was not JSON';
 					$failed = true;
 				}
-			} catch (Exception $e) {
+			} catch (\Throwable $e) {
 				$failed = true;
 				$ip = $value['url'];
 				$errors .= $ip . ': ' . $e->getMessage();
@@ -189,7 +189,7 @@ trait RadarrHomepageItem
 				if (!empty($queue)) {
 					$queueItems = array_merge($queueItems, $queue);
 				}
-			} catch (Exception $e) {
+			} catch (\Throwable $e) {
 				$this->logger->error($e);
 			}
 		}
@@ -223,7 +223,7 @@ trait RadarrHomepageItem
 				} else {
 					$calendar = '';
 				}
-			} catch (Exception $e) {
+			} catch (\Throwable $e) {
 				$this->setLoggerChannel('Radarr')->error($e);
 			}
 			if (!empty($calendar)) {

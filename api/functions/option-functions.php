@@ -503,8 +503,10 @@ trait OptionsFunction
 				array(
 					'function' => 'fetchAll',
 					'query' => array(
-						"SELECT * FROM tabs WHERE `enabled`='1' AND `type`='1' AND `group_id`>=? AND (`url` = '" . $url . "' OR `url_local` = '" . $url . "') ORDER BY `order` ASC",
+						"SELECT * FROM tabs WHERE `enabled`='1' AND `type`='1' AND `group_id`>=? AND (`url` = ? OR `url_local` = ?) ORDER BY `order` ASC",
 						$this->getUserLevel(),
+						$url,
+						$url,
 					)
 				)
 			];

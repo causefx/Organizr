@@ -307,7 +307,7 @@ trait LogFunctions
 			$this->logger = $loggerBuilder->build();
 			$this->loggerSetup = true;
 			return $this->logger;
-		} catch (Exception $e) {
+		} catch (\Throwable $e) {
 			// nothing so far
 			return $this->logger;
 		}
