@@ -6,7 +6,8 @@
 set -euo pipefail
 
 # Configuration
-GITHUB_REPO="${GITHUB_REPO:-causefx/Organizr}"
+#GITHUB_REPO="${GITHUB_REPO:-causefx/Organizr}"
+GITHUB_REPO="${GITHUB_REPO:-metalcated/Organizr}"
 
 # Determine branch
 if [ -z "${1:-}" ]; then
