@@ -23,7 +23,8 @@
     "simshaun/recurr": "^5.0",
     "stripe/stripe-php": "^7.116",
     "ramsey/uuid": "^4.2",
-    "league/oauth2-client": "^2.7"
+    "league/oauth2-client": "^2.7",
+    "phpxmlrpc/phpxmlrpc": "^4.0"
   },
   "config": {
     "platform": {
