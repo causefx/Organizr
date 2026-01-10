@@ -8026,18 +8026,18 @@ function buildPiholeItem(array){
                 value = e['domains_being_blocked'].map(function (x) {
                     return `<li>${x.toString()}</li>`;
                 }).join("");
+                card += `<ul class="multi-column" data-toggle="tooltip" title="` + key + `">` + value + `</ul>`;
             }
-            card += `<ul class="multi-column" data-toggle="tooltip" title="` + key + `">` + value + `</ul>`;
-	        }
-            card += `
-                        </div>
-                        <i class="fa fa-list inline-block" aria-hidden="true"></i>
+        }
+        card += `
                     </div>
+                    <i class="fa fa-list inline-block" aria-hidden="true"></i>
                 </div>
             </div>
-            `
-            return card;
-        }
+        </div>
+        `
+        return card;
+    }
 
     if(combine) {
         stats += '<div class="row">'
