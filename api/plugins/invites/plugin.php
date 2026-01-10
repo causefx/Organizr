@@ -233,6 +233,7 @@ class Invites extends Organizr
 	public function _invitesPluginUseCode($code, $array)
 	{
 		$code = ($code) ?? null;
+		$mail = $this->_getEmailFronInviteCode($code);
 		$usedBy = ($array['usedby']) ?? null;
 		$now = date("Y-m-d H:i:s");
 		$currentIP = $this->userIP();
@@ -255,8 +256,8 @@ class Invites extends Organizr
 				)
 			];
 			$query = $this->processQueries($response);
-			$this->setLoggerChannel('Invites')->info('Invite Used [' . $code . ']');
-			return $this->_invitesPluginAction($usedBy, 'share', $this->config['INVITES-type-include']);
+			$this->setLoggerChannel('Invites')->info('Invite Used [' . $code . '] by ' . $usedBy);
+			return $this->_invitesPluginAction($usedBy, 'share', $this->config['INVITES-type-include'], $mail);
 		} else {
 			return false;
 		}
@@ -326,6 +327,11 @@ class Invites extends Organizr
 				),
 			);
 		}
+
+		$komgaRoles = $this->_getKomgaRoles();
+		$komgalibrary = $this->_getKomgaLibraries();
+		$nextcloudRoles = $this->_getNextcloudGroups();
+
 		return array(
 			'Backend' => array(
 				array(
@@ -430,6 +436,105 @@ class Invites extends Organizr
 					'value' => $this->config['INVITES-plex-music-labels'],
 					'placeholder' => 'All'
 				),
+				array(
+					'type' => 'switch',
+					'name' => 'INVITES-add-plex-home',
+					'label' => 'When user subscribe add him to Plex Home',
+					'value' => $this->config['INVITES-add-plex-home']
+				)
+			),
+			'Komga Settings' => array(
+				array(
+					'type' => 'switch',
+					'name' => 'INVITES-komga-enabled',
+					'label' => 'Enable Komga for auto create account',
+					'value' => $this->config['INVITES-komga-enabled'],
+				),
+				array(
+					'type' => 'input',
+					'name' => 'INVITES-komga-uri',
+					'label' => 'URL',
+					'value' => $this->config['INVITES-komga-uri'],
+					'placeholder' => 'http(s)://hostname:port'
+				),
+				array(
+					'type' => 'password-alt',
+					'name' => 'INVITES-komga-api-key',
+					'label' => 'Komga Api Key',
+					'value' => $this->config['INVITES-komga-api-key']
+				),
+				array(
+					'type' => 'password-alt',
+					'name' => 'INVITES-komga-default-user-password',
+					'label' => 'Default password for new user',
+					'value' => $this->config['INVITES-komga-default-user-password']
+				),
+				array(
+					'type' => 'select2',
+					'class' => 'select2-multiple',
+					'id' => 'INVITES-select-' . $this->random_ascii_string(6),
+					'name' => 'INVITES-komga-roles',
+					'label' => 'Roles',
+					'value' => $this->config['INVITES-komga-roles'],
+					'options' => $komgaRoles
+				),
+				array(
+					'type' => 'select2',
+					'class' => 'select2-multiple',
+					'id' => 'INVITES-select-' . $this->random_ascii_string(6),
+					'name' => 'INVITES-komga-libraryIds',
+					'label' => 'Libraries',
+					'value' => $this->config['INVITES-komga-libraryIds'],
+					'options' => $komgalibrary
+				)
+			),
+			'Nextcloud Settings' => array(
+				array(
+					'type' => 'switch',
+					'name' => 'INVITES-nextcloud-enabled',
+					'label' => 'Enable Nextcloud for auto create account',
+					'value' => $this->config['INVITES-nextcloud-enabled'],
+				),
+				array(
+					'type' => 'switch',
+					'name' => 'INVITES-nextcloud-plex-sso',
+					'label' => 'Enable if you have Plex SSO app installed on Nextcloud',
+					'value' => $this->config['INVITES-nextcloud-plex-sso'],
+				),
+				array(
+					'type' => 'input',
+					'name' => 'INVITES-nextcloud-url',
+					'label' => 'Nextcloud URI',
+					'value' => $this->config['INVITES-nextcloud-url']
+				),
+				array(
+					'type' => 'input',
+					'name' => 'INVITES-nextcloud-admin-user',
+					'label' => 'Nextcloud Admin User',
+					'value' => $this->config['INVITES-nextcloud-admin-user']
+				),
+				array(
+					'type' => 'password',
+					'name' => 'INVITES-nextcloud-admin-password',
+					'label' => 'Nextcloud Admin Password',
+					'value' => $this->config['INVITES-nextcloud-admin-password']
+				),
+				array(
+					'type' => 'input',
+					'name' => 'INVITES-nextcloud-quota',
+					'label' => 'Storage quota for user after subscription (empty for no-limit)',
+					'value' => $this->config['INVITES-nextcloud-quota'],
+					'placeholder' => '10GB'
+				),
+				array(
+					'type' => 'select2',
+					'class' => 'select2-multiple',
+					'id' => 'INVITES-select-' . $this->random_ascii_string(6),
+					'name' => 'INVITES-nextcloud-groups-member',
+					'label' => 'Nextcloud Groups after subscription',
+					'value' => $this->config['INVITES-nextcloud-groups-member'],
+					'options' => $nextcloudRoles
+				)
 			),
 			'Emby Settings' => array(
 				array(
@@ -464,7 +569,7 @@ class Invites extends Organizr
 		);
 	}
 
-	public function _invitesPluginAction($username, $action = null, $type = null)
+	public function _invitesPluginAction($username, $action = null, $type = null, $mail)
 	{
 		if ($action == null) {
 			$this->setAPIResponse('error', 'No Action supplied', 409);
@@ -515,6 +620,19 @@ class Invites extends Organizr
 						switch ($action) {
 							case 'share':
 								$response = Requests::post($url, $headers, json_encode($data), array());
+
+								if($this->config['INVITES-add-plex-home']) {
+									$this->_addUserPlexHome($mail);
+								}
+
+								if($this->config['INVITES-komga-enabled']) {
+									$this->_createKomgaAccount($mail);
+								}
+
+								if ($this->config['INVITES-nextcloud-enabled']) {
+									$nextcloudAccountCreated = $this->_createNextcloudAccount($mail, $username);
+								}
+
 								break;
 							case 'unshare':
 								$id = (is_numeric($username) ? $username : $this->_invitesPluginConvertPlexName($username, "id"));
@@ -533,8 +651,8 @@ class Invites extends Organizr
 							switch ($response->status_code) {
 								case 400:
 									$this->setLoggerChannel('Plex')->warning('Plex User already has access');
-									$this->setAPIResponse('error', 'Plex User already has access', 409);
-									return false;
+									$this->setAPIResponse('success', 'Plex User already has access', 200);
+									return true;
 								case 401:
 									$this->setLoggerChannel('Plex')->warning('Incorrect Token');
 									$this->setAPIResponse('error', 'Incorrect Token', 409);
@@ -593,6 +711,424 @@ class Invites extends Organizr
 				$plexUser = false;
 		}
 		return (!empty($plexUser) ? $plexUser : null);
+	}
+
+	/**
+	 * Creates a new Komga user account using the provided email address.
+	 *
+	 * @param string $email The email address for the new Komga user account.
+	 * @return bool True if the account was successfully created, false otherwise.
+	 */
+	private function _createKomgaAccount($email) {
+        $this->logger->info('Try to create Komga account for ' . $email);
+
+
+		if(!$this->_checkKomgaVar()) {
+			return false;
+		}
+
+		if (empty($email)) {
+			$this->setLoggerChannel('Invites')->info('User email empty');
+			return false;
+		}
+
+		$endpoint = rtrim($this->config['INVITES-komga-uri'], '/') . '/api/v2/users';
+		$apiKey = $this->config['INVITES-komga-api-key'];
+		$password =  $this->decrypt($this->config['INVITES-komga-default-user-password']);
+
+		$rolesStr = $this->config['INVITES-komga-roles'] ?? '';
+		$roles = array_values(array_filter(array_map('trim', explode(';', $rolesStr))));
+
+		$libIdsStr = $this->config['INVITES-komga-libraryIds'] ?? '';
+		$libraryIds = array_values(array_filter(array_map('trim', explode(';', $libIdsStr))));
+
+		$headers = array(
+			'accept' => 'application/json',
+			'X-API-Key' => $apiKey,
+			'Content-Type' => 'application/json'
+		);
+
+		$payload = array(
+			'email' => $email,
+			'password' => $password,
+			'roles' => $roles,
+			'sharedLibraries' => array(
+				'all' => false,
+				'libraryIds' => $libraryIds
+			)
+		);
+
+		try {
+			$response = Requests::post($endpoint, $headers, json_encode($payload));
+			if ($response->success) {
+				$this->setLoggerChannel('Komga')->info('User created ' . $email . ' with roles: ' . implode(',', $roles) . ' and libraries: ' . implode(',', $libraryIds));
+				return true;
+			}
+			$this->setLoggerChannel('Komga')->warning('User not created ' . $email . ' HTTP ' . $response->status_code);
+		} catch (Requests_Exception $e) {
+			$this->setLoggerChannel('Komga')->error('User not created ' . $email . ' Requests_Exception: ' . $e->getMessage());
+		}
+		return false;
+	}
+
+    /**
+     * Retrieves a list of Komga roles
+     *
+     * @return array An array of associative arrays, each containing 'name' and 'value' for a Komga role.
+     */
+    public function _getKomgaRoles() {
+        $komgaRoles = array();
+
+        $roleNames = array(
+            'ADMIN' => 'Administrator',
+            'FILE_DOWNLOAD' => 'File download',
+            'PAGE_STREAMING' => 'Page streaming',
+            'KOBO_SYNC' => 'Kobo Sync',
+            'KOREADER_SYNC' => 'Koreader Sync'
+        );
+
+        foreach ($roleNames as $value => $name) {
+            $komgaRoles[] = array(
+                'name' => $name,
+                'value' => $value
+            );
+        }
+        return $komgaRoles;
+    }
+
+	/**
+     * Fetches the list of Komga libraries from the Komga API.
+     *
+     * @return array|false Returns an array of libraries with 'name' and 'id' on success, or false on failure.
+     */
+    public function _getKomgaLibraries() {
+        $this->logger->info('Try to fetch Komga libraries');
+
+		if(!$this->_checkKomgaVar()) {
+			return false;
+		}
+
+        $endpoint = rtrim($this->config['komgaURL'], '/') . '/api/v1/libraries';
+        $apiKey = $this->config['INVITES-komga-api-key'];
+
+        $libraryListDefault = array(
+			array(
+				'name' => 'Refresh page to update List',
+				'value' => '',
+				'disabled' => true,
+			),
+		);
+
+        $headers = array(
+            'accept' => 'application/json',
+            'X-API-Key' => $apiKey
+        );
+
+        try {
+            $response = Requests::get($endpoint, $headers);
+            if ($response->success) {
+                $libraries = json_decode($response->body, true);
+                // Komga retourne un tableau d'objets librairie
+                $result = array();
+                foreach ($libraries as $library) {
+                    $result[] = array(
+                        'name' => $library['name'],
+                        'id' => $library['id']
+                    );
+                }
+                $this->logger->info('Fetched libraries: ' . json_encode($result));
+                if(!empty($result)) {
+                    return $result;
+                }
+            } else {
+                $this->logger->warning("Error HTTP ".$response->status_code.' body='.$response->body);
+            }
+        } catch (Requests_Exception $e) {
+            $this->logger->warning("Exception: " . $e->getMessage());
+        }
+        return $libraryListDefault;
+    }
+
+	/**
+	 * Fetches the list of Nextcloud groups using the configured Nextcloud admin credentials.
+	*
+		* @return array|false Returns an array of groups with 'name' and 'value' keys on success,
+		*                     or false on failure.
+		*/
+	public function _getNextcloudGroups() {
+		$this->logger->info('Try to fetch Nextcloud groups');
+
+		if(!$this->_checkNextcloudVar()) {
+			return false;
+		}
+
+		$url = rtrim($this->config['INVITES-nextcloud-url'], '/') . '/ocs/v1.php/cloud/groups';
+		$adminUser = $this->config['INVITES-nextcloud-admin-user'];
+		$adminPass = $this->decrypt($this->config['INVITES-nextcloud-admin-password']);
+		$headers = array(
+			'OCS-APIRequest' => 'true',
+			'Accept' => 'application/json',
+		);
+
+		try {
+			$options = array(
+				'auth' => array($adminUser, $adminPass),
+			);
+			$response = Requests::get($url, $headers, $options);
+			if ($response->success) {
+				$body = json_decode($response->body, true);
+				if (isset($body['ocs']['data']['groups'])) {
+					$this->logger->info('Fetched groups: ' . implode(', ', $body['ocs']['data']['groups']));
+					$groups = $body['ocs']['data']['groups'];
+					$result = array();
+					foreach ($groups as $group) {
+						$result[] = array(
+							'name' => $group,
+							'value' => $group
+						);
+					}
+					return $result;
+				} else {
+					$this->logger->warning('Groups not found in response');
+				}
+			} else {
+				$this->logger->warning("Error HTTP ".$response->status_code.' body='.$response->body);
+			}
+		} catch (Requests_Exception $e) {
+			$this->logger->warning("Exception: " . $e->getMessage());
+		}
+		return false;
+	}
+
+	/**
+	 * Checks if all required Nextcloud configuration variables are set.
+	 *
+	 * @return bool Returns true if all required Nextcloud configuration variables are set; false otherwise.
+	 */
+	public function _checkNextcloudVar() {
+		if (empty($this->config['INVITES-nextcloud-enabled'])) {
+			$this->logger->info('Nextcloud disabled in config');
+			return false;
+		}
+		if (empty($this->config['INVITES-nextcloud-url'])) {
+			$this->logger->info('Nextcloud URL missing');
+			return false;
+		}
+		if (empty($this->config['INVITES-nextcloud-admin-user']) || empty($this->config['INVITES-nextcloud-admin-password'])) {
+			$this->logger->info('Nextcloud admin credentials missing');
+			return false;
+		}
+		return true;
+	}
+
+	/**
+	 * Checks if all required komga configuration variables are set.
+	 *
+	 * @return bool Returns true if all required komga configuration variables are set; false otherwise.
+	 */
+	public function _checkKomgaVar() {
+		if (empty($this->config['INVITES-komga-uri'])) {
+			$this->setLoggerChannel('Invites')->info('Komga uri is missing');
+			return false;
+		}
+		if (empty($this->config['INVITES-komga-api-key'])) {
+			$this->setLoggerChannel('Invites')->info('Komga api key is missing');
+			return false;
+		}
+		if (empty($this->config['INVITES-komga-roles'])) {
+			$this->setLoggerChannel('Invites')->info('Komga roles empty');
+			return false;
+		}
+		if (empty($this->config['INVITES-komga-libraryIds'])) {
+			$this->setLoggerChannel('Invites')->info('Komga library empty');
+			return false;
+		}
+		if (empty($this->config['INVITES-komga-default-user-password'])) {
+			$this->setLoggerChannel('Invites')->info('Komga default user password empty');
+			return false;
+		}
+		return true;
+	}
+
+
+
+	/**
+	* Creates a Nextcloud account for a user based on their email and other parameters.
+	*
+	* @param string $email                The email address of the user to create in Nextcloud.
+	* @param string $displayName          The display name for the Nextcloud user.
+	* @param string $nextcloudGroupsMember A semicolon-separated list of Nextcloud groups to add the user to.
+	* @param string $nextcloudQuota       The storage quota to assign to the user (e.g., "5GB").
+	*
+	* @return bool Returns true if the account was successfully created, false otherwise.
+	*/
+	public function _createNextcloudAccount($email, $displayName) {
+		$this->logger->info('Try to create Nextcloud account');
+
+		if(!$this->_checkNextcloudVar()) {
+			return false;
+		}
+
+		$nextcloudGroupsMember = $this->config['INVITES-nextcloud-groups-member'] ?? '';
+		$nextcloudQuota = $this->config['INVITES-nextcloud-quota'] ?? '';
+
+		$userid = $email;
+		if($this->config['INVITES-nextcloud-plex-sso']) {
+			$plexUserId = $this->_getPlexUserIdByEmail($email);
+			$this->logger->warning('plexUserId=' . $plexUserId);
+
+			if (!empty($plexUserId)) {
+				$userid = 'PlexTv-' . $plexUserId;
+			}
+		}
+
+		try {
+			$password = bin2hex(random_bytes(12));
+		} catch (\Throwable $e) {
+			$password = bin2hex(openssl_random_pseudo_bytes(12));
+		}
+
+		if (empty($password)) {
+			$this->logger->warning('Error generating password');
+			return false;
+		}
+
+		$url = rtrim($this->config['INVITES-nextcloud-url'], '/') . '/ocs/v1.php/cloud/users';
+		$adminUser = $this->config['INVITES-nextcloud-admin-user'];
+		$adminPass = $this->decrypt($this->config['INVITES-nextcloud-admin-password']);
+		$headers = array(
+			'OCS-APIRequest' => 'true',
+			'Accept' => 'application/json',
+		);
+
+		$data = array(
+			'userid' => $userid,
+			'password' => $password,
+			'email' => $email,
+			'displayName' => $displayName,
+		);
+
+		if (!empty($nextcloudGroupsMember)) {
+			$groups = array_values(array_filter(array_map('trim', explode(';', $nextcloudGroupsMember))));
+			foreach ($groups as $group) {
+				$data['groups[]'] = $group;
+			}
+		}
+
+		if (!empty($nextcloudQuota)) {
+			$data['quota'] = $nextcloudQuota;
+		}
+
+		try {
+			$options = array(
+				'auth' => array($adminUser, $adminPass),
+			);
+			$response = Requests::post($url, $headers, $data, $options);
+			if ($response->success) {
+				$this->logger->info("User created ($email)");
+				return true;
+			}
+			$this->logger->warning("Error ($email) HTTP ".$response->status_code.' body='.$response->body);
+		} catch (Requests_Exception $e) {
+			$this->logger->warning("Exception: " . $e->getMessage());
+		}
+		return false;
+	}
+
+	/**
+	 * Retrieves the Plex user ID associated with a given email address.
+	 *
+	 * @param string $email The email address to search for in the shared Plex users.
+	 * @return string|null The Plex user ID if found, or null if not found or on error.
+	 */
+	public function _getPlexUserIdByEmail($email) {
+		$this->logger->info("Try to get Plex userID for $email");
+
+		if (empty($this->config['plexToken']) || empty($this->config['plexID'])) {
+			$this->logger->warning("PlexToken ou plexID missing");
+			return null;
+		}
+
+		$url = "https://clients.plex.tv/api/invites/requested";
+		$headers = array(
+			"Accept" => "application/json",
+			"X-Plex-Token" => $this->config['plexToken']
+		);
+		try {
+			$response = Requests::get($url, $headers);
+			if ($response->success) {
+				$xml = simplexml_load_string($response->body);
+				// Parcourt les éléments <Invite> du MediaContainer
+				foreach ($xml->Invite as $invite) {
+					$inviteEmail = (string)$invite['email'];
+					$inviteId = (string)$invite['id'];
+					if (strcasecmp($inviteEmail, $email) === 0) {
+						$this->logger->info("Find id=$inviteId for $email");
+						return $inviteId;
+					}
+				}
+			}
+			$this->logger->warning("No userId found for $email");
+		} catch (Requests_Exception $e) {
+			$this->logger->warning("Exception: " . $e->getMessage());
+		}
+		return null;
+	}
+
+	/**
+	 * Retrieves the email address associated with a given invite code.
+	 *
+	 * @param string $inviteCode The invite code to look up.
+	 * @return string|false The email address associated with the invite code, or false if not found.
+	 */
+	public function _getEmailFronInviteCode($inviteCode) {
+		if (empty($inviteCode)) {
+			$this->logger->warning('Invite code not found');
+			return false;
+		}
+		$emailLookupQuery = [
+			array(
+				'function' => 'fetch',
+				'query' => array(
+					'SELECT email FROM invites WHERE code = ? COLLATE NOCASE',
+					$inviteCode
+				)
+			)
+		];
+		$emailRow = $this->processQueries($emailLookupQuery);
+		if ($emailRow && !empty($emailRow['email'])) {
+			$this->logger->info("Email foud via the code [$inviteCode] : ".$emailRow['email']);
+			return $emailRow['email'];
+		} else {
+			$this->logger->warning("No mail found for the code [$inviteCode]");
+			return false;
+		}
+	}
+
+	/**
+	 * Adds a user to Plex Home using the provided email address.
+	 *
+	 * @param string $email The email address of the user to invite.
+	 * @return array|false Returns the decoded response from Plex API on success, or false on failure.
+	 */
+	public function _addUserPlexHome($email){
+		if (empty($email) || empty($this->config['plexToken'])) {
+			$this->logger->warning('_addUserPlexHome: email or plexToken missing');
+			return false;
+		}
+		$url = 'https://clients.plex.tv/api/home/users?invitedEmail=' . urlencode($email) . '&skipFriendship=1&X-Plex-Token=' . urlencode($this->config['plexToken']);
+		try {
+			$response = Requests::post($url, $headers);
+			if ($response->success) {
+				$this->logger->info('User added on plex home');
+				return json_decode($response->body, true);
+			} else {
+				$this->logger->info('_getPlexHomeUserByEmail: error (HTTP ' . $response->status_code . ')');
+			}
+		} catch (Requests_Exception $e) {
+			$this->logger->info('_addUserPlexHome: ' . $e->getMessage());
+		}
+		return false;
 	}
 
 }
