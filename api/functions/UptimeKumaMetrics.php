@@ -21,7 +21,7 @@ class UptimeKumaMetrics
         $latencies = array_filter($processed, function (string $item) {
             return str_starts_with($item, 'monitor_response_time');
         });
-        
+
         $monitors = array_map(function (string $item) {
             return $this->parseMonitorStatus($item);
         }, $monitors);
@@ -37,23 +37,36 @@ class UptimeKumaMetrics
     }
 
     private function parseMonitorStatus(string $status): ?array
-    {  
+    {
         if (substr($status, -1) === '2') {
             return null;
-		}
+        }
 
-		$up = (substr($status, -1)) == '0' ? false : true;
-		$status = substr($status, 15);
-		$status = substr($status, 0, -4);
-		$status = explode(',', $status);
-		$data = [
-			'name' => $this->getStringBetweenQuotes($status[0]),
-			'url' => $this->getStringBetweenQuotes($status[2]),
-			'type' => $this->getStringBetweenQuotes($status[1]),
-			'status' => $up,
-		];
+        if (preg_match('/{(.*?)}/', $status, $match) != 1) {
+            return null;
+        }
 
-		return $data;
+        $matches = explode(',', $match[1]);
+
+        $data = [];
+        foreach ($matches as $match) {
+            switch (true) {
+                case str_starts_with($match, "monitor_name"):
+                    $data['name'] = $this->getStringBetweenQuotes($match);
+                    break;
+                case str_starts_with($match, "monitor_url"):
+                    $data['url'] = $this->getStringBetweenQuotes($match);
+                    break;
+                case str_starts_with($match, "monitor_type"):
+                    $data['type'] = $this->getStringBetweenQuotes($match);
+                    break;
+            }
+        }
+
+        $up = (substr($status, -1)) == '0' ? false : true;
+        $data['status'] = $up;
+
+        return $data;
     }
 
     private function addLatencyToMonitors(array &$monitors, array $latencies)
@@ -79,10 +92,10 @@ class UptimeKumaMetrics
     }
 
     private function getStringBetweenQuotes(string $input): string
-	{
-		if (preg_match('/"(.*?)"/', $input, $match) == 1) {
-			return $match[1];
-		}
-		return '';
-	} 
+    {
+        if (preg_match('/"(.*?)"/', $input, $match) == 1) {
+            return $match[1];
+        }
+        return '';
+    }
 }
