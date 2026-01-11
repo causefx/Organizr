@@ -61,7 +61,7 @@ trait OIDCFunctions
 			'provider' => $provider,
 			'name' => $this->config[$prefix . 'Name'] ?? ucfirst($provider),
 			'clientId' => $this->config[$prefix . 'ClientId'] ?? '',
-			'clientSecret' => $this->decrypt($this->config[$prefix . 'ClientSecret'] ?? ''),
+			'clientSecret' => ($this->config[$prefix . 'ClientSecret'] ?? ''),
 			'discoveryUrl' => $this->config[$prefix . 'DiscoveryUrl'] ?? '',
 			'scopes' => $this->config[$prefix . 'Scopes'] ?? 'openid,profile,email',
 			'groupClaim' => $this->config[$prefix . 'GroupClaim'] ?: ($config['defaultGroupClaim'] ?? 'groups'),
@@ -77,7 +77,7 @@ trait OIDCFunctions
 	{
 		$config = $this->getOIDCProviderConfig($provider);
 		if (!$config || empty($config['discoveryUrl'])) {
-			$this->setLoggerChannel('OIDC')->error('Discovery URL not configured for provider: ' . $provider);
+			$this->setLoggerChannel('OIDC')->warning('Discovery URL not configured for provider: ' . $provider);
 			return null;
 		}
 		$cacheKey = 'oidc_discovery_' . $provider;
@@ -86,10 +86,8 @@ trait OIDCFunctions
 			return $cached['data'];
 		}
 		try {
-			$response = Requests::get($config['discoveryUrl'], [], [
-				'verify' => $this->getCert(),
-				'timeout' => 10,
-			]);
+			$options = ($this->localURL($config['discoveryUrl'])) ? array('verify' => false) : array('verify' => $this->getCert());
+			$response = Requests::get($config['discoveryUrl'], [], $options);
 			if ($response->success) {
 				$discovery = json_decode($response->body, true);
 				$_SESSION[$cacheKey] = [
@@ -98,7 +96,7 @@ trait OIDCFunctions
 				];
 				return $discovery;
 			}
-			$this->setLoggerChannel('OIDC')->error('Failed to fetch discovery document: ' . $response->status_code);
+			$this->setLoggerChannel('OIDC')->warning('Failed to fetch discovery document: ' . $response->status_code);
 			return null;
 		} catch (Requests_Exception $e) {
 			$this->setLoggerChannel('OIDC')->error($e);
@@ -165,7 +163,7 @@ trait OIDCFunctions
 		}
 		$discovery = $this->getOIDCDiscovery($provider);
 		if (!$discovery || empty($discovery['authorization_endpoint'])) {
-			$this->setLoggerChannel('OIDC')->error('Authorization endpoint not found in discovery');
+			$this->setLoggerChannel('OIDC')->warning('Authorization endpoint not found in discovery');
 			return null;
 		}
 		$pkce = $this->generatePKCE();
@@ -198,7 +196,7 @@ trait OIDCFunctions
 		}
 		$discovery = $this->getOIDCDiscovery($provider);
 		if (!$discovery || empty($discovery['token_endpoint'])) {
-			$this->setLoggerChannel('OIDC')->error('Token endpoint not found in discovery');
+			$this->setLoggerChannel('OIDC')->warning('Token endpoint not found in discovery');
 			return null;
 		}
 		$codeVerifier = $_SESSION['oidc_code_verifier'] ?? '';
@@ -212,18 +210,16 @@ trait OIDCFunctions
 			'code_verifier' => $codeVerifier,
 		];
 		try {
+			$options = ($this->localURL($discovery['token_endpoint'])) ? array('verify' => false) : array('verify' => $this->getCert());
 			$response = Requests::post($discovery['token_endpoint'], [
 				'Content-Type' => 'application/x-www-form-urlencoded',
-			], http_build_query($data), [
-				'verify' => $this->getCert(),
-				'timeout' => 10,
-			]);
+			], http_build_query($data), $options);
 			if ($response->success) {
 				$tokens = json_decode($response->body, true);
 				$this->setLoggerChannel('OIDC')->debug('Token exchange successful for provider: ' . $provider);
 				return $tokens;
 			}
-			$this->setLoggerChannel('OIDC')->error('Token exchange failed: ' . $response->body);
+			$this->setLoggerChannel('OIDC')->warning('Token exchange failed: ' . $response->body);
 			return null;
 		} catch (Requests_Exception $e) {
 			$this->setLoggerChannel('OIDC')->error($e);
@@ -242,16 +238,14 @@ trait OIDCFunctions
 			return null;
 		}
 		try {
+			$options = ($this->localURL($discovery['userinfo_endpoint'])) ? array('verify' => false) : array('verify' => $this->getCert());
 			$response = Requests::get($discovery['userinfo_endpoint'], [
 				'Authorization' => 'Bearer ' . $accessToken,
-			], [
-				'verify' => $this->getCert(),
-				'timeout' => 10,
-			]);
+			], $options);
 			if ($response->success) {
 				return json_decode($response->body, true);
 			}
-			$this->setLoggerChannel('OIDC')->error('Userinfo request failed: ' . $response->status_code);
+			$this->setLoggerChannel('OIDC')->warning('Userinfo request failed: ' . $response->status_code);
 			return null;
 		} catch (Requests_Exception $e) {
 			$this->setLoggerChannel('OIDC')->error($e);
@@ -359,7 +353,7 @@ trait OIDCFunctions
 		$username = $userInfo['preferred_username'] ?? $userInfo['name'] ?? $userInfo['sub'] ?? '';
 		$image = $userInfo['picture'] ?? '';
 		if (empty($username)) {
-			$this->setLoggerChannel('OIDC')->error('No username available from OIDC claims');
+			$this->setLoggerChannel('OIDC')->warning('No username available from OIDC claims');
 			return null;
 		}
 		$groupId = $this->mapOIDCGroupToOrganizr($oidcGroups);
@@ -414,7 +408,7 @@ trait OIDCFunctions
 			$this->setLoggerChannel('OIDC')->info('Created new OIDC user: ' . $username);
 			return $this->getUserByUsername($username);
 		} catch (Exception $e) {
-			$this->setLoggerChannel('OIDC')->error('Failed to create user: ' . $e->getMessage());
+			$this->setLoggerChannel('OIDC')->error($e);
 			return null;
 		}
 	}
