@@ -56,6 +56,10 @@ $config->setRules([
     // but we can feel free to remove it in a major version (or maybe in a minor if
     // we devote some effort into determining that it is safe)
     'no_null_property_initialization' => false,
+
+    // We have to support `@return void` to satisfy Symfony deprecations helper.
+    // See https://github.com/stripe/stripe-php/pull/1230
+    'phpdoc_no_empty_return' => false,
 ]);
 $config->setFinder($finder);
 return $config;

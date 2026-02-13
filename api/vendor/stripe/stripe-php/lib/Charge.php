@@ -32,6 +32,7 @@ namespace Stripe;
  * @property null|string|\Stripe\Account $destination ID of an existing, connected Stripe account to transfer funds to if <code>transfer_data</code> was specified in the charge request.
  * @property null|string|\Stripe\Dispute $dispute Details about the dispute if the charge has been disputed.
  * @property bool $disputed Whether the charge has been disputed.
+ * @property null|string|\Stripe\BalanceTransaction $failure_balance_transaction ID of the balance transaction that describes the reversal of the balance on your account due to payment failure.
  * @property null|string $failure_code Error code explaining reason for charge failure if available (see <a href="https://stripe.com/docs/api#errors">the errors section</a> for a list of codes).
  * @property null|string $failure_message Message to user further explaining reason for charge failure if available.
  * @property null|\Stripe\StripeObject $fraud_details Information on fraud assessments for the charge.
@@ -68,6 +69,7 @@ class Charge extends ApiResource
     use ApiOperations\All;
     use ApiOperations\Create;
     use ApiOperations\Retrieve;
+    use ApiOperations\Search;
     use ApiOperations\Update;
 
     const STATUS_FAILED = 'failed';
@@ -142,5 +144,20 @@ class Charge extends ApiResource
         $this->refreshFrom($response, $opts);
 
         return $this;
+    }
+
+    /**
+     * @param null|array $params
+     * @param null|array|string $opts
+     *
+     * @throws \Stripe\Exception\ApiErrorException if the request fails
+     *
+     * @return \Stripe\SearchResult<Charge> the charge search results
+     */
+    public static function search($params = null, $opts = null)
+    {
+        $url = '/v1/charges/search';
+
+        return self::_searchResource($url, $params, $opts);
     }
 }

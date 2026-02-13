@@ -12,80 +12,51 @@
 namespace Symfony\Component\Finder\Comparator;
 
 /**
- * Comparator.
- *
  * @author Fabien Potencier <fabien@symfony.com>
  */
 class Comparator
 {
-    private $target;
-    private $operator = '==';
+    private string $operator;
 
-    /**
-     * Gets the target value.
-     *
-     * @return string The target value
-     */
-    public function getTarget()
-    {
-        return $this->target;
-    }
-
-    public function setTarget(string $target)
-    {
-        $this->target = $target;
-    }
-
-    /**
-     * Gets the comparison operator.
-     *
-     * @return string The operator
-     */
-    public function getOperator()
-    {
-        return $this->operator;
-    }
-
-    /**
-     * Sets the comparison operator.
-     *
-     * @throws \InvalidArgumentException
-     */
-    public function setOperator(string $operator)
-    {
-        if ('' === $operator) {
-            $operator = '==';
-        }
-
-        if (!\in_array($operator, ['>', '<', '>=', '<=', '==', '!='])) {
-            throw new \InvalidArgumentException(sprintf('Invalid operator "%s".', $operator));
+    public function __construct(
+        private string $target,
+        string $operator = '==',
+    ) {
+        if (!\in_array($operator, ['>', '<', '>=', '<=', '==', '!='], true)) {
+            throw new \InvalidArgumentException(\sprintf('Invalid operator "%s".', $operator));
         }
 
         $this->operator = $operator;
     }
 
     /**
-     * Tests against the target.
-     *
-     * @param mixed $test A test value
-     *
-     * @return bool
+     * Gets the target value.
      */
-    public function test($test)
+    public function getTarget(): string
     {
-        switch ($this->operator) {
-            case '>':
-                return $test > $this->target;
-            case '>=':
-                return $test >= $this->target;
-            case '<':
-                return $test < $this->target;
-            case '<=':
-                return $test <= $this->target;
-            case '!=':
-                return $test != $this->target;
-        }
+        return $this->target;
+    }
 
-        return $test == $this->target;
+    /**
+     * Gets the comparison operator.
+     */
+    public function getOperator(): string
+    {
+        return $this->operator;
+    }
+
+    /**
+     * Tests against the target.
+     */
+    public function test(mixed $test): bool
+    {
+        return match ($this->operator) {
+            '>' => $test > $this->target,
+            '>=' => $test >= $this->target,
+            '<' => $test < $this->target,
+            '<=' => $test <= $this->target,
+            '!=' => $test != $this->target,
+            default => $test == $this->target,
+        };
     }
 }

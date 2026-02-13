@@ -6,29 +6,30 @@
 
 namespace OpenApi;
 
-use Closure;
 use Exception;
 
 /**
  * Logger reports the parser and validation messages.
+ *
+ * @deprecated use \OpenApi\Generator and PSR logger instead
  */
 class Logger
 {
     /**
-     * Singleton
+     * Singleton.
      *
      * @var Logger
      */
     public static $instance;
 
     /**
-     * @var Closure
+     * @var callable
      */
     public $log;
 
     protected function __construct()
     {
-        /**
+        /*
          * @param \Exception|string $entry
          * @param int $type Error type
          */
@@ -40,14 +41,12 @@ class Logger
         };
     }
 
-    /**
-     * @return Logger
-     */
-    public static function getInstance()
+    public static function getInstance(): Logger
     {
         if (self::$instance === null) {
             self::$instance = new Logger();
         }
+
         return self::$instance;
     }
 
@@ -56,7 +55,7 @@ class Logger
      *
      * @param Exception|string $entry
      */
-    public static function warning($entry)
+    public static function warning($entry): void
     {
         call_user_func(self::getInstance()->log, $entry, E_USER_WARNING);
     }
@@ -66,8 +65,20 @@ class Logger
      *
      * @param Exception|string $entry
      */
-    public static function notice($entry)
+    public static function notice($entry): void
     {
         call_user_func(self::getInstance()->log, $entry, E_USER_NOTICE);
+    }
+
+    /**
+     * Shorten class name(s).
+     *
+     * @param array|object|string $classes Class(es) to shorten
+     *
+     * @return string|string[] One or more shortened class names
+     */
+    public static function shorten($classes)
+    {
+        return Util::shorten($classes);
     }
 }

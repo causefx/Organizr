@@ -1,0 +1,68 @@
+openapi: 3.0.0
+info:
+  title: 'Testing annotations from bugreports'
+  description: "NOTE:\nThis sentence is on a new line"
+  version: 1.0.0
+servers:
+  -
+    url: '{schema}://host.dev'
+    description: 'OpenApi parameters'
+    variables:
+      schema:
+        enum:
+          - https
+          - http
+        default: https
+paths:
+  /api/endpoint:
+    get:
+      summary: 'An API endpoint.'
+      parameters:
+        -
+          name: filter
+          in: query
+          content:
+            application/json:
+              schema:
+                properties:
+                  type: { type: string }
+                  color: { type: string }
+                type: object
+      responses:
+        '200':
+          description: Success
+      security:
+        -
+          bearerAuth: []
+components:
+  responses:
+    '200':
+      description: ''
+      content:
+        application/json:
+          schema:
+            properties:
+              name:
+                description: demo
+                type: integer
+            type: object
+          examples:
+            '200':
+              summary: ''
+              value:
+                name: 1
+            '300':
+              summary: ''
+              value:
+                name: 1
+            '400':
+              summary: ''
+              value:
+                name: 1
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+security:
+  -
+    bearerAuth: []

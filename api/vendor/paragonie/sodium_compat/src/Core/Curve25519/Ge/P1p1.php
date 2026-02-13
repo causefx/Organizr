@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 if (class_exists('ParagonIE_Sodium_Core_Curve25519_Ge_P1p1', false)) {
     return;
@@ -8,41 +9,26 @@ if (class_exists('ParagonIE_Sodium_Core_Curve25519_Ge_P1p1', false)) {
  */
 class ParagonIE_Sodium_Core_Curve25519_Ge_P1p1
 {
-    /**
-     * @var ParagonIE_Sodium_Core_Curve25519_Fe
-     */
-    public $X;
-
-    /**
-     * @var ParagonIE_Sodium_Core_Curve25519_Fe
-     */
-    public $Y;
-
-    /**
-     * @var ParagonIE_Sodium_Core_Curve25519_Fe
-     */
-    public $Z;
-
-    /**
-     * @var ParagonIE_Sodium_Core_Curve25519_Fe
-     */
-    public $T;
+    public ParagonIE_Sodium_Core_Curve25519_Fe $X;
+    public ParagonIE_Sodium_Core_Curve25519_Fe $Y;
+    public ParagonIE_Sodium_Core_Curve25519_Fe $Z;
+    public ParagonIE_Sodium_Core_Curve25519_Fe $T;
 
     /**
      * ParagonIE_Sodium_Core_Curve25519_Ge_P1p1 constructor.
      *
      * @internal You should not use this directly from another application
      *
-     * @param ParagonIE_Sodium_Core_Curve25519_Fe|null $x
-     * @param ParagonIE_Sodium_Core_Curve25519_Fe|null $y
-     * @param ParagonIE_Sodium_Core_Curve25519_Fe|null $z
-     * @param ParagonIE_Sodium_Core_Curve25519_Fe|null $t
+     * @param ?ParagonIE_Sodium_Core_Curve25519_Fe $x
+     * @param ?ParagonIE_Sodium_Core_Curve25519_Fe $y
+     * @param ?ParagonIE_Sodium_Core_Curve25519_Fe $z
+     * @param ?ParagonIE_Sodium_Core_Curve25519_Fe $t
      */
     public function __construct(
-        ParagonIE_Sodium_Core_Curve25519_Fe $x = null,
-        ParagonIE_Sodium_Core_Curve25519_Fe $y = null,
-        ParagonIE_Sodium_Core_Curve25519_Fe $z = null,
-        ParagonIE_Sodium_Core_Curve25519_Fe $t = null
+        ?ParagonIE_Sodium_Core_Curve25519_Fe $x = null,
+        ?ParagonIE_Sodium_Core_Curve25519_Fe $y = null,
+        ?ParagonIE_Sodium_Core_Curve25519_Fe $z = null,
+        ?ParagonIE_Sodium_Core_Curve25519_Fe $t = null
     ) {
         if ($x === null) {
             $x = new ParagonIE_Sodium_Core_Curve25519_Fe();

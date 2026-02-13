@@ -10,8 +10,8 @@ use DateTimeInterface;
 use DateTimeZone;
 use Exception;
 use InvalidArgumentException;
+use LogicException;
 use RuntimeException;
-use Webmozart\Assert\Assert;
 
 /**
  * CRON expression parser that can determine whether or not a CRON expression is
@@ -32,7 +32,7 @@ class CronExpression
     public const DAY = 2;
     public const MONTH = 3;
     public const WEEKDAY = 4;
-    
+
     /** @deprecated */
     public const YEAR = 5;
 
@@ -42,28 +42,29 @@ class CronExpression
         '@monthly' => '0 0 1 * *',
         '@weekly' => '0 0 * * 0',
         '@daily' => '0 0 * * *',
+        '@midnight' => '0 0 * * *',
         '@hourly' => '0 * * * *',
     ];
 
     /**
-     * @var array CRON expression parts
+     * @var array<int, string> CRON expression parts
      */
-    private $cronParts;
+    protected $cronParts;
 
     /**
      * @var FieldFactoryInterface CRON field factory
      */
-    private $fieldFactory;
+    protected $fieldFactory;
 
     /**
      * @var int Max iteration count when searching for next run date
      */
-    private $maxIterationCount = 1000;
+    protected $maxIterationCount = 1000;
 
     /**
-     * @var array Order in which to test of cron parts
+     * @var array<int, int> Order in which to test of cron parts
      */
-    private static $order = [
+    protected static $order = [
         self::YEAR,
         self::MONTH,
         self::DAY,
@@ -73,9 +74,80 @@ class CronExpression
     ];
 
     /**
+     * @var array<string, string>
+     */
+    private static $registeredAliases = self::MAPPINGS;
+
+    /**
+     * Registered a user defined CRON Expression Alias.
+     *
+     * @throws LogicException If the expression or the alias name are invalid
+     *                         or if the alias is already registered.
+     */
+    public static function registerAlias(string $alias, string $expression): void
+    {
+        try {
+            new self($expression);
+        } catch (InvalidArgumentException $exception) {
+            throw new LogicException("The expression `$expression` is invalid", 0, $exception);
+        }
+
+        $shortcut = strtolower($alias);
+        if (1 !== preg_match('/^@\w+$/', $shortcut)) {
+            throw new LogicException("The alias `$alias` is invalid. It must start with an `@` character and contain alphanumeric (letters, numbers, regardless of case) plus underscore (_).");
+        }
+
+        if (isset(self::$registeredAliases[$shortcut])) {
+            throw new LogicException("The alias `$alias` is already registered.");
+        }
+
+        self::$registeredAliases[$shortcut] = $expression;
+    }
+
+    /**
+     * Unregistered a user defined CRON Expression Alias.
+     *
+     * @throws LogicException If the user tries to unregister a built-in alias
+     */
+    public static function unregisterAlias(string $alias): bool
+    {
+        $shortcut = strtolower($alias);
+        if (isset(self::MAPPINGS[$shortcut])) {
+            throw new LogicException("The alias `$alias` is a built-in alias; it can not be unregistered.");
+        }
+
+        if (!isset(self::$registeredAliases[$shortcut])) {
+            return false;
+        }
+
+        unset(self::$registeredAliases[$shortcut]);
+
+        return true;
+    }
+
+    /**
+     * Tells whether a CRON Expression alias is registered.
+     */
+    public static function supportsAlias(string $alias): bool
+    {
+        return isset(self::$registeredAliases[strtolower($alias)]);
+    }
+
+    /**
+     * Returns all registered aliases as an associated array where the aliases are the key
+     * and their associated expressions are the values.
+     *
+     * @return array<string, string>
+     */
+    public static function getAliases(): array
+    {
+        return self::$registeredAliases;
+    }
+
+    /**
      * @deprecated since version 3.0.2, use __construct instead.
      */
-    public static function factory(string $expression, FieldFactoryInterface $fieldFactory = null): CronExpression
+    public static function factory(string $expression, ?FieldFactoryInterface $fieldFactory = null): CronExpression
     {
         /** @phpstan-ignore-next-line */
         return new static($expression, $fieldFactory);
@@ -104,11 +176,12 @@ class CronExpression
      *
      * @param string $expression CRON expression (e.g. '8 * * * *')
      * @param null|FieldFactoryInterface $fieldFactory Factory to create cron fields
+     * @throws InvalidArgumentException
      */
-    public function __construct(string $expression, FieldFactoryInterface $fieldFactory = null)
+    public function __construct(string $expression, ?FieldFactoryInterface $fieldFactory = null)
     {
         $shortcut = strtolower($expression);
-        $expression = self::MAPPINGS[$shortcut] ?? $expression;
+        $expression = self::$registeredAliases[$shortcut] ?? $expression;
 
         $this->fieldFactory = $fieldFactory ?: new FieldFactory();
         $this->setExpression($expression);
@@ -126,15 +199,29 @@ class CronExpression
     public function setExpression(string $value): CronExpression
     {
         $split = preg_split('/\s/', $value, -1, PREG_SPLIT_NO_EMPTY);
-        Assert::isArray($split);
 
-        $this->cronParts = $split;
-        if (\count($this->cronParts) < 5) {
+        if (!\is_array($split)) {
             throw new InvalidArgumentException(
                 $value . ' is not a valid CRON expression'
             );
         }
 
+        $notEnoughParts = \count($split) < 5;
+
+        $questionMarkInInvalidPart = array_key_exists(0, $split) && $split[0] === '?'
+            || array_key_exists(1, $split) && $split[1] === '?'
+            || array_key_exists(3, $split) && $split[3] === '?';
+
+        $tooManyQuestionMarks = array_key_exists(2, $split) && $split[2] === '?'
+            && array_key_exists(4, $split) && $split[4] === '?';
+
+        if ($notEnoughParts || $questionMarkInInvalidPart || $tooManyQuestionMarks) {
+            throw new InvalidArgumentException(
+                $value . ' is not a valid CRON expression'
+            );
+        }
+
+        $this->cronParts = $split;
         foreach ($this->cronParts as $position => $part) {
             $this->setPart($position, $part);
         }
@@ -239,14 +326,35 @@ class CronExpression
      */
     public function getMultipleRunDates(int $total, $currentTime = 'now', bool $invert = false, bool $allowCurrentDate = false, $timeZone = null): array
     {
+        $timeZone = $this->determineTimeZone($currentTime, $timeZone);
+
+        if ('now' === $currentTime) {
+            $currentTime = new DateTime();
+        } elseif ($currentTime instanceof DateTime) {
+            $currentTime = clone $currentTime;
+        } elseif ($currentTime instanceof DateTimeImmutable) {
+            $currentTime = DateTime::createFromFormat('U', $currentTime->format('U'));
+        } elseif (\is_string($currentTime)) {
+            $currentTime = new DateTime($currentTime);
+        }
+
+        if (!$currentTime instanceof DateTime) {
+            throw new InvalidArgumentException('invalid current time');
+        }
+
+        $currentTime->setTimezone(new DateTimeZone($timeZone));
+
         $matches = [];
-        $max = max(0, $total);
-        for ($i = 0; $i < $max; ++$i) {
+        for ($i = 0; $i < $total; ++$i) {
             try {
-                $matches[] = $this->getRunDate($currentTime, $i, $invert, $allowCurrentDate, $timeZone);
+                $result = $this->getRunDate($currentTime, 0, $invert, $allowCurrentDate, $timeZone);
             } catch (RuntimeException $e) {
                 break;
             }
+
+            $allowCurrentDate = false;
+            $currentTime = clone $result;
+            $matches[] = $result;
         }
 
         return $matches;
@@ -319,7 +427,10 @@ class CronExpression
             $currentTime = new DateTime($currentTime);
         }
 
-        Assert::isInstanceOf($currentTime, DateTime::class);
+        if (!$currentTime instanceof DateTime) {
+            throw new InvalidArgumentException('invalid current time');
+        }
+
         $currentTime->setTimezone(new DateTimeZone($timeZone));
 
         // drop the seconds to 0
@@ -361,9 +472,17 @@ class CronExpression
             $currentDate = new DateTime('now');
         }
 
-        Assert::isInstanceOf($currentDate, DateTime::class);
+        if (!$currentDate instanceof DateTime) {
+            throw new InvalidArgumentException('invalid current date');
+        }
+
         $currentDate->setTimezone(new DateTimeZone($timeZone));
-        $currentDate->setTime((int) $currentDate->format('H'), (int) $currentDate->format('i'), 0);
+        // Workaround for setTime causing an offset change: https://bugs.php.net/bug.php?id=81074
+        $currentDate = DateTime::createFromFormat("!Y-m-d H:iO", $currentDate->format("Y-m-d H:iP"), $currentDate->getTimezone());
+        if ($currentDate === false) {
+            throw new \RuntimeException('Unable to create date from format');
+        }
+        $currentDate->setTimezone(new DateTimeZone($timeZone));
 
         $nextRun = clone $currentDate;
 
@@ -379,7 +498,7 @@ class CronExpression
             $fields[$position] = $this->fieldFactory->getField($position);
         }
 
-        if (isset($parts[2]) && isset($parts[4])) {
+        if (isset($parts[self::DAY]) && isset($parts[self::WEEKDAY])) {
             $domExpression = sprintf('%s %s %s %s *', $this->getExpression(0), $this->getExpression(1), $this->getExpression(2), $this->getExpression(3));
             $dowExpression = sprintf('%s %s * %s %s', $this->getExpression(0), $this->getExpression(1), $this->getExpression(3), $this->getExpression(4));
 
@@ -389,10 +508,21 @@ class CronExpression
             $domRunDates = $domExpression->getMultipleRunDates($nth + 1, $currentTime, $invert, $allowCurrentDate, $timeZone);
             $dowRunDates = $dowExpression->getMultipleRunDates($nth + 1, $currentTime, $invert, $allowCurrentDate, $timeZone);
 
+            if ($parts[self::DAY] === '?' || $parts[self::DAY] === '*') {
+                $domRunDates = [];
+            }
+
+            if ($parts[self::WEEKDAY] === '?' || $parts[self::WEEKDAY] === '*') {
+                $dowRunDates = [];
+            }
+
             $combined = array_merge($domRunDates, $dowRunDates);
             usort($combined, function ($a, $b) {
                 return $a->format('Y-m-d H:i:s') <=> $b->format('Y-m-d H:i:s');
             });
+            if ($invert) {
+                $combined = array_reverse($combined);
+            }
 
             return $combined[$nth];
         }
@@ -405,10 +535,10 @@ class CronExpression
                 $field = $fields[$position];
                 // Check if this is singular or a list
                 if (false === strpos($part, ',')) {
-                    $satisfied = $field->isSatisfiedBy($nextRun, $part);
+                    $satisfied = $field->isSatisfiedBy($nextRun, $part, $invert);
                 } else {
                     foreach (array_map('trim', explode(',', $part)) as $listPart) {
-                        if ($field->isSatisfiedBy($nextRun, $listPart)) {
+                        if ($field->isSatisfiedBy($nextRun, $listPart, $invert)) {
                             $satisfied = true;
 
                             break;
@@ -426,8 +556,7 @@ class CronExpression
 
             // Skip this match if needed
             if ((!$allowCurrentDate && $nextRun == $currentDate) || --$nth > -1) {
-                $this->fieldFactory->getField(0)->increment($nextRun, $invert, $parts[0] ?? null);
-
+                $this->fieldFactory->getField(self::MINUTE)->increment($nextRun, $invert, $parts[self::MINUTE] ?? null);
                 continue;
             }
 
@@ -454,7 +583,7 @@ class CronExpression
         }
 
         if ($currentTime instanceof DateTimeInterface) {
-            return $currentTime->getTimeZone()->getName();
+            return $currentTime->getTimezone()->getName();
         }
 
         return date_default_timezone_get();

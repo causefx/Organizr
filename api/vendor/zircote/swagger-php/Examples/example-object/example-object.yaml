@@ -1,0 +1,71 @@
+openapi: 3.0.0
+info:
+  title: 'Example for response examples value'
+  version: '1.0'
+paths:
+  '/users/{id}':
+    put:
+      summary: 'Updates a user'
+      parameters:
+        -
+          name: id
+          in: path
+          description: 'Parameter with mutliple examples'
+          required: true
+          schema:
+            type: string
+          examples:
+            int:
+              summary: 'An int value.'
+              value: '1'
+            uuid:
+              summary: 'An UUID value.'
+              value: 0006faf6-7a61-426c-9034-579f2cfcfa83
+      responses:
+        '200':
+          description: OK
+  /users:
+    post:
+      summary: 'Adds a new user - with oneOf examples'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                id:
+                  type: string
+                name:
+                  type: string
+                phone:
+                  oneOf: [{ type: string }, { type: integer }]
+              type: object
+              example:
+                id: a3fb6
+                name: 'Jessica Smith'
+                phone: 12345678
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - { $ref: '#/components/schemas/Result' }
+                  - { type: boolean }
+              examples:
+                result:
+                  summary: 'An result object.'
+                  value: { success: true }
+                bool:
+                  summary: 'A boolean value.'
+                  value: false
+components:
+  schemas:
+    Result:
+      title: 'Sample schema for using references'
+      properties:
+        status:
+          type: string
+        error:
+          type: string
+      type: object

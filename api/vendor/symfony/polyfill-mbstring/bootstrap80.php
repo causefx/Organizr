@@ -48,10 +48,10 @@ if (!function_exists('mb_detect_encoding')) {
     function mb_detect_encoding(?string $string, array|string|null $encodings = null, ?bool $strict = false): string|false { return p\Mbstring::mb_detect_encoding((string) $string, $encodings, (bool) $strict); }
 }
 if (!function_exists('mb_detect_order')) {
-    function mb_detect_order(array|string|null $encoding = null): array|bool { return p\Mbstring::mb_detect_order((string) $encoding); }
+    function mb_detect_order(array|string|null $encoding = null): array|bool { return p\Mbstring::mb_detect_order($encoding); }
 }
 if (!function_exists('mb_parse_str')) {
-    function mb_parse_str(?string $string, &$result = []): bool { parse_str((string) $string, $result); }
+    function mb_parse_str(?string $string, &$result = []): bool { parse_str((string) $string, $result); return (bool) $result; }
 }
 if (!function_exists('mb_strlen')) {
     function mb_strlen(?string $string, ?string $encoding = null): int { return p\Mbstring::mb_strlen((string) $string, $encoding); }
@@ -78,7 +78,7 @@ if (!function_exists('mb_stristr')) {
     function mb_stristr(?string $haystack, ?string $needle, ?bool $before_needle = false, ?string $encoding = null): string|false { return p\Mbstring::mb_stristr((string) $haystack, (string) $needle, (bool) $before_needle, $encoding); }
 }
 if (!function_exists('mb_strrchr')) {
-    function mb_strrchr(?string $haystack, ?string $needle, ?bool $before_needle = false, ?string $encoding = null): string|false { return p\Mbstring::mb_strrchr((string) $haystack, (string) $needle, $before_needle, (bool) $encoding); }
+    function mb_strrchr(?string $haystack, ?string $needle, ?bool $before_needle = false, ?string $encoding = null): string|false { return p\Mbstring::mb_strrchr((string) $haystack, (string) $needle, (bool) $before_needle, $encoding); }
 }
 if (!function_exists('mb_strrichr')) {
     function mb_strrichr(?string $haystack, ?string $needle, ?bool $before_needle = false, ?string $encoding = null): string|false { return p\Mbstring::mb_strrichr((string) $haystack, (string) $needle, (bool) $before_needle, $encoding); }
@@ -93,7 +93,7 @@ if (!function_exists('mb_strstr')) {
     function mb_strstr(?string $haystack, ?string $needle, ?bool $before_needle = false, ?string $encoding = null): string|false { return p\Mbstring::mb_strstr((string) $haystack, (string) $needle, (bool) $before_needle, $encoding); }
 }
 if (!function_exists('mb_get_info')) {
-    function mb_get_info(?string $type = 'all'): array|string|int|false { return p\Mbstring::mb_get_info((string) $type); }
+    function mb_get_info(?string $type = 'all'): array|string|int|false|null { return p\Mbstring::mb_get_info((string) $type); }
 }
 if (!function_exists('mb_http_output')) {
     function mb_http_output(?string $encoding = null): string|bool { return p\Mbstring::mb_http_output($encoding); }
@@ -126,6 +126,30 @@ if (!function_exists('mb_scrub')) {
 }
 if (!function_exists('mb_str_split')) {
     function mb_str_split(?string $string, ?int $length = 1, ?string $encoding = null): array { return p\Mbstring::mb_str_split((string) $string, (int) $length, $encoding); }
+}
+
+if (!function_exists('mb_str_pad')) {
+    function mb_str_pad(string $string, int $length, string $pad_string = ' ', int $pad_type = STR_PAD_RIGHT, ?string $encoding = null): string { return p\Mbstring::mb_str_pad($string, $length, $pad_string, $pad_type, $encoding); }
+}
+
+if (!function_exists('mb_ucfirst')) {
+    function mb_ucfirst($string, ?string $encoding = null): string { return p\Mbstring::mb_ucfirst($string, $encoding); }
+}
+
+if (!function_exists('mb_lcfirst')) {
+    function mb_lcfirst($string, ?string $encoding = null): string { return p\Mbstring::mb_lcfirst($string, $encoding); }
+}
+
+if (!function_exists('mb_trim')) {
+    function mb_trim(string $string, ?string $characters = null, ?string $encoding = null): string { return p\Mbstring::mb_trim($string, $characters, $encoding); }
+}
+
+if (!function_exists('mb_ltrim')) {
+    function mb_ltrim(string $string, ?string $characters = null, ?string $encoding = null): string { return p\Mbstring::mb_ltrim($string, $characters, $encoding); }
+}
+
+if (!function_exists('mb_rtrim')) {
+    function mb_rtrim(string $string, ?string $characters = null, ?string $encoding = null): string { return p\Mbstring::mb_rtrim($string, $characters, $encoding); }
 }
 
 if (extension_loaded('mbstring')) {

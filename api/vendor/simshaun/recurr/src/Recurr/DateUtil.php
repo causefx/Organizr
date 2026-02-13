@@ -111,8 +111,8 @@ class DateUtil
     public static function getDaySetOfWeek(
         \DateTimeInterface $dt,
         \DateTimeInterface $start,
-        Rule $rule = null,
-        DateInfo $dtInfo = null
+        ?Rule $rule = null,
+        ?DateInfo $dtInfo = null
     )
     {
         $start = clone $dt;

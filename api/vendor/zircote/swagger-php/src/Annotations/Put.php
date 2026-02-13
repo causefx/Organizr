@@ -20,6 +20,6 @@ class Put extends Operation
      * @inheritdoc
      */
     public static $_parents = [
-        PathItem::class
+        PathItem::class,
     ];
 }

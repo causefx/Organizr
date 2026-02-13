@@ -1,0 +1,1622 @@
+NB: This is an old changelog. All recent commits are available online at https://github.com/gggeek/phpxmlrpc/commits
+This file will not be updated further.
+
+2014-05-26 - G. Giunta (giunta.gaetano@gmail.com)
+
+	* removed bundled phpunit
+	* converted all tabs to spaces in php files and removed closing tags
+
+2014-05-12 - Samu Voutilainen (smar@smar.fi)
+
+	* removed obsolete xml.so open; dl() is deprecated and removed from 5.3.0
+	* removed deprecated xmlEntities
+	* removed deprecated xmlrpc_backslash
+	* converted $GLOBALS to internal class. This makes testing much easier and should be more flexible regarding other projects
+	* changed verifyhost from 1 to 2. This makes modern php versions work properly.
+	* split off each class in its own file
+
+2014-02-03 - G. Giunta (giunta.gaetano@gmail.com)
+
+	* bumped up requirements to php 5.1.0
+
+2014-01-10 - G. Giunta (giunta.gaetano@gmail.com)
+
+	* xmlrpc.inc: when using curl and keepalive, reset curl handle if we did not get back an http 200 response (eg a 302)
+
+	* testsuite.php, parse_args.php: update testsuite
+
+	* debugger/controller.php: change default path to javascript debugger
+
+2010-05-23 - G. Giunta (giunta.gaetano@gmail.com)
+
+	* xmlrpc.inc: omit port on http 'Host' header if it is 80;
+	add a namespace declaration in response if ex:nil is in use
+
+2010-04-12 - G. Giunta (giunta.gaetano@gmail.com)
+
+	* testsuite.php, parse_args.php: testsuite allows interrogating https servers ignoring their certs
+
+	* xmlrpc.inc: method setAcceptedCompression was failing to disable reception
+	of compressed responses if the client supported them (triggering a bug with
+	https and php < 5.3 on windows); remove a php warning that could be
+	generated when using debug=2 in a client connecting to an https
+	server
+
+2010-04-11 - G. Giunta (giunta.gaetano@gmail.com) thanks amoe
+
+	* fixed: bad variables in "make install" make target
+
+2009-11-11 - G. Giunta (giunta.gaetano@gmail.com) thanks Ikiro Watanabe
+
+	* added INSTALL file
+
+2009-09-05 - G. Giunta (giunta.gaetano@gmail.com)
+
+	* xmlrpcs.inc, xmlrpcs.inc: remove code that was left for compatibility
+	with php 4; use __METHOD__ constant for error messages instead of hardcoded
+	values
+
+	* xmlrpcs.inc: catch exceptions thrown during execution of invoked methods;
+	check for $_SERVER having been disabled via php.ini and log an error if so
+
+	* server.php, testsuite.php: add a new test and server method for exception
+	catching in the server
+
+	* xmlrpc.inc: added new method SetUserAgent to client to allow having different
+	user-agent http headers
+
+	* tagged and released as 3.0.0 beta
+
+2009-08-05 - G. Giunta (giunta.gaetano@gmail.com)
+
+	* xmlrpc_wrappers.inc: improve compatibility with php 5.0 when registering
+	class/object methods
+
+2009-08-02 - G. Giunta (giunta.gaetano@gmail.com) thanks Laurens
+
+	* xmlrpcs.inc: add a new member var in server class to allow fine-tuning
+	of the encoding of returned values when the server is in 'phpvals' mode;
+	allow servers in 'xmlrpcvals' mode to also register plain php functions by
+	defining them in the dispatch map with an added option:
+	'parameters_type' => 'phpvals' (feature request #2806628)
+
+	* xmlrpc.inc: added new method xmrlpc_client::SetCurlOptions($array) to
+	allow extra flexibility in tweaking http config, such as explicitly
+	binding to an ip address (feature request #2787468); fix bad encoding if
+	same object is encoded twice using php_xmlrpc_encode; removed some by-ref
+	assignments and declarations
+
+2009-07-31 - G. Giunta (giunta.gaetano@gmail.com)
+
+	* xmlrpc.inc: add support for dateTime objects in both in php_xmlrpc_encode
+	and as parameter for constructor of xmlrpcvals; add support for timestamps
+	as parameter for constructor of xmlrpcvals; add option 'dates_as_objects' to
+	php_xmlrpc_decode to return dateTime objects for xmlrpc datetimes
+
+	* benchmark.php, xmlrpc_wrappers.inc: remove usage of split(), deprecated in
+	php 5.3
+
+	* benchmark.php: fixed url of server page used for testing; improved
+	verification of correspondence of test results; added more variants for
+	http options comparison
+
+	* verify_compat.php: check for php version 5 for client side too
+
+	* makefile: remove from build the compat directory
+
+2009-07-26 - G. Giunta (giunta.gaetano@gmail.com)
+
+	* server.php: remove usage of ereg*(), deprecated in php 5.3
+
+2009-07-16 - G. Giunta (giunta.gaetano@gmail.com) thanks Jean-Jacques Sarton
+
+	* xmlrpc.inc: add support for the <ex:nil/> from the apache library, both
+	in input and output (feature request #...)
+
+	* xmlrpc.inc, testsuite.php: remove usage of split(), deprecated in php 5.3
+
+	* testsuite.php: flush better results with output_buffering on
+
+	* server: php: avoid one warning about static function calls
+
+2009-07-02 - G. Giunta (giunta.gaetano@gmail.com) thanks Heiko Stuebner
+
+	* xmlrpc.inc: fix: when checking the parameters against the signatures xmlrpc
+	checks for "array" but PHP returns "Array" resulting in a not matches signature
+
+2009-05-07 - G. Giunta (giunta.gaetano@gmail.com)
+
+	* replace all usage of '= & new' with '= new', as this is deprecated in php 5
+	and has been shown to cause problems too
+
+2009-05-06 - G. Giunta (giunta.gaetano@gmail.com)
+
+	* create php4 branch, rename trunk to 3.0.0beta - it will be the php5-only version
+
+	* xmlrpc.inc: removed test for php version and inclusion of compat patches for really
+	really old versions of php 4
+
+2009-03-16 - G. Giunta (giunta.gaetano@gmail.com) thanks Tommaso Trani
+
+	* move from CVS to SVN on sf.net; file layout now is the same as in packaged lib
+
+	* xmlrpc.inc: fix php warning when receiving 'false' in a bool value
+
+	* Makefile, doc/Makefile: alter to follow new file layout
+
+	* tagged and released as 2.2.2
+
+2009-02-03 - G. Giunta (giunta.gaetano@gmail.com)
+
+	* debugger/action.php: improve code robustness when parsing system.listmethods
+	and system.describemethods call
+
+	* xmlrpc.inc: format floating point values using the correct decimal separator
+	even when php locale is set to one that uses comma (bug #2517579);
+	use feof() to test if socket connections are to be closed instead of the
+	number of bytes read (bug #2556209)
+
+2008-10-29 - G. Giunta (giunta.gaetano@gmail.com)
+
+	* xmlrpcs.inc: allow add_to_map server method to add docs for single params, too
+
+2008-09-20 - G. Giunta (giunta.gaetano@gmail.com)
+
+	* xmlrpc_wrappers.inc: added the possibility to wrap for exposure as xmlrpc
+	methods plain php class methods, object methods and even whole classes
+
+	* testsuite.php, server.php: added test cases for the new code
+
+2008-09-07 - G. Giunta (giunta.gaetano@gmail.com) thanks Bruno Zanetti Melotti
+
+	* xmlrpc.inc: be more tolerant in detection of charset in http headers (fix for bug #2058158)
+
+2008-04-05 - G. Giunta (giunta.gaetano@gmail.com)
+
+	* xmlrpc.inc: fix encoding of UTF8 chars outside of the BMP
+
+	* xmlrpcs.inc: fix detection of zlib.output_compression (thanks xbert)
+
+2008-03-06 - G. Giunta (giunta.gaetano@gmail.com)
+
+	* tagged and released as 2.2.1
+
+	* Makefile: improve usage on windows xp despite cmd's broken mkdir
+
+2007-10-26 - G. Giunta (giunta.gaetano@gmail.com) thanks sajo_raftman
+
+	* xmlrpc.inc: remove one warning in xmlrpc_client creator
+
+2007-10-26 - G. Giunta (giunta.gaetano@gmail.com)
+
+	* xmlrpc.inc: improve support for windows cp1252 character set (still
+	commented in the code)
+
+2007-09-05 - G. Giunta (giunta.gaetano@gmail.com)
+
+	* xmlrpc.inc, xmlrps.inc: do not try to set invalid charsets as output for
+	xml parser, even if user set them up for internal_encoding (helps encoding
+	to exotic charsets, while decoding to UTF8)
+
+2007-09-05 - G. Giunta (giunta.gaetano@gmail.com)
+
+	* xmlrpc.inc: fix parsing of '1e+1' as valid float
+
+2007-09-01 - G. Giunta (giunta.gaetano@gmail.com), thanks Frederic Lecointre
+
+	* xmlrpcs.inc: allow errorlevel 3 to work when prev. error handler was a static method
+
+	* testsuite.php: fix test on setCookie()
+
+2007-08-31 - G. Giunta (giunta.gaetano@gmail.com)
+
+	* xmlrpc.inc: minor fix in cookie parsing
+
+2007-07-31 - G. Giunta (giunta.gaetano@gmail.com)
+
+	* xmlrpc.inc: Fix usage of client::setcookie() for multiple cookies in non-ssl mode
+
+2007-07-26 - G. Giunta (giunta.gaetano@gmail.com) thanks Mark Olive
+
+	* xmlrpc.inc: Fix for bug # 1756274 (usage of cookies in ssl mode)
+
+2007-04-28 - G. Giunta (giunta.gaetano@gmail.com)
+
+	* xmlrpc.inc: give more detailed curl information when DEBUG = 2; fix handling
+	of case where curl w. keepalive is used and one connection of many fails
+
+	* testsuite improvements: add one testcase; give feedbcak while tests are
+	running
+
+2007-04-01 - G. Giunta (giunta.gaetano@gmail.com)
+
+	* doc/makefile, doc/custom.fo.xsl: improve pdf rendering of php source code
+
+	* makefile: recover version number from source instead of having it hardcoded
+
+2007-03-10 - G. Giunta (giunta.gaetano@gmail.com)
+
+	* doc/makefile, doc/convert.php, doc/*.xsl: created customizations xslt to
+	produce a documentation more in line with the php manual, esp. with regards
+	to functions synopsis; added jellyfish book cover as local resource and a
+	screenshot of the debugger too; various updates to the manual source; added
+	a php script to highlight examples inside html docs
+
+2007-03-09 - G. Giunta (giunta.gaetano@gmail.com)
+
+	* debugger/action.php: css tweak for IE
+
+	* added phpunit license file in the phpunit directory
+
+	* added link to license (on sf.net site) to many files
+
+2007-03-04 - G. Giunta (giunta.gaetano@gmail.com)
+
+	* Makefile, doc/makefile: assorted improvements
+
+2007-03-03 - G. Giunta (giunta.gaetano@gmail.com)
+
+	* xmlrpc.inc: micro-optimization in declaration of global vars xmlrpcerr, xmlrpcstr
+
+2007-02-25 Gaetano Giunta <giunta.gaetano@gmail.com>
+
+	* removed a couple of warnings emitted in testsuite.php
+
+	* doc/makefile: added command for invocation of xxe to generate docs
+
+	* better rendering of docs in xml+css format for function prototypes
+
+	* updated documentation
+
+	* tagged and released as 2.2
+
+2007-02-22 Gaetano Giunta <giunta.gaetano@gmail.com>
+
+	* debugger: workaround for case of magic_quotes_gpc being set (properly
+	unescape user input); fix case of user not setting msg id in jsonrpc case
+	when executing a remote method; allow strings, false, true and null as msg id
+
+2007-02-13 Gaetano Giunta <giunta.gaetano@gmail.com>
+
+	* testsuite.php: added one test for automatic encoding/decoding case
+
+2007-02-05 Gaetano Giunta <giunta.gaetano@gmail.com>
+
+	* xmlrpc.inc: slightly faster encoding of UTF8 data to ascii
+
+2007-01-11 Gaetano Giunta <giunta.gaetano@gmail.com>
+
+	* xmlrpc.inc: when calling client::multicall() with an unspecified http version,
+	use the client default rather than the fixed 'http 1.0'
+
+2006-09-17 Gaetano Giunta <giunta.gaetano@gmail.com>
+
+	* xmlrpc.inc, xmlrpcs.inc, testsuite.php: added support for <NIL/> and
+	system.getCapabilities, and one more testcase to go with it
+
+2006-09-05 Gaetano Giunta <giunta.gaetano@gmail.com>
+
+	* xmlrpc.inc: fix support for https through proxies; client parses debug
+	messages sent by client even for compressed responses;
+
+	* testsuite.php, parse_args.php: added 3 test cases for proxy connections
+
+2006-09-01 Gaetano Giunta <giunta.gaetano@gmail.com>
+
+	xmlrpc_wrappers.inc: add two more options in wrap_xmlrpc_method and fix
+	typo to allow obj encoding
+
+2006-08-28 Gaetano Giunta <giunta.gaetano@gmail.com>
+
+	* xmlrpc_wrappers.inc: more options added to wrap_php_function and
+	wrap_xmlrpc_method
+
+	* xmlrpc.inc: pave the way to support for <nil/>
+
+	* doc/xmlrpc_php.xml documentation updated
+
+	* tagged and released as 2.1
+
+2006-08-25 Gaetano Giunta <giunta.gaetano@gmail.com>
+
+	* xmlrpc.inc: stricter parsing of incoming messages: detect two DATA elements
+	inside an ARRAY, a STRUCT or SCALAR inside an already filled VALUE
+
+	* testsuite.php: added two testcases to check for the above cases
+
+2006-08-24 Gaetano Giunta <giunta.gaetano@gmail.com>
+
+	* xmlrpc.inc: more code optimization in xmlrpcval::serialize() and
+	php_xmlrpc_encode(); fixed bug where struct elements with non-ascii chars
+	in their name would not be properly encoded
+
+	* testsuite.php: added a testcase for the new bug
+
+2006-08-23 Gaetano Giunta <giunta.gaetano@gmail.com>
+
+	* remove old code left in comments across many files; many more javadoc
+	comments added
+
+	* xmlrpc.inc: a bit of code optimization: reorder switch() statements of
+	xml parsing element handlers; inline code for xmlrpcval() - this breaks
+	new xmlrpcval('true') and changes error msgs on new xmlrpcval($x, 'invalid_type')
+
+	* testsuite.php: change according to above
+
+	* benchmark.php: basic support for xdebug 2 profiling
+
+2006-08-22 Gaetano Giunta <giunta.gaetano@gmail.com>
+
+	* xmlrpc.inc: addscalar() and addstruct() where not returning 1 when adding
+	data to an already formed value
+
+2006-08-21 Gaetano Giunta <giunta.gaetano@gmail.com>
+
+	* xmlrpcs.inc, xmlrpc.inc: added support for emulating the xmlrpc-extension
+	API (the full emulation layer is part of the extras package);
+	fix support for the HTTP 'deflate' encoding
+
+	* xmlrpc.inc: better support for http compression with and without CURL;
+	a minor decoding speedup; added a new function: php_xmlrpc_decode_xml(),
+	that will convert into the appropriate object the xml representation of
+	either a request, response or a single value; log reception of invalid
+	datetime values
+
+	* xmlrpcs.inc: add a new parameter and return type to server->service();
+	let server->add_to_map() accept method definitions without parameter types
+
+	* xmlrpc_wrappers.inc: more logging of errors; wrap_php_functions now takes
+	more options; better support for jsonrpc; escape quote chars when wrapping
+	remothe servers / remote methods
+
+	* added cvs Id tag to files that missed it; speling fixes; updated NEWS files
+
+2006-08-07 Gaetano Giunta <giunta.gaetano@gmail.com>
+
+	* assorted fixes to make the suite more compatible with php 4.0.5 and 5.x
+
+2006-07-02 Gaetano Giunta <giunta.gaetano@gmail.com>
+
+	* xmlrpc_warppers.inc: added new function to wrap entire remote server into
+	a local php class; changed default calling synopsis of wrap_remote_method,
+	to ease passing multiple options at a time (but old syntax still works!)
+
+	* updated makefile, debugger/action.php in accord with the above
+
+2006-06-30 Gaetano Giunta <giunta.gaetano@gmail.com>
+
+	* added to debugger capability to generate json-rpc code stubs
+
+	* added to debugger capability to load and launch self correctly if
+	controller.php is called directly from outside processes (single url access)
+
+2006-06-26 Gaetano Giunta <giunta.gaetano@gmail.com>
+
+	* moved wrap_php_functions and wrap_xmlrpc_method into a file of their own.
+	This will let us add further stub functionality without the base lib growing too much.
+	All of the files that reference this functionality have been modified accordingly.
+
+	* made wrap_xmlrpc_method generate better code (with php type juggling), and
+	some phpdoc for the generated function, too
+
+	* added to debugger an option to produce for the user the generated php code
+	for wrapping a call to a remote method into a php function
+
+2006-06-22 Gaetano Giunta <giunta.gaetano@gmail.com>
+
+	* xmlrpcs.inc: added description of parameters for system.xxx methods (useful with
+	html-self-documenting servers);
+	server->service() now returns response object, in case user has need for it...
+
+	* xmlrpc.inc: save full response payload into xmlrpcresp obj for better debugging
+
+2006-06-15 Gaetano Giunta <giunta.gaetano@gmail.com>
+
+	* verify_compat.php: more tests
+
+2006-06-09 Gaetano Giunta <giunta.gaetano@gmail.com>
+
+	* xmlrpcs.inc: fixed sending of compressed responses when output compression
+	is already enabled in php.ini
+
+	* verify_compat.php: split tests between server and client cases
+
+2006-05-29  Gaetano Giunta <giunta.gaetano@gmail.com>
+
+	* added new file: verify_compat.php, to help troubleshooting platform
+	support for the library; added it to makefile, too
+
+2006-05-24  Gaetano Giunta <giunta.gaetano@gmail.com>
+
+	* xmlrpc.inc: removed residual usage of regexp in favour of  pregexps; fixed
+	a bug in specifying Host http header with non std ports
+
+2006-05-23  Gaetano Giunta <giunta.gaetano@gmail.com>
+
+	* xmlrpc.inc: improvements to wrap_php_function: let it deal correctly
+	with php functions returning xmlrpcresp objs; make it generate also
+	docs for single parameters (useful for documenting_xmlrpc_server class)
+
+2006-05-22  Gaetano Giunta <giunta.gaetano@gmail.com>
+
+	* xmlrpc.inc, xmlrpcs.inc: minor performance tuning updates: replaced
+	some explode vs. split, ereg vs. preg, single vs. double quotes
+
+	* xmlrpc.inc: fix wrap_xmlrpc_method to NOT rebuild php objects received
+	from the server by default, as it might pose a security risk
+
+2006-04-24  Gaetano Giunta <giunta.gaetano@gmail.com>
+
+	* minor fixes makefiles. Tagged and released as 2.0 final
+
+2006-04-22  Gaetano Giunta <giunta.gaetano@gmail.com>
+
+	* debugger/*: added option to set cainfo; improve web layout
+
+	* xmlrpc.inc: set sslverifypeer to TRUE instaed of 1 by default
+
+	* doc/php_xmlrpc.xml: documentation updates
+
+2006-04-21  Gaetano Giunta <giunta.gaetano@gmail.com>
+
+	* xmlrpc.inc: added option to set ca certs dir instead of single cert
+	(used to validate server in https connetions)
+
+2006-04-18  Gaetano Giunta <giunta.gaetano@gmail.com>
+
+	* xmlrpc.inc: fixed bug in xmlrpcval::structmemexists()
+
+	* testsuite.php: added test case for xmlrpcval::structmemexists()
+
+2006-04-03  Gaetano Giunta <giunta.gaetano@gmail.com>
+
+	* xmlrpc.inc: add support for Digest and NTLM authentication, both to server
+	and to proxies (note: must use CURL for this to work)
+
+	* debugger/*: add support for Digest/NTLM auth to remote servers
+
+2006-03-19  Gaetano Giunta <giunta.gaetano@gmail.com>
+
+	* xmlrpc.inc: fix a bug parsing of 'true' bool values;
+	added a new method to the client class: SetCaCertificate;
+	add column number in xml parsing error messages;
+	fix serialization of messages to ISO-8859-1 charset with php 5 (by adding
+	encoding to the xml prologue of generated messages)
+
+	* xmlrpcs.inc: correct detection of charset in http headers;
+	add column number in xml parsing error messages;
+	fix serialization of responses to ISO-8859-1 charset with php 5 (by adding
+	encoding to the xml prologue of generated responses)
+
+	* testsuite.php: added two more tests on charset encoding
+
+	* NEWS: update info for impending release
+
+2006-03-23  Gaetano Giunta <giunta.gaetano@gmail.com>
+
+	* added a new demo file: simple_call.php
+
+2006-02-20  Gaetano Giunta <giunta.gaetano@gmail.com>
+
+	* xmlrpcs.inc: more error checking and logging with regard to user-coded
+	method handler functions not being well behaved;
+	fix a case where error handler would not be reset upon user function
+	returning not valid xmlrpresp
+
+	* xmlrpc.inc: fix bug in detection of php 4.3.0
+
+	* Makefile: fix uppercase filenames
+
+2006-02-15
+
+	* xmlrpc.inc: parse 'true' and 'false' as valid booleans, even though the
+	spec is quite clear on that; fix small bug w. internal_encoding = utf8; add
+	definition of $GLOBALS['xmlrpcNull'] for extensibility, e.g. json or
+	extensions to the xmlrpc spec
+
+2006-02-05  Gaetano Giunta <giunta.gaetano@gmail.com>
+
+	* xmlrpc.inc: fix bug in wrap_xmlrpc_method if client passed to function has
+	return_type=phpvals
+
+	* all demo files: review code, add more comments and information
+
+	* added 2 demo files: proxy.php (implementing an xmlrpc proxy server) and
+	wrap.php (showing usage of wrap_method_call)
+
+2006-02-04  Gaetano Giunta <giunta.gaetano@gmail.com>
+
+	* xmlrpc.inc: fix bug in multicall in case of no fallback and server error
+
+2006-01-30  Gaetano Giunta <giunta.gaetano@gmail.com>
+
+	* xmlrpc.inc: fix recursive serialization of xmlrpcvals loosing UTF8 charset;
+	correctly set type field of xmlrpcvals returned by send() calls
+
+	* xmlrpcs.inc: add to server checks for correct return type of user-coded
+	method handling function; tolerate xmlrpcval instead of xmlrpcresp
+
+	* minor change in xmlrpcresp internals, to ease subclassing (store payload
+	in an internal var on serialize(), same as xmlrpcclient does)
+
+2006-01-22  Gaetano Giunta <giunta.gaetano@gmail.com>
+
+	* benchmark.php: do not run http 1.1 tests if CURL notfound
+
+	* Released as 2.0 Rc3
+
+2006-01-19  Gaetano Giunta <giunta.gaetano@gmail.com>
+
+	* xmlrpc.inc: make xmlrpc_client::setDebug() accept int values instead of
+	boolean. At level 2, the request payload is printed to screen before being
+	sent; fix bug with repeated sending of the same msg object and using request
+	compression w. php 5.1.2 (objects passed by ref by default!!!)
+
+	* xmlrpcs.inc: fix detection of clients accepting compressed responses
+
+	* comment.php: remove warnings due to liberal usage of $HTTP_POST/GET_VARS
+
+	* benchmark.php: add a test using http compression of both requests and
+	responses
+
+	* testsuite.php: added test for fix in xmlrpc.inc
+
+2006-01-17  Gaetano Giunta <giunta.gaetano@gmail.com>
+
+	* xmlrpcs.php: minor fix: do not raise a PHP warning when std server is
+	called via GET (global HTTP_RAW_POST_DATA undefined). Some might have called
+	it a security breach (path disclosure)...
+
+2006-01-15  Gaetano Giunta <giunta.gaetano@gmail.com>
+
+	* testsuite.php: minor fix to expected date format in http cookie hedaer
+	to cope with PHP 5.1.2
+
+2006-01-05  Gaetano Giunta <giunta.gaetano@gmail.com>
+
+	* xmlrpcs.inc: merge code from the 'extras' subclass that allows server
+	to register plain php functions in dispatch map instead of functions
+	accepting a single xmlrpcmgs obj parameter.
+	One step closer to the kitchen sink!!!
+
+2005-12-31  Gaetano Giunta <giunta.gaetano@gmail.com>
+
+	* xmlrpcs.inc: let the server accept 'class::method' syntax in the dispatch
+	map
+
+	* testsuite.php, server.php: added new tests for the recent charset encoding
+	capabilities
+
+2005-12-24  Gaetano Giunta <giunta.gaetano@gmail.com>
+
+	* xmlrpc.inc: correctly serialize() string xmlrpcvals that have been
+	created out of non-string php variables, when internal encoding is UTF8;
+	serialize to '0' int and double values created out of non-string php
+	variables, eg. 'hello', instead of creating invalid xmlrpc;
+	extend the php_xmlrpc_encode function to allow serializing string values
+	to charsets other tha US-ASCII;
+	minor tweak to xml parsing to allow correct parsing of empty strings when
+	in 'direct to php values' mode
+
+	* xmlrpcs.inc: advances in system.multicall with plain php values
+
+2005-12-17  Gaetano Giunta <giunta.gaetano@gmail.com>
+
+	* xmlrpcs.inc: let the functions implementing the system.* methods work
+	fine when called with plain php values as parameters instead of xmlrpcmsg
+	objects (multicall not quite finished yet...);
+	encode level 3 debug info as base64 data, to avoid charset encoding hell
+
+	* xmlrpc.inc: added a new xmlrpc_2_php_type function, to get the name of
+	php types corresponding to xmlrpc types;
+	in debug mode, when detecting base64 server debug info, print it out fine
+
+	* server.php: cosmetic fixes
+
+2005-12-09  Gaetano Giunta <giunta.gaetano@gmail.com>
+
+	* xmlrpc.inc: remove one warning emitted when received xml contains an
+	unknown tag; remove warnings emitted when custom error handler is set
+	and user calls php_xmlrpc_encode/decode without the 2nd parameter
+
+	* xmlrpcs.inc: added a param to service(), to allow the server to parse
+	data other than the POST body (useful for subclassing and debugging);
+	reworked the implementation of server debug messages at debug level 2:
+	since the debug info generated has no known charset, and putting it back
+	into the response's xml would most likely break it, send it back to the
+	client as a base64 encoded comment. Clients can decode it if they need it...
+	Add some more javadocs
+
+	* testsuite.php: modified the string test, to see if the server can echo
+	back to the client the received data without breaking the response's xml
+
+2005-12-05  Gaetano Giunta <giunta.gaetano@gmail.com>
+
+	* xmlrpc.inc, xmlrpcs.inc: let server and client objects decide if they
+	want to use some charset encoding other than US-ASCII for serialized data:
+	add a new var to both objects, and lots of parameters to function calls
+	that took none up to now;
+	refactored server method service() and parseRequest(), implementing a
+	new parserequestHeaders() method to explicitly deal with HTTP
+
+2005-12-01  Gaetano Giunta <giunta.gaetano@gmail.com>
+
+	* moved the jsonrpc implementation and the new wsdl stuff to a separate
+	CVS module; updated the makefile to reflect it
+
+2005-11-24  Gaetano Giunta <giunta.gaetano@gmail.com>
+
+	* modified php_xmlrpc_decode() to work on xmlrpcmessages too, besides
+	xmlrpcvals. To achieve this, added a new method: xmlrpcmsg::kindOf()
+
+2005-11-22  Gaetano Giunta <giunta.gaetano@gmail.com>
+
+	* released as 2.0 RC2
+
+2005-11-21  Gaetano Giunta <giunta.gaetano@gmail.com>
+
+	* xmlrpc.inc: fix warnings about references for PHP 4.1.X
+
+	* Whitespace cleanup on all the lib
+
+2005-11-16  Gaetano Giunta <giunta.gaetano@gmail.com>
+
+	* xmlrpc.inc: rewritten xmlrpc_encode_entitites adding two extra parameters
+	that specify input and output charset encodings. This corrects the bug that
+	prevented native UTF-8 strings to be correctly serialized (to have them
+	encoded the user must set $xmlrpc_internalencoing appropriately).
+
+	* xmlrpc.inc: added new method xmlrpcmsg::parseResponseHeaders(), refactoring
+	parseResponse(). This makes the code more modular and eases subclassing.
+
+	* xmlrpc.inc: set cookies and http headers to xmlrpcresp objs even when calls
+	to send() do not complete correctly
+
+	* added new file: jsonrpcs.inc, to accomodate server jsonrpc objects in the future
+
+	* jsonrpc.inc: slow progress...
+
+2005-11-10  Gaetano Giunta <giunta.gaetano@gmail.com>
+
+	* xmlrpc.inc: fixed the xmlrpc_client send and sendpayloadhttps methods
+	to fix errors in calling https servers;
+	added a new xmlrpc_client->setkey method to allow usage of client-side ssl
+	certs in recent php builds;
+	added to xmlrpcresp objects a content_type var, to be used in HTTP headers
+
+	* xmlrpcs.inc: separate generation of content-type http header and xml prologue
+	from the service() method, to ease subclassing
+
+2005-11-03  Gaetano Giunta <giunta.gaetano@gmail.com>
+
+	* xmlrpc.inc: moved the 'text/xml' mimetype string as class var of the xmlrpcmsg
+	object instead of having it cabled into xmlrpc_client->send(): this allows to
+	create subclasses of xmlrpcmsg that use a different mimetype
+
+	* jsonrpc.inc: added a new file, with an extremely experimental set of classes,
+	 designed to implement a json-rpc client and server, taking advantage of the
+	 existing xml-rpc infrastructure
+
+2005-10-28  Gaetano Giunta <giunta.gaetano@gmail.com>
+
+	* xmlrpc.inc: changed constructor method for xmlrpcresp, making it smarter in
+	case user does not declare the type of value it is passing to it;
+	minor changes in serialization of xmlrpcresp with error codes, so that it
+	utputs LF instead of CRLF on windows boxes after an FTP transfer of the code, too
+
+2005-10-26  Gaetano Giunta <giunta.gaetano@gmail.com>
+
+	* xmlrpc.inc: added a new var of class xmlrpc_client, indicating what kind of
+	object will be stored in the value() of xmlrpcresp's gotten from the send()
+	method: xmlrpxc objects, plain php variables or raw xml. This allow the coder
+	to make use of xmlrpc_decode for better performances if he wishes so.
+	Modified creator of xmlrpcresp class to allow it to distinguish between being
+	created out of raw xml or a plain php string (in the former case, serialization
+	is still possible, opening a new world of opportunity for server-side programming:
+	the php function implementing a web service has to provide the xml for the
+	return value on its own).
+	Modified xmlrpc_client::multicall() to suit; also added a new parameter which
+	allows calls to multicall without automatic fallback to many-calls in case of
+	error (speeding up the process of doing a failed multicall() call quite a bit)
+	Fixed two bugs in guess_encoding.
+	Audited all regexps and fixed some.
+	xmlrpc_client::send() does not call xmlrpcmsg::parseresponsefile() anymore.
+	Shuffled parseresponse() a little bit
+
+	* testsuite.php: added a new testcase for the modifications to multicall():
+	now we test the case where xmlrpc_client returns php values, too
+
+2005-10-24  Gaetano Giunta <giunta.gaetano@gmail.com>
+
+	* xmlrpc.inc: fixed guess_encoding() to always return uppercase chars
+
+	* added new file: benchmark.php. It contains a few tests used to evaluate
+	speed of the lib in common use cases
+
+	* added file parse_args.php, containing common code for benchmark and
+	testsuite, and modified testsuite.php accordingly
+
+	* modified makefile adding new files
+
+	* testsuite.php: added a couple of new test cases; fixed one warning
+	emitted in php 5 E_STRICT mode
+
+2005-10-20  Gaetano Giunta <giunta.gaetano@gmail.com>
+
+	* xmlrpc.inc: modify 3d param of ParseResponse(), allowing the function to
+	return the raw xml received as value of the xmlrpcresponse object.
+	This allows eg. to have epi-xmlrpc decode the xml for faster execution.
+
+2005-10-09  Gaetano Giunta <giunta.gaetano@gmail.com>
+
+	* xmlrpc.inc: fixed error that prevented usage of HTTPS (the client
+	always determined that ssl support was not present)
+
+2005-10-03  Gaetano Giunta <giunta.gaetano@gmail.com>
+
+	* xmlrpc.inc, xmlrpcs.inc: revert direction of stack growth during xml
+	parsing for faster execution time; add support for detecting charset
+	encoding of received xml; add support for cookies; better parsing of
+	javadoc when building stub code in wrap_php_function; add a lot of
+	javadoc comments everywhere; rewrite most error messages
+
+	* testsuite.php: add many tests for newly introduced features
+
+	* server.php: add a couple of new functions to support debugging new
+	features
+
+	* debugger: add switches to enable all the latest lib features; minor
+	improvements to layout
+
+	* synch included phpunit with latest PEAR release
+
+	* reorganize files included in the distribution in a new hierarchy of folders
+
+	* bump revision number to 2.0RC1 and release
+
+2005-8-14  Miles Lott <milos@groupwhere.org>
+
+	* xmlrpc.inc, xmlrpcs.inc: Remove all use of eval() to avoid potential
+	security hole.
+
+	* As of this release we are no longer php3-compatible.
+
+2005-8-10 Miles Lott <milos@groupwhere.org>
+
+	* xmlrpc.inc, xmlrpcs.inc: Switched to using $GLOBALS instead of calling
+	global $varname
+
+2005-07-22  Miles Lott <milos@groupwhere.org>
+
+	* Removed: bug_* files
+
+2005-07-14  Gaetano Giunta <giunta.gaetano@gmail.com>
+
+	* debugger: added a workaround to disable using the debugger for attacking
+	older versions of the lib
+
+	* testsuite.php: added code to test wrap_xmlrpc_method;
+	use different wording for failed tests
+
+	* xmlrpcs.inc: change for() with foreach() in system.* methods implementations;
+	remove a possible cause of php warning;
+
+	* xmlrpc.inc: let wrap_php_function and wrap_xmlrpc_method find suitable
+	function names if default function names are already in use;
+	correct wrap_xmlrpc_method to not set http protocol to 1.0 when not asked to;
+	detect curl compiles without SSL
+
+2005-07-14  Gaetano Giunta <giunta.gaetano@gmail.com>
+
+	* xmlrpc.inc: more auto-fix of xmlrpc_client path: '' -> '/';
+	change to the method used for detecting failed evals (php 4.0.x compatibility);
+	complete rework of return-by-ref functions to comply with php 4.4.0
+
+	* xmlrpcs.inc: change to the method used for detecting failed evals (php 4.0.x
+	compatibility)
+
+	* testsuite.php: major rewrite of the multi- tests, to give better feedback on
+	number of failed tests;
+	flush html page title to screen before starting tests;
+
+2005-07-13  Gaetano Giunta <giunta.gaetano@gmail.com>
+
+	* xmlrpc.inc: let xmlrpcmsg creator be forgiving of target paths that miss the
+	starting '/' char;
+	completely reworked assign-by-ref to be compliant with php 4.4.0 stricter
+	warnings
+
+	* testsuite.php: added ability to be run from cli: (really dumb) separation of
+	html and plain text outputs + parsing of argv parameters
+
+2005-07-12  Gaetano Giunta <giunta.gaetano@gmail.com>
+
+	* xmlrpc.inc: compatibility fixes with PHP versions 4.0.x (and remove some for
+	PHP 3)
+
+	* xmlrpcs.inc: compatibility fixes for PHP 4.0.x versions
+
+	* testsuite.php: better support for running with php versions 4.0.x;
+	do not generate runtime errors but finish tests anyway if some calls to
+	localhost fail;
+	correctly detect a localhost port different from 80 for running tests against
+
+2005-07-11  Gaetano Giunta <giunta.gaetano@gmail.com>
+
+	* xmlrpc.inc: preliminary building of method signature and docs in
+	wrap_php_function;
+	fix a bug in extracting function description from javadoc block in
+	wrap_php_function;
+	small fix for better compatibility with php < 4.2.0
+
+	* added compat subdir with extra code, taken form PEAR package Compat, to let
+	the lib run fine with php 4 versions < 4.1
+
+2005-07-10  Gaetano Giunta <giunta.gaetano@gmail.com>
+
+	* xmlrpc.inc: some nazi whitespace corrections;
+	declared global $xmlrpcBoolean too (was the only one missing);
+	used @eval inside getval() to have less path disclosure security reports filed
+	in the future;
+	added new global var: $xmlrpcValue, to be used in server dispatch maps as
+	placeholder for a param which can be of any kind;
+	big chunks (but still incomplete) of javadoc parsing in wrap_php_function
+	+ changed type of return val - now it is the complete array to be put in the
+	dispatch map
+
+	* xmlrpcs.inc: let previous error handler be called by server to handle errors
+	even if in debug level 3;
+	default to compress responses if zlib installed;
+	added a new val useful for only checking number (not type) of params in method
+	calls;
+	let user use object methods in dispatch map using the
+	array($obj, 'fmethodname') format
+
+	* server.php: Added code called by testsuite.php to exercise registration of
+	object methods as xmlrpc methods and auto-registration of php functions as xmlrpc
+	methods
+
+	* testsuite.php: added tests to exercice server registering object methods as
+	xmlrpc methods and automatic registration of php functions as server methods;
+	added a hint to enable debug if some test goes wrong;
+	renamed https test for better clarity
+
+2005-07-07  Gaetano Giunta <giunta.gaetano@gmail.com>
+
+	* xmlrpc.inc: added function to be used for 'guestimating' charset encoding of
+	received xml (not activated yet)
+
+	* server.php: Let server compress content by default if user asks so: it allows
+	testsuite to check for compressed responses
+
+	* testsuite.php: added suite of tests for compressed responses; test CURL
+	(http1.1) with all possible compression combinations too
+
+2005-07-06  Gaetano Giunta <giunta.gaetano@gmail.com>
+
+	* xmlrpc.inc: Enable setting usage of keepalives on/off (for CURL cases);
+	implement compression of xmlrpc requests; enable new syntax of xmlrpclient
+	constructor: 1 - allow preferred http method to be set at creation time,
+	2 - allow user to insert a single complete URL as only parameter and parse it;
+	try to detect if curl is present whether it has been compiled w. zlib to enable
+	automatically the reception of compressed responses
+
+	* xmlrpcs.inc: do not add into logs the content of the request, if it was
+	received gzipped/deflated, to avoid breaking the xml sent back as response
+	(NB: might be investigated further: is the problem caused by windows chars in
+	the range 128-160 ?)
+
+	* testsuite.php: run all localhost tests 2 more times, to stress request
+	compression;
+	run all localhost tests in a row using keepalives, to test keepalive
+	functionality
+
+2005-07-05  Gaetano Giunta <giunta.gaetano@gmail.com>
+
+	* xmlrpc.inc: let CURL pass back to caller function the complete PHP headers
+	as it did before: it enables better logging / debugging of communication;
+	small change to the way CURL declares its ability to receive compressed
+	messages (fix for the case where zlib is compiled in PHP but not in curl);
+	added Keep-alive (ON BY DEFAULT) for http 1.1 and https messages (had to modify
+	a lot of functions for that);
+	always make sure a 'Connection: close' header is sent with curl connections if
+	keep-alive is not wanted
+
+	* phpunit.php: switched to PEAR PHPUnit (rel 1.2.3), since it is maintained a
+	lot more than the old version we were using
+
+	* added new folder with code of phpunit classes
+
+	* testsuite.php: added a new run of tests to check for compliance of client
+	when using http 1.1;
+	switched to PEAR PHPUnit classes;
+	divided test for client ability to do multicall() into 2 separate tests
+
+2005-06-30  Gaetano Giunta <giunta.gaetano@gmail.com>
+
+	tagged and released version 1.1.1, backporting security fixes from HEAD
+
+2005-06-28  Gaetano Giunta <giunta.gaetano@gmail.com>
+
+	* xmlrpcs.inc: fix changes introuced yesterday in a rush;
+	do not list system.* methods for a server that has them explicitly disabled
+
+	* bug_inject.xml: new test case used to check for code injection vulnerability
+
+	* testsuite.php: added a test case for zero parameters method calls;
+	added two test cases for recently found code injection vulnerabilities
+
+2005-06-27  Gaetano Giunta <giunta.gaetano@gmail.com>
+
+	* xmlrpc.inc: (tentative) fix for security problem reported by
+	security@gulftech.org: we were not properly php-escaping xml received for
+	BASE64 and NAME tags;
+	some more patching related to junk received in xml messages/responses: if the
+	PHP code built from the parsed xml is broken, catch any generated errors
+	without echoing it to screen but take note of the error and propagate to user
+	code
+
+	* xmlrpcs.inc: some more patching related to junk received in xml messages/
+	responses: if the PHP code built from the parsed xml is broken, catch any
+	generated errors without echoing it to screen but take note of the error and
+	propagate to user code
+
+2005-06-24  Gaetano Giunta <giunta.gaetano@gmail.com>
+
+	* xmlrpc.inc: fixed php_xmlrpc_encode detection of php arrays (again!);
+	removed from wrap_php_function the part about setting a custom error handler
+	(it can be activated using the more general $server->setDebug(3) anyway)
+
+	* xmlrpcs.inc: added to server the capability to trap all processing errors
+	during execution of user functions and add them to debug info inside responses;
+	return a (new) xmlrpcerr response instead of raising some obscure php execution
+	error if there is an undefined function in the dispatch map
+
+	* testsuite.php: Added new testcases for recently implemented stuff
+
+2005-06-23  Gaetano Giunta <giunta.gaetano@gmail.com>
+
+	* xmlrpc.inc: added new method: xmlrpcval->structmemexists, to check for
+	presence of a wanted struct member without having to loop through all members;
+	fix wrap_php_functions: correctly return false for php internal functions,
+	whose param list is unknown;
+	let addscalar fail as it should if called on struct vals;
+	fix addstruct: do not fail when called for adding stuff to initialized structs;
+	removed a warning generated when calling addscalar with inexistent type;
+	massive code review for speed: replaced each() loops with foreach(), removed
+	lots of useless assignments and duplications of data;
+	added 'http11' as valid method param for xmlrpclient->send: makes use of curl
+	for sending http 1.1 requests;
+	changed a couple '=' into '=&' where objects are returned;
+	fixed wrap_php_function() to better detect php errors while processing wrapped
+	function
+
+	* xmlrpcs.inc: Fix php warnings generated when clients requested method
+	signature / description for a method that had none in its dispatch map;
+	turned server->debug into an integer value that will change the amount of
+	logging going as comments into xmlrpc responses
+
+	* server.php: set default server debug level to 2
+
+	* testsuite.php: removed calls to deleted functions (xmlrpc_encode,
+	xmlrpc_decode);
+	added html page title describing target servers used for tests;
+	added an assign-by-ref
+
+	* phpunit.php: Do not consider as failures PHP 5 E_STRICT errors (arbitrary
+	choice, but lib is targeted at PHP 4)
+
+2005-06-22  Gaetano Giunta <giunta.gaetano@gmail.com>
+
+	* xmlrpc.inc: removed lottsa old code that had been left in commented
+
+	* xmlrpc.inc: fixed setting of proxy port
+
+	* xmlrpc.inc: removed one warning when trying to decompress junk sent as
+	deflated response
+
+	* xmlrpc.inc: changed the error messages (but not the code) that will be found
+	in xmlrpcresponses when there are socket errors, to differentiate from HTTP
+	errors
+
+	* xmlrpc.inc: refactored xmlrpcclient->sendpayloadHTTPS: now it calls a new
+	method (sendpayloadCURL) that could be used also for generating HTTP 1.1
+	requests
+
+	* xmlrpc.inc: added two new methods: wrap_php_function and wrap_xmlrpc_method:
+	designed to let the lazy programmer automagically convert php functions to
+	xmlrpc methods and vice versa. Details are in the code
+
+	* debugger/*: added initial revision of a 'universal xmlrpc debugger'
+
+2005-06-20  Gaetano Giunta <giunta.gaetano@gmail.com>
+
+	* xmlrpc.inc: replace usage of 'echo' with error_log when errors arise
+	in manipulation of xmlrpcval objects
+
+	* xmlrpc.inc: replaced <br> with <br /> in dump function
+
+	* xmlrpc.inc: added method structsize to xmlrpcval class (alias for arraysize)
+
+	* xmlrpc.inc: addarray() now will add extra members to an xmlrpcval object
+	of array type; addstruct() can be used to add members to an xmlrpcval object
+	of struct type
+
+	* xmlrpcs.inc: Added member allow_system_funcs to server: controls whether the
+	server accepts or not calls to system.* functions
+
+2005-05-10  Gaetano Giunta <giunta.gaetano@gmail.com>
+
+	* xmlrpc.inc: fix regression in php_xmlrpc_encode when encoding php hashes;
+	fix decompression of gzip/deflated xmlrpc responses;
+	set user agent string correctly in SSL mode (was forgetting lib name);
+	add allowed encoding http headers in requests;
+	do not pass http headers back from curl to parseresponse, to avoid re-decoding
+	compressed xml or http 100 headers
+
+	* xmlrpcs.inc: added method setDebug;
+	renamed compress_output to compress_response;
+	do not try to set http headers if they have already been sent, because trying
+	to do so will raise a PHP error, and if headers have been sent something has
+	gone wrong already (shall we send a meaningful error response instead?)
+
+2005-05-08  Gaetano Giunta <giunta.gaetano@gmail.com>
+
+	* xmlrpcs.inc, xmlrpcs.inc: reverted to usage of '=& new' for better
+	performance on (some) php4 installs.
+	NB: PHP 3 compatibility is deprecated from now on!
+
+	* xmlrpc.inc: decode xmlrpc boolean type to native php boolean
+
+	* xmlrpcs.inc, xmlrpcs.inc: switched $_xh[$parser] to $_xh, since indexing
+	an array by object will give a warning in php 5 (and we were resetting the
+	array of _xh elements on every call anyway)
+
+	* xmlrpc.inc: commented unused code used originally for escaping content
+
+	* xmlrpc.inc: commented deprecated methods xmlrpc_encode and xmlrpc_decode
+
+	* xmlrpc.inc: php_xmlrpc_encode: encode integer-indexed php arrays as xmlrpc
+	arrays instead of structs; if object given to encode is an xmlrpcval return it
+	instead of reencoding (makes easier calling encode on an array of xmlrpcvals)
+
+	* xmlrpcs.inc: added $debug field to server class; if false will prevent
+	the server from echoing debug info back to the client as xml comment
+
+	* xmlrpcs.inc: let the server add to the debug messages the complete request
+	payload received and (if php installed as apache module) http headers, so that
+	the client in debug mode can echo a complete fingerprint of the communication
+
+	* xmlrpcs.inc: changed API of ParseRequest method: now it cannot be called
+	without a 'data' parameter; added 2nd parameter (http encoding); changed the
+	call to this method from inside service() method
+
+	* xmlrpc.inc, xmlrpcs.inc: enable both server and client to parse compressed xml
+	(if php is compiled with zlib); client should also be able to decode chunked
+	http encoding
+
+	* xmlrpc.inc: add support for proxies (only basic auth supported); default port
+	is 8080 (if left unspecified)
+
+	* xmlrpc.inc: use lowercase for names of http headers received (makes using
+	them much simpler, since servers can use any upper/lowercase combination)
+
+	* xmlrpc.inc: bumped version number to '2.0 beta'
+
+2005-05-08  Gaetano Giunta <giunta.gaetano@gmail.com>
+
+	* release of version 1.1
+
+2005-04-24  Gaetano Giunta <giunta.gaetano@gmail.com>
+
+	* xmlrpcs.inc: removed charset declaration from xml prologue of responses,
+	since we are now escaping all non-ascii chars in an encoding-independent way
+
+	* bug_http.xml: modified to exercise some extra functonality of the lib
+	(it should now be failed by the current PEAR implementation of the lib)
+
+	* xmlrpc.inc: bumped up rev. number to 1.1
+
+	* doc/xmlrpc_php.xml, doc/announce1_1.txt: documentation updates
+
+	* Makefile: updated to reflect new xml doc source, modified filelist
+
+2005-04-17  Gaetano Giunta <giunta.gaetano@gmail.com>
+
+	* client.php, agesort.php, introspect.php, introspect_demo.php,
+	which.php, test.pl, test.py: use as default target the server.php page hosted
+	on phpxmlrpc.sf.net
+
+	* server.php: fix for register_globals off; refer to docs on phpxmlrpc.sf.net
+
+2005-04-15 Miles Lott <milos@groupwhere.org>
+
+	code formatting and comments
+
+2005-04-03  Gaetano Giunta <giunta.gaetano@gmail.com>
+
+	* xmlrpc.inc: make use of global var $xmlrpcName in building User_Agent HTTP
+	header (in conjunction with $xmlrpcVersion)
+
+	* agesort.php, client.php, comment.php, dicuss.php, mail.php, server.php,
+	which.php: various janitorial fixes
+	+ always html escape content received from xmlrpc server or from user input
+	+ make the scripts run fine with register_globals off an register_long_arrays off
+	+ always use the functions php_xmlrpc_en(de)code, even if the EPI extension
+	is not installed
+	+ in mail.php, allow user to see script source even if support for .phps files
+	is not configured in the local web server
+
+	* testsuite.php: better detection of local webserver hostname for running tests
+	against (if the user did not supply a webserver name)
+
+2005-03-21  Gaetano Giunta <giunta.gaetano@gmail.com>
+
+	* xmlrpcs.inc: revert to a PHP3 compatible script (change '=& new' to '= new')
+
+	* xmlrpc.inc: revert to a PHP3 compatible script (lottsa fixes)
+
+	* testsuite.php: default to using local server as test target if no user
+	provided values are available instead of heddley.com server
+
+	* testsuite.php: play nice to PHP3 in retrieving user-passed values
+
+	* testsuite.php: fix constructor method name for a type of tests
+
+	* phpunit.php: fix all cases of call-time-pass-by-ref
+
+	* phpunit.php: rename Exception class to _Exception if the script is run with
+	PHP 5 (exception is a reserverd word)
+
+2005-03-19  Gaetano Giunta <giunta.gaetano@gmail.com>
+
+	* xmlrpc.inc: fixed bug in new http header parsing code in case there is
+	no correct separator between response headers and body
+
+	* xmlrpc.inc: added recognizing and stripping of HTTP/1.1 100 response headers
+
+	* xmlrpc.inc: strip extra whitespace from response body, as well as any junk
+	that comes after the last </MethodResponse> tag. It allows the server code to
+	be put on public providers that add e.g. javascript advertising to served pages
+
+	* xmlrpc.inc: removed unused parts of code, trailing whitespace
+
+	* xmlrpc.inc: fix possible bug (?) in xmlrpc_ee for BOOLEAN values: true was
+	being handled differently than false
+
+	* testsuite.php: added a new file-based test to stress the response parsing
+	modifications recently introduced; enabled debugging for file based tests
+
+2005-03-15  Gaetano Giunta <giunta.gaetano@gmail.com>
+
+	* xmlrpc.inc: fixed missing declaration of global vars in xmlrpc_dh,
+	sendpayloadhttps and sendpayloadhttp10
+
+	* xmlrpc.inc: changed error message for invalid responses: 'enable debugging'
+	is more clear that 'enabling debugging' (the user is being encouraged to do it)
+
+	* xmlrpc.inc: rewrote HTTP response header parsing. It should be more tolerant
+	of invalid headers, give more accurate error messages and be marginally faster,
+	too.
+
+	* xmlrpc.inc: cosmetic whitespace fixes and remove useless one-liners
+
+	* xmlrpc.inc: build a shorter PHP command line to be evaluated for rebuilding
+	values from parsed xml: use '$val =& nex xmlrpcval("value")' for string values
+	instead of '$val =& nex xmlrpcval("value", $xmlrpcString)'
+
+	* xmlrpc.inc: fix change introduced 2005/01/30 moving call to curl_close()
+	too early: it did not work on error situations
+
+	* testsuite.php: fix name of testAddingTest method, renamed testErrosString
+	into testErrorString and removed useless warning for register_globals=off case
+
+2005-02-27  Gaetano Giunta <giunta.gaetano@gmail.com>
+
+	* xmlrpc.inc: do not echo XML parsing error to screen (it is already dumped
+	into error log)
+
+	* xmlrpc.inc: set hdrs field into response object in case of XML parsing error
+	(uniform behaviour with other responses)
+
+2005-02-26  Gaetano Giunta <giunta.gaetano@gmail.com>
+
+	* xmlrpc.inc: use global var $xmlrpcVersion as number for user agent string
+
+	* xmlrpcs.inc: eliminate server side PHP warning and give back to caller
+	a better error msg in case the called method exists but no signature matches
+	the number of parameters
+
+2005-02-20  Gaetano Giunta <giunta.gaetano@gmail.com>
+
+	* xmlrpc.inc: accept a + sign in front of floats / integers, since the spec
+	clearly mentions it
+
+	* xmlrpc.inc, xmlrpcs.inc: renamed function XmlEntities to xmlrpc_encode_entitites,
+	to avoid using the same name as an array already defined
+
+	* xmlrpc.inc: fix bug introduced with escaping of UTF8 chars in xmlrpc error
+	responses: correct behaviour is to escape chars inside serialize(), not when
+	calling the xmlrpcresp creator
+
+	* testsuite.php: made test suite more friendly to modern PHP configs, allowing
+	register_globals to be off and to set in the URL all testing parameters;
+	added tests for newly introduced fixes; renamed existing tests acording to the
+	docs inside phpunit.php (e.g. no subclass of TestCase should have a name
+	starting with test...)
+
+2005-02-19  Gaetano Giunta <giunta.gaetano@gmail.com>
+
+	* xmlrpc.inc: accept patch 683153 by mah0: if timeout is set, allow all socket
+	operations to timeout at the given time, not only the socket connection
+
+2005-02-13  Gaetano Giunta <giunta.gaetano@gmail.com>
+
+	* xmlrpc.inc: be tolerant to double values received in exponential notation:
+	even though the spec forbids their usage PHP is fine with them
+
+	* xmlrpc.inc: fix bug: new xmlrpcval('-1') was creating an empty value instead
+	of a string value!
+
+	* xmlrpc.inc, xmlrpcs.inc: fix the payload encoding changes introduced by
+	Andres Salomon on 2004-03-17: sending named html entities inside an xml chunk
+	makes it invalid, and thus renders the lib absolutely non-interoperable with
+	any other xmlrpc implementation; moreover the current implementation only ever
+	worked for non-ascii requests, while breaking client-parsing of responses
+	containing non-ascii chars.
+	The principle of using entities is preserved though, because it allows the
+	client to send correct xml regardless of php internal charset encoding vs.
+	xml request charset encoding, but using 'character references' instead.
+
+	* xmlrpc.inc: encode (non-ascii) chars into charset entities also for error
+	strings
+
+	* xmlrpcs.inc: encode (non-ascii) chars into charset entities also for debug
+	messages
+
+	* xmlrpcs.inc: added 'Accept-Charset' header in http request to let the server
+	know what kind of charset encoding we do expect to be used for responses
+
+	* xmlrpc.inc, xmlrpcs.inc: explicitly tell the xml parser what charset the
+	application expects to receive content in (notably strings). A new variable,
+	$xmlrpc_internalencoding, (defaulting to ISO-8859-1) defines what charset the
+	parser will use for passing back string xmlrpcvals to the PHP application
+	(both server-side and client-side).
+	This allows transparent usage of e.g. UTF-8 for encoding xml messages between
+	server and client and ISO-8859-1 for internal string handling.
+	ISO-8859-1 is, AFAIK, PHP internal encoding for all installs except
+	mbstring-enabled ones.
+
+2005-02-12  Gaetano Giunta <giunta.gaetano@gmail.com>
+
+	* xmlrpcs.inc: use '$var =& new(' construct to assign objects: on older versions
+	of PHP objects are first built then copied over if the ampersand is omitted.
+	Using it should make the code a little bit faster...
+
+	* doc/xmlrpc.php: update lib version number, release date in preparation for
+	next release
+
+	* makefile: update lib version number in preparation for next release
+
+	* xmlrpc.inc: split up parsing of xmlrpc INT and DOUBLE values. This allows
+	finer-grained control over valid values: now the '.' char is not allowed
+	any more inside int values.
+
+	* xmlrpc.inc: fix for bug #560303: ints and doubles starting with '0' chars are
+	no more parsed as octal values
+
+2005-01-30  Gaetano Giunta <giunta.gaetano@gmail.com>
+
+	* xmlrpc.inc: Modifed last change by Miles: the functions php_xmlrpc_encode
+	and php_xmlrpc_decode are now always defined, regardless of the existence of
+	XMLRPC-EPI.  This allows users to start using these functions as the 'default'
+	functions, and pave the way for future deprecation of xmlrpc_encode/encode
+	while maintaining a stable API.
+
+	* xmlrpc.inc: use '$var =& new(' construct to assign objects: on older versions
+	of PHP objects are first built then copied over if the ampersand is omitted.
+	Using it should make the code a little bit faster...
+
+	* xmlrpc.inc: close curl connection as soon as possible for https requests:
+	it could save some memory / resources.
+
+	* xmlrpc.inc: added some extra info in the PHP error log message generated
+	when an invalid xmlrpc integer/float value is encountered and we try to
+	deserialize it.
+
+	* xmlrpc.inc: added @ char before fsockopen to avoid echoing useless warnings
+	when connection to server fails; added the same to avoid echoing warnings when
+	deserializing data of an unknown type
+
+	* xmlrpc.inc: reset the _xh array on each xmlrpc call: otherwise a new array
+	member is created for each consecutive call and never destroyed, thus making it
+	impossible to build an xmlrpc-client daemon beacuse of memory leaking.
+
+	* xmlrpc.inc: declare global the variables that are used as 'constants',
+	so that xmlrpc.inc will work even if it is included from within a function
+
+2004-12-27  Miles Lott <milos@groupwhere.org>
+	* xmlrpc.inc: A new constant, XMLRPC_EPI_ENABLED, is defined depending on
+	the existence of the function, xmlrpc_decode.  This function will exist in
+	PHP if the extension, XMLRPC-EPI (http://xmlrpc-epi.sourceforge.net), is
+	loaded.  It defines the functions xmlrpc_encode and xmlrpc_decode, which
+	will conflict with functions of the same name in xmlrpc.inc.  If this
+	extension is loaded, we instead use the names php_xmlrpc_encode and
+	php_xmlrpc_decode.  Please look at server.php, testsuite.php, etc., for
+	how this should be handled if using these functions.
+
+2003-04-17  Andres Salomon  <dilinger@voxel.net>
+	* xmlrpc.inc: encode strings using htmlentities() instead of
+	htmlspecialchars(), and add xmlrpc_html_entity_xlate().  This
+	should fix longstanding issues with sending weird chars (from
+	non-USASCII codesets like UTF-8, ISO-8859-1, etc) that caused
+	the xml parser to choke.  Multi-byte chars are now changed to
+	entities before sending, so that the xmlrpc server doesn't need
+	to know the encoding type of the POST data.
+	* xmlrpcs.inc: call xmlrpc_html_entity_xlate before parsing
+	request packet.  The parser chokes on unknown entities (the
+	entities created by htmlentities() are exactly that; html
+	entities, not xml entities), so they must be converted from
+	name form (&eacute;) to numerical form (&#233;).
+
+2003-01-12  Andres Salomon  <dilinger@voxel.net>
+
+	* released 1.0.99.2.
+	* Makefile: separate doc/Makefile a bit more from Makefile,
+	and add clean rules.
+
+2003-01-10  Andres Salomon  <dilinger@voxel.net>
+
+	* xmlrpc.inc: xmlrpcresp and parseResponse cleanups; variable
+	name renames ('xv' to 'val', for example), type checking, and
+	stricter default values.
+	* xmlrpc.inc: fix xmlrpcresp's faultcode; return -1 for FAULT
+	responses from the server whose faultcodes don't reflect any
+	errors.
+
+2003-01-08  Andres Salomon  <dilinger@voxel.net>
+
+	* xmlrpc.inc: rename $_xh[$parser]['ha'] to
+	$_xh[$parser]['headers'].
+	* xmlrpc.inc: fix bugs related to $_xh[$parser]['headers];
+	some places treated this as an array, others as a scalar.
+	Treat unconditionally as an array.  Also wrap header debugging
+	output in PRE tags.
+
+2002-12-17  Andres Salomon  <dilinger@voxel.net>
+
+	* released 1.0.99.
+	* Makefile: changed the tarball format/dist rule to a more
+	conventional form, as well as normal release updates.
+	* xmlrpc.inc: added setSSLVerifyPeer and setSSLVerifyHost; as
+	of curl 7.10, various certificate checks are done (by default).
+	The default for CURLOPT_SSL_VERIFYHOST is to ensure the common
+	name on the cert matches the provided hostname. This breaks a
+	lot of stuff, so allow users to override it.
+	* doc/xmlrpc_php.sgml: updated documentation accordingly.
+
+2002-09-06  Geoffrey T. Dairiki  <dairiki@dairiki.org>
+
+	Add support for system.multicall() to both the client
+	and the server.
+
+	* testsuite.php: Add new tests 'testServerMulticall',
+	and 'testClientMulticall'.
+
+	* xmlrpc.inc: Added new error messages for system.multicall().
+	* xmlrpcs.inc: Added new procedure call system.multicall().
+	See http://www.xmlrpc.com/discuss/msgReader$1208 for details.
+
+	* xmlrpc.inc: Added system.multicall functionality to
+	xmlrpc_client.  xmlrpc_client::send can now take an array of
+	xmlrpcmsg's as an argument.  In that case it will attempt
+	to execute the whole array of procure calls in a single
+	HTTP request using system.multicall().  (If that attempt fails,
+	then the calls will be excuted one at a time.)  The return
+	value will be an array of xmlrpcresp's (or 0 upon transport
+	failure.)
+
+2001-11-29  Edd Dumbill  <edd@usefulinc.com>
+
+	* xmlrpc.inc: fixed problem with processing HTTP headers that
+	broke any payload with more than one consecutive newline in it.
+	also initialise the 'ac' array member to empty string at start.
+	* testsuite.php: added unit test to exercise above bug
+	* xmlrpcs.inc: fixed uninitialized variable $plist
+
+2001-09-25  Edd Dumbill  <edd@usefulinc.com>
+
+	* xmlrpc.inc: applied urgent security fixes as identified by Dan
+	Libby
+
+2001-08-27  Edd Dumbill  <edd@usefulinc.com>
+
+	* xmlrpc.inc: Merged in HTTPS support from Justin Miller, with a
+	few additions for better traceability of failure conditions. Added
+	small fix from Giancarlo Pinerolo. Bumped rev to 1.0. Changed
+	license to BSD license.
+
+2001-06-15  Edd Dumbill  <edd@usefulinc.com>
+
+	* xmlrpcs.inc: Added \r into return MIME headers for server class
+
+2001-04-25  Edd Dumbill  <edd@usefulinc.com>
+
+	* server.php: Added interop suite of methods.
+
+2001-04-24  Edd Dumbill  <edd@usefulinc.com>
+
+	* testsuite.php: added in test case for string handling bug.
+
+	* xmlrpc.inc: merged in minor fixes from G Giunta to fix
+	noninitialization. Created new method, getval(), which includes
+	experimental support for recreating nested arrays, from Giunta and
+	Sofer. Fixed string handling bug where characters after </string>
+	but before </value> weren't ignored. Added in support for native
+	boolean type into xmlrpc_encode (Giunta).
+
+	* xmlrpcs.inc: updated copyright notice
+
+2001-01-15  Edd Dumbill  <edd@usefulinc.com>
+
+	* xmlrpc.inc: fixed bug with creation of booleans. Put checks in
+	to ensure that numbers were really numeric. Fixed bug with
+	non-escaping of dollar signs in strings.
+
+	* testsuite.php: created test suite.
+
+2000-08-26  Edd Dumbill  <edd@usefulinc.com>
+
+	* xmlrpcs.inc: added xmlrpc_debugmsg() function which outputs
+	debug information in comments inside the return payload XML
+
+	* xmlrpc.inc: merged in some changes from Dan Libby which fix up
+	whitespace handling.
+
+	* xmlrpcs.inc: added Content-length header on response (bug from
+	Jan Varga <varga@utcru.sk>. This means you can no longer print
+	during processing
+
+	* xmlrpc.inc: changed ereg_replace to str_replace in several
+	places (thanks to Dan Libby <dan@libby.com> for this).
+
+	* xmlrpc.inc: added xmlrpc_encode() and xmlrpc_decode() from Dan
+	Libby--these helper routines make it easier to work in native PHP
+	data structures.
+
+2000-07-21  Edd Dumbill  <edd@usefulinc.com>
+
+	* xmlrpc.inc: added xmlrpc_client::setCredentials method to pass
+	in authorization information, and modified sendPayload* methods to
+	send this OK. Thanks to Grant Rauscher for the impetus to do this.
+	Also, made the client send empty <params></params> if there are no
+	parameters set by the user.
+
+	* doc/xmlrpc_php.sgml: updated documentation to reflect recent
+	changes
+
+
+2000-07-18  Edd Dumbill  <edd@usefulinc.com>
+
+	* server.php: added examples.invertBooleans method to server as a
+	useful test method for boolean values.
+
+	* xmlrpc.inc: rearranged the way booleans are handled to fix
+	outstanding problems. Fixed calling addScalar() on arrays so it
+	works. Finally fixed backslashification issues to remove the
+	problem will dollar signs disappearing.
+
+	* booltest.php: really fixed booleans this time.
+
+2000-06-03  Edd Dumbill  <edd@usefulinc.com>
+
+	* xmlrpcs.inc: made signature verification more useful - now
+	returns what it found was wrong
+
+	* xmlrpc.inc: fixed bug with decoding dateTimes. Also fixed a bug
+	which meant a PHP syntax error happened when attempting to receive
+	empty arrays or structs. Also fixed bug with booleans always being
+	interpreted as 'true'.
+
+	* server.php: Added validator1 suite of tests to test against
+	validator.xmlrpc.com
+
+
+2000-05-06  Edd Dumbill  <edd@usefulinc.com>
+
+	* released 1.0b6
+
+	* added test.pl and test.py, Perl and Python scripts that exercise
+	server.php somewhat (but not a lot)
+
+	* added extra fault condition for a non 200 OK response from the
+	remote server.
+
+	* added iso8601_encode() and iso8601_decode() to give some support
+	for passing dates around. They translate to and from UNIX
+	timestamps. Updated documentation accordingly.
+
+	* fixed string backslashification -- was previously a little
+	overzealous! new behavior is '\' --> '\\' and '"' -->
+	'\"'. Everything else gets left alone.
+
+2000-04-12  Edd Dumbill  <edd@usefulinc.com>
+
+	* updated and bugfixed the documentation
+
+	* fixed base 64 encoding to only happen at serialize() time,
+	rather than when a base64 value is created. This fixes the double
+	encoding bug reported by Nicolay Mausz
+	<castor@flying-dog.com>. The same approach ought to be taken with
+	encoding XML entities in the data - this is a TODO.
+
+	* integrated further code from Peter Kocks: used his new code for
+	send(), adding a second, optional, parameter which is a timeout
+	parameter to fsockopen()
+
+1999-10-11  Edd Dumbill  <edd@usefulinc.com>
+
+	* added bug fixes from Peter Kocks <peter.kocks@baygate.com>
+
+1999-10-10  Edd Dumbill  <edd@usefulinc.com>
+
+	* updated the documentation
+
+1999-10-08  Edd Dumbill  <edd@usefulinc.com>
+
+	* added system.* methods and dispatcher, plus documentation
+
+	* fixed bug which meant request::getNumParams was returning an
+	incorrect value
+
+	* added signatures into the dispatch map. This BREAKS
+	COMPATIBILITY with previous releases of this code
+
+1999-08-18  Edd Dumbill  <edd@usefulinc.com>
+
+	* made entity encoding and decoding transparent now on string
+	passing.
+
+	* de-globalised the globals in the parse routines, using an
+	associative array to hold all parser state $_xh
+
+	* changed default input encoding to be UTF-8 to match expectation
+
+	* separated out parseResponse into parseResponse and
+	parseResponseFile so that you can call parseResponse on a string
+	if you have one handy
+
+1999-07-20  Edd Dumbill  <edd@usefulinc.com>
+
+	* Moved documentation into Docbook format
+
+1999-07-19  Edd Dumbill  <edd@usefulinc.com>
+
+	* Added an echo server into server.php and echotest.php, a client
+	which will exercise the new echo routine.
+
+	* Added test for no valid value returned: in this case will now
+	throw the error "invalid payload"
+
+	* Added serialize() method to xmlrpcresp to return a string with
+	the response serialized as XML
+
+	* Added automatic encoding and decoding for base64 types
+
+	* Added setDebug() method to client to enable HTML output
+	debugging in the client
+
+1999-07-08  Edd Dumbill  <edd@usefulinc.com>
+
+	* Improved XML parse error reporting on the server side to send it
+	back in a faultCode packet. expat errors now begin at 100
+
+1999-07-07  Edd Dumbill  <edd@usefulinc.com>
+
+	* Changed the structmem and arraymem methods of xmlrpcval to always
+	return xmlrpc vals whether they referred to scalars or complex
+	types.
+
+	* Added the server class and demonstrations
+
+	* Fixed bugs in the XML parsing and reworked it

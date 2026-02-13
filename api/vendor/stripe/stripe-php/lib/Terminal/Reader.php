@@ -13,6 +13,7 @@ namespace Stripe\Terminal;
  *
  * @property string $id Unique identifier for the object.
  * @property string $object String representing the object's type. Objects of the same type share the same value.
+ * @property null|\Stripe\StripeObject $action The most recent action performed by the reader.
  * @property null|string $device_sw_version The current software version of the reader.
  * @property string $device_type Type of reader, one of <code>bbpos_wisepad3</code>, <code>stripe_m2</code>, <code>bbpos_chipper2x</code>, <code>bbpos_wisepos_e</code>, or <code>verifone_P400</code>.
  * @property null|string $ip_address The local IP address of the reader.
@@ -32,4 +33,72 @@ class Reader extends \Stripe\ApiResource
     use \Stripe\ApiOperations\Delete;
     use \Stripe\ApiOperations\Retrieve;
     use \Stripe\ApiOperations\Update;
+
+    /**
+     * @param null|array $params
+     * @param null|array|string $opts
+     *
+     * @throws \Stripe\Exception\ApiErrorException if the request fails
+     *
+     * @return \Stripe\Terminal\Reader the canceled reader
+     */
+    public function cancelAction($params = null, $opts = null)
+    {
+        $url = $this->instanceUrl() . '/cancel_action';
+        list($response, $opts) = $this->_request('post', $url, $params, $opts);
+        $this->refreshFrom($response, $opts);
+
+        return $this;
+    }
+
+    /**
+     * @param null|array $params
+     * @param null|array|string $opts
+     *
+     * @throws \Stripe\Exception\ApiErrorException if the request fails
+     *
+     * @return \Stripe\Terminal\Reader the processed reader
+     */
+    public function processPaymentIntent($params = null, $opts = null)
+    {
+        $url = $this->instanceUrl() . '/process_payment_intent';
+        list($response, $opts) = $this->_request('post', $url, $params, $opts);
+        $this->refreshFrom($response, $opts);
+
+        return $this;
+    }
+
+    /**
+     * @param null|array $params
+     * @param null|array|string $opts
+     *
+     * @throws \Stripe\Exception\ApiErrorException if the request fails
+     *
+     * @return \Stripe\Terminal\Reader the processed reader
+     */
+    public function processSetupIntent($params = null, $opts = null)
+    {
+        $url = $this->instanceUrl() . '/process_setup_intent';
+        list($response, $opts) = $this->_request('post', $url, $params, $opts);
+        $this->refreshFrom($response, $opts);
+
+        return $this;
+    }
+
+    /**
+     * @param null|array $params
+     * @param null|array|string $opts
+     *
+     * @throws \Stripe\Exception\ApiErrorException if the request fails
+     *
+     * @return \Stripe\Terminal\Reader the seted reader
+     */
+    public function setReaderDisplay($params = null, $opts = null)
+    {
+        $url = $this->instanceUrl() . '/set_reader_display';
+        list($response, $opts) = $this->_request('post', $url, $params, $opts);
+        $this->refreshFrom($response, $opts);
+
+        return $this;
+    }
 }

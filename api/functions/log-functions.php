@@ -251,28 +251,28 @@ trait LogFunctions
 	{
 		switch ($level) {
 			case 'DEBUG':
-				$logLevel = Nekonomokochan\PhpJsonLogger\LoggerBuilder::DEBUG;
+				$logLevel = OrganizrLogger::DEBUG;
 				break;
 			case 'INFO':
-				$logLevel = Nekonomokochan\PhpJsonLogger\LoggerBuilder::INFO;
+				$logLevel = OrganizrLogger::INFO;
 				break;
 			case 'NOTICE':
-				$logLevel = Nekonomokochan\PhpJsonLogger\LoggerBuilder::NOTICE;
+				$logLevel = OrganizrLogger::NOTICE;
 				break;
 			case 'ERROR':
-				$logLevel = Nekonomokochan\PhpJsonLogger\LoggerBuilder::ERROR;
+				$logLevel = OrganizrLogger::ERROR;
 				break;
 			case 'CRITICAL':
-				$logLevel = Nekonomokochan\PhpJsonLogger\LoggerBuilder::CRITICAL;
+				$logLevel = OrganizrLogger::CRITICAL;
 				break;
 			case 'ALERT':
-				$logLevel = Nekonomokochan\PhpJsonLogger\LoggerBuilder::ALERT;
+				$logLevel = OrganizrLogger::ALERT;
 				break;
 			case 'EMERGENCY':
-				$logLevel = Nekonomokochan\PhpJsonLogger\LoggerBuilder::EMERGENCY;
+				$logLevel = OrganizrLogger::EMERGENCY;
 				break;
 			default:
-				$logLevel = Nekonomokochan\PhpJsonLogger\LoggerBuilder::WARNING;
+				$logLevel = OrganizrLogger::WARNING;
 				break;
 		}
 		if ($slack) {
@@ -299,7 +299,7 @@ trait LogFunctions
 		try {
 			if ($this->config['sendLogsToSlack']) {
 				if ($this->config['slackLogWebhook'] !== '') {
-					$slackHandlerBuilder = new Nekonomokochan\PhpJsonLogger\SlackWebhookHandlerBuilder($this->config['slackLogWebhook'], $this->config['slackLogWebHookChannel']);
+					$slackHandlerBuilder = new SlackWebhookHandlerBuilder($this->config['slackLogWebhook'], $this->config['slackLogWebHookChannel']);
 					$slackHandlerBuilder->setLevel($this->getLogLevelClass($this->config['slackLogLevel'], true));
 					$loggerBuilder->setSlackWebhookHandler($slackHandlerBuilder->build());
 				}
@@ -308,8 +308,8 @@ trait LogFunctions
 			$this->loggerSetup = true;
 			return $this->logger;
 		} catch (\Throwable $e) {
-			// nothing so far
-			return $this->logger;
+			// If logger setup failed, return null
+			return null;
 		}
 		/*
 		Setup:

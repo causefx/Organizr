@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace OpenApiFixtures;
+namespace OpenApi\Tests\Fixtures\InheritProperties;
 
 class AncestorWithoutDocBlocks extends GrandAncestor
 {

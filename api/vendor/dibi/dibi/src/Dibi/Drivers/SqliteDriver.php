@@ -292,7 +292,8 @@ class SqliteDriver implements Dibi\Driver
 		callable $rowCallback,
 		callable $agrCallback,
 		int $numArgs = -1
-	): void {
+	): void
+	{
 		$this->connection->createAggregate($name, $rowCallback, $agrCallback, $numArgs);
 	}
 }

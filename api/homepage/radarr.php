@@ -84,8 +84,11 @@ trait RadarrHomepageItem
 		foreach ($list as $key => $value) {
 			try {
 				$options = $this->requestOptions($value['url'], null, $this->config['radarrDisableCertCheck'], $this->config['radarrUseCustomCertificate']);
-				$downloader = new Kryptonit3\Sonarr\Sonarr($value['url'], $value['token'], 'radarr', null, null, $options);
-				$results = $downloader->getRootFolder();
+				$client = new \GuzzleHttp\Client($options);
+				$response = $client->get(rtrim($value['url'], '/') . '/api/v3/rootfolder', [
+					'headers' => ['X-Api-Key' => $value['token']]
+				]);
+				$results = $response->getBody()->getContents();
 				$downloadList = json_decode($results, true);
 				if (is_array($downloadList) || is_object($downloadList)) {
 					$queue = (array_key_exists('error', $downloadList)) ? $downloadList['error']['msg'] : $downloadList;
@@ -177,8 +180,11 @@ trait RadarrHomepageItem
 		foreach ($list as $key => $value) {
 			try {
 				$options = $this->requestOptions($value['url'], $this->config['homepageRadarrQueueRefresh'], $this->config['radarrDisableCertCheck'], $this->config['radarrUseCustomCertificate']);
-				$downloader = new Kryptonit3\Sonarr\Sonarr($value['url'], $value['token'], 'radarr', null, null, $options);
-				$results = $downloader->getQueue();
+				$client = new \GuzzleHttp\Client($options);
+				$response = $client->get(rtrim($value['url'], '/') . '/api/v3/queue', [
+					'headers' => ['X-Api-Key' => $value['token']]
+				]);
+				$results = $response->getBody()->getContents();
 				$downloadList = json_decode($results, true);
 				if (is_array($downloadList) || is_object($downloadList)) {
 					$queue = (array_key_exists('error', $downloadList)) ? [] : $downloadList;
@@ -215,8 +221,12 @@ trait RadarrHomepageItem
 		foreach ($list as $key => $value) {
 			try {
 				$options = $this->requestOptions($value['url'], $this->config['homepageRadarrQueueRefresh'], $this->config['radarrDisableCertCheck'], $this->config['radarrUseCustomCertificate']);
-				$downloader = new Kryptonit3\Sonarr\Sonarr($value['url'], $value['token'], 'radarr', null, null, $options);
-				$results = $downloader->getCalendar($startDate, $endDate, $this->config['radarrUnmonitored']);
+				$client = new \GuzzleHttp\Client($options);
+				$response = $client->get(rtrim($value['url'], '/') . '/api/v3/calendar', [
+					'headers' => ['X-Api-Key' => $value['token']],
+					'query' => ['start' => $startDate, 'end' => $endDate, 'unmonitored' => $this->config['radarrUnmonitored']]
+				]);
+				$results = $response->getBody()->getContents();
 				$result = json_decode($results, true);
 				if (is_array($result) || is_object($result)) {
 					$calendar = (array_key_exists('error', $result)) ? '' : $this->formatRadarrCalendar($results, $key, $value['url']);

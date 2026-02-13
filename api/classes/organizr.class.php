@@ -101,7 +101,7 @@ class Organizr
 	public $warnings;
 	public $errors;
 	public bool $loggerSetup = false;
-	public \Nekonomokochan\PhpJsonLogger\Logger $logger;
+	public ?OrganizrLoggerInstance $logger = null;
 
 	public function __construct($checkForUpdates = false)
 	{

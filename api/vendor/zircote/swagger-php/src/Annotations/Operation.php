@@ -4,9 +4,9 @@
  * @license Apache 2.0
  */
 
- namespace OpenApi\Annotations;
+namespace OpenApi\Annotations;
 
-use OpenApi\Logger;
+use OpenApi\Generator;
 
 /**
  * @Annotation
@@ -18,11 +18,11 @@ use OpenApi\Logger;
 abstract class Operation extends AbstractAnnotation
 {
     /**
-     * key in the OpenApi "Paths Object" for this operation
+     * key in the OpenApi "Paths Object" for this operation.
      *
      * @var string
      */
-    public $path = UNDEFINED;
+    public $path = Generator::UNDEFINED;
 
     /**
      * A list of tags for API documentation control.
@@ -30,22 +30,22 @@ abstract class Operation extends AbstractAnnotation
      *
      * @var string[]
      */
-    public $tags = UNDEFINED;
+    public $tags = Generator::UNDEFINED;
 
     /**
      * Key in the OpenApi "Path Item Object" for this operation.
-     * Allowed values: 'get', 'post', put', 'patch', 'delete', 'options', 'head' and 'trace'
+     * Allowed values: 'get', 'post', put', 'patch', 'delete', 'options', 'head' and 'trace'.
      *
      * @var string
      */
-    public $method = UNDEFINED;
+    public $method = Generator::UNDEFINED;
 
     /**
      * A short summary of what the operation does.
      *
      * @var string
      */
-    public $summary = UNDEFINED;
+    public $summary = Generator::UNDEFINED;
 
     /**
      * A verbose explanation of the operation behavior.
@@ -53,14 +53,14 @@ abstract class Operation extends AbstractAnnotation
      *
      * @var string
      */
-    public $description = UNDEFINED;
+    public $description = Generator::UNDEFINED;
 
     /**
      * Additional external documentation for this operation.
      *
      * @var ExternalDocumentation
      */
-    public $externalDocs = UNDEFINED;
+    public $externalDocs = Generator::UNDEFINED;
 
     /**
      * Unique string used to identify the operation.
@@ -69,7 +69,7 @@ abstract class Operation extends AbstractAnnotation
      *
      * @var string
      */
-    public $operationId = UNDEFINED;
+    public $operationId = Generator::UNDEFINED;
 
     /**
      * A list of parameters that are applicable for this operation.
@@ -80,7 +80,7 @@ abstract class Operation extends AbstractAnnotation
      *
      * @var Parameter[]
      */
-    public $parameters = UNDEFINED;
+    public $parameters = Generator::UNDEFINED;
 
     /**
      * The request body applicable for this operation.
@@ -89,14 +89,14 @@ abstract class Operation extends AbstractAnnotation
      *
      * @var RequestBody
      */
-    public $requestBody = UNDEFINED;
+    public $requestBody = Generator::UNDEFINED;
 
     /**
      * The list of possible responses as they are returned from executing this operation.
      *
      * @var \OpenApi\Annotations\Response[]
      */
-    public $responses = UNDEFINED;
+    public $responses = Generator::UNDEFINED;
 
     /**
      * A map of possible out-of band callbacks related to the parent operation.
@@ -104,18 +104,18 @@ abstract class Operation extends AbstractAnnotation
      * Each value in the map is a Callback Object that describes a request that may be initiated by the API provider and the expected responses.
      * The key value used to identify the callback object is an expression, evaluated at runtime, that identifies a URL to use for the callback operation.
      *
-     * @var Callback[]
+     * @var callable[]
      */
-    public $callbacks = UNDEFINED;
+    public $callbacks = Generator::UNDEFINED;
 
     /**
      * Declares this operation to be deprecated.
      * Consumers should refrain from usage of the declared operation.
      * Default value is false.
      *
-     * @var boolean
+     * @var bool
      */
-    public $deprecated = UNDEFINED;
+    public $deprecated = Generator::UNDEFINED;
 
     /**
      * A declaration of which security mechanisms can be used for this operation.
@@ -126,7 +126,7 @@ abstract class Operation extends AbstractAnnotation
      *
      * @var array
      */
-    public $security = UNDEFINED;
+    public $security = Generator::UNDEFINED;
 
     /**
      * An alternative server array to service this operation.
@@ -134,7 +134,7 @@ abstract class Operation extends AbstractAnnotation
      *
      * @var Server[]
      */
-    public $servers = UNDEFINED;
+    public $servers = Generator::UNDEFINED;
 
     /**
      * @inheritdoc
@@ -150,7 +150,7 @@ abstract class Operation extends AbstractAnnotation
         'tags' => '[string]',
         'summary' => 'string',
         'description' => 'string',
-        'deprecated' => 'boolean'
+        'deprecated' => 'boolean',
     ];
 
     /**
@@ -162,32 +162,46 @@ abstract class Operation extends AbstractAnnotation
         ExternalDocumentation::class => 'externalDocs',
         Server::class => ['servers'],
         RequestBody::class => 'requestBody',
+        Attachable::class => ['attachables'],
     ];
 
     /**
      * @inheritdoc
+     *
+     * @return mixed
      */
+    #[\ReturnTypeWillChange]
     public function jsonSerialize()
     {
         $data = parent::jsonSerialize();
+
         unset($data->method);
         unset($data->path);
+
+        // ensure security elements are object
+        if (isset($data->security) && is_array($data->security)) {
+            foreach ($data->security as $key => $scheme) {
+                $data->security[$key] = (object) $scheme;
+            }
+        }
+
         return $data;
     }
 
-    public function validate($parents = [], $skip = [], $ref = '')
+    public function validate(array $parents = [], array $skip = [], string $ref = ''): bool
     {
         if (in_array($this, $skip, true)) {
             return true;
         }
         $valid = parent::validate($parents, $skip);
-        if ($this->responses !== UNDEFINED) {
+        if ($this->responses !== Generator::UNDEFINED) {
             foreach ($this->responses as $response) {
-                if ($response->response !== UNDEFINED && $response->response !== 'default' && preg_match('/^([12345]{1}[0-9]{2})|([12345]{1}XX)$/', (string) $response->response) === 0) {
-                    Logger::notice('Invalid value "' . $response->response . '" for ' . $response->_identity([]) . '->response, expecting "default", a HTTP Status Code or HTTP Status Code range definition in ' . $response->_context);
+                if ($response->response !== Generator::UNDEFINED && $response->response !== 'default' && preg_match('/^([12345]{1}[0-9]{2})|([12345]{1}XX)$/', (string) $response->response) === 0) {
+                    $this->_context->logger->warning('Invalid value "' . $response->response . '" for ' . $response->_identity([]) . '->response, expecting "default", a HTTP Status Code or HTTP Status Code range definition in ' . $response->_context);
                 }
             }
         }
+
         return $valid;
     }
 }

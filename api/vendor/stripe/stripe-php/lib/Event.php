@@ -39,6 +39,9 @@ namespace Stripe;
  * href="https://stripe.com/docs/api#retrieve_event">Retrieve Event API</a> is
  * guaranteed only for 30 days.
  *
+ * This class includes constants for the possible string representations of
+ * event types. See https://stripe.com/docs/api#event_types for more details.
+ *
  * @property string $id Unique identifier for the object.
  * @property string $object String representing the object's type. Objects of the same type share the same value.
  * @property string $account The connected account that originated the event.
@@ -57,40 +60,37 @@ class Event extends ApiResource
     use ApiOperations\All;
     use ApiOperations\Retrieve;
 
-    /**
-     * Possible string representations of event types.
-     *
-     * @see https://stripe.com/docs/api#event_types
-     */
-    const ACCOUNT_UPDATED = 'account.updated';
     const ACCOUNT_APPLICATION_AUTHORIZED = 'account.application.authorized';
     const ACCOUNT_APPLICATION_DEAUTHORIZED = 'account.application.deauthorized';
     const ACCOUNT_EXTERNAL_ACCOUNT_CREATED = 'account.external_account.created';
     const ACCOUNT_EXTERNAL_ACCOUNT_DELETED = 'account.external_account.deleted';
     const ACCOUNT_EXTERNAL_ACCOUNT_UPDATED = 'account.external_account.updated';
+    const ACCOUNT_UPDATED = 'account.updated';
     const APPLICATION_FEE_CREATED = 'application_fee.created';
-    const APPLICATION_FEE_REFUNDED = 'application_fee.refunded';
     const APPLICATION_FEE_REFUND_UPDATED = 'application_fee.refund.updated';
+    const APPLICATION_FEE_REFUNDED = 'application_fee.refunded';
     const BALANCE_AVAILABLE = 'balance.available';
     const BILLING_PORTAL_CONFIGURATION_CREATED = 'billing_portal.configuration.created';
     const BILLING_PORTAL_CONFIGURATION_UPDATED = 'billing_portal.configuration.updated';
     const CAPABILITY_UPDATED = 'capability.updated';
+    const CASH_BALANCE_FUNDS_AVAILABLE = 'cash_balance.funds_available';
     const CHARGE_CAPTURED = 'charge.captured';
-    const CHARGE_EXPIRED = 'charge.expired';
-    const CHARGE_FAILED = 'charge.failed';
-    const CHARGE_PENDING = 'charge.pending';
-    const CHARGE_REFUNDED = 'charge.refunded';
-    const CHARGE_SUCCEEDED = 'charge.succeeded';
-    const CHARGE_UPDATED = 'charge.updated';
     const CHARGE_DISPUTE_CLOSED = 'charge.dispute.closed';
     const CHARGE_DISPUTE_CREATED = 'charge.dispute.created';
     const CHARGE_DISPUTE_FUNDS_REINSTATED = 'charge.dispute.funds_reinstated';
     const CHARGE_DISPUTE_FUNDS_WITHDRAWN = 'charge.dispute.funds_withdrawn';
     const CHARGE_DISPUTE_UPDATED = 'charge.dispute.updated';
+    const CHARGE_EXPIRED = 'charge.expired';
+    const CHARGE_FAILED = 'charge.failed';
+    const CHARGE_PENDING = 'charge.pending';
     const CHARGE_REFUND_UPDATED = 'charge.refund.updated';
+    const CHARGE_REFUNDED = 'charge.refunded';
+    const CHARGE_SUCCEEDED = 'charge.succeeded';
+    const CHARGE_UPDATED = 'charge.updated';
     const CHECKOUT_SESSION_ASYNC_PAYMENT_FAILED = 'checkout.session.async_payment_failed';
     const CHECKOUT_SESSION_ASYNC_PAYMENT_SUCCEEDED = 'checkout.session.async_payment_succeeded';
     const CHECKOUT_SESSION_COMPLETED = 'checkout.session.completed';
+    const CHECKOUT_SESSION_EXPIRED = 'checkout.session.expired';
     const COUPON_CREATED = 'coupon.created';
     const COUPON_DELETED = 'coupon.deleted';
     const COUPON_UPDATED = 'coupon.updated';
@@ -99,7 +99,6 @@ class Event extends ApiResource
     const CREDIT_NOTE_VOIDED = 'credit_note.voided';
     const CUSTOMER_CREATED = 'customer.created';
     const CUSTOMER_DELETED = 'customer.deleted';
-    const CUSTOMER_UPDATED = 'customer.updated';
     const CUSTOMER_DISCOUNT_CREATED = 'customer.discount.created';
     const CUSTOMER_DISCOUNT_DELETED = 'customer.discount.deleted';
     const CUSTOMER_DISCOUNT_UPDATED = 'customer.discount.updated';
@@ -116,6 +115,7 @@ class Event extends ApiResource
     const CUSTOMER_TAX_ID_CREATED = 'customer.tax_id.created';
     const CUSTOMER_TAX_ID_DELETED = 'customer.tax_id.deleted';
     const CUSTOMER_TAX_ID_UPDATED = 'customer.tax_id.updated';
+    const CUSTOMER_UPDATED = 'customer.updated';
     const FILE_CREATED = 'file.created';
     const IDENTITY_VERIFICATION_SESSION_CANCELED = 'identity.verification_session.canceled';
     const IDENTITY_VERIFICATION_SESSION_CREATED = 'identity.verification_session.created';
@@ -163,10 +163,13 @@ class Event extends ApiResource
     const PAYMENT_INTENT_AMOUNT_CAPTURABLE_UPDATED = 'payment_intent.amount_capturable_updated';
     const PAYMENT_INTENT_CANCELED = 'payment_intent.canceled';
     const PAYMENT_INTENT_CREATED = 'payment_intent.created';
+    const PAYMENT_INTENT_PARTIALLY_FUNDED = 'payment_intent.partially_funded';
     const PAYMENT_INTENT_PAYMENT_FAILED = 'payment_intent.payment_failed';
     const PAYMENT_INTENT_PROCESSING = 'payment_intent.processing';
     const PAYMENT_INTENT_REQUIRES_ACTION = 'payment_intent.requires_action';
     const PAYMENT_INTENT_SUCCEEDED = 'payment_intent.succeeded';
+    const PAYMENT_LINK_CREATED = 'payment_link.created';
+    const PAYMENT_LINK_UPDATED = 'payment_link.updated';
     const PAYMENT_METHOD_ATTACHED = 'payment_method.attached';
     const PAYMENT_METHOD_AUTOMATICALLY_UPDATED = 'payment_method.automatically_updated';
     const PAYMENT_METHOD_CARD_AUTOMATICALLY_UPDATED = 'payment_method.card_automatically_updated';
@@ -193,6 +196,10 @@ class Event extends ApiResource
     const PROMOTION_CODE_CREATED = 'promotion_code.created';
     const PROMOTION_CODE_DELETED = 'promotion_code.deleted';
     const PROMOTION_CODE_UPDATED = 'promotion_code.updated';
+    const QUOTE_ACCEPTED = 'quote.accepted';
+    const QUOTE_CANCELED = 'quote.canceled';
+    const QUOTE_CREATED = 'quote.created';
+    const QUOTE_FINALIZED = 'quote.finalized';
     const RADAR_EARLY_FRAUD_WARNING_CREATED = 'radar.early_fraud_warning.created';
     const RADAR_EARLY_FRAUD_WARNING_UPDATED = 'radar.early_fraud_warning.updated';
     const RECIPIENT_CREATED = 'recipient.created';
@@ -228,12 +235,21 @@ class Event extends ApiResource
     const SUBSCRIPTION_SCHEDULE_UPDATED = 'subscription_schedule.updated';
     const TAX_RATE_CREATED = 'tax_rate.created';
     const TAX_RATE_UPDATED = 'tax_rate.updated';
+    const TERMINAL_READER_ACTION_FAILED = 'terminal.reader.action_failed';
+    const TERMINAL_READER_ACTION_SUCCEEDED = 'terminal.reader.action_succeeded';
+    const TEST_HELPERS_TEST_CLOCK_ADVANCING = 'test_helpers.test_clock.advancing';
+    const TEST_HELPERS_TEST_CLOCK_CREATED = 'test_helpers.test_clock.created';
+    const TEST_HELPERS_TEST_CLOCK_DELETED = 'test_helpers.test_clock.deleted';
+    const TEST_HELPERS_TEST_CLOCK_INTERNAL_FAILURE = 'test_helpers.test_clock.internal_failure';
+    const TEST_HELPERS_TEST_CLOCK_READY = 'test_helpers.test_clock.ready';
     const TOPUP_CANCELED = 'topup.canceled';
     const TOPUP_CREATED = 'topup.created';
     const TOPUP_FAILED = 'topup.failed';
     const TOPUP_REVERSED = 'topup.reversed';
     const TOPUP_SUCCEEDED = 'topup.succeeded';
     const TRANSFER_CREATED = 'transfer.created';
+    const TRANSFER_FAILED = 'transfer.failed';
+    const TRANSFER_PAID = 'transfer.paid';
     const TRANSFER_REVERSED = 'transfer.reversed';
     const TRANSFER_UPDATED = 'transfer.updated';
 }

@@ -6,31 +6,33 @@
 
 namespace OpenApi\Annotations;
 
+use OpenApi\Generator;
+
 /**
  * @Annotation
  */
 class Examples extends AbstractAnnotation
 {
     /**
-     * $ref See https://swagger.io/docs/specification/using-ref/
+     * $ref See https://swagger.io/docs/specification/using-ref/.
      *
      * @var string
      */
-    public $ref = UNDEFINED;
+    public $ref = Generator::UNDEFINED;
 
     /**
      * The key into Components->examples array.
      *
      * @var string
      */
-    public $example = UNDEFINED;
+    public $example = Generator::UNDEFINED;
 
     /**
      * Short description for the example.
      *
      * @var string
      */
-    public $summary = UNDEFINED;
+    public $summary = Generator::UNDEFINED;
 
     /**
      * Embedded literal example. The value field and externalValue field are
@@ -40,7 +42,7 @@ class Examples extends AbstractAnnotation
      *
      * @var string
      */
-    public $description = UNDEFINED;
+    public $description = Generator::UNDEFINED;
 
     /**
      * Embedded literal example.
@@ -51,7 +53,7 @@ class Examples extends AbstractAnnotation
      *
      * @var string
      */
-    public $value = UNDEFINED;
+    public $value = Generator::UNDEFINED;
 
     /**
      * A URL that points to the literal example. This provides the
@@ -61,7 +63,7 @@ class Examples extends AbstractAnnotation
      *
      * @var string
      */
-    public $externalValue = UNDEFINED;
+    public $externalValue = Generator::UNDEFINED;
 
     public static $_types = [
         'summary' => 'string',
@@ -75,5 +77,14 @@ class Examples extends AbstractAnnotation
         Components::class,
         Parameter::class,
         MediaType::class,
+        JsonContent::class,
+        XmlContent::class,
+    ];
+
+    /**
+     * @inheritdoc
+     */
+    public static $_nested = [
+        Attachable::class => ['attachables'],
     ];
 }

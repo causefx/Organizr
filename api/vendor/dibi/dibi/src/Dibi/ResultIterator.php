@@ -44,22 +44,22 @@ class ResultIterator implements \Iterator, \Countable
 	}
 
 
-	#[\ReturnTypeWillChange]
 	/**
 	 * Returns the key of the current element.
 	 * @return mixed
 	 */
+	#[\ReturnTypeWillChange]
 	public function key()
 	{
 		return $this->pointer;
 	}
 
 
-	#[\ReturnTypeWillChange]
 	/**
 	 * Returns the current element.
 	 * @return mixed
 	 */
+	#[\ReturnTypeWillChange]
 	public function current()
 	{
 		return $this->row;

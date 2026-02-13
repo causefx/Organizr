@@ -1,8 +1,6 @@
-<?php
+<?php declare(strict_types=1);
 
-declare(strict_types=1);
-
-namespace OpenApiFixures;
+namespace OpenApi\Tests\Fixtures;
 
 use OpenApi\Annotations as OA;
 

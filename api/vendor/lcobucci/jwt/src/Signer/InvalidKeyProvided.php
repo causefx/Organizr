@@ -10,11 +10,33 @@ final class InvalidKeyProvided extends InvalidArgumentException implements Excep
 {
     public static function cannotBeParsed(string $details): self
     {
-        return new self('It was not possible to parse your key, reason: ' . $details);
+        return new self('It was not possible to parse your key, reason:' . $details);
     }
 
-    public static function incompatibleKey(): self
+    public static function incompatibleKeyType(string $expectedType, string $actualType): self
     {
-        return new self('This key is not compatible with this signer');
+        return new self(
+            'The type of the provided key is not "' . $expectedType
+            . '", "' . $actualType . '" provided'
+        );
+    }
+
+    public static function incompatibleKeyLength(int $expectedLength, int $actualLength): self
+    {
+        return new self(
+            'The length of the provided key is different than ' . $expectedLength . ' bits, '
+            . $actualLength . ' bits provided'
+        );
+    }
+
+    public static function cannotBeEmpty(): self
+    {
+        return new self('Key cannot be empty');
+    }
+
+    public static function tooShort(int $expectedLength, int $actualLength): self
+    {
+        return new self('Key provided is shorter than ' . $expectedLength . ' bits,'
+            . ' only ' . $actualLength . ' bits provided');
     }
 }

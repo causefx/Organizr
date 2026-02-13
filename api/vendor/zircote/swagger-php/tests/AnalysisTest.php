@@ -4,17 +4,16 @@
  * @license Apache 2.0
  */
 
-namespace OpenApiTests;
+namespace OpenApi\Tests;
 
 use OpenApi\Analysis;
-use OpenApi\StaticAnalyser;
 
 class AnalysisTest extends OpenApiTestCase
 {
     public function testRegisterProcessor()
     {
         $counter = 0;
-        $analysis = new Analysis();
+        $analysis = new Analysis([], $this->getContext());
         $analysis->process();
         $this->assertSame(0, $counter);
         $countProcessor = function (Analysis $a) use (&$counter) {
@@ -30,31 +29,107 @@ class AnalysisTest extends OpenApiTestCase
 
     public function testGetSubclasses()
     {
-        $analyser = new StaticAnalyser();
-        $analysis = $analyser->fromFile(__DIR__.'/Fixtures/InheritProperties/Child.php');
-        $analysis->addAnalysis($analyser->fromFile(__DIR__.'/Fixtures/InheritProperties/GrandAncestor.php'));
-        $analysis->addAnalysis($analyser->fromFile(__DIR__.'/Fixtures/InheritProperties/Ancestor.php'));
+        $analysis = $this->analysisFromFixtures([
+            'AnotherNamespace/Child.php',
+            'InheritProperties/GrandAncestor.php',
+            'InheritProperties/Ancestor.php',
+        ]);
 
         $this->assertCount(3, $analysis->classes, '3 classes should\'ve been detected');
 
-        $subclasses = $analysis->getSubClasses('\OpenApiFixtures\GrandAncestor');
+        $subclasses = $analysis->getSubClasses('\OpenApi\Tests\Fixtures\InheritProperties\GrandAncestor');
         $this->assertCount(2, $subclasses, 'GrandAncestor has 2 subclasses');
-        $this->assertSame(['\OpenApiFixtures\Ancestor', '\AnotherNamespace\Child'], array_keys($subclasses));
-        $this->assertSame(['\AnotherNamespace\Child'], array_keys($analysis->getSubClasses('\OpenApiFixtures\Ancestor')));
+        $this->assertSame(
+            ['\OpenApi\Tests\Fixtures\InheritProperties\Ancestor', '\AnotherNamespace\Child'],
+            array_keys($subclasses)
+        );
+        $this->assertSame(
+            ['\AnotherNamespace\Child'],
+            array_keys($analysis->getSubClasses('\OpenApi\Tests\Fixtures\InheritProperties\Ancestor'))
+        );
     }
 
-    public function testGetAncestorClasses()
+    public function testGetAllAncestorClasses()
     {
-        $analyser = new StaticAnalyser();
-        $analysis = $analyser->fromFile(__DIR__.'/Fixtures/InheritProperties/Child.php');
-        $analysis->addAnalysis($analyser->fromFile(__DIR__.'/Fixtures/InheritProperties/GrandAncestor.php'));
-        $analysis->addAnalysis($analyser->fromFile(__DIR__.'/Fixtures/InheritProperties/Ancestor.php'));
+        $analysis = $this->analysisFromFixtures([
+            'AnotherNamespace/Child.php',
+            'InheritProperties/GrandAncestor.php',
+            'InheritProperties/Ancestor.php',
+        ]);
 
         $this->assertCount(3, $analysis->classes, '3 classes should\'ve been detected');
 
         $superclasses = $analysis->getSuperClasses('\AnotherNamespace\Child');
         $this->assertCount(2, $superclasses, 'Child has a chain of 2 super classes');
-        $this->assertSame(['\OpenApiFixtures\Ancestor', '\OpenApiFixtures\GrandAncestor'], array_keys($superclasses));
-        $this->assertSame(['\OpenApiFixtures\GrandAncestor'], array_keys($analysis->getSuperClasses('\OpenApiFixtures\Ancestor')));
+        $this->assertSame(
+            ['\OpenApi\Tests\Fixtures\InheritProperties\Ancestor', '\OpenApi\Tests\Fixtures\InheritProperties\GrandAncestor'],
+            array_keys($superclasses)
+        );
+        $this->assertSame(
+            ['\OpenApi\Tests\Fixtures\InheritProperties\GrandAncestor'],
+            array_keys($analysis->getSuperClasses('\OpenApi\Tests\Fixtures\InheritProperties\Ancestor'))
+        );
+    }
+
+    public function testGetDirectAncestorClass()
+    {
+        $analysis = $this->analysisFromFixtures([
+            'AnotherNamespace/Child.php',
+            'InheritProperties/GrandAncestor.php',
+            'InheritProperties/Ancestor.php',
+        ]);
+
+        $this->assertCount(3, $analysis->classes, '3 classes should\'ve been detected');
+
+        $superclasses = $analysis->getSuperClasses('\AnotherNamespace\Child', true);
+        $this->assertCount(1, $superclasses, 'Child has 1 parent class');
+        $this->assertSame(
+            ['\OpenApi\Tests\Fixtures\InheritProperties\Ancestor'],
+            array_keys($superclasses)
+        );
+        $this->assertSame(
+            ['\OpenApi\Tests\Fixtures\InheritProperties\GrandAncestor'],
+            array_keys($analysis->getSuperClasses('\OpenApi\Tests\Fixtures\InheritProperties\Ancestor', true))
+        );
+    }
+
+    public function testGetInterfacesOfClass()
+    {
+        $analysis = $this->analysisFromFixtures([
+            'Parser/User.php',
+            'Parser/UserInterface.php',
+            'Parser/OtherInterface.php',
+        ]);
+
+        $this->assertCount(1, $analysis->classes);
+        $this->assertCount(2, $analysis->interfaces);
+
+        $interfaces = $analysis->getInterfacesOfClass('\OpenApi\Tests\Fixtures\Parser\User');
+        $this->assertCount(2, $interfaces);
+        $this->assertSame([
+            '\OpenApi\Tests\Fixtures\Parser\UserInterface',
+            '\OpenApi\Tests\Fixtures\Parser\OtherInterface',
+        ], array_keys($interfaces));
+    }
+
+    public function testGetTraitsOfClass()
+    {
+        $analysis = $this->analysisFromFixtures([
+            'Parser/User.php',
+            'Parser/HelloTrait.php',
+            'Parser/OtherTrait.php',
+            'Parser/AsTrait.php',
+            'Parser/StaleTrait.php',
+        ]);
+
+        $this->assertCount(1, $analysis->classes);
+        $this->assertCount(4, $analysis->traits);
+
+        $traits = $analysis->getTraitsOfClass('\OpenApi\Tests\Fixtures\Parser\User');
+        $this->assertSame([
+            '\OpenApi\Tests\Fixtures\Parser\HelloTrait',
+            '\OpenApi\Tests\Fixtures\Parser\OtherTrait',
+            '\OpenApi\Tests\Fixtures\Parser\AsTrait',
+        ], array_keys($traits));
     }
 }

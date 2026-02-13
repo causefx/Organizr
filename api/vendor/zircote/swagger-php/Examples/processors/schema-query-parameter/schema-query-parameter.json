@@ -1,0 +1,87 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "Example of using a custom processor in swagger-php",
+        "version": "1.0.0"
+    },
+    "paths": {
+        "\/products\/{id}": {
+            "get": {
+                "tags": [
+                    "Products"
+                ],
+                "operationId": "399b71a7672f0a46be1b5f4c120c355d",
+                "responses": {
+                    "200": {
+                        "description": "A single product",
+                        "content": {
+                            "application\/json": {
+                                "schema": {
+                                    "$ref": "#\/components\/schemas\/Product"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "\/products\/search": {
+            "get": {
+                "tags": [
+                    "Products"
+                ],
+                "summary": "Controller that takes all `Product` properties as query parameter.",
+                "operationId": "178f74de3417eec20dee95709821e6ca",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "query",
+                        "required": false
+                    },
+                    {
+                        "name": "name",
+                        "in": "query",
+                        "required": false
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "A list of matching products",
+                        "content": {
+                            "application\/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#\/components\/schemas\/Product"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "Product": {
+                "title": "Product",
+                "description": "A simple product model",
+                "properties": {
+                    "id": {
+                        "description": "The unique identifier of a product in our catalog.",
+                        "type": "integer",
+                        "format": "int64",
+                        "example": 1
+                    },
+                    "name": {
+                        "type": "string",
+                        "format": "int64",
+                        "example": 1
+                    }
+                },
+                "type": "object"
+            }
+        }
+    }
+}

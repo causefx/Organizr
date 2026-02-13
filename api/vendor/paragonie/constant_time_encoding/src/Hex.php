@@ -2,8 +2,18 @@
 declare(strict_types=1);
 namespace ParagonIE\ConstantTime;
 
+use RangeException;
+use SensitiveParameter;
+use SodiumException;
+use TypeError;
+use function extension_loaded;
+use function pack;
+use function sodium_bin2hex;
+use function sodium_hex2bin;
+use function unpack;
+
 /**
- *  Copyright (c) 2016 - 2018 Paragon Initiative Enterprises.
+ *  Copyright (c) 2016 - 2022 Paragon Initiative Enterprises.
  *  Copyright (c) 2014 Steve "Sc00bz" Thomas (steve at tobtu dot com)
  *
  *  Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -37,19 +47,25 @@ abstract class Hex implements EncoderInterface
      *
      * @param string $binString (raw binary)
      * @return string
-     * @throws \TypeError
+     * @throws TypeError
      */
-    public static function encode(string $binString): string
-    {
-        /** @var string $hex */
+    public static function encode(
+        #[SensitiveParameter]
+        string $binString
+    ): string {
+        if (extension_loaded('sodium')) {
+            try {
+                return sodium_bin2hex($binString);
+            } catch (SodiumException $ex) {
+                throw new RangeException($ex->getMessage(), $ex->getCode(), $ex);
+            }
+        }
         $hex = '';
         $len = Binary::safeStrlen($binString);
         for ($i = 0; $i < $len; ++$i) {
             /** @var array<int, int> $chunk */
-            $chunk = \unpack('C', Binary::safeSubstr($binString, $i, 1));
-            /** @var int $c */
+            $chunk = unpack('C', $binString[$i]);
             $c = $chunk[1] & 0xf;
-            /** @var int $b */
             $b = $chunk[1] >> 4;
 
             $hex .= pack(
@@ -67,21 +83,19 @@ abstract class Hex implements EncoderInterface
      *
      * @param string $binString (raw binary)
      * @return string
-     * @throws \TypeError
+     * @throws TypeError
      */
-    public static function encodeUpper(string $binString): string
-    {
-        /** @var string $hex */
+    public static function encodeUpper(
+        #[SensitiveParameter]
+        string $binString
+    ): string {
         $hex = '';
-        /** @var int $len */
         $len = Binary::safeStrlen($binString);
 
         for ($i = 0; $i < $len; ++$i) {
             /** @var array<int, int> $chunk */
-            $chunk = \unpack('C', Binary::safeSubstr($binString, $i, 2));
-            /** @var int $c */
+            $chunk = unpack('C', $binString[$i]);
             $c = $chunk[1] & 0xf;
-            /** @var int $b */
             $b = $chunk[1] >> 4;
 
             $hex .= pack(
@@ -97,60 +111,59 @@ abstract class Hex implements EncoderInterface
      * Convert a hexadecimal string into a binary string without cache-timing
      * leaks
      *
-     * @param string $hexString
+     * @param string $encodedString
      * @param bool $strictPadding
      * @return string (raw binary)
-     * @throws \RangeException
+     * @throws RangeException
      */
-    public static function decode(string $hexString, bool $strictPadding = false): string
-    {
-        /** @var int $hex_pos */
+    public static function decode(
+        #[SensitiveParameter]
+        string $encodedString,
+        bool $strictPadding = false
+    ): string {
+        if (extension_loaded('sodium') && $strictPadding) {
+            try {
+                return sodium_hex2bin($encodedString);
+            } catch (SodiumException $ex) {
+                throw new RangeException($ex->getMessage(), $ex->getCode(), $ex);
+            }
+        }
         $hex_pos = 0;
-        /** @var string $bin */
         $bin = '';
-        /** @var int $c_acc */
         $c_acc = 0;
-        /** @var int $hex_len */
-        $hex_len = Binary::safeStrlen($hexString);
-        /** @var int $state */
+        $hex_len = Binary::safeStrlen($encodedString);
         $state = 0;
         if (($hex_len & 1) !== 0) {
             if ($strictPadding) {
-                throw new \RangeException(
+                throw new RangeException(
                     'Expected an even number of hexadecimal characters'
                 );
             } else {
-                $hexString = '0' . $hexString;
+                $encodedString = '0' . $encodedString;
                 ++$hex_len;
             }
         }
 
-        /** @var array<int, ing> $chunk */
-        $chunk = \unpack('C*', $hexString);
+        /** @var array<int, int> $chunk */
+        $chunk = unpack('C*', $encodedString);
         while ($hex_pos < $hex_len) {
             ++$hex_pos;
-            /** @var int $c */
             $c = $chunk[$hex_pos];
-            /** @var int $c_num */
             $c_num = $c ^ 48;
-            /** @var int $c_num0 */
             $c_num0 = ($c_num - 10) >> 8;
-            /** @var int $c_alpha */
             $c_alpha = ($c & ~32) - 55;
-            /** @var int $c_alpha0 */
             $c_alpha0 = (($c_alpha - 10) ^ ($c_alpha - 16)) >> 8;
 
             if (($c_num0 | $c_alpha0) === 0) {
-                throw new \RangeException(
-                    'hexEncode() only expects hexadecimal characters'
+                throw new RangeException(
+                    'Expected hexadecimal character'
                 );
             }
-            /** @var int $c_val */
             $c_val = ($c_num0 & $c_num) | ($c_alpha & $c_alpha0);
             if ($state === 0) {
                 $c_acc = $c_val * 16;
             } else {
-                $bin .= \pack('C', $c_acc | $c_val);
+                $bin .= pack('C', $c_acc | $c_val);
             }
             $state ^= 1;
         }

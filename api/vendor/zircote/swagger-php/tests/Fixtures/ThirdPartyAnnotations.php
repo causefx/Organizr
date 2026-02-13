@@ -1,36 +1,30 @@
 <?php declare(strict_types=1);
 
-namespace OpenApiFixtures;
+namespace OpenApi\Tests\Fixtures;
 
 /**
  * @OA\Info(title="Fixture for ParserTest", version="test")
  * Based on the examplefrom http://framework.zend.com/manual/current/en/modules/zend.form.quick-start.html
  */
-use Zend\Form\Annotation;
+use AnotherNamespace\Annotations as Annotation;
 
 /**
- * @Annotation\Name("user")
- * @Annotation\Hydrator("Zend\Stdlib\Hydrator\ObjectProperty")
+ * @Annotation\Unrelated("user")
  */
 class ThirdPartyAnnotations
 {
     /**
-     * @Annotation\Exclude()
+     * @Annotation\Unrelated()
      */
     public $id;
 
     /**
-     * @Annotation\Filter({"name":"StringTrim"})
-     * @Annotation\Validator({"name":"StringLength", "options":{"min":1, "max":25}})
-     * @Annotation\Validator({"name":"Regex", "options":{"pattern":"/^[a-zA-Z][a-zA-Z0-9_-]{0,24}$/"}})
-     * @Annotation\Attributes({"type":"text"})
-     * @Annotation\Options({"label":"Username:"})
+     * @Annotation\Unrelated("user")
      */
     public $username;
 
     /**
-     * @Annotation\Type("Zend\Form\Element\Email")
-     * @Annotation\Options({"label":"Your email address:"})
+     * @Annotation\Unrelated("email")
      */
     public $email;
 

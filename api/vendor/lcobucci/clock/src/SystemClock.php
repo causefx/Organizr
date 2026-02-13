@@ -8,13 +8,11 @@ use DateTimeZone;
 
 use function date_default_timezone_get;
 
-final class SystemClock implements Clock
+/** @immutable */
+final readonly class SystemClock implements Clock
 {
-    private DateTimeZone $timezone;
-
-    public function __construct(DateTimeZone $timezone)
+    public function __construct(private DateTimeZone $timezone)
     {
-        $this->timezone = $timezone;
     }
 
     public static function fromUTC(): self

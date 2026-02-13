@@ -16,6 +16,7 @@ namespace Stripe;
  * @property string $object String representing the object's type. Objects of the same type share the same value.
  * @property null|\Stripe\StripeObject $address The customer's address.
  * @property int $balance Current balance, if any, being stored on the customer. If negative, the customer has credit to apply to their next invoice. If positive, the customer has an amount owed that will be added to their next invoice. The balance does not refer to any unpaid invoices; it solely takes into account amounts that have yet to be successfully applied to any invoice. This balance is only taken into account as invoices are finalized.
+ * @property null|\Stripe\CashBalance $cash_balance The current funds being held by Stripe on behalf of the customer. These funds can be applied towards payment intents with source &quot;cash_balance&quot;.The settings[reconciliation_mode] field describes whether these funds are applied to such payment intents manually or automatically.
  * @property int $created Time at which the object was created. Measured in seconds since the Unix epoch.
  * @property null|string $currency Three-letter <a href="https://stripe.com/docs/currencies">ISO code for the currency</a> the customer can be charged in for recurring billing purposes.
  * @property null|string|\Stripe\Account|\Stripe\AlipayAccount|\Stripe\BankAccount|\Stripe\BitcoinReceiver|\Stripe\Card|\Stripe\Source $default_source <p>ID of the default payment source for the customer.</p><p>If you are using payment methods created via the PaymentMethods API, see the <a href="https://stripe.com/docs/api/customers/object#customer_object-invoice_settings-default_payment_method">invoice_settings.default_payment_method</a> field instead.</p>
@@ -48,6 +49,7 @@ class Customer extends ApiResource
     use ApiOperations\Delete;
     use ApiOperations\NestedResource;
     use ApiOperations\Retrieve;
+    use ApiOperations\Search;
     use ApiOperations\Update;
 
     const TAX_EXEMPT_EXEMPT = 'exempt';
@@ -100,6 +102,52 @@ class Customer extends ApiResource
         return $obj;
     }
 
+    /**
+     * @param null|array $params
+     * @param null|array|string $opts
+     *
+     * @throws \Stripe\Exception\ApiErrorException if the request fails
+     *
+     * @return \Stripe\SearchResult<Customer> the customer search results
+     */
+    public static function search($params = null, $opts = null)
+    {
+        $url = '/v1/customers/search';
+
+        return self::_searchResource($url, $params, $opts);
+    }
+
+    const PATH_CASH_BALANCE = '/cash_balance';
+
+    /**
+     * @param string $id the ID of the customer to which the cash balance belongs
+     * @param null|array $params
+     * @param null|array|string $opts
+     * @param mixed $cashBalanceId
+     *
+     * @throws \Stripe\Exception\ApiErrorException if the request fails
+     *
+     * @return \Stripe\cash_balance
+     */
+    public static function retrieveCashBalance($id, $cashBalanceId, $params = null, $opts = null)
+    {
+        return self::_retrieveNestedResource($id, static::PATH_CASH_BALANCE, $params, $opts);
+    }
+
+    /**
+     * @param string $id the ID of the customer to which the cash balance belongs
+     * @param null|array $params
+     * @param null|array|string $opts
+     * @param mixed $cashBalanceId
+     *
+     * @throws \Stripe\Exception\ApiErrorException if the request fails
+     *
+     * @return \Stripe\cash_balance
+     */
+    public static function updateCashBalance($id, $cashBalanceId, $params = null, $opts = null)
+    {
+        return self::_updateNestedResource($id, static::PATH_CASH_BALANCE, $params, $opts);
+    }
     const PATH_BALANCE_TRANSACTIONS = '/balance_transactions';
 
     /**

@@ -1,6 +1,6 @@
 # Constant-Time Encoding
 
-[![Build Status](https://travis-ci.org/paragonie/constant_time_encoding.svg?branch=master)](https://travis-ci.org/paragonie/constant_time_encoding)
+[![Build Status](https://github.com/paragonie/constant_time_encoding/actions/workflows/ci.yml/badge.svg)](https://github.com/paragonie/constant_time_encoding/actions)
 [![Latest Stable Version](https://poser.pugx.org/paragonie/constant_time_encoding/v/stable)](https://packagist.org/packages/paragonie/constant_time_encoding)
 [![Latest Unstable Version](https://poser.pugx.org/paragonie/constant_time_encoding/v/unstable)](https://packagist.org/packages/paragonie/constant_time_encoding)
 [![License](https://poser.pugx.org/paragonie/constant_time_encoding/license)](https://packagist.org/packages/paragonie/constant_time_encoding)
@@ -11,7 +11,7 @@ this library aims to offer character encoding functions that do not leak
 information about what you are encoding/decoding via processor cache 
 misses. Further reading on [cache-timing attacks](http://blog.ircmaxell.com/2014/11/its-all-about-time.html).
 
-Our fork offers the following enchancements:
+Our fork offers the following enhancements:
 
 * `mbstring.func_overload` resistance
 * Unit tests
@@ -36,7 +36,7 @@ composer require paragonie/constant_time_encoding
 ## How to Use
 
 ```php
-use \ParagonIE\ConstantTime\Encoding;
+use ParagonIE\ConstantTime\Encoding;
 
 // possibly (if applicable): 
 // require 'vendor/autoload.php';
@@ -63,8 +63,8 @@ If you only need a particular variant, you can just reference the
 required class like so:
 
 ```php
-use \ParagonIE\ConstantTime\Base64;
-use \ParagonIE\ConstantTime\Base32;
+use ParagonIE\ConstantTime\Base64;
+use ParagonIE\ConstantTime\Base32;
 
 $data = random_bytes(32);
 echo Base64::encode($data), "\n";
@@ -77,3 +77,8 @@ Example output:
 1VilPkeVqirlPifk5scbzcTTbMT2clp+Zkyv9VFFasE=
 2vmkkpshswvcvzj6e7sonry3zxcng3ge6zzfu7tgjsx7kukfnlaq====
 ```
+
+## Support Contracts
+
+If your company uses this library in their products or services, you may be
+interested in [purchasing a support contract from Paragon Initiative Enterprises](https://paragonie.com/enterprise).

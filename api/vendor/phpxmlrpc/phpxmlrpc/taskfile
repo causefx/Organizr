@@ -1,0 +1,106 @@
+#!/usr/bin/env bash
+
+set -e
+
+# @todo test all commands on mac, windows-wsl. If there are issues, rewrite this in (plain, no dependencies) php or make it a polyglot?
+
+# download the demo files and unzip them in the 'demo' folder
+function download_demos() {
+    # @todo check for presence of curl, tar, grep, sed and tr first
+    # NB: we always get the demos matching the current version, not the last one available
+    #TAG=$(curl -s https://api.github.com/repos/gggeek/phpxmlrpc/releases/latest | grep "tag_name" | cut -d : -f 2,3 | tr -d \" | tr -d , | tr -d ' ')
+    TAG=$(grep 'public \+static \+$xmlrpcVersion *=' src/PhpXmlRpc.php | sed 's/public \+static \+$xmlrpcVersion *= *//' | tr -d ' ' | tr -d \" | tr -d ';' | tr -d "'")
+    curl -fsSL -o demofiles.tgz "https://github.com/gggeek/phpxmlrpc/releases/download/${TAG}/demofiles.tgz"
+    tar -xvzf demofiles.tgz
+    rm demofiles.tgz
+}
+
+# remove the 'demo' folder
+function remove_demos() {
+    ROOT_DIR="$(pwd)"
+    if [ -d "${ROOT_DIR}/demo" ]; then rm -rf "${ROOT_DIR}/demo"; fi
+}
+
+# @todo can we find a better name than this?
+# download and install the visual-editing component into the debugger
+function setup_debugger_visualeditor() {
+    ROOT_DIR="$(pwd)"
+    cd "${TMPDIR-/tmp}"
+    # avoid use of npm - use as few dependencies as possible
+    # @todo check for presence of npm first and use it if found - note that that would leave on disk much more stuff than the manual method...
+    # @todo check for presence of curl, grep, cut, tr and unzip first; if unzip is missing but tar is present, download tarball instead
+    # @todo should we filter the release number, eg. removing betas and anything above 0.6.x (or 0.x) ?
+    TAG=$(curl -s https://api.github.com/repos/gggeek/jsxmlrpc/releases/latest | grep "tag_name" | cut -d : -f 2,3 | tr -d \" | tr -d , | tr -d ' ')
+    #TAG="$(npm show @jsxmlrpc/jsxmlrpc@0.6 version | tail -1 | awk '{print $2}' | tr -d "'")"
+    curl -fsSL -o jsxmlrpc.zip "https://github.com/gggeek/jsxmlrpc/archive/refs/tags/${TAG}.zip"
+    unzip jsxmlrpc.zip
+    mv jsxmlrpc-* jsxmlrpc
+    if [ ! -d "${ROOT_DIR}/debugger/jsxmlrpc" ]; then mkdir -p "${ROOT_DIR}/debugger/jsxmlrpc"; fi
+    cp -R jsxmlrpc/lib "${ROOT_DIR}/debugger/jsxmlrpc"
+    cp -R jsxmlrpc/debugger "${ROOT_DIR}/debugger/jsxmlrpc"
+    rm -rf jsxmlrpc*
+}
+
+# remove the visual-editing component from the debugger
+function remove_debugger_visualeditor() {
+    ROOT_DIR="$(pwd)"
+    if [ -d "${ROOT_DIR}/debugger/jsxmlrpc" ]; then rm -rf "${ROOT_DIR}/debugger/jsxmlrpc"; fi
+}
+
+# arg: $TAG. Replaces the lib version tag in all files (source and docs) known to use it
+function tag_code() {
+    TAG="$1"
+    if [ -z "${TAG}" ]; then
+        echo "Error: miss first argument: tag" >&2
+        exit 1
+    fi
+    sed -i -e "s/public \+static \+\$xmlrpcVersion *=.\+/public static \$xmlrpcVersion = \"$TAG\";/" src/PhpXmlRpc.php
+    sed -i -e "3s/.*/$TAG/" doc/manual/phpxmlrpc_manual.adoc
+    sed -i -e "s/PhpXmlRpc\\\\PhpXmlRpc::\$xmlrpcVersion *=.\+/PhpXmlRpc\\\\PhpXmlRpc::\$xmlrpcVersion = \"$TAG\"/" doc/manual/phpxmlrpc_manual.adoc
+    DATE=$(date +%Y/%m/%d)
+    sed -i -e "1s|.*|## XML-RPC for PHP version $TAG - $DATE|" NEWS.md
+}
+
+# install the git hooks useful for development of this library
+function setup_git_hooks() {
+    if [ -f "$(pwd)/.git/hooks/pre-push" ]; then
+        echo "ERROR: git pre-push hook already exists. Please check and remove file $(pwd)/.git/hooks/pre-push" >&2
+        exit 1
+    else
+        ln -s "$(pwd)/.githooks/pre-push.sh" "$(pwd)/.git/hooks/pre-push"
+    fi
+}
+
+# prints this help text
+function help() {
+    # @todo allow a tag such as `# @internal` to denote functions as not available for external execution
+    declare -A DESCRIPTIONS
+    local CMD MAX LEN
+    echo "$0 <task> <args>"
+    echo "Tasks:"
+    MAX=-1
+    for CMD in $(compgen -A function); do
+        LEN=${#CMD}
+        ((LEN > MAX)) && MAX=$LEN
+        DESCRIPTIONS[$CMD]=$(grep "function $CMD(" -B 1 "${BASH_SOURCE[0]}" | grep '^#' | grep -v '@todo' | sed 's/^# *//')
+    done
+    MAX=$((MAX + 4))
+    for CMD in $(compgen -A function); do
+        if [ -z "${DESCRIPTIONS[$CMD]}" ]; then
+            echo "    ${CMD}"
+        else
+            printf "%-${MAX}s %s\n" "    ${CMD}" "${DESCRIPTIONS[$CMD]}"
+            #echo "    ${CMD}: ${DESCRIPTIONS[$CMD]}"
+        fi
+
+    done
+}
+
+if [ $# -eq 0 ]; then
+    help
+else
+    cd "$(dirname -- "$(realpath "${BASH_SOURCE[0]}")")"
+
+    TIMEFORMAT="Task completed in %3lR"
+    time ${@}
+fi

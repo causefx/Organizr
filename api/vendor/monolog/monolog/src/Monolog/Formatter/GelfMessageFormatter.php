@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /*
  * This file is part of the Monolog package.
@@ -11,125 +11,139 @@
 
 namespace Monolog\Formatter;
 
-use Monolog\Logger;
+use Monolog\Level;
 use Gelf\Message;
+use Monolog\Utils;
+use Monolog\LogRecord;
 
 /**
  * Serializes a log message to GELF
- * @see http://www.graylog2.org/about/gelf
+ * @see http://docs.graylog.org/en/latest/pages/gelf.html
  *
  * @author Matt Lehner <mlehner@gmail.com>
  */
 class GelfMessageFormatter extends NormalizerFormatter
 {
-    const DEFAULT_MAX_LENGTH = 32766;
+    protected const DEFAULT_MAX_LENGTH = 32766;
 
     /**
      * @var string the name of the system for the Gelf log message
      */
-    protected $systemName;
+    protected string $systemName;
 
     /**
      * @var string a prefix for 'extra' fields from the Monolog record (optional)
      */
-    protected $extraPrefix;
+    protected string $extraPrefix;
 
     /**
      * @var string a prefix for 'context' fields from the Monolog record (optional)
      */
-    protected $contextPrefix;
+    protected string $contextPrefix;
 
     /**
      * @var int max length per field
      */
-    protected $maxLength;
+    protected int $maxLength;
 
     /**
      * Translates Monolog log levels to Graylog2 log priorities.
      */
-    private $logLevels = array(
-        Logger::DEBUG     => 7,
-        Logger::INFO      => 6,
-        Logger::NOTICE    => 5,
-        Logger::WARNING   => 4,
-        Logger::ERROR     => 3,
-        Logger::CRITICAL  => 2,
-        Logger::ALERT     => 1,
-        Logger::EMERGENCY => 0,
-    );
-
-    public function __construct($systemName = null, $extraPrefix = null, $contextPrefix = 'ctxt_', $maxLength = null)
+    private function getGraylog2Priority(Level $level): int
     {
-        parent::__construct('U.u');
-
-        $this->systemName = $systemName ?: gethostname();
-
-        $this->extraPrefix = $extraPrefix;
-        $this->contextPrefix = $contextPrefix;
-        $this->maxLength = is_null($maxLength) ? self::DEFAULT_MAX_LENGTH : $maxLength;
+        return match ($level) {
+            Level::Debug     => 7,
+            Level::Info      => 6,
+            Level::Notice    => 5,
+            Level::Warning   => 4,
+            Level::Error     => 3,
+            Level::Critical  => 2,
+            Level::Alert     => 1,
+            Level::Emergency => 0,
+        };
     }
 
     /**
-     * {@inheritdoc}
+     * @throws \RuntimeException
      */
-    public function format(array $record)
+    public function __construct(?string $systemName = null, ?string $extraPrefix = null, string $contextPrefix = 'ctxt_', ?int $maxLength = null)
     {
-        $record = parent::format($record);
+        if (!class_exists(Message::class)) {
+            throw new \RuntimeException('Composer package graylog2/gelf-php is required to use Monolog\'s GelfMessageFormatter');
+        }
 
-        if (!isset($record['datetime'], $record['message'], $record['level'])) {
-            throw new \InvalidArgumentException('The record should at least contain datetime, message and level keys, '.var_export($record, true).' given');
+        parent::__construct('U.u');
+
+        $this->systemName = (null === $systemName || $systemName === '') ? (string) gethostname() : $systemName;
+
+        $this->extraPrefix = null === $extraPrefix ? '' : $extraPrefix;
+        $this->contextPrefix = $contextPrefix;
+        $this->maxLength = null === $maxLength ? self::DEFAULT_MAX_LENGTH : $maxLength;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function format(LogRecord $record): Message
+    {
+        $context = $extra = [];
+        if (isset($record->context)) {
+            /** @var array<array<mixed>|bool|float|int|string|null> $context */
+            $context = parent::normalize($record->context);
+        }
+        if (isset($record->extra)) {
+            /** @var array<array<mixed>|bool|float|int|string|null> $extra */
+            $extra = parent::normalize($record->extra);
         }
 
         $message = new Message();
         $message
-            ->setTimestamp($record['datetime'])
-            ->setShortMessage((string) $record['message'])
+            ->setTimestamp($record->datetime)
+            ->setShortMessage($record->message)
             ->setHost($this->systemName)
-            ->setLevel($this->logLevels[$record['level']]);
+            ->setLevel($this->getGraylog2Priority($record->level));
 
-        // message length + system name length + 200 for padding / metadata 
-        $len = 200 + strlen((string) $record['message']) + strlen($this->systemName);
+        // message length + system name length + 200 for padding / metadata
+        $len = 200 + \strlen($record->message) + \strlen($this->systemName);
 
         if ($len > $this->maxLength) {
-            $message->setShortMessage(substr($record['message'], 0, $this->maxLength));
+            $message->setShortMessage(Utils::substr($record->message, 0, $this->maxLength));
         }
 
-        if (isset($record['channel'])) {
-            $message->setFacility($record['channel']);
-        }
-        if (isset($record['extra']['line'])) {
-            $message->setLine($record['extra']['line']);
-            unset($record['extra']['line']);
-        }
-        if (isset($record['extra']['file'])) {
-            $message->setFile($record['extra']['file']);
-            unset($record['extra']['file']);
+        if (isset($record->channel)) {
+            $message->setAdditional('facility', $record->channel);
         }
 
-        foreach ($record['extra'] as $key => $val) {
-            $val = is_scalar($val) || null === $val ? $val : $this->toJson($val);
-            $len = strlen($this->extraPrefix . $key . $val);
+        foreach ($extra as $key => $val) {
+            $key = (string) preg_replace('#[^\w.-]#', '-', (string) $key);
+            $val = \is_bool($val) ? ($val ? 1 : 0) : $val;
+            $val = \is_scalar($val) || null === $val ? $val : $this->toJson($val);
+            $len = \strlen($this->extraPrefix . $key . $val);
             if ($len > $this->maxLength) {
-                $message->setAdditional($this->extraPrefix . $key, substr($val, 0, $this->maxLength));
-                break;
+                $message->setAdditional($this->extraPrefix . $key, Utils::substr((string) $val, 0, $this->maxLength));
+
+                continue;
             }
             $message->setAdditional($this->extraPrefix . $key, $val);
         }
 
-        foreach ($record['context'] as $key => $val) {
-            $val = is_scalar($val) || null === $val ? $val : $this->toJson($val);
-            $len = strlen($this->contextPrefix . $key . $val);
+        foreach ($context as $key => $val) {
+            $key = (string) preg_replace('#[^\w.-]#', '-', (string) $key);
+            $val = \is_bool($val) ? ($val ? 1 : 0) : $val;
+            $val = \is_scalar($val) || null === $val ? $val : $this->toJson($val);
+            $len = \strlen($this->contextPrefix . $key . $val);
             if ($len > $this->maxLength) {
-                $message->setAdditional($this->contextPrefix . $key, substr($val, 0, $this->maxLength));
-                break;
+                $message->setAdditional($this->contextPrefix . $key, Utils::substr((string) $val, 0, $this->maxLength));
+
+                continue;
             }
             $message->setAdditional($this->contextPrefix . $key, $val);
         }
 
-        if (null === $message->getFile() && isset($record['context']['exception']['file'])) {
-            if (preg_match("/^(.+):([0-9]+)$/", $record['context']['exception']['file'], $matches)) {
-                $message->setFile($matches[1]);
-                $message->setLine($matches[2]);
+        if (!$message->hasAdditional('file') && isset($context['exception']['file'])) {
+            if (1 === preg_match("/^(.+):([0-9]+)$/", $context['exception']['file'], $matches)) {
+                $message->setAdditional('file', $matches[1]);
+                $message->setAdditional('line', $matches[2]);
             }
         }
 

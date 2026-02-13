@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 namespace Bcremer\LineReaderTests;
 
 use Bcremer\LineReader\LineReader;
@@ -6,19 +9,21 @@ use PHPUnit\Framework\TestCase;
 
 class LineReaderTest extends TestCase
 {
-    private static $maxLines;
-    private static $testFile;
+    private static int $maxLines;
+
+    private static string $testFile;
 
     public static function setUpBeforeClass(): void
     {
-        self::$maxLines = (int)getenv('TEST_MAX_LINES') ?: 10000;
-        self::$testFile = __DIR__.'/testfile_'.self::$maxLines.'.txt';
+        self::$maxLines = (int) getenv('TEST_MAX_LINES') ?: 10000;
+        self::$testFile = __DIR__ . '/testfile_' . self::$maxLines . '.txt';
 
         if (is_file(self::$testFile)) {
             return;
         }
 
         $fh = fopen(self::$testFile, 'w');
+        self::assertIsResource($fh);
         for ($i = 1; $i <= self::$maxLines; $i++) {
             fwrite($fh, "Line $i\n");
         }
@@ -45,8 +50,6 @@ class LineReaderTest extends TestCase
     {
         $result = LineReader::readLines(self::$testFile);
 
-        self::assertInstanceOf(\Traversable::class, $result);
-
         $firstLine = 1;
         $lastLine = self::$maxLines;
         $lineCount = self::$maxLines;
@@ -60,7 +63,7 @@ class LineReaderTest extends TestCase
 
         $firstLine = 51;
         $lastLine = self::$maxLines;
-        $lineCount = self::$maxLines-50;
+        $lineCount = self::$maxLines - 50;
         $this->assertLines($lineGenerator, $firstLine, $lastLine, $lineCount);
     }
 
@@ -90,15 +93,15 @@ class LineReaderTest extends TestCase
         $lineGenerator = LineReader::readLinesBackwards(self::$testFile);
         $lineGenerator = new \LimitIterator($lineGenerator, 10, 50);
 
-        $firstLine = self::$maxLines-10;
-        $lastLine = self::$maxLines-59;
+        $firstLine = self::$maxLines - 10;
+        $lastLine = self::$maxLines - 59;
         $lineCount = 50;
         $this->assertLines($lineGenerator, $firstLine, $lastLine, $lineCount);
     }
 
     public function testEmptyFile(): void
     {
-        $testFile = __DIR__.'/testfile_empty.txt';
+        $testFile = __DIR__ . '/testfile_empty.txt';
         $content = '';
         file_put_contents($testFile, $content);
 
@@ -111,7 +114,7 @@ class LineReaderTest extends TestCase
 
     public function testFileWithLeadingAndTrailingNewlines(): void
     {
-        $testFile = __DIR__.'/testfile_space.txt';
+        $testFile = __DIR__ . '/testfile_space.txt';
 
         $content = <<<CONTENT
 
@@ -159,20 +162,20 @@ CONTENT;
     /**
      * Runs the generator and asserts on first, last and the total line count
      *
-     * @param \Traversable $generator
+     * @param \Traversable<string> $generator
      */
-    private function assertLines(\Traversable $generator, string $firstLine, int $lastLine, int $lineCount): void
+    private function assertLines(\Traversable $generator, int $firstLine, int $lastLine, int $lineCount): void
     {
         $count = 0;
         $line = '';
         foreach ($generator as $line) {
             if ($count === 0) {
-                self::assertSame("Line $firstLine", $line, 'Expect first line');
+                self::assertSame(sprintf('Line %s', $firstLine), $line, 'Expect first line');
             }
             $count++;
         }
 
-        self::assertSame("Line $lastLine", $line, 'Expect last line');
+        self::assertSame(sprintf('Line %s', $lastLine), $line, 'Expect last line');
         self::assertSame($lineCount, $count, 'Expect total line count');
     }
 }

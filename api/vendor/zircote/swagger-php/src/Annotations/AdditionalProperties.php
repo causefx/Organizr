@@ -33,5 +33,6 @@ class AdditionalProperties extends Schema
         ExternalDocumentation::class => 'externalDocs',
         Xml::class => 'xml',
         AdditionalProperties::class => 'additionalProperties',
+        Attachable::class => ['attachables'],
     ];
 }

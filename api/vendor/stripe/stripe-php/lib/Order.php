@@ -10,8 +10,8 @@ namespace Stripe;
  * create, retrieve, and pay individual orders, as well as list all orders. Orders
  * are identified by a unique, random ID.
  *
- * Related guide: <a href="https://stripe.com/docs/orders">Tax, Shipping, and
- * Inventory</a>.
+ * Related guide: <a href="https://stripe.com/docs/orders-legacy">Tax, Shipping,
+ * and Inventory</a>.
  *
  * @property string $id Unique identifier for the object.
  * @property string $object String representing the object's type. Objects of the same type share the same value.

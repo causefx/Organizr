@@ -5,32 +5,18 @@ declare(strict_types=1);
 namespace Brick\Math;
 
 /**
- * Specifies a rounding behavior for numerical operations capable of discarding precision.
- *
- * Each rounding mode indicates how the least significant returned digit of a rounded result
- * is to be calculated. If fewer digits are returned than the digits needed to represent the
- * exact numerical result, the discarded digits will be referred to as the discarded fraction
- * regardless the digits' contribution to the value of the number. In other words, considered
- * as a numerical value, the discarded fraction could have an absolute value greater than one.
+ * Specifies rounding behavior by defining how discarded digits affect the returned result when an exact value cannot
+ * be represented at the requested scale.
  */
-final class RoundingMode
+enum RoundingMode
 {
-    /**
-     * Private constructor. This class is not instantiable.
-     *
-     * @codeCoverageIgnore
-     */
-    private function __construct()
-    {
-    }
-
     /**
      * Asserts that the requested operation has an exact result, hence no rounding is necessary.
      *
      * If this rounding mode is specified on an operation that yields a result that
      * cannot be represented at the requested scale, a RoundingNecessaryException is thrown.
      */
-    public const UNNECESSARY = 0;
+    case Unnecessary;
 
     /**
      * Rounds away from zero.
@@ -38,7 +24,7 @@ final class RoundingMode
      * Always increments the digit prior to a nonzero discarded fraction.
      * Note that this rounding mode never decreases the magnitude of the calculated value.
      */
-    public const UP = 1;
+    case Up;
 
     /**
      * Rounds towards zero.
@@ -46,62 +32,112 @@ final class RoundingMode
      * Never increments the digit prior to a discarded fraction (i.e., truncates).
      * Note that this rounding mode never increases the magnitude of the calculated value.
      */
-    public const DOWN = 2;
+    case Down;
 
     /**
      * Rounds towards positive infinity.
      *
-     * If the result is positive, behaves as for UP; if negative, behaves as for DOWN.
+     * If the result is positive, behaves as for Up; if negative, behaves as for Down.
      * Note that this rounding mode never decreases the calculated value.
      */
-    public const CEILING = 3;
+    case Ceiling;
 
     /**
      * Rounds towards negative infinity.
      *
-     * If the result is positive, behave as for DOWN; if negative, behave as for UP.
+     * If the result is positive, behaves as for Down; if negative, behaves as for Up.
      * Note that this rounding mode never increases the calculated value.
      */
-    public const FLOOR = 4;
+    case Floor;
 
     /**
      * Rounds towards "nearest neighbor" unless both neighbors are equidistant, in which case round up.
      *
-     * Behaves as for UP if the discarded fraction is >= 0.5; otherwise, behaves as for DOWN.
+     * Behaves as for Up if the discarded fraction is >= 0.5; otherwise, behaves as for Down.
      * Note that this is the rounding mode commonly taught at school.
      */
-    public const HALF_UP = 5;
+    case HalfUp;
 
     /**
      * Rounds towards "nearest neighbor" unless both neighbors are equidistant, in which case round down.
      *
-     * Behaves as for UP if the discarded fraction is > 0.5; otherwise, behaves as for DOWN.
+     * Behaves as for Up if the discarded fraction is > 0.5; otherwise, behaves as for Down.
      */
-    public const HALF_DOWN = 6;
+    case HalfDown;
 
     /**
      * Rounds towards "nearest neighbor" unless both neighbors are equidistant, in which case round towards positive infinity.
      *
-     * If the result is positive, behaves as for HALF_UP; if negative, behaves as for HALF_DOWN.
+     * If the result is positive, behaves as for HalfUp; if negative, behaves as for HalfDown.
      */
-    public const HALF_CEILING = 7;
+    case HalfCeiling;
 
     /**
      * Rounds towards "nearest neighbor" unless both neighbors are equidistant, in which case round towards negative infinity.
      *
-     * If the result is positive, behaves as for HALF_DOWN; if negative, behaves as for HALF_UP.
+     * If the result is positive, behaves as for HalfDown; if negative, behaves as for HalfUp.
      */
-    public const HALF_FLOOR = 8;
+    case HalfFloor;
 
     /**
      * Rounds towards the "nearest neighbor" unless both neighbors are equidistant, in which case rounds towards the even neighbor.
      *
-     * Behaves as for HALF_UP if the digit to the left of the discarded fraction is odd;
-     * behaves as for HALF_DOWN if it's even.
+     * Behaves as for HalfUp if the digit to the left of the discarded fraction is odd;
+     * behaves as for HalfDown if it's even.
      *
      * Note that this is the rounding mode that statistically minimizes
      * cumulative error when applied repeatedly over a sequence of calculations.
      * It is sometimes known as "Banker's rounding", and is chiefly used in the USA.
      */
-    public const HALF_EVEN = 9;
+    case HalfEven;
+
+    /**
+     * @deprecated Use RoundingMode::Unnecessary instead.
+     */
+    public const UNNECESSARY = self::Unnecessary;
+
+    /**
+     * @deprecated Use RoundingMode::Up instead.
+     */
+    public const UP = self::Up;
+
+    /**
+     * @deprecated Use RoundingMode::Down instead.
+     */
+    public const DOWN = self::Down;
+
+    /**
+     * @deprecated Use RoundingMode::Ceiling instead.
+     */
+    public const CEILING = self::Ceiling;
+
+    /**
+     * @deprecated Use RoundingMode::Floor instead.
+     */
+    public const FLOOR = self::Floor;
+
+    /**
+     * @deprecated Use RoundingMode::HalfUp instead.
+     */
+    public const HALF_UP = self::HalfUp;
+
+    /**
+     * @deprecated Use RoundingMode::HalfDown instead.
+     */
+    public const HALF_DOWN = self::HalfDown;
+
+    /**
+     * @deprecated Use RoundingMode::HalfCeiling instead.
+     */
+    public const HALF_CEILING = self::HalfCeiling;
+
+    /**
+     * @deprecated Use RoundingMode::HalfFloor instead.
+     */
+    public const HALF_FLOOR = self::HalfFloor;
+
+    /**
+     * @deprecated Use RoundingMode::HalfEven instead.
+     */
+    public const HALF_EVEN = self::HalfEven;
 }

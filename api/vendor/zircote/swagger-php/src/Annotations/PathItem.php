@@ -6,6 +6,8 @@
 
 namespace OpenApi\Annotations;
 
+use OpenApi\Generator;
+
 /**
  * @Annotation
  * A "Path Item Object": https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.0.md#path-item-object
@@ -16,88 +18,88 @@ namespace OpenApi\Annotations;
 class PathItem extends AbstractAnnotation
 {
     /**
-     * $ref See https://swagger.io/docs/specification/using-ref/
+     * $ref See https://swagger.io/docs/specification/using-ref/.
      *
      * @var string
      */
-    public $ref = UNDEFINED;
+    public $ref = Generator::UNDEFINED;
 
     /**
      * key for the Path Object (OpenApi->paths array).
      *
      * @var string
      */
-    public $path = UNDEFINED;
+    public $path = Generator::UNDEFINED;
 
     /**
      * An optional, string summary, intended to apply to all operations in this path.
      *
      * @var string
      */
-    public $summary = UNDEFINED;
+    public $summary = Generator::UNDEFINED;
 
     /**
      * A definition of a GET operation on this path.
      *
      * @var Get
      */
-    public $get = UNDEFINED;
+    public $get = Generator::UNDEFINED;
 
     /**
      * A definition of a PUT operation on this path.
      *
      * @var Put
      */
-    public $put = UNDEFINED;
+    public $put = Generator::UNDEFINED;
 
     /**
      * A definition of a POST operation on this path.
      *
      * @var Post
      */
-    public $post = UNDEFINED;
+    public $post = Generator::UNDEFINED;
 
     /**
      * A definition of a DELETE operation on this path.
      *
      * @var Delete
      */
-    public $delete = UNDEFINED;
+    public $delete = Generator::UNDEFINED;
 
     /**
      * A definition of a OPTIONS operation on this path.
      *
      * @var Options
      */
-    public $options = UNDEFINED;
+    public $options = Generator::UNDEFINED;
 
     /**
      * A definition of a HEAD operation on this path.
      *
      * @var Head
      */
-    public $head = UNDEFINED;
+    public $head = Generator::UNDEFINED;
 
     /**
      * A definition of a PATCH operation on this path.
      *
      * @var Patch
      */
-    public $patch = UNDEFINED;
+    public $patch = Generator::UNDEFINED;
 
     /**
      * A definition of a TRACE operation on this path.
      *
      * @var Trace
      */
-    public $trace = UNDEFINED;
+    public $trace = Generator::UNDEFINED;
 
     /**
      * An alternative server array to service all operations in this path.
      *
      * @var Server[]
      */
-    public $servers = UNDEFINED;
+    public $servers = Generator::UNDEFINED;
 
     /**
      * A list of parameters that are applicable for all the operations described under this path.
@@ -108,13 +110,13 @@ class PathItem extends AbstractAnnotation
      *
      * @var Parameter[]
      */
-    public $parameters = UNDEFINED;
+    public $parameters = Generator::UNDEFINED;
 
     /**
      * @inheritdoc
      */
     public static $_types = [
-        'path' => 'string'
+        'path' => 'string',
     ];
 
     /**
@@ -131,12 +133,13 @@ class PathItem extends AbstractAnnotation
         Options::class => 'options',
         Parameter::class => ['parameters'],
         Server::class => ['servers'],
+        Attachable::class => ['attachables'],
     ];
 
     /**
      * @inheritdoc
      */
     public static $_parents = [
-        OpenApi::class
+        OpenApi::class,
     ];
 }

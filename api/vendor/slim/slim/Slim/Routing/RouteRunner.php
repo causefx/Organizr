@@ -22,25 +22,17 @@ use Slim\Middleware\RoutingMiddleware;
 
 class RouteRunner implements RequestHandlerInterface
 {
-    /**
-     * @var RouteResolverInterface
-     */
-    private $routeResolver;
+    private RouteResolverInterface $routeResolver;
+
+    private RouteParserInterface $routeParser;
 
     /**
-     * @var RouteParserInterface
+     * @var RouteCollectorProxyInterface<\Psr\Container\ContainerInterface|null>
      */
-    private $routeParser;
+    private ?RouteCollectorProxyInterface $routeCollectorProxy;
 
     /**
-     * @var RouteCollectorProxyInterface|null
-     */
-    private $routeCollectorProxy;
-
-    /**
-     * @param RouteResolverInterface            $routeResolver
-     * @param RouteParserInterface              $routeParser
-     * @param RouteCollectorProxyInterface|null $routeCollectorProxy
+     * @param RouteCollectorProxyInterface<\Psr\Container\ContainerInterface|null> $routeCollectorProxy
      */
     public function __construct(
         RouteResolverInterface $routeResolver,
@@ -59,8 +51,6 @@ class RouteRunner implements RequestHandlerInterface
      * defined middleware stack. In the event that the user did not perform routing
      * it is done here
      *
-     * @param ServerRequestInterface $request
-     * @return ResponseInterface
      * @throws HttpNotFoundException
      * @throws HttpMethodNotAllowedException
      */
@@ -79,7 +69,7 @@ class RouteRunner implements RequestHandlerInterface
             );
         }
 
-        /** @var Route $route */
+        /** @var Route<\Psr\Container\ContainerInterface|null> $route */
         $route = $request->getAttribute(RouteContext::ROUTE);
         return $route->run($request);
     }

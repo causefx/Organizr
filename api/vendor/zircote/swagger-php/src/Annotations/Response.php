@@ -6,6 +6,8 @@
 
 namespace OpenApi\Annotations;
 
+use OpenApi\Generator;
+
 /**
  * @Annotation
  * A "Response Object": https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.0.md#response-object
@@ -15,18 +17,18 @@ namespace OpenApi\Annotations;
 class Response extends AbstractAnnotation
 {
     /**
-     * $ref See https://swagger.io/docs/specification/using-ref/
+     * $ref See https://swagger.io/docs/specification/using-ref/.
      *
      * @var string
      */
-    public $ref = UNDEFINED;
+    public $ref = Generator::UNDEFINED;
 
     /**
      * The key into Operations->responses array.
      *
      * @var string a HTTP Status Code or "default"
      */
-    public $response = UNDEFINED;
+    public $response = Generator::UNDEFINED;
 
     /**
      * A short description of the response.
@@ -34,7 +36,7 @@ class Response extends AbstractAnnotation
      *
      * @var string
      */
-    public $description = UNDEFINED;
+    public $description = Generator::UNDEFINED;
 
     /**
      * Maps a header name to its definition.
@@ -43,16 +45,16 @@ class Response extends AbstractAnnotation
      *
      * @var Header[]
      */
-    public $headers = UNDEFINED;
+    public $headers = Generator::UNDEFINED;
 
     /**
      * A map containing descriptions of potential response payloads.
      * The key is a media type or media type range and the value describes it.
-     * For responses that match multiple keys, only the most specific key is applicable. e.g. text/plain overrides text/*
+     * For responses that match multiple keys, only the most specific key is applicable. e.g. text/plain overrides text/*.
      *
      * @var MediaType[]
      */
-    public $content = UNDEFINED;
+    public $content = Generator::UNDEFINED;
 
     /**
      * A map of operations links that can be followed from the response.
@@ -60,7 +62,7 @@ class Response extends AbstractAnnotation
      *
      * @var array
      */
-    public $links = UNDEFINED;
+    public $links = Generator::UNDEFINED;
 
     /**
      * @inheritdoc
@@ -81,6 +83,7 @@ class Response extends AbstractAnnotation
         MediaType::class => ['content', 'mediaType'],
         Header::class => ['headers', 'header'],
         Link::class => ['links', 'link'],
+        Attachable::class => ['attachables'],
     ];
 
     /**

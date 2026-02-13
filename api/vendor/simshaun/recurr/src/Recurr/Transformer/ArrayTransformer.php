@@ -52,7 +52,7 @@ class ArrayTransformer
      *
      * @param ArrayTransformerConfig $config
      */
-    public function __construct(ArrayTransformerConfig $config = null)
+    public function __construct(?ArrayTransformerConfig $config = null)
     {
         if (!$config instanceof ArrayTransformerConfig) {
             $config = new ArrayTransformerConfig();
@@ -83,7 +83,7 @@ class ArrayTransformer
      * @return RecurrenceCollection|Recurrence[]
      * @throws InvalidWeekday
      */
-    public function transform(Rule $rule, ConstraintInterface $constraint = null, $countConstraintFailures = true)
+    public function transform(Rule $rule, ?ConstraintInterface $constraint = null, $countConstraintFailures = true)
     {
         $start = $rule->getStartDate();
         $end   = $rule->getEndDate();

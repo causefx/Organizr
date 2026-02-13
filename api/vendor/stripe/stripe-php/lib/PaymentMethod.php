@@ -5,11 +5,11 @@
 namespace Stripe;
 
 /**
- * PaymentMethod objects represent your customer's payment instruments. They can be
- * used with <a
+ * PaymentMethod objects represent your customer's payment instruments. You can use
+ * them with <a
  * href="https://stripe.com/docs/payments/payment-intents">PaymentIntents</a> to
- * collect payments or saved to Customer objects to store instrument details for
- * future payments.
+ * collect payments or save them to Customer objects to store instrument details
+ * for future payments.
  *
  * Related guides: <a
  * href="https://stripe.com/docs/payments/payment-methods">Payment Methods</a> and
@@ -30,6 +30,7 @@ namespace Stripe;
  * @property \Stripe\StripeObject $card_present
  * @property int $created Time at which the object was created. Measured in seconds since the Unix epoch.
  * @property null|string|\Stripe\Customer $customer The ID of the Customer to which this PaymentMethod is saved. This will not be set when the PaymentMethod has not been saved to a Customer.
+ * @property \Stripe\StripeObject $customer_balance
  * @property \Stripe\StripeObject $eps
  * @property \Stripe\StripeObject $fpx
  * @property \Stripe\StripeObject $giropay
@@ -42,9 +43,11 @@ namespace Stripe;
  * @property null|\Stripe\StripeObject $metadata Set of <a href="https://stripe.com/docs/api/metadata">key-value pairs</a> that you can attach to an object. This can be useful for storing additional information about the object in a structured format.
  * @property \Stripe\StripeObject $oxxo
  * @property \Stripe\StripeObject $p24
+ * @property \Stripe\StripeObject $paynow
  * @property \Stripe\StripeObject $sepa_debit
  * @property \Stripe\StripeObject $sofort
  * @property string $type The type of the PaymentMethod. An additional hash is included on the PaymentMethod with a name matching this value. It contains additional information specific to the PaymentMethod type.
+ * @property \Stripe\StripeObject $us_bank_account
  * @property \Stripe\StripeObject $wechat_pay
  */
 class PaymentMethod extends ApiResource

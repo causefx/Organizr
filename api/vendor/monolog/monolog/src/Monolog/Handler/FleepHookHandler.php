@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /*
  * This file is part of the Monolog package.
@@ -11,8 +11,10 @@
 
 namespace Monolog\Handler;
 
+use Monolog\Formatter\FormatterInterface;
 use Monolog\Formatter\LineFormatter;
-use Monolog\Logger;
+use Monolog\Level;
+use Monolog\LogRecord;
 
 /**
  * Sends logs to Fleep.io using Webhook integrations
@@ -24,14 +26,14 @@ use Monolog\Logger;
  */
 class FleepHookHandler extends SocketHandler
 {
-    const FLEEP_HOST = 'fleep.io';
+    protected const FLEEP_HOST = 'fleep.io';
 
-    const FLEEP_HOOK_URI = '/hook/';
+    protected const FLEEP_HOOK_URI = '/hook/';
 
     /**
      * @var string Webhook token (specifies the conversation where logs are sent)
      */
-    protected $token;
+    protected string $token;
 
     /**
      * Construct a new Fleep.io Handler.
@@ -39,21 +41,36 @@ class FleepHookHandler extends SocketHandler
      * For instructions on how to create a new web hook in your conversations
      * see https://fleep.io/integrations/webhooks/
      *
-     * @param  string                    $token  Webhook token
-     * @param  bool|int                  $level  The minimum logging level at which this handler will be triggered
-     * @param  bool                      $bubble Whether the messages that are handled can bubble up the stack or not
-     * @throws MissingExtensionException
+     * @param  string                    $token Webhook token
+     * @throws MissingExtensionException if OpenSSL is missing
      */
-    public function __construct($token, $level = Logger::DEBUG, $bubble = true)
-    {
-        if (!extension_loaded('openssl')) {
+    public function __construct(
+        string $token,
+        $level = Level::Debug,
+        bool $bubble = true,
+        bool $persistent = false,
+        float $timeout = 0.0,
+        float $writingTimeout = 10.0,
+        ?float $connectionTimeout = null,
+        ?int $chunkSize = null
+    ) {
+        if (!\extension_loaded('openssl')) {
             throw new MissingExtensionException('The OpenSSL PHP extension is required to use the FleepHookHandler');
         }
 
         $this->token = $token;
 
-        $connectionString = 'ssl://' . self::FLEEP_HOST . ':443';
-        parent::__construct($connectionString, $level, $bubble);
+        $connectionString = 'ssl://' . static::FLEEP_HOST . ':443';
+        parent::__construct(
+            $connectionString,
+            $level,
+            $bubble,
+            $persistent,
+            $timeout,
+            $writingTimeout,
+            $connectionTimeout,
+            $chunkSize
+        );
     }
 
     /**
@@ -63,29 +80,24 @@ class FleepHookHandler extends SocketHandler
      *
      * @return LineFormatter
      */
-    protected function getDefaultFormatter()
+    protected function getDefaultFormatter(): FormatterInterface
     {
         return new LineFormatter(null, null, true, true);
     }
 
     /**
      * Handles a log record
-     *
-     * @param array $record
      */
-    public function write(array $record)
+    public function write(LogRecord $record): void
     {
         parent::write($record);
         $this->closeSocket();
     }
 
     /**
-     * {@inheritdoc}
-     *
-     * @param  array  $record
-     * @return string
+     * @inheritDoc
      */
-    protected function generateDataStream($record)
+    protected function generateDataStream(LogRecord $record): string
     {
         $content = $this->buildContent($record);
 
@@ -94,16 +106,13 @@ class FleepHookHandler extends SocketHandler
 
     /**
      * Builds the header of the API Call
-     *
-     * @param  string $content
-     * @return string
      */
-    private function buildHeader($content)
+    private function buildHeader(string $content): string
     {
-        $header = "POST " . self::FLEEP_HOOK_URI . $this->token . " HTTP/1.1\r\n";
-        $header .= "Host: " . self::FLEEP_HOST . "\r\n";
+        $header = "POST " . static::FLEEP_HOOK_URI . $this->token . " HTTP/1.1\r\n";
+        $header .= "Host: " . static::FLEEP_HOST . "\r\n";
         $header .= "Content-Type: application/x-www-form-urlencoded\r\n";
-        $header .= "Content-Length: " . strlen($content) . "\r\n";
+        $header .= "Content-Length: " . \strlen($content) . "\r\n";
         $header .= "\r\n";
 
         return $header;
@@ -111,15 +120,12 @@ class FleepHookHandler extends SocketHandler
 
     /**
      * Builds the body of API call
-     *
-     * @param  array  $record
-     * @return string
      */
-    private function buildContent($record)
+    private function buildContent(LogRecord $record): string
     {
-        $dataArray = array(
-            'message' => $record['formatted'],
-        );
+        $dataArray = [
+            'message' => $record->formatted,
+        ];
 
         return http_build_query($dataArray);
     }

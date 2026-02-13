@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /*
  * This file is part of the Monolog package.
@@ -11,46 +11,67 @@
 
 namespace Monolog\Handler\SyslogUdp;
 
+use Monolog\Utils;
+use Socket;
+
 class UdpSocket
 {
-    const DATAGRAM_MAX_LENGTH = 65023;
+    protected const DATAGRAM_MAX_LENGTH = 65023;
 
-    protected $ip;
-    protected $port;
-    protected $socket;
+    protected string $ip;
+    protected int $port;
+    protected ?Socket $socket = null;
 
-    public function __construct($ip, $port = 514)
+    public function __construct(string $ip, int $port = 514)
     {
         $this->ip = $ip;
         $this->port = $port;
-        $this->socket = socket_create(AF_INET, SOCK_DGRAM, SOL_UDP);
     }
 
-    public function write($line, $header = "")
+    public function write(string $line, string $header = ""): void
     {
         $this->send($this->assembleMessage($line, $header));
     }
 
-    public function close()
+    public function close(): void
     {
-        if (is_resource($this->socket)) {
+        if ($this->socket instanceof Socket) {
             socket_close($this->socket);
             $this->socket = null;
         }
     }
 
-    protected function send($chunk)
+    protected function getSocket(): Socket
     {
-        if (!is_resource($this->socket)) {
-            throw new \LogicException('The UdpSocket to '.$this->ip.':'.$this->port.' has been closed and can not be written to anymore');
+        if (null !== $this->socket) {
+            return $this->socket;
         }
-        socket_sendto($this->socket, $chunk, strlen($chunk), $flags = 0, $this->ip, $this->port);
+
+        $domain = AF_INET;
+        $protocol = SOL_UDP;
+        // Check if we are using unix sockets.
+        if ($this->port === 0) {
+            $domain = AF_UNIX;
+            $protocol = IPPROTO_IP;
+        }
+
+        $socket = socket_create($domain, SOCK_DGRAM, $protocol);
+        if ($socket instanceof Socket) {
+            return $this->socket = $socket;
+        }
+
+        throw new \RuntimeException('The UdpSocket to '.$this->ip.':'.$this->port.' could not be opened via socket_create');
     }
 
-    protected function assembleMessage($line, $header)
+    protected function send(string $chunk): void
     {
-        $chunkSize = self::DATAGRAM_MAX_LENGTH - strlen($header);
+        socket_sendto($this->getSocket(), $chunk, \strlen($chunk), $flags = 0, $this->ip, $this->port);
+    }
 
-        return $header . substr($line, 0, $chunkSize);
+    protected function assembleMessage(string $line, string $header): string
+    {
+        $chunkSize = static::DATAGRAM_MAX_LENGTH - \strlen($header);
+
+        return $header . Utils::substr($line, 0, $chunkSize);
     }
 }

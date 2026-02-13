@@ -1,7 +1,7 @@
 # Sodium Compat
 
-[![Linux Build Status](https://travis-ci.org/paragonie/sodium_compat.svg?branch=master)](https://travis-ci.org/paragonie/sodium_compat)
-[![Windows Build Status](https://ci.appveyor.com/api/projects/status/itcx1vgmfqiawgbe?svg=true)](https://ci.appveyor.com/project/paragonie-scott/sodium-compat)
+[![Build Status](https://github.com/paragonie/sodium_compat/actions/workflows/ci.yml/badge.svg)](https://github.com/paragonie/sodium_compat/actions)
+[![Psalm Status](https://github.com/paragonie/sodium_compat/actions/workflows/psalm.yml/badge.svg)](https://github.com/paragonie/sodium_compat/actions)
 [![Latest Stable Version](https://poser.pugx.org/paragonie/sodium_compat/v/stable)](https://packagist.org/packages/paragonie/sodium_compat)
 [![Latest Unstable Version](https://poser.pugx.org/paragonie/sodium_compat/v/unstable)](https://packagist.org/packages/paragonie/sodium_compat)
 [![License](https://poser.pugx.org/paragonie/sodium_compat/license)](https://packagist.org/packages/paragonie/sodium_compat)
@@ -10,11 +10,46 @@
 Sodium Compat is a pure PHP polyfill for the Sodium cryptography library 
 (libsodium), a core extension in PHP 7.2.0+ and otherwise [available in PECL](https://pecl.php.net/package/libsodium).
 
-This library tentativeley supports PHP 5.2.4 - 7.x (latest), but officially
-only supports [non-EOL'd versions of PHP](https://secure.php.net/supported-versions.php).
-
 If you have the PHP extension installed, Sodium Compat will opportunistically
 and transparently use the PHP extension instead of our implementation.
+
+## Major Versions and Branches
+
+sodium_compat v1.21.0 was the last v1.x release from the master branch. From now
+on, all future releases that support PHP 5.2 - 8.0 and 32-bit integers will be
+[in the `v1.x` branch](https://github.com/paragonie/sodium_compat/tree/v1.x).
+
+Newer versions of sodium_compat (i.e., v2.0.0) will continue to live in the master
+branch, unless a new major version is needed. The goal of this work is to improve
+code readability and performance, while reducing boilerplate code.
+
+When in doubt, refer to the README file in [the master branch](https://github.com/paragonie/sodium_compat/blob/master/README.md)
+for the latest in version information.
+
+### Which version should I use?
+
+| sodium_compat version | PHP versions supported | 32-bit support? | Branch                                                        |
+|-----------------------|------------------------|-----------------|---------------------------------------------------------------|
+| `v1.x.y`              | 5.2.4 - LATEST         | YES             | [v1.x](https://github.com/paragonie/sodium_compat/tree/v1.x)  |
+| `v2.x.y`              | 8.1 - LATEST           | NO              | **master**                                                    |
+
+If you need 32-bit PHP support (`PHP_INT_SIZE == 4`), continue using sodium_compat v1.x.
+If you want improved performance and smaller dependencies, use v2.x.
+
+We recommend libraries and frameworks set a Composer version constraint as follows:
+
+```javascript
+{
+    "require": {
+        /* ... */
+        "paragonie/sodium_compat": ">= 1"
+        /* ... */
+    }
+}
+```
+
+Applications should, conversely, specify the actual version that matters to them 
+and their deployments.
 
 ## IMPORTANT!
 
@@ -25,7 +60,16 @@ If you require such an audit before you can use sodium_compat in your projects
 and have the funds for such an audit, please open an issue or contact 
 `security at paragonie dot com` so we can help get the ball rolling.
 
-If you'd like to learn more about the defensive security measures we've taken,
+However, sodium_compat has been adopted by high profile open source projects,
+such as [Joomla!](https://github.com/joomla/joomla-cms/blob/459d74686d2a638ec51149d7c44ddab8075852be/composer.json#L40)
+and [Magento](https://github.com/magento/magento2/blob/8fd89cfdf52c561ac0ca7bc20fd38ef688e201b0/composer.json#L44).
+Furthermore, sodium_compat was developed by Paragon Initiative Enterprises, a
+company that *specializes* in secure PHP development and PHP cryptography, and
+has been informally reviewed by many other security experts who also specialize
+in PHP.
+
+If you'd like to learn more about the defensive security measures we've taken
+to prevent sodium_compat from being a source of vulnerability in your systems,
 please read [*Cryptographically Secure PHP Development*](https://paragonie.com/blog/2017/02/cryptographically-secure-php-development).
 
 # Installing Sodium Compat
@@ -87,35 +131,34 @@ Non-commercial report will be facilitated through [Github issues](https://github
 We offer no guarantees of our availability to resolve questions about integrating sodium_compat into third-party
 software for free, but will strive to fix any bugs (security-related or otherwise) in our library.
 
+## Support Contracts
+
+If your company uses this library in their products or services, you may be
+interested in [purchasing a support contract from Paragon Initiative Enterprises](https://paragonie.com/enterprise).
+
 # Using Sodium Compat
 
 ## True Polyfill
 
-If you're using PHP 5.3.0 or newer and do not have the PECL extension installed,
-you can just use the [standard ext/sodium API features as-is](https://paragonie.com/book/pecl-libsodium)
-and the polyfill will work its magic.
+As per the [second vote on the libsodium RFC](https://wiki.php.net/rfc/libsodium#proposed_voting_choices),
+PHP 7.2 uses `sodium_*` instead of `\Sodium\*`.
 
 ```php
 <?php
 require_once "/path/to/sodium_compat/autoload.php";
 
-$alice_kp = \Sodium\crypto_sign_keypair();
-$alice_sk = \Sodium\crypto_sign_secretkey($alice_kp);
-$alice_pk = \Sodium\crypto_sign_publickey($alice_kp);
+$alice_kp = sodium_crypto_sign_keypair();
+$alice_sk = sodium_crypto_sign_secretkey($alice_kp);
+$alice_pk = sodium_crypto_sign_publickey($alice_kp);
 
 $message = 'This is a test message.';
-$signature = \Sodium\crypto_sign_detached($message, $alice_sk);
-if (\Sodium\crypto_sign_verify_detached($signature, $message, $alice_pk)) {
+$signature = sodium_crypto_sign_detached($message, $alice_sk);
+if (sodium_crypto_sign_verify_detached($signature, $message, $alice_pk)) {
     echo 'OK', PHP_EOL;
 } else {
     throw new Exception('Invalid signature');
 }
 ```
-
-The polyfill does not expose this API on PHP < 5.3, or if you have the PHP
-extension installed already.
-
-Since this doesn't require a namespace, this API *is* exposed on PHP 5.2.
 
 ## General-Use Polyfill
 
@@ -142,44 +185,24 @@ if (ParagonIE_Sodium_Compat::crypto_sign_verify_detached($signature, $message, $
 }
 ```
 
-Generally: If you replace `\Sodium\ ` with `ParagonIE_Sodium_Compat::`, any
+Generally: If you replace `sodium_` with `ParagonIE_Sodium_Compat::`, any
 code already written for the libsodium PHP extension should work with our
 polyfill without additional code changes.
 
+Since this doesn't require a namespace, this API *is* exposed on PHP 5.2.
+
 Since version 0.7.0, we have our own namespaced API (`ParagonIE\Sodium\*`) to allow brevity
-in software that uses PHP 5.3+. This is useful if you want to use our file cryptography 
+in software that uses PHP 5.3+. This is useful if you want to use our file cryptography
 features without writing `ParagonIE_Sodium_File` every time. This is not exposed on PHP < 5.3,
 so if your project supports PHP < 5.3, use the underscore method instead.
 
 To learn how to use Libsodium, read [*Using Libsodium in PHP Projects*](https://paragonie.com/book/pecl-libsodium).
 
-## PHP 7.2 Polyfill
-
-As per the [second vote on the libsodium RFC](https://wiki.php.net/rfc/libsodium#proposed_voting_choices),
-PHP 7.2 uses `sodium_*` instead of `\Sodium\*`.
-
-```php
-<?php
-require_once "/path/to/sodium_compat/autoload.php";
-
-$alice_kp = sodium_crypto_sign_keypair();
-$alice_sk = sodium_crypto_sign_secretkey($alice_kp);
-$alice_pk = sodium_crypto_sign_publickey($alice_kp);
-
-$message = 'This is a test message.';
-$signature = sodium_crypto_sign_detached($message, $alice_sk);
-if (sodium_crypto_sign_verify_detached($signature, $message, $alice_pk)) {
-    echo 'OK', PHP_EOL;
-} else {
-    throw new Exception('Invalid signature');
-}
-```
-
 ## Help, Sodium_Compat is Slow! How can I make it fast?
 
 There are three ways to make it fast:
 
-1. Use PHP 7.2.
+1. Use a newer version of PHP (at least 7.2).
 2. [Install the libsodium PHP extension from PECL](https://paragonie.com/book/pecl-libsodium/read/00-intro.md#installing-libsodium).
 3. Only if the previous two options are not available for you:
    1. Verify that [the processor you're using actually implements constant-time multiplication](https://bearssl.org/ctmul.html).
@@ -188,21 +211,37 @@ There are three ways to make it fast:
       without harming the security of your cryptography keys. If your processor *isn't* safe, then decide whether you
       want speed or security because you can't have both.
 
-### Help, my PHP only has 32-Bit Integers! It's super slow!
+### How can I tell if sodium_compat will be slow, at runtime?
 
-Some features of sodium_compat are ***incredibly slow* with PHP 5 on Windows**
-(in particular: public-key cryptography (encryption and signatures) is
-affected), and there is nothing we can do about that, due to platform
-restrictions on integers.
+Since version 1.8, you can use the `polyfill_is_fast()` static method to
+determine if sodium_compat will be slow at runtime.
 
-For acceptable performance, we highly recommend Windows users to version 1.0.6
-of the libsodium extension from PECL or. Alternatively, simply upgrade to PHP 7
-and the slowdown will be greatly reduced.
+```php
+<?php
+if (ParagonIE_Sodium_Compat::polyfill_is_fast()) {
+    // Use libsodium now
+    $process->execute();
+} else {
+    // Defer to a cron job or other sort of asynchronous process
+    $process->enqueue();
+}
+```
 
-This is also true of non-Windows 32-bit operating systems, or if somehow PHP
-was compiled where `PHP_INT_SIZE` equals `4` instead of `8`.
+## Documentation
+
+First, you'll want to read the [Libsodium Quick Reference](https://paragonie.com/blog/2017/06/libsodium-quick-reference-quick-comparison-similar-functions-and-which-one-use).
+It aims to answer, "Which function should I use for [common problem]?".
+
+If you don't find the answers in the Quick Reference page, check out
+[*Using Libsodium in PHP Projects*](https://paragonie.com/book/pecl-libsodium).
+
+Finally, the [official libsodium documentation](https://download.libsodium.org/doc/) 
+(which was written for the C library, not the PHP library) also contains a lot of
+insightful technical information you may find helpful.
 
 ## API Coverage
+
+**Recommended reading:** [Libsodium Quick Reference](https://paragonie.com/blog/2017/06/libsodium-quick-reference-quick-comparison-similar-functions-and-which-one-use)
 
 * Mainline NaCl Features
     * `crypto_auth()`
@@ -215,6 +254,10 @@ was compiled where `PHP_INT_SIZE` equals `4` instead of `8`.
     * `crypto_sign()`
     * `crypto_sign_open()`
 * PECL Libsodium Features
+    * `crypto_aead_aegis128l_encrypt()`
+    * `crypto_aead_aegis128l_decrypt()`
+    * `crypto_aead_aegis256_encrypt()`
+    * `crypto_aead_aegis256_decrypt()`
     * `crypto_aead_aes256gcm_encrypt()`
     * `crypto_aead_aes256gcm_decrypt()`
     * `crypto_aead_chacha20poly1305_encrypt()`
@@ -240,9 +283,44 @@ was compiled where `PHP_INT_SIZE` equals `4` instead of `8`.
     * `crypto_sign_ed25519_sk_to_curve25519()`
     * `crypto_sign_verify_detached()`
     * For advanced users only:
+        * `crypto_core_ristretto255_add()`
+        * `crypto_core_ristretto255_from_hash()`
+        * `crypto_core_ristretto255_is_valid_point()`
+        * `crypto_core_ristretto255_random()`
+        * `crypto_core_ristretto255_scalar_add()`
+        * `crypto_core_ristretto255_scalar_complement()`
+        * `crypto_core_ristretto255_scalar_invert()`
+        * `crypto_core_ristretto255_scalar_mul()`
+        * `crypto_core_ristretto255_scalar_negate()`
+        * `crypto_core_ristretto255_scalar_random()`
+        * `crypto_core_ristretto255_scalar_reduce()`
+        * `crypto_core_ristretto255_scalar_sub()`
+        * `crypto_core_ristretto255_sub()`
+        * `crypto_scalarmult_ristretto255_base()`
+        * `crypto_scalarmult_ristretto255()`
         * `crypto_stream()`
+        * `crypto_stream_keygen()`
         * `crypto_stream_xor()`
+        * `crypto_stream_xchacha20()`
+        * `crypto_stream_xchacha20_keygen()`
+        * `crypto_stream_xchacha20_xor()`
+        * `crypto_stream_xchacha20_xor_ic()`
     * Other utilities (e.g. `crypto_*_keypair()`)
+        * `add()`
+        * `base642bin()`
+        * `bin2base64()`
+        * `bin2hex()`
+        * `hex2bin()`
+        * `crypto_kdf_derive_from_key()`
+        * `crypto_kx_client_session_keys()`
+        * `crypto_kx_server_session_keys()`
+        * `crypto_secretstream_xchacha20poly1305_init_push()`
+        * `crypto_secretstream_xchacha20poly1305_push()`
+        * `crypto_secretstream_xchacha20poly1305_init_pull()`
+        * `crypto_secretstream_xchacha20poly1305_pull()`
+        * `crypto_secretstream_xchacha20poly1305_rekey()`
+        * `pad()`
+        * `unpad()`
 
 ### Cryptography Primitives Provided
 
@@ -257,13 +335,13 @@ was compiled where `PHP_INT_SIZE` equals `4` instead of `8`.
 
 ### Features Excluded from this Polyfill
 
-* `\Sodium\memzero()` - Although we expose this API endpoint, we can't reliably
+* `sodium_memzero()` - Although we expose this API endpoint, we can't reliably
   zero buffers from PHP.
   
   If you have the PHP extension installed, sodium_compat
   will use the native implementation to zero out the string provided. Otherwise
   it will throw a `SodiumException`.
-* `\Sodium\crypto_pwhash()` - It's not feasible to polyfill scrypt or Argon2
+* `sodium_crypto_pwhash()` - It's not feasible to polyfill scrypt or Argon2
   into PHP and get reasonable performance. Users would feel motivated to select
   parameters that downgrade security to avoid denial of service (DoS) attacks.
   
@@ -275,4 +353,16 @@ was compiled where `PHP_INT_SIZE` equals `4` instead of `8`.
   To detect support for Argon2i at runtime, use
   `ParagonIE_Sodium_Compat::crypto_pwhash_is_available()`, which returns a
    boolean value (`TRUE` or `FALSE`).
+* Libsodium's HKDF API (`crypto_kdf_hkdf_*()`) is not included because PHP has
+  its own [HMAC features](https://php.met/hash_hmac) amd it was not deemed necessary.
 
+### PHPCompatibility Ruleset
+
+For sodium_compat users and that utilize [`PHPCompatibility`](https://github.com/PHPCompatibility/PHPCompatibility)
+in their CI process, there is now a custom ruleset available which can be used
+to prevent false positives being thrown by `PHPCompatibility` for the native
+PHP functionality being polyfilled by this repo.
+
+You can find the repo for the `PHPCompatibilityParagonieSodiumCompat` ruleset
+here [on Github](https://github.com/PHPCompatibility/PHPCompatibilityParagonie) 
+and [on Packagist](https://packagist.org/packages/phpcompatibility/phpcompatibility-paragonie).

@@ -5,57 +5,58 @@ declare(strict_types=1);
 namespace Brick\Math\Internal\Calculator;
 
 use Brick\Math\Internal\Calculator;
+use Override;
+
+use function assert;
+use function in_array;
+use function intdiv;
+use function is_int;
+use function ltrim;
+use function str_pad;
+use function str_repeat;
+use function strcmp;
+use function strlen;
+use function substr;
+
+use const PHP_INT_SIZE;
+use const STR_PAD_LEFT;
 
 /**
  * Calculator implementation using only native PHP code.
  *
  * @internal
- *
- * @psalm-immutable
  */
-class NativeCalculator extends Calculator
+final readonly class NativeCalculator extends Calculator
 {
     /**
      * The max number of digits the platform can natively add, subtract, multiply or divide without overflow.
      * For multiplication, this represents the max sum of the lengths of both operands.
      *
-     * For addition, it is assumed that an extra digit can hold a carry (1) without overflowing.
+     * In addition, it is assumed that an extra digit can hold a carry (1) without overflowing.
      * Example: 32-bit: max number 1,999,999,999 (9 digits + carry)
      *          64-bit: max number 1,999,999,999,999,999,999 (18 digits + carry)
-     *
-     * @var int
      */
-    private $maxDigits;
+    private int $maxDigits;
 
     /**
-     * Class constructor.
+     * @pure
      *
      * @codeCoverageIgnore
      */
     public function __construct()
     {
-        switch (PHP_INT_SIZE) {
-            case 4:
-                $this->maxDigits = 9;
-                break;
-
-            case 8:
-                $this->maxDigits = 18;
-                break;
-
-            default:
-                throw new \RuntimeException('The platform is not 32-bit or 64-bit as expected.');
-        }
+        $this->maxDigits = match (PHP_INT_SIZE) {
+            4 => 9,
+            8 => 18,
+        };
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function add(string $a, string $b) : string
+    #[Override]
+    public function add(string $a, string $b): string
     {
         /**
-         * @psalm-var numeric-string $a
-         * @psalm-var numeric-string $b
+         * @var numeric-string $a
+         * @var numeric-string $b
          */
         $result = $a + $b;
 
@@ -82,22 +83,18 @@ class NativeCalculator extends Calculator
         return $result;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function sub(string $a, string $b) : string
+    #[Override]
+    public function sub(string $a, string $b): string
     {
         return $this->add($a, $this->neg($b));
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function mul(string $a, string $b) : string
+    #[Override]
+    public function mul(string $a, string $b): string
     {
         /**
-         * @psalm-var numeric-string $a
-         * @psalm-var numeric-string $b
+         * @var numeric-string $a
+         * @var numeric-string $b
          */
         $result = $a * $b;
 
@@ -136,26 +133,20 @@ class NativeCalculator extends Calculator
         return $result;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function divQ(string $a, string $b) : string
+    #[Override]
+    public function divQ(string $a, string $b): string
     {
         return $this->divQR($a, $b)[0];
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function divR(string $a, string $b): string
     {
         return $this->divQR($a, $b)[1];
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function divQR(string $a, string $b) : array
+    #[Override]
+    public function divQR(string $a, string $b): array
     {
         if ($a === '0') {
             return ['0', '0'];
@@ -173,24 +164,22 @@ class NativeCalculator extends Calculator
             return [$this->neg($a), '0'];
         }
 
-        /** @psalm-var numeric-string $a */
+        /** @var numeric-string $a */
         $na = $a * 1; // cast to number
 
         if (is_int($na)) {
-            /** @psalm-var numeric-string $b */
+            /** @var numeric-string $b */
             $nb = $b * 1;
 
             if (is_int($nb)) {
                 // the only division that may overflow is PHP_INT_MIN / -1,
                 // which cannot happen here as we've already handled a divisor of -1 above.
+                $q = intdiv($na, $nb);
                 $r = $na % $nb;
-                $q = ($na - $r) / $nb;
-
-                assert(is_int($q));
 
                 return [
                     (string) $q,
-                    (string) $r
+                    (string) $r,
                 ];
             }
         }
@@ -210,10 +199,8 @@ class NativeCalculator extends Calculator
         return [$q, $r];
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function pow(string $a, int $e) : string
+    #[Override]
+    public function pow(string $a, int $e): string
     {
         if ($e === 0) {
             return '1';
@@ -228,7 +215,6 @@ class NativeCalculator extends Calculator
 
         $aa = $this->mul($a, $a);
 
-        /** @psalm-suppress PossiblyInvalidArgument We're sure that $e / 2 is an int now */
         $result = $this->pow($aa, $e / 2);
 
         if ($odd === 1) {
@@ -239,16 +225,13 @@ class NativeCalculator extends Calculator
     }
 
     /**
-     * Algorithm from: https://www.geeksforgeeks.org/modular-exponentiation-power-in-modular-arithmetic/
-     *
-     * {@inheritdoc}
+     * Algorithm from: https://www.geeksforgeeks.org/modular-exponentiation-power-in-modular-arithmetic/.
      */
-    public function modPow(string $base, string $exp, string $mod) : string
+    #[Override]
+    public function modPow(string $base, string $exp, string $mod): string
     {
-        // special case: the algorithm below fails with 0 power 0 mod 1 (returns 1 instead of 0)
-        if ($base === '0' && $exp === '0' && $mod === '1') {
-            return '0';
-        }
+        // normalize to Euclidean representative so modPow() stays consistent with mod()
+        $base = $this->mod($base, $mod);
 
         // special case: the algorithm below fails with power 0 mod 1 (returns 1 instead of 0)
         if ($exp === '0' && $mod === '1') {
@@ -275,22 +258,21 @@ class NativeCalculator extends Calculator
     }
 
     /**
-     * Adapted from https://cp-algorithms.com/num_methods/roots_newton.html
-     *
-     * {@inheritDoc}
+     * Adapted from https://cp-algorithms.com/num_methods/roots_newton.html.
      */
-    public function sqrt(string $n) : string
+    #[Override]
+    public function sqrt(string $n): string
     {
         if ($n === '0') {
             return '0';
         }
 
         // initial approximation
-        $x = \str_repeat('9', \intdiv(\strlen($n), 2) ?: 1);
+        $x = str_repeat('9', intdiv(strlen($n), 2) ?: 1);
 
         $decreased = false;
 
-        for (;;) {
+        for (; ;) {
             $nx = $this->divQ($this->add($x, $this->divQ($n, $x)), '2');
 
             if ($x === $nx || $this->cmp($nx, $x) > 0 && $decreased) {
@@ -307,42 +289,38 @@ class NativeCalculator extends Calculator
     /**
      * Performs the addition of two non-signed large integers.
      *
-     * @param string $a The first operand.
-     * @param string $b The second operand.
-     *
-     * @return string
+     * @pure
      */
-    private function doAdd(string $a, string $b) : string
+    private function doAdd(string $a, string $b): string
     {
         [$a, $b, $length] = $this->pad($a, $b);
 
         $carry = 0;
         $result = '';
 
-        for ($i = $length - $this->maxDigits;; $i -= $this->maxDigits) {
+        for ($i = $length - $this->maxDigits; ; $i -= $this->maxDigits) {
             $blockLength = $this->maxDigits;
 
             if ($i < 0) {
                 $blockLength += $i;
-                /** @psalm-suppress LoopInvalidation */
                 $i = 0;
             }
 
-            /** @psalm-var numeric-string $blockA */
-            $blockA = \substr($a, $i, $blockLength);
+            /** @var numeric-string $blockA */
+            $blockA = substr($a, $i, $blockLength);
 
-            /** @psalm-var numeric-string $blockB */
-            $blockB = \substr($b, $i, $blockLength);
+            /** @var numeric-string $blockB */
+            $blockB = substr($b, $i, $blockLength);
 
             $sum = (string) ($blockA + $blockB + $carry);
-            $sumLength = \strlen($sum);
+            $sumLength = strlen($sum);
 
             if ($sumLength > $blockLength) {
-                $sum = \substr($sum, 1);
+                $sum = substr($sum, 1);
                 $carry = 1;
             } else {
                 if ($sumLength < $blockLength) {
-                    $sum = \str_repeat('0', $blockLength - $sumLength) . $sum;
+                    $sum = str_repeat('0', $blockLength - $sumLength) . $sum;
                 }
                 $carry = 0;
             }
@@ -364,12 +342,9 @@ class NativeCalculator extends Calculator
     /**
      * Performs the subtraction of two non-signed large integers.
      *
-     * @param string $a The first operand.
-     * @param string $b The second operand.
-     *
-     * @return string
+     * @pure
      */
-    private function doSub(string $a, string $b) : string
+    private function doSub(string $a, string $b): string
     {
         if ($a === $b) {
             return '0';
@@ -393,20 +368,19 @@ class NativeCalculator extends Calculator
 
         $complement = 10 ** $this->maxDigits;
 
-        for ($i = $length - $this->maxDigits;; $i -= $this->maxDigits) {
+        for ($i = $length - $this->maxDigits; ; $i -= $this->maxDigits) {
             $blockLength = $this->maxDigits;
 
             if ($i < 0) {
                 $blockLength += $i;
-                /** @psalm-suppress LoopInvalidation */
                 $i = 0;
             }
 
-            /** @psalm-var numeric-string $blockA */
-            $blockA = \substr($a, $i, $blockLength);
+            /** @var numeric-string $blockA */
+            $blockA = substr($a, $i, $blockLength);
 
-            /** @psalm-var numeric-string $blockB */
-            $blockB = \substr($b, $i, $blockLength);
+            /** @var numeric-string $blockB */
+            $blockB = substr($b, $i, $blockLength);
 
             $sum = $blockA - $blockB - $carry;
 
@@ -418,10 +392,10 @@ class NativeCalculator extends Calculator
             }
 
             $sum = (string) $sum;
-            $sumLength = \strlen($sum);
+            $sumLength = strlen($sum);
 
             if ($sumLength < $blockLength) {
-                $sum = \str_repeat('0', $blockLength - $sumLength) . $sum;
+                $sum = str_repeat('0', $blockLength - $sumLength) . $sum;
             }
 
             $result = $sum . $result;
@@ -434,7 +408,7 @@ class NativeCalculator extends Calculator
         // Carry cannot be 1 when the loop ends, as a > b
         assert($carry === 0);
 
-        $result = \ltrim($result, '0');
+        $result = ltrim($result, '0');
 
         if ($invert) {
             $result = $this->neg($result);
@@ -446,52 +420,47 @@ class NativeCalculator extends Calculator
     /**
      * Performs the multiplication of two non-signed large integers.
      *
-     * @param string $a The first operand.
-     * @param string $b The second operand.
-     *
-     * @return string
+     * @pure
      */
-    private function doMul(string $a, string $b) : string
+    private function doMul(string $a, string $b): string
     {
-        $x = \strlen($a);
-        $y = \strlen($b);
+        $x = strlen($a);
+        $y = strlen($b);
 
-        $maxDigits = \intdiv($this->maxDigits, 2);
+        $maxDigits = intdiv($this->maxDigits, 2);
         $complement = 10 ** $maxDigits;
 
         $result = '0';
 
-        for ($i = $x - $maxDigits;; $i -= $maxDigits) {
+        for ($i = $x - $maxDigits; ; $i -= $maxDigits) {
             $blockALength = $maxDigits;
 
             if ($i < 0) {
                 $blockALength += $i;
-                /** @psalm-suppress LoopInvalidation */
                 $i = 0;
             }
 
-            $blockA = (int) \substr($a, $i, $blockALength);
+            $blockA = (int) substr($a, $i, $blockALength);
 
             $line = '';
             $carry = 0;
 
-            for ($j = $y - $maxDigits;; $j -= $maxDigits) {
+            for ($j = $y - $maxDigits; ; $j -= $maxDigits) {
                 $blockBLength = $maxDigits;
 
                 if ($j < 0) {
                     $blockBLength += $j;
-                    /** @psalm-suppress LoopInvalidation */
                     $j = 0;
                 }
 
-                $blockB = (int) \substr($b, $j, $blockBLength);
+                $blockB = (int) substr($b, $j, $blockBLength);
 
                 $mul = $blockA * $blockB + $carry;
                 $value = $mul % $complement;
                 $carry = ($mul - $value) / $complement;
 
                 $value = (string) $value;
-                $value = \str_pad($value, $maxDigits, '0', STR_PAD_LEFT);
+                $value = str_pad($value, $maxDigits, '0', STR_PAD_LEFT);
 
                 $line = $value . $line;
 
@@ -504,10 +473,10 @@ class NativeCalculator extends Calculator
                 $line = $carry . $line;
             }
 
-            $line = \ltrim($line, '0');
+            $line = ltrim($line, '0');
 
             if ($line !== '') {
-                $line .= \str_repeat('0', $x - $blockALength - $i);
+                $line .= str_repeat('0', $x - $blockALength - $i);
                 $result = $this->add($result, $line);
             }
 
@@ -522,12 +491,11 @@ class NativeCalculator extends Calculator
     /**
      * Performs the division of two non-signed large integers.
      *
-     * @param string $a The first operand.
-     * @param string $b The second operand.
-     *
      * @return string[] The quotient and remainder.
+     *
+     * @pure
      */
-    private function doDiv(string $a, string $b) : array
+    private function doDiv(string $a, string $b): array
     {
         $cmp = $this->doCmp($a, $b);
 
@@ -535,8 +503,8 @@ class NativeCalculator extends Calculator
             return ['0', $a];
         }
 
-        $x = \strlen($a);
-        $y = \strlen($b);
+        $x = strlen($a);
+        $y = strlen($b);
 
         // we now know that a >= b && x >= y
 
@@ -544,8 +512,24 @@ class NativeCalculator extends Calculator
         $r = $a; // remainder
         $z = $y; // focus length, always $y or $y+1
 
-        for (;;) {
-            $focus = \substr($a, 0, $z);
+        /** @var numeric-string $b */
+        $nb = $b * 1; // cast to number
+        // performance optimization in cases where the remainder will never cause int overflow
+        if (is_int(($nb - 1) * 10 + 9)) {
+            $r = (int) substr($a, 0, $z - 1);
+
+            for ($i = $z - 1; $i < $x; $i++) {
+                $n = $r * 10 + (int) $a[$i];
+                /** @var int $nb */
+                $q .= intdiv($n, $nb);
+                $r = $n % $nb;
+            }
+
+            return [ltrim($q, '0') ?: '0', (string) $r];
+        }
+
+        for (; ;) {
+            $focus = substr($a, 0, $z);
 
             $cmp = $this->doCmp($focus, $b);
 
@@ -557,7 +541,7 @@ class NativeCalculator extends Calculator
                 $z++;
             }
 
-            $zeros = \str_repeat('0', $x - $z);
+            $zeros = str_repeat('0', $x - $z);
 
             $q = $this->add($q, '1' . $zeros);
             $a = $this->sub($a, $b . $zeros);
@@ -568,7 +552,7 @@ class NativeCalculator extends Calculator
                 break;
             }
 
-            $x = \strlen($a);
+            $x = strlen($a);
 
             if ($x < $y) { // remainder < dividend
                 break;
@@ -583,15 +567,14 @@ class NativeCalculator extends Calculator
     /**
      * Compares two non-signed large numbers.
      *
-     * @param string $a The first operand.
-     * @param string $b The second operand.
+     * @return -1|0|1
      *
-     * @return int [-1, 0, 1]
+     * @pure
      */
-    private function doCmp(string $a, string $b) : int
+    private function doCmp(string $a, string $b): int
     {
-        $x = \strlen($a);
-        $y = \strlen($b);
+        $x = strlen($a);
+        $y = strlen($b);
 
         $cmp = $x <=> $y;
 
@@ -599,7 +582,7 @@ class NativeCalculator extends Calculator
             return $cmp;
         }
 
-        return \strcmp($a, $b) <=> 0; // enforce [-1, 0, 1]
+        return strcmp($a, $b) <=> 0; // enforce -1|0|1
     }
 
     /**
@@ -607,24 +590,23 @@ class NativeCalculator extends Calculator
      *
      * The numbers must only consist of digits, without leading minus sign.
      *
-     * @param string $a The first operand.
-     * @param string $b The second operand.
-     *
      * @return array{string, string, int}
+     *
+     * @pure
      */
-    private function pad(string $a, string $b) : array
+    private function pad(string $a, string $b): array
     {
-        $x = \strlen($a);
-        $y = \strlen($b);
+        $x = strlen($a);
+        $y = strlen($b);
 
         if ($x > $y) {
-            $b = \str_repeat('0', $x - $y) . $b;
+            $b = str_repeat('0', $x - $y) . $b;
 
             return [$a, $b, $x];
         }
 
         if ($x < $y) {
-            $a = \str_repeat('0', $y - $x) . $a;
+            $a = str_repeat('0', $y - $x) . $a;
 
             return [$a, $b, $y];
         }

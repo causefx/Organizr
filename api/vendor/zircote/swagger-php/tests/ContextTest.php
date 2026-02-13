@@ -4,9 +4,10 @@
  * @license Apache 2.0
  */
 
-namespace OpenApiTests;
+namespace OpenApi\Tests;
 
 use OpenApi\Context;
+use OpenApi\Generator;
 
 class ContextTest extends OpenApiTestCase
 {
@@ -15,35 +16,34 @@ class ContextTest extends OpenApiTestCase
         $context = Context::detect();
         $line = __LINE__ - 1;
         $this->assertSame('ContextTest', $context->class);
-        $this->assertSame('\OpenApiTests\ContextTest', $context->fullyQualifiedName($context->class));
+        $this->assertSame('\OpenApi\Tests\ContextTest', $context->fullyQualifiedName($context->class));
         $this->assertSame('testDetect', $context->method);
         $this->assertSame(__FILE__, $context->filename);
         $this->assertSame($line, $context->line);
-        $this->assertSame('OpenApiTests', $context->namespace);
-        //        $this->assertCount(1, $context->uses); // Context::detect() doesn't pick up USE statements (yet)
+        $this->assertSame('OpenApi\Tests', $context->namespace);
     }
 
     public function testFullyQualifiedName()
     {
-        $this->assertOpenApiLogEntryStartsWith('Required @OA\PathItem() not found');
-        $openapi = \OpenApi\scan(__DIR__.'/Fixtures/Customer.php');
+        $this->assertOpenApiLogEntryContains('Required @OA\PathItem() not found');
+        $openapi = Generator::scan([__DIR__ . '/Fixtures/Customer.php'], ['logger' => $this->getTrackingLogger()]);
         $context = $openapi->components->schemas[0]->_context;
         // resolve with namespace
         $this->assertSame('\FullyQualified', $context->fullyQualifiedName('\FullyQualified'));
-        $this->assertSame('\OpenApiFixures\Unqualified', $context->fullyQualifiedName('Unqualified'));
-        $this->assertSame('\OpenApiFixures\Namespace\Qualified', $context->fullyQualifiedName('Namespace\Qualified'));
+        $this->assertSame('\OpenApi\Tests\Fixtures\Unqualified', $context->fullyQualifiedName('Unqualified'));
+        $this->assertSame('\OpenApi\Tests\Fixtures\Namespace\Qualified', $context->fullyQualifiedName('Namespace\Qualified'));
         // respect use statements
         $this->assertSame('\Exception', $context->fullyQualifiedName('Exception'));
-        $this->assertSame('\OpenApiFixures\Customer', $context->fullyQualifiedName('Customer'));
-        $this->assertSame('\OpenApi\Logger', $context->fullyQualifiedName('Logger'));
-        $this->assertSame('\OpenApi\Logger', $context->fullyQualifiedName('lOgGeR')); // php has case-insensitive class names :-(
-        $this->assertSame('\OpenApi\Logger', $context->fullyQualifiedName('OpenApiLogger'));
+        $this->assertSame('\OpenApi\Tests\Fixtures\Customer', $context->fullyQualifiedName('Customer'));
+        $this->assertSame('\OpenApi\Generator', $context->fullyQualifiedName('Generator'));
+        $this->assertSame('\OpenApi\Generator', $context->fullyQualifiedName('gEnerator')); // php has case-insensitive class names :-(
+        $this->assertSame('\OpenApi\Generator', $context->fullyQualifiedName('OpenApiGenerator'));
         $this->assertSame('\OpenApi\Annotations\QualifiedAlias', $context->fullyQualifiedName('OA\QualifiedAlias'));
     }
 
     public function testPhpdocContent()
     {
-        $singleLine = new Context(['comment' => <<<END
+        $singleLine = $this->getContext(['comment' => <<<END
     /**
      * A single line.
      *
@@ -53,7 +53,7 @@ END
         ]);
         $this->assertEquals('A single line.', $singleLine->phpdocContent());
 
-        $multiline = new Context(['comment' => <<<END
+        $multiline = $this->getContext(['comment' => <<<END
 /**
  * A description spread across
  * multiple lines.
@@ -66,7 +66,7 @@ END
         ]);
         $this->assertEquals("A description spread across\nmultiple lines.\n\neven blank lines", $multiline->phpdocContent());
 
-        $escapedLinebreak = new Context(['comment' => <<<END
+        $escapedLinebreak = $this->getContext(['comment' => <<<END
 /**
  * A single line spread across \
  * multiple lines.
@@ -75,20 +75,20 @@ END
  */
 END
         ]);
-        $this->assertEquals("A single line spread across multiple lines.", $escapedLinebreak->phpdocContent());
+        $this->assertEquals('A single line spread across multiple lines.', $escapedLinebreak->phpdocContent());
     }
 
     /**
-     * https://phpdoc.org/docs/latest/guides/docblocks.html
+     * https://phpdoc.org/docs/latest/guides/docblocks.html.
      */
     public function testPhpdocSummaryAndDescription()
     {
-        $single = new Context(['comment' => '/** This is a single line DocComment. */']);
+        $single = $this->getContext(['comment' => '/** This is a single line DocComment. */']);
         $this->assertEquals('This is a single line DocComment.', $single->phpdocContent());
-        $multi = new Context(['comment' => "/**\n * This is a multi-line DocComment.\n */"]);
+        $multi = $this->getContext(['comment' => "/**\n * This is a multi-line DocComment.\n */"]);
         $this->assertEquals('This is a multi-line DocComment.', $multi->phpdocContent());
 
-        $emptyWhiteline = new Context(['comment' => <<<END
+        $emptyWhiteline = $this->getContext(['comment' => <<<END
     /**
      * This is a summary
      *
@@ -97,7 +97,7 @@ END
 END
         ]);
         $this->assertEquals('This is a summary', $emptyWhiteline->phpdocSummary());
-        $periodNewline = new Context(['comment' => <<<END
+        $periodNewline = $this->getContext(['comment' => <<<END
      /**
      * This is a summary.
      * This is a description
@@ -105,7 +105,7 @@ END
 END
         ]);
         $this->assertEquals('This is a summary.', $periodNewline->phpdocSummary());
-        $multilineSummary = new Context(['comment' => <<<END
+        $multilineSummary = $this->getContext(['comment' => <<<END
      /**
      * This is a summary
      * but this is part of the summary

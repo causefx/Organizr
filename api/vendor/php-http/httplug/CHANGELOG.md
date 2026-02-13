@@ -6,8 +6,23 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [2.4.1] - 2024-09-23
 
-## [Unreleased]
+- Updated code to not raise warnings for nullable parameters in PHP 8.4.
+
+## [2.4.0] - 2023-04-14
+
+### Changed
+
+- Allow `psr/http-message` v2 in addition to v1
+- Deprecate `Http\Client\HttpClient`, use [PSR-18](https://www.php-fig.org/psr/psr-18/) instead
+
+## [2.3.0] - 2022-02-21
+
+### Changed
+
+- Enabled the `$onRejected` callback of `HttpRejectedPromise` to return a promise for implementing a retry
+  mechanism [#168](https://github.com/php-http/httplug/pull/168)
 
 ## [2.2.0] - 2020-07-13
 

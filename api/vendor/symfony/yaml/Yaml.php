@@ -22,18 +22,22 @@ use Symfony\Component\Yaml\Exception\ParseException;
  */
 class Yaml
 {
-    const DUMP_OBJECT = 1;
-    const PARSE_EXCEPTION_ON_INVALID_TYPE = 2;
-    const PARSE_OBJECT = 4;
-    const PARSE_OBJECT_FOR_MAP = 8;
-    const DUMP_EXCEPTION_ON_INVALID_TYPE = 16;
-    const PARSE_DATETIME = 32;
-    const DUMP_OBJECT_AS_MAP = 64;
-    const DUMP_MULTI_LINE_LITERAL_BLOCK = 128;
-    const PARSE_CONSTANT = 256;
-    const PARSE_CUSTOM_TAGS = 512;
-    const DUMP_EMPTY_ARRAY_AS_SEQUENCE = 1024;
-    const DUMP_NULL_AS_TILDE = 2048;
+    public const DUMP_OBJECT = 1;
+    public const PARSE_EXCEPTION_ON_INVALID_TYPE = 2;
+    public const PARSE_OBJECT = 4;
+    public const PARSE_OBJECT_FOR_MAP = 8;
+    public const DUMP_EXCEPTION_ON_INVALID_TYPE = 16;
+    public const PARSE_DATETIME = 32;
+    public const DUMP_OBJECT_AS_MAP = 64;
+    public const DUMP_MULTI_LINE_LITERAL_BLOCK = 128;
+    public const PARSE_CONSTANT = 256;
+    public const PARSE_CUSTOM_TAGS = 512;
+    public const DUMP_EMPTY_ARRAY_AS_SEQUENCE = 1024;
+    public const DUMP_NULL_AS_TILDE = 2048;
+    public const DUMP_NUMERIC_KEY_AS_STRING = 4096;
+    public const DUMP_NULL_AS_EMPTY = 8192;
+    public const DUMP_COMPACT_NESTED_MAPPING = 16384;
+    public const DUMP_FORCE_DOUBLE_QUOTES_ON_VALUES = 32768;
 
     /**
      * Parses a YAML file into a PHP value.
@@ -43,14 +47,12 @@ class Yaml
      *     $array = Yaml::parseFile('config.yml');
      *     print_r($array);
      *
-     * @param string $filename The path to the YAML file to be parsed
-     * @param int    $flags    A bit field of PARSE_* constants to customize the YAML parser behavior
-     *
-     * @return mixed The YAML converted to a PHP value
+     * @param string                     $filename The path to the YAML file to be parsed
+     * @param int-mask-of<self::PARSE_*> $flags    A bit field of PARSE_* constants to customize the YAML parser behavior
      *
      * @throws ParseException If the file could not be read or the YAML is not valid
      */
-    public static function parseFile(string $filename, int $flags = 0)
+    public static function parseFile(string $filename, int $flags = 0): mixed
     {
         $yaml = new Parser();
 
@@ -66,14 +68,12 @@ class Yaml
      *   print_r($array);
      *  </code>
      *
-     * @param string $input A string containing YAML
-     * @param int    $flags A bit field of PARSE_* constants to customize the YAML parser behavior
-     *
-     * @return mixed The YAML converted to a PHP value
+     * @param string                     $input A string containing YAML
+     * @param int-mask-of<self::PARSE_*> $flags A bit field of PARSE_* constants to customize the YAML parser behavior
      *
      * @throws ParseException If the YAML is not valid
      */
-    public static function parse(string $input, int $flags = 0)
+    public static function parse(string $input, int $flags = 0): mixed
     {
         $yaml = new Parser();
 
@@ -86,14 +86,12 @@ class Yaml
      * The dump method, when supplied with an array, will do its best
      * to convert the array into friendly YAML.
      *
-     * @param mixed $input  The PHP value
-     * @param int   $inline The level where you switch to inline YAML
-     * @param int   $indent The amount of spaces to use for indentation of nested nodes
-     * @param int   $flags  A bit field of DUMP_* constants to customize the dumped YAML string
-     *
-     * @return string A YAML string representing the original PHP value
+     * @param mixed                     $input  The PHP value
+     * @param int                       $inline The level where you switch to inline YAML
+     * @param int                       $indent The amount of spaces to use for indentation of nested nodes
+     * @param int-mask-of<self::DUMP_*> $flags  A bit field of DUMP_* constants to customize the dumped YAML string
      */
-    public static function dump($input, int $inline = 2, int $indent = 4, int $flags = 0): string
+    public static function dump(mixed $input, int $inline = 2, int $indent = 4, int $flags = 0): string
     {
         $yaml = new Dumper($indent);
 

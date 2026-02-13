@@ -10,7 +10,7 @@ use InvalidArgumentException;
 use Symfony\Component\Finder\Finder;
 
 /**
- * Convenient utility functions that don't neatly fit anywhere else
+ * Convenient utility functions that don't neatly fit anywhere else.
  */
 class Util
 {
@@ -25,11 +25,9 @@ class Util
      * and conform specifically to what is expected by functions like `exclude()` and `notPath()`.
      * In particular, leading and trailing slashes are removed.
      *
-     * @param  string       $fullPath
-     * @param  string|array $basePaths
-     * @return string
+     * @param array|string $basePaths
      */
-    public static function getRelativePath($fullPath, $basePaths)
+    public static function getRelativePath(string $fullPath, $basePaths): string
     {
         $relativePath = null;
         if (is_string($basePaths)) { // just a single path, not an array of possible paths
@@ -42,36 +40,36 @@ class Util
                 }
             }
         }
+
         return !empty($relativePath) ? trim($relativePath, '/') : $fullPath;
     }
 
     /**
      * Removes a prefix from the start of a string if it exists, or null otherwise.
-     *
-     * @param  string $str
-     * @param  string $prefix
-     * @return null|string
      */
-    private static function removePrefix($str, $prefix)
+    private static function removePrefix(string $str, string $prefix): ?string
     {
         if (substr($str, 0, strlen($prefix)) == $prefix) {
             return substr($str, strlen($prefix));
         }
+
         return null;
     }
 
     /**
      * Build a Symfony Finder object that scans the given $directory.
      *
-     * @param  string|array|Finder $directory The directory(s) or filename(s)
-     * @param  null|string|array   $exclude   The directory(s) or filename(s) to exclude (as absolute or relative paths)
-     * @param  null|string         $pattern   The pattern of the files to scan
+     * @param array|Finder|string $directory The directory(s) or filename(s)
+     * @param null|array|string   $exclude   The directory(s) or filename(s) to exclude (as absolute or relative paths)
+     * @param null|string         $pattern   The pattern of the files to scan
+     *
      * @throws InvalidArgumentException
      */
-    public static function finder($directory, $exclude = null, $pattern = null)
+    public static function finder($directory, $exclude = null, $pattern = null): Finder
     {
         if ($directory instanceof Finder) {
-            return $directory;
+            // Make sure that the provided Finder only finds files and follows symbolic links.
+            return $directory->files()->followLinks();
         } else {
             $finder = new Finder();
             $finder->sortByName();
@@ -109,6 +107,46 @@ class Util
                 throw new InvalidArgumentException('Unexpected $exclude value:' . gettype($exclude));
             }
         }
+
         return $finder;
+    }
+
+    /**
+     * Escapes the special characters "/" and "~".
+     *
+     * https://swagger.io/docs/specification/using-ref/
+     * https://tools.ietf.org/html/rfc6901#page-3
+     */
+    public static function refEncode(string $raw): string
+    {
+        return str_replace('/', '~1', str_replace('~', '~0', $raw));
+    }
+
+    /**
+     * Converted the escaped characters "~1" and "~" back to "/" and "~".
+     *
+     * https://swagger.io/docs/specification/using-ref/
+     * https://tools.ietf.org/html/rfc6901#page-3
+     */
+    public static function refDecode(string $encoded): string
+    {
+        return str_replace('~1', '/', str_replace('~0', '~', $encoded));
+    }
+
+    /**
+     * Shorten class name(s).
+     *
+     * @param array|object|string $classes Class(es) to shorten
+     *
+     * @return string|string[] One or more shortened class names
+     */
+    public static function shorten($classes)
+    {
+        $short = [];
+        foreach ((array) $classes as $class) {
+            $short[] = '@' . str_replace('OpenApi\\Annotations\\', 'OA\\', $class);
+        }
+
+        return is_array($classes) ? $short : array_pop($short);
     }
 }

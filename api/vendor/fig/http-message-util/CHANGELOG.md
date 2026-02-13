@@ -2,6 +2,28 @@
 
 All notable changes to this project will be documented in this file, in reverse chronological order by release.
 
+## 1.1.5 - 2020-11-24
+
+### Added
+
+- [#19](https://github.com/php-fig/http-message-util/pull/19) adds support for PHP 8.
+
+### Changed
+
+- Nothing.
+
+### Deprecated
+
+- Nothing.
+
+### Removed
+
+- Nothing.
+
+### Fixed
+
+- Nothing.
+
 ## 1.1.4 - 2020-02-05
 
 ### Added

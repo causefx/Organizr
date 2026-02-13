@@ -43,6 +43,7 @@ namespace Stripe;
  * @property null|string $nationality The country where the person is a national.
  * @property null|string $phone The person's phone number.
  * @property string $political_exposure Indicates if the person or any of their representatives, family members, or other closely related persons, declares that they hold or have held an important public job or function, in any jurisdiction.
+ * @property \Stripe\StripeObject $registered_address
  * @property \Stripe\StripeObject $relationship
  * @property null|\Stripe\StripeObject $requirements Information about the requirements for this person, including what information needs to be collected, and by when.
  * @property bool $ssn_last_4_provided Whether the last four digits of the person's Social Security number have been provided (U.S. only).

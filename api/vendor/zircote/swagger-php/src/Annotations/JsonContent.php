@@ -6,6 +6,8 @@
 
 namespace OpenApi\Annotations;
 
+use OpenApi\Generator;
+
 /**
  * @Annotation
  * Shorthand for a json response.
@@ -14,16 +16,15 @@ namespace OpenApi\Annotations;
  */
 class JsonContent extends Schema
 {
+    /**
+     * @var object
+     */
+    public $example = Generator::UNDEFINED;
 
     /**
      * @var object
      */
-    public $example = UNDEFINED;
-
-    /**
-     * @var object
-     */
-    public $examples = UNDEFINED;
+    public $examples = Generator::UNDEFINED;
 
     /**
      * @inheritdoc
@@ -38,7 +39,8 @@ class JsonContent extends Schema
         Items::class => 'items',
         Property::class => ['properties', 'property'],
         ExternalDocumentation::class => 'externalDocs',
-        Xml::class => 'xml',
-        AdditionalProperties::class => 'additionalProperties'
+        AdditionalProperties::class => 'additionalProperties',
+        Examples::class => ['examples', 'example'],
+        Attachable::class => ['attachables'],
     ];
 }

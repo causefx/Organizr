@@ -82,7 +82,7 @@ class Order
 
     /**
      * @OA\Property(
-     *     default="false",
+     *     default=false,
      *     format="int64",
      *     description="Complete status",
      *     title="Complete status",

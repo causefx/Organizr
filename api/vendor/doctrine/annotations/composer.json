@@ -1,31 +1,57 @@
 {
     "name": "doctrine/annotations",
-    "type": "library",
     "description": "Docblock Annotations Parser",
-    "keywords": ["annotations", "docblock", "parser"],
-    "homepage": "http://www.doctrine-project.org",
     "license": "MIT",
-    "authors": [
-        {"name": "Guilherme Blanco", "email": "guilhermeblanco@gmail.com"},
-        {"name": "Roman Borschel", "email": "roman@code-factory.org"},
-        {"name": "Benjamin Eberlei", "email": "kontakt@beberlei.de"},
-        {"name": "Jonathan Wage", "email": "jonwage@gmail.com"},
-        {"name": "Johannes Schmitt", "email": "schmittjoh@gmail.com"}
+    "type": "library",
+    "keywords": [
+        "annotations",
+        "docblock",
+        "parser"
     ],
+    "authors": [
+        {
+            "name": "Guilherme Blanco",
+            "email": "guilhermeblanco@gmail.com"
+        },
+        {
+            "name": "Roman Borschel",
+            "email": "roman@code-factory.org"
+        },
+        {
+            "name": "Benjamin Eberlei",
+            "email": "kontakt@beberlei.de"
+        },
+        {
+            "name": "Jonathan Wage",
+            "email": "jonwage@gmail.com"
+        },
+        {
+            "name": "Johannes Schmitt",
+            "email": "schmittjoh@gmail.com"
+        }
+    ],
+    "homepage": "https://www.doctrine-project.org/projects/annotations.html",
     "require": {
         "php": "^7.1 || ^8.0",
         "ext-tokenizer": "*",
-        "doctrine/lexer": "1.*"
+        "doctrine/lexer": "^1 || ^2",
+        "psr/cache": "^1 || ^2 || ^3"
     },
     "require-dev": {
-        "doctrine/cache": "1.*",
-        "phpunit/phpunit": "^7.5"
+        "doctrine/cache": "^1.11 || ^2.0",
+        "doctrine/coding-standard": "^9 || ^12",
+        "phpstan/phpstan": "~1.4.10 || ^1.10.28",
+        "phpunit/phpunit": "^7.5 || ^8.5 || ^9.5",
+        "symfony/cache": "^4.4 || ^5.4 || ^6.4 || ^7",
+        "vimeo/psalm": "^4.30 || ^5.14"
     },
-    "config": {
-        "sort-packages": true
+    "suggest": {
+        "php": "PHP 8.0 or higher comes with attributes, a native replacement for annotations"
     },
     "autoload": {
-        "psr-4": { "Doctrine\\Common\\Annotations\\": "lib/Doctrine/Common/Annotations" }
+        "psr-4": {
+            "Doctrine\\Common\\Annotations\\": "lib/Doctrine/Common/Annotations"
+        }
     },
     "autoload-dev": {
         "psr-4": {
@@ -33,12 +59,14 @@
             "Doctrine\\Tests\\Common\\Annotations\\": "tests/Doctrine/Tests/Common/Annotations"
         },
         "files": [
+            "tests/Doctrine/Tests/Common/Annotations/Fixtures/functions.php",
             "tests/Doctrine/Tests/Common/Annotations/Fixtures/SingleClassLOC1000.php"
         ]
     },
-    "extra": {
-        "branch-alias": {
-            "dev-master": "1.9.x-dev"
-        }
+    "config": {
+        "allow-plugins": {
+            "dealerdirect/phpcodesniffer-composer-installer": true
+        },
+        "sort-packages": true
     }
 }

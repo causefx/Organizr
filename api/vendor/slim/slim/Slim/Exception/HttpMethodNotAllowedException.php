@@ -17,7 +17,7 @@ class HttpMethodNotAllowedException extends HttpSpecializedException
     /**
      * @var string[]
      */
-    protected $allowedMethods = [];
+    protected array $allowedMethods = [];
 
     /**
      * @var int
@@ -29,8 +29,8 @@ class HttpMethodNotAllowedException extends HttpSpecializedException
      */
     protected $message = 'Method not allowed.';
 
-    protected $title = '405 Method Not Allowed';
-    protected $description = 'The request method is not supported for the requested resource.';
+    protected string $title = '405 Method Not Allowed';
+    protected string $description = 'The request method is not supported for the requested resource.';
 
     /**
      * @return string[]
@@ -42,9 +42,8 @@ class HttpMethodNotAllowedException extends HttpSpecializedException
 
     /**
      * @param string[] $methods
-     * @return self
      */
-    public function setAllowedMethods(array $methods): HttpMethodNotAllowedException
+    public function setAllowedMethods(array $methods): self
     {
         $this->allowedMethods = $methods;
         $this->message = 'Method not allowed. Must be one of: ' . implode(', ', $methods);

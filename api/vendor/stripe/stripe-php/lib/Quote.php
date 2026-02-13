@@ -13,6 +13,7 @@ namespace Stripe;
  * @property string $object String representing the object's type. Objects of the same type share the same value.
  * @property int $amount_subtotal Total before any discounts or taxes are applied.
  * @property int $amount_total Total after discounts and taxes are applied.
+ * @property null|string|\Stripe\StripeObject $application ID of the Connect Application that created the quote.
  * @property null|int $application_fee_amount The amount of the application fee (if any) that will be requested to be applied to the payment and transferred to the application owner's Stripe account. Only applicable if there are no line items with recurring prices on the quote.
  * @property null|float $application_fee_percent A non-negative decimal between 0 and 100, with at most two decimal places. This represents the percentage of the subscription invoice subtotal that will be transferred to the application owner's Stripe account. Only applicable if there are line items with recurring prices on the quote.
  * @property \Stripe\StripeObject $automatic_tax

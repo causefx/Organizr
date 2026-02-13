@@ -31,24 +31,18 @@ class Cookies
 {
     /**
      * Cookies from HTTP request
-     *
-     * @var array
      */
-    protected $requestCookies = [];
+    protected array $requestCookies = [];
 
     /**
      * Cookies for HTTP response
-     *
-     * @var array
      */
-    protected $responseCookies = [];
+    protected array $responseCookies = [];
 
     /**
      * Default cookie properties
-     *
-     * @var array
      */
-    protected $defaults = [
+    protected array $defaults = [
         'value' => '',
         'domain' => null,
         'hostonly' => null,
@@ -154,7 +148,7 @@ class Cookies
                 $timestamp = (int) $properties['expires'];
             }
             if ($timestamp && $timestamp !== 0) {
-                $result .= '; expires=' . gmdate('D, d-M-Y H:i:s e', $timestamp);
+                $result .= '; expires=' . gmdate('D, d M Y H:i:s', $timestamp) . ' GMT';
             }
         }
 
@@ -170,7 +164,10 @@ class Cookies
             $result .= '; HttpOnly';
         }
 
-        if (isset($properties['samesite']) && in_array(strtolower($properties['samesite']), ['lax', 'strict'], true)) {
+        if (
+            isset($properties['samesite'])
+            && in_array(strtolower($properties['samesite']), ['lax', 'strict', 'none'], true)
+        ) {
             // While strtolower is needed for correct comparison, the RFC doesn't care about case
             $result .= '; SameSite=' . $properties['samesite'];
         }
@@ -190,7 +187,7 @@ class Cookies
     public static function parseHeader($header): array
     {
         if (is_array($header)) {
-            $header = isset($header[0]) ? $header[0] : '';
+            $header = $header[0] ?? '';
         }
 
         if (!is_string($header)) {

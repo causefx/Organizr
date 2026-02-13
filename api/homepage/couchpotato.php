@@ -72,8 +72,11 @@ trait CouchPotatoHomepageItem
 		foreach ($list as $key => $value) {
 			try {
 				$options = $this->requestOptions($value['url'], 60, $this->config['couchpotatoDisableCertCheck'], $this->config['couchpotatoUseCustomCertificate']);
-				$downloader = new Kryptonit3\CouchPotato\CouchPotato($value['url'], $value['token'], null, null, $options);
-				$calendar = $this->formatCouchCalendar($downloader->getMediaList(array('status' => 'active,done')), $key);
+				$client = new \GuzzleHttp\Client($options);
+				$response = $client->get(rtrim($value['url'], '/') . '/api/' . $value['token'] . '/media.list', [
+					'query' => ['status' => 'active,done']
+				]);
+				$calendar = $this->formatCouchCalendar($response->getBody()->getContents(), $key);
 			} catch (\Throwable $e) {
 				$this->setLoggerChannel('Radarr')->error($e);
 			}

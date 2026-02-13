@@ -6,9 +6,11 @@
 
 namespace OpenApi\Processors;
 
-use OpenApi\Annotations\OpenApi;
 use OpenApi\Analysis;
+use OpenApi\Annotations\AbstractAnnotation;
+use OpenApi\Annotations\OpenApi;
 use OpenApi\Context;
+use OpenApi\Generator;
 
 /**
  * Merge all @OA\OpenApi annotations into one.
@@ -19,7 +21,7 @@ class MergeIntoOpenApi
     {
         // Auto-create the OpenApi annotation.
         if (!$analysis->openapi) {
-            $context = new Context(['analysis' => $analysis]);
+            $context = new Context([], $analysis->context);
             $analysis->addAnnotation(new OpenApi(['_context' => $context]), $context);
         }
         $openapi = $analysis->openapi;
@@ -27,7 +29,7 @@ class MergeIntoOpenApi
 
         // Merge annotations into the target openapi
         $merge = [];
-        $classes = array_keys(OpenApi::$_nested);
+        /** @var AbstractAnnotation $annotation */
         foreach ($analysis->annotations as $annotation) {
             if ($annotation === $openapi) {
                 continue;
@@ -36,16 +38,16 @@ class MergeIntoOpenApi
                 $paths = $annotation->paths;
                 unset($annotation->paths);
                 $openapi->mergeProperties($annotation);
-                if ($paths !== UNDEFINED) {
+                if ($paths !== Generator::UNDEFINED) {
                     foreach ($paths as $path) {
-                        if ($openapi->paths === UNDEFINED) {
+                        if ($openapi->paths === Generator::UNDEFINED) {
                             $openapi->paths = [];
                         }
                         $openapi->paths[] = $path;
                     }
                 }
-            } elseif (in_array(get_class($annotation), $classes) && property_exists($annotation, '_context') && $annotation->_context->is('nested') === false) { // A top level annotation.
-                // Also merge @OA\Info, @OA\Server and other directly nested annotations.
+            } elseif (OpenApi::matchNested(get_class($annotation)) && property_exists($annotation, '_context') && $annotation->_context->is('nested') === false) {
+                // A top level annotation.
                 $merge[] = $annotation;
             }
         }

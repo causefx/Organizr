@@ -14,20 +14,16 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 
+/** @api */
 interface RouteInterface
 {
     /**
      * Get route invocation strategy
-     *
-     * @return InvocationStrategyInterface
      */
     public function getInvocationStrategy(): InvocationStrategyInterface;
 
     /**
      * Set route invocation strategy
-     *
-     * @param InvocationStrategyInterface $invocationStrategy
-     * @return RouteInterface
      */
     public function setInvocationStrategy(InvocationStrategyInterface $invocationStrategy): RouteInterface;
 
@@ -40,45 +36,35 @@ interface RouteInterface
 
     /**
      * Get route pattern
-     *
-     * @return string
      */
     public function getPattern(): string;
 
     /**
      * Set route pattern
-     *
-     * @param string $pattern
-     * @return RouteInterface
      */
     public function setPattern(string $pattern): RouteInterface;
 
     /**
      * Get route callable
      *
-     * @return callable|string
+     * @return callable|array{class-string, string}|string
      */
     public function getCallable();
 
     /**
      * Set route callable
      *
-     * @param callable|string $callable
-     * @return RouteInterface
+     * @param callable|array{class-string, string}|string $callable
      */
     public function setCallable($callable): RouteInterface;
 
     /**
      * Get route name
-     *
-     * @return null|string
      */
     public function getName(): ?string;
 
     /**
      * Set route name
-     *
-     * @param string $name
      *
      * @return static
      */
@@ -86,66 +72,50 @@ interface RouteInterface
 
     /**
      * Get the route's unique identifier
-     *
-     * @return string
      */
     public function getIdentifier(): string;
 
     /**
      * Retrieve a specific route argument
-     *
-     * @param string      $name
-     * @param string|null $default
-     *
-     * @return string|null
      */
     public function getArgument(string $name, ?string $default = null): ?string;
 
     /**
      * Get route arguments
      *
-     * @return string[]
+     * @return array<string, string>
      */
     public function getArguments(): array;
 
     /**
      * Set a route argument
      *
-     * @param string $name
-     * @param string $value
-     *
-     * @return self
+     * @deprecated 4.14.1 Use a middleware for custom route arguments now.
      */
     public function setArgument(string $name, string $value): RouteInterface;
 
     /**
      * Replace route arguments
      *
-     * @param string[] $arguments
+     * @param array<string, string> $arguments
      *
-     * @return self
+     * @deprecated 4.14.1 Use a middleware for custom route arguments now.
      */
-    public function setArguments(array $arguments): RouteInterface;
+    public function setArguments(array $arguments): self;
 
     /**
      * @param MiddlewareInterface|string|callable $middleware
-     * @return RouteInterface
      */
-    public function add($middleware): RouteInterface;
+    public function add($middleware): self;
 
-    /**
-     * @param MiddlewareInterface $middleware
-     * @return RouteInterface
-     */
-    public function addMiddleware(MiddlewareInterface $middleware): RouteInterface;
+    public function addMiddleware(MiddlewareInterface $middleware): self;
 
     /**
      * Prepare the route for use
      *
-     * @param string[] $arguments
-     * @return RouteInterface
+     * @param array<string, string> $arguments
      */
-    public function prepare(array $arguments): RouteInterface;
+    public function prepare(array $arguments): self;
 
     /**
      * Run route
@@ -153,9 +123,6 @@ interface RouteInterface
      * This method traverses the middleware stack, including the route's callable
      * and captures the resultant HTTP response object. It then sends the response
      * back to the Application.
-     *
-     * @param ServerRequestInterface $request
-     * @return ResponseInterface
      */
     public function run(ServerRequestInterface $request): ResponseInterface;
 }

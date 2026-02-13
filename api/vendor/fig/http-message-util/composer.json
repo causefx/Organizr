@@ -6,11 +6,11 @@
     "authors": [
         {
             "name": "PHP-FIG",
-            "homepage": "http://www.php-fig.org/"
+            "homepage": "https://www.php-fig.org/"
         }
     ],
     "require": {
-        "php": "^5.3 || ^7.0"
+        "php": "^5.3 || ^7.0 || ^8.0"
     },
     "suggest": {
         "psr/http-message": "The package containing the PSR-7 interfaces"

@@ -28,19 +28,16 @@ use function trim;
 
 class Headers implements HeadersInterface
 {
-    /**
-     * @var array
-     */
-    protected $globals;
+    protected array $globals;
 
     /**
      * @var Header[]
      */
-    protected $headers;
+    protected array $headers;
 
     /**
-     * @param array $headers
-     * @param array $globals
+     * @param array      $headers
+     * @param array|null $globals
      */
     final public function __construct(array $headers = [], ?array $globals = null)
     {
@@ -179,11 +176,19 @@ class Headers implements HeadersInterface
      */
     protected function parseAuthorizationHeader(array $headers): array
     {
-        if (!isset($headers['Authorization'])) {
+        $hasAuthorizationHeader = false;
+        foreach ($headers as $name => $value) {
+            if (strtolower((string) $name) === 'authorization') {
+                $hasAuthorizationHeader = true;
+                break;
+            }
+        }
+
+        if (!$hasAuthorizationHeader) {
             if (isset($this->globals['REDIRECT_HTTP_AUTHORIZATION'])) {
                 $headers['Authorization'] = $this->globals['REDIRECT_HTTP_AUTHORIZATION'];
             } elseif (isset($this->globals['PHP_AUTH_USER'])) {
-                $pw = isset($this->globals['PHP_AUTH_PW']) ? $this->globals['PHP_AUTH_PW'] : '';
+                $pw = $this->globals['PHP_AUTH_PW'] ?? '';
                 $headers['Authorization'] = 'Basic ' . base64_encode($this->globals['PHP_AUTH_USER'] . ':' . $pw);
             } elseif (isset($this->globals['PHP_AUTH_DIGEST'])) {
                 $headers['Authorization'] = $this->globals['PHP_AUTH_DIGEST'];
@@ -246,7 +251,7 @@ class Headers implements HeadersInterface
      * @param string        $name
      * @param array|string  $value
      *
-     * @throws InvalidArgumentException;
+     * @throws InvalidArgumentException
      */
     protected function validateHeader($name, $value): void
     {
@@ -261,7 +266,7 @@ class Headers implements HeadersInterface
      */
     protected function validateHeaderName($name): void
     {
-        if (!is_string($name) || preg_match("@^[!#$%&'*+.^_`|~0-9A-Za-z-]+$@", $name) !== 1) {
+        if (!is_string($name) || preg_match("@^[!#$%&'*+.^_`|~0-9A-Za-z-]+$@D", $name) !== 1) {
             throw new InvalidArgumentException('Header name must be an RFC 7230 compatible string.');
         }
     }
@@ -281,7 +286,7 @@ class Headers implements HeadersInterface
             );
         }
 
-        $pattern = "@^[ \t\x21-\x7E\x80-\xFF]*$@";
+        $pattern = "@^[ \t\x21-\x7E\x80-\xFF]*$@D";
         foreach ($items as $item) {
             $hasInvalidType = !is_numeric($item) && !is_string($item);
             $rejected = $hasInvalidType || preg_match($pattern, (string) $item) !== 1;

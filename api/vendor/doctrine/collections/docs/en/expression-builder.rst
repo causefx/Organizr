@@ -42,6 +42,18 @@ orX
 
     $collection->matching(new Criteria($expression));
 
+not
+---
+
+.. code-block:: php
+    $expressionBuilder = Criteria::expr();
+
+    $expression = $expressionBuilder->not(
+        $expressionBuilder->eq('foo', 1)
+    );
+
+    $collection->matching(new Criteria($expression));
+
 eq
 ---
 
@@ -109,6 +121,16 @@ isNull
     $expressionBuilder = Criteria::expr();
 
     $expression = $expressionBuilder->isNull('foo');
+
+    $collection->matching(new Criteria($expression));
+
+isNotNull
+---------
+
+.. code-block:: php
+    $expressionBuilder = Criteria::expr();
+
+    $expression = $expressionBuilder->isNotNull('foo');
 
     $collection->matching(new Criteria($expression));
 

@@ -11,7 +11,8 @@
 
 namespace Symfony\Component\VarDumper\Dumper\ContextProvider;
 
-use Symfony\Component\HttpKernel\Debug\FileLinkFormatter;
+use Symfony\Component\ErrorHandler\ErrorRenderer\FileLinkFormatter;
+use Symfony\Component\HttpKernel\Debug\FileLinkFormatter as LegacyFileLinkFormatter;
 use Symfony\Component\VarDumper\Cloner\VarCloner;
 use Symfony\Component\VarDumper\Dumper\HtmlDumper;
 use Symfony\Component\VarDumper\VarDumper;
@@ -25,12 +26,12 @@ use Twig\Template;
  */
 final class SourceContextProvider implements ContextProviderInterface
 {
-    private $limit;
-    private $charset;
-    private $projectDir;
-    private $fileLinkFormatter;
+    private int $limit;
+    private ?string $charset;
+    private ?string $projectDir;
+    private FileLinkFormatter|LegacyFileLinkFormatter|null $fileLinkFormatter;
 
-    public function __construct(string $charset = null, string $projectDir = null, FileLinkFormatter $fileLinkFormatter = null, int $limit = 9)
+    public function __construct(?string $charset = null, ?string $projectDir = null, FileLinkFormatter|LegacyFileLinkFormatter|null $fileLinkFormatter = null, int $limit = 9)
     {
         $this->charset = $charset;
         $this->projectDir = $projectDir;
@@ -40,11 +41,11 @@ final class SourceContextProvider implements ContextProviderInterface
 
     public function getContext(): ?array
     {
-        $trace = debug_backtrace(DEBUG_BACKTRACE_PROVIDE_OBJECT | DEBUG_BACKTRACE_IGNORE_ARGS, $this->limit);
+        $trace = debug_backtrace(\DEBUG_BACKTRACE_PROVIDE_OBJECT | \DEBUG_BACKTRACE_IGNORE_ARGS, $this->limit);
 
         $file = $trace[1]['file'];
         $line = $trace[1]['line'];
-        $name = false;
+        $name = '-' === $file || 'Standard input code' === $file ? 'Standard input code' : false;
         $fileExcerpt = false;
 
         for ($i = 2; $i < $this->limit; ++$i) {
@@ -52,11 +53,11 @@ final class SourceContextProvider implements ContextProviderInterface
                 && 'dump' === $trace[$i]['function']
                 && VarDumper::class === $trace[$i]['class']
             ) {
-                $file = $trace[$i]['file'];
-                $line = $trace[$i]['line'];
+                $file = $trace[$i]['file'] ?? $file;
+                $line = $trace[$i]['line'] ?? $line;
 
                 while (++$i < $this->limit) {
-                    if (isset($trace[$i]['function'], $trace[$i]['file']) && empty($trace[$i]['class']) && 0 !== strpos($trace[$i]['function'], 'call_user_func')) {
+                    if (isset($trace[$i]['function'], $trace[$i]['file']) && empty($trace[$i]['class']) && !str_starts_with($trace[$i]['function'], 'call_user_func')) {
                         $file = $trace[$i]['file'];
                         $line = $trace[$i]['line'];
 
@@ -98,7 +99,7 @@ final class SourceContextProvider implements ContextProviderInterface
 
         if (null !== $this->projectDir) {
             $context['project_dir'] = $this->projectDir;
-            if (0 === strpos($file, $this->projectDir)) {
+            if (str_starts_with($file, $this->projectDir)) {
                 $context['file_relative'] = ltrim(substr($file, \strlen($this->projectDir)), \DIRECTORY_SEPARATOR);
             }
         }

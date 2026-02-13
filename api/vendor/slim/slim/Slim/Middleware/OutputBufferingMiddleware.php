@@ -23,24 +23,18 @@ use function ob_end_clean;
 use function ob_get_clean;
 use function ob_start;
 
+/** @api */
 class OutputBufferingMiddleware implements MiddlewareInterface
 {
     public const APPEND = 'append';
     public const PREPEND = 'prepend';
 
-    /**
-     * @var StreamFactoryInterface
-     */
-    protected $streamFactory;
+    protected StreamFactoryInterface $streamFactory;
+
+    protected string $style;
 
     /**
-     * @var string
-     */
-    protected $style;
-
-    /**
-     * @param StreamFactoryInterface $streamFactory
-     * @param string                 $style Either "append" or "prepend"
+     * @param string $style Either "append" or "prepend"
      */
     public function __construct(StreamFactoryInterface $streamFactory, string $style = 'append')
     {
@@ -53,9 +47,6 @@ class OutputBufferingMiddleware implements MiddlewareInterface
     }
 
     /**
-     * @param ServerRequestInterface  $request
-     * @param RequestHandlerInterface $handler
-     * @return ResponseInterface
      * @throws Throwable
      */
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface

@@ -67,7 +67,7 @@ class StreamHandler
             if (false !== \strpos($message, 'getaddrinfo') // DNS lookup failed
                 || false !== \strpos($message, 'Connection refused')
                 || false !== \strpos($message, "couldn't connect to host") // error on HHVM
-                || false !== \strpos($message, "connection attempt failed")
+                || false !== \strpos($message, 'connection attempt failed')
             ) {
                 $e = new ConnectException($e->getMessage(), $request, $e);
             } else {
@@ -83,8 +83,8 @@ class StreamHandler
         array $options,
         RequestInterface $request,
         ?float $startTime,
-        ResponseInterface $response = null,
-        \Throwable $error = null
+        ?ResponseInterface $response = null,
+        ?\Throwable $error = null
     ): void {
         if (isset($options['on_stats'])) {
             $stats = new TransferStats($request, $response, Utils::currentTime() - $startTime, $error, []);
@@ -231,20 +231,24 @@ class StreamHandler
         \set_error_handler(static function ($_, $msg, $file, $line) use (&$errors): bool {
             $errors[] = [
                 'message' => $msg,
-                'file'    => $file,
-                'line'    => $line
+                'file' => $file,
+                'line' => $line,
             ];
+
             return true;
         });
 
-        $resource = $callback();
-        \restore_error_handler();
+        try {
+            $resource = $callback();
+        } finally {
+            \restore_error_handler();
+        }
 
         if (!$resource) {
             $message = 'Error creating resource: ';
             foreach ($errors as $err) {
                 foreach ($err as $key => $value) {
-                    $message .= "[$key] $value" . \PHP_EOL;
+                    $message .= "[$key] $value".\PHP_EOL;
                 }
             }
             throw new \RuntimeException(\trim($message));
@@ -261,6 +265,10 @@ class StreamHandler
         static $methods;
         if (!$methods) {
             $methods = \array_flip(\get_class_methods(__CLASS__));
+        }
+
+        if (!\in_array($request->getUri()->getScheme(), ['http', 'https'])) {
+            throw new RequestException(\sprintf("The scheme '%s' is not supported.", $request->getUri()->getScheme()), $request);
         }
 
         // HTTP/1.1 streams using the PHP stream wrapper require a
@@ -315,7 +323,7 @@ class StreamHandler
         return $this->createResource(
             function () use ($uri, &$http_response_header, $contextResource, $context, $options, $request) {
                 $resource = @\fopen((string) $uri, 'r', false, $contextResource);
-                $this->lastHeaders = $http_response_header;
+                $this->lastHeaders = $http_response_header ?? [];
 
                 if (false === $resource) {
                     throw new ConnectException(sprintf('Connection refused for URI %s', $uri), $request, null, $context);
@@ -343,6 +351,7 @@ class StreamHandler
                 if (false === $records || !isset($records[0]['ip'])) {
                     throw new ConnectException(\sprintf("Could not resolve IPv4 address for host '%s'", $uri->getHost()), $request);
                 }
+
                 return $uri->withHost($records[0]['ip']);
             }
             if ('v6' === $options['force_ip_resolve']) {
@@ -350,7 +359,8 @@ class StreamHandler
                 if (false === $records || !isset($records[0]['ipv6'])) {
                     throw new ConnectException(\sprintf("Could not resolve IPv6 address for host '%s'", $uri->getHost()), $request);
                 }
-                return $uri->withHost('[' . $records[0]['ipv6'] . ']');
+
+                return $uri->withHost('['.$records[0]['ipv6'].']');
             }
         }
 
@@ -368,17 +378,20 @@ class StreamHandler
 
         $context = [
             'http' => [
-                'method'           => $request->getMethod(),
-                'header'           => $headers,
+                'method' => $request->getMethod(),
+                'header' => $headers,
                 'protocol_version' => $request->getProtocolVersion(),
-                'ignore_errors'    => true,
-                'follow_location'  => 0,
+                'ignore_errors' => true,
+                'follow_location' => 0,
+            ],
+            'ssl' => [
+                'peer_name' => $request->getUri()->getHost(),
             ],
         ];
 
         $body = (string) $request->getBody();
 
-        if (!empty($body)) {
+        if ('' !== $body) {
             $context['http']['content'] = $body;
             // Prevent the HTTP handler from adding a Content-Type header.
             if (!$request->hasHeader('Content-Type')) {
@@ -465,6 +478,25 @@ class StreamHandler
     /**
      * @param mixed $value as passed via Request transfer options.
      */
+    private function add_crypto_method(RequestInterface $request, array &$options, $value, array &$params): void
+    {
+        if (
+            $value === \STREAM_CRYPTO_METHOD_TLSv1_0_CLIENT
+            || $value === \STREAM_CRYPTO_METHOD_TLSv1_1_CLIENT
+            || $value === \STREAM_CRYPTO_METHOD_TLSv1_2_CLIENT
+            || (defined('STREAM_CRYPTO_METHOD_TLSv1_3_CLIENT') && $value === \STREAM_CRYPTO_METHOD_TLSv1_3_CLIENT)
+        ) {
+            $options['http']['crypto_method'] = $value;
+
+            return;
+        }
+
+        throw new \InvalidArgumentException('Invalid crypto_method request option: unknown version provided');
+    }
+
+    /**
+     * @param mixed $value as passed via Request transfer options.
+     */
     private function add_verify(RequestInterface $request, array &$options, $value, array &$params): void
     {
         if ($value === false) {
@@ -514,7 +546,9 @@ class StreamHandler
             $params,
             static function ($code, $a, $b, $c, $transferred, $total) use ($value) {
                 if ($code == \STREAM_NOTIFY_PROGRESS) {
-                    $value($total, $transferred, null, null);
+                    // The upload progress cannot be determined. Use 0 for cURL compatibility:
+                    // https://curl.se/libcurl/c/CURLOPT_PROGRESSFUNCTION.html
+                    $value($total, $transferred, 0, 0);
                 }
             }
         );
@@ -530,27 +564,27 @@ class StreamHandler
         }
 
         static $map = [
-            \STREAM_NOTIFY_CONNECT       => 'CONNECT',
+            \STREAM_NOTIFY_CONNECT => 'CONNECT',
             \STREAM_NOTIFY_AUTH_REQUIRED => 'AUTH_REQUIRED',
-            \STREAM_NOTIFY_AUTH_RESULT   => 'AUTH_RESULT',
-            \STREAM_NOTIFY_MIME_TYPE_IS  => 'MIME_TYPE_IS',
-            \STREAM_NOTIFY_FILE_SIZE_IS  => 'FILE_SIZE_IS',
-            \STREAM_NOTIFY_REDIRECTED    => 'REDIRECTED',
-            \STREAM_NOTIFY_PROGRESS      => 'PROGRESS',
-            \STREAM_NOTIFY_FAILURE       => 'FAILURE',
-            \STREAM_NOTIFY_COMPLETED     => 'COMPLETED',
-            \STREAM_NOTIFY_RESOLVE       => 'RESOLVE',
+            \STREAM_NOTIFY_AUTH_RESULT => 'AUTH_RESULT',
+            \STREAM_NOTIFY_MIME_TYPE_IS => 'MIME_TYPE_IS',
+            \STREAM_NOTIFY_FILE_SIZE_IS => 'FILE_SIZE_IS',
+            \STREAM_NOTIFY_REDIRECTED => 'REDIRECTED',
+            \STREAM_NOTIFY_PROGRESS => 'PROGRESS',
+            \STREAM_NOTIFY_FAILURE => 'FAILURE',
+            \STREAM_NOTIFY_COMPLETED => 'COMPLETED',
+            \STREAM_NOTIFY_RESOLVE => 'RESOLVE',
         ];
         static $args = ['severity', 'message', 'message_code', 'bytes_transferred', 'bytes_max'];
 
         $value = Utils::debugResource($value);
-        $ident = $request->getMethod() . ' ' . $request->getUri()->withFragment('');
+        $ident = $request->getMethod().' '.$request->getUri()->withFragment('');
         self::addNotification(
             $params,
             static function (int $code, ...$passed) use ($ident, $value, $map, $args): void {
                 \fprintf($value, '<%s> [%s] ', $ident, $map[$code]);
                 foreach (\array_filter($passed) as $i => $v) {
-                    \fwrite($value, $args[$i] . ': "' . $v . '" ');
+                    \fwrite($value, $args[$i].': "'.$v.'" ');
                 }
                 \fwrite($value, "\n");
             }
@@ -565,7 +599,7 @@ class StreamHandler
         } else {
             $params['notification'] = self::callArray([
                 $params['notification'],
-                $notify
+                $notify,
             ]);
         }
     }

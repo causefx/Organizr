@@ -13,41 +13,31 @@ namespace Slim\Interfaces;
 use Psr\Http\Server\MiddlewareInterface;
 use Slim\MiddlewareDispatcher;
 
+/** @api */
 interface RouteGroupInterface
 {
-    /**
-     * @return RouteGroupInterface
-     */
     public function collectRoutes(): RouteGroupInterface;
 
     /**
      * Add middleware to the route group
      *
      * @param MiddlewareInterface|string|callable $middleware
-     * @return RouteGroupInterface
      */
     public function add($middleware): RouteGroupInterface;
 
     /**
      * Add middleware to the route group
-     *
-     * @param MiddlewareInterface $middleware
-     * @return RouteGroupInterface
      */
     public function addMiddleware(MiddlewareInterface $middleware): RouteGroupInterface;
 
     /**
      * Append the group's middleware to the MiddlewareDispatcher
-     *
-     * @param MiddlewareDispatcher $dispatcher
-     * @return RouteGroupInterface
+     * @param MiddlewareDispatcher<\Psr\Container\ContainerInterface|null> $dispatcher
      */
     public function appendMiddlewareToDispatcher(MiddlewareDispatcher $dispatcher): RouteGroupInterface;
 
     /**
      * Get the RouteGroup's pattern
-     *
-     * @return string
      */
     public function getPattern(): string;
 }

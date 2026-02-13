@@ -30,15 +30,9 @@ use function is_string;
 
 class ServerRequestFactory implements ServerRequestFactoryInterface
 {
-    /**
-     * @var StreamFactoryInterface|StreamFactory
-     */
-    protected $streamFactory;
+    protected StreamFactoryInterface $streamFactory;
 
-    /**
-     * @var UriFactoryInterface|UriFactory
-     */
-    protected $uriFactory;
+    protected UriFactoryInterface $uriFactory;
 
     /**
      * @param StreamFactoryInterface|null $streamFactory
@@ -46,16 +40,8 @@ class ServerRequestFactory implements ServerRequestFactoryInterface
      */
     public function __construct(?StreamFactoryInterface $streamFactory = null, ?UriFactoryInterface $uriFactory = null)
     {
-        if (!isset($streamFactory)) {
-            $streamFactory = new StreamFactory();
-        }
-
-        if (!isset($uriFactory)) {
-            $uriFactory = new UriFactory();
-        }
-
-        $this->streamFactory = $streamFactory;
-        $this->uriFactory = $uriFactory;
+        $this->streamFactory = $streamFactory ?? new StreamFactory();
+        $this->uriFactory = $uriFactory ?? new UriFactory();
     }
 
     /**
@@ -92,7 +78,8 @@ class ServerRequestFactory implements ServerRequestFactoryInterface
      */
     public static function createFromGlobals(): Request
     {
-        $method = isset($_SERVER['REQUEST_METHOD']) ? $_SERVER['REQUEST_METHOD'] : 'GET';
+        /** @var string $method */
+        $method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
         $uri = (new UriFactory())->createFromGlobals($_SERVER);
 
         $headers = Headers::createFromGlobals();
@@ -106,7 +93,7 @@ class ServerRequestFactory implements ServerRequestFactoryInterface
         $uploadedFiles = UploadedFile::createFromGlobals($_SERVER);
 
         $request = new Request($method, $uri, $headers, $cookies, $_SERVER, $body, $uploadedFiles);
-        $contentTypes = $request->getHeader('Content-Type') ?? [];
+        $contentTypes = $request->getHeader('Content-Type');
 
         $parsedContentType = '';
         foreach ($contentTypes as $contentType) {

@@ -109,7 +109,7 @@ final class Translator
 								(\?)                            ## 11) placeholder
 							)/xs
 XX
-,
+							,
 							[$this, 'cb'],
 							substr($arg, $toSkip)
 						);
@@ -448,7 +448,7 @@ XX
 									:(\S*?:)([a-zA-Z0-9._]?)
 								)/sx
 XX
-,
+								,
 								[$this, 'cb'],
 								substr($value, $toSkip)
 							);

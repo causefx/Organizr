@@ -28,29 +28,24 @@ use function is_string;
 use function preg_match;
 use function sprintf;
 
+/**
+ * @api
+ * @template TContainerInterface of (ContainerInterface|null)
+ */
 class MiddlewareDispatcher implements MiddlewareDispatcherInterface
 {
     /**
      * Tip of the middleware call stack
-     *
-     * @var RequestHandlerInterface
      */
-    protected $tip;
+    protected RequestHandlerInterface $tip;
+
+    protected ?CallableResolverInterface $callableResolver;
+
+    /** @var TContainerInterface $container */
+    protected ?ContainerInterface $container;
 
     /**
-     * @var CallableResolverInterface|null
-     */
-    protected $callableResolver;
-
-    /**
-     * @var ContainerInterface|null
-     */
-    protected $container;
-
-    /**
-     * @param RequestHandlerInterface        $kernel
-     * @param CallableResolverInterface|null $callableResolver
-     * @param ContainerInterface|null        $container
+     * @param TContainerInterface $container
      */
     public function __construct(
         RequestHandlerInterface $kernel,
@@ -72,9 +67,6 @@ class MiddlewareDispatcher implements MiddlewareDispatcherInterface
 
     /**
      * Invoke the middleware stack
-     *
-     * @param ServerRequestInterface $request
-     * @return ResponseInterface
      */
     public function handle(ServerRequestInterface $request): ResponseInterface
     {
@@ -89,7 +81,6 @@ class MiddlewareDispatcher implements MiddlewareDispatcherInterface
      * added one (last in, first out).
      *
      * @param MiddlewareInterface|string|callable $middleware
-     * @return MiddlewareDispatcherInterface
      */
     public function add($middleware): MiddlewareDispatcherInterface
     {
@@ -118,23 +109,14 @@ class MiddlewareDispatcher implements MiddlewareDispatcherInterface
      * Middleware are organized as a stack. That means middleware
      * that have been added before will be executed after the newly
      * added one (last in, first out).
-     *
-     * @param MiddlewareInterface $middleware
-     * @return MiddlewareDispatcherInterface
      */
     public function addMiddleware(MiddlewareInterface $middleware): MiddlewareDispatcherInterface
     {
         $next = $this->tip;
         $this->tip = new class ($middleware, $next) implements RequestHandlerInterface {
-            /**
-             * @var MiddlewareInterface
-             */
-            private $middleware;
+            private MiddlewareInterface $middleware;
 
-            /**
-             * @var RequestHandlerInterface
-             */
-            private $next;
+            private RequestHandlerInterface $next;
 
             public function __construct(MiddlewareInterface $middleware, RequestHandlerInterface $next)
             {
@@ -157,9 +139,7 @@ class MiddlewareDispatcher implements MiddlewareDispatcherInterface
      * Middleware are organized as a stack. That means middleware
      * that have been added before will be executed after the newly
      * added one (last in, first out).
-     *
-     * @param string $middleware
-     * @return self
+     * @return MiddlewareDispatcher<TContainerInterface>
      */
     public function addDeferred(string $middleware): self
     {
@@ -170,25 +150,13 @@ class MiddlewareDispatcher implements MiddlewareDispatcherInterface
             $this->container,
             $this->callableResolver
         ) implements RequestHandlerInterface {
-            /**
-             * @var string
-             */
-            private $middleware;
+            private string $middleware;
 
-            /**
-             * @var RequestHandlerInterface
-             */
-            private $next;
+            private RequestHandlerInterface $next;
 
-            /**
-             * @var ContainerInterface|null
-             */
-            private $container;
+            private ?ContainerInterface $container;
 
-            /**
-             * @var CallableResolverInterface|null
-             */
-            private $callableResolver;
+            private ?CallableResolverInterface $callableResolver;
 
             public function __construct(
                 string $middleware,
@@ -206,6 +174,7 @@ class MiddlewareDispatcher implements MiddlewareDispatcherInterface
             {
                 if ($this->callableResolver instanceof AdvancedCallableResolverInterface) {
                     $callable = $this->callableResolver->resolveMiddleware($this->middleware);
+                    /** @var ResponseInterface */
                     return $callable($request, $this->next);
                 }
 
@@ -224,6 +193,7 @@ class MiddlewareDispatcher implements MiddlewareDispatcherInterface
                     $instance = null;
                     $method = null;
 
+                    /** @psalm-suppress ArgumentTypeCoercion */
                     // Check for Slim callable as `class:method`
                     if (preg_match(CallableResolver::$callablePattern, $resolved, $matches)) {
                         $resolved = $matches[1];
@@ -265,6 +235,7 @@ class MiddlewareDispatcher implements MiddlewareDispatcherInterface
                     );
                 }
 
+                /** @var ResponseInterface */
                 return $callable($request, $this->next);
             }
         };
@@ -273,14 +244,12 @@ class MiddlewareDispatcher implements MiddlewareDispatcherInterface
     }
 
     /**
-     * Add a (non standard) callable middleware to the stack
+     * Add a (non-standard) callable middleware to the stack
      *
      * Middleware are organized as a stack. That means middleware
      * that have been added before will be executed after the newly
      * added one (last in, first out).
-     *
-     * @param callable $middleware
-     * @return self
+     * @return MiddlewareDispatcher<TContainerInterface>
      */
     public function addCallable(callable $middleware): self
     {
@@ -310,6 +279,7 @@ class MiddlewareDispatcher implements MiddlewareDispatcherInterface
 
             public function handle(ServerRequestInterface $request): ResponseInterface
             {
+                /** @var ResponseInterface */
                 return ($this->middleware)($request, $this->next);
             }
         };

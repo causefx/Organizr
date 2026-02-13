@@ -1,0 +1,39 @@
+{
+    "name": "doctrine/deprecations",
+    "description": "A small layer on top of trigger_error(E_USER_DEPRECATED) or PSR-3 logging with options to disable all deprecations or selectively for packages.",
+    "license": "MIT",
+    "type": "library",
+    "homepage": "https://www.doctrine-project.org/",
+    "require": {
+        "php": "^7.1 || ^8.0"
+    },
+    "require-dev": {
+        "doctrine/coding-standard": "^9 || ^12 || ^14",
+        "phpstan/phpstan": "1.4.10 || 2.1.30",
+        "phpstan/phpstan-phpunit": "^1.0 || ^2",
+        "phpunit/phpunit": "^7.5 || ^8.5 || ^9.6 || ^10.5 || ^11.5 || ^12.4 || ^13.0",
+        "psr/log": "^1 || ^2 || ^3"
+    },
+    "conflict": {
+        "phpunit/phpunit": "<=7.5 || >=14"
+    },
+    "suggest": {
+        "psr/log": "Allows logging deprecations via PSR-3 logger implementation"
+    },
+    "autoload": {
+        "psr-4": {
+            "Doctrine\\Deprecations\\": "src"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "DeprecationTests\\": "test_fixtures/src",
+            "Doctrine\\Foo\\": "test_fixtures/vendor/doctrine/foo"
+        }
+    },
+    "config": {
+        "allow-plugins": {
+            "dealerdirect/phpcodesniffer-composer-installer": true
+        }
+    }
+}

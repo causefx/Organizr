@@ -17,8 +17,7 @@ class ProductController
      *   path="/products/{product_id}",
      *   @OA\Response(
      *       response="default",
-     *       description="successful operation",
-     *       @OA\JsonContent(ref="#/components/responses/product")
+     *       ref="#/components/responses/product"
      *   )
      * )
      */
@@ -30,31 +29,14 @@ class ProductController
      * @OA\Patch(
      *   tags={"Products"},
      *   path="/products/{product_id}",
-     *   @OA\Parameter(ref="#/components/requestBodies/product_in_body"),
+     *   @OA\RequestBody(ref="#/components/requestBodies/product_in_body"),
      *   @OA\Response(
      *       response="default",
-     *       description="successful operation",
-     *       @OA\JsonContent(ref="#/components/responses/product")
+     *       ref="#/components/responses/product"
      *   )
      * )
      */
     public function updateProduct($id)
-    {
-    }
-
-    /**
-     * @OA\Post(
-     *   tags={"Products"},
-     *   path="/products",
-     *   @OA\Parameter(ref="#/components/requestBodies/product_in_body"),
-     *   @OA\Response(
-     *       response="default",
-     *       description="successful operation",
-     *       @OA\JsonContent(ref="#/components/responses/product")
-     *   )
-     * )
-     */
-    public function addProduct($id)
     {
     }
 }

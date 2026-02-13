@@ -47,17 +47,47 @@
     }
   ],
   "autoload": {
-    "files": ["autoload.php"]
+    "files": ["autoload.php"],
+    "psr-4": {
+      "ParagonIE\\Sodium\\": "namespaced/"
+    }
+  },
+  "autoload-dev": {
+    "classmap": [
+      "tests/compat/",
+      "tests/unit/",
+      "tests/unit/Core/",
+      "tests/unit/KAT/"
+    ]
   },
   "require": {
-    "php": "^5.2.4|^5.3|^5.4|^5.5|^5.6|^7",
-    "paragonie/random_compat": ">=1"
+    "php": "^8.1",
+    "php-64bit": "*"
   },
   "require-dev": {
-    "phpunit/phpunit": "^3|^4|^5"
+    "phpunit/phpunit": "^7|^8|^9|^10|^11",
+    "infection/infection": "^0",
+    "nikic/php-fuzzer": "^0",
+    "vimeo/psalm": "^4|^5|^6"
+  },
+  "extra": {
+      "branch-alias": {
+          "dev-master": "2.0.x-dev"
+      }
+  },
+  "scripts": {
+    "test": "phpunit",
+    "static-analysis": "psalm",
+    "fuzz-test": "vendor/bin/php-fuzzer fuzz fuzzing/FuzzSodiumCompat.php",
+    "mutation-test": "infection"
   },
   "suggest": {
-    "ext-libsodium": "PHP < 7.0: Better performance, password hashing (Argon2i), secure memory management (memzero), and better security.",
-    "ext-sodium": "PHP >= 7.0: Better performance, password hashing (Argon2i), secure memory management (memzero), and better security."
+    "ext-sodium": "Better performance, password hashing (Argon2i), secure memory management (memzero), and better security."
+  },
+  "config": {
+    "process-timeout": 0,
+    "allow-plugins": {
+      "infection/extension-installer": true
+    }
   }
 }

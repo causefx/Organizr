@@ -6,8 +6,8 @@ $vendorDir = dirname(__DIR__);
 $baseDir = dirname($vendorDir);
 
 return array(
-    'Attribute' => $vendorDir . '/symfony/polyfill-php80/Resources/stubs/Attribute.php',
     'Composer\\InstalledVersions' => $vendorDir . '/composer/InstalledVersions.php',
+    'Deprecated' => $vendorDir . '/symfony/polyfill-php84/Resources/stubs/Deprecated.php',
     'Dibi\\Bridges\\Nette\\DibiExtension22' => $vendorDir . '/dibi/dibi/src/Dibi/Bridges/Nette/DibiExtension22.php',
     'Dibi\\Bridges\\Tracy\\Panel' => $vendorDir . '/dibi/dibi/src/Dibi/Bridges/Tracy/Panel.php',
     'Dibi\\Connection' => $vendorDir . '/dibi/dibi/src/Dibi/Connection.php',
@@ -75,9 +75,7 @@ return array(
     'Dibi\\Translator' => $vendorDir . '/dibi/dibi/src/Dibi/Translator.php',
     'Dibi\\Type' => $vendorDir . '/dibi/dibi/src/Dibi/Type.php',
     'Dibi\\UniqueConstraintViolationException' => $vendorDir . '/dibi/dibi/src/Dibi/exceptions.php',
-    'ReturnTypeWillChange' => $vendorDir . '/symfony/polyfill-php81/Resources/stubs/ReturnTypeWillChange.php',
-    'Stringable' => $vendorDir . '/symfony/polyfill-php80/Resources/stubs/Stringable.php',
-    'UnhandledMatchError' => $vendorDir . '/symfony/polyfill-php80/Resources/stubs/UnhandledMatchError.php',
-    'ValueError' => $vendorDir . '/symfony/polyfill-php80/Resources/stubs/ValueError.php',
+    'ReflectionConstant' => $vendorDir . '/symfony/polyfill-php84/Resources/stubs/ReflectionConstant.php',
+    'Stringable' => $vendorDir . '/myclabs/php-enum/stubs/Stringable.php',
     'dibi' => $vendorDir . '/dibi/dibi/src/Dibi/dibi.php',
 );

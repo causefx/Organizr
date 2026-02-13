@@ -6,9 +6,9 @@
 
 namespace OpenApi\Annotations;
 
-use Exception;
 use OpenApi\Analysis;
-use OpenApi\Logger;
+use OpenApi\Generator;
+use OpenApi\Util;
 
 /**
  * @Annotation
@@ -32,7 +32,7 @@ class OpenApi extends AbstractAnnotation
      *
      * @var Info
      */
-    public $info = UNDEFINED;
+    public $info = Generator::UNDEFINED;
 
     /**
      * An array of Server Objects, which provide connectivity information to a target server.
@@ -40,22 +40,21 @@ class OpenApi extends AbstractAnnotation
      *
      * @var Server[]
      */
-    public $servers = UNDEFINED;
+    public $servers = Generator::UNDEFINED;
 
     /**
      * The available paths and operations for the API.
      *
      * @var PathItem[]
      */
-    public $paths = UNDEFINED;
+    public $paths = Generator::UNDEFINED;
 
     /**
      * An element to hold various components for the specification.
      *
      * @var Components
      */
-    public $components = UNDEFINED;
-
+    public $components = Generator::UNDEFINED;
 
     /**
      * Lists the required security schemes to execute this operation.
@@ -71,7 +70,7 @@ class OpenApi extends AbstractAnnotation
      *
      * @var array
      */
-    public $security = UNDEFINED;
+    public $security = Generator::UNDEFINED;
 
     /**
      * A list of tags used by the specification with additional metadata.
@@ -82,19 +81,19 @@ class OpenApi extends AbstractAnnotation
      *
      * @var Tag[]
      */
-    public $tags = UNDEFINED;
+    public $tags = Generator::UNDEFINED;
 
     /**
      * Additional external documentation.
      *
      * @var ExternalDocumentation
      */
-    public $externalDocs = UNDEFINED;
+    public $externalDocs = Generator::UNDEFINED;
 
     /**
      * @var Analysis
      */
-    public $_analysis = UNDEFINED;
+    public $_analysis = Generator::UNDEFINED;
 
     /**
      * @inheritdoc
@@ -116,6 +115,7 @@ class OpenApi extends AbstractAnnotation
         Components::class => 'components',
         Tag::class => ['tags'],
         ExternalDocumentation::class => 'externalDocs',
+        Attachable::class => ['attachables'],
     ];
 
     /**
@@ -126,60 +126,56 @@ class OpenApi extends AbstractAnnotation
     /**
      * @inheritdoc
      */
-    public function validate($parents = null, $skip = null, $ref = null)
+    public function validate(array $parents = null, array $skip = null, string $ref = ''): bool
     {
-        if ($parents !== null || $skip !== null || $ref !== null) {
-            Logger::notice('Nested validation for '.$this->identity().' not allowed');
+        if ($parents !== null || $skip !== null || $ref !== '') {
+            $this->_context->logger->warning('Nested validation for ' . $this->identity() . ' not allowed');
+
             return false;
         }
+
         return parent::validate([], [], '#');
     }
+
     /**
      * Save the OpenAPI documentation to a file.
-     *
-     * @param  string $filename
-     * @throws Exception
      */
-    public function saveAs($filename, $format = 'auto')
+    public function saveAs(string $filename, string $format = 'auto'): void
     {
-
         if ($format === 'auto') {
-            $format =   strtolower(substr($filename, -5)) === '.json' ? 'json' : 'yaml';
+            $format = strtolower(substr($filename, -5)) === '.json' ? 'json' : 'yaml';
         }
+
         if (strtolower($format) === 'json') {
             $content = $this->toJson();
         } else {
             $content = $this->toYaml();
         }
+
         if (file_put_contents($filename, $content) === false) {
-            throw new Exception('Failed to saveAs("' . $filename . '", "'.$format.'")');
+            throw new \Exception('Failed to saveAs("' . $filename . '", "' . $format . '")');
         }
     }
 
     /**
      * Look up an annotation with a $ref url.
      *
-     * @param  string $ref The $ref value, for example: "#/components/schemas/Product"
-     * @throws Exception
+     * @param string $ref The $ref value, for example: "#/components/schemas/Product"
      */
-    public function ref($ref)
+    public function ref(string $ref)
     {
         if (substr($ref, 0, 2) !== '#/') {
             // @todo Add support for external (http) refs?
-            throw new Exception('Unsupported $ref "' . $ref . '", it should start with "#/"');
+            throw new \Exception('Unsupported $ref "' . $ref . '", it should start with "#/"');
         }
+
         return $this->resolveRef($ref, '#/', $this, []);
     }
 
     /**
-     * Recursive helper for ref()
-     *
-     * @param string $prefix    The resolved path of the ref.
-     * @param string $path      A partial ref
-     * @param *      $container the container to resolve the ref in.
-     * @param Array  $mapping
+     * Recursive helper for ref().
      */
-    private static function resolveRef($ref, $resolved, $container, $mapping)
+    private static function resolveRef(string $ref, string $resolved, $container, array $mapping)
     {
         if ($ref === $resolved) {
             return $container;
@@ -188,68 +184,39 @@ class OpenApi extends AbstractAnnotation
         $slash = strpos($path, '/');
 
         $subpath = $slash === false ? $path : substr($path, 0, $slash);
-        $property = self::unescapeRef($subpath);
+        $property = Util::refDecode($subpath);
         $unresolved = $slash === false ? $resolved . $subpath : $resolved . $subpath . '/';
 
         if (is_object($container)) {
             if (property_exists($container, $property) === false) {
-                throw new Exception('$ref "' . $ref . '" not found');
+                throw new \Exception('$ref "' . $ref . '" not found');
             }
             if ($slash === false) {
                 return $container->$property;
             }
             $mapping = [];
             if ($container instanceof AbstractAnnotation) {
-                foreach ($container::$_nested as $className => $nested) {
+                foreach ($container::$_nested as $nestedClass => $nested) {
                     if (is_string($nested) === false && count($nested) === 2 && $nested[0] === $property) {
-                        $mapping[$className] = $nested[1];
+                        $mapping[$nestedClass] = $nested[1];
                     }
                 }
             }
+
             return self::resolveRef($ref, $unresolved, $container->$property, $mapping);
         } elseif (is_array($container)) {
             if (array_key_exists($property, $container)) {
                 return self::resolveRef($ref, $unresolved, $container[$property], []);
             }
-            foreach ($mapping as $className => $keyField) {
+            foreach ($mapping as $nestedClass => $keyField) {
                 foreach ($container as $key => $item) {
-                    if (is_numeric($key) && is_object($item) && $item instanceof $className && (string) $item->$keyField === $property) {
+                    if (is_numeric($key) && is_object($item) && $item instanceof $nestedClass && (string) $item->$keyField === $property) {
                         return self::resolveRef($ref, $unresolved, $item, []);
                     }
                 }
             }
         }
-        throw new Exception('$ref "' . $unresolved . '" not found');
-    }
 
-    /**
-     * Decode the $ref escape characters.
-     *
-     * https://swagger.io/docs/specification/using-ref/
-     * https://tools.ietf.org/html/rfc6901#page-3
-     */
-    private static function unescapeRef($encoded)
-    {
-        $decoded = '';
-        $length = strlen($encoded);
-        for ($i = 0; $i < $length; $i++) {
-            $char = $encoded[$i];
-            if ($char === '~' && $i !== $length - 1) {
-                $next = $encoded[$i + 1];
-                if ($next === '0') { // escaped `~`
-                    $decoded .= '~';
-                    $i++;
-                } elseif ($next === '1') { // escaped `/`
-                    $decoded .= '/';
-                    $i++;
-                } else {
-                    // this ~ had special meaning :-(
-                    $decoded .= $char;
-                }
-            } else {
-                $decoded .= $char;
-            }
-        }
-        return $decoded;
+        throw new \Exception('$ref "' . $unresolved . '" not found');
     }
 }
