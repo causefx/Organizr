@@ -224,7 +224,7 @@ trait RadarrHomepageItem
 				$client = new \GuzzleHttp\Client($options);
 				$response = $client->get(rtrim($value['url'], '/') . '/api/v3/calendar', [
 					'headers' => ['X-Api-Key' => $value['token']],
-					'query' => ['start' => $startDate, 'end' => $endDate, 'unmonitored' => $this->config['radarrUnmonitored']]
+					'query' => ['start' => $startDate, 'end' => $endDate, 'unmonitored' => $this->config['radarrUnmonitored'] ? 'true' : 'false']
 				]);
 				$results = $response->getBody()->getContents();
 				$result = json_decode($results, true);

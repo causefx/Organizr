@@ -5,7 +5,55 @@ use Monolog\Level;
 use Monolog\Handler\RotatingFileHandler;
 use Monolog\Handler\SlackWebhookHandler;
 use Monolog\Formatter\JsonFormatter;
+use Monolog\LogRecord;
 use Monolog\Processor\PsrLogMessageProcessor;
+use Monolog\Processor\IntrospectionProcessor;
+use Monolog\Processor\WebProcessor;
+
+/**
+ * Custom JSON formatter that outputs fields compatible with Organizr's JS log viewer
+ * Maps Monolog 3 field names to the expected legacy format
+ */
+class OrganizrJsonFormatter extends JsonFormatter
+{
+	public function format(LogRecord $record): string
+	{
+		$data = $record->toArray();
+		$extra = $data['extra'] ?? [];
+
+		// Build output with legacy field names
+		$output = [
+			'log_level' => strtoupper($data['level_name'] ?? 'INFO'),
+			'message' => $data['message'] ?? '',
+			'channel' => $data['channel'] ?? 'Organizr',
+			'username' => $extra['trace_id'] ?? '',
+			'trace_id' => $this->generateTraceId(),
+			'file' => $extra['file'] ?? '',
+			'line' => $extra['line'] ?? 0,
+			'context' => $data['context'] ?? [],
+			'remote_ip_address' => $extra['remote_ip_address'] ?? $extra['ip'] ?? '',
+			'server_ip_address' => $extra['server_ip_address'] ?? '',
+			'user_agent' => $extra['user_agent'] ?? '',
+			'datetime' => $data['datetime']?->format('Y-m-d H:i:s.u') ?? date('Y-m-d H:i:s'),
+			'timezone' => $extra['timezone'] ?? 'UTC',
+			'process_time' => $extra['process_time'] ?? 0,
+		];
+
+		return json_encode($output, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) . "\n";
+	}
+
+	private function generateTraceId(): string
+	{
+		return sprintf(
+			'%04x%04x-%04x-%04x-%04x-%04x%04x%04x',
+			mt_rand(0, 0xffff), mt_rand(0, 0xffff),
+			mt_rand(0, 0xffff),
+			mt_rand(0, 0x0fff) | 0x4000,
+			mt_rand(0, 0x3fff) | 0x8000,
+			mt_rand(0, 0xffff), mt_rand(0, 0xffff), mt_rand(0, 0xffff)
+		);
+	}
+}
 
 class OrganizrLogger
 {
@@ -125,7 +173,7 @@ class OrganizrLoggerInstance extends Logger
 		// Add rotating file handler with JSON formatting
 		if ($fileName) {
 			$handler = new RotatingFileHandler($fileName, $maxFiles, $logLevel);
-			$formatter = new JsonFormatter();
+			$formatter = new OrganizrJsonFormatter();
 			$handler->setFormatter($formatter);
 			$this->pushHandler($handler);
 		}
@@ -138,10 +186,24 @@ class OrganizrLoggerInstance extends Logger
 		// Add PSR-3 message processor
 		$this->pushProcessor(new PsrLogMessageProcessor());
 
-		// Add trace_id processor
-		$this->pushProcessor(function ($record) {
-			$record->extra['trace_id'] = $this->traceId;
-			return $record;
+		// Add introspection processor for file/line info
+		$this->pushProcessor(new IntrospectionProcessor(Level::Debug, ['Monolog\\']));
+
+		// Add web processor for IP/user agent info
+		$this->pushProcessor(new WebProcessor());
+
+		// Add custom processor for trace_id, timezone, process_time
+		$startTime = $_SERVER['REQUEST_TIME_FLOAT'] ?? microtime(true);
+		$traceId = $this->traceId;
+		$this->pushProcessor(function (LogRecord $record) use ($startTime, $traceId): LogRecord {
+			return $record->with(extra: array_merge($record->extra, [
+				'trace_id' => $traceId,
+				'remote_ip_address' => $_SERVER['REMOTE_ADDR'] ?? '',
+				'server_ip_address' => $_SERVER['SERVER_ADDR'] ?? '',
+				'user_agent' => $_SERVER['HTTP_USER_AGENT'] ?? '',
+				'timezone' => date_default_timezone_get(),
+				'process_time' => microtime(true) - $startTime,
+			]));
 		});
 	}
 

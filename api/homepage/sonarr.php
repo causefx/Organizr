@@ -226,7 +226,7 @@ trait SonarrHomepageItem
 				$client = new \GuzzleHttp\Client($options);
 				$response = $client->get(rtrim($value['url'], '/') . '/api/v3/calendar', [
 					'headers' => ['X-Api-Key' => $value['token']],
-					'query' => ['start' => $startDate, 'end' => $endDate, 'unmonitored' => $this->config['sonarrUnmonitored']]
+					'query' => ['start' => $startDate, 'end' => $endDate, 'unmonitored' => $this->config['sonarrUnmonitored'] ? 'true' : 'false']
 				]);
 				$sonarr = $response->getBody()->getContents();
 				$result = json_decode($sonarr, true);
