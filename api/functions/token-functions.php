@@ -4,11 +4,13 @@ trait TokenFunctions
 {
 	public function configToken()
 	{
+		// lcobucci/jwt 5.x requires minimum 256-bit key for HMAC-SHA256
+		// Derive a proper-length key from organizrHash using SHA-256
+		$key = hash('sha256', $this->config['organizrHash'], true);
 		return Lcobucci\JWT\Configuration::forSymmetricSigner(
 		// You may use any HMAC variations (256, 384, and 512)
 			new Lcobucci\JWT\Signer\Hmac\Sha256(),
-			// replace the value below with a key of your own!
-			Lcobucci\JWT\Signer\Key\InMemory::plainText($this->config['organizrHash'])
+			Lcobucci\JWT\Signer\Key\InMemory::plainText($key)
 		// You may also override the JOSE encoder/decoder if needed by providing extra arguments here
 		);
 	}
