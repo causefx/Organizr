@@ -3013,6 +3013,10 @@ class Organizr
 
 	public function wizardConfig($array)
 	{
+		if($this->hasConfig() && $this->hasDB()) {
+			$this->setAPIResponse('error', 'Endpoint disabled as database already exists', 401);
+			return false;
+		}
 		$array['driver'] = $array['driver'] ?? 'sqlite3';
 		$driver = $this->formatDatabaseDriver($array['driver']);
 		$dbName = $array['dbName'] ?? null;
