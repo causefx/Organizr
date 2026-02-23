@@ -706,6 +706,38 @@ trait OrganizrFunctions
 		return '<a href="javascript:void(0)" class="text-center db ' . $showLogo . '" id="login-logo">' . $html . '</a>';
 	}
 
+	public function showoAuthOIDC()
+	{
+		$buttons = '';
+		$providers = $this->getEnabledOIDCProviders();
+		foreach ($providers as $provider => $config) {
+			$name = htmlspecialchars($this->config[$config['configPrefix'] . 'Name'] ?? ucfirst($provider));
+			$buttons .= '<a href="javascript:void(0)" onclick="oidcStart(\'' . htmlspecialchars($provider) . '\')" class="btn btn-lg btn-block text-uppercase waves-effect waves-light bg-oidc-' . htmlspecialchars($provider) . ' text-muted"> <span>Login with ' . $name . '</span><i aria-hidden="true" class="mdi mdi-shield-key m-l-5"></i> </a>';
+		}
+		if (!$buttons) {
+			return '';
+		}
+		return '
+		<div class="panel">
+			<div class="panel-heading bg-org" id="oidc-login-heading" role="tab">
+				<a class="panel-title" data-toggle="collapse" href="#oidc-login-collapse" data-parent="#login-panels" aria-expanded="false" aria-controls="oidc-login-collapse">
+					<i class="mdi mdi-shield-account"></i> &nbsp;
+					<span class="text-uppercase fw300" lang="en">Single Sign-On</span>
+				</a>
+			</div>
+			<div class="panel-collapse collapse in" id="oidc-login-collapse" aria-labelledby="oidc-login-heading" role="tabpanel">
+				<div class="panel-body">
+					<div class="row">
+						<div class="col-xs-12 col-sm-12 col-md-12 text-center">
+							<div class="social m-b-0">' . $buttons . '</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		';
+	}
+
 	public function settingsDocker()
 	{
 		$type = ($this->docker) ? 'Official Docker' : 'Native';

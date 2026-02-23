@@ -70,7 +70,7 @@ function get_page_error($Organizr)
 			<h1 class="text-danger">' . $error . '</h1>
 			<h2 class="text-uppercase" lang="en">' . $errorDetails['type'] . '</h2>
 			<h3 class="text-uppercase" lang="en">' . $errorDetails['description'] . '</h3>
-			<p class="text-muted m-t-30 m-b-30">Hey there, ' . $Organizr->user['username'] . '.  Looks like you tried accessing something that just ain\'t right!  WTF right?! </p>
+			<p class="text-muted m-t-30 m-b-30">Hey there, ' . $Organizr->user['username'] . ', ' . $Organizr->config['customErrorMessage'] . ' . </p>
 			<a href="' . $nonRootPath . '" class="btn btn-danger btn-rounded waves-effect waves-light m-b-40">Back Home</a>
 		</div>
 	</div>

@@ -204,6 +204,7 @@ trait PiHoleHomepageItem
 		} catch (Requests_Exception $e) {
 				$this->setResponse(500, $e->getMessage());
 				$this->setLoggerChannel('PiHole')->error($e);
+				throw $e;
 			};
 		return $processedResponse ?? [];
 	}

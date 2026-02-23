@@ -219,7 +219,7 @@ class Ping
 		exec($exec_string, $output, $return);
 		// Strip empty lines and reorder the indexes from 0 (to make results more
 		// uniform across OS versions).
-		$this->commandOutput = implode($output, '');
+		$this->commandOutput = implode('', $output);
 		$output = array_values(array_filter($output));
 		// If the result line in the output is not empty, parse it.
 		if (!empty($output[1])) {

@@ -22,6 +22,12 @@
     "peppeocchi/php-cron-scheduler": "^4.0",
     "simshaun/recurr": "^5.0",
     "stripe/stripe-php": "^7.116",
-    "ramsey/uuid": "^4.2"
+    "ramsey/uuid": "^4.2",
+    "league/oauth2-client": "^2.7"
+  },
+  "config": {
+    "platform": {
+      "php": "7.4.0"
+    }
   }
 }

@@ -17,6 +17,7 @@ class Organizr
 	use NetDataFunctions;
 	use NormalFunctions;
 	use OAuthFunctions;
+	use OIDCFunctions;
 	use OptionsFunction;
 	use OrganizrFunctions;
 	use PluginFunctions;
@@ -72,7 +73,7 @@ class Organizr
 
 	// ===================================
 	// Organizr Version
-	public $version = '2.1.3180';
+	public $version = '2.1.4';
 	// ===================================
 	// Quick php Version check
 	public $minimumPHP = '7.4';
@@ -1670,6 +1671,34 @@ class Organizr
 		return $this->processQueries($response);
 	}
 
+	public function getUserByUsername($username)
+	{
+		$response = [
+			array(
+				'function' => 'fetch',
+				'query' => array(
+					'SELECT * FROM users WHERE username = ? COLLATE NOCASE',
+					$username
+				)
+			)
+		];
+		return $this->processQueries($response);
+	}
+
+	public function updateUserById($id, $updates)
+	{
+		if (empty($updates) || !$id) {
+			return false;
+		}
+		try {
+			$this->db->query('UPDATE [users] SET', $updates, 'WHERE id = ?', $id);
+			return true;
+		} catch (Exception $e) {
+			$this->setLoggerChannel('User')->error('Failed to update user: ' . $e->getMessage());
+			return false;
+		}
+	}
+
 	protected function invalidToken($token)
 	{
 		if (isset($_COOKIE[$this->cookieName])) {
@@ -2624,6 +2653,71 @@ class Organizr
 				$this->settingsOption('password', 'komgaFallbackPassword', ['label' => 'Komga Fallback Password']),
 				$this->settingsOption('password', 'komgaSSOMasterPassword', ['label' => 'Komga Master Password', 'help' => 'Sets master password if using oAuth backend - This will set the password on the login form for logins using oAuth where no password is supplied.']),
 			],
+			'OIDC Global' => [
+				$this->settingsOption('enable', 'oidcEnabled', ['label' => 'Enable OIDC Authentication']),
+				$this->settingsOption('switch', 'oidcAutoRedirect', ['label' => 'Auto-Redirect to OIDC', 'help' => 'Automatically redirect to OIDC provider on login page (add #noredirect to URL to bypass)']),
+				$this->settingsOption('select', 'oidcAutoRedirectProvider', ['label' => 'Auto-Redirect Provider', 'options' => [
+					['name' => 'None', 'value' => ''],
+					['name' => 'Authentik', 'value' => 'authentik'],
+					['name' => 'Keycloak', 'value' => 'keycloak'],
+					['name' => 'PocketID', 'value' => 'pocketid'],
+					['name' => 'Zitadel', 'value' => 'zitadel'],
+				]]),
+				$this->settingsOption('url', 'oidcAutoRedirectLogoutUrl', ['label' => 'Custom Logout URL', 'help' => 'Redirect to this URL after logout (e.g., OIDC provider logout endpoint)']),
+				$this->settingsOption('blank'),
+				$this->settingsOption('switch', 'oidcAutoCreateUsers', ['label' => 'Auto-Create Users', 'help' => 'Automatically create users on first OIDC login']),
+				$this->settingsOption('switch', 'oidcLinkExistingUsers', ['label' => 'Link Existing Users', 'help' => 'Link OIDC accounts to existing Organizr users by email']),
+				$this->settingsOption('switch', 'oidcUpdateGroupsOnLogin', ['label' => 'Update Groups on Login', 'help' => 'Re-sync group membership from OIDC on each login']),
+				$this->settingsOption('select', 'oidcDefaultGroupId', ['label' => 'Default Group', 'help' => 'Group assigned to new OIDC users if no mapping matches', 'options' => $this->groupSelect()]),
+				$this->settingsOption('blank'),
+				$this->settingsOption('input', 'oidcGroupClaimName', ['label' => 'Group Claim Name', 'placeholder' => 'groups', 'help' => 'JWT claim containing user groups']),
+				$this->settingsOption('select', 'oidcGroupMappingMode', ['label' => 'Group Mapping Mode', 'help' => 'How to handle multiple matching groups', 'options' => [
+					['name' => 'First Match', 'value' => 'first'],
+					['name' => 'Highest Privilege (lowest ID)', 'value' => 'highest_privilege'],
+					['name' => 'Lowest Privilege (highest ID)', 'value' => 'lowest_privilege'],
+				]]),
+				$this->settingsOption('textbox', 'oidcGroupMappings', ['label' => 'Group Mappings (JSON)', 'help' => 'Map OIDC groups to Organizr group IDs. Example: {"oidc-admins": 0, "oidc-users": 3}']),
+			],
+			'OIDC: Authentik' => [
+				$this->settingsOption('enable', 'oidcAuthentikEnabled', ['label' => 'Enable Authentik']),
+				$this->settingsOption('input', 'oidcAuthentikName', ['label' => 'Display Name', 'placeholder' => 'Authentik']),
+				$this->settingsOption('url', 'oidcAuthentikDiscoveryUrl', ['label' => 'Discovery URL', 'help' => 'e.g., https://authentik.example.com/application/o/organizr/.well-known/openid-configuration']),
+				$this->settingsOption('input', 'oidcAuthentikClientId', ['label' => 'Client ID']),
+				$this->settingsOption('password', 'oidcAuthentikClientSecret', ['label' => 'Client Secret']),
+				$this->settingsOption('input', 'oidcAuthentikScopes', ['label' => 'Scopes', 'placeholder' => 'openid,profile,email,groups']),
+				$this->settingsOption('input', 'oidcAuthentikGroupClaim', ['label' => 'Group Claim Override', 'placeholder' => 'groups', 'help' => 'Leave empty to use global setting']),
+				$this->settingsOption('button', 'testOIDCAuthentik', ['label' => 'Test Connection', 'icon' => 'fa fa-plug', 'text' => 'Test', 'attr' => 'onclick="testOIDCConnection(\'authentik\')"']),
+			],
+			'OIDC: Keycloak' => [
+				$this->settingsOption('enable', 'oidcKeycloakEnabled', ['label' => 'Enable Keycloak']),
+				$this->settingsOption('input', 'oidcKeycloakName', ['label' => 'Display Name', 'placeholder' => 'Keycloak']),
+				$this->settingsOption('url', 'oidcKeycloakDiscoveryUrl', ['label' => 'Discovery URL', 'help' => 'e.g., https://keycloak.example.com/realms/master/.well-known/openid-configuration']),
+				$this->settingsOption('input', 'oidcKeycloakClientId', ['label' => 'Client ID']),
+				$this->settingsOption('password', 'oidcKeycloakClientSecret', ['label' => 'Client Secret']),
+				$this->settingsOption('input', 'oidcKeycloakScopes', ['label' => 'Scopes', 'placeholder' => 'openid,profile,email']),
+				$this->settingsOption('input', 'oidcKeycloakGroupClaim', ['label' => 'Group Claim Override', 'placeholder' => 'groups', 'help' => 'Leave empty to use global setting']),
+				$this->settingsOption('button', 'testOIDCKeycloak', ['label' => 'Test Connection', 'icon' => 'fa fa-plug', 'text' => 'Test', 'attr' => 'onclick="testOIDCConnection(\'keycloak\')"']),
+			],
+			'OIDC: PocketID' => [
+				$this->settingsOption('enable', 'oidcPocketidEnabled', ['label' => 'Enable PocketID']),
+				$this->settingsOption('input', 'oidcPocketidName', ['label' => 'Display Name', 'placeholder' => 'PocketID']),
+				$this->settingsOption('url', 'oidcPocketidDiscoveryUrl', ['label' => 'Discovery URL', 'help' => 'e.g., https://pocketid.example.com/.well-known/openid-configuration']),
+				$this->settingsOption('input', 'oidcPocketidClientId', ['label' => 'Client ID']),
+				$this->settingsOption('password', 'oidcPocketidClientSecret', ['label' => 'Client Secret']),
+				$this->settingsOption('input', 'oidcPocketidScopes', ['label' => 'Scopes', 'placeholder' => 'openid,profile,email']),
+				$this->settingsOption('input', 'oidcPocketidGroupClaim', ['label' => 'Group Claim Override', 'placeholder' => 'groups', 'help' => 'Leave empty to use global setting']),
+				$this->settingsOption('button', 'testOIDCPocketid', ['label' => 'Test Connection', 'icon' => 'fa fa-plug', 'text' => 'Test', 'attr' => 'onclick="testOIDCConnection(\'pocketid\')"']),
+			],
+			'OIDC: Zitadel' => [
+				$this->settingsOption('enable', 'oidcZitadelEnabled', ['label' => 'Enable Zitadel']),
+				$this->settingsOption('input', 'oidcZitadelName', ['label' => 'Display Name', 'placeholder' => 'Zitadel']),
+				$this->settingsOption('url', 'oidcZitadelDiscoveryUrl', ['label' => 'Discovery URL', 'help' => 'e.g., https://zitadel.example.com/.well-known/openid-configuration']),
+				$this->settingsOption('input', 'oidcZitadelClientId', ['label' => 'Client ID']),
+				$this->settingsOption('password', 'oidcZitadelClientSecret', ['label' => 'Client Secret']),
+				$this->settingsOption('input', 'oidcZitadelScopes', ['label' => 'Scopes', 'placeholder' => 'openid,profile,email,urn:zitadel:iam:org:project:roles']),
+				$this->settingsOption('input', 'oidcZitadelGroupClaim', ['label' => 'Group Claim Override', 'placeholder' => 'urn:zitadel:iam:org:project:roles', 'help' => 'Zitadel uses a special claim format for roles']),
+				$this->settingsOption('button', 'testOIDCZitadel', ['label' => 'Test Connection', 'icon' => 'fa fa-plug', 'text' => 'Test', 'attr' => 'onclick="testOIDCConnection(\'zitadel\')"']),
+			],
 		];
 	}
 
@@ -2919,6 +3013,10 @@ class Organizr
 
 	public function wizardConfig($array)
 	{
+		if($this->hasConfig() && $this->hasDB()) {
+			$this->setAPIResponse('error', 'Endpoint disabled as database already exists', 401);
+			return false;
+		}
 		$array['driver'] = $array['driver'] ?? 'sqlite3';
 		$driver = $this->formatDatabaseDriver($array['driver']);
 		$dbName = $array['dbName'] ?? null;

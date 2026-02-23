@@ -14,11 +14,22 @@ function get_page_login($Organizr)
 	$hideOrganizrRecoveryPassword = ($Organizr->config['disableRecoverPass']) ? 'hidden' : '';
 	$customForgotPasswordText = (empty($Organizr->config['customForgotPassText'])) ? 'Enter your Email and instructions will be sent to you!' : $Organizr->config['customForgotPassText'];
 	$customForgotPasswordText = ($Organizr->config['disableRecoverPass']) ? 'Disabled' : $customForgotPasswordText;
+	$oidcAutoRedirectScript = '';
+	if ($Organizr->shouldAutoRedirectToOIDC()) {
+		$provider = $Organizr->getAutoRedirectProvider();
+		$oidcAutoRedirectScript = '
+// OIDC Auto-redirect
+if (!window.location.hash.includes("noredirect") && !sessionStorage.getItem("oidc_no_redirect")) {
+	window.location.href = "api/v2/oidc/' . htmlspecialchars($provider) . '/authorize";
+}
+';
+	}
 	return '
 <script>
 if(activeInfo.settings.login.rememberMe){
 	$(\'#checkbox-login\').prop(\'checked\',true);
 }
+' . $oidcAutoRedirectScript . '
 </script>
 <section id="wrapper" class="login-register">
 	<div class="login-box login-sidebar animated slideInRight">
@@ -101,6 +112,9 @@ if(activeInfo.settings.login.rememberMe){
 					<!-- PLEX OAUTH LOGIN -->
 					' . $Organizr->showoAuth() . '
 					<!-- END PLEX OAUTH LOGIN -->
+					<!-- OIDC SSO LOGIN -->
+					' . $Organizr->showoAuthOIDC() . '
+					<!-- END OIDC SSO LOGIN -->
 				</div>
 			</form>
 			<form class="form-horizontal form-material hidden" id="registerForm" onsubmit="return false;">
