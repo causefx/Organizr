@@ -73,7 +73,7 @@ class Organizr
 
 	// ===================================
 	// Organizr Version
-	public $version = '2.1.4';
+	public $version = '2.1.4000';
 	// ===================================
 	// Quick php Version check
 	public $minimumPHP = '7.4';
