@@ -655,6 +655,13 @@
     "title": "Weekly Update + Security Fix",
     "new": "added decrypt password|added endpoint to test connection to JellyStat|added nextction accoiunt creation, improve komga code and plex get id|chore: update version to 2.1.3210 and added release notes in version.json|create komga $ Nextcloud account when user use invite and an option for added the user to plex home|feat: added new update announcement and reorganize news entries|feat: added OIDC support - alpha testing",
     "fixed": "fix: wizard endpoing security|fix: logging errors and local ssl for oidc|fix: set default OIDC group ID to 4|fix: update subtitle for upcoming features and improvements|fix: uptime kuma label parsing|fix bad conflcit resolve|Fix pihole widget",
-    "notes": "array is the second arg for implode|change type input for password-alt|clean up debug scripts|create komga account when user use invite|edit var name|get library from komga server|not pointing to causefx, was pointing to metalcated|remove comment|reraise|Signed-off-by: Henry Whitaker \u003Chenrywhitaker3@outlook.com\u003E|Update API endpoint from v1 to v2 for user retrieval|update error message to include custom error text"
+    "notes": ",array is the second arg for implode|change type input for password-alt|clean up debug scripts|create komga account when user use invite|edit var name|get library from komga server|not pointing to causefx, was pointing to metalcated|remove comment|reraise|Signed-off-by: Henry Whitaker \u003Chenrywhitaker3@outlook.com\u003E|Update API endpoint from v1 to v2 for user retrieval|update error message to include custom error text"
+  },
+  "2.1.4010": {
+    "date": "2026-03-06 16:36",
+    "title": "Quick fix for SSO settings and OIDC group ID type",
+    "new": "",
+    "fixed": "fix: change oidcDefaultGroupId to string type in default.php",
+    "notes": ""
   }
 }
