@@ -778,7 +778,7 @@ return [
 	'oidcAutoRedirectLogoutUrl' => '',
 	'oidcAutoCreateUsers' => true,
 	'oidcLinkExistingUsers' => true,
-	'oidcDefaultGroupId' => 4,
+	'oidcDefaultGroupId' => '4',
 	'oidcGroupClaimName' => 'groups',
 	'oidcGroupMappings' => '{}',
 	'oidcGroupMappingMode' => 'first',
