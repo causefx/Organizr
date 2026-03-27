@@ -53,6 +53,7 @@ Temporary Items
 
 # Files from my local computer
 php_errors.log
+local-dev
 
 # Backup Files
 .pydio_id
