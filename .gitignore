@@ -179,6 +179,7 @@ api/plugins/*
 !api/plugins/speedTest/
 !api/plugins/shuck-stop/
 api/plugins/shuck-stop/drives.json
+!api/plugins/komga/
 
 # =========================
 # Custom files

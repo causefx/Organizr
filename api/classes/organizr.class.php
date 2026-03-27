@@ -41,6 +41,7 @@ class Organizr
 	use ProwlarrHomepageItem;
 	use JDownloaderHomepageItem;
 	use JellyfinHomepageItem;
+	use KomgaHomepageItem;
 	use LidarrHomepageItem;
 	use MiscHomepageItem;
 	use MonitorrHomepageItem;
