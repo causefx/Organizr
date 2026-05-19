@@ -663,5 +663,12 @@
     "new": "",
     "fixed": "fix: change oidcDefaultGroupId to string type in default.php",
     "notes": ""
+  },
+  "2.1.5000": {
+    "date": "2026-05-19 23:17",
+    "title": "Weekly Update",
+    "new": "feat: added URL validation to prevent SSRF attacks by blocking local/internal resources",
+    "fixed": "fix:settings page not loading after OIDC|fix: enhance password reset functionality to prevent account enumeration",
+    "notes": ""
   }
 }

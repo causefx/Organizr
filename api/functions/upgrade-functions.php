@@ -99,6 +99,14 @@ trait UpgradeFunctions
 				$this->upgradeToVersion($versionCheck);
 			}
 			// End Upgrade check start for version above
+			// Upgrade check start for version below
+			$versionCheck = '2.1.5000';
+			if ($compare->lessThan($oldVer, $versionCheck)) {
+				$updateDB = false;
+				$oldVer = $versionCheck;
+				$this->upgradeToVersion($versionCheck);
+			}
+			// End Upgrade check start for version above
 			if ($updateDB == true) {
 				//return 'Upgraded Needed - Current Version '.$oldVer.' - New Version: '.$versionCheck;
 				// Upgrade database to latest version
@@ -460,10 +468,24 @@ trait UpgradeFunctions
 				$this->addGroupIdMaxToDatabase();
 				$this->addAddToAdminToDatabase();
 				break;
+			case '2.1.5000':
+				$this->fixGroupOIDC();
+				break;
 		}
 		$this->setLoggerChannel('Upgrade')->notice('Finished upgrade to version ' . $version);
 		$this->setAPIResponse('success', 'Ran update function for version: ' . $version, 200);
 		return true;
+	}
+
+	public function fixGroupOIDC()
+	{
+		$this->updateConfig(array('oidcDefaultGroupId' => (string) $this->config['oidcDefaultGroupId']));
+		$this->logger->info(
+			'Updated OIDC default group id to string type', 
+			[ 
+				'oldValue' => $this->config['oidcDefaultGroupId'],
+				'newValue' => (string) $this->config['oidcDefaultGroupId']
+			]);
 	}
 
 	public function removeOldCacheFolder()
