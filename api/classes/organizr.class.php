@@ -7460,6 +7460,94 @@ public function youtubeSearch($query)
 		}
 	}
 
+	/**
+	 * Validate that URL is external and not a local/internal resource
+	 * Prevents SSRF attacks by blocking local file access and private IP ranges
+	 * 
+	 * @param string $url The URL to validate
+	 * @return bool True if URL is external and safe, false otherwise
+	 */
+	private function isExternalURL($url)
+	{
+		// Parse the URL
+		$parsedUrl = parse_url($url);
+		
+		if (!$parsedUrl || !isset($parsedUrl['scheme']) || !isset($parsedUrl['host'])) {
+			return false;
+		}
+		
+		// Block file:// and other non-http(s) schemes
+		$scheme = strtolower($parsedUrl['scheme']);
+		if (!in_array($scheme, ['http', 'https'])) {
+			return false;
+		}
+		
+		$host = strtolower($parsedUrl['host']);
+		
+		// Block localhost variations
+		$localhostPatterns = [
+			'localhost',
+			'127.0.0.1',
+			'0.0.0.0',
+			'::1',
+			'0:0:0:0:0:0:0:1'
+		];
+		
+		if (in_array($host, $localhostPatterns)) {
+			return false;
+		}
+		
+		// Resolve hostname to IP if it's not already an IP
+		$ip = $host;
+		if (!filter_var($host, FILTER_VALIDATE_IP)) {
+			$ip = gethostbyname($host);
+			// If gethostbyname fails, it returns the hostname unchanged
+			if ($ip === $host) {
+				// Could not resolve - for security, block unresolvable hosts
+				return false;
+			}
+		}
+		
+		// Block private IP ranges (IPv4)
+		if (filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4)) {
+			// Convert IP to long for range checking
+			$ipLong = ip2long($ip);
+			
+			// Private IP ranges:
+			// 10.0.0.0 - 10.255.255.255
+			// 172.16.0.0 - 172.31.255.255
+			// 192.168.0.0 - 192.168.255.255
+			// 169.254.0.0 - 169.254.255.255 (link-local)
+			// 127.0.0.0 - 127.255.255.255 (loopback)
+			$privateRanges = [
+				['10.0.0.0', '10.255.255.255'],
+				['172.16.0.0', '172.31.255.255'],
+				['192.168.0.0', '192.168.255.255'],
+				['169.254.0.0', '169.254.255.255'],
+				['127.0.0.0', '127.255.255.255']
+			];
+			
+			foreach ($privateRanges as $range) {
+				$rangeStart = ip2long($range[0]);
+				$rangeEnd = ip2long($range[1]);
+				if ($ipLong >= $rangeStart && $ipLong <= $rangeEnd) {
+					return false;
+				}
+			}
+		}
+		
+		// Block private/local IPv6 addresses
+		if (filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6)) {
+			// Block IPv6 loopback (::1) and link-local (fe80::/10)
+			if (strpos($ip, '::1') === 0 || strpos($ip, 'fe80:') === 0 || strpos($ip, 'fc00:') === 0 || strpos($ip, 'fd00:') === 0) {
+				return false;
+			}
+		}
+		
+		// URL passed all checks - it's external
+		return true;
+	}
+
 	public function scrapePage($array)
 	{
 		try {
@@ -7470,6 +7558,11 @@ public function youtubeSearch($query)
 				return false;
 			}
 			$url = $this->qualifyURL($url);
+			// Security: Only allow external URLs, block local/internal resources
+			if (!$this->isExternalURL($url)) {
+				$this->setAPIResponse('error', 'Access to local or internal URLs is not allowed', 403);
+				return false;
+			}
 			$data = array(
 				'full_url' => $url,
 				'drill_url' => $this->qualifyURL($url, true)
