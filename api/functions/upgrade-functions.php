@@ -460,10 +460,18 @@ trait UpgradeFunctions
 				$this->addGroupIdMaxToDatabase();
 				$this->addAddToAdminToDatabase();
 				break;
+			case '2.1.5000':
+				$this->fixGroupOIDC();
+				break;
 		}
 		$this->setLoggerChannel('Upgrade')->notice('Finished upgrade to version ' . $version);
 		$this->setAPIResponse('success', 'Ran update function for version: ' . $version, 200);
 		return true;
+	}
+
+	public function fixGroupOIDC()
+	{
+		$this->updateConfig(array('oidcDefaultGroupId' => (string) $this->config['oidcDefaultGroupId']));
 	}
 
 	public function removeOldCacheFolder()
