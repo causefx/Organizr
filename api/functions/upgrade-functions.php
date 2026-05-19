@@ -99,6 +99,14 @@ trait UpgradeFunctions
 				$this->upgradeToVersion($versionCheck);
 			}
 			// End Upgrade check start for version above
+			// Upgrade check start for version below
+			$versionCheck = '2.1.5000';
+			if ($compare->lessThan($oldVer, $versionCheck)) {
+				$updateDB = false;
+				$oldVer = $versionCheck;
+				$this->upgradeToVersion($versionCheck);
+			}
+			// End Upgrade check start for version above
 			if ($updateDB == true) {
 				//return 'Upgraded Needed - Current Version '.$oldVer.' - New Version: '.$versionCheck;
 				// Upgrade database to latest version
@@ -472,6 +480,12 @@ trait UpgradeFunctions
 	public function fixGroupOIDC()
 	{
 		$this->updateConfig(array('oidcDefaultGroupId' => (string) $this->config['oidcDefaultGroupId']));
+		$this->logger->info(
+			'Updated OIDC default group id to string type', 
+			[ 
+				'oldValue' => $this->config['oidcDefaultGroupId'],
+				'newValue' => (string) $this->config['oidcDefaultGroupId']
+			]);
 	}
 
 	public function removeOldCacheFolder()
