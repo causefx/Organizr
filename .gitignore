@@ -53,6 +53,7 @@ Temporary Items
 
 # Files from my local computer
 php_errors.log
+local-dev
 
 # Backup Files
 .pydio_id
@@ -178,6 +179,7 @@ api/plugins/*
 !api/plugins/speedTest/
 !api/plugins/shuck-stop/
 api/plugins/shuck-stop/drives.json
+!api/plugins/komga/
 
 # =========================
 # Custom files
