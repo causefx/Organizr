@@ -4031,11 +4031,14 @@ class Organizr
 			$this->setAPIResponse('error', 'Email was not supplied', 422);
 			return false;
 		}
+		if (!$this->config['PHPMAILER-enabled']) {
+			$this->setAPIResponse('error', 'Email functionality is not enabled', 422);
+			return false;
+		}
 		$newPassword = $this->randString(10);
 		$isUser = $this->getUserByEmail($email);
 		if ($isUser) {
 			$this->updateUserPassword($newPassword, $isUser['id']);
-			$this->setAPIResponse('success', 'User password has been reset', 200);
 			$this->setLoggerChannel('User Management');
 			$this->logger->info('User Management Function - User: ' . $isUser['username'] . '\'s password was reset');
 			if ($this->config['PHPMAILER-enabled']) {
@@ -4056,13 +4059,11 @@ class Organizr
 					'body' => $PhpMailer->_phpMailerPluginBuildEmail($emailTemplate),
 				);
 				$PhpMailer->_phpMailerPluginSendEmail($sendEmail);
-				$this->setAPIResponse('success', 'User password has been reset and email has been sent', 200);
 			}
-			return true;
-		} else {
-			$this->setAPIResponse('error', 'User not found', 404);
-			return false;
 		}
+		// Always return the same message to prevent account enumeration
+		$this->setAPIResponse('success', 'If the email exists in our system, a password reset has been sent to the user', 200);
+		return true;
 	}
 
 	public function register($array)
