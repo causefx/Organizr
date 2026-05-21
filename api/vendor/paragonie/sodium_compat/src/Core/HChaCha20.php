@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 if (class_exists('ParagonIE_Sodium_Core_HChaCha20', false)) {
     return;
@@ -14,10 +15,21 @@ class ParagonIE_Sodium_Core_HChaCha20 extends ParagonIE_Sodium_Core_ChaCha20
      * @param string $key
      * @param string|null $c
      * @return string
-     * @throws TypeError
+     *
+     * @throws SodiumException
      */
-    public static function hChaCha20($in = '', $key = '', $c = null)
-    {
+    public static function hChaCha20(
+        string $in,
+        #[SensitiveParameter]
+        string $key,
+        ?string $c = null
+    ): string {
+        if (self::strlen($in) !== 16) {
+            throw new SodiumException('Argument 1 must be 16 bytes');
+        }
+        if (self::strlen($key) !== 32) {
+            throw new SodiumException('Argument 2 must be 32 bytes');
+        }
         $ctx = array();
 
         if ($c === null) {
@@ -51,7 +63,7 @@ class ParagonIE_Sodium_Core_HChaCha20 extends ParagonIE_Sodium_Core_ChaCha20
      * @return string
      * @throws TypeError
      */
-    protected static function hChaCha20Bytes(array $ctx)
+    protected static function hChaCha20Bytes(array $ctx): string
     {
         $x0  = (int) $ctx[0];
         $x1  = (int) $ctx[1];
@@ -71,38 +83,24 @@ class ParagonIE_Sodium_Core_HChaCha20 extends ParagonIE_Sodium_Core_ChaCha20
         $x15 = (int) $ctx[15];
 
         for ($i = 0; $i < 10; ++$i) {
-            # QUARTERROUND( x0,  x4,  x8,  x12)
-            list($x0, $x4, $x8, $x12) = self::quarterRound($x0, $x4, $x8, $x12);
+            [$x0, $x4, $x8, $x12] = self::quarterRound($x0, $x4, $x8, $x12);
+            [$x1, $x5, $x9, $x13] = self::quarterRound($x1, $x5, $x9, $x13);
+            [$x2, $x6, $x10, $x14] = self::quarterRound($x2, $x6, $x10, $x14);
+            [$x3, $x7, $x11, $x15] = self::quarterRound($x3, $x7, $x11, $x15);
 
-            # QUARTERROUND( x1,  x5,  x9,  x13)
-            list($x1, $x5, $x9, $x13) = self::quarterRound($x1, $x5, $x9, $x13);
-
-            # QUARTERROUND( x2,  x6,  x10,  x14)
-            list($x2, $x6, $x10, $x14) = self::quarterRound($x2, $x6, $x10, $x14);
-
-            # QUARTERROUND( x3,  x7,  x11,  x15)
-            list($x3, $x7, $x11, $x15) = self::quarterRound($x3, $x7, $x11, $x15);
-
-            # QUARTERROUND( x0,  x5,  x10,  x15)
-            list($x0, $x5, $x10, $x15) = self::quarterRound($x0, $x5, $x10, $x15);
-
-            # QUARTERROUND( x1,  x6,  x11,  x12)
-            list($x1, $x6, $x11, $x12) = self::quarterRound($x1, $x6, $x11, $x12);
-
-            # QUARTERROUND( x2,  x7,  x8,  x13)
-            list($x2, $x7, $x8, $x13) = self::quarterRound($x2, $x7, $x8, $x13);
-
-            # QUARTERROUND( x3,  x4,  x9,  x14)
-            list($x3, $x4, $x9, $x14) = self::quarterRound($x3, $x4, $x9, $x14);
+            [$x0, $x5, $x10, $x15] = self::quarterRound($x0, $x5, $x10, $x15);
+            [$x1, $x6, $x11, $x12] = self::quarterRound($x1, $x6, $x11, $x12);
+            [$x2, $x7, $x8, $x13] = self::quarterRound($x2, $x7, $x8, $x13);
+            [$x3, $x4, $x9, $x14] = self::quarterRound($x3, $x4, $x9, $x14);
         }
 
-        return self::store32_le((int) ($x0  & 0xffffffff)) .
-            self::store32_le((int) ($x1  & 0xffffffff)) .
-            self::store32_le((int) ($x2  & 0xffffffff)) .
-            self::store32_le((int) ($x3  & 0xffffffff)) .
-            self::store32_le((int) ($x12 & 0xffffffff)) .
-            self::store32_le((int) ($x13 & 0xffffffff)) .
-            self::store32_le((int) ($x14 & 0xffffffff)) .
-            self::store32_le((int) ($x15 & 0xffffffff));
+        return self::store32_le(($x0  & 0xffffffff)) .
+            self::store32_le(($x1  & 0xffffffff)) .
+            self::store32_le(($x2  & 0xffffffff)) .
+            self::store32_le(($x3  & 0xffffffff)) .
+            self::store32_le(($x12 & 0xffffffff)) .
+            self::store32_le(($x13 & 0xffffffff)) .
+            self::store32_le(($x14 & 0xffffffff)) .
+            self::store32_le(($x15 & 0xffffffff));
     }
 }

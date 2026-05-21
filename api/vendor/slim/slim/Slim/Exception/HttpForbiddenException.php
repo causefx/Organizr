@@ -10,6 +10,7 @@ declare(strict_types=1);
 
 namespace Slim\Exception;
 
+/** @api */
 class HttpForbiddenException extends HttpSpecializedException
 {
     /**
@@ -22,6 +23,6 @@ class HttpForbiddenException extends HttpSpecializedException
      */
     protected $message = 'Forbidden.';
 
-    protected $title = '403 Forbidden';
-    protected $description = 'You are not permitted to perform the requested operation.';
+    protected string $title = '403 Forbidden';
+    protected string $description = 'You are not permitted to perform the requested operation.';
 }

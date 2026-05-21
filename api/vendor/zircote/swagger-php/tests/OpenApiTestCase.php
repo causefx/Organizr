@@ -4,235 +4,234 @@
  * @license Apache 2.0
  */
 
-namespace OpenApiTests;
+namespace OpenApi\Tests;
 
-use Closure;
 use DirectoryIterator;
 use Exception;
-use PHPUnit\Framework\TestCase;
-use stdClass;
 use OpenApi\Analyser;
-use OpenApi\Annotations\AbstractAnnotation;
-use OpenApi\Annotations\OpenApi;
+use OpenApi\Analysis;
 use OpenApi\Annotations\Info;
+use OpenApi\Annotations\OpenApi;
 use OpenApi\Annotations\PathItem;
 use OpenApi\Context;
-use OpenApi\Logger;
+use OpenApi\StaticAnalyser;
+use PHPUnit\Framework\TestCase;
+use Psr\Log\AbstractLogger;
+use Psr\Log\LoggerInterface;
+use Symfony\Component\Yaml\Exception\ParseException;
+use Symfony\Component\Yaml\Yaml;
 
 class OpenApiTestCase extends TestCase
 {
-    protected $countExceptions = 0;
-
     /**
      * @var array
      */
-    private $expectedLogMessages;
-
-    /**
-     * @var Closure
-     */
-    private $originalLogger;
-
-    /**
-     * @param string  $expectedFile  File containing the excepted json.
-     * @param OpenApi $actualOpenApi
-     * @param string  $message
-     */
-    public function assertOpenApiEqualsFile($expectedFile, $actualOpenApi, $message = '')
-    {
-        $expected = json_decode(file_get_contents($expectedFile));
-        $error = json_last_error();
-        if ($error !== JSON_ERROR_NONE) {
-            $this->fail('File: "'.$expectedFile.'" doesn\'t contain valid json, error '.$error);
-        }
-        $json = json_encode($actualOpenApi);
-        if ($json === false) {
-            $this->fail('Failed to encode openapi object');
-        }
-        $actual = json_decode($json);
-        $expectedJson = json_encode($this->sorted($expected, $expectedFile), JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
-        $actualJson = json_encode($this->sorted($actual, 'OpenApi'), JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
-        $this->assertEquals($expectedJson, $actualJson, $message);
-    }
-
-    public function assertOpenApiLog($expectedEntry, $expectedType, $message = '')
-    {
-        $this->expectedLogMessages[] = function ($actualEntry, $actualType) use ($expectedEntry, $expectedType, $message) {
-            $this->assertSame($expectedEntry, $actualEntry, $message);
-            $this->assertSame($expectedType, $actualType, $message);
-        };
-    }
-
-    public function assertOpenApiLogType($expectedType, $message = '')
-    {
-        $this->expectedLogMessages[] = function ($entry, $actualType) use ($expectedType, $message) {
-            $this->assertSame($expectedType, $actualType, $message);
-        };
-    }
-
-    public function assertOpenApiLogEntry($expectedEntry, $message = '')
-    {
-        $this->expectedLogMessages[] = function ($actualEntry, $type) use ($expectedEntry, $message) {
-            $this->assertSame($expectedEntry, $actualEntry, $message);
-        };
-    }
-
-    public function assertOpenApiLogEntryStartsWith($entryPrefix, $message = '')
-    {
-        $this->expectedLogMessages[] = function ($entry, $type) use ($entryPrefix, $message) {
-            if ($entry instanceof Exception) {
-                $entry = $entry->getMessage();
-            }
-            $this->assertStringStartsWith($entryPrefix, $entry, $message);
-        };
-    }
+    public $expectedLogMessages = [];
 
     protected function setUp(): void
     {
         $this->expectedLogMessages = [];
-        $this->originalLogger = Logger::getInstance()->log;
-        Logger::getInstance()->log = function ($entry, $type) {
-            if (count($this->expectedLogMessages)) {
-                $assertion = array_shift($this->expectedLogMessages);
-                $assertion($entry, $type);
-            } else {
-                $map = [
-                    E_USER_NOTICE => 'notice',
-                    E_USER_WARNING => 'warning',
-                ];
-                if (isset($map[$type])) {
-                    $this->fail('Unexpected \OpenApi\Logger::'.$map[$type].'("'.$entry.'")');
-                } else {
-                    $this->fail('Unexpected \OpenApi\Logger->getInstance()->log("'.$entry.'",'.$type.')');
-                }
-            }
-        };
+
         parent::setUp();
     }
 
     protected function tearDown(): void
     {
-        $this->assertCount($this->countExceptions, $this->expectedLogMessages, count($this->expectedLogMessages).' OpenApi\Logger messages were not triggered');
-        Logger::getInstance()->log = $this->originalLogger;
+        $this->assertEmpty(
+            $this->expectedLogMessages,
+            implode(PHP_EOL . '  => ', array_merge(
+                ['OpenApi\Logger messages were not triggered:'],
+                array_map(function (array $value) {
+                    return $value[1];
+                }, $this->expectedLogMessages)
+            ))
+        );
+
         parent::tearDown();
     }
 
-    /**
-     *
-     * @param string $comment Contents of a comment block
-     *
-     * @return AbstractAnnotation[]
-     */
-    protected function parseComment($comment)
+    public function getTrackingLogger(): ?LoggerInterface
     {
-        $analyser = new Analyser();
-        $context = Context::detect(1);
-        return $analyser->fromComment("<?php\n/**\n * ".implode("\n * ", explode("\n", $comment))."\n*/", $context);
+        return new class($this) extends AbstractLogger {
+            protected $testCase;
+
+            public function __construct($testCase)
+            {
+                $this->testCase = $testCase;
+            }
+
+            public function log($level, $message, array $context = []): void
+            {
+                if (count($this->testCase->expectedLogMessages)) {
+                    list($assertion, $needle) = array_shift($this->testCase->expectedLogMessages);
+                    $assertion($message, $level);
+                } else {
+                    $this->testCase->fail('Unexpected log line ::' . $level . '("' . $message . '")');
+                }
+            }
+        };
+    }
+
+    public function getContext(array $properties = [])
+    {
+        return new Context(['logger' => $this->getTrackingLogger()] + $properties);
+    }
+
+    public function assertOpenApiLogEntryContains($needle, $message = '')
+    {
+        $this->expectedLogMessages[] = [function ($entry, $type) use ($needle, $message) {
+            if ($entry instanceof Exception) {
+                $entry = $entry->getMessage();
+            }
+            $this->assertStringContainsString($needle, $entry, $message);
+        }, $needle];
     }
 
     /**
-     * Create a OpenApi object with Info.
-     * (So it will pass validation.)
+     * Compare OpenApi specs assuming strings to contain YAML.
+     *
+     * @param array|OpenApi|\stdClass|string $actual     The generated output
+     * @param array|OpenApi|\stdClass|string $expected   The specification
+     * @param string                         $message
+     * @param bool                           $normalized flag indicating whether the inputs are already normalized or not
+     */
+    protected function assertSpecEquals($actual, $expected, $message = '', $normalized = false)
+    {
+        $normalize = function ($in) {
+            if ($in instanceof OpenApi) {
+                $in = $in->toYaml();
+            }
+            if (is_string($in)) {
+                // assume YAML
+                try {
+                    $in = Yaml::parse($in);
+                } catch (ParseException $e) {
+                    $this->fail('Invalid YAML: ' . $e->getMessage() . PHP_EOL . $in);
+                }
+            }
+
+            return $in;
+        };
+
+        if (!$normalized) {
+            $actual = $normalize($actual);
+            $expected = $normalize($expected);
+        }
+
+        if (is_iterable($actual) && is_iterable($expected)) {
+            foreach ($actual as $key => $value) {
+                $this->assertArrayHasKey($key, (array) $expected, $message . ': property: "' . $key . '" should be absent, but has value: ' . $this->formattedValue($value));
+                $this->assertSpecEquals($value, ((array) $expected)[$key], $message . ' > ' . $key, true);
+            }
+            foreach ($expected as $key => $value) {
+                $this->assertArrayHasKey($key, (array) $actual, $message . ': property: "' . $key . '" is missing');
+                $this->assertSpecEquals(((array) $actual)[$key], $value, $message . ' > ' . $key, true);
+            }
+        } else {
+            $this->assertEquals($actual, $expected, $message);
+        }
+    }
+
+    private function formattedValue($value)
+    {
+        if (is_bool($value)) {
+            return $value ? 'true' : 'false';
+        }
+        if (is_numeric($value)) {
+            return (string) $value;
+        }
+        if (is_string($value)) {
+            return '"' . $value . '"';
+        }
+        if (is_object($value)) {
+            return get_class($value);
+        }
+
+        return gettype($value);
+    }
+
+    protected function parseComment($comment, ?Context $context = null)
+    {
+        $analyser = new Analyser();
+        $context = $context ?: $this->getContext();
+
+        return $analyser->fromComment("<?php\n/**\n * " . implode("\n * ", explode("\n", $comment)) . "\n*/", $context);
+    }
+
+    /**
+     * Create a valid OpenApi object with Info.
      */
     protected function createOpenApiWithInfo()
     {
-        $openapi = new OpenApi(
-            [
-            'info' => new Info(
-                [
+        return new OpenApi([
+            'info' => new Info([
                 'title' => 'swagger-php Test-API',
                 'version' => 'test',
-                '_context' => new Context(['unittest' => true]),
-                ]
-            ),
+                '_context' => $this->getContext(),
+            ]),
             'paths' => [
-                new PathItem(['path' => '/test'])
+                new PathItem(['path' => '/test', '_context' => $this->getContext()]),
             ],
-            '_context' => new Context(['unittest' => true]),
-            ]
-        );
-        return $openapi;
+            '_context' => $this->getContext(),
+        ]);
     }
 
     /**
-     * Sorts the object to improve matching and debugging the differences.
-     * Used by assertOpenApiEqualsFile
+     * Resolve fixture filenames.
      *
-     * @param stdClass $object
-     * @param string   $origin
+     * @param array|string $files one ore more files
      *
-     * @return stdClass The sorted object
+     * @return array resolved filenames for loading scanning etc
      */
-    protected function sorted(stdClass $object, $origin = 'unknown')
+    public function fixtures($files): array
     {
-        static $sortMap = null;
-        if ($sortMap === null) {
-            $sortMap = [
-                // property -> algorithm
-                'parameters' => function ($a, $b) {
-                    return strcasecmp($a->name, $b->name);
-                },
-                // 'responses' => function ($a, $b) {
-                //     return strcasecmp($a->name, $b->name);
-                // },
-                'headers' => function ($a, $b) {
-                    return strcasecmp($a->header, $b->header);
-                },
-                'tags' => function ($a, $b) {
-                    return strcasecmp($a->name, $b->name);
-                },
-                'allOf' => function ($a, $b) {
-                    return strcasecmp(implode(',', array_keys(get_object_vars($a))), implode(',', array_keys(get_object_vars($b))));
-                },
-                'security' => function ($a, $b) {
-                    return strcasecmp(implode(',', array_keys(get_object_vars($a))), implode(',', array_keys(get_object_vars($b))));
-                },
-            ];
-        }
-        $data = unserialize(serialize((array)$object));
-        ksort($data);
-        foreach ($data as $property => $value) {
-            if (is_object($value)) {
-                $data[$property] = $this->sorted($value, $origin.'->'.$property);
-            } elseif (is_array($value)) {
-                if (count($value) > 1) {
-                    if (gettype($value[0]) === 'string') {
-                        $sortFn = 'strcasecmp';
-                    } else {
-                        $sortFn = isset($sortMap[$property]) ? $sortMap[$property] : null;
-                    }
-                    if ($sortFn) {
-                        usort($value, $sortFn);
-                        $data[$property] = $value;
-                    } else {
-                        echo 'no sort for '.$origin.'->'.$property."\n";
-                        die;
-                    }
-                }
-                foreach ($value as $i => $element) {
-                    if (is_object($element)) {
-                        $data[$property][$i] = $this->sorted($element, $origin.'->'.$property.'['.$i.']');
-                    }
-                }
-            }
-        }
-        return (object)$data;
+        return array_map(function ($file) {
+            return __DIR__ . '/Fixtures/' . $file;
+        }, (array) $files);
     }
 
-    public function allAnnotations()
+    public function analysisFromFixtures($files): Analysis
     {
-        $data = [];
-        $dir = new DirectoryIterator(__DIR__.'/../src/Annotations');
+        $analyser = new StaticAnalyser();
+        $analysis = new Analysis([], $this->getContext());
+
+        foreach ((array) $files as $file) {
+            $analysis->addAnalysis($analyser->fromFile($this->fixtures($file)[0], $this->getContext()));
+        }
+
+        return $analysis;
+    }
+
+    public function analysisFromCode(string $code, ?Context $context = null)
+    {
+        return (new StaticAnalyser())->fromCode("<?php\n" . $code, $context ?: $this->getContext());
+    }
+
+    public function analysisFromDockBlock($comment)
+    {
+        return (new Analyser())->fromComment($comment, $this->getContext());
+    }
+
+    /**
+     * Collect list of all non abstract annotation classes.
+     *
+     * @return array
+     */
+    public function allAnnotationClasses()
+    {
+        $classes = [];
+        $dir = new DirectoryIterator(__DIR__ . '/../src/Annotations');
         foreach ($dir as $entry) {
-            if ($entry->isFile() === false) {
+            if (!$entry->isFile() || $entry->getExtension() != 'php') {
                 continue;
             }
-            $class = substr($entry->getFilename(), 0, -4);
-            if (in_array($class, ['AbstractAnnotation','Operation'])) {
-                continue; // skip abstract classes
+            $class = $entry->getBasename('.php');
+            if (in_array($class, ['AbstractAnnotation', 'Operation'])) {
+                continue;
             }
-            $data[] = ['OpenApi\\Annotations\\'.$class];
+            $classes[$class] = ['OpenApi\\Annotations\\' . $class];
         }
-        return $data;
+
+        return $classes;
     }
 }

@@ -97,7 +97,7 @@ trait JellyStatHomepageItem
                     $this->setAPIResponse('error', 'Failed to connect to JellyStat URL', 500);
                     return false;
                 }
-            } catch (Exception $e) {
+            } catch (\Throwable $e) {
                 $this->setAPIResponse('error', 'Connection test failed: ' . $e->getMessage(), 500);
                 return false;
             }
@@ -151,7 +151,7 @@ trait JellyStatHomepageItem
                 }
                 return false;
                 
-            } catch (Exception $e) {
+            } catch (\Throwable $e) {
                 $this->error('JellyStat API test exception: ' . $e->getMessage());
                 $this->setAPIResponse('error', 'Connection test failed: ' . $e->getMessage(), 500);
                 return false;
@@ -1312,7 +1312,7 @@ trait JellyStatHomepageItem
             $this->setAPIResponse('success', 'JellyStat data retrieved successfully', 200, $stats);
             return true;
             
-        } catch (Exception $e) {
+        } catch (\Throwable $e) {
             $this->setAPIResponse('error', 'Failed to retrieve JellyStat data: ' . $e->getMessage(), 500);
             return false;
         }
@@ -1436,7 +1436,7 @@ trait JellyStatHomepageItem
                 $stats['users'] = $this->aggregateJellyStatUsers($allHistoryResults);
             }
             
-        } catch (Exception $e) {
+        } catch (\Throwable $e) {
             return ['error' => true, 'message' => 'Failed to fetch JellyStat data: ' . $e->getMessage()];
         }
         

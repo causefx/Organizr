@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Bcremer\LineReader;
 
 final class LineReader
@@ -7,11 +9,13 @@ final class LineReader
     /**
      * Prevent instantiation
      */
-    private function __construct() {}
+    private function __construct()
+    {
+    }
 
     /**
-     * @param string $filePath
-     * @return \Generator
+     * @return \Generator<int, string, void, void>
+     *
      * @throws \InvalidArgumentException if $filePath is not readable
      */
     public static function readLines(string $filePath): \Generator
@@ -24,8 +28,8 @@ final class LineReader
     }
 
     /**
-     * @param string $filePath
-     * @return \Generator
+     * @return \Generator<int, string, void, void>
+     *
      * @throws \InvalidArgumentException if $filePath is not readable
      */
     public static function readLinesBackwards(string $filePath): \Generator
@@ -35,13 +39,15 @@ final class LineReader
         }
 
         $size = filesize($filePath);
+        if (!\is_int($size)) {
+            throw new \RuntimeException('Could not get file size');
+        }
 
         return self::readBackwards($fh, $size);
     }
 
     /**
      * @param resource $fh
-     * @return \Generator
      */
     private static function read($fh): \Generator
     {
@@ -60,9 +66,10 @@ final class LineReader
      * a newline character.
      *
      * @see http://stackoverflow.com/a/10494801/147634
+     *
      * @param resource $fh
-     * @param int $pos
-     * @return \Generator
+     *
+     * @return \Generator<int, string, void, void>
      */
     private static function readBackwards($fh, int $pos): \Generator
     {
@@ -79,7 +86,7 @@ final class LineReader
                 continue;
             }
 
-            if ($pos === 0) {
+            if ($pos === 0 && \is_array($buffer)) {
                 yield array_pop($buffer);
                 break;
             }
@@ -91,7 +98,13 @@ final class LineReader
                 $pos -= $bufferSize;
             }
             fseek($fh, $pos);
+            if ($bufferSize < 0) {
+                throw new \RuntimeException('Buffer size cannot be negative');
+            }
             $chunk = fread($fh, $bufferSize);
+            if (!\is_string($chunk)) {
+                throw new \RuntimeException('Could not read file');
+            }
             if ($buffer === null) {
                 // remove single trailing newline, rtrim cannot be used here
                 if (substr($chunk, -1) === "\n") {

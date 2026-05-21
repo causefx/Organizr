@@ -12,20 +12,24 @@ composer require zircote/swagger-php
 
 Generate always-up-to-date documentation.
 
-```php{3-5}
+```php
 <?php
 require("vendor/autoload.php");
-$openapi = \OpenApi\scan('/path/to/project');
+
+$openapi = \OpenApi\Generator::scan(['/path/to/project']);
+
 header('Content-Type: application/x-yaml');
 echo $openapi->toYaml();
 ```
 
 This will scan the php-files in the given folder(s), look for OpenApi annotations and output a json file.
 
+Complete documentation of how to use the `Generator` class can be found in the [Generator Migration](https://zircote.github.io/swagger-php/Generator-migration.html) guide.
+
 ## CLI
 
 Instead of generating the documentation dynamically we also provide a command line interface.
-This writes the documentation to a static json file.
+This allows to write the documentation to a static yaml/json file.
 
 ```bash
 ./vendor/bin/openapi --help
@@ -333,6 +337,13 @@ You can combine model definitions into new schema compositions with [allOf](http
 ```
 
 More info in the [Inheritance and Polymorphism](https://swagger.io/docs/specification/data-models/inheritance-and-polymorphism/) chapter.
+
+## Array parameters in query
+
+Depending on [style-values](https://swagger.io/specification/#style-values) `@OA\Parameter(in="query", name="param", ...)` might create urls like this: `path?param=123&param=abc` which doesn't work when reading the param values in php.
+
+The solution is to change the name `param` into `param[]` which will create
+`path?param[]=123&param[]=abc` and results in an php array.
 
 ## Vendor extensions
 

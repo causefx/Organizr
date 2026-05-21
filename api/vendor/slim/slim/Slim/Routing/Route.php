@@ -33,6 +33,10 @@ use function class_implements;
 use function in_array;
 use function is_array;
 
+/**
+ * @api
+ * @template TContainerInterface of (ContainerInterface|null)
+ */
 class Route implements RouteInterface, RequestHandlerInterface
 {
     /**
@@ -40,99 +44,78 @@ class Route implements RouteInterface, RequestHandlerInterface
      *
      * @var string[]
      */
-    protected $methods = [];
+    protected array $methods = [];
 
     /**
      * Route identifier
-     *
-     * @var string
      */
-    protected $identifier;
+    protected string $identifier;
 
     /**
      * Route name
-     *
-     * @var null|string
      */
-    protected $name;
+    protected ?string $name = null;
 
     /**
      * Parent route groups
      *
      * @var RouteGroupInterface[]
      */
-    protected $groups;
+    protected array $groups;
 
-    /**
-     * @var InvocationStrategyInterface
-     */
-    protected $invocationStrategy;
+    protected InvocationStrategyInterface $invocationStrategy;
 
     /**
      * Route parameters
      *
-     * @var string[]
+     * @var array<string, string>
      */
-    protected $arguments = [];
+    protected array $arguments = [];
 
     /**
      * Route arguments parameters
      *
-     * @var string[]
+     * @var array<string, string>
      */
-    protected $savedArguments = [];
+    protected array $savedArguments = [];
 
     /**
      * Container
-     *
-     * @var ContainerInterface|null
+     * @var TContainerInterface $container
      */
-    protected $container;
+    protected ?ContainerInterface $container = null;
 
-    /**
-     * @var MiddlewareDispatcher
-     */
-    protected $middlewareDispatcher;
+    /** @var MiddlewareDispatcher<TContainerInterface> $middlewareDispatcher */
+    protected MiddlewareDispatcher $middlewareDispatcher;
 
     /**
      * Route callable
      *
-     * @var callable|string
+     * @var callable|array{class-string, string}|string
      */
     protected $callable;
 
-    /**
-     * @var CallableResolverInterface
-     */
-    protected $callableResolver;
+    protected CallableResolverInterface $callableResolver;
 
-    /**
-     * @var ResponseFactoryInterface
-     */
-    protected $responseFactory;
+    protected ResponseFactoryInterface $responseFactory;
 
     /**
      * Route pattern
-     *
-     * @var string
      */
-    protected $pattern;
+    protected string $pattern;
+
+    protected bool $groupMiddlewareAppended = false;
 
     /**
-     * @var bool
-     */
-    protected $groupMiddlewareAppended = false;
-
-    /**
-     * @param string[]                         $methods    The route HTTP methods
-     * @param string                           $pattern    The route pattern
-     * @param callable|string                  $callable   The route callable
-     * @param ResponseFactoryInterface         $responseFactory
-     * @param CallableResolverInterface        $callableResolver
-     * @param ContainerInterface|null          $container
+     * @param string[] $methods The route HTTP methods
+     * @param string $pattern The route pattern
+     * @param callable|array{class-string, string}|string $callable The route callable
+     * @param ResponseFactoryInterface $responseFactory
+     * @param CallableResolverInterface $callableResolver
+     * @param TContainerInterface $container
      * @param InvocationStrategyInterface|null $invocationStrategy
-     * @param RouteGroup[]                     $groups     The parent route groups
-     * @param int                              $identifier The route identifier
+     * @param RouteGroupInterface[] $groups The parent route groups
+     * @param int $identifier The route identifier
      */
     public function __construct(
         array $methods,
@@ -157,9 +140,6 @@ class Route implements RouteInterface, RequestHandlerInterface
         $this->middlewareDispatcher = new MiddlewareDispatcher($this, $callableResolver, $container);
     }
 
-    /**
-     * @return CallableResolverInterface
-     */
     public function getCallableResolver(): CallableResolverInterface
     {
         return $this->callableResolver;
@@ -312,7 +292,7 @@ class Route implements RouteInterface, RequestHandlerInterface
      */
     public function prepare(array $arguments): RouteInterface
     {
-        $this->arguments = array_replace($this->savedArguments, $arguments) ?? [];
+        $this->arguments = array_replace($this->savedArguments, $arguments);
         return $this;
     }
 
@@ -349,7 +329,6 @@ class Route implements RouteInterface, RequestHandlerInterface
         $inner = $this->middlewareDispatcher;
         $this->middlewareDispatcher = new MiddlewareDispatcher($inner, $this->callableResolver, $this->container);
 
-        /** @var RouteGroupInterface $group */
         foreach (array_reverse($this->groups) as $group) {
             $group->appendMiddlewareToDispatcher($this->middlewareDispatcher);
         }
@@ -369,7 +348,6 @@ class Route implements RouteInterface, RequestHandlerInterface
         }
         $strategy = $this->invocationStrategy;
 
-        /** @var string[] $strategyImplements */
         $strategyImplements = class_implements($strategy);
 
         if (

@@ -22,6 +22,26 @@ class PaymentIntentService extends \Stripe\Service\AbstractService
     }
 
     /**
+     * Manually reconcile the remaining amount for a customer_balance PaymentIntent.
+     *
+     * This can be used when the cash balance for <a
+     * href="docs/payments/customer-balance/reconciliation#cash-manual-reconciliation">a
+     * customer in manual reconciliation mode</a> received funds.
+     *
+     * @param string $id
+     * @param null|array $params
+     * @param null|array|\Stripe\Util\RequestOptions $opts
+     *
+     * @throws \Stripe\Exception\ApiErrorException if the request fails
+     *
+     * @return \Stripe\PaymentIntent
+     */
+    public function applyCustomerBalance($id, $params = null, $opts = null)
+    {
+        return $this->request('post', $this->buildPath('/v1/payment_intents/%s/apply_customer_balance', $id), $params, $opts);
+    }
+
+    /**
      * A PaymentIntent object can be canceled when it is in one of these statuses:
      * <code>requires_payment_method</code>, <code>requires_capture</code>,
      * <code>requires_confirmation</code>, <code>requires_action</code>, or
@@ -31,6 +51,10 @@ class PaymentIntentService extends \Stripe\Service\AbstractService
      * operations on the PaymentIntent will fail with an error. For PaymentIntents with
      * <code>status=’requires_capture’</code>, the remaining
      * <code>amount_capturable</code> will automatically be refunded.
+     *
+     * You cannot cancel the PaymentIntent for a Checkout Session. <a
+     * href="/docs/api/checkout/sessions/expire">Expire the Checkout Session</a>
+     * instead
      *
      * @param string $id
      * @param null|array $params
@@ -136,6 +160,47 @@ class PaymentIntentService extends \Stripe\Service\AbstractService
     }
 
     /**
+     * Perform an incremental authorization on an eligible <a
+     * href="/docs/api/payment_intents/object">PaymentIntent</a>. To be eligible, the
+     * PaymentIntent’s status must be <code>requires_capture</code> and <a
+     * href="/docs/api/charges/object#charge_object-payment_method_details-card_present-incremental_authorization_supported">incremental_authorization_supported</a>
+     * must be <code>true</code>.
+     *
+     * Incremental authorizations attempt to increase the authorized amount on your
+     * customer’s card to the new, higher <code>amount</code> provided. As with the
+     * initial authorization, incremental authorizations may be declined. A single
+     * PaymentIntent can call this endpoint multiple times to further increase the
+     * authorized amount.
+     *
+     * If the incremental authorization succeeds, the PaymentIntent object is returned
+     * with the updated <a
+     * href="/docs/api/payment_intents/object#payment_intent_object-amount">amount</a>.
+     * If the incremental authorization fails, a <a
+     * href="/docs/error-codes#card-declined">card_declined</a> error is returned, and
+     * no fields on the PaymentIntent or Charge are updated. The PaymentIntent object
+     * remains capturable for the previously authorized amount.
+     *
+     * Each PaymentIntent can have a maximum of 10 incremental authorization attempts,
+     * including declines. Once captured, a PaymentIntent can no longer be incremented.
+     *
+     * Learn more about <a
+     * href="/docs/terminal/features/incremental-authorizations">incremental
+     * authorizations</a>.
+     *
+     * @param string $id
+     * @param null|array $params
+     * @param null|array|\Stripe\Util\RequestOptions $opts
+     *
+     * @throws \Stripe\Exception\ApiErrorException if the request fails
+     *
+     * @return \Stripe\PaymentIntent
+     */
+    public function incrementAuthorization($id, $params = null, $opts = null)
+    {
+        return $this->request('post', $this->buildPath('/v1/payment_intents/%s/increment_authorization', $id), $params, $opts);
+    }
+
+    /**
      * Retrieves the details of a PaymentIntent that has previously been created.
      *
      * Client-side retrieval using a publishable key is allowed when the
@@ -156,6 +221,26 @@ class PaymentIntentService extends \Stripe\Service\AbstractService
     public function retrieve($id, $params = null, $opts = null)
     {
         return $this->request('get', $this->buildPath('/v1/payment_intents/%s', $id), $params, $opts);
+    }
+
+    /**
+     * Search for PaymentIntents you’ve previously created using Stripe’s <a
+     * href="/docs/search#search-query-language">Search Query Language</a>. Don’t use
+     * search in read-after-write flows where strict consistency is necessary. Under
+     * normal operating conditions, data is searchable in less than a minute.
+     * Occasionally, propagation of new or updated data can be up to an hour behind
+     * during outages. Search functionality is not available to merchants in India.
+     *
+     * @param null|array $params
+     * @param null|array|\Stripe\Util\RequestOptions $opts
+     *
+     * @throws \Stripe\Exception\ApiErrorException if the request fails
+     *
+     * @return \Stripe\SearchResult<\Stripe\PaymentIntent>
+     */
+    public function search($params = null, $opts = null)
+    {
+        return $this->requestSearchResult('get', '/v1/payment_intents/search', $params, $opts);
     }
 
     /**

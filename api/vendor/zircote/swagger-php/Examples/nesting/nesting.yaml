@@ -1,0 +1,55 @@
+openapi: 3.0.0
+info:
+  title: 'Nested schemas'
+  description: 'An entity controller class.'
+  version: 1.0.0
+paths:
+  '/entity/{id}':
+    get:
+      tags:
+        - api
+      operationId: 4db0bcd1e9358f78c662034e39c702b6
+      parameters:
+        -
+          name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        default:
+          description: 'successful operation'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ActualModel'
+components:
+  schemas:
+    ActualModel:
+      type: object
+      allOf:
+        -
+          properties:
+            actual:
+              type: string
+            soClose:
+              type: string
+        -
+          $ref: '#/components/schemas/AlmostModel'
+    AlmostModel:
+      type: object
+      allOf:
+        -
+          properties:
+            almost:
+              type: string
+            intermediate:
+              type: string
+        -
+          $ref: '#/components/schemas/BaseModel'
+    BaseModel:
+      properties:
+        base:
+          type: string
+      type: object

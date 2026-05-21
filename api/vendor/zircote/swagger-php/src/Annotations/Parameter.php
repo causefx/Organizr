@@ -6,7 +6,7 @@
 
 namespace OpenApi\Annotations;
 
-use OpenApi\Logger;
+use OpenApi\Generator;
 
 /**
  * @Annotation
@@ -17,18 +17,18 @@ use OpenApi\Logger;
 class Parameter extends AbstractAnnotation
 {
     /**
-     * $ref See https://swagger.io/docs/specification/using-ref/
+     * $ref See https://swagger.io/docs/specification/using-ref/.
      *
      * @var string
      */
-    public $ref = UNDEFINED;
+    public $ref = Generator::UNDEFINED;
 
     /**
      * The key into Components->parameters or PathItem->parameters array.
      *
      * @var string
      */
-    public $parameter = UNDEFINED;
+    public $parameter = Generator::UNDEFINED;
 
     /**
      * The name of the parameter.
@@ -39,7 +39,7 @@ class Parameter extends AbstractAnnotation
      *
      * @var string
      */
-    public $name = UNDEFINED;
+    public $name = Generator::UNDEFINED;
 
     /**
      * The location of the parameter.
@@ -47,7 +47,7 @@ class Parameter extends AbstractAnnotation
      *
      * @var string
      */
-    public $in = UNDEFINED;
+    public $in = Generator::UNDEFINED;
 
     /**
      * A brief description of the parameter.
@@ -56,41 +56,40 @@ class Parameter extends AbstractAnnotation
      *
      * @var string
      */
-    public $description = UNDEFINED;
+    public $description = Generator::UNDEFINED;
 
     /**
      * Determines whether this parameter is mandatory.
      * If the parameter location is "path", this property is required and its value must be true.
-     * Otherwise, the property may be included and its default value is false
+     * Otherwise, the property may be included and its default value is false.
      *
-     * @var boolean
+     * @var bool
      */
-    public $required = UNDEFINED;
+    public $required = Generator::UNDEFINED;
 
     /**
      * Specifies that a parameter is deprecated and should be transitioned out of usage.
      *
-     * @var boolean
+     * @var bool
      */
-    public $deprecated = UNDEFINED;
+    public $deprecated = Generator::UNDEFINED;
 
     /**
      * Sets the ability to pass empty-valued parameters.
      * This is valid only for query parameters and allows sending a parameter with an empty value.
      * Default value is false. If style is used, and if behavior is n/a (cannot be serialized), the value of allowEmptyValue shall be ignored.
      *
-     * @var boolean
+     * @var bool
      */
-    public $allowEmptyValue = UNDEFINED;
+    public $allowEmptyValue = Generator::UNDEFINED;
 
-    
     /**
      * Describes how the parameter value will be serialized depending on the type of the parameter value.
      * Default values (based on value of in): for query - form; for path - simple; for header - simple; for cookie - form.
      *
      * @var string
      */
-    public $style = UNDEFINED;
+    public $style = Generator::UNDEFINED;
 
     /**
      * When this is true, parameter values of type array or object generate separate parameters for each value of the array or key-value pair of the map.
@@ -98,25 +97,25 @@ class Parameter extends AbstractAnnotation
      * When style is form, the default value is true.
      * For all other styles, the default value is false.
      *
-     * @var boolean
+     * @var bool
      */
-    public $explode = UNDEFINED;
+    public $explode = Generator::UNDEFINED;
 
     /**
      * Determines whether the parameter value should allow reserved characters, as defined by RFC3986 :/?#[]@!$&'()*+,;= to be included without percent-encoding.
      * This property only applies to parameters with an in value of query.
      * The default value is false.
      *
-     * @var boolean
+     * @var bool
      */
-    public $allowReserved = UNDEFINED;
+    public $allowReserved = Generator::UNDEFINED;
 
     /**
      * The schema defining the type used for the parameter.
      *
      * @var Schema
      */
-    public $schema = UNDEFINED;
+    public $schema = Generator::UNDEFINED;
 
     /**
      * Example of the media type.
@@ -125,7 +124,7 @@ class Parameter extends AbstractAnnotation
      * Furthermore, if referencing a schema which contains an example, the example value shall override the example provided by the schema.
      * To represent examples of media types that cannot naturally be represented in JSON or YAML, a string value can contain the example with escaping where necessary.
      */
-    public $example = UNDEFINED;
+    public $example = Generator::UNDEFINED;
 
     /**
      * Examples of the media type.
@@ -135,7 +134,7 @@ class Parameter extends AbstractAnnotation
      *
      * @var array
      */
-    public $examples = UNDEFINED;
+    public $examples = Generator::UNDEFINED;
 
     /**
      * A map containing the representations for the parameter.
@@ -144,23 +143,23 @@ class Parameter extends AbstractAnnotation
      *
      * @var MediaType[]
      */
-    public $content = UNDEFINED;
+    public $content = Generator::UNDEFINED;
 
     /**
-     * Path-style parameters defined by https://tools.ietf.org/html/rfc6570#section-3.2.7
+     * Path-style parameters defined by https://tools.ietf.org/html/rfc6570#section-3.2.7.
      */
-    public $matrix = UNDEFINED;
+    public $matrix = Generator::UNDEFINED;
 
     /**
-     * Label style parameters defined by https://tools.ietf.org/html/rfc6570#section-3.2.5
+     * Label style parameters defined by https://tools.ietf.org/html/rfc6570#section-3.2.5.
      */
-    public $label = UNDEFINED;
+    public $label = Generator::UNDEFINED;
 
     /**
      * Form style parameters defined by https://tools.ietf.org/html/rfc6570#section-3.2.8
      * This option replaces collectionFormat with a csv (when explode is false) or multi (when explode is true) value from OpenAPI 2.0.
      */
-    public $form = UNDEFINED;
+    public $form = Generator::UNDEFINED;
 
     /**
      * Simple style parameters defined by https://tools.ietf.org/html/rfc6570#section-3.2.2
@@ -168,7 +167,7 @@ class Parameter extends AbstractAnnotation
      *
      * @var array
      */
-    public $simple = UNDEFINED;
+    public $simple = Generator::UNDEFINED;
 
     /**
      * Space separated array values.
@@ -176,7 +175,7 @@ class Parameter extends AbstractAnnotation
      *
      * @var array
      */
-    public $spaceDelimited = UNDEFINED;
+    public $spaceDelimited = Generator::UNDEFINED;
 
     /**
      * Pipe separated array values.
@@ -184,12 +183,12 @@ class Parameter extends AbstractAnnotation
      *
      * @var array
      */
-    public $pipeDelimited = UNDEFINED;
+    public $pipeDelimited = Generator::UNDEFINED;
 
     /**
      * Provides a simple way of rendering nested objects using form parameters.
      */
-    public $deepObject = UNDEFINED;
+    public $deepObject = Generator::UNDEFINED;
 
     /**
      * @inheritdoc
@@ -212,7 +211,8 @@ class Parameter extends AbstractAnnotation
      */
     public static $_nested = [
         Schema::class => 'schema',
-        Examples::class => ['examples'],
+        Examples::class => ['examples', 'example'],
+        Attachable::class => ['attachables'],
     ];
 
     /**
@@ -235,42 +235,28 @@ class Parameter extends AbstractAnnotation
     /**
      * @inheritdoc
      */
-    public function validate($parents = [], $skip = [], $ref = '')
+    public function validate(array $parents = [], array $skip = [], string $ref = ''): bool
     {
         if (in_array($this, $skip, true)) {
             return true;
         }
         $valid = parent::validate($parents, $skip, $ref);
-        if ($this->ref === UNDEFINED) {
+        if ($this->ref === Generator::UNDEFINED) {
             if ($this->in === 'body') {
-                if ($this->schema === UNDEFINED) {
-                    Logger::notice('Field "schema" is required when ' . $this->identity() . ' is in "' . $this->in . '" in ' . $this->_context);
+                if ($this->schema === Generator::UNDEFINED) {
+                    $this->_context->logger->warning('Field "schema" is required when ' . $this->identity() . ' is in "' . $this->in . '" in ' . $this->_context);
                     $valid = false;
                 }
-            } else {
-                //                $validTypes = ['string', 'number', 'integer', 'boolean', 'array', 'file'];
-                //                if ($this->type === null) {
-                //                    Logger::notice($this->identity() . '->type is required when ' . $this->_identity([]) . '->in == "' . $this->in . '" in ' . $this->_context);
-                //                    $valid = false;
-                //                } elseif ($this->type === 'array' && $this->items === null) {
-                //                    Logger::notice($this->identity() . '->items required when ' . $this->_identity([]) . '->type == "array" in ' . $this->_context);
-                //                    $valid = false;
-                //                } elseif (in_array($this->type, $validTypes) === false) {
-                //                    $valid = false;
-                //                    Logger::notice($this->identity() . '->type must be "' . implode('", "', $validTypes) . '" when ' . $this->_identity([]) . '->in != "body" in ' . $this->_context);
-                //                } elseif ($this->type === 'file' && $this->in !== 'formData') {
-                //                    Logger::notice($this->identity() . '->in must be "formData" when ' . $this->_identity([]) . '->type == "file" in ' . $this->_context);
-                //                    $valid = false;
-                //                }
             }
         }
+
         return $valid;
     }
 
     /**
      * @inheritdoc
      */
-    public function identity()
+    public function identity(): string
     {
         return parent::_identity(['name', 'in']);
     }

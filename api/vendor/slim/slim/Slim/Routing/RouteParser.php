@@ -24,19 +24,10 @@ use function is_string;
 
 class RouteParser implements RouteParserInterface
 {
-    /**
-     * @var RouteCollectorInterface
-     */
-    private $routeCollector;
+    private RouteCollectorInterface $routeCollector;
 
-    /**
-     * @var Std
-     */
-    private $routeParser;
+    private Std $routeParser;
 
-    /**
-     * @param RouteCollectorInterface $routeCollector
-     */
     public function __construct(RouteCollectorInterface $routeCollector)
     {
         $this->routeCollector = $routeCollector;
@@ -71,6 +62,7 @@ class RouteParser implements RouteParserInterface
                     continue;
                 }
 
+                /** @var string[] $segment */
                 /*
                  * If we don't have a data element for this segment in the provided $data
                  * we cancel testing to move onto the next expression with a less specific item

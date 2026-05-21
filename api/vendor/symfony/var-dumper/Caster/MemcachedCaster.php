@@ -15,13 +15,18 @@ use Symfony\Component\VarDumper\Cloner\Stub;
 
 /**
  * @author Jan Schädlich <jan.schaedlich@sensiolabs.de>
+ *
+ * @final
  */
 class MemcachedCaster
 {
-    private static $optionConstants;
-    private static $defaultOptions;
+    private static array $optionConstants;
+    private static array $defaultOptions;
 
-    public static function castMemcached(\Memcached $c, array $a, Stub $stub, $isNested)
+    /**
+     * @return array
+     */
+    public static function castMemcached(\Memcached $c, array $a, Stub $stub, bool $isNested)
     {
         $a += [
             Caster::PREFIX_VIRTUAL.'servers' => $c->getServerList(),
@@ -33,10 +38,10 @@ class MemcachedCaster
         return $a;
     }
 
-    private static function getNonDefaultOptions(\Memcached $c)
+    private static function getNonDefaultOptions(\Memcached $c): array
     {
-        self::$defaultOptions = self::$defaultOptions ?? self::discoverDefaultOptions();
-        self::$optionConstants = self::$optionConstants ?? self::getOptionConstants();
+        self::$defaultOptions ??= self::discoverDefaultOptions();
+        self::$optionConstants ??= self::getOptionConstants();
 
         $nonDefaultOptions = [];
         foreach (self::$optionConstants as $constantKey => $value) {
@@ -48,13 +53,13 @@ class MemcachedCaster
         return $nonDefaultOptions;
     }
 
-    private static function discoverDefaultOptions()
+    private static function discoverDefaultOptions(): array
     {
         $defaultMemcached = new \Memcached();
         $defaultMemcached->addServer('127.0.0.1', 11211);
 
         $defaultOptions = [];
-        self::$optionConstants = self::$optionConstants ?? self::getOptionConstants();
+        self::$optionConstants ??= self::getOptionConstants();
 
         foreach (self::$optionConstants as $constantKey => $value) {
             $defaultOptions[$constantKey] = $defaultMemcached->getOption($value);
@@ -63,13 +68,13 @@ class MemcachedCaster
         return $defaultOptions;
     }
 
-    private static function getOptionConstants()
+    private static function getOptionConstants(): array
     {
         $reflectedMemcached = new \ReflectionClass(\Memcached::class);
 
         $optionConstants = [];
         foreach ($reflectedMemcached->getConstants() as $constantKey => $value) {
-            if (0 === strpos($constantKey, 'OPT_')) {
+            if (str_starts_with($constantKey, 'OPT_')) {
                 $optionConstants[$constantKey] = $value;
             }
         }

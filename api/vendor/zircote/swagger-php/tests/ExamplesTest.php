@@ -4,42 +4,40 @@
  * @license Apache 2.0
  */
 
-namespace OpenApiTests;
+namespace OpenApi\Tests;
+
+use OpenApi\Generator;
 
 class ExamplesTest extends OpenApiTestCase
 {
-
-    /**
-     * Test the processed Examples against json files in ExamplesOutput.
-     *
-     * @dataProvider getExamples
-     *
-     * @param string $example Example path
-     * @param string $output  Expected output (path to a json file)
-     */
-    public function testExample($example, $output)
+    public function exampleMappings()
     {
-        $openapi = \OpenApi\scan(__DIR__.'/../Examples/'.$example);
-        $this->assertOpenApiEqualsFile(__DIR__.'/ExamplesOutput/'.$output, $openapi);
+        return [
+            'misc' => ['misc', 'misc.yaml'],
+            'openapi-spec' => ['openapi-spec', 'openapi-spec.yaml'],
+            'petstore.swagger.io' => ['petstore.swagger.io', 'petstore.swagger.io.yaml'],
+            'petstore-3.0' => ['petstore-3.0', 'petstore-3.0.yaml'],
+            'swagger-spec/petstore' => ['swagger-spec/petstore', 'petstore.yaml'],
+            'swagger-spec/petstore-simple' => ['swagger-spec/petstore-simple', 'petstore-simple.yaml'],
+            'swagger-spec/petstore-with-external-docs' => ['swagger-spec/petstore-with-external-docs', 'petstore-with-external-docs.yaml'],
+            'using-refs' => ['using-refs', 'using-refs.yaml'],
+            'example-object' => ['example-object', 'example-object.yaml'],
+            'using-interfaces' => ['using-interfaces', 'using-interfaces.yaml'],
+            'using-traits' => ['using-traits', 'using-traits.yaml'],
+            'nesting' => ['nesting', 'nesting.yaml'],
+        ];
     }
 
     /**
-     * dataProvider for testExample
+     * Validate openapi definitions of the included examples.
      *
-     * @return array
+     * @dataProvider exampleMappings
      */
-    public function getExamples()
+    public function testExamples($example, $spec)
     {
-        return [
-            ['misc', 'misc.json'],
-            ['openapi-spec', 'openapi-spec.json'],
-            ['petstore.swagger.io', 'petstore.swagger.io.json'],
-            ['petstore-3.0', 'petstore-3.0.json'],
-            ['swagger-spec/petstore', 'petstore.json'],
-            ['swagger-spec/petstore-simple', 'petstore-simple.json'],
-            ['swagger-spec/petstore-with-external-docs', 'petstore-with-external-docs.json'],
-            ['using-refs', 'using-refs.json'],
-            ['example-object', 'example-object.json'],
-        ];
+        $path = __DIR__ . '/../Examples/' . $example;
+        $openapi = Generator::scan([$path], ['validate' => true]);
+        //file_put_contents($path . '/' . $spec, $openapi->toYaml());
+        $this->assertSpecEquals(file_get_contents($path . '/' . $spec), $openapi, 'Examples/' . $example . '/' . $spec);
     }
 }

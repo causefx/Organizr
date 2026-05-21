@@ -58,7 +58,7 @@ Installation
 ------------
 
 ### Install with Composer
-If you're using [Composer](https://github.com/composer/composer) to manage
+If you're using [Composer](https://getcomposer.org/) to manage
 dependencies, you can add Requests with it.
 
 ```sh
@@ -123,12 +123,12 @@ After that, take a look at [the documentation for
 `Requests::request()`][request_method], where all the parameters are fully
 documented.
 
-Requests is [100% documented with PHPDoc](http://requests.ryanmccue.info/api/).
+Requests is [100% documented with PHPDoc](https://requests.ryanmccue.info/api/).
 If you find any problems with it, [create a new
 issue](https://github.com/WordPress/Requests/issues/new)!
 
 [prose-based documentation]: https://github.com/WordPress/Requests/blob/master/docs/README.md
-[request_method]: http://requests.ryanmccue.info/api/class-Requests.html#_request
+[request_method]: https://requests.ryanmccue.info/api/class-Requests.html#_request
 
 Testing
 -------

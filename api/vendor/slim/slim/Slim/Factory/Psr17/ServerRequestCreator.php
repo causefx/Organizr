@@ -21,14 +21,10 @@ class ServerRequestCreator implements ServerRequestCreatorInterface
      */
     protected $serverRequestCreator;
 
-    /**
-     * @var string
-     */
-    protected $serverRequestCreatorMethod;
+    protected string $serverRequestCreatorMethod;
 
     /**
      * @param object|string $serverRequestCreator
-     * @param string        $serverRequestCreatorMethod
      */
     public function __construct($serverRequestCreator, string $serverRequestCreatorMethod)
     {
@@ -43,6 +39,8 @@ class ServerRequestCreator implements ServerRequestCreatorInterface
     {
         /** @var callable $callable */
         $callable = [$this->serverRequestCreator, $this->serverRequestCreatorMethod];
+
+        /** @var ServerRequestInterface */
         return (Closure::fromCallable($callable))();
     }
 }

@@ -24,22 +24,23 @@ namespace Ramsey\Collection;
  */
 abstract class AbstractSet extends AbstractCollection
 {
-    /**
-     * @inheritDoc
-     */
-    public function add($element): bool
+    public function add(mixed $element): bool
     {
         if ($this->contains($element)) {
             return false;
         }
 
-        return parent::add($element);
+        // Call offsetSet() on the parent instead of add(), since calling
+        // parent::add() will invoke $this->offsetSet(), which will call
+        // $this->contains() a second time. This can cause performance issues
+        // with extremely large collections. For more information, see
+        // https://github.com/ramsey/collection/issues/68.
+        parent::offsetSet(null, $element);
+
+        return true;
     }
 
-    /**
-     * @inheritDoc
-     */
-    public function offsetSet($offset, $value): void
+    public function offsetSet(mixed $offset, mixed $value): void
     {
         if ($this->contains($value)) {
             return;

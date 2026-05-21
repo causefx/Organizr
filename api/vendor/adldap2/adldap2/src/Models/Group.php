@@ -237,7 +237,7 @@ class Group extends Entry
         $key = reset($attributes);
 
         preg_match_all(
-            '/member;range\=([0-9]{1,4})-([0-9*]{1,4})/',
+            '/member;range\=([0-9]{1,5})-([0-9*]{1,5})/',
             $key,
             $matches
         );

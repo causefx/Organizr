@@ -14,6 +14,7 @@ namespace Stripe;
  *
  * @property string $id Unique identifier for the object.
  * @property string $object String representing the object's type. Objects of the same type share the same value.
+ * @property null|string|\Stripe\StripeObject $application ID of the Connect Application that created the schedule.
  * @property null|int $canceled_at Time at which the subscription schedule was canceled. Measured in seconds since the Unix epoch.
  * @property null|int $completed_at Time at which the subscription schedule was completed. Measured in seconds since the Unix epoch.
  * @property int $created Time at which the object was created. Measured in seconds since the Unix epoch.

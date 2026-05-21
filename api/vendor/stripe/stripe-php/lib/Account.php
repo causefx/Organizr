@@ -22,7 +22,7 @@ namespace Stripe;
  * @property \Stripe\StripeObject $company
  * @property \Stripe\StripeObject $controller
  * @property string $country The account's country.
- * @property int $created Time at which the object was created. Measured in seconds since the Unix epoch.
+ * @property int $created Time at which the account was connected. Measured in seconds since the Unix epoch.
  * @property string $default_currency Three-letter ISO currency code representing the default currency for the account. This must be a currency that <a href="https://stripe.com/docs/payouts">Stripe supports in the account's country</a>.
  * @property bool $details_submitted Whether account details have been submitted. Standard accounts cannot receive payouts before this is true.
  * @property null|string $email An email address associated with the account. You can treat this as metadata: it is not used for authentication or messaging account holders.

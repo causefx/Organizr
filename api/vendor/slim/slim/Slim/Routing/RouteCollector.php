@@ -17,6 +17,7 @@ use Slim\Handlers\Strategies\RequestResponse;
 use Slim\Interfaces\CallableResolverInterface;
 use Slim\Interfaces\InvocationStrategyInterface;
 use Slim\Interfaces\RouteCollectorInterface;
+use Slim\Interfaces\RouteCollectorProxyInterface;
 use Slim\Interfaces\RouteGroupInterface;
 use Slim\Interfaces\RouteInterface;
 use Slim\Interfaces\RouteParserInterface;
@@ -24,83 +25,65 @@ use Slim\Interfaces\RouteParserInterface;
 use function array_pop;
 use function dirname;
 use function file_exists;
-use function sprintf;
 use function is_readable;
 use function is_writable;
+use function sprintf;
 
 /**
  * RouteCollector is used to collect routes and route groups
  * as well as generate paths and URLs relative to its environment
+ * @template TContainerInterface of (ContainerInterface|null)
  */
 class RouteCollector implements RouteCollectorInterface
 {
-    /**
-     * @var RouteParserInterface
-     */
-    protected $routeParser;
+    protected RouteParserInterface $routeParser;
 
-    /**
-     * @var CallableResolverInterface
-     */
-    protected $callableResolver;
+    protected CallableResolverInterface $callableResolver;
 
-    /**
-     * @var ContainerInterface|null
-     */
-    protected $container;
+    protected ?ContainerInterface $container = null;
 
-    /**
-     * @var InvocationStrategyInterface
-     */
-    protected $defaultInvocationStrategy;
+    protected InvocationStrategyInterface $defaultInvocationStrategy;
 
     /**
      * Base path used in pathFor()
-     *
-     * @var string
      */
-    protected $basePath = '';
+    protected string $basePath = '';
 
     /**
      * Path to fast route cache file. Set to null to disable route caching
-     *
-     * @var string|null
      */
-    protected $cacheFile;
+    protected ?string $cacheFile = null;
 
     /**
      * Routes
      *
      * @var RouteInterface[]
      */
-    protected $routes = [];
+    protected array $routes = [];
+
+    /**
+     * Routes indexed by name
+     *
+     * @var RouteInterface[]
+     */
+    protected array $routesByName = [];
 
     /**
      * Route groups
      *
-     * @var RouteGroup[]
+     * @var RouteGroupInterface[]
      */
-    protected $routeGroups = [];
+    protected array $routeGroups = [];
 
     /**
      * Route counter incrementer
-     *
-     * @var int
      */
-    protected $routeCounter = 0;
+    protected int $routeCounter = 0;
+
+    protected ResponseFactoryInterface $responseFactory;
 
     /**
-     * @var ResponseFactoryInterface
-     */
-    protected $responseFactory;
-
-    /**
-     * @param ResponseFactoryInterface         $responseFactory
-     * @param CallableResolverInterface        $callableResolver
-     * @param ContainerInterface|null          $container
-     * @param InvocationStrategyInterface|null $defaultInvocationStrategy
-     * @param RouteParserInterface|null        $routeParser
-     * @param string|null                      $cacheFile
+     * @param TContainerInterface $container
      */
     public function __construct(
         ResponseFactoryInterface $responseFactory,
@@ -121,9 +104,6 @@ class RouteCollector implements RouteCollectorInterface
         }
     }
 
-    /**
-     * @return RouteParserInterface
-     */
     public function getRouteParser(): RouteParserInterface
     {
         return $this->routeParser;
@@ -131,18 +111,12 @@ class RouteCollector implements RouteCollectorInterface
 
     /**
      * Get default route invocation strategy
-     *
-     * @return InvocationStrategyInterface
      */
     public function getDefaultInvocationStrategy(): InvocationStrategyInterface
     {
         return $this->defaultInvocationStrategy;
     }
 
-    /**
-     * @param InvocationStrategyInterface $strategy
-     * @return self
-     */
     public function setDefaultInvocationStrategy(InvocationStrategyInterface $strategy): RouteCollectorInterface
     {
         $this->defaultInvocationStrategy = $strategy;
@@ -188,10 +162,6 @@ class RouteCollector implements RouteCollectorInterface
 
     /**
      * Set the base path used in urlFor()
-     *
-     * @param string $basePath
-     *
-     * @return self
      */
     public function setBasePath(string $basePath): RouteCollectorInterface
     {
@@ -214,7 +184,9 @@ class RouteCollector implements RouteCollectorInterface
     public function removeNamedRoute(string $name): RouteCollectorInterface
     {
         $route = $this->getNamedRoute($name);
-        unset($this->routes[$route->getIdentifier()]);
+
+        /** @psalm-suppress PossiblyNullArrayOffset */
+        unset($this->routesByName[$route->getName()], $this->routes[$route->getIdentifier()]);
         return $this;
     }
 
@@ -223,11 +195,22 @@ class RouteCollector implements RouteCollectorInterface
      */
     public function getNamedRoute(string $name): RouteInterface
     {
+        if (isset($this->routesByName[$name])) {
+            $route = $this->routesByName[$name];
+            if ($route->getName() === $name) {
+                return $route;
+            }
+
+            unset($this->routesByName[$name]);
+        }
+
         foreach ($this->routes as $route) {
             if ($name === $route->getName()) {
+                $this->routesByName[$name] = $route;
                 return $route;
             }
         }
+
         throw new RuntimeException('Named route does not exist for name: ' . $name);
     }
 
@@ -247,15 +230,7 @@ class RouteCollector implements RouteCollectorInterface
      */
     public function group(string $pattern, $callable): RouteGroupInterface
     {
-        $routeCollectorProxy = new RouteCollectorProxy(
-            $this->responseFactory,
-            $this->callableResolver,
-            $this->container,
-            $this,
-            $pattern
-        );
-
-        $routeGroup = new RouteGroup($pattern, $callable, $this->callableResolver, $routeCollectorProxy);
+        $routeGroup = $this->createGroup($pattern, $callable);
         $this->routeGroups[] = $routeGroup;
 
         $routeGroup->collectRoutes();
@@ -265,23 +240,50 @@ class RouteCollector implements RouteCollectorInterface
     }
 
     /**
+     * @param string|callable $callable
+     */
+    protected function createGroup(string $pattern, $callable): RouteGroupInterface
+    {
+        $routeCollectorProxy = $this->createProxy($pattern);
+        return new RouteGroup($pattern, $callable, $this->callableResolver, $routeCollectorProxy);
+    }
+
+    /**
+     * @return RouteCollectorProxyInterface<TContainerInterface>
+     */
+    protected function createProxy(string $pattern): RouteCollectorProxyInterface
+    {
+        /** @var RouteCollectorProxy<TContainerInterface> */
+        return new RouteCollectorProxy(
+            $this->responseFactory,
+            $this->callableResolver,
+            $this->container,
+            $this,
+            $pattern
+        );
+    }
+
+    /**
      * {@inheritdoc}
      */
     public function map(array $methods, string $pattern, $handler): RouteInterface
     {
         $route = $this->createRoute($methods, $pattern, $handler);
         $this->routes[$route->getIdentifier()] = $route;
+
+        $routeName = $route->getName();
+        if ($routeName !== null && !isset($this->routesByName[$routeName])) {
+            $this->routesByName[$routeName] = $route;
+        }
+
         $this->routeCounter++;
 
         return $route;
     }
 
     /**
-     * @param string[]        $methods
-     * @param string          $pattern
-     * @param callable|string $callable
-     *
-     * @return RouteInterface
+     * @param string[] $methods
+     * @param callable|array{class-string, string}|string $callable
      */
     protected function createRoute(array $methods, string $pattern, $callable): RouteInterface
     {

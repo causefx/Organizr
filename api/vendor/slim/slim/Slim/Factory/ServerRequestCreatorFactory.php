@@ -17,33 +17,21 @@ use Slim\Factory\Psr17\SlimHttpServerRequestCreator;
 use Slim\Interfaces\Psr17FactoryProviderInterface;
 use Slim\Interfaces\ServerRequestCreatorInterface;
 
+/** @api */
 class ServerRequestCreatorFactory
 {
-    /**
-     * @var Psr17FactoryProviderInterface|null
-     */
-    protected static $psr17FactoryProvider;
+    protected static ?Psr17FactoryProviderInterface $psr17FactoryProvider = null;
 
-    /**
-     * @var ServerRequestCreatorInterface|null
-     */
-    protected static $serverRequestCreator;
+    protected static ?ServerRequestCreatorInterface $serverRequestCreator = null;
 
-    /**
-     * @var bool
-     */
-    protected static $slimHttpDecoratorsAutomaticDetectionEnabled = true;
+    protected static bool $slimHttpDecoratorsAutomaticDetectionEnabled = true;
 
-    /**
-     * @return ServerRequestCreatorInterface
-     */
     public static function create(): ServerRequestCreatorInterface
     {
         return static::determineServerRequestCreator();
     }
 
     /**
-     * @return ServerRequestCreatorInterface
      * @throws RuntimeException
      */
     public static function determineServerRequestCreator(): ServerRequestCreatorInterface
@@ -70,10 +58,6 @@ class ServerRequestCreatorFactory
         );
     }
 
-    /**
-     * @param ServerRequestCreatorInterface $serverRequestCreator
-     * @return ServerRequestCreatorInterface
-     */
     protected static function attemptServerRequestCreatorDecoration(
         ServerRequestCreatorInterface $serverRequestCreator
     ): ServerRequestCreatorInterface {
@@ -87,25 +71,16 @@ class ServerRequestCreatorFactory
         return $serverRequestCreator;
     }
 
-    /**
-     * @param Psr17FactoryProviderInterface $psr17FactoryProvider
-     */
     public static function setPsr17FactoryProvider(Psr17FactoryProviderInterface $psr17FactoryProvider): void
     {
         static::$psr17FactoryProvider = $psr17FactoryProvider;
     }
 
-    /**
-     * @param ServerRequestCreatorInterface $serverRequestCreator
-     */
     public static function setServerRequestCreator(ServerRequestCreatorInterface $serverRequestCreator): void
     {
         self::$serverRequestCreator = $serverRequestCreator;
     }
 
-    /**
-     * @param bool $enabled
-     */
     public static function setSlimHttpDecoratorsAutomaticDetection(bool $enabled): void
     {
         static::$slimHttpDecoratorsAutomaticDetectionEnabled = $enabled;

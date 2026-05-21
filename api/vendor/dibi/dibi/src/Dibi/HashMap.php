@@ -14,6 +14,7 @@ namespace Dibi;
  * Lazy cached storage.
  * @internal
  */
+#[\AllowDynamicProperties]
 abstract class HashMapBase
 {
 	/** @var callable */

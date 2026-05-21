@@ -25,24 +25,17 @@ interface Mailer
      *
      * @param  string  $text
      * @param  mixed  $callback
-     * @return void
+     * @return \Illuminate\Mail\SentMessage|null
      */
     public function raw($text, $callback);
 
     /**
      * Send a new message using a view.
      *
-     * @param  string|array|\Illuminate\Contracts\Mail\Mailable  $view
+     * @param  \Illuminate\Contracts\Mail\Mailable|string|array  $view
      * @param  array  $data
-     * @param  \Closure|string  $callback
-     * @return void
+     * @param  \Closure|string|null  $callback
+     * @return \Illuminate\Mail\SentMessage|null
      */
     public function send($view, array $data = [], $callback = null);
-
-    /**
-     * Get the array of failed recipients.
-     *
-     * @return array
-     */
-    public function failures();
 }

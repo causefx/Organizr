@@ -28,7 +28,7 @@ interface Guard
     /**
      * Get the ID for the currently authenticated user.
      *
-     * @return int|null
+     * @return int|string|null
      */
     public function id();
 
@@ -39,6 +39,13 @@ interface Guard
      * @return bool
      */
     public function validate(array $credentials = []);
+
+    /**
+     * Determine if the guard has a user instance.
+     *
+     * @return bool
+     */
+    public function hasUser();
 
     /**
      * Set the current user.

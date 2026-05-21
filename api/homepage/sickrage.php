@@ -60,8 +60,11 @@ trait SickRageHomepageItem
 		foreach ($list as $key => $value) {
 			try {
 				$options = $this->requestOptions($value['url'], null, $this->config['sickrageDisableCertCheck'], $this->config['sickrageUseCustomCertificate']);
-				$downloader = new Kryptonit3\SickRage\SickRage($value['url'], $value['token'], null, null, $options);
-				$results = $downloader->sb();
+				$client = new \GuzzleHttp\Client($options);
+				$response = $client->get(rtrim($value['url'], '/') . '/api/' . $value['token'] . '/', [
+					'query' => ['cmd' => 'sb']
+				]);
+				$results = $response->getBody()->getContents();
 				$downloadList = json_decode($results, true);
 				if (is_array($downloadList) || is_object($downloadList)) {
 					$queue = (array_key_exists('error', $downloadList)) ? $downloadList['error']['msg'] : $downloadList;
@@ -75,7 +78,7 @@ trait SickRageHomepageItem
 					$errors .= $ip . ': Response was not JSON';
 					$failed = true;
 				}
-			} catch (Exception $e) {
+			} catch (\Throwable $e) {
 				$failed = true;
 				$ip = $value['url'];
 				$errors .= $ip . ': ' . $e->getMessage();
@@ -120,16 +123,22 @@ trait SickRageHomepageItem
 		foreach ($list as $key => $value) {
 			try {
 				$options = $this->requestOptions($value['url'], null, $this->config['sickrageDisableCertCheck'], $this->config['sickrageUseCustomCertificate']);
-				$downloader = new Kryptonit3\SickRage\SickRage($value['url'], $value['token'], null, null, $options);
-				$sickrageFuture = $this->formatSickrageCalendarWanted($downloader->future(), $key);
-				$sickrageHistory = $this->formatSickrageCalendarHistory($downloader->history("100", "downloaded"), $key);
+				$client = new \GuzzleHttp\Client($options);
+				$futureResponse = $client->get(rtrim($value['url'], '/') . '/api/' . $value['token'] . '/', [
+					'query' => ['cmd' => 'future']
+				]);
+				$historyResponse = $client->get(rtrim($value['url'], '/') . '/api/' . $value['token'] . '/', [
+					'query' => ['cmd' => 'history', 'limit' => '100', 'type' => 'downloaded']
+				]);
+				$sickrageFuture = $this->formatSickrageCalendarWanted($futureResponse->getBody()->getContents(), $key);
+				$sickrageHistory = $this->formatSickrageCalendarHistory($historyResponse->getBody()->getContents(), $key);
 				if (!empty($sickrageFuture)) {
 					$calendarItems = array_merge($calendarItems, $sickrageFuture);
 				}
 				if (!empty($sickrageHistory)) {
 					$calendarItems = array_merge($calendarItems, $sickrageHistory);
 				}
-			} catch (Exception $e) {
+			} catch (\Throwable $e) {
 				$this->setLoggerChannel('SickRage')->error($e);
 			}
 		}

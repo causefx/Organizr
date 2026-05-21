@@ -4,10 +4,24 @@
  * @license Apache 2.0
  */
 
-namespace OpenApiTests;
+namespace OpenApi\Tests;
+
+use OpenApi\Analyser;
 
 class AnalyserTest extends OpenApiTestCase
 {
+    protected function setUp(): void
+    {
+        parent::setUp();
+        Analyser::$defaultImports['swg'] = 'OpenApi\Annotations';
+    }
+
+    protected function tearDown(): void
+    {
+        unset(Analyser::$defaultImports['swg']);
+        parent::tearDown();
+    }
+
     public function testParseContents()
     {
         $annotations = $this->parseComment('@OA\Parameter(description="This is my parameter")');
@@ -19,8 +33,7 @@ class AnalyserTest extends OpenApiTestCase
 
     public function testDeprecatedAnnotationWarning()
     {
-        $this->countExceptions = 1;
-        $this->assertOpenApiLogEntryStartsWith('The annotation @SWG\Definition() is deprecated.');
+        $this->assertOpenApiLogEntryContains('The annotation @SWG\Definition() is deprecated.');
         $this->parseComment('@SWG\Definition()');
     }
 }

@@ -29,14 +29,14 @@
         "php": ">=7.0",
         "ext-ldap": "*",
         "ext-json": "*",
-        "psr/log": "~1.0|~2.0|~3.0",
-        "psr/simple-cache": "~1.0|~2.0",
-        "tightenco/collect": "~5.0|~6.0|~7.0|~8.0",
-        "illuminate/contracts": "~5.0|~6.0|~7.0|~8.0|~9.0"
+        "psr/log": "^1.0|^2.0|^3.0",
+        "psr/simple-cache": "^1.0|^2.0|^3.0",
+        "tightenco/collect": "^5.0|^6.0|^7.0|^8.0|^9.0",
+        "illuminate/contracts": "^5.0|^6.0|^7.0|^8.0|^9.0|^10.0"
     },
     "require-dev": {
-        "symfony/phpunit-bridge": "~5.2|~6.0",
-        "mockery/mockery": "~1.0"
+        "symfony/phpunit-bridge": "^5.2|^6.0",
+        "mockery/mockery": "^1.0"
     },
     "suggest": {
         "ext-fileinfo": "fileinfo is required when retrieving user encoded thumbnails"

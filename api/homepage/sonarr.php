@@ -86,8 +86,11 @@ trait SonarrHomepageItem
 		foreach ($list as $key => $value) {
 			try {
 				$options = $this->requestOptions($value['url'], null, $this->config['sonarrDisableCertCheck'], $this->config['sonarrUseCustomCertificate']);
-				$downloader = new Kryptonit3\Sonarr\Sonarr($value['url'], $value['token'], 'sonarr', null, null, $options);
-				$results = $downloader->getRootFolder();
+				$client = new \GuzzleHttp\Client($options);
+				$response = $client->get(rtrim($value['url'], '/') . '/api/v3/rootfolder', [
+					'headers' => ['X-Api-Key' => $value['token']]
+				]);
+				$results = $response->getBody()->getContents();
 				$downloadList = json_decode($results, true);
 				if (is_array($downloadList) || is_object($downloadList)) {
 					$queue = (array_key_exists('error', $downloadList)) ? $downloadList['error']['msg'] : $downloadList;
@@ -101,7 +104,7 @@ trait SonarrHomepageItem
 					$errors .= $ip . ': Response was not JSON';
 					$failed = true;
 				}
-			} catch (Exception $e) {
+			} catch (\Throwable $e) {
 				$failed = true;
 				$ip = $value['url'];
 				$errors .= $ip . ': ' . $e->getMessage();
@@ -179,8 +182,11 @@ trait SonarrHomepageItem
 		foreach ($list as $key => $value) {
 			try {
 				$options = $this->requestOptions($value['url'], $this->config['homepageSonarrQueueRefresh'], $this->config['sonarrDisableCertCheck'], $this->config['sonarrUseCustomCertificate']);
-				$downloader = new Kryptonit3\Sonarr\Sonarr($value['url'], $value['token'], 'sonarr', null, null, $options);
-				$results = $downloader->getQueue();
+				$client = new \GuzzleHttp\Client($options);
+				$response = $client->get(rtrim($value['url'], '/') . '/api/v3/queue', [
+					'headers' => ['X-Api-Key' => $value['token']]
+				]);
+				$results = $response->getBody()->getContents();
 				$downloadList = json_decode($results, true);
 				if (is_array($downloadList) || is_object($downloadList)) {
 					$queue = (array_key_exists('error', $downloadList)) ? [] : $downloadList;
@@ -191,7 +197,7 @@ trait SonarrHomepageItem
 				if (!empty($queue)) {
 					$queueItems = array_merge($queueItems, $queue);
 				}
-			} catch (Exception $e) {
+			} catch (\Throwable $e) {
 				$this->setLoggerChannel('Sonarr')->error($e);
 			}
 		}
@@ -217,15 +223,19 @@ trait SonarrHomepageItem
 		foreach ($list as $key => $value) {
 			try {
 				$options = $this->requestOptions($value['url'], null, $this->config['sonarrDisableCertCheck'], $this->config['sonarrUseCustomCertificate']);
-				$sonarr = new Kryptonit3\Sonarr\Sonarr($value['url'], $value['token'], 'sonarr', null, null, $options);
-				$sonarr = $sonarr->getCalendar($startDate, $endDate, $this->config['sonarrUnmonitored']);
+				$client = new \GuzzleHttp\Client($options);
+				$response = $client->get(rtrim($value['url'], '/') . '/api/v3/calendar', [
+					'headers' => ['X-Api-Key' => $value['token']],
+					'query' => ['start' => $startDate, 'end' => $endDate, 'unmonitored' => $this->config['sonarrUnmonitored'] ? 'true' : 'false']
+				]);
+				$sonarr = $response->getBody()->getContents();
 				$result = json_decode($sonarr, true);
 				if (is_array($result) || is_object($result)) {
 					$sonarrCalendar = (array_key_exists('error', $result)) ? '' : $this->formatSonarrCalendar($sonarr, $key);
 				} else {
 					$sonarrCalendar = '';
 				}
-			} catch (Exception $e) {
+			} catch (\Throwable $e) {
 				$this->setLoggerChannel('Sonarr')->error($e);
 			}
 			if (!empty($sonarrCalendar)) {

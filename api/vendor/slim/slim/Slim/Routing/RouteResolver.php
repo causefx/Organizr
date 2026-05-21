@@ -24,20 +24,10 @@ use function rawurldecode;
  */
 class RouteResolver implements RouteResolverInterface
 {
-    /**
-     * @var RouteCollectorInterface
-     */
-    protected $routeCollector;
+    protected RouteCollectorInterface $routeCollector;
 
-    /**
-     * @var DispatcherInterface
-     */
-    private $dispatcher;
+    private DispatcherInterface $dispatcher;
 
-    /**
-     * @param RouteCollectorInterface  $routeCollector
-     * @param DispatcherInterface|null $dispatcher
-     */
     public function __construct(RouteCollectorInterface $routeCollector, ?DispatcherInterface $dispatcher = null)
     {
         $this->routeCollector = $routeCollector;
@@ -46,8 +36,6 @@ class RouteResolver implements RouteResolverInterface
 
     /**
      * @param string $uri Should be $request->getUri()->getPath()
-     * @param string $method
-     * @return RoutingResults
      */
     public function computeRoutingResults(string $uri, string $method): RoutingResults
     {
@@ -59,8 +47,6 @@ class RouteResolver implements RouteResolverInterface
     }
 
     /**
-     * @param string $identifier
-     * @return RouteInterface
      * @throws RuntimeException
      */
     public function resolveRoute(string $identifier): RouteInterface

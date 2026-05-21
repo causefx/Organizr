@@ -1,10 +1,12 @@
-[![Build Status](https://img.shields.io/travis/zircote/swagger-php/master.svg?style=flat-square)](https://travis-ci.org/zircote/swagger-php)
+[![Build Status](https://img.shields.io/github/workflow/status/zircote/swagger-php/build?style=flat-square)](https://github.com/zircote/swagger-php/actions?query=workflow:build)
 [![Total Downloads](https://img.shields.io/packagist/dt/zircote/swagger-php.svg?style=flat-square)](https://packagist.org/packages/zircote/swagger-php)
 [![License](https://img.shields.io/badge/license-Apache2.0-blue.svg?style=flat-square)](LICENSE-2.0.txt)
 
 # swagger-php
 
 Generate interactive [OpenAPI](https://www.openapis.org) documentation for your RESTful API using [doctrine annotations](https://www.doctrine-project.org/projects/doctrine-annotations/en/latest/index.html).
+
+For a full list of supported annotations, please have look at the [`OpenApi\Annotations` namespace](src/Annotations) or the [documentation website](https://zircote.github.io/swagger-php/Supported-annotations.html).
 
 ## Features
 
@@ -52,14 +54,15 @@ Generate always-up-to-date documentation.
 ```php
 <?php
 require("vendor/autoload.php");
-$openapi = \OpenApi\scan('/path/to/project');
+$openapi = \OpenApi\Generator::scan(['/path/to/project']);
 header('Content-Type: application/x-yaml');
 echo $openapi->toYaml();
 ```
+Documentation of how to use the `Generator` class can be found in the [Generator Migration](https://zircote.github.io/swagger-php/Generator-migration.html) guide.
 
 ### Usage from the Command Line Interface
 
-Generate the documentation to a static json file.
+The `openapi` command line interface can be used to generate the documentation to a static yaml/json file.
 
 ```bash
 ./vendor/bin/openapi --help
@@ -103,22 +106,24 @@ or pull requests.
 The documentation website is build from the [docs](docs/) folder with [vuepress](https://vuepress.vuejs.org).
 
 Make sure pull requests pass [PHPUnit](https://phpunit.de/)
-and [PHP_CodeSniffer](https://github.com/cakephp/cakephp-codesniffer) (PSR-2) tests.
+and [PHP-CS-Fixer](https://github.com/FriendsOfPHP/PHP-CS-Fixer) (PSR-2) tests.
 
-To run both unittests and linting execute:
-
+### To run both unit tests and linting execute:
 ```bash
 composer test
 ```
 
-Running only unittests:
-
+### Running unit tests only:
 ```bash
 ./bin/phpunit
 ```
 
-Running only linting:
-
+### Running linting only:
 ```bash
-./bin/phpcs -p --extensions=php --standard=PSR2 --error-severity=1 --warning-severity=0 ./src ./tests
+composer lint
+```
+
+### To make `php-cs-fixer` fix linting errors:
+```bash
+composer cs
 ```

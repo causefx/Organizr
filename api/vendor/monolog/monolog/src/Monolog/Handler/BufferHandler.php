@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /*
  * This file is part of the Monolog package.
@@ -11,9 +11,10 @@
 
 namespace Monolog\Handler;
 
-use Monolog\Logger;
+use Monolog\Level;
 use Monolog\ResettableInterface;
 use Monolog\Formatter\FormatterInterface;
+use Monolog\LogRecord;
 
 /**
  * Buffers all records until closing the handler and then pass them as batch.
@@ -23,42 +24,48 @@ use Monolog\Formatter\FormatterInterface;
  *
  * @author Christophe Coevoet <stof@notk.org>
  */
-class BufferHandler extends AbstractHandler
+class BufferHandler extends AbstractHandler implements ProcessableHandlerInterface, FormattableHandlerInterface
 {
-    protected $handler;
-    protected $bufferSize = 0;
-    protected $bufferLimit;
-    protected $flushOnOverflow;
-    protected $buffer = array();
-    protected $initialized = false;
+    use ProcessableHandlerTrait;
+
+    protected HandlerInterface $handler;
+
+    protected int $bufferSize = 0;
+
+    protected int $bufferLimit;
+
+    protected bool $flushOnOverflow;
+
+    /** @var LogRecord[] */
+    protected array $buffer = [];
+
+    protected bool $initialized = false;
 
     /**
      * @param HandlerInterface $handler         Handler.
      * @param int              $bufferLimit     How many entries should be buffered at most, beyond that the oldest items are removed from the buffer.
-     * @param int              $level           The minimum logging level at which this handler will be triggered
-     * @param bool             $bubble          Whether the messages that are handled can bubble up the stack or not
      * @param bool             $flushOnOverflow If true, the buffer is flushed when the max size has been reached, by default oldest entries are discarded
      */
-    public function __construct(HandlerInterface $handler, $bufferLimit = 0, $level = Logger::DEBUG, $bubble = true, $flushOnOverflow = false)
+    public function __construct(HandlerInterface $handler, int $bufferLimit = 0, int|string|Level $level = Level::Debug, bool $bubble = true, bool $flushOnOverflow = false)
     {
         parent::__construct($level, $bubble);
         $this->handler = $handler;
-        $this->bufferLimit = (int) $bufferLimit;
+        $this->bufferLimit = $bufferLimit;
         $this->flushOnOverflow = $flushOnOverflow;
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritDoc
      */
-    public function handle(array $record)
+    public function handle(LogRecord $record): bool
     {
-        if ($record['level'] < $this->level) {
+        if ($record->level->isLowerThan($this->level)) {
             return false;
         }
 
         if (!$this->initialized) {
             // __destructor() doesn't get called on Fatal errors
-            register_shutdown_function(array($this, 'close'));
+            register_shutdown_function([$this, 'close']);
             $this->initialized = true;
         }
 
@@ -71,10 +78,8 @@ class BufferHandler extends AbstractHandler
             }
         }
 
-        if ($this->processors) {
-            foreach ($this->processors as $processor) {
-                $record = call_user_func($processor, $record);
-            }
+        if (\count($this->processors) > 0) {
+            $record = $this->processRecord($record);
         }
 
         $this->buffer[] = $record;
@@ -83,7 +88,7 @@ class BufferHandler extends AbstractHandler
         return false === $this->bubble;
     }
 
-    public function flush()
+    public function flush(): void
     {
         if ($this->bufferSize === 0) {
             return;
@@ -101,27 +106,31 @@ class BufferHandler extends AbstractHandler
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritDoc
      */
-    public function close()
+    public function close(): void
     {
         $this->flush();
+
+        $this->handler->close();
     }
 
     /**
      * Clears the buffer without flushing any messages down to the wrapped handler.
      */
-    public function clear()
+    public function clear(): void
     {
         $this->bufferSize = 0;
-        $this->buffer = array();
+        $this->buffer = [];
     }
 
-    public function reset()
+    public function reset(): void
     {
         $this->flush();
 
         parent::reset();
+
+        $this->resetProcessors();
 
         if ($this->handler instanceof ResettableInterface) {
             $this->handler->reset();
@@ -129,20 +138,33 @@ class BufferHandler extends AbstractHandler
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritDoc
      */
-    public function setFormatter(FormatterInterface $formatter)
+    public function setFormatter(FormatterInterface $formatter): HandlerInterface
     {
-        $this->handler->setFormatter($formatter);
+        if ($this->handler instanceof FormattableHandlerInterface) {
+            $this->handler->setFormatter($formatter);
 
-        return $this;
+            return $this;
+        }
+
+        throw new \UnexpectedValueException('The nested handler of type '.\get_class($this->handler).' does not support formatters.');
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritDoc
      */
-    public function getFormatter()
+    public function getFormatter(): FormatterInterface
     {
-        return $this->handler->getFormatter();
+        if ($this->handler instanceof FormattableHandlerInterface) {
+            return $this->handler->getFormatter();
+        }
+
+        throw new \UnexpectedValueException('The nested handler of type '.\get_class($this->handler).' does not support formatters.');
+    }
+
+    public function setHandler(HandlerInterface $handler): void
+    {
+        $this->handler = $handler;
     }
 }

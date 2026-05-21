@@ -9,7 +9,7 @@ trait UpdateFunctions
 				return true;
 			} elseif (!$retest) {
 				$this->setLoggerChannel('Update')->notice('Attempting to set correct permissions', ['file' => $script]);
-				$permissions = shell_exec('chmod 777 ' . $script);
+				$permissions = shell_exec('chmod 755 ' . escapeshellarg($script));
 				return $this->testScriptFilePermissions($script, true);
 			} else {
 				$this->setLoggerChannel('Update')->warning('Update script doesn\'t have the correct permissions', ['file' => $script]);

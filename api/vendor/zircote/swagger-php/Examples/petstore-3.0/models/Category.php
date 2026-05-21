@@ -7,14 +7,13 @@
 namespace Petstore30;
 
 /**
- * Class Category
+ * Pets Category
  *
  * @package Petstore30
  *
  * @author  Donii Sergii <doniysa@gmail.com>
  *
  * @OA\Schema(
- *     description="Pets Category",
  *     title="Pets Category",
  *     @OA\Xml(
  *         name="Category"

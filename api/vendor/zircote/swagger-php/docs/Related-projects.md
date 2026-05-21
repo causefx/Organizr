@@ -4,18 +4,20 @@ sidebar: false
 
 # Related projects
 
-| Project                 | Description                                               |
-| ----------------------- | --------------------------------------------------------- |
-| [Swagger UI][1]         | The webinterface for reading the generated documentation  |
-| [Swagger Explained][2]  | Browse the spec by using an swagger.json.                 |
-| [silex2swagger][3]      | Generate swagger documentation from Silex Annotations     |
-| [yii2-swagger][4]       | swagger-php intergation with yii2                         |
-| [Lumen swagger][5]      | swagger-php integration with lumen/laravel                |
-| [NelmioApiDocBundle][6] | Symfony bundle on top of swagger-php                      |
-| [auto-swagger-ui][7]    | Automatically add swagger ui and json to your application |
-| [openapi-router][8]     | Configure framework routes from OpenApi annotations       |
-| [openapi-verifier][9]   | Verify response against OpenAPI specification in PHPUnit  |
-| [openapi-filter][10]    | Filter internal paths, operations, parameters, etc        |
+| Project                       | Description                                               |
+| ----------------------------- | --------------------------------------------------------- |
+| [Swagger UI][1]               | The webinterface for reading the generated documentation  |
+| [Swagger Explained][2]        | Browse the spec by using an swagger.json.                 |
+| [silex2swagger][3]            | Generate swagger documentation from Silex Annotations     |
+| [yii2-swagger][4]             | swagger-php intergation with yii2                         |
+| [Lumen swagger][5]            | swagger-php integration with lumen/laravel                |
+| [NelmioApiDocBundle][6]       | Symfony bundle on top of swagger-php                      |
+| [auto-swagger-ui][7]          | Automatically add swagger ui and json to your application |
+| [openapi-router][8]           | Configure framework routes from OpenApi annotations       |
+| [openapi-verifier][9]         | Verify response against OpenAPI specification in PHPUnit  |
+| [openapi-filter][10]          | Filter internal paths, operations, parameters, etc        |
+| [OpenAPI-Symfony-Routing][11] | Load routes in Symfony based on OpenAPI annotations       |
+| [Swag It PHP][12]             | Convert JSON to PHP Swagger annotations                   |
 
 Is a related project missing? Create a pull request!
 
@@ -29,3 +31,5 @@ Is a related project missing? Create a pull request!
 [8]: https://github.com/DerManoMann/openapi-router
 [9]: https://github.com/DerManoMann/openapi-verifier
 [10]: https://github.com/Mermade/openapi-filter
+[11]: https://github.com/Tobion/OpenAPI-Symfony-Routing
+[12]: https://kizu514.com/swagit.php

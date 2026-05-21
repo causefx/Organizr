@@ -24,20 +24,10 @@ use Slim\Routing\RoutingResults;
 
 class RoutingMiddleware implements MiddlewareInterface
 {
-    /**
-     * @var RouteResolverInterface
-     */
-    protected $routeResolver;
+    protected RouteResolverInterface $routeResolver;
 
-    /**
-     * @var RouteParserInterface
-     */
-    protected $routeParser;
+    protected RouteParserInterface $routeParser;
 
-    /**
-     * @param RouteResolverInterface $routeResolver
-     * @param RouteParserInterface   $routeParser
-     */
     public function __construct(RouteResolverInterface $routeResolver, RouteParserInterface $routeParser)
     {
         $this->routeResolver = $routeResolver;
@@ -45,10 +35,6 @@ class RoutingMiddleware implements MiddlewareInterface
     }
 
     /**
-     * @param ServerRequestInterface  $request
-     * @param RequestHandlerInterface $handler
-     * @return ResponseInterface
-     *
      * @throws HttpNotFoundException
      * @throws HttpMethodNotAllowedException
      * @throws RuntimeException
@@ -63,7 +49,6 @@ class RoutingMiddleware implements MiddlewareInterface
      * Perform routing
      *
      * @param  ServerRequestInterface $request PSR7 Server Request
-     * @return ServerRequestInterface
      *
      * @throws HttpNotFoundException
      * @throws HttpMethodNotAllowedException
@@ -102,9 +87,6 @@ class RoutingMiddleware implements MiddlewareInterface
 
     /**
      * Resolves the route from the given request
-     *
-     * @param  ServerRequestInterface $request
-     * @return RoutingResults
      */
     protected function resolveRoutingResultsFromRequest(ServerRequestInterface $request): RoutingResults
     {

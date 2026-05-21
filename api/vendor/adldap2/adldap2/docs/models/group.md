@@ -39,7 +39,7 @@ the members inside the group.
 ```php
 $group = $provider->search()->groups()->first();
 
-foreach ($group->members as $member) {
+foreach ($group->member as $member) {
     echo $member; // 'cn=John Doe,dc=corp,dc=acme,dc=org'
 }
 ```
@@ -74,7 +74,7 @@ To get around this limit, you need to ask your server to paginate the groups mem
 ```php
 $group = $provider->search()->groups()->select('member;range=0-500')->first();
 
-foreach ($group->members as $member) {
+foreach ($group->member as $member) {
     // We'll only have 500 members in this query.
 }
 ```

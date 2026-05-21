@@ -1,10 +1,8 @@
-<?php
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
-namespace OpenApiFixtures;
+namespace OpenApi\Tests\Fixtures;
 
 use DateTime;
-use App;
 
 /**
  * @OA\Schema()
@@ -27,7 +25,7 @@ class TypedProperties
     public ?string $nullableString;
 
     /**
-     * @var \OpenApiFixtures\TypedProperties[]
+     * @var \OpenApi\Tests\Fixtures\TypedProperties[]
      * @OA\Property()
      */
     public array $arrayType;
@@ -45,7 +43,7 @@ class TypedProperties
     /**
      * @OA\Property()
      */
-    public \OpenApiFixtures\TypedProperties $namespace;
+    public \OpenApi\Tests\Fixtures\TypedProperties $namespaced;
 
     /**
      * @OA\Property()

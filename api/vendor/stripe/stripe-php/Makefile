@@ -29,3 +29,11 @@ phpstan: vendor
 phpstan-baseline: vendor/bin/phpstan
 	php -d memory_limit=512M vendor/bin/phpstan analyse lib tests --generate-baseline
 .PHONY: phpstan-baseline
+
+update-version:
+	@echo "$(VERSION)" > VERSION
+	@perl -pi -e 's|VERSION = '\''[.\d]+'\''|VERSION = '\''$(VERSION)'\''|' lib/Stripe.php
+.PHONY: update-version
+
+codegen-format: fmt
+.PHONY: codegen-format

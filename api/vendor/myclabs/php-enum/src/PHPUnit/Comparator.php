@@ -43,7 +43,7 @@ final class Comparator extends \SebastianBergmann\Comparator\Comparator
         );
     }
 
-    private function formatEnum(Enum $enum = null)
+    private function formatEnum(?Enum $enum = null)
     {
         if ($enum === null) {
             return "null";

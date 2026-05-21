@@ -1,0 +1,26 @@
+<html lang="en">
+<head>
+    <title>XML-RPC for PHP User Manual</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/asciidoctor.js/1.5.9/asciidoctor.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/asciidoctor.js/1.5.9/css/asciidoctor.min.css">
+</head>
+<body>
+<h1>XML-RPC for PHP</h1>
+<div id="target"></div>
+<script>
+    var asciidoctor = Asciidoctor();
+    const content = "include::phpxmlrpc_manual.adoc[]"
+    try {
+        let html = asciidoctor.convert(content, {safe: 'safe'});
+        /// @todo we should make this error parsing more robust, in case we want to load a different version of asciidoctor.min.js above
+        if (html.includes('Unresolved directive in &lt;stdin&gt; - include::phpxmlrpc_manual.adoc[]')) {
+            html = 'ERROR: you are most likely viewing this file by loading it from the filesystem. You need to view it via an http request, ie. use a webserver.'
+        }
+        document.getElementById('target').innerHTML = html;
+    } catch(error) {
+        alert(error);
+    }
+
+</script>
+</body>
+</html>

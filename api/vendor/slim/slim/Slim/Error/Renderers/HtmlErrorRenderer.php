@@ -22,11 +22,6 @@ use function sprintf;
  */
 class HtmlErrorRenderer extends AbstractErrorRenderer
 {
-    /**
-     * @param Throwable $exception
-     * @param bool      $displayErrorDetails
-     * @return string
-     */
     public function __invoke(Throwable $exception, bool $displayErrorDetails): string
     {
         if ($displayErrorDetails) {
@@ -40,66 +35,45 @@ class HtmlErrorRenderer extends AbstractErrorRenderer
         return $this->renderHtmlBody($this->getErrorTitle($exception), $html);
     }
 
-    /**
-     * @param Throwable $exception
-     * @return string
-     */
     private function renderExceptionFragment(Throwable $exception): string
     {
         $html = sprintf('<div><strong>Type:</strong> %s</div>', get_class($exception));
 
         $code = $exception->getCode();
-        if ($code !== null) {
-            $html .= sprintf('<div><strong>Code:</strong> %s</div>', $code);
-        }
+        $html .= sprintf('<div><strong>Code:</strong> %s</div>', $code);
 
-        $message = $exception->getMessage();
-        if ($message !== null) {
-            $html .= sprintf('<div><strong>Message:</strong> %s</div>', htmlentities($message));
-        }
+        $html .= sprintf('<div><strong>Message:</strong> %s</div>', htmlentities($exception->getMessage()));
 
-        $file = $exception->getFile();
-        if ($file !== null) {
-            $html .= sprintf('<div><strong>File:</strong> %s</div>', $file);
-        }
+        $html .= sprintf('<div><strong>File:</strong> %s</div>', $exception->getFile());
 
-        $line = $exception->getLine();
-        if ($line !== null) {
-            $html .= sprintf('<div><strong>Line:</strong> %s</div>', $line);
-        }
+        $html .= sprintf('<div><strong>Line:</strong> %s</div>', $exception->getLine());
 
-        $trace = $exception->getTraceAsString();
-        if ($trace !== null) {
-            $html .= '<h2>Trace</h2>';
-            $html .= sprintf('<pre>%s</pre>', htmlentities($trace));
-        }
+        $html .= '<h2>Trace</h2>';
+        $html .= sprintf('<pre>%s</pre>', htmlentities($exception->getTraceAsString()));
 
         return $html;
     }
 
-    /**
-     * @param string $title
-     * @param string $html
-     * @return string
-     */
     public function renderHtmlBody(string $title = '', string $html = ''): string
     {
         return sprintf(
-            '<html>' .
-            '   <head>' .
-            "       <meta http-equiv='Content-Type' content='text/html; charset=utf-8'>" .
-            '       <title>%s</title>' .
-            '       <style>' .
-            '           body{margin:0;padding:30px;font:12px/1.5 Helvetica,Arial,Verdana,sans-serif}' .
-            '           h1{margin:0;font-size:48px;font-weight:normal;line-height:48px}' .
-            '           strong{display:inline-block;width:65px}' .
-            '       </style>' .
-            '   </head>' .
-            '   <body>' .
-            '       <h1>%s</h1>' .
-            '       <div>%s</div>' .
-            '       <a href="#" onClick="window.history.go(-1)">Go Back</a>' .
-            '   </body>' .
+            '<!doctype html>' .
+            '<html lang="en">' .
+            '    <head>' .
+            '        <meta charset="utf-8">' .
+            '        <meta name="viewport" content="width=device-width, initial-scale=1">' .
+            '        <title>%s</title>' .
+            '        <style>' .
+            '            body{margin:0;padding:30px;font:12px/1.5 Helvetica,Arial,Verdana,sans-serif}' .
+            '            h1{margin:0;font-size:48px;font-weight:normal;line-height:48px}' .
+            '            strong{display:inline-block;width:65px}' .
+            '        </style>' .
+            '    </head>' .
+            '    <body>' .
+            '        <h1>%s</h1>' .
+            '        <div>%s</div>' .
+            '        <a href="#" onclick="window.history.go(-1)">Go Back</a>' .
+            '    </body>' .
             '</html>',
             $title,
             $title,

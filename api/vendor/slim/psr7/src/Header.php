@@ -10,36 +10,17 @@ declare(strict_types=1);
 
 namespace Slim\Psr7;
 
-use InvalidArgumentException;
-
 use function array_merge;
-use function is_array;
 use function is_string;
 
 class Header
 {
-    /**
-     * @var string
-     */
-    private $originalName;
+    private string $originalName;
 
-    /**
-     * @var string
-     */
-    private $normalizedName;
+    private string $normalizedName;
 
-    /**
-     * @var array
-     */
-    private $values;
+    private array $values;
 
-    /**
-     * Header constructor.
-     *
-     * @param string $originalName
-     * @param string $normalizedName
-     * @param array  $values
-     */
     public function __construct(string $originalName, string $normalizedName, array $values)
     {
         $this->originalName = $originalName;
@@ -47,27 +28,16 @@ class Header
         $this->values = $values;
     }
 
-    /**
-     * @return string
-     */
     public function getOriginalName(): string
     {
         return $this->originalName;
     }
 
-    /**
-     * @return string
-     */
     public function getNormalizedName(): string
     {
         return $this->normalizedName;
     }
 
-    /**
-     * @param string $value
-     *
-     * @return self
-     */
     public function addValue(string $value): self
     {
         $this->values[] = $value;
@@ -75,19 +45,10 @@ class Header
         return $this;
     }
 
-    /**
-     * @param array|string $values
-     *
-     * @return self
-     */
-    public function addValues($values): self
+    public function addValues(array|string $values): self
     {
         if (is_string($values)) {
             return $this->addValue($values);
-        }
-
-        if (!is_array($values)) {
-            throw new InvalidArgumentException('Parameter 1 of Header::addValues() should be a string or an array.');
         }
 
         $this->values = array_merge($this->values, $values);
@@ -95,9 +56,6 @@ class Header
         return $this;
     }
 
-    /**
-     * @return array
-     */
     public function getValues(): array
     {
         return $this->values;

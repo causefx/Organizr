@@ -34,7 +34,7 @@ Install Dibi via Composer:
 composer require dibi/dibi
 ```
 
-The Dibi 4.2 requires PHP version 7.2 and supports PHP up to 8.1.
+The Dibi 4.2 requires PHP version 7.2 and supports PHP up to 8.3.
 
 
 Usage
@@ -341,7 +341,7 @@ $database->query('INSERT INTO users', [
 There are three methods for dealing with transactions:
 
 ```php
-$database->beginTransaction();
+$database->begin();
 
 $database->commit();
 

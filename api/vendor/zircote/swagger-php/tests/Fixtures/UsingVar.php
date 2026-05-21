@@ -1,11 +1,13 @@
-<?php
+<?php declare(strict_types=1);
 
-namespace OpenApiTests\Fixtures;
+namespace OpenApi\Tests\Fixtures;
 
 /**
  * @OA\Schema(
  *   schema="UsingVar",
- *   required={"name"}
+ *   required={"name"},
+ *   @OA\Attachable(),
+ *   @OA\Attachable()
  * )
  */
 class UsingVar

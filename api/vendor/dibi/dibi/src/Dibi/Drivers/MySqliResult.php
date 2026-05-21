@@ -22,9 +22,6 @@ class MySqliResult implements Dibi\ResultDriver
 	/** @var \mysqli_result */
 	private $resultSet;
 
-	/** @var bool */
-	private $autoFree = true;
-
 	/** @var bool  Is buffered (seekable and countable)? */
 	private $buffered;
 
@@ -33,17 +30,6 @@ class MySqliResult implements Dibi\ResultDriver
 	{
 		$this->resultSet = $resultSet;
 		$this->buffered = $buffered;
-	}
-
-
-	/**
-	 * Automatically frees the resources allocated for this result set.
-	 */
-	public function __destruct()
-	{
-		if ($this->autoFree && $this->getResultResource()) {
-			@$this->free();
-		}
 	}
 
 
@@ -136,7 +122,6 @@ class MySqliResult implements Dibi\ResultDriver
 	 */
 	public function getResultResource(): \mysqli_result
 	{
-		$this->autoFree = false;
 		return $this->resultSet;
 	}
 

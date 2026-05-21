@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /*
  * This file is part of the Monolog package.
@@ -12,6 +12,7 @@
 namespace Monolog\Processor;
 
 use Monolog\ResettableInterface;
+use Monolog\LogRecord;
 
 /**
  * Adds a unique identifier into records
@@ -20,40 +21,47 @@ use Monolog\ResettableInterface;
  */
 class UidProcessor implements ProcessorInterface, ResettableInterface
 {
-    private $uid;
+    /** @var non-empty-string */
+    private string $uid;
 
-    public function __construct($length = 7)
+    /**
+     * @param int<1, 32> $length
+     */
+    public function __construct(int $length = 7)
     {
-        if (!is_int($length) || $length > 32 || $length < 1) {
+        if ($length > 32 || $length < 1) {
             throw new \InvalidArgumentException('The uid length must be an integer between 1 and 32');
         }
-
 
         $this->uid = $this->generateUid($length);
     }
 
-    public function __invoke(array $record)
+    /**
+     * @inheritDoc
+     */
+    public function __invoke(LogRecord $record): LogRecord
     {
-        $record['extra']['uid'] = $this->uid;
+        $record->extra['uid'] = $this->uid;
 
         return $record;
     }
 
-    /**
-     * @return string
-     */
-    public function getUid()
+    public function getUid(): string
     {
         return $this->uid;
     }
 
-    public function reset()
+    public function reset(): void
     {
-        $this->uid = $this->generateUid(strlen($this->uid));
+        $this->uid = $this->generateUid(\strlen($this->uid));
     }
 
-    private function generateUid($length)
+    /**
+     * @param  positive-int     $length
+     * @return non-empty-string
+     */
+    private function generateUid(int $length): string
     {
-        return substr(hash('md5', uniqid('', true)), 0, $length);
+        return substr(bin2hex(random_bytes((int) ceil($length / 2))), 0, $length);
     }
 }

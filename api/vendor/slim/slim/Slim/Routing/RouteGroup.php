@@ -24,31 +24,23 @@ class RouteGroup implements RouteGroupInterface
      */
     protected $callable;
 
-    /**
-     * @var CallableResolverInterface
-     */
-    protected $callableResolver;
+    protected CallableResolverInterface $callableResolver;
 
     /**
-     * @var RouteCollectorProxyInterface
+     * @var RouteCollectorProxyInterface<\Psr\Container\ContainerInterface|null>
      */
-    protected $routeCollectorProxy;
+    protected RouteCollectorProxyInterface $routeCollectorProxy;
 
     /**
      * @var MiddlewareInterface[]|string[]|callable[]
      */
-    protected $middleware = [];
+    protected array $middleware = [];
+
+    protected string $pattern;
 
     /**
-     * @var string
-     */
-    protected $pattern;
-
-    /**
-     * @param string                       $pattern
      * @param callable|string              $callable
-     * @param CallableResolverInterface    $callableResolver
-     * @param RouteCollectorProxyInterface $routeCollectorProxy
+     * @param RouteCollectorProxyInterface<\Psr\Container\ContainerInterface|null> $routeCollectorProxy
      */
     public function __construct(
         string $pattern,
@@ -96,6 +88,7 @@ class RouteGroup implements RouteGroupInterface
 
     /**
      * {@inheritdoc}
+     * @param MiddlewareDispatcher<\Psr\Container\ContainerInterface|null> $dispatcher
      */
     public function appendMiddlewareToDispatcher(MiddlewareDispatcher $dispatcher): RouteGroupInterface
     {

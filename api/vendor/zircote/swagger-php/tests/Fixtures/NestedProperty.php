@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace AnotherNamespace;
+namespace OpenApi\Tests\Fixtures;
 
 /**
  * @OA\Schema()

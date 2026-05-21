@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /*
  * This file is part of the Monolog package.
@@ -11,30 +11,35 @@
 
 namespace Monolog\Handler;
 
-use Monolog\ResettableInterface;
+use Monolog\LogRecord;
 
 /**
- * Base Handler class providing the Handler structure
+ * Base Handler class providing the Handler structure, including processors and formatters
  *
  * Classes extending it should (in most cases) only implement write($record)
  *
  * @author Jordi Boggiano <j.boggiano@seld.be>
  * @author Christophe Coevoet <stof@notk.org>
  */
-abstract class AbstractProcessingHandler extends AbstractHandler
+abstract class AbstractProcessingHandler extends AbstractHandler implements ProcessableHandlerInterface, FormattableHandlerInterface
 {
+    use ProcessableHandlerTrait;
+    use FormattableHandlerTrait;
+
     /**
-     * {@inheritdoc}
+     * @inheritDoc
      */
-    public function handle(array $record)
+    public function handle(LogRecord $record): bool
     {
         if (!$this->isHandling($record)) {
             return false;
         }
 
-        $record = $this->processRecord($record);
+        if (\count($this->processors) > 0) {
+            $record = $this->processRecord($record);
+        }
 
-        $record['formatted'] = $this->getFormatter()->format($record);
+        $record->formatted = $this->getFormatter()->format($record);
 
         $this->write($record);
 
@@ -42,27 +47,14 @@ abstract class AbstractProcessingHandler extends AbstractHandler
     }
 
     /**
-     * Writes the record down to the log of the implementing handler
-     *
-     * @param  array $record
-     * @return void
+     * Writes the (already formatted) record down to the log of the implementing handler
      */
-    abstract protected function write(array $record);
+    abstract protected function write(LogRecord $record): void;
 
-    /**
-     * Processes a record.
-     *
-     * @param  array $record
-     * @return array
-     */
-    protected function processRecord(array $record)
+    public function reset(): void
     {
-        if ($this->processors) {
-            foreach ($this->processors as $processor) {
-                $record = call_user_func($processor, $record);
-            }
-        }
+        parent::reset();
 
-        return $record;
+        $this->resetProcessors();
     }
 }

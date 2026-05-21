@@ -31,6 +31,11 @@ use Slim\Routing\RouteRunner;
 
 use function strtoupper;
 
+/**
+ * @api
+ * @template TContainerInterface of (ContainerInterface|null)
+ * @template-extends RouteCollectorProxy<TContainerInterface>
+ */
 class App extends RouteCollectorProxy implements RequestHandlerInterface
 {
     /**
@@ -38,25 +43,14 @@ class App extends RouteCollectorProxy implements RequestHandlerInterface
      *
      * @var string
      */
-    public const VERSION = '4.7.0';
+    public const VERSION = '4.15.1';
+
+    protected RouteResolverInterface $routeResolver;
+
+    protected MiddlewareDispatcherInterface $middlewareDispatcher;
 
     /**
-     * @var RouteResolverInterface
-     */
-    protected $routeResolver;
-
-    /**
-     * @var MiddlewareDispatcherInterface
-     */
-    protected $middlewareDispatcher;
-
-    /**
-     * @param ResponseFactoryInterface              $responseFactory
-     * @param ContainerInterface|null               $container
-     * @param CallableResolverInterface|null        $callableResolver
-     * @param RouteCollectorInterface|null          $routeCollector
-     * @param RouteResolverInterface|null           $routeResolver
-     * @param MiddlewareDispatcherInterface|null    $middlewareDispatcher
+     * @param TContainerInterface $container
      */
     public function __construct(
         ResponseFactoryInterface $responseFactory,
@@ -103,7 +97,7 @@ class App extends RouteCollectorProxy implements RequestHandlerInterface
 
     /**
      * @param MiddlewareInterface|string|callable $middleware
-     * @return self
+     * @return App<TContainerInterface>
      */
     public function add($middleware): self
     {
@@ -113,7 +107,7 @@ class App extends RouteCollectorProxy implements RequestHandlerInterface
 
     /**
      * @param MiddlewareInterface $middleware
-     * @return self
+     * @return App<TContainerInterface>
      */
     public function addMiddleware(MiddlewareInterface $middleware): self
     {

@@ -11,7 +11,7 @@ These definitions can then be referenced with `ref="#/components/schemas/$classn
  *     title="Product model"
  * )
  */
-class Product {
+class Product extends Model {
 
     /**
      * The unique identifier of a product in our catalog.

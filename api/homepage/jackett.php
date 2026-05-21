@@ -151,7 +151,6 @@ trait JackettHomepageItem
 		}
 		$apiURL = $this->qualifyURL($this->config['jackettURL']);
 		$endpoint = $apiURL . $url;
-		error_log($endpoint);
 		try {
 			$headers = [];
 			$options = $this->requestOptions($apiURL, 120, $this->config['jackettDisableCertCheck'], $this->config['jackettUseCustomCertificate']);

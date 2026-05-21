@@ -2,12 +2,11 @@
 
 [![Latest Version](https://img.shields.io/github/release/php-http/httplug.svg?style=flat-square)](https://github.com/php-http/httplug/releases)
 [![Software License](https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square)](LICENSE)
-[![Build Status](https://img.shields.io/travis/php-http/httplug/master.svg?style=flat-square)](https://travis-ci.org/php-http/httplug)
+[![Build Status](https://github.com/php-http/httplug/actions/workflows/ci.yml/badge.svg)](https://github.com/php-http/httplug/actions/workflows/ci.yml)
 [![Code Coverage](https://img.shields.io/scrutinizer/coverage/g/php-http/httplug.svg?style=flat-square)](https://scrutinizer-ci.com/g/php-http/httplug)
 [![Quality Score](https://img.shields.io/scrutinizer/g/php-http/httplug.svg?style=flat-square)](https://scrutinizer-ci.com/g/php-http/httplug)
 [![Total Downloads](https://img.shields.io/packagist/dt/php-http/httplug.svg?style=flat-square)](https://packagist.org/packages/php-http/httplug)
 
-[![Slack Status](http://slack.httplug.io/badge.svg)](http://slack.httplug.io)
 [![Email](https://img.shields.io/badge/email-team@httplug.io-blue.svg?style=flat-square)](mailto:team@httplug.io)
 
 **HTTPlug, the HTTP client abstraction for PHP.**
@@ -16,19 +15,11 @@
 ## Intro
 
 HTTP client standard built on [PSR-7](http://www.php-fig.org/psr/psr-7/) HTTP
-messages. The HTTPlug client interface is compatible with the official standard
-for the HTTP client interface, [PSR-18](http://www.php-fig.org/psr/psr-18/).
-HTTPlug adds an interface for asynchronous HTTP requests, which PSR-18 does not
-cover.
+messages. The HttpAsyncClient defines an asynchronous HTTP client for PHP.
 
-Since HTTPlug has already been widely adopted and a whole ecosystem has been
-built around it, we will keep maintaining this package for the time being.
-HTTPlug 2.0 and newer extend the PSR-18 interface to allow for a convenient
-migration path.
-
-New client implementations and consumers should use the PSR-18 interfaces
-directly. In the long term, we expect PSR-18 to completely replace the need
-for HTTPlug.
+This package also provides a synchronous HttpClient interface with the same
+method signature as the [PSR-18](http://www.php-fig.org/psr/psr-18/) client.
+For synchronous requests, we recommend using PSR-18 directly.
 
 
 ## History

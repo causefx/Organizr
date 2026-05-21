@@ -1,4 +1,5 @@
-<?php
+<?php declare(strict_types=1);
+
 /*
  * This file is part of the Monolog package.
  *
@@ -10,8 +11,9 @@
 
 namespace Monolog\Formatter;
 
-use Monolog\Logger;
+use Monolog\Level;
 use Monolog\Utils;
+use Monolog\LogRecord;
 
 /**
  * Formats incoming records into an HTML table
@@ -25,21 +27,24 @@ class HtmlFormatter extends NormalizerFormatter
     /**
      * Translates Monolog log levels to html color priorities.
      */
-    protected $logLevels = array(
-        Logger::DEBUG     => '#cccccc',
-        Logger::INFO      => '#468847',
-        Logger::NOTICE    => '#3a87ad',
-        Logger::WARNING   => '#c09853',
-        Logger::ERROR     => '#f0ad4e',
-        Logger::CRITICAL  => '#FF7708',
-        Logger::ALERT     => '#C12A19',
-        Logger::EMERGENCY => '#000000',
-    );
+    protected function getLevelColor(Level $level): string
+    {
+        return match ($level) {
+            Level::Debug     => '#CCCCCC',
+            Level::Info      => '#28A745',
+            Level::Notice    => '#17A2B8',
+            Level::Warning   => '#FFC107',
+            Level::Error     => '#FD7E14',
+            Level::Critical  => '#DC3545',
+            Level::Alert     => '#821722',
+            Level::Emergency => '#000000',
+        };
+    }
 
     /**
-     * @param string $dateFormat The format of the timestamp: one supported by DateTime::format
+     * @param string|null $dateFormat The format of the timestamp: one supported by DateTime::format
      */
-    public function __construct($dateFormat = null)
+    public function __construct(?string $dateFormat = null)
     {
         parent::__construct($dateFormat);
     }
@@ -47,12 +52,11 @@ class HtmlFormatter extends NormalizerFormatter
     /**
      * Creates an HTML table row
      *
-     * @param  string $th       Row header content
-     * @param  string $td       Row standard cell content
-     * @param  bool   $escapeTd false if td content must not be html escaped
-     * @return string
+     * @param string $th       Row header content
+     * @param string $td       Row standard cell content
+     * @param bool   $escapeTd false if td content must not be html escaped
      */
-    protected function addRow($th, $td = ' ', $escapeTd = true)
+    protected function addRow(string $th, string $td = ' ', bool $escapeTd = true): string
     {
         $th = htmlspecialchars($th, ENT_NOQUOTES, 'UTF-8');
         if ($escapeTd) {
@@ -65,43 +69,40 @@ class HtmlFormatter extends NormalizerFormatter
     /**
      * Create a HTML h1 tag
      *
-     * @param  string $title Text to be in the h1
-     * @param  int    $level Error level
-     * @return string
+     * @param string $title Text to be in the h1
      */
-    protected function addTitle($title, $level)
+    protected function addTitle(string $title, Level $level): string
     {
         $title = htmlspecialchars($title, ENT_NOQUOTES, 'UTF-8');
 
-        return '<h1 style="background: '.$this->logLevels[$level].';color: #ffffff;padding: 5px;" class="monolog-output">'.$title.'</h1>';
+        return '<h1 style="background: '.$this->getLevelColor($level).';color: #ffffff;padding: 5px;" class="monolog-output">'.$title.'</h1>';
     }
 
     /**
      * Formats a log record.
      *
-     * @param  array $record A record to format
-     * @return mixed The formatted record
+     * @return string The formatted record
      */
-    public function format(array $record)
+    public function format(LogRecord $record): string
     {
-        $output = $this->addTitle($record['level_name'], $record['level']);
+        $output = $this->addTitle($record->level->getName(), $record->level);
         $output .= '<table cellspacing="1" width="100%" class="monolog-output">';
 
-        $output .= $this->addRow('Message', (string) $record['message']);
-        $output .= $this->addRow('Time', $record['datetime']->format($this->dateFormat));
-        $output .= $this->addRow('Channel', $record['channel']);
-        if ($record['context']) {
+        $output .= $this->addRow('Message', $record->message);
+        $output .= $this->addRow('Time', $this->formatDate($record->datetime));
+        $output .= $this->addRow('Channel', $record->channel);
+        if (\count($record->context) > 0) {
             $embeddedTable = '<table cellspacing="1" width="100%">';
-            foreach ($record['context'] as $key => $value) {
-                $embeddedTable .= $this->addRow($key, $this->convertToString($value));
+            foreach ($record->context as $key => $value) {
+                $embeddedTable .= $this->addRow((string) $key, $this->convertToString($value));
             }
             $embeddedTable .= '</table>';
             $output .= $this->addRow('Context', $embeddedTable, false);
         }
-        if ($record['extra']) {
+        if (\count($record->extra) > 0) {
             $embeddedTable = '<table cellspacing="1" width="100%">';
-            foreach ($record['extra'] as $key => $value) {
-                $embeddedTable .= $this->addRow($key, $this->convertToString($value));
+            foreach ($record->extra as $key => $value) {
+                $embeddedTable .= $this->addRow((string) $key, $this->convertToString($value));
             }
             $embeddedTable .= '</table>';
             $output .= $this->addRow('Extra', $embeddedTable, false);
@@ -113,10 +114,9 @@ class HtmlFormatter extends NormalizerFormatter
     /**
      * Formats a set of log records.
      *
-     * @param  array $records A set of records to format
-     * @return mixed The formatted set of records
+     * @return string The formatted set of records
      */
-    public function formatBatch(array $records)
+    public function formatBatch(array $records): string
     {
         $message = '';
         foreach ($records as $record) {
@@ -126,17 +126,17 @@ class HtmlFormatter extends NormalizerFormatter
         return $message;
     }
 
-    protected function convertToString($data)
+    /**
+     * @param mixed $data
+     */
+    protected function convertToString($data): string
     {
-        if (null === $data || is_scalar($data)) {
+        if (null === $data || \is_scalar($data)) {
             return (string) $data;
         }
 
         $data = $this->normalize($data);
-        if (version_compare(PHP_VERSION, '5.4.0', '>=')) {
-            return Utils::jsonEncode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE, true);
-        }
 
-        return str_replace('\\/', '/', Utils::jsonEncode($data, null, true));
+        return Utils::jsonEncode($data, JSON_PRETTY_PRINT | Utils::DEFAULT_JSON_FLAGS, true);
     }
 }

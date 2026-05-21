@@ -1,13 +1,13 @@
 {
     "name": "lcobucci/jwt",
-    "type": "library",
     "description": "A simple library to work with JSON Web Token and JSON Web Signature",
+    "license": [
+        "BSD-3-Clause"
+    ],
+    "type": "library",
     "keywords": [
         "JWT",
         "JWS"
-    ],
-    "license": [
-        "BSD-3-Clause"
     ],
     "authors": [
         {
@@ -23,24 +23,20 @@
         "ext-mbstring": "*",
         "ext-openssl": "*",
         "ext-sodium": "*",
-        "lcobucci/clock": "^2.0"
+        "lcobucci/clock": "^2.0 || ^3.0"
     },
     "require-dev": {
         "infection/infection": "^0.21",
         "lcobucci/coding-standard": "^6.0",
         "mikey179/vfsstream": "^1.6.7",
-        "phpbench/phpbench": "^1.0",
+        "phpbench/phpbench": "^1.2",
         "phpstan/extension-installer": "^1.0",
-        "phpstan/phpstan": "^0.12",
-        "phpstan/phpstan-deprecation-rules": "^0.12",
-        "phpstan/phpstan-phpunit": "^0.12",
-        "phpstan/phpstan-strict-rules": "^0.12",
+        "phpstan/phpstan": "^1.4",
+        "phpstan/phpstan-deprecation-rules": "^1.0",
+        "phpstan/phpstan-phpunit": "^1.0",
+        "phpstan/phpstan-strict-rules": "^1.0",
         "phpunit/php-invoker": "^3.1",
         "phpunit/phpunit": "^9.5"
-    },
-    "config": {
-        "preferred-install": "dist",
-        "sort-packages": true
     },
     "autoload": {
         "psr-4": {
@@ -56,5 +52,15 @@
             ],
             "Lcobucci\\JWT\\FunctionalTests\\": "test/functional"
         }
+    },
+    "config": {
+        "allow-plugins": {
+            "dealerdirect/phpcodesniffer-composer-installer": true,
+            "phpstan/extension-installer": true,
+            "infection/extension-installer": true,
+            "ocramius/package-versions": true
+        },
+        "preferred-install": "dist",
+        "sort-packages": true
     }
 }

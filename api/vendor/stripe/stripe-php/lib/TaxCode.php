@@ -5,8 +5,8 @@
 namespace Stripe;
 
 /**
- * <a href="https://stripe.com/docs/tax/tax-codes">Tax codes</a> classify goods and
- * services for tax purposes.
+ * <a href="https://stripe.com/docs/tax/tax-categories">Tax codes</a> classify
+ * goods and services for tax purposes.
  *
  * @property string $id Unique identifier for the object.
  * @property string $object String representing the object's type. Objects of the same type share the same value.

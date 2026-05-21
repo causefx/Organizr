@@ -2,22 +2,10 @@
 
 use Tightenco\Collect\Support\Arr;
 use Tightenco\Collect\Support\Collection;
-use Tightenco\Collect\Support\Debug\Dumper;
+use Tightenco\Collect\Support\HigherOrderTapProxy;
+use Symfony\Component\VarDumper\VarDumper;
 
 if (! class_exists(Illuminate\Support\Collection::class)) {
-    if (! function_exists('array_wrap')) {
-        /**
-         * If the given value is not an array, wrap it in one.
-         *
-         * @param  mixed  $value
-         * @return array
-         */
-        function array_wrap($value)
-        {
-            return ! is_array($value) ? [$value] : $value;
-        }
-    }
-
     if (! function_exists('collect')) {
         /**
          * Create a collection from the given value.
@@ -38,9 +26,9 @@ if (! class_exists(Illuminate\Support\Collection::class)) {
          * @param  mixed  $value
          * @return mixed
          */
-        function value($value)
+        function value($value, ...$args)
         {
-            return $value instanceof Closure ? $value() : $value;
+            return $value instanceof Closure ? $value(...$args) : $value;
         }
     }
 
@@ -48,9 +36,9 @@ if (! class_exists(Illuminate\Support\Collection::class)) {
         /**
          * Get an item from an array or object using "dot" notation.
          *
-         * @param  mixed   $target
-         * @param  string|array  $key
-         * @param  mixed   $default
+         * @param  mixed  $target
+         * @param  string|array|int|null  $key
+         * @param  mixed  $default
          * @return mixed
          */
         function data_get($target, $key, $default = null)
@@ -61,7 +49,13 @@ if (! class_exists(Illuminate\Support\Collection::class)) {
 
             $key = is_array($key) ? $key : explode('.', $key);
 
-            while (($segment = array_shift($key)) !== null) {
+            foreach ($key as $i => $segment) {
+                unset($key[$i]);
+
+                if (is_null($segment)) {
+                    return $target;
+                }
+
                 if ($segment === '*') {
                     if ($target instanceof Collection) {
                         $target = $target->all();
@@ -69,7 +63,11 @@ if (! class_exists(Illuminate\Support\Collection::class)) {
                         return value($default);
                     }
 
-                    $result = Arr::pluck($target, $key);
+                    $result = [];
+
+                    foreach ($target as $item) {
+                        $result[] = data_get($item, $key);
+                    }
 
                     return in_array('*', $key) ? Arr::collapse($result) : $result;
                 }
@@ -87,32 +85,38 @@ if (! class_exists(Illuminate\Support\Collection::class)) {
         }
     }
 
-    if (! function_exists('with')) {
+    if (! function_exists('tap')) {
         /**
-         * Return the given object. Useful for chaining.
+         * Call the given Closure with the given value then return the value.
          *
-         * @param  mixed  $object
+         * @param  mixed  $value
+         * @param  callable|null  $callback
          * @return mixed
          */
-        function with($object)
+        function tap($value, $callback = null)
         {
-            return $object;
+            if (is_null($callback)) {
+                return new HigherOrderTapProxy($value);
+            }
+
+            $callback($value);
+
+            return $value;
         }
     }
 
-    if (! function_exists('dd')) {
+    if (! function_exists('class_basename')) {
         /**
-         * Dump the passed variables and end the script.
+         * Get the class "basename" of the given object / class.
          *
-         * @param  mixed
-         * @return void
+         * @param  string|object  $class
+         * @return string
          */
-        function dd(...$args)
+        function class_basename($class)
         {
-            foreach ($args as $x) {
-                (new Dumper)->dump($x);
-            }
-            die(1);
+            $class = is_object($class) ? get_class($class) : $class;
+
+            return basename(str_replace('\\', '/', $class));
         }
     }
 }

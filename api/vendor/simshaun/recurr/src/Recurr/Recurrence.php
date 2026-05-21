@@ -27,7 +27,7 @@ class Recurrence
     /** @var int */
     protected $index;
 
-    public function __construct(\DateTimeInterface $start = null, \DateTimeInterface $end = null, $index = 0)
+    public function __construct(?\DateTimeInterface $start = null, ?\DateTimeInterface $end = null, $index = 0)
     {
         if ($start instanceof \DateTimeInterface) {
             $this->setStart($start);

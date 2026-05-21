@@ -120,6 +120,26 @@ class CustomerService extends \Stripe\Service\AbstractService
     }
 
     /**
+     * Retrieve funding instructions for a customer cash balance. If funding
+     * instructions do not yet exist for the customer, new funding instructions will be
+     * created. If funding instructions have already been created for a given customer,
+     * the same funding instructions will be retrieved. In other words, we will return
+     * the same funding instructions each time.
+     *
+     * @param string $id
+     * @param null|array $params
+     * @param null|array|\Stripe\Util\RequestOptions $opts
+     *
+     * @throws \Stripe\Exception\ApiErrorException if the request fails
+     *
+     * @return \Stripe\Customer
+     */
+    public function createFundingInstructions($id, $params = null, $opts = null)
+    {
+        return $this->request('post', $this->buildPath('/v1/customers/%s/funding_instructions', $id), $params, $opts);
+    }
+
+    /**
      * When you create a new credit card, you must specify a customer or recipient on
      * which to create it.
      *
@@ -257,6 +277,22 @@ class CustomerService extends \Stripe\Service\AbstractService
     }
 
     /**
+     * Retrieves a customer’s cash balance.
+     *
+     * @param string $parentId
+     * @param null|array $params
+     * @param null|array|\Stripe\Util\RequestOptions $opts
+     *
+     * @throws \Stripe\Exception\ApiErrorException if the request fails
+     *
+     * @return \Stripe\cash_balance
+     */
+    public function retrieveCashBalance($parentId, $params = null, $opts = null)
+    {
+        return $this->request('get', $this->buildPath('/v1/customers/%s/cash_balance', $parentId), $params, $opts);
+    }
+
+    /**
      * Retrieve a specified source for a given customer.
      *
      * @param string $parentId
@@ -288,6 +324,26 @@ class CustomerService extends \Stripe\Service\AbstractService
     public function retrieveTaxId($parentId, $id, $params = null, $opts = null)
     {
         return $this->request('get', $this->buildPath('/v1/customers/%s/tax_ids/%s', $parentId, $id), $params, $opts);
+    }
+
+    /**
+     * Search for customers you’ve previously created using Stripe’s <a
+     * href="/docs/search#search-query-language">Search Query Language</a>. Don’t use
+     * search in read-after-write flows where strict consistency is necessary. Under
+     * normal operating conditions, data is searchable in less than a minute.
+     * Occasionally, propagation of new or updated data can be up to an hour behind
+     * during outages. Search functionality is not available to merchants in India.
+     *
+     * @param null|array $params
+     * @param null|array|\Stripe\Util\RequestOptions $opts
+     *
+     * @throws \Stripe\Exception\ApiErrorException if the request fails
+     *
+     * @return \Stripe\SearchResult<\Stripe\Customer>
+     */
+    public function search($params = null, $opts = null)
+    {
+        return $this->requestSearchResult('get', '/v1/customers/search', $params, $opts);
     }
 
     /**
@@ -334,6 +390,22 @@ class CustomerService extends \Stripe\Service\AbstractService
     public function updateBalanceTransaction($parentId, $id, $params = null, $opts = null)
     {
         return $this->request('post', $this->buildPath('/v1/customers/%s/balance_transactions/%s', $parentId, $id), $params, $opts);
+    }
+
+    /**
+     * Updates a customer’s cash balance.
+     *
+     * @param string $parentId
+     * @param null|array $params
+     * @param null|array|\Stripe\Util\RequestOptions $opts
+     *
+     * @throws \Stripe\Exception\ApiErrorException if the request fails
+     *
+     * @return \Stripe\cash_balance
+     */
+    public function updateCashBalance($parentId, $params = null, $opts = null)
+    {
+        return $this->request('post', $this->buildPath('/v1/customers/%s/cash_balance', $parentId), $params, $opts);
     }
 
     /**

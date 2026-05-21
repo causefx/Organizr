@@ -76,7 +76,7 @@ trait DelugeHomepageItem
 			$torrents = $deluge->getTorrents(null, 'comment, download_payload_rate, eta, hash, is_finished, is_seed, message, name, paused, progress, queue, state, total_size, upload_payload_rate');
 			$this->setAPIResponse('success', 'API Connection succeeded', 200);
 			return true;
-		} catch (Exception $e) {
+		} catch (\Throwable $e) {
 			$this->setLoggerChannel('Deluge')->error($e);
 			$this->setResponse(500, $e->getMessage());
 			return false;
@@ -144,7 +144,7 @@ trait DelugeHomepageItem
 			}
 			$api['content']['queueItems'] = (empty($api['content']['queueItems'])) ? [] : $api['content']['queueItems'];
 			$api['content']['historyItems'] = false;
-		} catch (Exception $e) {
+		} catch (\Throwable $e) {
 			$this->setLoggerChannel('Deluge')->error($e);
 			$this->setResponse(500, $e->getMessage());
 			return false;

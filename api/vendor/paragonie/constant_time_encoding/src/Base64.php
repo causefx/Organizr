@@ -2,8 +2,24 @@
 declare(strict_types=1);
 namespace ParagonIE\ConstantTime;
 
+use InvalidArgumentException;
+use RangeException;
+use SensitiveParameter;
+use SodiumException;
+use TypeError;
+use function extension_loaded;
+use function pack;
+use function rtrim;
+use function sodium_base642bin;
+use function sodium_bin2base64;
+use function unpack;
+use const SODIUM_BASE64_VARIANT_ORIGINAL;
+use const SODIUM_BASE64_VARIANT_ORIGINAL_NO_PADDING;
+use const SODIUM_BASE64_VARIANT_URLSAFE;
+use const SODIUM_BASE64_VARIANT_URLSAFE_NO_PADDING;
+
 /**
- *  Copyright (c) 2016 - 2018 Paragon Initiative Enterprises.
+ *  Copyright (c) 2016 - 2022 Paragon Initiative Enterprises.
  *  Copyright (c) 2014 Steve "Sc00bz" Thomas (steve at tobtu dot com)
  *
  *  Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -38,13 +54,35 @@ abstract class Base64 implements EncoderInterface
      *
      * Base64 character set "[A-Z][a-z][0-9]+/"
      *
-     * @param string $src
+     * @param string $binString
      * @return string
-     * @throws \TypeError
+     *
+     * @throws TypeError
      */
-    public static function encode(string $src): string
-    {
-        return static::doEncode($src, true);
+    public static function encode(
+        #[SensitiveParameter]
+        string $binString
+    ): string {
+        if (extension_loaded('sodium')) {
+            switch (static::class) {
+                case Base64::class:
+                    $variant = SODIUM_BASE64_VARIANT_ORIGINAL;
+                    break;
+                case Base64UrlSafe::class:
+                    $variant = SODIUM_BASE64_VARIANT_URLSAFE;
+                    break;
+                default:
+                    $variant = 0;
+            }
+            if ($variant > 0) {
+                try {
+                    return sodium_bin2base64($binString, $variant);
+                } catch (SodiumException $ex) {
+                    throw new RangeException($ex->getMessage(), $ex->getCode(), $ex);
+                }
+            }
+        }
+        return static::doEncode($binString, true);
     }
 
     /**
@@ -54,10 +92,32 @@ abstract class Base64 implements EncoderInterface
      *
      * @param string $src
      * @return string
-     * @throws \TypeError
+     *
+     * @throws TypeError
      */
-    public static function encodeUnpadded(string $src): string
-    {
+    public static function encodeUnpadded(
+        #[SensitiveParameter]
+        string $src
+    ): string {
+        if (extension_loaded('sodium')) {
+            switch (static::class) {
+                case Base64::class:
+                    $variant = SODIUM_BASE64_VARIANT_ORIGINAL_NO_PADDING;
+                    break;
+                case Base64UrlSafe::class:
+                    $variant = SODIUM_BASE64_VARIANT_URLSAFE_NO_PADDING;
+                    break;
+                default:
+                    $variant = 0;
+            }
+            if ($variant > 0) {
+                try {
+                    return sodium_bin2base64($src, $variant);
+                } catch (SodiumException $ex) {
+                    throw new RangeException($ex->getMessage(), $ex->getCode(), $ex);
+                }
+            }
+        }
         return static::doEncode($src, false);
     }
 
@@ -65,16 +125,20 @@ abstract class Base64 implements EncoderInterface
      * @param string $src
      * @param bool $pad   Include = padding?
      * @return string
-     * @throws \TypeError
+     *
+     * @throws TypeError
      */
-    protected static function doEncode(string $src, bool $pad = true): string
-    {
+    protected static function doEncode(
+        #[SensitiveParameter]
+        string $src,
+        bool $pad = true
+    ): string {
         $dest = '';
         $srcLen = Binary::safeStrlen($src);
         // Main loop (no padding):
         for ($i = 0; $i + 3 <= $srcLen; $i += 3) {
             /** @var array<int, int> $chunk */
-            $chunk = \unpack('C*', Binary::safeSubstr($src, $i, 3));
+            $chunk = unpack('C*', Binary::safeSubstr($src, $i, 3));
             $b0 = $chunk[1];
             $b1 = $chunk[2];
             $b2 = $chunk[3];
@@ -88,7 +152,7 @@ abstract class Base64 implements EncoderInterface
         // The last chunk, which may have padding:
         if ($i < $srcLen) {
             /** @var array<int, int> $chunk */
-            $chunk = \unpack('C*', Binary::safeSubstr($src, $i, $srcLen - $i));
+            $chunk = unpack('C*', Binary::safeSubstr($src, $i, $srcLen - $i));
             $b0 = $chunk[1];
             if ($i + 1 < $srcLen) {
                 $b1 = $chunk[2];
@@ -116,42 +180,65 @@ abstract class Base64 implements EncoderInterface
      *
      * Base64 character set "./[A-Z][a-z][0-9]"
      *
-     * @param string $src
+     * @param string $encodedString
      * @param bool $strictPadding
      * @return string
-     * @throws \RangeException
-     * @throws \TypeError
+     *
+     * @throws RangeException
+     * @throws TypeError
      */
-    public static function decode(string $src, bool $strictPadding = false): string
-    {
+    public static function decode(
+        #[SensitiveParameter]
+        string $encodedString,
+        bool $strictPadding = false
+    ): string {
         // Remove padding
-        $srcLen = Binary::safeStrlen($src);
+        $srcLen = Binary::safeStrlen($encodedString);
         if ($srcLen === 0) {
             return '';
         }
 
         if ($strictPadding) {
             if (($srcLen & 3) === 0) {
-                if ($src[$srcLen - 1] === '=') {
+                if ($encodedString[$srcLen - 1] === '=') {
                     $srcLen--;
-                    if ($src[$srcLen - 1] === '=') {
+                    if ($encodedString[$srcLen - 1] === '=') {
                         $srcLen--;
                     }
                 }
             }
             if (($srcLen & 3) === 1) {
-                throw new \RangeException(
+                throw new RangeException(
                     'Incorrect padding'
                 );
             }
-            if ($src[$srcLen - 1] === '=') {
-                throw new \RangeException(
+            if ($encodedString[$srcLen - 1] === '=') {
+                throw new RangeException(
                     'Incorrect padding'
                 );
+            }
+            if (extension_loaded('sodium')) {
+                switch (static::class) {
+                    case Base64::class:
+                        $variant = SODIUM_BASE64_VARIANT_ORIGINAL_NO_PADDING;
+                        break;
+                    case Base64UrlSafe::class:
+                        $variant = SODIUM_BASE64_VARIANT_URLSAFE_NO_PADDING;
+                        break;
+                    default:
+                        $variant = 0;
+                }
+                if ($variant > 0) {
+                    try {
+                        return sodium_base642bin(Binary::safeSubstr($encodedString, 0, $srcLen), $variant);
+                    } catch (SodiumException $ex) {
+                        throw new RangeException($ex->getMessage(), $ex->getCode(), $ex);
+                    }
+                }
             }
         } else {
-            $src = \rtrim($src, '=');
-            $srcLen = Binary::safeStrlen($src);
+            $encodedString = rtrim($encodedString, '=');
+            $srcLen = Binary::safeStrlen($encodedString);
         }
 
         $err = 0;
@@ -159,13 +246,13 @@ abstract class Base64 implements EncoderInterface
         // Main loop (no padding):
         for ($i = 0; $i + 4 <= $srcLen; $i += 4) {
             /** @var array<int, int> $chunk */
-            $chunk = \unpack('C*', Binary::safeSubstr($src, $i, 4));
+            $chunk = unpack('C*', Binary::safeSubstr($encodedString, $i, 4));
             $c0 = static::decode6Bits($chunk[1]);
             $c1 = static::decode6Bits($chunk[2]);
             $c2 = static::decode6Bits($chunk[3]);
             $c3 = static::decode6Bits($chunk[4]);
 
-            $dest .= \pack(
+            $dest .= pack(
                 'CCC',
                 ((($c0 << 2) | ($c1 >> 4)) & 0xff),
                 ((($c1 << 4) | ($c2 >> 2)) & 0xff),
@@ -176,35 +263,68 @@ abstract class Base64 implements EncoderInterface
         // The last chunk, which may have padding:
         if ($i < $srcLen) {
             /** @var array<int, int> $chunk */
-            $chunk = \unpack('C*', Binary::safeSubstr($src, $i, $srcLen - $i));
+            $chunk = unpack('C*', Binary::safeSubstr($encodedString, $i, $srcLen - $i));
             $c0 = static::decode6Bits($chunk[1]);
 
             if ($i + 2 < $srcLen) {
                 $c1 = static::decode6Bits($chunk[2]);
                 $c2 = static::decode6Bits($chunk[3]);
-                $dest .= \pack(
+                $dest .= pack(
                     'CC',
                     ((($c0 << 2) | ($c1 >> 4)) & 0xff),
                     ((($c1 << 4) | ($c2 >> 2)) & 0xff)
                 );
                 $err |= ($c0 | $c1 | $c2) >> 8;
+                if ($strictPadding) {
+                    $err |= ($c2 << 6) & 0xff;
+                }
             } elseif ($i + 1 < $srcLen) {
                 $c1 = static::decode6Bits($chunk[2]);
-                $dest .= \pack(
+                $dest .= pack(
                     'C',
                     ((($c0 << 2) | ($c1 >> 4)) & 0xff)
                 );
                 $err |= ($c0 | $c1) >> 8;
-            } elseif ($i < $srcLen && $strictPadding) {
+                if ($strictPadding) {
+                    $err |= ($c1 << 4) & 0xff;
+                }
+            } elseif ($strictPadding) {
                 $err |= 1;
             }
         }
-        if ($err !== 0) {
-            throw new \RangeException(
+        $check = ($err === 0);
+        if (!$check) {
+            throw new RangeException(
                 'Base64::decode() only expects characters in the correct base64 alphabet'
             );
         }
         return $dest;
+    }
+
+    /**
+     * @param string $encodedString
+     * @return string
+     */
+    public static function decodeNoPadding(
+        #[SensitiveParameter]
+        string $encodedString
+    ): string {
+        $srcLen = Binary::safeStrlen($encodedString);
+        if ($srcLen === 0) {
+            return '';
+        }
+        if (($srcLen & 3) === 0) {
+            // If $strLen is not zero, and it is divisible by 4, then it's at least 4.
+            if ($encodedString[$srcLen - 1] === '=' || $encodedString[$srcLen - 2] === '=') {
+                throw new InvalidArgumentException(
+                    "decodeNoPadding() doesn't tolerate padding"
+                );
+            }
+        }
+        return static::decode(
+            $encodedString,
+            true
+        );
     }
 
     /**
@@ -263,6 +383,6 @@ abstract class Base64 implements EncoderInterface
         // if ($src > 62) $diff += 0x2f - 0x2b - 1; // 3
         $diff += ((62 - $src) >> 8) & 3;
 
-        return \pack('C', $src + $diff);
+        return pack('C', $src + $diff);
     }
 }

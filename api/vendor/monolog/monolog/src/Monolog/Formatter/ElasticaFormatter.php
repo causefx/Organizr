@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /*
  * This file is part of the Monolog package.
@@ -12,6 +12,7 @@
 namespace Monolog\Formatter;
 
 use Elastica\Document;
+use Monolog\LogRecord;
 
 /**
  * Format a log message into an Elastica Document
@@ -23,18 +24,18 @@ class ElasticaFormatter extends NormalizerFormatter
     /**
      * @var string Elastic search index name
      */
-    protected $index;
+    protected string $index;
 
     /**
-     * @var string Elastic search document type
+     * @var string|null Elastic search document type
      */
-    protected $type;
+    protected string|null $type;
 
     /**
-     * @param string $index Elastic Search index name
-     * @param string $type  Elastic Search document type
+     * @param string  $index Elastic Search index name
+     * @param ?string $type  Elastic Search document type, deprecated as of Elastica 7
      */
-    public function __construct($index, $type)
+    public function __construct(string $index, ?string $type)
     {
         // elasticsearch requires a ISO 8601 format date with optional millisecond precision.
         parent::__construct('Y-m-d\TH:i:s.uP');
@@ -44,44 +45,38 @@ class ElasticaFormatter extends NormalizerFormatter
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritDoc
      */
-    public function format(array $record)
+    public function format(LogRecord $record)
     {
         $record = parent::format($record);
 
         return $this->getDocument($record);
     }
 
-    /**
-     * Getter index
-     * @return string
-     */
-    public function getIndex()
+    public function getIndex(): string
     {
         return $this->index;
     }
 
     /**
-     * Getter type
-     * @return string
+     * @deprecated since Elastica 7 type has no effect
      */
-    public function getType()
+    public function getType(): string
     {
+        /** @phpstan-ignore-next-line */
         return $this->type;
     }
 
     /**
      * Convert a log message into an Elastica Document
      *
-     * @param  array    $record Log message
-     * @return Document
+     * @param mixed[] $record
      */
-    protected function getDocument($record)
+    protected function getDocument(array $record): Document
     {
         $document = new Document();
         $document->setData($record);
-        $document->setType($this->type);
         $document->setIndex($this->index);
 
         return $document;

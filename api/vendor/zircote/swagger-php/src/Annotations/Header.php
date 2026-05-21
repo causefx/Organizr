@@ -5,6 +5,8 @@
 
 namespace OpenApi\Annotations;
 
+use OpenApi\Generator;
+
 /**
  * @Annotation
  *
@@ -13,42 +15,42 @@ namespace OpenApi\Annotations;
 class Header extends AbstractAnnotation
 {
     /**
-     * $ref See https://swagger.io/docs/specification/using-ref/
+     * $ref See https://swagger.io/docs/specification/using-ref/.
      *
      * @var string
      */
-    public $ref = UNDEFINED;
+    public $ref = Generator::UNDEFINED;
 
     /**
      * @var string
      */
-    public $header = UNDEFINED;
+    public $header = Generator::UNDEFINED;
 
     /**
      * @var string
      */
-    public $description = UNDEFINED;
+    public $description = Generator::UNDEFINED;
 
     /**
      * A brief description of the parameter. This could contain examples of use. CommonMark syntax MAY be used for rich text representation.
      *
      * @var bool
      */
-    public $required = UNDEFINED;
+    public $required = Generator::UNDEFINED;
 
     /**
-     * Schema object
+     * Schema object.
      *
      * @var \OpenApi\Annotations\Schema
      */
-    public $schema = UNDEFINED;
+    public $schema = Generator::UNDEFINED;
 
     /**
      * Specifies that a parameter is deprecated and SHOULD be transitioned out of usage.
      *
      * @var bool
      */
-    public $deprecated = UNDEFINED;
+    public $deprecated = Generator::UNDEFINED;
 
     /**
      * Sets the ability to pass empty-valued parameters.
@@ -58,7 +60,7 @@ class Header extends AbstractAnnotation
      *
      * @var bool
      */
-    public $allowEmptyValue = UNDEFINED;
+    public $allowEmptyValue = Generator::UNDEFINED;
 
     /**
      * @inheritdoc
@@ -77,7 +79,8 @@ class Header extends AbstractAnnotation
      * @inheritdoc
      */
     public static $_nested = [
-        Schema::class => 'schema'
+        Schema::class => 'schema',
+        Attachable::class => ['attachables'],
     ];
 
     /**
@@ -85,6 +88,6 @@ class Header extends AbstractAnnotation
      */
     public static $_parents = [
         Components::class,
-        Response::class
+        Response::class,
     ];
 }

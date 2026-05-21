@@ -1,9 +1,91 @@
 # Changelog
 
+## 7.128.0 - 2022-05-05
+* [#1282](https://github.com/stripe/stripe-php/pull/1282) API Updates
+  * Add support for `default_price` on `Product`
+  * Add support for `instructions_email` on `Refund`
+  
+
+## 7.127.0 - 2022-05-05
+* [#1281](https://github.com/stripe/stripe-php/pull/1281) API Updates
+  * Add support for new resources `FinancialConnections.AccountOwner`, `FinancialConnections.AccountOwnership`, `FinancialConnections.Account`, and `FinancialConnections.Session`
+  
+* [#1278](https://github.com/stripe/stripe-php/pull/1278) Pin setup-php action version.
+* [#1277](https://github.com/stripe/stripe-php/pull/1277) API Updates
+  * Add support for `registered_address` on `Person`
+
+## 7.126.0 - 2022-05-03
+* [#1276](https://github.com/stripe/stripe-php/pull/1276) API Updates
+  * Add support for new resource `CashBalance`
+  * Change type of `BillingPortal.Configuration.application` from `$Application` to `deletable($Application)`
+  * Add support for `cash_balance` on `Customer`
+  * Add support for `application` on `Invoice`, `Quote`, `SubscriptionSchedule`, and `Subscription`
+  * Add support for new value `eu_oss_vat` on enum `TaxId.type`
+* [#1274](https://github.com/stripe/stripe-php/pull/1274) Fix PHPDoc on Discount for nullable properties
+* [#1272](https://github.com/stripe/stripe-php/pull/1272) Allow users to pass a custom IPRESOLVE cURL option.
+
+## 7.125.0 - 2022-04-21
+* [#1270](https://github.com/stripe/stripe-php/pull/1270) API Updates
+  * Add support for `expire` test helper method on resource `Refund`
+
+## 7.124.0 - 2022-04-18
+* [#1265](https://github.com/stripe/stripe-php/pull/1265) API Updates
+  * Add support for new resources `FundingInstructions` and `Terminal.Configuration`
+  * Add support for `create_funding_instructions` method on resource `Customer`
+  * Add support for `amount_details` on `PaymentIntent`
+  * Add support for `customer_balance` on `PaymentMethod`
+  * Add support for new value `customer_balance` on enum `PaymentMethod.type`
+  * Add support for `configuration_overrides` on `Terminal.Location`
+
+
+## 7.123.0 - 2022-04-13
+* [#1263](https://github.com/stripe/stripe-php/pull/1263) API Updates
+  * Add support for `increment_authorization` method on resource `PaymentIntent`
+* [#1262](https://github.com/stripe/stripe-php/pull/1262) Add support for updating the version of the repo
+* [#1230](https://github.com/stripe/stripe-php/pull/1230) Add PHPDoc return types
+* [#1242](https://github.com/stripe/stripe-php/pull/1242) Fix some PHPDoc in tests
+
+## 7.122.0 - 2022-04-08
+* [#1261](https://github.com/stripe/stripe-php/pull/1261) API Updates
+  * Add support for `apply_customer_balance` method on resource `PaymentIntent`
+* [#1259](https://github.com/stripe/stripe-php/pull/1259) API Updates
+  
+  * Add `payment_intent.partially_funded`, `terminal.reader.action_failed`, and `terminal.reader.action_succeeded` events.
+
+## 7.121.0 - 2022-03-30
+* [#1258](https://github.com/stripe/stripe-php/pull/1258) API Updates
+  * Add support for `cancel_action`, `process_payment_intent`, `process_setup_intent`, and `set_reader_display` methods on resource `Terminal.Reader`
+  * Add support for `action` on `Terminal.Reader`
+
+## 7.120.0 - 2022-03-29
+* [#1257](https://github.com/stripe/stripe-php/pull/1257) API Updates
+  * Add support for Search API
+    * Add support for `search` method on resources `Charge`, `Customer`, `Invoice`, `PaymentIntent`, `Price`, `Product`, and `Subscription`
+
+## 7.119.0 - 2022-03-25
+* [#1256](https://github.com/stripe/stripe-php/pull/1256) API Updates
+  * Add support for PayNow and US Bank Accounts Debits payments
+      * Add support for `paynow` and `us_bank_account` on `PaymentMethod`
+      * Add support for new values `paynow` and `us_bank_account` on enum `PaymentMethod.type`
+  * Add support for `failure_balance_transaction` on `Charge`
+
+## 7.118.0 - 2022-03-23
+* [#1255](https://github.com/stripe/stripe-php/pull/1255) API Updates
+  * Add support for `cancel` method on resource `Refund`
+  * Add support for new values `bg_uic`, `hu_tin`, and `si_tin` on enum `TaxId.type`
+  * Add  `test_helpers.test_clock.advancing`, `test_helpers.test_clock.created`, `test_helpers.test_clock.deleted`, `test_helpers.test_clock.internal_failure`, and `test_helpers.test_clock.ready` events.
+
+
+## 7.117.0 - 2022-03-18
+* [#1254](https://github.com/stripe/stripe-php/pull/1254) API Updates
+  * Add support for `status` on `Card`
+* [#1251](https://github.com/stripe/stripe-php/pull/1251) Add support for SearchResult objects.
+* [#1249](https://github.com/stripe/stripe-php/pull/1249) Add missing constant for payment_behavior
+
 ## 7.116.0 - 2022-03-02
 * [#1248](https://github.com/stripe/stripe-php/pull/1248) API Updates
   * Add support for `proration_details` on `InvoiceLineItem`
-  
+
 
 ## 7.115.0 - 2022-03-01
 * [#1245](https://github.com/stripe/stripe-php/pull/1245) [#1247](https://github.com/stripe/stripe-php/pull/1247) API Updates
@@ -28,7 +110,7 @@
 * [#1235](https://github.com/stripe/stripe-php/pull/1235) API Updates
   * Add support for `phone_number_collection` on `PaymentLink`
   * Add support for new value `is_vat` on enum `TaxId.type`
-  
+
 
 ## 7.111.0 - 2022-01-20
 * [#1233](https://github.com/stripe/stripe-php/pull/1233) API Updates

@@ -22,9 +22,6 @@ class SqlsrvResult implements Dibi\ResultDriver
 	/** @var resource */
 	private $resultSet;
 
-	/** @var bool */
-	private $autoFree = true;
-
 
 	/**
 	 * @param  resource  $resultSet
@@ -32,17 +29,6 @@ class SqlsrvResult implements Dibi\ResultDriver
 	public function __construct($resultSet)
 	{
 		$this->resultSet = $resultSet;
-	}
-
-
-	/**
-	 * Automatically frees the resources allocated for this result set.
-	 */
-	public function __destruct()
-	{
-		if ($this->autoFree && $this->getResultResource()) {
-			$this->free();
-		}
 	}
 
 
@@ -107,7 +93,6 @@ class SqlsrvResult implements Dibi\ResultDriver
 	 */
 	public function getResultResource()
 	{
-		$this->autoFree = false;
 		return is_resource($this->resultSet) ? $this->resultSet : null;
 	}
 

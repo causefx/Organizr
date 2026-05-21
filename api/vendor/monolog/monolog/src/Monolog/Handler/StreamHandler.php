@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /*
  * This file is part of the Monolog package.
@@ -11,8 +11,9 @@
 
 namespace Monolog\Handler;
 
-use Monolog\Logger;
+use Monolog\Level;
 use Monolog\Utils;
+use Monolog\LogRecord;
 
 /**
  * Stores to any stream resource
@@ -23,44 +24,82 @@ use Monolog\Utils;
  */
 class StreamHandler extends AbstractProcessingHandler
 {
+    protected const MAX_CHUNK_SIZE = 2147483647;
+    /** 10MB */
+    protected const DEFAULT_CHUNK_SIZE = 10 * 1024 * 1024;
+    protected int $streamChunkSize;
+    /** @var resource|null */
     protected $stream;
-    protected $url;
-    private $errorMessage;
-    protected $filePermission;
-    protected $useLocking;
-    private $dirCreated;
+    protected string|null $url = null;
+    private string|null $errorMessage = null;
+    protected int|null $filePermission;
+    protected bool $useLocking;
+    protected string $fileOpenMode;
+    /** @var true|null */
+    private bool|null $dirCreated = null;
+    private bool $retrying = false;
+    private int|null $inodeUrl = null;
 
     /**
-     * @param resource|string $stream
-     * @param int             $level          The minimum logging level at which this handler will be triggered
-     * @param bool            $bubble         Whether the messages that are handled can bubble up the stack or not
+     * @param resource|string $stream         If a missing path can't be created, an UnexpectedValueException will be thrown on first write
      * @param int|null        $filePermission Optional file permissions (default (0644) are only for owner read/write)
      * @param bool            $useLocking     Try to lock log file before doing any writes
+     * @param string          $fileOpenMode   The fopen() mode used when opening a file, if $stream is a file path
      *
-     * @throws \Exception                If a missing directory is not buildable
      * @throws \InvalidArgumentException If stream is not a resource or string
      */
-    public function __construct($stream, $level = Logger::DEBUG, $bubble = true, $filePermission = null, $useLocking = false)
+    public function __construct($stream, int|string|Level $level = Level::Debug, bool $bubble = true, ?int $filePermission = null, bool $useLocking = false, string $fileOpenMode = 'a')
     {
         parent::__construct($level, $bubble);
-        if (is_resource($stream)) {
+
+        if (($phpMemoryLimit = Utils::expandIniShorthandBytes(\ini_get('memory_limit'))) !== false) {
+            if ($phpMemoryLimit > 0) {
+                // use max 10% of allowed memory for the chunk size, and at least 100KB
+                $this->streamChunkSize = min(static::MAX_CHUNK_SIZE, max((int) ($phpMemoryLimit / 10), 100 * 1024));
+            } else {
+                // memory is unlimited, set to the default 10MB
+                $this->streamChunkSize = static::DEFAULT_CHUNK_SIZE;
+            }
+        } else {
+            // no memory limit information, set to the default 10MB
+            $this->streamChunkSize = static::DEFAULT_CHUNK_SIZE;
+        }
+
+        if (\is_resource($stream)) {
             $this->stream = $stream;
-        } elseif (is_string($stream)) {
+
+            stream_set_chunk_size($this->stream, $this->streamChunkSize);
+        } elseif (\is_string($stream)) {
             $this->url = Utils::canonicalizePath($stream);
         } else {
             throw new \InvalidArgumentException('A stream must either be a resource or a string.');
         }
 
+        $this->fileOpenMode = $fileOpenMode;
         $this->filePermission = $filePermission;
         $this->useLocking = $useLocking;
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritDoc
      */
-    public function close()
+    public function reset(): void
     {
-        if ($this->url && is_resource($this->stream)) {
+        parent::reset();
+
+        // auto-close on reset to make sure we periodically close the file in long running processes
+        // as long as they correctly call reset() between jobs
+        if ($this->url !== null && $this->url !== 'php://memory') {
+            $this->close();
+        }
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function close(): void
+    {
+        if (null !== $this->url && \is_resource($this->stream)) {
             fclose($this->stream);
         }
         $this->stream = null;
@@ -79,101 +118,163 @@ class StreamHandler extends AbstractProcessingHandler
 
     /**
      * Return the stream URL if it was configured with a URL and not an active resource
-     *
-     * @return string|null
      */
-    public function getUrl()
+    public function getUrl(): ?string
     {
         return $this->url;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    protected function write(array $record)
+    public function getStreamChunkSize(): int
     {
-        if (!is_resource($this->stream)) {
-            if (null === $this->url || '' === $this->url) {
-                throw new \LogicException('Missing stream url, the stream can not be opened. This may be caused by a premature call to close().');
+        return $this->streamChunkSize;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    protected function write(LogRecord $record): void
+    {
+        if ($this->hasUrlInodeWasChanged()) {
+            $this->close();
+            $this->write($record);
+
+            return;
+        }
+
+        if (!\is_resource($this->stream)) {
+            $url = $this->url;
+            if (null === $url || '' === $url) {
+                throw new \LogicException('Missing stream url, the stream can not be opened. This may be caused by a premature call to close().' . Utils::getRecordMessageForException($record));
             }
-            $this->createDir();
+            $this->createDir($url);
             $this->errorMessage = null;
-            set_error_handler(array($this, 'customErrorHandler'));
-            $this->stream = fopen($this->url, 'a');
-            if ($this->filePermission !== null) {
-                @chmod($this->url, $this->filePermission);
+            set_error_handler($this->customErrorHandler(...));
+
+            try {
+                $stream = fopen($url, $this->fileOpenMode);
+                if ($this->filePermission !== null) {
+                    @chmod($url, $this->filePermission);
+                }
+            } finally {
+                restore_error_handler();
             }
-            restore_error_handler();
-            if (!is_resource($this->stream)) {
+            if (!\is_resource($stream)) {
                 $this->stream = null;
 
-                throw new \UnexpectedValueException(sprintf('The stream or file "%s" could not be opened in append mode: '.$this->errorMessage, $this->url));
+                throw new \UnexpectedValueException(sprintf('The stream or file "%s" could not be opened in append mode: '.$this->errorMessage, $url) . Utils::getRecordMessageForException($record));
             }
+            stream_set_chunk_size($stream, $this->streamChunkSize);
+            $this->stream = $stream;
+            $this->inodeUrl = $this->getInodeFromUrl();
         }
 
+        $stream = $this->stream;
         if ($this->useLocking) {
             // ignoring errors here, there's not much we can do about them
-            flock($this->stream, LOCK_EX);
+            flock($stream, LOCK_EX);
         }
 
-        $this->streamWrite($this->stream, $record);
+        $this->errorMessage = null;
+        set_error_handler($this->customErrorHandler(...));
+        try {
+            $this->streamWrite($stream, $record);
+        } finally {
+            restore_error_handler();
+        }
+        if ($this->errorMessage !== null) {
+            $error = $this->errorMessage;
+            // close the resource if possible to reopen it, and retry the failed write
+            if (!$this->retrying && $this->url !== null && $this->url !== 'php://memory') {
+                $this->retrying = true;
+                $this->close();
+                $this->write($record);
 
+                return;
+            }
+
+            throw new \UnexpectedValueException('Writing to the log file failed: '.$error . Utils::getRecordMessageForException($record));
+        }
+
+        $this->retrying = false;
         if ($this->useLocking) {
-            flock($this->stream, LOCK_UN);
+            flock($stream, LOCK_UN);
         }
     }
 
     /**
      * Write to stream
      * @param resource $stream
-     * @param array $record
      */
-    protected function streamWrite($stream, array $record)
+    protected function streamWrite($stream, LogRecord $record): void
     {
-        fwrite($stream, (string) $record['formatted']);
-    }
-
-    private function customErrorHandler($code, $msg)
-    {
-        $this->errorMessage = preg_replace('{^(fopen|mkdir)\(.*?\): }', '', $msg);
+        fwrite($stream, (string) $record->formatted);
     }
 
     /**
-     * @param string $stream
-     *
-     * @return null|string
+     * @return true
      */
-    private function getDirFromStream($stream)
+    private function customErrorHandler(int $code, string $msg): bool
+    {
+        $this->errorMessage = preg_replace('{^(fopen|mkdir|fwrite)\(.*?\): }', '', $msg);
+
+        return true;
+    }
+
+    private function getDirFromStream(string $stream): ?string
     {
         $pos = strpos($stream, '://');
         if ($pos === false) {
-            return dirname($stream);
+            return \dirname($stream);
         }
 
         if ('file://' === substr($stream, 0, 7)) {
-            return dirname(substr($stream, 7));
+            return \dirname(substr($stream, 7));
         }
 
         return null;
     }
 
-    private function createDir()
+    private function createDir(string $url): void
     {
         // Do not try to create dir if it has already been tried.
-        if ($this->dirCreated) {
+        if (true === $this->dirCreated) {
             return;
         }
 
-        $dir = $this->getDirFromStream($this->url);
+        $dir = $this->getDirFromStream($url);
         if (null !== $dir && !is_dir($dir)) {
             $this->errorMessage = null;
-            set_error_handler(array($this, 'customErrorHandler'));
+            set_error_handler(function (...$args) {
+                return $this->customErrorHandler(...$args);
+            });
             $status = mkdir($dir, 0777, true);
             restore_error_handler();
-            if (false === $status && !is_dir($dir)) {
-                throw new \UnexpectedValueException(sprintf('There is no existing directory at "%s" and its not buildable: '.$this->errorMessage, $dir));
+            if (false === $status && !is_dir($dir) && strpos((string) $this->errorMessage, 'File exists') === false) {
+                throw new \UnexpectedValueException(sprintf('There is no existing directory at "%s" and it could not be created: '.$this->errorMessage, $dir));
             }
         }
         $this->dirCreated = true;
+    }
+
+    private function getInodeFromUrl(): ?int
+    {
+        if ($this->url === null || str_starts_with($this->url, 'php://')) {
+            return null;
+        }
+
+        $inode = @fileinode($this->url);
+
+        return $inode === false ? null : $inode;
+    }
+
+    private function hasUrlInodeWasChanged(): bool
+    {
+        if ($this->inodeUrl === null || $this->retrying || $this->inodeUrl === $this->getInodeFromUrl()) {
+            return false;
+        }
+
+        $this->retrying = true;
+
+        return true;
     }
 }

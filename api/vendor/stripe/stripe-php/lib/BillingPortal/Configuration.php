@@ -11,7 +11,7 @@ namespace Stripe\BillingPortal;
  * @property string $id Unique identifier for the object.
  * @property string $object String representing the object's type. Objects of the same type share the same value.
  * @property bool $active Whether the configuration is active and can be used to create portal sessions.
- * @property null|string $application ID of the Connect Application that created the configuration.
+ * @property null|string|\Stripe\StripeObject $application ID of the Connect Application that created the configuration.
  * @property \Stripe\StripeObject $business_profile
  * @property int $created Time at which the object was created. Measured in seconds since the Unix epoch.
  * @property null|string $default_return_url The default URL to redirect customers to when they click on the portal's link to return to your website. This can be <a href="https://stripe.com/docs/api/customer_portal/sessions/create#create_portal_session-return_url">overriden</a> when creating the session.

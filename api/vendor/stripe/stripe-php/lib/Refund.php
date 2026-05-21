@@ -21,6 +21,7 @@ namespace Stripe;
  * @property string $description An arbitrary string attached to the object. Often useful for displaying to users. (Available on non-card refunds only)
  * @property string|\Stripe\BalanceTransaction $failure_balance_transaction If the refund failed, this balance transaction describes the adjustment made on your account balance that reverses the initial balance transaction.
  * @property string $failure_reason If the refund failed, the reason for refund failure if known. Possible values are <code>lost_or_stolen_card</code>, <code>expired_or_canceled_card</code>, or <code>unknown</code>.
+ * @property string $instructions_email Email to which refund instructions, if required, are sent to.
  * @property null|\Stripe\StripeObject $metadata Set of <a href="https://stripe.com/docs/api/metadata">key-value pairs</a> that you can attach to an object. This can be useful for storing additional information about the object in a structured format.
  * @property \Stripe\StripeObject $next_action
  * @property null|string|\Stripe\PaymentIntent $payment_intent ID of the PaymentIntent that was refunded.
@@ -57,4 +58,21 @@ class Refund extends ApiResource
      * @deprecated use FAILURE_REASON_EXPIRED_OR_CANCELED_CARD instead
      */
     const FAILURE_REASON = 'expired_or_canceled_card';
+
+    /**
+     * @param null|array $params
+     * @param null|array|string $opts
+     *
+     * @throws \Stripe\Exception\ApiErrorException if the request fails
+     *
+     * @return \Stripe\Refund the canceled refund
+     */
+    public function cancel($params = null, $opts = null)
+    {
+        $url = $this->instanceUrl() . '/cancel';
+        list($response, $opts) = $this->_request('post', $url, $params, $opts);
+        $this->refreshFrom($response, $opts);
+
+        return $this;
+    }
 }

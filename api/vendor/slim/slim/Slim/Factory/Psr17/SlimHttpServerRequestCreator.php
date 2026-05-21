@@ -18,19 +18,10 @@ use function class_exists;
 
 class SlimHttpServerRequestCreator implements ServerRequestCreatorInterface
 {
-    /**
-     * @var ServerRequestCreatorInterface
-     */
-    protected $serverRequestCreator;
+    protected ServerRequestCreatorInterface $serverRequestCreator;
 
-    /**
-     * @var string
-     */
-    protected static $serverRequestDecoratorClass = 'Slim\Http\ServerRequest';
+    protected static string $serverRequestDecoratorClass = 'Slim\Http\ServerRequest';
 
-    /**
-     * @param ServerRequestCreatorInterface $serverRequestCreator
-     */
     public function __construct(ServerRequestCreatorInterface $serverRequestCreator)
     {
         $this->serverRequestCreator = $serverRequestCreator;
@@ -47,12 +38,17 @@ class SlimHttpServerRequestCreator implements ServerRequestCreatorInterface
 
         $request = $this->serverRequestCreator->createServerRequestFromGlobals();
 
-        return new static::$serverRequestDecoratorClass($request);
+        if (
+            !((
+                $decoratedServerRequest = new static::$serverRequestDecoratorClass($request)
+                ) instanceof ServerRequestInterface)
+        ) {
+            throw new RuntimeException(get_called_class() . ' could not instantiate a decorated server request.');
+        }
+
+        return $decoratedServerRequest;
     }
 
-    /**
-     * @return bool
-     */
     public static function isServerRequestDecoratorAvailable(): bool
     {
         return class_exists(static::$serverRequestDecoratorClass);

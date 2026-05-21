@@ -274,7 +274,7 @@ trait PlexHomepageItem
 				$this->setAPIResponse('error', null, 401, []);
 				return [];
 			}
-		} catch (Exception $e) {
+		} catch (\Throwable $e) {
 			$this->setAPIResponse('error', null, 422, [$e->getMessage()]);
 			return false;
 		}
@@ -322,7 +322,7 @@ trait PlexHomepageItem
 			$api['group'] = '1';
 			$this->setAPIResponse('success', null, 200, $api);
 			return $api;
-		} catch (Exception $e) {
+		} catch (\Throwable $e) {
 			$this->setAPIResponse('error', null, 422, [$e->getMessage()]);
 			return false;
 		}
@@ -368,7 +368,7 @@ trait PlexHomepageItem
 				$this->setAPIResponse('error', 'Plex API error', 500);
 				return false;
 			}
-		} catch (Exception $e) {
+		} catch (\Throwable $e) {
 			$this->setAPIResponse('error', null, 422, [$e->getMessage()]);
 			return false;
 		}
@@ -410,7 +410,7 @@ trait PlexHomepageItem
 				$this->setAPIResponse('success', null, 200, $api);
 				return $api;
 			}
-		} catch (Exception $e) {
+		} catch (\Throwable $e) {
 			$this->setAPIResponse('error', null, 422, [$e->getMessage()]);
 			return false;
 		}
@@ -450,7 +450,7 @@ trait PlexHomepageItem
 				$this->setAPIResponse('success', null, 200, $api);
 				return $api;
 			}
-		} catch (Exception $e) {
+		} catch (\Throwable $e) {
 			$this->setAPIResponse('error', null, 422, [$e->getMessage()]);
 			return false;
 		}
@@ -671,7 +671,7 @@ trait PlexHomepageItem
 					}
 				}
 			}
-		} catch (Exception $e) {
+		} catch (\Throwable $e) {
 			$this->setAPIResponse('error', null, 422, [$e->getMessage()]);
 		}
 		$this->setAPIResponse('success', null, 200, $names);
@@ -702,7 +702,7 @@ trait PlexHomepageItem
 					$name = $customNames[$name];
 				}
 			}
-		} catch (Exception $e) {
+		} catch (\Throwable $e) {
 			// don't do anythig if it goes wrong, like if the JSON is badly formatted
 		}
 		return $name;

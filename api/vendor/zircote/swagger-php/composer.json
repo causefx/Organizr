@@ -16,21 +16,30 @@
   "authors": [
     {
       "name": "Robert Allen",
-      "email": "zircote@gmail.com",
-      "homepage": "http://www.zircote.com"
+      "email": "zircote@gmail.com"
     },
     {
       "name": "Bob Fanger",
       "email": "bfanger@gmail.com",
-      "homepage": "http://bfanger.nl"
+      "homepage": "https://bfanger.nl"
+    },
+    {
+      "name": "Martin Rademacher",
+      "email": "mano@radebatz.net",
+      "homepage": "https://radebatz.net"
     }
   ],
   "config": {
-    "bin-dir": "bin"
+    "bin-dir": "bin",
+    "optimize-autoloader": true,
+    "sort-packages": true
   },
+  "minimum-stability": "stable",
   "require": {
     "php": ">=7.2",
-    "doctrine/annotations": "*",
+    "ext-json": "*",
+    "doctrine/annotations": "^1.7",
+    "psr/log": "^1.1 || ^2.0 || ^3.0",
     "symfony/finder": ">=2.2",
     "symfony/yaml": ">=3.3"
   },
@@ -43,18 +52,34 @@
     ]
   },
   "require-dev": {
-    "zendframework/zend-form": "<2.8",
-    "squizlabs/php_codesniffer": ">=3.3",
-    "phpunit/phpunit": ">=8"
+    "composer/package-versions-deprecated": "1.11.99.2",
+    "friendsofphp/php-cs-fixer": "^2.17 || ^3.0",
+    "phpunit/phpunit": ">=8.5.14"
   },
   "autoload-dev": {
     "psr-4": {
-      "OpenApiTests\\": "tests/"
+      "OpenApi\\Tests\\": "tests/",
+      "AnotherNamespace\\": "tests/Fixtures/AnotherNamespace"
     }
   },
   "scripts": {
-    "test": "phpunit && phpcs -p --extensions=php --standard=PSR2 --error-severity=1 --warning-severity=0 ./src ./tests",
-    "docs": "vuepress dev docs/",
-    "deploy_docs": "vuepress build docs/ && cp -r .git docs/.vuepress/dist/.git && cd docs/.vuepress/dist/ && git symbolic-ref HEAD refs/heads/gh-pages && git add --all"
+    "cs": "php-cs-fixer fix --allow-risky=yes",
+    "lint": "@cs --dry-run",
+    "test": [
+      "phpunit",
+      "@lint"
+    ],
+    "phpstan": "phpstan analyze --level=3 src | grep -v 'does not accept default value of type string'",
+    "psalm": "psalm",
+    "analyse": [
+      "@phpstan",
+      "@psalm"
+    ],
+    "validate-examples": {
+      "spectral": "for ff in `find Examples -name *.yaml`; do spectral lint $ff; done",
+      "swagger-cli": "for ff in `find Examples -name *.yaml`; do swagger-cli validate $ff; done"
+    },
+    "docs": "./docs/node_modules/.bin/vuepress dev docs/",
+    "deploy_docs": "./docs/node_modules/.bin/vuepress build docs/ && cp -r .git docs/.vuepress/dist/.git && cd docs/.vuepress/dist/ && git symbolic-ref HEAD refs/heads/gh-pages && git add --all"
   }
 }

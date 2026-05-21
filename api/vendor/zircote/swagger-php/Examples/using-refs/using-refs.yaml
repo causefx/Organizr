@@ -1,0 +1,89 @@
+openapi: 3.0.0
+info:
+  title: 'Example of using references in swagger-php'
+  version: 1.0.0
+paths:
+  '/products/{product_id}':
+    get:
+      tags:
+        - Products
+      operationId: 133f11c148f628647767a323bf78c68d
+      responses:
+        default:
+          $ref: '#/components/responses/product'
+    patch:
+      tags:
+        - Products
+      operationId: 7f26f01759fb7245bf4f7138a3717e0f
+      requestBody:
+        $ref: '#/components/requestBodies/product_in_body'
+      responses:
+        default:
+          $ref: '#/components/responses/product'
+    parameters:
+      -
+        $ref: '#/components/parameters/product_id_in_path_required'
+  '/products/{product_id}/do-stuff':
+    get:
+      tags:
+        - Products
+      operationId: 9aed2c6f96bff805003c993b97822c06
+      parameters:
+        -
+          $ref: '#/components/schemas/Product/allOf/0/properties/id'
+      responses:
+        default:
+          $ref: '#/components/responses/product'
+components:
+  schemas:
+    Model:
+      description: 'A model'
+    Product:
+      title: 'Product model'
+      description: 'Product model'
+      type: object
+      allOf:
+        -
+          properties:
+            id:
+              description: 'The unique identifier of a product in our catalog.'
+              type: integer
+              format: int64
+              example: 1
+            status:
+              $ref: '#/components/schemas/product_status'
+        -
+          $ref: '#/components/schemas/Model'
+    product_status:
+      description: 'The status of a product'
+      type: string
+      default: available
+      enum:
+        - available
+        - discontinued
+  responses:
+    product:
+      description: 'All information about a product'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Product'
+    todo:
+      description: 'This API call has no documentated response (yet)'
+  parameters:
+    product_id_in_path_required:
+      name: product_id
+      in: path
+      description: 'The ID of the product'
+      required: true
+      schema:
+        type: integer
+        format: int64
+  requestBodies:
+    product_in_body:
+      description: product_request
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Product'

@@ -74,7 +74,7 @@ trait EmbyLiveTVTrackerHomepageItem
                             $message .= ' (Warning: LiveTV may not be configured)';
                         }
                         $this->setAPIResponse('success', $message, 200);
-                    } catch (Exception $e) {
+                    } catch (\Throwable $e) {
                         $this->setAPIResponse('success', 'Connected to ' . $info['ServerName'] . ' but LiveTV status unknown', 200);
                     }
                 } else {
@@ -482,7 +482,7 @@ trait EmbyLiveTVTrackerHomepageItem
                     $timers = json_decode($timersResponse->body, true);
                     $stats['activeTimers'] = count($timers['Items'] ?? []);
                 }
-            } catch (Exception $e) {
+            } catch (\Throwable $e) {
                 $this->setLoggerChannel('EmbyLiveTVTracker')->warning('Failed to get timers: ' . $e->getMessage());
             }
             
@@ -494,7 +494,7 @@ trait EmbyLiveTVTrackerHomepageItem
                     $seriesTimers = json_decode($seriesTimersResponse->body, true);
                     $stats['seriesTimers'] = count($seriesTimers['Items'] ?? []);
                 }
-            } catch (Exception $e) {
+            } catch (\Throwable $e) {
                 $this->setLoggerChannel('EmbyLiveTVTracker')->warning('Failed to get series timers: ' . $e->getMessage());
             }
             
@@ -533,14 +533,14 @@ trait EmbyLiveTVTrackerHomepageItem
                     $stats['totalRecordings'] = $recordings['TotalRecordCount'] ?? count($allRecordings);
                     $stats['recentRecordings'] = array_slice($recentRecordings, 0, 10); // Limit to 10 recent recordings
                 }
-            } catch (Exception $e) {
+            } catch (\Throwable $e) {
                 $this->setLoggerChannel('EmbyLiveTVTracker')->warning('Failed to get recordings: ' . $e->getMessage());
             }
             
             $this->setAPIResponse('success', 'LiveTV stats retrieved successfully', 200, $stats);
             return true;
             
-        } catch (Exception $e) {
+        } catch (\Throwable $e) {
             $this->setAPIResponse('error', 'Failed to retrieve LiveTV stats: ' . $e->getMessage(), 500);
             return false;
         }
@@ -595,7 +595,7 @@ trait EmbyLiveTVTrackerHomepageItem
                             $this->setLoggerChannel('EmbyLiveTVTracker')->info('Retrieved ' . count($userMap) . ' users for mapping');
                         }
                     }
-                } catch (Exception $e) {
+                } catch (\Throwable $e) {
                     $this->setLoggerChannel('EmbyLiveTVTracker')->warning('Failed to get users: ' . $e->getMessage());
                 }
             }
@@ -733,7 +733,7 @@ trait EmbyLiveTVTrackerHomepageItem
                         $scheduledRecordings[] = $activity;
                     }
                 }
-            } catch (Exception $e) {
+            } catch (\Throwable $e) {
                 $this->setLoggerChannel('EmbyLiveTVTracker')->warning('Failed to get timers for activity: ' . $e->getMessage());
             }
             
@@ -776,7 +776,7 @@ trait EmbyLiveTVTrackerHomepageItem
                             }
                         }
                     }
-                } catch (Exception $e) {
+                } catch (\Throwable $e) {
                     $this->setLoggerChannel('EmbyLiveTVTracker')->warning('Failed to get completed recordings: ' . $e->getMessage());
                 }
             }
@@ -792,7 +792,7 @@ trait EmbyLiveTVTrackerHomepageItem
             ]);
             return true;
             
-        } catch (Exception $e) {
+        } catch (\Throwable $e) {
             $this->setAPIResponse('error', 'Failed to retrieve LiveTV activity: ' . $e->getMessage(), 500);
             return false;
         }

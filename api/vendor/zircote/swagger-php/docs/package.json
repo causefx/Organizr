@@ -1,0 +1,12 @@
+{
+  "name": "swagger-php-docs",
+  "version":"3.0.0",
+  "license": "Apache-2.0",
+  "scripts": {
+    "dev": "vuepress dev .",
+    "build": "vuepress build ."
+  },
+  "devDependencies": {
+    "vuepress": "^1.5.4"
+  }
+}

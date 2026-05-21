@@ -4,12 +4,11 @@
  * @license Apache 2.0
  */
 
-namespace OpenApiTests;
+namespace OpenApi\Tests;
 
 use OpenApi\Analysis;
 use OpenApi\Annotations\Info;
 use OpenApi\Annotations\Response;
-use OpenApi\Context;
 
 class RefTest extends OpenApiTestCase
 {
@@ -26,8 +25,8 @@ class RefTest extends OpenApiTestCase
 )
 END;
         $openapi->merge($this->parseComment($comment));
-        $analysis = new Analysis();
-        $analysis->addAnnotation($openapi, Context::detect());
+        $analysis = new Analysis([], $this->getContext());
+        $analysis->addAnnotation($openapi, $this->getContext());
         $analysis->process();
 
         $analysis->validate();

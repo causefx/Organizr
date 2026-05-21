@@ -1,0 +1,40 @@
+name: security-checks
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  security-checker:
+    runs-on: ${{ matrix.operating-system }}
+    strategy:
+      fail-fast: true
+      matrix:
+        operating-system: [ ubuntu-latest ]
+        php: [ '7.2', '7.3', '7.4', '8.0', '8.1', '8.2' ]
+        dependencies: [ 'highest' ]
+
+    name: PHP ${{ matrix.php }} on ${{ matrix.operating-system }} with ${{ matrix.dependencies }} dependencies
+
+    steps:
+      - uses: actions/checkout@v2
+        name: Checkout repository
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+
+      - name: Composer install
+        uses: ramsey/composer-install@v2
+        with:
+          dependency-versions: ${{ matrix.dependencies }}
+          composer-options: ${{ matrix.composer-options }} --no-dev
+
+      - name: Cache security checker dependencies
+        uses: actions/cache@v2
+        with:
+          path: ~/.symfony/cache
+          key: security-checker-db
+
+      - uses: symfonycorp/security-checker-action@v3

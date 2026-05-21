@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /*
  * This file is part of the Monolog package.
@@ -13,21 +13,28 @@ namespace Monolog\Handler;
 
 use Monolog\Formatter\FormatterInterface;
 use Monolog\ResettableInterface;
+use Monolog\LogRecord;
 
 /**
  * Forwards records to multiple handlers
  *
  * @author Lenar Lõhmus <lenar@city.ee>
  */
-class GroupHandler extends AbstractHandler
+class GroupHandler extends Handler implements ProcessableHandlerInterface, ResettableInterface
 {
-    protected $handlers;
+    use ProcessableHandlerTrait;
+
+    /** @var HandlerInterface[] */
+    protected array $handlers;
+    protected bool $bubble;
 
     /**
-     * @param array $handlers Array of Handlers.
-     * @param bool  $bubble   Whether the messages that are handled can bubble up the stack or not
+     * @param HandlerInterface[] $handlers Array of Handlers.
+     * @param bool               $bubble   Whether the messages that are handled can bubble up the stack or not
+     *
+     * @throws \InvalidArgumentException if an unsupported handler is set
      */
-    public function __construct(array $handlers, $bubble = true)
+    public function __construct(array $handlers, bool $bubble = true)
     {
         foreach ($handlers as $handler) {
             if (!$handler instanceof HandlerInterface) {
@@ -40,9 +47,9 @@ class GroupHandler extends AbstractHandler
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritDoc
      */
-    public function isHandling(array $record)
+    public function isHandling(LogRecord $record): bool
     {
         foreach ($this->handlers as $handler) {
             if ($handler->isHandling($record)) {
@@ -54,47 +61,42 @@ class GroupHandler extends AbstractHandler
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritDoc
      */
-    public function handle(array $record)
+    public function handle(LogRecord $record): bool
     {
-        if ($this->processors) {
-            foreach ($this->processors as $processor) {
-                $record = call_user_func($processor, $record);
-            }
+        if (\count($this->processors) > 0) {
+            $record = $this->processRecord($record);
         }
 
         foreach ($this->handlers as $handler) {
-            $handler->handle($record);
+            $handler->handle(clone $record);
         }
 
         return false === $this->bubble;
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritDoc
      */
-    public function handleBatch(array $records)
+    public function handleBatch(array $records): void
     {
-        if ($this->processors) {
-            $processed = array();
+        if (\count($this->processors) > 0) {
+            $processed = [];
             foreach ($records as $record) {
-                foreach ($this->processors as $processor) {
-                    $record = call_user_func($processor, $record);
-                }
-                $processed[] = $record;
+                $processed[] = $this->processRecord($record);
             }
             $records = $processed;
         }
 
         foreach ($this->handlers as $handler) {
-            $handler->handleBatch($records);
+            $handler->handleBatch(array_map(fn ($record) => clone $record, $records));
         }
     }
 
-    public function reset()
+    public function reset(): void
     {
-        parent::reset();
+        $this->resetProcessors();
 
         foreach ($this->handlers as $handler) {
             if ($handler instanceof ResettableInterface) {
@@ -103,13 +105,24 @@ class GroupHandler extends AbstractHandler
         }
     }
 
+    public function close(): void
+    {
+        parent::close();
+
+        foreach ($this->handlers as $handler) {
+            $handler->close();
+        }
+    }
+
     /**
-     * {@inheritdoc}
+     * @inheritDoc
      */
-    public function setFormatter(FormatterInterface $formatter)
+    public function setFormatter(FormatterInterface $formatter): HandlerInterface
     {
         foreach ($this->handlers as $handler) {
-            $handler->setFormatter($formatter);
+            if ($handler instanceof FormattableHandlerInterface) {
+                $handler->setFormatter($formatter);
+            }
         }
 
         return $this;

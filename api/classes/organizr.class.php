@@ -101,7 +101,7 @@ class Organizr
 	public $warnings;
 	public $errors;
 	public bool $loggerSetup = false;
-	public \Nekonomokochan\PhpJsonLogger\Logger $logger;
+	public ?OrganizrLoggerInstance $logger = null;
 
 	public function __construct($checkForUpdates = false)
 	{
@@ -2377,7 +2377,7 @@ class Organizr
 					default:
 						return false;
 				}
-			} catch (Exception $e) {
+			} catch (\Throwable $e) {
 				return false;
 			}
 		} else {
@@ -8156,7 +8156,7 @@ public function youtubeSearch($query)
 					default:
 						return false;
 				}
-			} catch (Exception $e) {
+			} catch (\Throwable $e) {
 				$this->setLoggerChannel('Database');
 				$this->logger->critical($e, $v['query']);
 				return false;

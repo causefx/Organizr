@@ -14,9 +14,6 @@ namespace Stripe;
  *
  * Can also be used to manage inventory.
  *
- * Related guide: <a href="https://stripe.com/docs/orders">Tax, Shipping, and
- * Inventory</a>.
- *
  * @property string $id Unique identifier for the object.
  * @property string $object String representing the object's type. Objects of the same type share the same value.
  * @property bool $active Whether the SKU is available for purchase.

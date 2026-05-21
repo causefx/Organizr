@@ -6,6 +6,8 @@
 
 namespace OpenApi\Annotations;
 
+use OpenApi\Generator;
+
 /**
  * @Annotation
  */
@@ -16,7 +18,14 @@ class Property extends Schema
      *
      * @var string
      */
-    public $property = UNDEFINED;
+    public $property = Generator::UNDEFINED;
+
+    /**
+     * Indicates the property is nullable.
+     *
+     * @var bool
+     */
+    public $nullable = Generator::UNDEFINED;
 
     /**
      * @inheritdoc
@@ -39,6 +48,7 @@ class Property extends Schema
         Property::class => ['properties', 'property'],
         ExternalDocumentation::class => 'externalDocs',
         Xml::class => 'xml',
-        AdditionalProperties::class => 'additionalProperties'
+        AdditionalProperties::class => 'additionalProperties',
+        Attachable::class => ['attachables'],
     ];
 }
