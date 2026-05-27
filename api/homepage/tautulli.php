@@ -193,8 +193,9 @@ trait TautulliHomepageItem
 					$key = array_search($cat, array_column($api['homestats']['data'], 'stat_id'));
 					if (count($api['homestats']['data'][$key]['rows']) > 0) {
 						$img = $api['homestats']['data'][$key]['rows'][0];
-						$this->cacheImage($url . '/pms_image_proxy?img=' . $img['art'] . '&rating_key=' . $img['rating_key'] . '&width=' . $nowPlayingWidth . '&height=' . $nowPlayingHeight, $img['rating_key'] . '-np');
-						$this->cacheImage($url . '/pms_image_proxy?img=' . $img['thumb'] . '&rating_key=' . $img['rating_key'] . '&width=' . $width . '&height=' . $height, $img['rating_key'] . '-list');
+						// Fetch posters through the authenticated API endpoint instead of direct pms_image_proxy access, which now redirects to login when auth is enabled
+						$this->cacheImage($url . '/api/v2?apikey=' . $this->config['tautulliApikey'] . '&cmd=pms_image_proxy&img=' . urlencode($img['art']) . '&rating_key=' . $img['rating_key'] . '&width=' . $nowPlayingWidth . '&height=' . $nowPlayingHeight, $img['rating_key'] . '-np');
+						$this->cacheImage($url . '/api/v2?apikey=' . $this->config['tautulliApikey'] . '&cmd=pms_image_proxy&img=' . urlencode($img['thumb']) . '&rating_key=' . $img['rating_key'] . '&width=' . $width . '&height=' . $height, $img['rating_key'] . '-list');
 						$img['art'] = 'data/cache/' . $img['rating_key'] . '-np.jpg';
 						$img['thumb'] = 'data/cache/' . $img['rating_key'] . '-list.jpg';
 						$api['homestats']['data'][$key]['rows'][0] = $img;
