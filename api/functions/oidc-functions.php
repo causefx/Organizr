@@ -429,10 +429,18 @@ trait OIDCFunctions
 			$this->setAPIResponse('error', 'Failed to exchange authorization code', 500);
 			return false;
 		}
-		// Get user info from userinfo endpoint or ID token
+		// Get user info from userinfo endpoint (primary source).
 		$userInfo = $this->getOIDCUserInfo($provider, $tokens['access_token']);
-		if (!$userInfo && !empty($tokens['id_token'])) {
-			$userInfo = $this->decodeOIDCIdToken($tokens['id_token']);
+		// Fill in any claims missing from userinfo using the ID token. Some providers
+		// (e.g. Microsoft Entra ID) omit claims like `groups` and `preferred_username`
+		// from /userinfo even when present in the ID token.
+		if (!empty($tokens['id_token'])) {
+			$idTokenClaims = $this->decodeOIDCIdToken($tokens['id_token']);
+			if (is_array($idTokenClaims)) {
+				$userInfo = is_array($userInfo)
+					? array_merge($idTokenClaims, $userInfo)
+					: $idTokenClaims;
+			}
 		}
 		if (!$userInfo) {
 			$this->setAPIResponse('error', 'Failed to get user information', 500);
