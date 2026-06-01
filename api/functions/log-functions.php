@@ -38,6 +38,7 @@ trait LogFunctions
 	public function error($msg, $context = [])
 	{
 		if ($this->logger) {
+			if (!($msg instanceof \Throwable)) { $msg = new \Exception(is_string($msg) ? $msg : json_encode($msg)); }
 			$this->logger->error($msg, $context);
 		}
 	}
@@ -45,6 +46,7 @@ trait LogFunctions
 	public function critical($msg, $context = [])
 	{
 		if ($this->logger) {
+			if (!($msg instanceof \Throwable)) { $msg = new \Exception(is_string($msg) ? $msg : json_encode($msg)); }
 			$this->logger->critical($msg, $context);
 		}
 	}
@@ -52,6 +54,7 @@ trait LogFunctions
 	public function alert($msg, $context = [])
 	{
 		if ($this->logger) {
+			if (!($msg instanceof \Throwable)) { $msg = new \Exception(is_string($msg) ? $msg : json_encode($msg)); }
 			$this->logger->alert($msg, $context);
 		}
 	}
@@ -59,6 +62,7 @@ trait LogFunctions
 	public function emergency($msg, $context = [])
 	{
 		if ($this->logger) {
+			if (!($msg instanceof \Throwable)) { $msg = new \Exception(is_string($msg) ? $msg : json_encode($msg)); }
 			$this->logger->emergency($msg, $context);
 		}
 	}
