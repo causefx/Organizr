@@ -70,9 +70,27 @@ trait QBitTorrentHomepageItem
 			$cookie = $reflection->getProperty("cookies");
 			$cookie->setAccessible(true);
 			$cookie = $cookie->getValue($response->cookies);
-			if ($cookie) {
+			if ($cookie) {				
+				$sessionCookieName = null;
+				foreach ($cookie as $cookieName => $cookieData) {
+					if ($cookieName === 'SID' || strpos($cookieName, 'QBT_SID_') === 0) {
+						$sessionCookieName = $cookieName;
+						break;
+					}
+				}
+				if ($sessionCookieName === null) {
+					$this->setLoggerChannel('qBittorrent')->warning(
+						'Could not find qBittorrent session cookie'
+					);
+					$this->setAPIResponse(
+						'error',
+						'qBittorrent Connection Error - Could not find session cookie',
+						409
+					);			
+					return false;
+				}
 				$headers = array(
-					'Cookie' => 'SID=' . $cookie['SID']->value
+					'Cookie' => $sessionCookieName . '=' . $cookie[$sessionCookieName]->value
 				);
 				$reverse = $this->config['qBittorrentReverseSorting'] ? 'true' : 'false';
 				$url = $digest['scheme'] . '://' . $digest['host'] . $digest['port'] . $digest['path'] . $apiVersionQuery . $this->config['qBittorrentSortOrder'] . '&reverse=' . $reverse;
@@ -157,8 +175,26 @@ trait QBitTorrentHomepageItem
 			$cookie->setAccessible(true);
 			$cookie = $cookie->getValue($response->cookies);
 			if ($cookie) {
+				$sessionCookieName = null;
+				foreach ($cookie as $cookieName => $cookieData) {
+					if ($cookieName === 'SID' || strpos($cookieName, 'QBT_SID_') === 0) {
+						$sessionCookieName = $cookieName;
+						break;
+					}
+				}
+				if ($sessionCookieName === null) {
+					$this->setLoggerChannel('qBittorrent')->warning(
+						'Could not find qBittorrent session cookie'
+					);
+					$this->setAPIResponse(
+						'error',
+						'qBittorrent Connection Error - Could not find session cookie',
+						409
+					);			
+					return false;
+				}
 				$headers = array(
-					'Cookie' => 'SID=' . $cookie['SID']->value
+					'Cookie' => $sessionCookieName . '=' . $cookie[$sessionCookieName]->value
 				);
 				$reverse = $this->config['qBittorrentReverseSorting'] ? 'true' : 'false';
 				$url = $digest['scheme'] . '://' . $digest['host'] . $digest['port'] . $digest['path'] . $apiVersionQuery . $this->config['qBittorrentSortOrder'] . '&reverse=' . $reverse;
