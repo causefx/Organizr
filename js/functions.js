@@ -14678,7 +14678,7 @@ getPlexOAuthPin = function () {
   var x_plex_headers = getPlexHeaders();
   var deferred = $.Deferred();
   $.ajax({
-    url: "https://plex.tv/api/v2/pins?strong=true",
+    url: "https://clients.plex.tv/api/v2/pins?strong=true",
     type: "POST",
     headers: x_plex_headers,
     success: function (data) {
@@ -14733,7 +14733,7 @@ function PlexOAuth(
       (function poll() {
         maxPollCount--;
         $.ajax({
-          url: "https://plex.tv/api/v2/pins/" + pin,
+          url: "https://clients.plex.tv/api/v2/pins/" + pin,
           type: "GET",
           headers: x_plex_headers,
           success: function (data) {
