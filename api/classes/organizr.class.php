@@ -5856,7 +5856,7 @@ class Organizr
 	public function getPluginFilesFromGithub($plugin = 'test')
 	{
 		$url = 'https://api.github.com/repos/causefx/organizr/contents/' . $plugin . '?ref=v2-plugins';
-		$options = array('verify' => false);
+		$options = array('verify' => true);
 		$response = Requests::get($url, array(), $options);
 		if ($response->success) {
 			return json_decode($response->body, true);
@@ -5867,7 +5867,7 @@ class Organizr
 	public function getBranchFromGithub($repo)
 	{
 		$url = 'https://api.github.com/repos/' . $repo;
-		$options = array('verify' => false);
+		$options = array('verify' => true);
 		$response = Requests::get($url, $this->setGithubAccessToken(), $options);
 		try {
 			if ($response->success) {
@@ -5891,7 +5891,7 @@ class Organizr
 			return false;
 		}
 		$url = 'https://api.github.com/repos/' . $repo . '/git/trees/' . $branch . '?recursive=1';
-		$options = array('verify' => false);
+		$options = array('verify' => true);
 		$response = Requests::get($url, $this->setGithubAccessToken(), $options);
 		try {
 			if ($response->success) {
@@ -6476,7 +6476,8 @@ class Organizr
 			$context = stream_context_create(
 				array(
 					'ssl' => array(
-						'verify_peer' => false,
+						'verify_peer' => true,
+						'verify_peer_name' => true,
 						'cafile' => $this->getCert()
 					),
 					'http' => array(
