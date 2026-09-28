@@ -70,9 +70,16 @@ trait QBitTorrentHomepageItem
 			$cookie = $reflection->getProperty("cookies");
 			$cookie->setAccessible(true);
 			$cookie = $cookie->getValue($response->cookies);
-			if ($cookie) {
+			$sidName = null;
+			foreach ((array) $cookie as $name => $item) {
+				if ($name === 'SID' || strpos($name, 'QBT_SID_') === 0) {
+					$sidName = $name;
+					break;
+				}
+			}
+			if ($sidName) {
 				$headers = array(
-					'Cookie' => 'SID=' . $cookie['SID']->value
+					'Cookie' => $sidName . '=' . $cookie[$sidName]->value
 				);
 				$reverse = $this->config['qBittorrentReverseSorting'] ? 'true' : 'false';
 				$url = $digest['scheme'] . '://' . $digest['host'] . $digest['port'] . $digest['path'] . $apiVersionQuery . $this->config['qBittorrentSortOrder'] . '&reverse=' . $reverse;
@@ -156,9 +163,17 @@ trait QBitTorrentHomepageItem
 			$cookie = $reflection->getProperty("cookies");
 			$cookie->setAccessible(true);
 			$cookie = $cookie->getValue($response->cookies);
-			if ($cookie) {
+			$cookie = $cookie->getValue($response->cookies);
+			$sidName = null;
+			foreach ((array) $cookie as $name => $item) {
+				if ($name === 'SID' || strpos($name, 'QBT_SID_') === 0) {
+					$sidName = $name;
+					break;
+				}
+			}
+			if ($sidName) {
 				$headers = array(
-					'Cookie' => 'SID=' . $cookie['SID']->value
+					'Cookie' => $sidName . '=' . $cookie[$sidName]->value
 				);
 				$reverse = $this->config['qBittorrentReverseSorting'] ? 'true' : 'false';
 				$url = $digest['scheme'] . '://' . $digest['host'] . $digest['port'] . $digest['path'] . $apiVersionQuery . $this->config['qBittorrentSortOrder'] . '&reverse=' . $reverse;
