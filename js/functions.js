@@ -12364,7 +12364,7 @@ function buildWeatherAndAir(array) {
                         </div>
                     </div>
                     `;
-        } else if (weatherItemsCount !== 5) {
+        } else if (weatherItemsCount < 6) {
           weatherItems +=
             `
                     <div class="col-lg-2 col-sm-3 col-xs-12">
