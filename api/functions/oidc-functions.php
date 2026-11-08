@@ -532,22 +532,95 @@ trait OIDCFunctions
 	 */
 	public function outputOIDCCallbackError($error)
 	{
+		$redirectUrl = $this->getServerPath();
+		if (empty($redirectUrl) || $redirectUrl === 'http://' || $redirectUrl === 'https://') {
+			$redirectUrl = '/';
+		}
+		$appTitle = !empty($this->config['title']) ? $this->config['title'] : 'Organizr';
+		$isStateError = (stripos((string)$error, 'state') !== false);
+		$heading = $isStateError ? 'Login Session Expired' : 'Login Failed';
+		$userMessage = $isStateError
+			? 'Your login session has expired, was cancelled, or you may have switched browsers (for example, clicking a password reset link in an email client). Don\'t worry, any credential or password updates were saved.'
+			: htmlspecialchars((string)$error);
+
+		$mvpCssPath = ($this->root ?? dirname(__DIR__, 2)) . DIRECTORY_SEPARATOR . 'css' . DIRECTORY_SEPARATOR . 'mvp.css';
+		$cssTag = file_exists($mvpCssPath)
+			? '<style>' . file_get_contents($mvpCssPath) . '</style>'
+			: '<link rel="stylesheet" href="' . htmlspecialchars(rtrim($redirectUrl, '/') . '/css/mvp.css') . '">';
+
+		$favIconHtml = method_exists($this, 'favIcons') ? $this->favIcons($redirectUrl) : '';
+
 		echo '<!DOCTYPE html>
 <html lang="en">
 <head>
-	<link rel="stylesheet" href="' . $this->getServerPath() . '/css/mvp.css">
+	' . $cssTag . '
+	' . $favIconHtml . '
 	<meta charset="utf-8">
-	<meta name="description" content="OIDC Login Error">
+	<meta name="description" content="' . htmlspecialchars($heading . ' - ' . $appTitle) . '">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>OIDC Login Error</title>
+	<title>' . htmlspecialchars($heading . ' - ' . $appTitle) . '</title>
+	<style>
+		body {
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			min-height: 100vh;
+			margin: 0;
+			padding: 1rem;
+			box-sizing: border-box;
+		}
+		main {
+			width: 100%;
+			max-width: 520px;
+			margin: 0 auto;
+			padding: 0;
+		}
+		aside {
+			text-align: center;
+			border-radius: 8px;
+			padding: 2rem;
+			box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+		}
+		aside h2 {
+			margin-top: 0;
+			font-size: 1.5rem;
+		}
+		aside h3 {
+			margin-top: 0.5rem;
+			font-size: 1.25rem;
+		}
+		aside p {
+			margin: 1rem 0;
+			line-height: 1.6;
+		}
+		aside a b {
+			display: inline-block;
+			padding: 0.75rem 1.5rem;
+			border-radius: 5px;
+			text-decoration: none;
+		}
+		details {
+			margin-top: 1.5rem;
+			text-align: left;
+			background: var(--color-accent);
+			padding: 0.5rem 1rem;
+			border-radius: 5px;
+		}
+		details summary {
+			cursor: pointer;
+			font-weight: bold;
+		}
+	</style>
 </head>
 <body>
 	<main>
 		<section>
 			<aside>
-				<h3>Login Failed</h3>
-				<p>' . htmlspecialchars($error) . '</p>
-				<p><a href="javascript:window.close()">Close this window</a></p>
+				<h2>' . htmlspecialchars($appTitle) . '</h2>
+				<h3>' . htmlspecialchars($heading) . '</h3>
+				<p>' . $userMessage . '</p>
+				<p><a href="' . htmlspecialchars($redirectUrl) . '"><b>Return to Login Page</b></a></p>
+				' . ($isStateError ? '<details><summary><small>Technical Details</small></summary><p><small><code>' . htmlspecialchars((string)$error) . '</code></small></p></details>' : '') . '
 			</aside>
 		</section>
 	</main>
