@@ -433,9 +433,9 @@ trait AuthFunctions
 	public function plugin_auth_jellyfin($username, $password)
 	{
 		try {
-			$url = $this->qualifyURL($this->config['jellyfinURL']) . '/Users/authenticatebyname';
+			$url = $this->qualifyURL($this->config['jellyfinURL']) . '/Users/AuthenticateByName';
 			$headers = array(
-				'X-Emby-Authorization' => 'MediaBrowser Client="Organizr Auth", Device="Organizr", DeviceId="orgv2", Version="2.0"',
+				'Authorization' => 'MediaBrowser Client="Organizr Auth", Device="Organizr", DeviceId="orgv2", Version="2.0"',
 				'Content-Type' => 'application/json',
 			);
 			$data = array(
@@ -445,11 +445,12 @@ trait AuthFunctions
 			$response = Requests::post($url, $headers, json_encode($data));
 			if ($response->success) {
 				$json = json_decode($response->body, true);
-				if (is_array($json) && isset($json['SessionInfo']) && isset($json['User']) && $json['User']['HasPassword'] == true) {
+				if (is_array($json) && !empty($json['AccessToken']) && !empty($json['User']) && is_array($json['User'])) {
 					$this->setLoggerChannel('JellyFin')->info('Found User and Logged In');
-					// Login Success - Now Logout JellyFin Session As We No Longer Need It
+					// Logout the temporary Jellyfin session using the non-deprecated auth header.
+					$token = (string)$json['AccessToken'];
 					$headers = array(
-						'X-Emby-Authorization' => 'MediaBrowser Client="Organizr Auth", Device="Organizr", DeviceId="orgv2", Version="2.0", Token="' . $json['AccessToken'] . '"',
+						'Authorization' => 'MediaBrowser Client="Organizr Auth", Device="Organizr", DeviceId="orgv2", Version="2.0", Token="' . $token . '"',
 						'Content-Type' => 'application/json',
 					);
 					$response = Requests::post($this->qualifyURL($this->config['jellyfinURL']) . '/Sessions/Logout', $headers, array());
